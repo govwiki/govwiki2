@@ -88,11 +88,17 @@ class ElectedOfficial
     private $contributions;
 
     /**
+     * @ORM\OneToMany(targetEntity="Endorsement", mappedBy="electedOfficial")
+     */
+    private $endorsements;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->contributions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->endorsements  = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -343,5 +349,38 @@ class ElectedOfficial
     public function getContributions()
     {
         return $this->contributions;
+    }
+
+    /**
+     * Add endorsements
+     *
+     * @param \GovWiki\DbBundle\Entity\Endorsement $endorsements
+     * @return ElectedOfficial
+     */
+    public function addEndorsement(\GovWiki\DbBundle\Entity\Endorsement $endorsements)
+    {
+        $this->endorsements[] = $endorsements;
+
+        return $this;
+    }
+
+    /**
+     * Remove endorsements
+     *
+     * @param \GovWiki\DbBundle\Entity\Endorsement $endorsements
+     */
+    public function removeEndorsement(\GovWiki\DbBundle\Entity\Endorsement $endorsements)
+    {
+        $this->endorsements->removeElement($endorsements);
+    }
+
+    /**
+     * Get endorsements
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEndorsements()
+    {
+        return $this->endorsements;
     }
 }
