@@ -22,6 +22,11 @@ class Government
     private $id;
 
     /**
+     * @ORM\OneToMany(targetEntity="ElectedOfficial", mappedBy="government")
+     */
+    private $electedOfficials;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
@@ -785,6 +790,14 @@ class Government
     private $enrollmentRank;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->electedOfficials = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * Get id
      *
      * @return integer
@@ -792,6 +805,39 @@ class Government
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Add electedOfficials
+     *
+     * @param \GovWiki\DbBundle\Entity\ElectedOfficial $electedOfficials
+     * @return Government
+     */
+    public function addElectedOfficial(\GovWiki\DbBundle\Entity\ElectedOfficial $electedOfficials)
+    {
+        $this->electedOfficials[] = $electedOfficials;
+
+        return $this;
+    }
+
+    /**
+     * Remove electedOfficials
+     *
+     * @param \GovWiki\DbBundle\Entity\ElectedOfficial $electedOfficials
+     */
+    public function removeElectedOfficial(\GovWiki\DbBundle\Entity\ElectedOfficial $electedOfficials)
+    {
+        $this->electedOfficials->removeElement($electedOfficials);
+    }
+
+    /**
+     * Get electedOfficials
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getElectedOfficials()
+    {
+        return $this->electedOfficials;
     }
 
     /**
