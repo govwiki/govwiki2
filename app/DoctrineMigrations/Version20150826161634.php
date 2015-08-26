@@ -1,0 +1,32 @@
+<?php
+
+namespace Application\Migrations;
+
+use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\DBAL\Schema\Schema;
+
+/**
+ * 20150826161634
+ */
+class Version20150826161634 extends AbstractMigration
+{
+    /**
+     * @param Schema $schema
+     */
+    public function up(Schema $schema)
+    {
+        $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+
+        $this->addSql('CREATE TABLE governments (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) DEFAULT NULL, slug VARCHAR(255) DEFAULT NULL, special_district_function_code VARCHAR(255) DEFAULT NULL, type VARCHAR(255) DEFAULT NULL, alt_type VARCHAR(20) DEFAULT NULL, census_contact VARCHAR(255) DEFAULT NULL, city VARCHAR(255) DEFAULT NULL, state VARCHAR(50) DEFAULT NULL, zip VARCHAR(50) DEFAULT NULL, web_site VARCHAR(255) DEFAULT NULL, population DOUBLE PRECISION DEFAULT NULL, population_as_of_year DOUBLE PRECISION DEFAULT NULL, enrollment VARCHAR(50) DEFAULT NULL, enrollment_as_of_year VARCHAR(50) DEFAULT NULL, frpm_rate DOUBLE PRECISION DEFAULT NULL, fips_county INT DEFAULT NULL, fips_place INT DEFAULT NULL, county_area_name LONGTEXT DEFAULT NULL, latitude DOUBLE PRECISION DEFAULT NULL, longitude DOUBLE PRECISION DEFAULT NULL, rand DOUBLE PRECISION DEFAULT NULL, median_wages_general_public DOUBLE PRECISION DEFAULT NULL, median_benefits_general_public DOUBLE PRECISION DEFAULT NULL, median_total_comp_general_public DOUBLE PRECISION DEFAULT NULL, median_home_price DOUBLE PRECISION DEFAULT NULL, median_salary_per_full_time_emp DOUBLE PRECISION DEFAULT NULL, median_benefits_per_ft_emp DOUBLE PRECISION DEFAULT NULL, median_total_comp_per_ft_emp DOUBLE PRECISION DEFAULT NULL, median_total_comp_over_median_individual_comp DOUBLE PRECISION DEFAULT NULL, name_of_highest_paid_employee LONGTEXT DEFAULT NULL, title_of_highest_paid_employee LONGTEXT DEFAULT NULL, total_comp_for_highest_paid_emp DOUBLE PRECISION DEFAULT NULL, number_of_full_time_employees DOUBLE PRECISION DEFAULT NULL, full_time_employees_over_population DOUBLE PRECISION DEFAULT NULL, total_wages DOUBLE PRECISION DEFAULT NULL, total_salaries_plus_benefits DOUBLE PRECISION DEFAULT NULL, pension_contribution DOUBLE PRECISION DEFAULT NULL, pension_uaal DOUBLE PRECISION DEFAULT NULL, median_pension_30_year_retiree DOUBLE PRECISION DEFAULT NULL, pension_contribution_over_total_revenue DOUBLE PRECISION DEFAULT NULL, former_emp_with_largest_pension LONGTEXT DEFAULT NULL, amount_of_largest_pension DOUBLE PRECISION DEFAULT NULL, opeb_arc DOUBLE PRECISION DEFAULT NULL, opeb_actual_contribution DOUBLE PRECISION DEFAULT NULL, opeb_uaal DOUBLE PRECISION DEFAULT NULL, opeb_arc_over_total_revenue DOUBLE PRECISION DEFAULT NULL, pension_plus_opeb_arc_over_tot_rev DOUBLE PRECISION DEFAULT NULL, academic_performance_index DOUBLE PRECISION DEFAULT NULL, sat_scores DOUBLE PRECISION DEFAULT NULL, parent_trigger_eligible_schools LONGTEXT DEFAULT NULL, open_enrollment_schools LONGTEXT DEFAULT NULL, violent_crimes_per_100000_population DOUBLE PRECISION DEFAULT NULL, property_crimes_per_100000_population DOUBLE PRECISION DEFAULT NULL, pavement_condition_index DOUBLE PRECISION DEFAULT NULL, sales_tax_rate DOUBLE PRECISION DEFAULT NULL, library_hours_per_week DOUBLE PRECISION DEFAULT NULL, graduation_rate DOUBLE PRECISION DEFAULT NULL, dropout_rate DOUBLE PRECISION DEFAULT NULL, public_safety_exp_over_tot_gov_fund_revenue DOUBLE PRECISION DEFAULT NULL, public_safety_exp_over_general_fund_revenue DOUBLE PRECISION DEFAULT NULL, general_fund_balance_over_general_fund_exp DOUBLE PRECISION DEFAULT NULL, total_debt_over_total_revenue DOUBLE PRECISION DEFAULT NULL, default_probability DOUBLE PRECISION DEFAULT NULL, total_governmental_fund_revenues DOUBLE PRECISION DEFAULT NULL, total_revenue DOUBLE PRECISION DEFAULT NULL, total_revenue_per_capita DOUBLE PRECISION DEFAULT NULL, total_governmental_fund_expenditures DOUBLE PRECISION DEFAULT NULL, total_expenditures DOUBLE PRECISION DEFAULT NULL, total_expenditures_per_capita DOUBLE PRECISION DEFAULT NULL, expenditure_per_student DOUBLE PRECISION DEFAULT NULL, gf_surplus_over_gf_revenue DOUBLE PRECISION DEFAULT NULL, change_in_governmental_fund_revenue DOUBLE PRECISION DEFAULT NULL, inc_id INT DEFAULT NULL, wikipedia_page_name VARCHAR(255) DEFAULT NULL, wikipedia_page_exists INT DEFAULT NULL, transparent_california_page_name VARCHAR(255) DEFAULT NULL, latest_audit_url VARCHAR(255) DEFAULT NULL, frpm_rate_rank INT DEFAULT NULL, median_salary_per_full_time_emp_rank INT DEFAULT NULL, median_benefits_per_ft_emp_rank INT DEFAULT NULL, median_total_comp_per_ft_emp_rank INT DEFAULT NULL, median_total_comp_over_median_individual_comp_rank INT DEFAULT NULL, total_comp_for_highest_paid_emp_rank INT DEFAULT NULL, full_time_employees_over_population_rank INT DEFAULT NULL, pension_contribution_over_total_revenue_rank INT DEFAULT NULL, opeb_arc_over_total_revenue_rank INT DEFAULT NULL, pension_plus_opeb_arc_over_tot_rev_rank INT DEFAULT NULL, violent_crimes_per_100000_population_rank INT DEFAULT NULL, property_crimes_per_100000_population_rank INT DEFAULT NULL, academic_performance_index_rank INT DEFAULT NULL, sat_scores_rank INT DEFAULT NULL, sales_tax_rate_rank INT DEFAULT NULL, library_hours_per_week_rank INT DEFAULT NULL, graduation_rate_rank INT DEFAULT NULL, dropout_rate_rank INT DEFAULT NULL, total_debt_over_total_revenue_rank INT DEFAULT NULL, expenditure_per_student_rank INT DEFAULT NULL, general_fund_balance_over_general_fund_exp_rank INT DEFAULT NULL, gf_surplus_over_gf_revenue_rank INT DEFAULT NULL, change_in_governmental_fund_revenue_rank INT DEFAULT NULL, default_probability_rank INT DEFAULT NULL, public_safety_exp_over_tot_gov_fund_revenue_rank INT DEFAULT NULL, public_safety_exp_over_general_fund_revenue_rank INT DEFAULT NULL, total_revenue_per_capita_rank INT DEFAULT NULL, total_expenditures_per_capita_rank INT DEFAULT NULL, median_total_comp_general_public_rank INT DEFAULT NULL, median_home_price_rank INT DEFAULT NULL, population_rank INT DEFAULT NULL, enrollment_rank INT DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
+    }
+
+    /**
+     * @param Schema $schema
+     */
+    public function down(Schema $schema)
+    {
+        $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+
+        $this->addSql('DROP TABLE governments');
+    }
+}
