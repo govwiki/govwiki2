@@ -29,56 +29,56 @@ class ElectedOfficial
     /**
      * @var string
      *
-     * @ORM\Column(name="full_name", type="string", length=255)
+     * @ORM\Column(name="full_name", type="string", length=255, nullable=true)
      */
     private $fullName;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="display_order", type="integer")
+     * @ORM\Column(name="display_order", type="integer", nullable=true)
      */
     private $displayOrder;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="title", type="string", length=255)
+     * @ORM\Column(name="title", type="string", length=255, nullable=true)
      */
     private $title;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="email_address", type="string", length=255)
+     * @ORM\Column(name="email_address", type="string", length=255, nullable=true)
      */
     private $emailAddress;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="telephone_number", type="string", length=255)
+     * @ORM\Column(name="telephone_number", type="string", length=255, nullable=true)
      */
     private $telephoneNumber;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="photo_url", type="string", length=255)
+     * @ORM\Column(name="photo_url", type="string", length=255, nullable=true)
      */
     private $photoUrl;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="bio_url", type="string", length=255)
+     * @ORM\Column(name="bio_url", type="string", length=255, nullable=true)
      */
     private $bioUrl;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="term_expires", type="string", length=255)
+     * @ORM\Column(name="term_expires", type="string", length=255, nullable=true)
      */
     private $termExpires;
 
