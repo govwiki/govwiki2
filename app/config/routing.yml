@@ -1,0 +1,4 @@
+gov_wiki_api:
+    resource: "@GovWikiApiBundle/Resources/config/routing.yml"
+    prefix:   /api
+

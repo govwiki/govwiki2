@@ -18,6 +18,7 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new GovWiki\DbBundle\GovWikiDbBundle(),
+            new GovWiki\ApiBundle\GovWikiApiBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
