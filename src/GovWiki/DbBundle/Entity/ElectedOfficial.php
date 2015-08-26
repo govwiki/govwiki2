@@ -93,12 +93,18 @@ class ElectedOfficial
     private $endorsements;
 
     /**
+     * @ORM\OneToMany(targetEntity="PublicStatement", mappedBy="electedOfficial")
+     */
+    private $publicStatements;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->contributions = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->endorsements  = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->contributions     = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->endorsements      = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->publicStatements  = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -382,5 +388,38 @@ class ElectedOfficial
     public function getEndorsements()
     {
         return $this->endorsements;
+    }
+
+    /**
+     * Add publicStatements
+     *
+     * @param \GovWiki\DbBundle\Entity\PublicStatement $publicStatements
+     * @return ElectedOfficial
+     */
+    public function addPublicStatement(\GovWiki\DbBundle\Entity\PublicStatement $publicStatements)
+    {
+        $this->publicStatements[] = $publicStatements;
+
+        return $this;
+    }
+
+    /**
+     * Remove publicStatements
+     *
+     * @param \GovWiki\DbBundle\Entity\PublicStatement $publicStatements
+     */
+    public function removePublicStatement(\GovWiki\DbBundle\Entity\PublicStatement $publicStatements)
+    {
+        $this->publicStatements->removeElement($publicStatements);
+    }
+
+    /**
+     * Get publicStatements
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPublicStatements()
+    {
+        return $this->publicStatements;
     }
 }
