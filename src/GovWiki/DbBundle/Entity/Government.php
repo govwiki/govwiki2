@@ -798,6 +798,19 @@ class Government
     }
 
     /**
+     * Set id
+     *
+     * @param int $id
+     * @return Government
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Get id
      *
      * @return integer
