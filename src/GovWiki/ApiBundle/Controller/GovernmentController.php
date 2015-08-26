@@ -20,6 +20,9 @@ class GovernmentController extends Controller
 {
     /**
      * @Route("/{slug}/", methods="GET")
+     *
+     * @param  Government $government
+     * @return Response
      */
     public function showAction(Government $government)
     {
