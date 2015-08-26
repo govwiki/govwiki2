@@ -83,6 +83,19 @@ class ElectedOfficial
     private $termExpires;
 
     /**
+     * @ORM\OneToMany(targetEntity="Contribution", mappedBy="electedOfficial")
+     */
+    private $contributions;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->contributions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * Get id
      *
      * @return integer
@@ -297,5 +310,38 @@ class ElectedOfficial
     public function getTermExpires()
     {
         return $this->termExpires;
+    }
+
+    /**
+     * Add contributions
+     *
+     * @param \GovWiki\DbBundle\Entity\Contribution $contributions
+     * @return ElectedOfficial
+     */
+    public function addContribution(\GovWiki\DbBundle\Entity\Contribution $contributions)
+    {
+        $this->contributions[] = $contributions;
+
+        return $this;
+    }
+
+    /**
+     * Remove contributions
+     *
+     * @param \GovWiki\DbBundle\Entity\Contribution $contributions
+     */
+    public function removeContribution(\GovWiki\DbBundle\Entity\Contribution $contributions)
+    {
+        $this->contributions->removeElement($contributions);
+    }
+
+    /**
+     * Get contributions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getContributions()
+    {
+        return $this->contributions;
     }
 }
