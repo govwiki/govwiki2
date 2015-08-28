@@ -43,9 +43,14 @@ class Endorsement
     private $electionYear;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ElectedOfficial", inversedBy="endorsments")
+     * @ORM\ManyToOne(targetEntity="ElectedOfficial", inversedBy="endorsements")
      */
     private $electedOfficial;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="IssueCategory", inversedBy="endorsements")
+     */
+    private $issueCategory;
 
     /**
      * Get id
@@ -147,5 +152,28 @@ class Endorsement
     public function getElectedOfficial()
     {
         return $this->electedOfficial;
+    }
+
+    /**
+     * Set issueCategory
+     *
+     * @param \GovWiki\DbBundle\Entity\IssueCategory $issueCategory
+     * @return Endorsement
+     */
+    public function setIssueCategory(\GovWiki\DbBundle\Entity\IssueCategory $issueCategory = null)
+    {
+        $this->issueCategory = $issueCategory;
+
+        return $this;
+    }
+
+    /**
+     * Get issueCategory
+     *
+     * @return \GovWiki\DbBundle\Entity\IssueCategory 
+     */
+    public function getIssueCategory()
+    {
+        return $this->issueCategory;
     }
 }

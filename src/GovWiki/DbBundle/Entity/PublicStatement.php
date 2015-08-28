@@ -48,6 +48,11 @@ class PublicStatement
     private $electedOfficial;
 
     /**
+     * @ORM\ManyToOne(targetEntity="IssueCategory", inversedBy="publicStatements")
+     */
+    private $issueCategory;
+
+    /**
      * Get id
      *
      * @return integer

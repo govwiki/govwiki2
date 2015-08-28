@@ -76,6 +76,11 @@ class Legislation
     private $electedOfficialVotes;
 
     /**
+     * @ORM\ManyToOne(targetEntity="IssueCategory", inversedBy="legislations")
+     */
+    private $issueCategory;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -285,5 +290,28 @@ class Legislation
     public function getElectedOfficialVotes()
     {
         return $this->electedOfficialVotes;
+    }
+
+    /**
+     * Set issueCategory
+     *
+     * @param \GovWiki\DbBundle\Entity\IssueCategory $issueCategory
+     * @return Legislation
+     */
+    public function setIssueCategory(\GovWiki\DbBundle\Entity\IssueCategory $issueCategory = null)
+    {
+        $this->issueCategory = $issueCategory;
+
+        return $this;
+    }
+
+    /**
+     * Get issueCategory
+     *
+     * @return \GovWiki\DbBundle\Entity\IssueCategory 
+     */
+    public function getIssueCategory()
+    {
+        return $this->issueCategory;
     }
 }
