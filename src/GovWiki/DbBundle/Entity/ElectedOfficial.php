@@ -98,6 +98,11 @@ class ElectedOfficial
     private $publicStatements;
 
     /**
+     * @ORM\OneToMany(targetEntity="ElectedOfficialVote", mappedBy="electedOfficial")
+     */
+    private $votes;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -105,6 +110,7 @@ class ElectedOfficial
         $this->contributions     = new \Doctrine\Common\Collections\ArrayCollection();
         $this->endorsements      = new \Doctrine\Common\Collections\ArrayCollection();
         $this->publicStatements  = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->votes             = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -421,5 +427,38 @@ class ElectedOfficial
     public function getPublicStatements()
     {
         return $this->publicStatements;
+    }
+
+    /**
+     * Add votes
+     *
+     * @param \GovWiki\DbBundle\Entity\ElectedOfficialVote $votes
+     * @return ElectedOfficial
+     */
+    public function addVote(\GovWiki\DbBundle\Entity\ElectedOfficialVote $votes)
+    {
+        $this->votes[] = $votes;
+
+        return $this;
+    }
+
+    /**
+     * Remove votes
+     *
+     * @param \GovWiki\DbBundle\Entity\ElectedOfficialVote $votes
+     */
+    public function removeVote(\GovWiki\DbBundle\Entity\ElectedOfficialVote $votes)
+    {
+        $this->votes->removeElement($votes);
+    }
+
+    /**
+     * Get votes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getVotes()
+    {
+        return $this->votes;
     }
 }
