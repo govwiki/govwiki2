@@ -28,7 +28,7 @@ class GovernmentController extends Controller
     {
         $normalizer  = new ObjectNormalizer();
         $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getName();
+            return;
         });
 
         $serializer  = new Serializer([$normalizer], [new JsonEncoder()]);
