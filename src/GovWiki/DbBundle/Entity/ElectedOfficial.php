@@ -114,6 +114,19 @@ class ElectedOfficial
     }
 
     /**
+     * Set id
+     *
+     * @param int $id
+     * @return ElectedOfficial
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Get id
      *
      * @return integer
