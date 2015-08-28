@@ -27,7 +27,7 @@ class Government
     private $electedOfficials;
 
     /**
-     * @ORM\OneToMany(targetEntity="Findata", mappedBy="government")
+     * @ORM\OneToMany(targetEntity="FinData", mappedBy="government")
      */
     private $finData;
 
@@ -862,10 +862,10 @@ class Government
     /**
      * Add finData
      *
-     * @param \GovWiki\DbBundle\Entity\Findata $finData
+     * @param \GovWiki\DbBundle\Entity\FinData $finData
      * @return Government
      */
-    public function addFinDatum(\GovWiki\DbBundle\Entity\Findata $finData)
+    public function addFinDatum(\GovWiki\DbBundle\Entity\FinData $finData)
     {
         $this->finData[] = $finData;
 
@@ -875,9 +875,9 @@ class Government
     /**
      * Remove finData
      *
-     * @param \GovWiki\DbBundle\Entity\Findata $finData
+     * @param \GovWiki\DbBundle\Entity\FinData $finData
      */
-    public function removeFinDatum(\GovWiki\DbBundle\Entity\Findata $finData)
+    public function removeFinDatum(\GovWiki\DbBundle\Entity\FinData $finData)
     {
         $this->finData->removeElement($finData);
     }

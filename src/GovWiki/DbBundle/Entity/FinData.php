@@ -50,17 +50,17 @@ class FinData
     private $dollarAmount;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Government", inversedBy="findata")
+     * @ORM\ManyToOne(targetEntity="Government", inversedBy="finData")
      */
-    private $governments;
+    private $government;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Fund", inversedBy="findata")
+     * @ORM\ManyToOne(targetEntity="Fund", inversedBy="finData")
      */
     private $fund;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CaptionCategory", inversedBy="findata")
+     * @ORM\ManyToOne(targetEntity="CaptionCategory", inversedBy="finData")
      */
     private $captionCategory;
 
@@ -167,26 +167,26 @@ class FinData
     }
 
     /**
-     * Set governments
+     * Set government
      *
-     * @param \GovWiki\DbBundle\Entity\Government $governments
+     * @param \GovWiki\DbBundle\Entity\Government $government
      * @return FinData
      */
-    public function setGovernments(\GovWiki\DbBundle\Entity\Government $governments = null)
+    public function setGovernment(\GovWiki\DbBundle\Entity\Government $government = null)
     {
-        $this->governments = $governments;
+        $this->government = $government;
 
         return $this;
     }
 
     /**
-     * Get governments
+     * Get government
      *
      * @return \GovWiki\DbBundle\Entity\Government
      */
-    public function getGovernments()
+    public function getGovernment()
     {
-        return $this->governments;
+        return $this->government;
     }
 
     /**
