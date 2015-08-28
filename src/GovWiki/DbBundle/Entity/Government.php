@@ -27,6 +27,11 @@ class Government
     private $electedOfficials;
 
     /**
+     * @ORM\OneToMany(targetEntity="Findata", mappedBy="government")
+     */
+    private $finData;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
@@ -795,6 +800,7 @@ class Government
     public function __construct()
     {
         $this->electedOfficials = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->finData          = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -851,6 +857,39 @@ class Government
     public function getElectedOfficials()
     {
         return $this->electedOfficials;
+    }
+
+    /**
+     * Add finData
+     *
+     * @param \GovWiki\DbBundle\Entity\Findata $finData
+     * @return Government
+     */
+    public function addFinDatum(\GovWiki\DbBundle\Entity\Findata $finData)
+    {
+        $this->finData[] = $finData;
+
+        return $this;
+    }
+
+    /**
+     * Remove finData
+     *
+     * @param \GovWiki\DbBundle\Entity\Findata $finData
+     */
+    public function removeFinDatum(\GovWiki\DbBundle\Entity\Findata $finData)
+    {
+        $this->finData->removeElement($finData);
+    }
+
+    /**
+     * Get finData
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFinData()
+    {
+        return $this->finData;
     }
 
     /**
