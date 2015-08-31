@@ -149,4 +149,27 @@ class Fund
     {
         return $this->finData;
     }
+
+    /**
+     * Add finData
+     *
+     * @param \GovWiki\DbBundle\Entity\FinData $finData
+     * @return Fund
+     */
+    public function addFinDatum(\GovWiki\DbBundle\Entity\FinData $finData)
+    {
+        $this->finData[] = $finData;
+
+        return $this;
+    }
+
+    /**
+     * Remove finData
+     *
+     * @param \GovWiki\DbBundle\Entity\FinData $finData
+     */
+    public function removeFinDatum(\GovWiki\DbBundle\Entity\FinData $finData)
+    {
+        $this->finData->removeElement($finData);
+    }
 }

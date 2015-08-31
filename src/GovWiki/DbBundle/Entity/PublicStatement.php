@@ -153,4 +153,27 @@ class PublicStatement
     {
         return $this->electedOfficial;
     }
+
+    /**
+     * Set issueCategory
+     *
+     * @param \GovWiki\DbBundle\Entity\IssueCategory $issueCategory
+     * @return PublicStatement
+     */
+    public function setIssueCategory(\GovWiki\DbBundle\Entity\IssueCategory $issueCategory = null)
+    {
+        $this->issueCategory = $issueCategory;
+
+        return $this;
+    }
+
+    /**
+     * Get issueCategory
+     *
+     * @return \GovWiki\DbBundle\Entity\IssueCategory
+     */
+    public function getIssueCategory()
+    {
+        return $this->issueCategory;
+    }
 }
