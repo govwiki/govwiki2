@@ -81,6 +81,11 @@ class Legislation
     private $issueCategory;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Government", inversedBy="legislations")
+     */
+    private $government;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -308,10 +313,33 @@ class Legislation
     /**
      * Get issueCategory
      *
-     * @return \GovWiki\DbBundle\Entity\IssueCategory 
+     * @return \GovWiki\DbBundle\Entity\IssueCategory
      */
     public function getIssueCategory()
     {
         return $this->issueCategory;
+    }
+
+    /**
+     * Set government
+     *
+     * @param \GovWiki\DbBundle\Entity\Government $government
+     * @return Legislation
+     */
+    public function setGovernment(\GovWiki\DbBundle\Entity\Government $government = null)
+    {
+        $this->government = $government;
+
+        return $this;
+    }
+
+    /**
+     * Get government
+     *
+     * @return \GovWiki\DbBundle\Entity\Government
+     */
+    public function getGovernment()
+    {
+        return $this->government;
     }
 }

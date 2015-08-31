@@ -34,6 +34,11 @@ class Government
     private $electedOfficials;
 
     /**
+     * @ORM\OneToMany(targetEntity="Legislation", mappedBy="government")
+     */
+    private $legislations;
+
+    /**
      * @ORM\OneToMany(targetEntity="FinData", mappedBy="government")
      */
     private $finData;
@@ -808,6 +813,7 @@ class Government
     {
         $this->electedOfficials = new \Doctrine\Common\Collections\ArrayCollection();
         $this->finData          = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->legislations     = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -920,6 +926,39 @@ class Government
     public function getFinData()
     {
         return $this->finData;
+    }
+
+    /**
+     * Add legislations
+     *
+     * @param \GovWiki\DbBundle\Entity\Legislation $legislations
+     * @return Government
+     */
+    public function addLegislation(\GovWiki\DbBundle\Entity\Legislation $legislations)
+    {
+        $this->legislations[] = $legislations;
+
+        return $this;
+    }
+
+    /**
+     * Remove legislations
+     *
+     * @param \GovWiki\DbBundle\Entity\Legislation $legislations
+     */
+    public function removeLegislation(\GovWiki\DbBundle\Entity\Legislation $legislations)
+    {
+        $this->legislations->removeElement($legislations);
+    }
+
+    /**
+     * Get legislations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getLegislations()
+    {
+        return $this->legislations;
     }
 
     /**
