@@ -41,7 +41,7 @@ class ElectedOfficialVote
     private $electedOfficial;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Legislation", inversedBy="elelectedOfficialVotes")
+     * @ORM\ManyToOne(targetEntity="Legislation", inversedBy="electedOfficialVotes")
      */
     private $legislation;
 
