@@ -22,6 +22,13 @@ class Government
     private $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="state_id", type="string", length=255, nullable=true)
+     */
+    private $stateId;
+
+    /**
      * @ORM\OneToMany(targetEntity="ElectedOfficial", mappedBy="government")
      */
     private $electedOfficials;
@@ -824,6 +831,29 @@ class Government
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set stateId
+     *
+     * @param string $stateId
+     * @return Government
+     */
+    public function setStateId($stateId)
+    {
+        $this->stateId = $stateId;
+
+        return $this;
+    }
+
+    /**
+     * Get stateId
+     *
+     * @return string
+     */
+    public function getStateId()
+    {
+        return $this->stateId;
     }
 
     /**
