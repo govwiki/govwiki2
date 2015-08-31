@@ -49,6 +49,19 @@ class CaptionCategory
     }
 
     /**
+     * Set id
+     *
+     * @param integer $id
+     * @return CaptionCategory
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Get id
      *
      * @return integer

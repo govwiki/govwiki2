@@ -49,6 +49,19 @@ class Fund
     }
 
     /**
+     * Set id
+     *
+     * @param integer $id
+     * @return Fund
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Get id
      *
      * @return integer
