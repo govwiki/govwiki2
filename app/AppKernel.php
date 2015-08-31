@@ -19,6 +19,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new GovWiki\DbBundle\GovWikiDbBundle(),
             new GovWiki\ApiBundle\GovWikiApiBundle(),
+            new GovWiki\AdminBundle\GovWikiAdminBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
