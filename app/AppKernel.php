@@ -17,6 +17,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
             new GovWiki\DbBundle\GovWikiDbBundle(),
             new GovWiki\ApiBundle\GovWikiApiBundle(),
             new GovWiki\AdminBundle\GovWikiAdminBundle(),
