@@ -91,7 +91,7 @@ fi
 printf "%-120s %s\n" "Set permissions to cache and logs for $APACHEUSER: [${txtgrn}Ok${txtrst}]"
 
 # migrate
-./app/console doctrine:migrations:migrate --env=prod
+./app/console doctrine:migrations:migrate --env=prod  --no-interaction
 if [ $? -ne 0 ] ; then
     echo "${txtred}Migrate: Error${txtrst}"
     exit 4;
