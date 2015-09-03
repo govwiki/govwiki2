@@ -3,12 +3,15 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * IssueCategory
  *
  * @ORM\Table(name="issue_categories")
  * @ORM\Entity
+ * @ExclusionPolicy("none")
  */
 class IssueCategory
 {
@@ -30,16 +33,19 @@ class IssueCategory
 
     /**
      * @ORM\OneToMany(targetEntity="Legislation", mappedBy="issueCategory")
+     * @Exclude
      */
     private $legislations;
 
     /**
      * @ORM\OneToMany(targetEntity="Endorsement", mappedBy="issueCategory")
+     * @Exclude
      */
     private $endorsements;
 
     /**
      * @ORM\OneToMany(targetEntity="PublicStatement", mappedBy="issueCategory")
+     * @Exclude
      */
     private $publicStatements;
 

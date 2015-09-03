@@ -3,12 +3,15 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * Fund
  *
  * @ORM\Table(name="funds")
  * @ORM\Entity
+ * @ExclusionPolicy("none")
  */
 class Fund
 {
@@ -37,6 +40,7 @@ class Fund
 
     /**
      * @ORM\OneToMany(targetEntity="FinData", mappedBy="fund")
+     * @Exclude
      */
     private $finData;
 

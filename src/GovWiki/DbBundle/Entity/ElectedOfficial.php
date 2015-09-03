@@ -3,12 +3,15 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * ElectedOfficial
  *
  * @ORM\Table(name="elected_officials")
  * @ORM\Entity
+ * @ExclusionPolicy("none")
  */
 class ElectedOfficial
 {
@@ -23,6 +26,7 @@ class ElectedOfficial
 
     /**
      * @ORM\ManyToOne(targetEntity="Government", inversedBy="electedOfficials")
+     * @Exclude
      */
     private $government;
 

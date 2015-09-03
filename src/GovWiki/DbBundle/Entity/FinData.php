@@ -3,12 +3,15 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * FinData
  *
  * @ORM\Table(name="findata")
  * @ORM\Entity
+ * @ExclusionPolicy("none")
  */
 class FinData
 {
@@ -51,6 +54,7 @@ class FinData
 
     /**
      * @ORM\ManyToOne(targetEntity="Government", inversedBy="finData")
+     * @Exclude
      */
     private $government;
 

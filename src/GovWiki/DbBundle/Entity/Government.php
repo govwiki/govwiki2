@@ -3,12 +3,16 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\MaxDepth;
 
 /**
  * Government
  *
  * @ORM\Table(name="governments")
  * @ORM\Entity
+ * @ExclusionPolicy("none")
  */
 class Government
 {
@@ -30,6 +34,7 @@ class Government
 
     /**
      * @ORM\OneToMany(targetEntity="ElectedOfficial", mappedBy="government")
+     * @MaxDepth(2)
      */
     private $electedOfficials;
 

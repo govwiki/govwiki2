@@ -3,12 +3,15 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * CaptionCategory
  *
  * @ORM\Table(name="caption_categories")
  * @ORM\Entity
+ * @ExclusionPolicy("none")
  */
 class CaptionCategory
 {
@@ -37,6 +40,7 @@ class CaptionCategory
 
     /**
      * @ORM\OneToMany(targetEntity="FinData", mappedBy="captionCategory")
+     * @Exclude
      */
     private $finData;
 
