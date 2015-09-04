@@ -5,7 +5,6 @@ namespace GovWiki\ApiBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
-use GovWiki\DbBundle\Entity\Government;
 use JMS\Serializer\SerializationContext;
 
 /**
@@ -14,13 +13,18 @@ use JMS\Serializer\SerializationContext;
 class GovernmentController extends Controller
 {
     /**
-     * @Route("/{id}/", methods="GET", requirements={"id":"\d+"})
+     * @Route("/{alt_type_slug}/{slug}", methods="GET")
      *
-     * @param  Government $government
+     * @param  string $alt_type_slug
+     * @param  string $slug
      * @return Response
      */
-    public function showAction(Government $government)
+    public function showAction($alt_type_slug, $slug)
     {
+        $em = $this->getDoctrine()->getManager();
+
+        $government = $em->getRepository('GovWikiDbBundle:Government')->findOneBy(['altTypeSlug' => $alt_type_slug, 'slug' => $slug]);
+
         $serializer = $this->get('jms_serializer');
 
         $response = new Response();
