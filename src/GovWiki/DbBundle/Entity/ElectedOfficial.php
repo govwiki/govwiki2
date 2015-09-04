@@ -38,6 +38,13 @@ class ElectedOfficial
     private $fullName;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="slug", type="string", length=255, nullable=true)
+     */
+    private $slug;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="display_order", type="integer", nullable=true)
@@ -172,6 +179,7 @@ class ElectedOfficial
     public function setFullName($fullName)
     {
         $this->fullName = $fullName;
+        $this->slug     = $this->sanitize($fullName);
 
         return $this;
     }
@@ -184,6 +192,29 @@ class ElectedOfficial
     public function getFullName()
     {
         return $this->fullName;
+    }
+
+    /**
+     * Set slug
+     *
+     * @param string $slug
+     * @return ElectedOfficial
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    /**
+     * Get slug
+     *
+     * @return string
+     */
+    public function getSlug()
+    {
+        return $this->slug;
     }
 
     /**
@@ -477,5 +508,26 @@ class ElectedOfficial
     public function getVotes()
     {
         return $this->votes;
+    }
+
+    /**
+     * Sanitize
+     *
+     * @param  string $str
+     * @param  array  $replace
+     * @param  string $delimiter
+     * @return string
+     */
+    private function sanitize($str, $replace = [], $delimiter = '_') {
+        if (!empty($replace)) {
+            $str = str_replace((array)$replace, ' ', $str);
+        }
+
+        $clean = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+        $clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
+        $clean = ucwords(strtolower(trim($clean, '_')));
+        $clean = preg_replace("/[\/_|+ -]+/", $delimiter, trim($clean));
+
+        return $clean;
     }
 }
