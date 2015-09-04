@@ -2,3 +2,8 @@ government:
     resource: "@GovWikiApiBundle/Controller/GovernmentController.php"
     type:     annotation
     prefix:   government
+
+elected-official:
+    resource: "@GovWikiApiBundle/Controller/ElectedOfficialController.php"
+    type:     annotation
+    prefix:   elected-official
