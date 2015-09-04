@@ -86,6 +86,13 @@ class Government
     /**
      * @var string
      *
+     * @ORM\Column(name="alt_type_slug", type="string", length=20, nullable=true)
+     */
+    private $altTypeSlug;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="census_contact", type="string", length=255, nullable=true)
      */
     private $censusContact;
@@ -1067,7 +1074,8 @@ class Government
      */
     public function setAltType($altType)
     {
-        $this->altType = $altType;
+        $this->altType     = $altType;
+        $this->altTypeSlug = str_replace(' ', '_', ucwords(strtolower($altType)));
 
         return $this;
     }
@@ -1080,6 +1088,29 @@ class Government
     public function getAltType()
     {
         return $this->altType;
+    }
+
+    /**
+     * Set altTypeSlug
+     *
+     * @param string $altTypeSlug
+     * @return Government
+     */
+    public function setAltTypeSlug($altTypeSlug)
+    {
+        $this->altTypeSlug = $altTypeSlug;
+
+        return $this;
+    }
+
+    /**
+     * Get altTypeSlug
+     *
+     * @return string
+     */
+    public function getAltTypeSlug()
+    {
+        return $this->altTypeSlug;
     }
 
     /**
