@@ -14,7 +14,7 @@ use JMS\Serializer\SerializationContext;
 class GovernmentController extends Controller
 {
     /**
-     * @Route("/{slug}/", methods="GET")
+     * @Route("/{id}/", methods="GET", requirements={"id":"\d+"})
      *
      * @param  Government $government
      * @return Response
