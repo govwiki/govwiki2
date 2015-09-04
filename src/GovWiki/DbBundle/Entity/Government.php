@@ -10,7 +10,9 @@ use JMS\Serializer\Annotation\MaxDepth;
 /**
  * Government
  *
- * @ORM\Table(name="governments")
+ * @ORM\Table(name="governments",uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="alt_type_slug_name_slug", columns={"alt_type_slug", "slug"})
+ * })
  * @ORM\Entity
  * @ExclusionPolicy("none")
  */
