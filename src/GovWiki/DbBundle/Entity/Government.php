@@ -975,6 +975,7 @@ class Government
     public function setName($name)
     {
         $this->name = $name;
+        $this->slug = str_replace([' ', '-'], '_', str_replace(['County Of ', 'City Of '], '', ucwords(strtolower($name))));
 
         return $this;
     }
