@@ -1,0 +1,139 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% block title %}Edit government{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        {{ form_start(form) }}
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="submit" class="btn btn-primary">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    {{ form_row(form.name) }}
+                    {{ form_row(form.slug) }}
+                    {{ form_row(form.stateId) }}
+                    {{ form_row(form.specialDistrictFunctionCode) }}
+                    {{ form_row(form.type) }}
+                    {{ form_row(form.altType) }}
+                    {{ form_row(form.altTypeSlug) }}
+                    {{ form_row(form.censusContact) }}
+                    {{ form_row(form.city) }}
+                    {{ form_row(form.state) }}
+                    {{ form_row(form.zip) }}
+                    {{ form_row(form.webSite) }}
+                    {{ form_row(form.population) }}
+                    {{ form_row(form.populationAsOfYear) }}
+                    {{ form_row(form.enrollment) }}
+                    {{ form_row(form.enrollmentAsOfYear) }}
+                    {{ form_row(form.frpmRate) }}
+                    {{ form_row(form.fipsCounty) }}
+                    {{ form_row(form.fipsPlace) }}
+                    {{ form_row(form.countyAreaName) }}
+                    {{ form_row(form.latitude) }}
+                    {{ form_row(form.longitude) }}
+                    {{ form_row(form.rand) }}
+                    {{ form_row(form.medianWagesGeneralPublic) }}
+                    {{ form_row(form.medianBenefitsGeneralPublic) }}
+                    {{ form_row(form.medianTotalCompGeneralPublic) }}
+                    {{ form_row(form.medianHomePrice) }}
+                </div>
+                <div class="col-md-3">
+                    {{ form_row(form.medianSalaryPerFullTimeEmp) }}
+                    {{ form_row(form.medianBenefitsPerFtEmp) }}
+                    {{ form_row(form.medianTotalCompPerFtEmp) }}
+                    {{ form_row(form.medianTotalCompOverMedianIndividualComp) }}
+                    {{ form_row(form.nameOfHighestPaidEmployee) }}
+                    {{ form_row(form.titleOfHighestPaidEmployee) }}
+                    {{ form_row(form.totalCompForHighestPaidEmp) }}
+                    {{ form_row(form.numberOfFullTimeEmployees) }}
+                    {{ form_row(form.fullTimeEmployeesOverPopulation) }}
+                    {{ form_row(form.totalWages) }}
+                    {{ form_row(form.totalSalariesPlusBenefits) }}
+                    {{ form_row(form.pensionContribution) }}
+                    {{ form_row(form.pensionUaal) }}
+                    {{ form_row(form.medianPension30YearRetiree) }}
+                    {{ form_row(form.pensionContributionOverTotalRevenue) }}
+                    {{ form_row(form.formerEmpWithLargestPension) }}
+                    {{ form_row(form.amountOfLargestPension) }}
+                    {{ form_row(form.opebArc) }}
+                    {{ form_row(form.opebActualContribution) }}
+                    {{ form_row(form.opebUaal) }}
+                    {{ form_row(form.opebArcOverTotalRevenue) }}
+                    {{ form_row(form.pensionPlusOpebArcOverTotRev) }}
+                    {{ form_row(form.academicPerformanceIndex) }}
+                    {{ form_row(form.satScores) }}
+                    {{ form_row(form.parentTriggerEligibleSchools) }}
+                    {{ form_row(form.openEnrollmentSchools) }}
+                    {{ form_row(form.violentCrimesPer100000Population) }}
+                    {{ form_row(form.propertyCrimesPer100000Population) }}
+                    {{ form_row(form.pavementConditionIndex) }}
+                    {{ form_row(form.salesTaxRate) }}
+                </div>
+                <div class="col-md-3">
+                    {{ form_row(form.libraryHoursPerWeek) }}
+                    {{ form_row(form.graduationRate) }}
+                    {{ form_row(form.dropoutRate) }}
+                    {{ form_row(form.publicSafetyExpOverTotGovFundRevenue) }}
+                    {{ form_row(form.publicSafetyExpOverGeneralFundRevenue) }}
+                    {{ form_row(form.generalFundBalanceOverGeneralFundExp) }}
+                    {{ form_row(form.totalDebtOverTotalRevenue) }}
+                    {{ form_row(form.defaultProbability) }}
+                    {{ form_row(form.totalGovernmentalFundRevenues) }}
+                    {{ form_row(form.totalRevenue) }}
+                    {{ form_row(form.totalRevenuePerCapita) }}
+                    {{ form_row(form.totalGovernmentalFundExpenditures) }}
+                    {{ form_row(form.totalExpenditures) }}
+                    {{ form_row(form.totalExpendituresPerCapita) }}
+                    {{ form_row(form.expenditurePerStudent) }}
+                    {{ form_row(form.gfSurplusOverGfRevenue) }}
+                    {{ form_row(form.changeInGovernmentalFundRevenue) }}
+                    {{ form_row(form.incId) }}
+                    {{ form_row(form.wikipediaPageName) }}
+                    {{ form_row(form.wikipediaPageExists) }}
+                    {{ form_row(form.transparentCaliforniaPageName) }}
+                    {{ form_row(form.latestAuditUrl) }}
+                    {{ form_row(form.frpmRateRank) }}
+                    {{ form_row(form.medianSalaryPerFullTimeEmpRank) }}
+                    {{ form_row(form.medianBenefitsPerFtEmpRank) }}
+                    {{ form_row(form.medianTotalCompPerFtEmpRank) }}
+                    {{ form_row(form.medianTotalCompOverMedianIndividualCompRank) }}
+                    {{ form_row(form.totalCompForHighestPaidEmpRank) }}
+                    {{ form_row(form.fullTimeEmployeesOverPopulationRank) }}
+                    {{ form_row(form.pensionContributionOverTotalRevenueRank) }}
+                    {{ form_row(form.opebArcOverTotalRevenueRank) }}
+                </div>
+                <div class="col-md-3">
+                    {{ form_row(form.pensionPlusOpebArcOverTotRevRank) }}
+                    {{ form_row(form.violentCrimesPer100000PopulationRank) }}
+                    {{ form_row(form.propertyCrimesPer100000PopulationRank) }}
+                    {{ form_row(form.academicPerformanceIndexRank) }}
+                    {{ form_row(form.satScoresRank) }}
+                    {{ form_row(form.salesTaxRateRank) }}
+                    {{ form_row(form.libraryHoursPerWeekRank) }}
+                    {{ form_row(form.graduationRateRank) }}
+                    {{ form_row(form.dropoutRateRank) }}
+                    {{ form_row(form.totalDebtOverTotalRevenueRank) }}
+                    {{ form_row(form.expenditurePerStudentRank) }}
+                    {{ form_row(form.generalFundBalanceOverGeneralFundExpRank) }}
+                    {{ form_row(form.gfSurplusOverGfRevenueRank) }}
+                    {{ form_row(form.changeInGovernmentalFundRevenueRank) }}
+                    {{ form_row(form.defaultProbabilityRank) }}
+                    {{ form_row(form.publicSafetyExpOverTotGovFundRevenueRank) }}
+                    {{ form_row(form.publicSafetyExpOverGeneralFundRevenueRank) }}
+                    {{ form_row(form.totalRevenuePerCapitaRank) }}
+                    {{ form_row(form.totalExpendituresPerCapitaRank) }}
+                    {{ form_row(form.medianTotalCompGeneralPublicRank) }}
+                    {{ form_row(form.medianHomePriceRank) }}
+                    {{ form_row(form.populationRank) }}
+                    {{ form_row(form.enrollmentRank) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="submit" class="btn btn-primary">
+                </div>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

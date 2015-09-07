@@ -2,3 +2,8 @@ main:
     resource: "@GovWikiAdminBundle/Controller/MainController.php"
     type:     annotation
     prefix:   /
+
+government:
+    resource: "@GovWikiAdminBundle/Controller/GovernmentController.php"
+    type:     annotation
+    prefix:   /government
