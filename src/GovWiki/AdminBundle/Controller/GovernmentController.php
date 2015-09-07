@@ -35,6 +35,33 @@ class GovernmentController extends Controller
     }
 
     /**
+     * @Route("/create", methods="GET|POST")
+     * @Template()
+     *
+     * @param Request    $request
+     * @return Response
+     */
+    public function createAction(Request $request)
+    {
+        $government = new Government;
+
+        $form = $this->createForm(new GovernmentType(), $government);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            $em->persist($government);
+            $em->flush();
+            $this->addFlash('info', 'Created');
+
+            return $this->redirectToRoute('govwiki_admin_government_index');
+        }
+
+        return ['form' => $form->createView()];
+    }
+
+    /**
      * @Route("/{id}/edit", methods="GET|POST", requirements={"id": "\d+"})
      * @Template()
      *

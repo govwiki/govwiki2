@@ -4,6 +4,7 @@
     <div class="container-fluid">
         <div class="navigation">
             {{ knp_pagination_render(governments) }}
+            <a class="btn btn-primary pull-right" href="{{ path('govwiki_admin_government_create') }}" style="margin-top:20px;">Create</a>
         </div>
         <table class="table table-bordered">
             <thead>
