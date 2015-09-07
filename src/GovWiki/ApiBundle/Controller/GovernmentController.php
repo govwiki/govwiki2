@@ -26,11 +26,19 @@ class GovernmentController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $government = $em->getRepository('GovWikiDbBundle:Government')->findOneBy(['altTypeSlug' => $alt_type_slug, 'slug' => $slug]);
+        $maxRanks   = $em->getRepository('GovWikiDbBundle:MaxRank')->find(1);
 
         $serializer = $this->get('jms_serializer');
 
+        $serializedGovernment = $serializer->serialize($government, 'json', SerializationContext::create()->enableMaxDepthChecks());
+        $serializedMaxRanks   = $serializer->serialize($maxRanks, 'json');
+
+        $decoded              = json_decode($serializedGovernment, true);
+        $decoded['max_ranks'] = json_decode($serializedMaxRanks, true);
+        $serializedGovernment = json_encode($decoded);
+
         $response = new Response();
-        $response->setContent($serializer->serialize($government, 'json', SerializationContext::create()->enableMaxDepthChecks()));
+        $response->setContent($serializedGovernment);
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
