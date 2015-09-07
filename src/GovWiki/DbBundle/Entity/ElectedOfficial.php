@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\VirtualProperty;
 
 /**
  * ElectedOfficial
@@ -508,6 +509,21 @@ class ElectedOfficial
     public function getVotes()
     {
         return $this->votes;
+    }
+
+    /**
+     * @VirtualProperty
+     *
+     * @return string
+     */
+    public function getGovName()
+    {
+        $government = $this->government;
+        if ($government) {
+            return $government->getName();
+        }
+
+        return '';
     }
 
     /**
