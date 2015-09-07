@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0065e441b8e05c0e421ff7ec012386bd",
+    "hash": "7ce9ba3644c514542af6d42c607d5801",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -881,6 +881,108 @@
                 "orm"
             ],
             "time": "2014-12-16 13:45:01"
+        },
+        {
+            "name": "helthe/turbolinks",
+            "version": "1.4.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/helthe/Turbolinks.git",
+                "reference": "aea314ebb3116074ddcdd948ca349fc6deef269e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/helthe/Turbolinks/zipball/aea314ebb3116074ddcdd948ca349fc6deef269e",
+                "reference": "aea314ebb3116074ddcdd948ca349fc6deef269e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "symfony/http-foundation": "~2.3"
+            },
+            "require-dev": {
+                "symfony/http-kernel": "~2.3"
+            },
+            "suggest": {
+                "symfony/http-kernel": "Required for usage with the Symfony HttpKernel Component"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.4.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Helthe\\Component\\Turbolinks\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Carl Alexander",
+                    "email": "carlalexander@helthe.co"
+                }
+            ],
+            "description": "Helthe Turbolinks Component",
+            "homepage": "https://helthe.co",
+            "keywords": [
+                "jquery.turbolinks",
+                "turbolinks"
+            ],
+            "time": "2014-12-10 14:32:54"
+        },
+        {
+            "name": "helthe/turbolinks-bundle",
+            "version": "1.1.1",
+            "target-dir": "Helthe/Bundle/TurbolinksBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/helthe/TurbolinksBundle.git",
+                "reference": "3a1be9a3ea0faf3bc0d64b5846ee7b610a2ba381"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/helthe/TurbolinksBundle/zipball/3a1be9a3ea0faf3bc0d64b5846ee7b610a2ba381",
+                "reference": "3a1be9a3ea0faf3bc0d64b5846ee7b610a2ba381",
+                "shasum": ""
+            },
+            "require": {
+                "helthe/turbolinks": "~1.2",
+                "php": ">=5.3.3",
+                "symfony/framework-bundle": "~2.3"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Helthe\\Bundle\\TurbolinksBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Carl Alexander",
+                    "email": "carlalexander@helthe.co"
+                }
+            ],
+            "description": "Turbolinks bundle for Symfony2",
+            "homepage": "https://helthe.co",
+            "keywords": [
+                "jquery.turbolinks",
+                "turbolinks"
+            ],
+            "time": "2014-01-30 21:56:48"
         },
         {
             "name": "incenteev/composer-parameter-handler",
