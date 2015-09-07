@@ -7,3 +7,8 @@ government:
     resource: "@GovWikiAdminBundle/Controller/GovernmentController.php"
     type:     annotation
     prefix:   /government
+
+electedofficial:
+    resource: "@GovWikiAdminBundle/Controller/ElectedOfficialController.php"
+    type:     annotation
+    prefix:   /electedofficial
