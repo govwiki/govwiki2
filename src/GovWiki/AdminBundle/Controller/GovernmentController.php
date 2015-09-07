@@ -25,8 +25,19 @@ class GovernmentController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
+        $qb = $em->createQueryBuilder()->select('g')->from('GovWikiDbBundle:Government', 'g');
+
+        if ($filter = $request->query->get('filter')) {
+            if (!empty($filter['id'])) {
+                $qb->andWhere('g.id = :id')->setParameter('id', $filter['id']);
+            }
+            if (!empty($filter['name'])) {
+                $qb->andWhere('g.name LIKE :name')->setParameter('name', '%'.$filter['name'].'%');
+            }
+        }
+
         $governments = $this->get('knp_paginator')->paginate(
-            $em->createQuery('SELECT g FROM GovWikiDbBundle:Government g'),
+            $qb->getQuery(),
             $request->query->getInt('page', 1),
             50
         );
