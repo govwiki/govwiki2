@@ -50,7 +50,7 @@ class GovernmentController extends Controller
         $query = $request->query->all();
 
         $qb = $em->createQueryBuilder()
-            ->select('g.id', 'g.name', 'g.type', 'g.city', 'g.zip', 'g.state',
+            ->select('g.id', 'g.name', 'g.altType', 'g.type', 'g.city', 'g.zip', 'g.state',
                      'g.latitude', 'g.longitude', 'g.altTypeSlug', 'g.slug')
             ->from('GovWikiDbBundle:Government', 'g')
             ->where('g.altType != :altType')
