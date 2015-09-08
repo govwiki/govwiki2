@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\MaxDepth;
+use JMS\Serializer\Annotation\SerializedName;
 
 /**
  * Government
@@ -417,6 +418,7 @@ class Government
     /**
      * @var float
      *
+     * @SerializedName("violent_crimes_per_100000_population")
      * @ORM\Column(name="violent_crimes_per_100000_population", type="float", precision=10, scale=0, nullable=true)
      */
     private $violentCrimesPer100000Population;
@@ -424,6 +426,7 @@ class Government
     /**
      * @var float
      *
+     * @SerializedName("property_crimes_per_100000_population")
      * @ORM\Column(name="property_crimes_per_100000_population", type="float", precision=10, scale=0, nullable=true)
      */
     private $propertyCrimesPer100000Population;
@@ -669,6 +672,7 @@ class Government
     /**
      * @var integer
      *
+     * @SerializedName("violent_crimes_per_100000_population_rank")
      * @ORM\Column(name="violent_crimes_per_100000_population_rank", type="integer", nullable=true)
      */
     private $violentCrimesPer100000PopulationRank;
@@ -676,6 +680,7 @@ class Government
     /**
      * @var integer
      *
+     * @SerializedName("property_crimes_per_100000_population_rank")
      * @ORM\Column(name="property_crimes_per_100000_population_rank", type="integer", nullable=true)
      */
     private $propertyCrimesPer100000PopulationRank;

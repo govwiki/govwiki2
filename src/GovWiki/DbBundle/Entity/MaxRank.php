@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\SerializedName;
 
 /**
  * MaxRank
@@ -24,6 +25,7 @@ class MaxRank
     /**
      * @var integer
      *
+     * @SerializedName("violent_crimes_per_100000_population_max_rank")
      * @ORM\Column(name="violent_crimes_per_100000_population_max_rank", type="integer", nullable=true)
      */
     private $violentCrimesPer100000PopulationMaxRank;
@@ -31,6 +33,7 @@ class MaxRank
     /**
      * @var integer
      *
+     * @SerializedName("property_crimes_per_100000_population_max_rank")
      * @ORM\Column(name="property_crimes_per_100000_population_max_rank", type="integer", nullable=true)
      */
     private $propertyCrimesPer100000PopulationMaxRank;
