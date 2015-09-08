@@ -12,3 +12,8 @@ electedofficial:
     resource: "@GovWikiAdminBundle/Controller/ElectedOfficialController.php"
     type:     annotation
     prefix:   /electedofficial
+
+legisltaion:
+    resource: "@GovWikiAdminBundle/Controller/LegislationController.php"
+    type:     annotation
+    prefix:   /legislation

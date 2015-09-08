@@ -60,6 +60,16 @@ class IssueCategory
     }
 
     /**
+     * To string
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    /**
      * Get id
      *
      * @return integer

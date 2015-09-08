@@ -4,14 +4,17 @@
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="{{ path('govwiki_admin_main_home') }}">GovWiki</a>
-              <ul class="nav navbar-nav">
-                <li{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} class="active"{% endif %}>
-                    <a href="{{ path('govwiki_admin_government_index') }}">Governments</a>
-                </li>
-                <li{% if app.request.attributes.get('_route') == 'govwiki_admin_electedofficial_index' %} class="active"{% endif %}>
-                    <a href="{{ path('govwiki_admin_electedofficial_index') }}">Elected Officials</a>
-                </li>
-              </ul>
+                <ul class="nav navbar-nav">
+                    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} class="active"{% endif %}>
+                        <a href="{{ path('govwiki_admin_government_index') }}">Governments</a>
+                    </li>
+                    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_electedofficial_index' %} class="active"{% endif %}>
+                        <a href="{{ path('govwiki_admin_electedofficial_index') }}">Elected Officials</a>
+                    </li>
+                    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_legislation_index' %} class="active"{% endif %}>
+                        <a href="{{ path('govwiki_admin_legislation_index') }}">Legislations</a>
+                    </li>
+                </ul>
         </div>
     </div>
 </nav>
