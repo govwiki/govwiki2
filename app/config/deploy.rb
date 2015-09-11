@@ -1,5 +1,5 @@
 # Stages
-set :stages,        %w(demo)
+set :stages,        %w(demo droplet)
 set :default_stage, "demo"
 set :stage_dir,     "app/config/stage"
 set :keep_releases, 3
