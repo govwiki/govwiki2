@@ -527,6 +527,21 @@ class ElectedOfficial
     }
 
     /**
+     * @VirtualProperty
+     *
+     * @return string
+     */
+    public function getGovAltName()
+    {
+        $government = $this->government;
+        if ($government) {
+            return str_replace('_', ' ', $government->getSlug());
+        }
+
+        return '';
+    }
+
+    /**
      * Sanitize
      *
      * @param  string $str
