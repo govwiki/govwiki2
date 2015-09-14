@@ -33,9 +33,42 @@ class GovernmentController extends Controller
         $serializedGovernment = $serializer->serialize($government, 'json', SerializationContext::create()->enableMaxDepthChecks());
         $serializedMaxRanks   = $serializer->serialize($maxRanks, 'json');
 
-        $decoded              = json_decode($serializedGovernment, true);
-        $decoded['max_ranks'] = json_decode($serializedMaxRanks, true);
-        $serializedGovernment = json_encode($decoded);
+        $finData = $em->getRepository('GovWikiDbBundle:FinData')->findByGovernment($government);
+        foreach ($finData as $finDataItem) {
+            $financialStatementsGroups[$finDataItem->getCaption()][] = $finDataItem;
+        }
+
+        $i = 0;
+        foreach ($financialStatementsGroups as $caption => $finData) {
+            foreach ($finData as $finDataItem) {
+                $financialStatements[$i]['caption'] = $caption;
+                $financialStatements[$i]['category_name'] = $finDataItem->getCaptionCategory()->getName();
+                $financialStatements[$i]['display_order'] = $finDataItem->getDisplayOrder();
+                if (empty($financialStatements[$i]['genfund'])) {
+                    if (empty($finDataItem->getFund())) {
+                        $financialStatements[$i]['genfund'] = $finDataItem->getDollarAmount();
+                    } elseif ($finDataItem->getFund()->getName() == 'General Fund') {
+                        $financialStatements[$i]['genfund'] = $finDataItem->getDollarAmount();
+                    }
+                }
+                if (empty($financialStatements[$i]['otherfund'])) {
+                    if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Other') {
+                        $financialStatements[$i]['otherfund'] = $finDataItem->getDollarAmount();
+                    }
+                }
+                if (empty($financialStatements[$i]['totalfund'])) {
+                    if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Total') {
+                        $financialStatements[$i]['totalfund'] = $finDataItem->getDollarAmount();
+                    }
+                }
+            }
+            $i++;
+        }
+
+        $decoded                         = json_decode($serializedGovernment, true);
+        $decoded['financial_statements'] = $financialStatements;
+        $decoded['max_ranks']            = json_decode($serializedMaxRanks, true);
+        $serializedGovernment            = json_encode($decoded);
 
         $response = new Response();
         $response->setContent($serializedGovernment);
