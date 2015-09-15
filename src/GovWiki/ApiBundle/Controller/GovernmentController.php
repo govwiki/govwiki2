@@ -15,63 +15,24 @@ use JMS\Serializer\SerializationContext;
 class GovernmentController extends Controller
 {
     /**
-     * @Route("/{alt_type_slug}/{slug}", methods="GET")
+     * @Route("/{altTypeSlug}/{slug}", methods="GET")
      *
-     * @param  string $alt_type_slug
+     * @param  string $altTypeSlug
      * @param  string $slug
      * @return Response
      */
-    public function showAction($alt_type_slug, $slug)
+    public function showAction($altTypeSlug, $slug)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $government = $em->getRepository('GovWikiDbBundle:Government')->findOneBy(['altTypeSlug' => $alt_type_slug, 'slug' => $slug]);
-        $maxRanks   = $em->getRepository('GovWikiDbBundle:MaxRank')->find(1);
-
-        $serializer = $this->get('jms_serializer');
-
-        $serializedGovernment = $serializer->serialize($government, 'json', SerializationContext::create()->enableMaxDepthChecks());
-        $serializedMaxRanks   = $serializer->serialize($maxRanks, 'json');
-
-        $finData = $em->getRepository('GovWikiDbBundle:FinData')->findByGovernment($government);
-        foreach ($finData as $finDataItem) {
-            $financialStatementsGroups[$finDataItem->getCaption()][] = $finDataItem;
-        }
-
-        $i = 0;
-        foreach ($financialStatementsGroups as $caption => $finData) {
-            foreach ($finData as $finDataItem) {
-                $financialStatements[$i]['caption'] = $caption;
-                $financialStatements[$i]['category_name'] = $finDataItem->getCaptionCategory()->getName();
-                $financialStatements[$i]['display_order'] = $finDataItem->getDisplayOrder();
-                if (empty($financialStatements[$i]['genfund'])) {
-                    if (empty($finDataItem->getFund())) {
-                        $financialStatements[$i]['genfund'] = $finDataItem->getDollarAmount();
-                    } elseif ($finDataItem->getFund()->getName() == 'General Fund') {
-                        $financialStatements[$i]['genfund'] = $finDataItem->getDollarAmount();
-                    }
-                }
-                if (empty($financialStatements[$i]['otherfunds'])) {
-                    if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Other') {
-                        $financialStatements[$i]['otherfunds'] = $finDataItem->getDollarAmount();
-                    }
-                }
-                if (empty($financialStatements[$i]['totalfunds'])) {
-                    if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Total') {
-                        $financialStatements[$i]['totalfunds'] = $finDataItem->getDollarAmount();
-                    }
-                }
-            }
-            $i++;
-        }
-
-        $decoded                         = json_decode($serializedGovernment, true);
-        $decoded['financial_statements'] = $financialStatements;
-        $decoded['max_ranks']            = json_decode($serializedMaxRanks, true);
-        $serializedGovernment            = json_encode($decoded);
+        $government = $em->getRepository('GovWikiDbBundle:Government')->findGovernment(
+            $altTypeSlug,
+            $slug,
+            $this->get('jms_serializer')
+        );
 
         $response = new Response();
-        $response->setContent($serializedGovernment);
+        $response->setContent($government);
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
@@ -88,28 +49,8 @@ class GovernmentController extends Controller
     public function getMarkersDataAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $query = $request->query->all();
 
-        $qb = $em->createQueryBuilder()
-            ->select('g.id', 'g.name', 'g.altType', 'g.type', 'g.city', 'g.zip', 'g.state',
-                     'g.latitude', 'g.longitude', 'g.altTypeSlug', 'g.slug')
-            ->from('GovWikiDbBundle:Government', 'g')
-            ->where('g.altType != :altType')
-            ->setParameter('altType', 'County');
-
-        if (!empty($query['altTypes'])) {
-            $orX = $qb->expr()->orX();
-            foreach ($query['altTypes'] as $key => $type) {
-                $orX->add($qb->expr()->eq('g.altType', ':altType'.$key));
-                $parameters['altType'.$key]  = $type;
-            }
-            $parameters['altType'] = 'County';
-            $qb->andWhere($orX)->setParameters($parameters);
-        }
-
-        $qb->setMaxResults(200)->orderBy('g.rand', 'ASC');
-
-        $data = $qb->getQuery()->getArrayResult();
+        $data = $em->getRepository('GovWikiDbBundle:Government')->getMarkers($request->query->get('altTypes'));
 
         return new JsonResponse($data);
     }

@@ -14,7 +14,7 @@ use JMS\Serializer\Annotation\SerializedName;
  * @ORM\Table(name="governments",uniqueConstraints={
  *     @ORM\UniqueConstraint(name="alt_type_slug_name_slug", columns={"alt_type_slug", "slug"})
  * })
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\GovernmentRepository")
  * @ExclusionPolicy("none")
  */
 class Government

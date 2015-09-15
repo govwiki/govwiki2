@@ -13,19 +13,19 @@ use JMS\Serializer\SerializationContext;
 class ElectedOfficialController extends Controller
 {
     /**
-     * @Route("/{gov_alt_type_slug}/{gov_slug}/{eo_slug}", methods="GET")
+     * @Route("/{govAltTypeSlug}/{govSlug}/{eoSlug}", methods="GET")
      *
-     * @param  string $gov_alt_type_slug
-     * @param  string $gov_slug
-     * @param  string $eo_slug
+     * @param  string $govAltTypeSlug
+     * @param  string $govSlug
+     * @param  string $eoSlug
      * @return Response
      */
-    public function showElectedOfficialAction($gov_alt_type_slug, $gov_slug, $eo_slug)
+    public function showElectedOfficialAction($govAltTypeSlug, $govSlug, $eoSlug)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $government = $em->getRepository('GovWikiDbBundle:Government')->findOneBy(['altTypeSlug' => $gov_alt_type_slug, 'slug' => $gov_slug]);
-        $electedOfficial = $em->getRepository('GovWikiDbBundle:ElectedOfficial')->findBy(['government' => $government, 'slug' => $eo_slug]);
+        $government = $em->getRepository('GovWikiDbBundle:Government')->findOneBy(['altTypeSlug' => $govAltTypeSlug, 'slug' => $govSlug]);
+        $electedOfficial = $em->getRepository('GovWikiDbBundle:ElectedOfficial')->findBy(['government' => $government, 'slug' => $eoSlug]);
 
         $serializer = $this->get('jms_serializer');
 
