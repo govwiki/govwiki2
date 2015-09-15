@@ -51,14 +51,14 @@ class GovernmentController extends Controller
                         $financialStatements[$i]['genfund'] = $finDataItem->getDollarAmount();
                     }
                 }
-                if (empty($financialStatements[$i]['otherfund'])) {
+                if (empty($financialStatements[$i]['otherfunds'])) {
                     if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Other') {
-                        $financialStatements[$i]['otherfund'] = $finDataItem->getDollarAmount();
+                        $financialStatements[$i]['otherfunds'] = $finDataItem->getDollarAmount();
                     }
                 }
-                if (empty($financialStatements[$i]['totalfund'])) {
+                if (empty($financialStatements[$i]['totalfunds'])) {
                     if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Total') {
-                        $financialStatements[$i]['totalfund'] = $finDataItem->getDollarAmount();
+                        $financialStatements[$i]['totalfunds'] = $finDataItem->getDollarAmount();
                     }
                 }
             }
