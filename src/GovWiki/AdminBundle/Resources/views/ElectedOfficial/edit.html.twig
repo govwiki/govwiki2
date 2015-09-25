@@ -8,7 +8,6 @@
                     {{ form_row(form.fullName) }}
                     {{ form_row(form.slug) }}
                     {{ form_row(form.displayOrder) }}
-                    {{ form_row(form.government) }}
                 </div>
                 <div class="col-md-4">
                     {{ form_row(form.title) }}
@@ -23,9 +22,106 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
+                    <h3 class="pull-left">Elected Official Votes</h3>
+                    <span data-link="{{path('govwiki_admin_electedofficial_addvote', {'id': electedOfficial.id})}}" class="add-vote btn btn-primary pull-right btn-beside-h3">
+                        <span class="glyphicon glyphicon-plus"></span> Add
+                    </span>
+                </div>
+            </div>
+            {% if electedOfficial.votes %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <td>Date</td>
+                                    <td>Title of Measure</td>
+                                    <td>Summary of Measure</td>
+                                    <td>How official Voted</td>
+                                    <td>Sponsored by this official?</td>
+                                    <td>Category</td>
+                                    <td>Actions</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vote in electedOfficial.votes %}
+                                    <tr>
+                                        <td>
+                                            {% if vote.legislation %}
+                                                {{ vote.legislation.dateConsidered|date('m/d/Y') }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if vote.legislation %}
+                                                {{ vote.legislation.name }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if vote.legislation %}
+                                                {{ vote.legislation.summary }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ vote.vote }}</td>
+                                        <td>{% if vote.didElectedOfficialProposeThis == 1 %}Yes{% else %}No{% endif %}</td>
+                                        <td>
+                                            {% if vote.legislation and vote.legislation.issueCategory %}
+                                                {{ vote.legislation.issueCategory.name }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="btn btn-danger remove-vote" data-link="{{path('govwiki_admin_electedofficial_removevote', {'id': vote.id})}}"><span class="glyphicon glyphicon-remove"></span> Remove</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-12">
                     <input type="submit" class="btn btn-primary">
                 </div>
             </div>
         {{ form_end(form) }}
     </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+    $(function() {
+        $('span.add-vote').on('click', function() {
+            var target = $(this).attr("data-link");
+            $("#modal-window .modal-content").load(target, function() {
+                $("#modal-window").modal("show");
+            });
+        });
+
+        $(document).on('click', '.legislation-choice span', function() {
+            $(this).parent().find('span').toggleClass('active btn-default btn-primary');
+            $('.legislation').toggleClass('hidden');
+            $('input#legislationType').val($('.legislation-choice span.btn.active').data('legislation-type'));
+        });
+
+        $(document).on('submit', 'form#vote', function(event) {
+            event.preventDefault();
+            $.post('{{path("govwiki_admin_electedofficial_addvote", {"id": electedOfficial.id})}}', $(this).serialize(), function(data) {
+                if (data.reload) {
+                    window.location.reload();
+                };
+            });
+        });
+
+        $('span.remove-vote').on('click', function() {
+            $span = $(this);
+            if (confirm('Are you sure?')) {
+                $.get($span.data('link'), function(data) {
+                    if (data.status == 'ok') {
+                        $span.closest('tr').remove();
+                    };
+                });
+            };
+        });
+    });
+    </script>
 {% endblock %}

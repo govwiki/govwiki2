@@ -1,0 +1,16 @@
+.index-page-head {
+    margin-bottom: 16px;
+}
+
+.index-page-head ul.pagination {
+    margin: 0px;
+}
+
+.btn-beside-h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.label-like {
+    font-weight: 700;
+}

@@ -27,7 +27,6 @@ class ElectedOfficialType extends AbstractType
             ->add('photoUrl')
             ->add('bioUrl')
             ->add('termExpires')
-            ->add('government')
         ;
     }
 

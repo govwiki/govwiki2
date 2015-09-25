@@ -1,0 +1,73 @@
+<div class="panel-body">
+    <form id="vote" action="">
+        <div class="form-group">
+            <label for="vote_vote">Vote</label>
+            <input class="form-control" type="text" name="vote[vote]" placeholder="Vote" id="vote_vote">
+        </div>
+        <div class="form-group">
+            <label for="vote_didElectedOfficialProposeThis">Did Elected Official Propose This</label>
+            <select class="form-control" name="vote[didElectedOfficialProposeThis]" id="vote_didElectedOfficialProposeThis">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <p><b>Legislation</b></p>
+            <div class="btn-group legislation-choice">
+                <span data-legislation-type="existing" class="btn btn-primary active">Use existing</span>
+                <span data-legislation-type="new" class="btn btn-default">Create new</span>
+            </div>
+            <input type="hidden" name="legislationType" id="legislationType" value="existing">
+        </div>
+        <div class="existing-legislations legislation">
+            <div class="form-group">
+                <label for="vote_legislation">Choose legislation</label>
+                <select class="form-control" name="vote[legislation]" id="vote_legislation">
+                    {% for legislation in electedOfficial.government.legislations %}
+                        <option value="{{legislation.id}}">{{ legislation.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="new-legislation legislation hidden">
+            <div class="form-group">
+                <label for="issueCategory">Issue category</label>
+                <select class="form-control" id="issueCategory" name="legislation[issueCategory]">
+                    <option value="">Select issue category</option>
+                    {% for issueCategory in issueCategories %}
+                        <option value="{{issueCategory.id}}">{{issueCategory.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="gov_assigned_number">Government Assigned #</label>
+                <input class="form-control" id="gov_assigned_number" name="legislation[govAssignedNumber]" type="text" placeholder="Government Assigned #">
+            </div>
+            <div class="form-group">
+                <label for="date_considered">Date Considered</label>
+                <input class="form-control" id="date_considered" name="legislation[dateConsidered]" type="date" placeholder="Date Considered">
+            </div>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input class="form-control" id="name" name="legislation[name]" type="text" placeholder="Name">
+            </div>
+            <div class="form-group">
+                <label for="summary">Summary</label>
+                <input class="form-control" id="summary" name="legislation[summary]" type="text" placeholder="Summary">
+            </div>
+            <div class="form-group">
+                <label for="evaluator_approved_position">Evaluator Approved Position</label>
+                <input class="form-control" id="evaluator_approved_position" name="legislation[evaluatorApprovedPosition]" type="text" placeholder="Evaluator Approved Position">
+            </div>
+            <div class="form-group">
+                <label for="weighting">Weighting</label>
+                <input class="form-control" id="weighting" name="legislation[weighting]" type="number" placeholder="Weighting">
+            </div>
+            <div class="form-group">
+                <label for="notes">Notes</label>
+                <textarea class="form-control" id="notes" name="legislation[notes]" placeholder="Notes"></textarea>
+            </div>
+        </div>
+        <input type="Submit" class="btn btn-primary"></input>
+    </form>
+</div>
