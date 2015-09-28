@@ -86,14 +86,47 @@ class GovernmentRepository extends EntityRepository
         if (!empty($altTypes)) {
             $orX = $qb->expr()->orX();
             foreach ($altTypes as $key => $type) {
-                $orX->add($qb->expr()->eq('g.altType', ':altType'.$key));
-                $parameters['altType'.$key]  = $type;
+                if ($type != 'Special District') {
+                    $orX->add($qb->expr()->eq('g.altType', ':altType'.$key));
+                    $parameters['altType'.$key]  = $type;
+                }
             }
             $parameters['altType'] = 'County';
             $qb->andWhere($orX)->setParameters($parameters);
         }
 
-        $qb->setMaxResults($limit)->orderBy('g.rand', 'ASC');
+        $result = $qb->setMaxResults($limit)->orderBy('g.rand', 'ASC')->getQuery()->getArrayResult();
+
+        if (in_array('Special District', $altTypes)) {
+            $specialDistricts = $this->fetchSpecialDistricts();
+            $result = array_merge($result, $specialDistricts);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
+    private function fetchSpecialDistricts()
+    {
+        $specialDistrictsList  = [
+            4378, 4387, 4416, 4427, 4532, 4750, 4917,
+            4981, 5204, 5339, 5600, 5618, 5626, 5749,
+            5752, 5791, 5871, 5874, 5963, 5983, 5993,
+            5995, 6000, 6033, 6070, 6090, 6093, 6544
+        ];
+
+        $qb = $this->createQueryBuilder('g')
+            ->select('g.id', 'g.name', 'g.altType', 'g.type', 'g.city', 'g.zip', 'g.state', 'g.latitude', 'g.longitude', 'g.altTypeSlug', 'g.slug');
+
+        $orX = $qb->expr()->orX();
+        foreach ($specialDistrictsList as $key => $id) {
+            $orX->add($qb->expr()->eq('g.id', ':id'.$key));
+            $parameters['id'.$key] = $id;
+        }
+
+        $qb->andWhere($orX)->setParameters($parameters);
 
         return $qb->getQuery()->getArrayResult();
     }
