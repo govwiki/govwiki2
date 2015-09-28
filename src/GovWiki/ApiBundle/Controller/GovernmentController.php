@@ -50,7 +50,11 @@ class GovernmentController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $data = $em->getRepository('GovWikiDbBundle:Government')->getMarkers($request->query->get('altTypes'));
+        if ($limit = $request->query->get('limit')) {
+            $data = $em->getRepository('GovWikiDbBundle:Government')->getMarkers($request->query->get('altTypes'), $limit);
+        } else {
+            $data = $em->getRepository('GovWikiDbBundle:Government')->getMarkers($request->query->get('altTypes'));
+        }
 
         return new JsonResponse($data);
     }

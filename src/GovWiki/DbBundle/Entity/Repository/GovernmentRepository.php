@@ -73,9 +73,10 @@ class GovernmentRepository extends EntityRepository
      * Get markers for map
      *
      * @param  array $altTypes
+     * @param  int   $limit
      * @return array
      */
-    public function getMarkers($altTypes)
+    public function getMarkers($altTypes, $limit = 200)
     {
         $qb = $this->createQueryBuilder('g')
             ->select('g.id', 'g.name', 'g.altType', 'g.type', 'g.city', 'g.zip', 'g.state', 'g.latitude', 'g.longitude', 'g.altTypeSlug', 'g.slug')
@@ -92,7 +93,7 @@ class GovernmentRepository extends EntityRepository
             $qb->andWhere($orX)->setParameters($parameters);
         }
 
-        $qb->setMaxResults(200)->orderBy('g.rand', 'ASC');
+        $qb->setMaxResults($limit)->orderBy('g.rand', 'ASC');
 
         return $qb->getQuery()->getArrayResult();
     }
