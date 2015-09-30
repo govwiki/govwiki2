@@ -13,7 +13,27 @@ electedofficial:
     type:     annotation
     prefix:   /electedofficial
 
-legisltaion:
+legislation:
     resource: "@GovWikiAdminBundle/Controller/LegislationController.php"
     type:     annotation
     prefix:   /legislation
+
+electedofficialvote:
+    resource: "@GovWikiAdminBundle/Controller/ElectedOfficialVoteController.php"
+    type:     annotation
+    prefix:   /
+
+contribution:
+    resource: "@GovWikiAdminBundle/Controller/ContributionController.php"
+    type:     annotation
+    prefix:   /
+
+endorsement:
+    resource: "@GovWikiAdminBundle/Controller/EndorsementController.php"
+    type:     annotation
+    prefix:   /
+
+publicstatement:
+    resource: "@GovWikiAdminBundle/Controller/PublicStatementController.php"
+    type:     annotation
+    prefix:   /

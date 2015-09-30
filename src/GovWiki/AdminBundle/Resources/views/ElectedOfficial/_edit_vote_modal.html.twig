@@ -1,0 +1,16 @@
+<div class="panel-body">
+    <form class="ajax-form" id="vote" action="{{action}}">
+        <div class="form-group">
+            <label for="vote_vote">Vote</label>
+            <input class="form-control" type="text" name="vote" placeholder="Vote" id="vote_vote" value="{{vote.vote}}">
+        </div>
+        <div class="form-group">
+            <label for="vote_didElectedOfficialProposeThis">Did Elected Official Propose This</label>
+            <select class="form-control" name="didElectedOfficialProposeThis" id="vote_didElectedOfficialProposeThis">
+                <option value="1"{% if vote.didElectedOfficialProposeThis == 1 %} selected{% endif %}>Yes</option>
+                <option value="0"{% if vote.didElectedOfficialProposeThis == 0 %} selected{% endif %}>No</option>
+            </select>
+        </div>
+        <input type="Submit" class="btn btn-primary"></input>
+    </form>
+</div>
