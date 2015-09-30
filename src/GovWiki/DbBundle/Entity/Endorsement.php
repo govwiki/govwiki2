@@ -24,21 +24,21 @@ class Endorsement
     /**
      * @var string
      *
-     * @ORM\Column(name="name_of_endorser", type="string", length=255)
+     * @ORM\Column(name="name_of_endorser", type="string", length=255, nullable=true)
      */
     private $nameOfEndorser;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="endorser_type", type="string", length=255)
+     * @ORM\Column(name="endorser_type", type="string", length=255, nullable=true)
      */
     private $endorserType;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="election_year", type="integer")
+     * @ORM\Column(name="election_year", type="integer", nullable=true)
      */
     private $electionYear;
 
