@@ -1,0 +1,10 @@
+<div class="panel-body">
+    {{ form_start(form, {'attr': {'class': 'ajax-form'}, 'action': action}) }}
+        {{ form_row(form.electionYear) }}
+        {{ form_row(form.contributorName) }}
+        {{ form_row(form.independentExpenditureDesc) }}
+        {{ form_row(form.contributionAmount) }}
+        {{ form_row(form.contributorType) }}
+        <input type="submit" class="btn btn-primary">
+    {{ form_end(form) }}
+</div>

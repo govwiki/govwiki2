@@ -6,9 +6,11 @@
     margin: 0px;
 }
 
-.btn-beside-h3 {
-  margin-top: 20px;
-  margin-bottom: 10px;
+.btn-beside-pills {
+    margin-top: -40px;
+    margin-bottom: 10px;
+    height: 40px;
+    padding: 9px 12px;
 }
 
 .label-like {
