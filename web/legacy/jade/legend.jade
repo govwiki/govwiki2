@@ -1,0 +1,19 @@
+#legend.panel.panel-default
+  .panel-heading
+    |Select type(s):
+  ul.list-group
+    li.list-group-item.active
+      span.glyphicon.glyphicon-ok
+      |<i class="red-circle marker-circle"></i>Cities
+      input(type="hidden", class="type_filter" name="City", value="1")
+    li.list-group-item.active.counties-trigger
+      span.glyphicon.glyphicon-ok
+      |<i class="grey-line"></i><!--<span class="counties-title">-->Counties<!--</span>-->
+    li.list-group-item.active
+      span.glyphicon.glyphicon-ok
+      |<i class="blue-circle marker-circle"></i>School Districts
+      input(type="hidden", class="type_filter" name="School District", value="1")
+    li.list-group-item.active
+      span.glyphicon.glyphicon-ok
+      |<i class="purple-circle marker-circle"></i>Special Districts
+      input(type="hidden", class="type_filter" name="Special District", value="1")
