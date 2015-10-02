@@ -1,3 +1,7 @@
+gov_wiki_user:
+    resource: "@GovWikiUserBundle/Resources/config/routing.yml"
+    prefix:   /
+
 gov_wiki_frontend:
     resource: "@GovWikiFrontendBundle/Resources/config/routing.yml"
     prefix:   /

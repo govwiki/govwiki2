@@ -26,6 +26,7 @@ class AppKernel extends Kernel
             new GovWiki\ApiBundle\GovWikiApiBundle(),
             new GovWiki\AdminBundle\GovWikiAdminBundle(),
             new GovWiki\FrontendBundle\GovWikiFrontendBundle(),
+            new GovWiki\UserBundle\GovWikiUserBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
