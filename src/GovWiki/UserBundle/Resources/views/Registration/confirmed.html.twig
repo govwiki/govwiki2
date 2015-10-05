@@ -1,0 +1,15 @@
+{% extends "FOSUserBundle::layout.html.twig" %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block fos_user_content %}
+    <div class="col-md-8 col-md-offset-2">
+        <div class="jumbotron" style="margin-top:141px;">
+            <p>{{ 'registration.confirmed'|trans({'%username%': user.username}) }}</p>
+            <a href="{{ path('govwiki_frontend_main_map') }}" class="btn btn-primary">Go to home page</a>
+        </div>
+    </div>
+    {% if targetUrl %}
+    <p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>
+    {% endif %}
+{% endblock fos_user_content %}
