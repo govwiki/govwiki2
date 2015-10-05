@@ -21,9 +21,12 @@ class AppKernel extends Kernel
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
             new Helthe\Bundle\TurbolinksBundle\HeltheTurbolinksBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
+            new FOS\UserBundle\FOSUserBundle(),
             new GovWiki\DbBundle\GovWikiDbBundle(),
             new GovWiki\ApiBundle\GovWikiApiBundle(),
             new GovWiki\AdminBundle\GovWikiAdminBundle(),
+            new GovWiki\FrontendBundle\GovWikiFrontendBundle(),
+            new GovWiki\UserBundle\GovWikiUserBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

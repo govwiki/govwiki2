@@ -1,0 +1,17 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+<div class="col-md-5 col-md-offset-3" style="margin-top:141px;">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Register</h3>
+        </div>
+        <div class="panel-body">
+            <form action="{{ path('fos_user_registration_register') }}" {{ form_enctype(form) }} method="POST" class="fos_user_registration_register">
+                {{ form_widget(form) }}
+                <div>
+                    <input class="btn btn-default" type="submit" value="{{ 'registration.submit'|trans }}" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

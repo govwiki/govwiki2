@@ -1,0 +1,4 @@
+main:
+    resource: "@GovWikiFrontendBundle/Controller/MainController.php"
+    type:     annotation
+    prefix:   /
