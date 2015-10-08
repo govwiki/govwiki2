@@ -90,7 +90,7 @@ add_marker = (rec)->
     lat: rec.latitude
     lng: rec.longitude
     icon: get_icon(rec.altType)
-    title:  "#{rec.gov_name}, #{rec.type}"
+    title:  "#{rec.name}, #{rec.type}"
     infoWindow:
       content: "
         <div><a href='javascript:void(0);' class='info-window-uri' data-uri='/#{rec.altTypeSlug}/#{rec.slug}'><strong>#{rec.name}</strong></a></div>

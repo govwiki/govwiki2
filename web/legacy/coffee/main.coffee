@@ -42,7 +42,7 @@ window.GOVWIKI =
 
 GOVWIKI.get_counties = get_counties = (callback) ->
     $.ajax
-        url: 'data/county_geography_ca_2.json'
+        url: '/legacy/data/county_geography_ca_2.json'
         dataType: 'json'
         cache: true
         success: (countiesJSON) ->
@@ -97,7 +97,7 @@ GOVWIKI.draw_polygons = draw_polygons = (countiesJSON) ->
                             $('#details').show()
                             $('#searchIcon').show()
                             window.history.pushState {template: compiled_gov_template}, 'CPC Civic Profiles', uri
-        })
+            })
 
 window.remember_tab = (name)-> active_tab = name
 
@@ -282,19 +282,26 @@ window.onhashchange = (e) ->
 
 # =====================================================================
 
+route = document.location.pathname.split('/').filter((itm)-> if itm isnt "" then itm else false);
+routeType = route.length;
+
 GOVWIKI.history = (index) ->
     if index == 0
         searchContainer = $('#searchContainer').text();
         if(searchContainer != '')
             window.history.pushState {}, 'CPC Civic Profiles', '/'
             $('#searchIcon').hide()
+            $('#stantonIcon').hide()
         else
             document.location.pathname = '/'
         $('#details').hide()
         $('#searchContainer').show()
         return false
-    window.history.go(index)
-
+    if (history.state != null && history.state.template != undefined)
+        window.history.go(index);
+    else
+        route.pop()
+        document.location.pathname = '/' + route.join('/')
 
 window.addEventListener 'popstate', (event) ->
     if window.history.state isnt null
@@ -305,10 +312,18 @@ window.addEventListener 'popstate', (event) ->
     else
         document.location.reload()
 
+# Refresh Disqus thread
+refresh_disqus = (newIdentifier, newUrl, newTitle) ->
+    DISQUS.reset
+        reload: true,
+        config: () ->
+            this.page.identifier = newIdentifier
+            this.page.url = newUrl
+            this.page.title = newTitle
 
 $('#dataContainer').on 'click', '.elected_link', (e) ->
     e.preventDefault();
-    url = e.target.pathname
+    url = e.currentTarget.pathname
     $('#details').hide()
     $('#searchContainer').hide()
     $('#dataContainer').show()
@@ -325,6 +340,14 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                 success: (data) ->
 
                     person = data[0]
+
+                    if $.isEmptyObject(person)
+                        $('.loader').hide()
+                        $('#details').html '<h2>Sorry. Page not found</h2>'
+                        $('#details').css({"textAlign":"center"})
+                        $('#details').show()
+                        $('#dataContainer').show()
+                        return false;
 
                     format = {year: 'numeric', month: 'numeric', day: 'numeric'};
                     person.votes.forEach (item, itemList) ->
@@ -355,12 +378,10 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     console.log e
 
 
-route = document.location.pathname.split('/').filter((itm)-> if itm isnt "" then itm else false).length;
-console.log route
 # Route /
-if route is 0
+if routeType is 0
     $('#stantonIcon').hide()
-    gov_selector = new GovSelector '.typeahead', '/data/h_types_ca_2.json', 7
+    gov_selector = new GovSelector '.typeahead', '/legacy/data/h_types_ca_2.json', 7
     gov_selector.on_selected = (evt, data, name) ->
         $('#details').hide()
         $('#searchContainer').hide()
@@ -389,7 +410,7 @@ if route is 0
     if !undef
         $('#searchContainer').html $('#search-container-template').html()
         # Load introductory text from texts/intro-text.html to #intro-text container.
-        $.get "texts/intro-text.html", (data) -> $("#intro-text").html data
+        $.get "/legacy/texts/intro-text.html", (data) -> $("#intro-text").html data
         govmap = require './govmap.coffee'
         get_counties GOVWIKI.draw_polygons
         undef = true
@@ -420,7 +441,7 @@ if route is 0
                 window.history.pushState {template: compiled_gov_template}, 'CPC Civic Profiles', uri
 
 # Route /:alt_name/:city_name
-if route is 2
+if routeType is 2
     document.title = 'CPC Civic Profiles'
     $('#details').hide()
     $('#dataContainer').show()
@@ -437,7 +458,6 @@ if route is 2
             $('.loader').hide()
             $('#details').show()
             $('#details').html templates.get_html(0, govs)
-            #get_record2 data.id
             activate_tab()
             GOVWIKI.show_data_page()
         error: (e) ->
@@ -448,7 +468,7 @@ if route is 2
         GOVWIKI.show_search_page()
 
 # Route /:alt_name/:city_name/:elected_name
-if route is 3
+if routeType is 3
     document.title = 'CPC Politician Profiles'
     $('#details').hide()
     $('#searchContainer').hide()
@@ -464,10 +484,19 @@ if route is 3
 
             person = data[0]
 
+            if $.isEmptyObject(person)
+                $('.loader').hide()
+                $('#details').html '<h2>Sorry. Page not found</h2>'
+                $('#details').css({"textAlign":"center"})
+                $('#details').show()
+                $('#dataContainer').show()
+                return false;
+
             format = {year: 'numeric', month: 'numeric', day: 'numeric'};
-            person.votes.forEach (item, itemList) ->
-                date = new Date item.legislation.date_considered;
-                item.legislation.date_considered = date.toLocaleString 'en-US', format
+            if person.votes != undefined
+                person.votes.forEach (item, itemList) ->
+                    date = new Date item.legislation.date_considered;
+                    item.legislation.date_considered = date.toLocaleString 'en-US', format
 
             tpl = $('#person-info-template').html()
             compiledTemplate = Handlebars.compile(tpl)
@@ -477,6 +506,26 @@ if route is 3
 
             $('#details').html html
             $('#dataContainer').css('display': 'block');
+
+            console.log person
+            $.fn.editable.defaults.mode = 'inline';
+            $('table').on 'click', 'td', (e) ->
+                $(e.target).editable();
+
+            $('td').on 'save', (e, params) ->
+                tableType = $(e.target).closest('table')[0].dataset.tableType
+                id = e.target.parentNode.dataset.id
+                field = Object.keys(e.target.dataset)[0]
+                sendObject = {
+                    tableType: tableType,
+                    entityName: person.full_name,
+                    entityId: id,
+                    changes: {}
+                }
+                sendObject.changes[field] = params.newValue
+                console.log sendObject
+                $.post 'http://45.55.0.145//editrequest/create', sendObject, (response) ->
+                    console.log response
 
             $('.vote').on 'click', (e) ->
                 id = e.currentTarget.id
@@ -491,12 +540,3 @@ if route is 3
 
         error: (e) ->
             console.log e
-
-        # Refresh Disqus thread
-        refresh_disqus = (newIdentifier, newUrl, newTitle) ->
-            DISQUS.reset
-                reload: true,
-                config: () ->
-                    this.page.identifier = newIdentifier
-                    this.page.url = newUrl
-                    this.page.title = newTitle
