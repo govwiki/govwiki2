@@ -510,6 +510,8 @@ if routeType is 3
             console.log person
             $.fn.editable.defaults.mode = 'inline';
             $('table').on 'click', 'td', (e) ->
+                console.log e.target.dataset.noEditable
+                if e.target.dataset.noEditable isnt undefined then return
                 $(e.target).editable();
 
             $('td').on 'save', (e, params) ->
@@ -527,8 +529,16 @@ if routeType is 3
                 sendObject.editRequest.changes[field] = params.newValue
                 sendObject.editRequest = JSON.stringify(sendObject.editRequest);
                 console.log sendObject
-                $.post 'http://45.55.0.145/editrequest/create', sendObject, (response) ->
-                    console.log response
+                $.ajax 'http://45.55.0.145/editrequest/create', {
+                    method: 'POST',
+                    data: sendObject,
+                    dataType: 'text/json',
+                    complete: (response) ->
+                        text = JSON.parse(response.responseText)
+                        alert text.message
+                    error: (error) ->
+                        if error.status is 401 then showModal('/login')
+                }
 
             $('.vote').on 'click', (e) ->
                 id = e.currentTarget.id

@@ -254,15 +254,15 @@ echo <<<EOT
                             </tr>
 
                             {{#votes}}
-                                <tr data-id="{{id}}">
+                                <tr data-id="{{legislation.id}}">
                                 {{#this}}
-                                    <td data-date-considered="{{date-considered}}">{{legislation.date_considered}}</td>
+                                    <td data-date-considered="{{date-considered}}" data-no-editable>{{legislation.date_considered}}</td>
                                     <td data-name="{{legislation.name}}">{{legislation.name}}</td>
                                     <td data-summary="{{legislation.summary}}">{{legislation.summary}}</td>
-                                    <td align="center" data-vote="{{vote}}">{{vote}}</td>
-                                    <td align="center" date-did-elected-official-propose-this="{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}">{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}</td>
-                                    <td data-issue-category="{{legislation.issue_category.name}}">{{legislation.issue_category.name}}</td>
-                                    <td><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}">0</span></td>
+                                    <td align="center" data-vote="{{vote}}" data-no-editable>{{vote}}</td>
+                                    <td align="center" date-did-elected-official-propose-this="{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}" data-no-editable>{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}</td>
+                                    <td data-issue-category="{{legislation.issue_category.name}}" data-no-editable>{{legislation.issue_category.name}}</td>
+                                    <td data-no-editable><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}">0</span></td>
                                 {{/this}}
                                 </tr>
                             {{/votes}}
@@ -448,7 +448,6 @@ echo <<<EOT
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
     <script src="/legacy/static/bundle.js"></script>
-    <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
   </body>
 </html>
 EOT;
