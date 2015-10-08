@@ -13,6 +13,7 @@ echo <<<EOT
     <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
     <title>CPC Civic Profiles</title>
     <!-- Bootstrap core CSS-->
+    <!--link(href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css", rel='stylesheet')-->
     <link href="/legacy/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this page-->
     <link rel="stylesheet" href="/legacy/css/index.css">
@@ -241,7 +242,7 @@ echo <<<EOT
 
                 <div role="tabpanel" class="tab-pane active" id="Votes">
                     {{#if votes}}
-                        <table class="table table-hover" data-table-type="votes">
+                        <table class="table table-hover" data-entity-type="Legislation">
                             <tr>
                                 <th>Date</th>
                                 <th>Title of Measure</th>
@@ -255,13 +256,13 @@ echo <<<EOT
                             {{#votes}}
                                 <tr data-id="{{id}}">
                                 {{#this}}
-                                    <td data-legislation-date-considered="{{legislation-date-considered}}">{{legislation.date_considered}}</td>
-                                    <td data-legislation-name="{{legislation.name}}">{{legislation.name}}</td>
-                                    <td data-legislation-summary="{{legislation.summary}}">{{legislation.summary}}</td>
+                                    <td data-date-considered="{{date-considered}}">{{legislation.date_considered}}</td>
+                                    <td data-name="{{legislation.name}}">{{legislation.name}}</td>
+                                    <td data-summary="{{legislation.summary}}">{{legislation.summary}}</td>
                                     <td align="center" data-vote="{{vote}}">{{vote}}</td>
                                     <td align="center" date-did-elected-official-propose-this="{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}">{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}</td>
-                                    <td data-legislation-issue-category="{{legislation.issue_category.name}}">{{legislation.issue_category.name}}</td>
-                                    <td><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-legislation-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}">0</span></td>
+                                    <td data-issue-category="{{legislation.issue_category.name}}">{{legislation.issue_category.name}}</td>
+                                    <td><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}">0</span></td>
                                 {{/this}}
                                 </tr>
                             {{/votes}}
@@ -273,7 +274,7 @@ echo <<<EOT
 
                 <div role="tabpanel" class="tab-pane" id="Contributions">
                     {{#if contributions}}
-                        <table class="table table-hover" data-table-type="сontributions">
+                        <table class="table table-hover" data-entity-type="Contributions">
                             <tr>
                                 <th>Election Year</th>
                                 <th>Name of contributor</th>
@@ -302,18 +303,18 @@ echo <<<EOT
 
                 <div role="tabpanel" class="tab-pane" id="Endorsements">
                     {{#if endorsements}}
-                        <table class="table table-hover">
+                        <table class="table table-hover" data-entity-type="Endorsements">
                             <tr>
                                 <th>Election Year</th>
                                 <th>Name</th>
                                 <th>Type</th>
                             </tr>
                             {{#endorsements}}
-                            <tr>
+                            <tr data-id="{{id}}">
                                 {{#this}}
-                                    <td>{{election_year}}</td>
-                                    <td>{{name_of_endorser}}</td>
-                                    <td>{{endorser_type}}</td>
+                                    <td data-election-year="{{election_year}}">{{election_year}}</td>
+                                    <td data-name-of-endorser="{{name_of_endorser}}">{{name_of_endorser}}</td>
+                                    <td data-endorser-type="{{endorser_type}}">{{endorser_type}}</td>
                                 {{/this}}
                             </tr>
                             {{/endorsements}}
@@ -416,16 +417,13 @@ echo <<<EOT
     </div>
 </div>
 
-<!-- Modal -->
-<div id="modal-window" class="modal fade">
-    <div class="modal-dialog">
+    <div id="modal-window" class="modal fade">
+      <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-body">Loading...</div>
+          <div class="modal-body">Loading...</div>
         </div>
+      </div>
     </div>
-</div>
-
-    <!-- Scripts -- Placed at the end of the document so the pages load faster-->
     <script src="/legacy/js_files/jquery.min.js"></script>
     <script src="/legacy/js/vendor/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug-->
@@ -443,8 +441,12 @@ echo <<<EOT
     <script src="/legacy/js/vendor/markerwithlabel_packed.js"></script>
     <script src="/legacy/js_files/disqus.js"></script>
     <script src="/legacy/js/vendor/history.js"></script>
+    <script src="/legacy/js/vendor/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="/legacy/js/vendor/bootstrap-table/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js"></script>
+    <script src="/legacy/js/vendor/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js"></script>
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+    <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
     <script src="/legacy/static/bundle.js"></script>
   </body>
 </html>

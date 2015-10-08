@@ -513,18 +513,21 @@ if routeType is 3
                 $(e.target).editable();
 
             $('td').on 'save', (e, params) ->
-                tableType = $(e.target).closest('table')[0].dataset.tableType
+                console.log $(e.target).closest('table')[0].dataset
+                entityType = $(e.target).closest('table')[0].dataset.entityType
                 id = e.target.parentNode.dataset.id
                 field = Object.keys(e.target.dataset)[0]
                 sendObject = {
-                    tableType: tableType,
-                    entityName: person.full_name,
-                    entityId: id,
-                    changes: {}
+                    editRequest: {
+                        entityName: entityType,
+                        entityId: id,
+                        changes: {}
+                    }
                 }
-                sendObject.changes[field] = params.newValue
+                sendObject.editRequest.changes[field] = params.newValue
+                sendObject.editRequest = JSON.stringify(sendObject.editRequest);
                 console.log sendObject
-                $.post 'http://45.55.0.145//editrequest/create', sendObject, (response) ->
+                $.post 'http://45.55.0.145/editrequest/create', sendObject, (response) ->
                     console.log response
 
             $('.vote').on 'click', (e) ->
