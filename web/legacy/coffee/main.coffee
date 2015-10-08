@@ -510,6 +510,8 @@ if routeType is 3
             console.log person
             $.fn.editable.defaults.mode = 'inline';
             $('table').on 'click', 'td', (e) ->
+                console.log e.target.dataset.noEditable
+                if e.target.dataset.noEditable isnt undefined then return
                 $(e.target).editable();
 
             $('td').on 'save', (e, params) ->
