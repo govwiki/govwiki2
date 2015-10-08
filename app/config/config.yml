@@ -89,7 +89,8 @@ knp_paginator:
 stof_doctrine_extensions:
     orm:
         default:
-            sluggable: true
+            sluggable:     true
+            timestampable: true
 
 fos_user:
     db_driver: orm
