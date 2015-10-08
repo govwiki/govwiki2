@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use GovWiki\DbBundle\Entity\EditRequest;
 
 /**
@@ -51,7 +52,12 @@ class EditRequestController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $targetEntity = $em->getRepository("GovWikiDbBundle:{$editRequest->getEntityName()}")->find($editRequest->getEntityId());
+        try {
+            $targetEntity = $em->getRepository("GovWikiDbBundle:{$editRequest->getEntityName()}")->find($editRequest->getEntityId());
+        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+            throw new HttpException(500, 'Bad Record');
+        }
+
         $changes = [];
         foreach ($editRequest->getChanges() as $field => $newValue) {
             $changes[] = [
