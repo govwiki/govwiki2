@@ -11,6 +11,7 @@
     "stylusw": "stylus -w css/index.styl",
     "jade": "jade jade -P -o .",
     "jadew": "jade jade -P -w -o .",
+    "jade_main": "jade jade -P -w -o route",
     "coffee_main": "browserify -d -t coffeeify coffee/main.coffee -o static/bundle.js",
     "uglify_main": "uglifyjs static/bundle.js --compress --mangle -o static/bundle.min.js",
     "prod_main": "npm run coffee_main && npm run uglify_main",
