@@ -254,7 +254,7 @@ echo <<<EOT
                             </tr>
 
                             {{#votes}}
-                                <tr data-id="{{id}}">
+                                <tr data-id="{{legislation.id}}">
                                 {{#this}}
                                     <td data-date-considered="{{date-considered}}">{{legislation.date_considered}}</td>
                                     <td data-name="{{legislation.name}}">{{legislation.name}}</td>
@@ -448,7 +448,6 @@ echo <<<EOT
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
     <script src="/legacy/static/bundle.js"></script>
-    <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
   </body>
 </html>
 EOT;
