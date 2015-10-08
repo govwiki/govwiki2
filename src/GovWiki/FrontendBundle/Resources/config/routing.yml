@@ -1,3 +1,8 @@
+editrequest:
+    resource: "@GovWikiFrontendBundle/Controller/EditRequestController.php"
+    type:     annotation
+    prefix:   /editrequest
+
 main:
     resource: "@GovWikiFrontendBundle/Controller/MainController.php"
     type:     annotation
