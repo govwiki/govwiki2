@@ -417,13 +417,16 @@ echo <<<EOT
     </div>
 </div>
 
-    <div id="modal-window" class="modal fade">
-      <div class="modal-dialog">
+<!-- Modal -->
+<div id="modal-window" class="modal fade">
+    <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-body">Loading...</div>
         </div>
-      </div>
     </div>
+</div>
+
+    <!-- Scripts -- Placed at the end of the document so the pages load faster-->
     <script src="/legacy/js_files/jquery.min.js"></script>
     <script src="/legacy/js/vendor/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug-->
