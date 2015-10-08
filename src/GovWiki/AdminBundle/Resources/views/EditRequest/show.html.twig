@@ -48,8 +48,21 @@
                     {% for change in changes %}
                         <tr{% if not change.correct %} class="danger"{% endif %}>
                             <td>{{ change.field }}</td>
-                            <td>{% if change.correct %}{{ attribute(targetEntity, change.field) }}{% endif %}</td>
-                            <td>{{ change.newValue }}</td>
+                            <td>{% if change.correct %}
+                                {% set oldValue = attribute(targetEntity, change.field) %}
+                                {% if oldValue.timestamp is defined %}
+                                    {{ oldValue|date('m/d/y g:i a') }}
+                                {% else %}
+                                    {{ oldValue }}
+                                {% endif %}
+                            {% endif %}</td>
+                            <td>
+                                {% if change.newValue.timestamp is defined %}
+                                    {{ change.newValue|date('m/d/y g:i a') }}
+                                {% else %}
+                                    {{ change.newValue }}
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
