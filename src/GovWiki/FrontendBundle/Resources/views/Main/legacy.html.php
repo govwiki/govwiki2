@@ -443,6 +443,15 @@ echo <<<EOT
     </div>
 </div>
 
+<!-- Modal -->
+<div id="modal-window" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">Loading...</div>
+        </div>
+    </div>
+</div>
+
     <!-- Scripts -- Placed at the end of the document so the pages load faster-->
     <script src="/legacy/js_files/jquery.min.js"></script>
     <script src="/legacy/js/vendor/bootstrap.min.js"></script>
@@ -462,6 +471,7 @@ echo <<<EOT
     <script src="/legacy/js_files/disqus.js"></script>
     <script src="/legacy/static/bundle.min.js"></script>
     <script src="/legacy/js/vendor/history.js"></script>
+    <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
   </body>
 </html>
 EOT;
