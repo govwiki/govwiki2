@@ -312,6 +312,14 @@ window.addEventListener 'popstate', (event) ->
     else
         document.location.reload()
 
+# Refresh Disqus thread
+refresh_disqus = (newIdentifier, newUrl, newTitle) ->
+    DISQUS.reset
+        reload: true,
+        config: () ->
+            this.page.identifier = newIdentifier
+            this.page.url = newUrl
+            this.page.title = newTitle
 
 $('#dataContainer').on 'click', '.elected_link', (e) ->
     e.preventDefault();
@@ -512,12 +520,3 @@ if routeType is 3
 
         error: (e) ->
             console.log e
-
-# Refresh Disqus thread
-        refresh_disqus = (newIdentifier, newUrl, newTitle) ->
-            DISQUS.reset
-                reload: true,
-                config: () ->
-                    this.page.identifier = newIdentifier
-                    this.page.url = newUrl
-                    this.page.title = newTitle
