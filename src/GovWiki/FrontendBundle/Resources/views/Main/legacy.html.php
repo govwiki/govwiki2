@@ -274,7 +274,7 @@ echo <<<EOT
 
                 <div role="tabpanel" class="tab-pane" id="Contributions">
                     {{#if contributions}}
-                        <table class="table table-hover" data-entity-type="Contributions">
+                        <table class="table table-hover" data-entity-type="Contribution">
                             <tr>
                                 <th>Election Year</th>
                                 <th>Name of contributor</th>
@@ -303,7 +303,7 @@ echo <<<EOT
 
                 <div role="tabpanel" class="tab-pane" id="Endorsements">
                     {{#if endorsements}}
-                        <table class="table table-hover" data-entity-type="Endorsements">
+                        <table class="table table-hover" data-entity-type="Endorsement">
                             <tr>
                                 <th>Election Year</th>
                                 <th>Name</th>
