@@ -244,7 +244,10 @@ echo <<<EOT
                     {{#if votes}}
                         <table class="table table-hover">
                             <tr>
-                                <th>Date</th>
+                                <th tabindex="0">
+                                    <div class="th-inner sortable both">Name</div>
+                                    <div class="fht-cell"></div>
+                                </th>
                                 <th>Title of Measure</th>
                                 <th>Summary of Measure</th>
                                 <th style="text-align:center;">How official Voted</th>
@@ -435,6 +438,9 @@ echo <<<EOT
     <script src="/legacy/js_files/disqus.js"></script>
     <script src="/legacy/static/bundle.min.js"></script>
     <script src="/legacy/js/vendor/history.js"></script>
+    <script src="/legacy/js/vendor/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="/legacy/js/vendor/bootstrap-table/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js"></script>
+    <script src="/legacy/js/vendor/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js"></script>
   </body>
 </html>
 EOT;

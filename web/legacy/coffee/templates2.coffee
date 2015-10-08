@@ -256,10 +256,7 @@ render_tabs = (initial_layout, data, tabset, parent) ->
               return
             ), 1000
           if graph
-            `setTimeout(function () {
-                google.load('visualization', '1.0', {'packages': 'corechart'})
-            }, 2000)`
-            google.setOnLoadCallback drawChart;
+            `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['median-comp-graph'] ='median-comp-graph'
         if not plot_handles['median-pension-graph']
           graph = true
@@ -297,10 +294,7 @@ render_tabs = (initial_layout, data, tabset, parent) ->
                 chart.draw vis_data, options
               return
             ), 1000
-          `setTimeout(function () {
-              google.load('visualization', '1.0', {'packages': 'corechart'})
-          }, 2000)`
-          google.setOnLoadCallback drawChart;
+          `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['median-pension-graph'] ='median-pension-graph'
       when 'Financial Health'
         h = ''
@@ -344,10 +338,7 @@ render_tabs = (initial_layout, data, tabset, parent) ->
               return
             ), 1000
           if graph
-            `setTimeout(function () {
-                google.load('visualization', '1.0', {'packages': 'corechart'})
-            }, 2000)`
-            google.setOnLoadCallback drawChart;
+            `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['public-safety-pie'] ='public-safety-pie'
         #fin-health-revenue graph
         if not plot_handles['fin-health-revenue-graph'] and data['alt_type'] != 'School District'
@@ -387,10 +378,8 @@ render_tabs = (initial_layout, data, tabset, parent) ->
               return
             ), 1000
           if graph
-            `setTimeout(function () {
-                google.load('visualization', '1.0', {'packages': 'corechart'})
-            }, 2000)`
-            google.setOnLoadCallback drawChart;
+            `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
+            
           plot_handles['fin-health-revenue-graph'] ='fin-health-revenue-graph'
         #fin-health-expenditures-graph
         if not plot_handles['fin-health-expenditures-graph'] and data['alt_type'] != 'School District'
@@ -429,10 +418,7 @@ render_tabs = (initial_layout, data, tabset, parent) ->
                 chart.draw vis_data, options
               return
             ), 1000
-          `setTimeout(function () {
-              google.load('visualization', '1.0', {'packages': 'corechart'})
-          }, 2000)`
-          google.setOnLoadCallback drawChart;
+          `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['fin-health-expenditures-graph'] ='fin-health-expenditures-graph'
       when 'Financial Statements'
         if data.financial_statements
@@ -485,10 +471,7 @@ render_tabs = (initial_layout, data, tabset, parent) ->
                 return
               ), 1000
           if graph
-            `setTimeout(function () {
-                google.load('visualization', '1.0', {'packages': 'corechart'})
-            }, 2000)`
-            google.setOnLoadCallback drawChart;
+            `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['total-revenue-pie'] ='total-revenue-pie'
           if not plot_handles['total-expenditures-pie']
             graph = true
@@ -534,10 +517,7 @@ render_tabs = (initial_layout, data, tabset, parent) ->
                 return
               ), 1000
           if graph
-            `setTimeout(function () {
-                google.load('visualization', '1.0', {'packages': 'corechart'})
-            }, 2000)`
-            google.setOnLoadCallback drawChart;
+            `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['total-expenditures-pie'] ='total-expenditures-pie'
       else
         detail_data.tabcontent += render_fields tab.fields, data, templates['tabdetail-namevalue-template']

@@ -507,6 +507,10 @@ if routeType is 3
             $('#details').html html
             $('#dataContainer').css('display': 'block');
 
+            $('#table-id').bootstrapTable(
+                {data: JSON_data}
+            );
+
             $('.vote').on 'click', (e) ->
                 id = e.currentTarget.id
                 # If legislationName is undefined use person name
