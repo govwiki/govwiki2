@@ -550,6 +550,9 @@ span.rank {
 .modal-dialog {
   z-index: 10000;
 }
+td {
+  vertical-align: middle !important;
+}
 @-moz-keyframes load8 {
   0% {
     -webkit-transform: rotate(0deg);

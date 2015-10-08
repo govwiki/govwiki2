@@ -186,14 +186,18 @@ render_tabs = (initial_layout, data, tabset, parent) ->
           official_data =
             title: if '' != official.title then "Title: " + official.title
             name: if '' != official.full_name then "Name: " + official.full_name
-            email: if null != official.email_address then "Email: " + official.email_address
+            email: if official.email_address then "Email: " + official.email_address
             telephonenumber: if null != official.telephone_number and undefined != official.telephone_number then "Telephone Number: " + official.telephone_number
-            termexpires: if null != official.term_expires then "Term Expires: " + official.term_expires
+            termexpires: if official.term_expires then "Term Expires: " + official.term_expires else "Term Expires: "
             altTypeSlug: data.alt_type_slug
             nameSlug: data.slug
             slug: official.slug
 
-          if '' != official.photo_url and official.photo_url != null then official_data.image =  '<img src="'+official.photo_url+'" class="portrait" alt="" />'
+          if '' != official.photo_url and official.photo_url != undefined
+            official_data.image =  '<img src="'+official.photo_url+'" class="portrait" alt="" />'
+          else
+            official_data.image =  ''
+
           detail_data.tabcontent += templates['tabdetail-official-template'](official_data)
       when 'Employee Compensation'
         h = ''
@@ -252,9 +256,7 @@ render_tabs = (initial_layout, data, tabset, parent) ->
               return
             ), 1000
           if graph
-            google.load 'visualization', '1.0',
-            'callback' : drawChart()
-            'packages' :'corechart'
+            `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['median-comp-graph'] ='median-comp-graph'
         if not plot_handles['median-pension-graph']
           graph = true
@@ -292,9 +294,7 @@ render_tabs = (initial_layout, data, tabset, parent) ->
                 chart.draw vis_data, options
               return
             ), 1000
-          google.load 'visualization', '1.0',
-          'callback' : drawChart()
-          'packages' :'corechart'
+          `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['median-pension-graph'] ='median-pension-graph'
       when 'Financial Health'
         h = ''
@@ -338,9 +338,7 @@ render_tabs = (initial_layout, data, tabset, parent) ->
               return
             ), 1000
           if graph
-            google.load 'visualization', '1.0',
-            'callback' : drawChart()
-            'packages' :'corechart'
+            `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['public-safety-pie'] ='public-safety-pie'
         #fin-health-revenue graph
         if not plot_handles['fin-health-revenue-graph'] and data['alt_type'] != 'School District'
@@ -380,9 +378,8 @@ render_tabs = (initial_layout, data, tabset, parent) ->
               return
             ), 1000
           if graph
-            google.load 'visualization', '1.0',
-            'callback' : drawChart()
-            'packages' :'corechart'
+            `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
+            
           plot_handles['fin-health-revenue-graph'] ='fin-health-revenue-graph'
         #fin-health-expenditures-graph
         if not plot_handles['fin-health-expenditures-graph'] and data['alt_type'] != 'School District'
@@ -421,9 +418,7 @@ render_tabs = (initial_layout, data, tabset, parent) ->
                 chart.draw vis_data, options
               return
             ), 1000
-          google.load 'visualization', '1.0',
-          'callback' : drawChart()
-          'packages' :'corechart'
+          `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['fin-health-expenditures-graph'] ='fin-health-expenditures-graph'
       when 'Financial Statements'
         if data.financial_statements
@@ -437,96 +432,92 @@ render_tabs = (initial_layout, data, tabset, parent) ->
             if data.financial_statements.length == 0
               graph = false
             drawChart = () ->
-            setTimeout ( ->
-              vis_data = new google.visualization.DataTable()
-              vis_data.addColumn 'string', 'Total Gov. Expenditures'
-              vis_data.addColumn 'number', 'Total'
+              setTimeout ( ->
+                vis_data = new google.visualization.DataTable()
+                vis_data.addColumn 'string', 'Total Gov. Expenditures'
+                vis_data.addColumn 'number', 'Total'
 
-              rows = []
-              for item in data.financial_statements
-                if (item.category_name is "Revenues") and (item.caption isnt "Total Revenues")
+                rows = []
+                for item in data.financial_statements
+                  if (item.category_name is "Revenues") and (item.caption isnt "Total Revenues")
 
-                  r = [
-                    item.caption
-                    parseInt item.totalfunds
-                  ]
-                  rows.push(r)
+                    r = [
+                      item.caption
+                      parseInt item.totalfunds
+                    ]
+                    rows.push(r)
 
-              vis_data.addRows rows
-              options =
-                'title':'Total Revenues'
-                'titleTextStyle':
-                 'fontSize': 16
-                'tooltip':
-                 'textStyle':
-                  'fontSize': 12
-                'width': bigChartWidth
-                'height': 350
-                'pieStartAngle': 60
-                'sliceVisibilityThreshold': .05
-                'forceIFrame': true
-                'chartArea':{
-                   width:'90%'
-                   height:'75%'
-                 }
-                #'is3D' : 'true'
-              if graph
-                chart = new google.visualization.PieChart document.getElementById 'total-revenue-pie'
-                chart.draw vis_data, options
-              return
-            ), 1000
+                vis_data.addRows rows
+                options =
+                  'title':'Total Revenues'
+                  'titleTextStyle':
+                   'fontSize': 16
+                  'tooltip':
+                   'textStyle':
+                    'fontSize': 12
+                  'width': bigChartWidth
+                  'height': 350
+                  'pieStartAngle': 60
+                  'sliceVisibilityThreshold': .05
+                  'forceIFrame': true
+                  'chartArea':{
+                     width:'90%'
+                     height:'75%'
+                   }
+                  #'is3D' : 'true'
+                if graph
+                  chart = new google.visualization.PieChart document.getElementById 'total-revenue-pie'
+                  chart.draw vis_data, options
+                return
+              ), 1000
           if graph
-            google.load 'visualization', '1.0',
-            'callback' : drawChart()
-            'packages' :'corechart'
+            `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['total-revenue-pie'] ='total-revenue-pie'
           if not plot_handles['total-expenditures-pie']
             graph = true
             if data.financial_statements.length == 0
               graph = false
             drawChart = () ->
-            setTimeout ( ->
-              vis_data = new google.visualization.DataTable()
-              vis_data.addColumn 'string', 'Total Gov. Expenditures'
-              vis_data.addColumn 'number', 'Total'
+              setTimeout ( ->
+                vis_data = new google.visualization.DataTable()
+                vis_data.addColumn 'string', 'Total Gov. Expenditures'
+                vis_data.addColumn 'number', 'Total'
 
-              rows = []
-              for item in data.financial_statements
-                if (item.category_name is "Expenditures") and (item.caption isnt "Total Expenditures")
+                rows = []
+                for item in data.financial_statements
+                  if (item.category_name is "Expenditures") and (item.caption isnt "Total Expenditures")
 
-                  r = [
-                    item.caption
-                    parseInt item.totalfunds
-                  ]
-                  rows.push(r)
+                    r = [
+                      item.caption
+                      parseInt item.totalfunds
+                    ]
+                    rows.push(r)
 
-              vis_data.addRows rows
-              options =
-                'title':'Total Expenditures'
-                'titleTextStyle':
-                 'fontSize': 16
-                'tooltip':
-                 'textStyle':
-                  'fontSize': 12
-                'width': bigChartWidth
-                'height': 350
-                'pieStartAngle': 60
-                'sliceVisibilityThreshold': .05
-                'forceIFrame': true
-                'chartArea':{
-                   width:'90%'
-                   height:'75%'
-                 }
-                #'is3D' : 'true'
-              if graph
-                chart = new google.visualization.PieChart document.getElementById 'total-expenditures-pie'
-                chart.draw vis_data, options
-              return
-            ), 1000
+                vis_data.addRows rows
+                options =
+                  'title':'Total Expenditures'
+                  'titleTextStyle':
+                   'fontSize': 16
+                  'tooltip':
+                   'textStyle':
+                    'fontSize': 12
+                  'width': bigChartWidth
+                  'height': 350
+                  'pieStartAngle': 60
+                  'sliceVisibilityThreshold': .05
+                  'forceIFrame': true
+                  'chartArea':{
+                     width:'90%'
+                     height:'75%'
+                   }
+                  #'is3D' : 'true'
+                if graph
+                  chart = new google.visualization.PieChart document.getElementById 'total-expenditures-pie'
+                  chart.draw vis_data, options
+                return
+              ), 1000
           if graph
-            google.load 'visualization', '1.0',
-            'callback' : drawChart()
-            'packages' :'corechart'
+            `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['total-expenditures-pie'] ='total-expenditures-pie'
       else
         detail_data.tabcontent += render_fields tab.fields, data, templates['tabdetail-namevalue-template']

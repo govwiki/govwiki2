@@ -43,29 +43,7 @@
 
     <br>
     <br>
-    <br>
-    <br>
-    <div id="wiki" style="display:none0">
-        {{#if wikipedia_page_name}}
-            <a  href="javascript:get_wikipedia_article('{{wikipedia_page_name}}')">
-              Show Wikipedia article
-            </a>
-            <h3 id="wikipediaTitle"></h3>
-            <div id="wikipediaArticle"></div>
-            {{else}}
-            There is no corresponding article at Wikipedia site. You can create a new one.<br>
-            Title:<br>
-            <input id="newWikipediaTitle" type="text" value="{{gov_name}}" style="width:100%">
-            <br>
-            Text:<br>
-            <textarea id="newWikipediaArticle" style="width:100%; height:200px;border:1px solid #DDD">
-            {{gov_name}}
-            </textarea>
-            <button class="btn btn-primary pull-right" type="button" onclick="create_wikipedia_article()">
-                Create Wikipedia article
-            </button>
-        {{/if}}
-    </div>
+
 	</div>
 </script>
 
@@ -81,7 +59,7 @@
 	<div>
             <span class="f-nam" >{{name}}
                 {{#if help}}
-                <div style='display:inline;color:#074d71' title='{{help}}'><img src="/img/678110-sign-info-16.png" /></div>
+                <div style='display:inline;color:#074d71' title='{{help}}'><img src="/legacy/img/678110-sign-info-16.png" /></div>
                 {{/if}}
             </span>
 		    <span class="f-val">{{{value}}}</span>
@@ -169,7 +147,7 @@
         <div class="col-xs-7 col-sm-7 col-md-7 col-md-push-1 col-lg-7 col-lg-push-1" style="font-size:16px;">
             <p>Title: {{title}}</p>
             <p>Name: {{full_name}} &nbsp;&nbsp;
-                <span class="disqus-comment-count vote" id="{{elected_official_id}}" data-disqus-identifier="{{elected_official_id}}"></span>
+                <span class="disqus-comment-count vote" id="{{elected_official_id}}" data-disqus-identifier="{{elected_official_id}}">0</span>
             <p>Term expiries: {{term_expires}}</p>
             {{#if bio_url}}
                 <p><a target="_blank" href="{{bio_url}}">Biographical Highlights</a></p>
@@ -198,7 +176,7 @@
 
                 <div role="tabpanel" class="tab-pane active" id="Votes">
                     {{#if votes}}
-                        <table class="table table-hover">
+                        <table class="table table-hover" data-table-type="votes">
                             <tr>
                                 <th>Date</th>
                                 <th>Title of Measure</th>
@@ -210,15 +188,15 @@
                             </tr>
 
                             {{#votes}}
-                                <tr>
+                                <tr data-id="{{id}}">
                                 {{#this}}
-                                    <td>{{legislation.date_considered}}</td>
-                                    <td>{{legislation.name}}</td>
-                                    <td>{{legislation.summary}}</td>
-                                    <td align="center">{{vote}}</td>
-                                    <td align="center">{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}</td>
-                                    <td>{{legislation.issue_category.name}}</td>
-                                    <td><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-legislation-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}"></span></td>
+                                    <td data-legislation-date-considered="{{legislation-date-considered}}">{{legislation.date_considered}}</td>
+                                    <td data-legislation-name="{{legislation.name}}">{{legislation.name}}</td>
+                                    <td data-legislation-summary="{{legislation.summary}}">{{legislation.summary}}</td>
+                                    <td align="center" data-vote="{{vote}}">{{vote}}</td>
+                                    <td align="center" date-did-elected-official-propose-this="{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}">{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}</td>
+                                    <td data-legislation-issue-category="{{legislation.issue_category.name}}">{{legislation.issue_category.name}}</td>
+                                    <td><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-legislation-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}">0</span></td>
                                 {{/this}}
                                 </tr>
                             {{/votes}}
@@ -230,25 +208,23 @@
 
                 <div role="tabpanel" class="tab-pane" id="Contributions">
                     {{#if contributions}}
-                        <table class="table table-hover">
+                        <table class="table table-hover" data-table-type="сontributions">
                             <tr>
                                 <th>Election Year</th>
                                 <th>Name of contributor</th>
                                 <th>Ind. Exp. Desc.</th>
-                                <th></th>
                                 <th>Amount</th>
                                 <th>Contributor Type</th>
                             </tr>
 
                             {{#contributions}}
-                            <tr>
+                            <tr data-id="{{id}}">
                                 {{#this}}
-                                    <td>{{election_year}}</td>
-                                    <td>{{contributor_name}}</td>
-                                    <td>{{independent_expenditure_desc}}</td>
-                                    <td>{{#unless @index}}${{/unless}}</td>
-                                    <td>{{contribution_amount}}</td>
-                                    <td>{{contributor_type}}</td>
+                                    <td data-election-year="{{election_year}}">{{election_year}}</td>
+                                    <td data-contributor-name="{{contributor_name}}<">{{contributor_name}}</td>
+                                    <td data-independent-expenditure-desc="{{independent_expenditure_desc}}">{{independent_expenditure_desc}}</td>
+                                    <td data-contribution-amount="{{contribution_amount}}">{{contribution_amount}}</td>
+                                    <td data-contributor-type="{{contributor_type}}">{{contributor_type}}</td>
                                 {{/this}}
                             </tr>
                             {{/contributions}}
@@ -299,9 +275,9 @@
                    style="width:412px" class="text-uppercase typeahead form-control0">
 
             <p class="text-center text-nowrap hidden-xs hidden-sm">Type part of the agency's name &nbsp;&nbsp;<img
-                src="/img/FullSizeRender.gif" style="width:40px">
+                src="/legacy/img/FullSizeRender.gif" style="width:40px">
                 <!--span(style="font-size:150%; position:relative; top:-6px;")⤴-->&nbsp; or click it on the map &nbsp;&nbsp;<img
-                    src="/img/FullSizeRender1.gif" style="width:40px">
+                    src="/legacy/img/FullSizeRender1.gif" style="width:40px">
                 <!--span(style="font-size:150%;position: relative; top:12px;")⤵-->
             </p>
         </div>
