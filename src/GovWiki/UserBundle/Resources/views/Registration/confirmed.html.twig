@@ -7,9 +7,9 @@
         <div class="jumbotron" style="margin-top:141px;">
             <p>{{ 'registration.confirmed'|trans({'%username%': user.username}) }}</p>
             <a href="{{ path('govwiki_frontend_main_map') }}" class="btn btn-primary">Go to home page</a>
+            {% if targetUrl %}
+                <a href="{{ targetUrl }}" class="btn btn-primary"> Back to the originating page</a>
+            {% endif %}
         </div>
     </div>
-    {% if targetUrl %}
-    <p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>
-    {% endif %}
 {% endblock fos_user_content %}
