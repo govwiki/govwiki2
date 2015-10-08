@@ -507,9 +507,25 @@ if routeType is 3
             $('#details').html html
             $('#dataContainer').css('display': 'block');
 
-            $('#table-id').bootstrapTable(
-                {data: JSON_data}
-            );
+            console.log person
+            $.fn.editable.defaults.mode = 'inline';
+            $('table').on 'click', 'td', (e) ->
+                $(e.target).editable();
+
+            $('td').on 'save', (e, params) ->
+                tableType = $(e.target).closest('table')[0].dataset.tableType
+                id = e.target.parentNode.dataset.id
+                field = Object.keys(e.target.dataset)[0]
+                sendObject = {
+                    tableType: tableType,
+                    entityName: person.full_name,
+                    entityId: id,
+                    changes: {}
+                }
+                sendObject.changes[field] = params.newValue
+                console.log sendObject
+                $.post 'http://45.55.0.145//editrequest/create', sendObject, (response) ->
+                    console.log response
 
             $('.vote').on 'click', (e) ->
                 id = e.currentTarget.id
