@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation\Timestampable;
 
 /**
  * EditRequest
@@ -48,6 +49,14 @@ class EditRequest
      * @ORM\Column(name="comment", type="text", nullable=true)
      */
     private $comment;
+
+    /**
+     * @var \DateTime $created
+     *
+     * @Timestampable(on="create")
+     * @ORM\Column(type="datetime")
+     */
+    private $created;
 
     /**
      * @ORM\ManyToOne(targetEntity="GovWiki\UserBundle\Entity\User", inversedBy="editRequests")
@@ -154,6 +163,29 @@ class EditRequest
     public function getComment()
     {
         return $this->comment;
+    }
+
+    /**
+     * Set created
+     *
+     * @param \DateTime $created
+     * @return EditRequest
+     */
+    public function setCreated($created)
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    /**
+     * Get created
+     *
+     * @return \DateTime
+     */
+    public function getCreated()
+    {
+        return $this->created;
     }
 
     /**
