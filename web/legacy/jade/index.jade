@@ -71,6 +71,11 @@ html(lang='en')
 
     include templates.html
 
+    #modal-window.modal.fade
+      .modal-dialog
+        .modal-content
+          .modal-body Loading...
+
     script(src='/legacy/js_files/jquery.min.js')
     script(src='/legacy/js/vendor/bootstrap.min.js')
     // IE10 viewport hack for Surface/desktop Windows 8 bug
@@ -87,5 +92,11 @@ html(lang='en')
     script(src='http://www.google.com/jsapi')
     script(src='/legacy/js/vendor/markerwithlabel_packed.js')
     script(src='/legacy/js_files/disqus.js')
-    script(src='/legacy/static/bundle.min.js')
     script(src='/legacy/js/vendor/history.js')
+    script(src='/legacy/js/vendor/bootstrap-table/bootstrap-table.min.js')
+    script(src='/legacy/js/vendor/bootstrap-table/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js')
+    script(src='/legacy/js/vendor/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js')
+    link(href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet")
+    script(src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js")
+    script(src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}")
+    script(src='/legacy/static/bundle.js')
