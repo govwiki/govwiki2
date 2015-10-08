@@ -51,6 +51,18 @@ class EditRequest
     private $comment;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="status", type="string", length=255)
+     */
+    private $status = 'pending';
+
+    /**
+     * @var array
+     */
+    public $statusChoices = ['pending', 'applied', 'discarded'];
+
+    /**
      * @var \DateTime $created
      *
      * @Timestampable(on="create")
@@ -163,6 +175,29 @@ class EditRequest
     public function getComment()
     {
         return $this->comment;
+    }
+
+    /**
+     * Set status
+     *
+     * @param string $status
+     * @return EditRequest
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 
     /**
