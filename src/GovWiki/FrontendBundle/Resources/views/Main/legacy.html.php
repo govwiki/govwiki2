@@ -448,6 +448,7 @@ echo <<<EOT
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
     <script src="/legacy/static/bundle.js"></script>
+    <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
   </body>
 </html>
 EOT;
