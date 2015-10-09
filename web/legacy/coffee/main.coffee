@@ -322,9 +322,10 @@ refresh_disqus = (newIdentifier, newUrl, newTitle) ->
             this.page.title = newTitle
 
 initHandlerForTables = () ->
+    $('[data-toggle="tooltip"]').tooltip()
     $('table').on 'click', 'td', (e) ->
         if e.target.dataset.noEditable isnt undefined then return
-        $.ajax 'http://45.55.0.145/editrequest/create', {
+        $.ajax 'http://gw.local/editrequest/create', {
             method: 'POST',
             dataType: 'text/json',
             complete: (response) ->
@@ -351,7 +352,7 @@ initHandlerForTables = () ->
         sendObject.editRequest.changes[field] = params.newValue
         sendObject.editRequest = JSON.stringify(sendObject.editRequest);
         console.log sendObject
-        $.ajax 'http://45.55.0.145/editrequest/create', {
+        $.ajax 'http://gw.local/editrequest/create', {
             method: 'POST',
             data: sendObject,
             dataType: 'text/json',
