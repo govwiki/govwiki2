@@ -351,7 +351,7 @@ initHandlerForTables = () ->
         sendObject.editRequest.changes[field] = params.newValue
         sendObject.editRequest = JSON.stringify(sendObject.editRequest);
         console.log sendObject
-        $.ajax 'http://gw.local/editrequest/create', {
+        $.ajax 'http://45.55.0.145/editrequest/create', {
             method: 'POST',
             data: sendObject,
             dataType: 'text/json',
