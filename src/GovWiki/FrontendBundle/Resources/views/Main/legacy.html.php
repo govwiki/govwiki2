@@ -417,16 +417,13 @@ echo <<<EOT
     </div>
 </div>
 
-<!-- Modal -->
-<div id="modal-window" class="modal fade">
-    <div class="modal-dialog">
+    <div id="modal-window" class="modal fade">
+      <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-body">Loading...</div>
         </div>
+      </div>
     </div>
-</div>
-
-    <!-- Scripts -- Placed at the end of the document so the pages load faster-->
     <script src="/legacy/js_files/jquery.min.js"></script>
     <script src="/legacy/js/vendor/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug-->
@@ -444,13 +441,14 @@ echo <<<EOT
     <script src="/legacy/js/vendor/markerwithlabel_packed.js"></script>
     <script src="/legacy/js_files/disqus.js"></script>
     <script src="/legacy/js/vendor/history.js"></script>
+    <script src="/legacy/js/vendor/cookies.js"></script>
     <script src="/legacy/js/vendor/bootstrap-table/bootstrap-table.min.js"></script>
     <script src="/legacy/js/vendor/bootstrap-table/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js"></script>
     <script src="/legacy/js/vendor/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js"></script>
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
-    <script src="/legacy/static/bundle.min.js"></script>
+    <script src="/legacy/static/bundle.js"></script>
   </body>
 </html>
 EOT;
