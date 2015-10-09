@@ -51,11 +51,13 @@ class EditRequestController extends Controller
     public function showAction(EditRequest $editRequest)
     {
         $em = $this->getDoctrine()->getManager();
+        $errors = [];
 
         try {
             $targetEntity = $em->getRepository("GovWikiDbBundle:{$editRequest->getEntityName()}")->find($editRequest->getEntityId());
         } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
-            throw new HttpException(500, 'Bad Record');
+            $targetEntity = null;
+            $errors[]     = "Can't find entity with name '{$editRequest->getEntityName()}', due to bad entry or internal system error";
         }
 
         $changes = [];
@@ -71,6 +73,7 @@ class EditRequestController extends Controller
             'editRequest'  => $editRequest,
             'targetEntity' => $targetEntity,
             'changes'      => $changes,
+            'errors'       => $errors,
         ];
     }
 
@@ -113,5 +116,20 @@ class EditRequestController extends Controller
         $em->flush();
 
         return new JsonResponse(['reload' => true]);
+    }
+
+    /**
+     * @Route("/{id}/remove")
+     *
+     * @param  EditRequest $editRequest
+     * @return JsonReponse
+     */
+    public function removeAction(EditRequest $editRequest)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($editRequest);
+        $em->flush();
+
+        return new JsonResponse(['status' => 'ok']);
     }
 }
