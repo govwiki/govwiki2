@@ -256,27 +256,26 @@ echo <<<EOT
                             {{#votes}}
                                 <tr data-id="{{legislation.id}}">
                                 {{#this}}
-                                    <td>
+                                    <td data-date-considered="{{date-considered}}">
                                         <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"
-                                              data-date-considered="{{date-considered}}" data-no-editable>
+                                              data-no-editable>
                                             {{legislation.date_considered}}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td data-name="{{legislation.name}}">
                                         <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1" data-placeholder="Type your text..." data-title="Please enter name" class="editable editable-pre-wrapped editable-click"
                                                                                                                        data-original-title=""
-                                                                                                                       title="" data-name="{{legislation.name}}">{{legislation.name}}</a></span>
+                                                                                                                       title="">{{legislation.name}}</a></span>
                                     </td>
-                                    <td>
+                                    <td data-summary="{{legislation.summary}}">
                                         <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
                                            data-placeholder="Type your text..." data-title="Please enter name"
                                            class="editable editable-pre-wrapped editable-click" data-original-title=""
-                                           title=""
-                                           data-summary="{{legislation.summary}}">{{legislation.summary}}</a></span>
+                                           title="">{{legislation.summary}}</a></span>
                                     </td>
-                                    <td>
+                                    <td data-vote="{{vote}}">
                                         <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"
-                                              data-vote="{{vote}}" data-no-editable>
+                                              data-no-editable>
                                             {{vote}}
                                         </span>
                                     </td>
@@ -306,40 +305,35 @@ echo <<<EOT
                             {{#contributions}}
                             <tr data-id="{{id}}">
                                 {{#this}}
-                                    <td>
+                                    <td data-election-year="{{election_year}}">
                                         <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
                                                data-placeholder="Type your text..." data-title="Please enter name"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
-                                               title=""
-                                               data-election-year="{{election_year}}">{{election_year}}</a></span>
+                                               title="">{{election_year}}</a></span>
                                     </td>
-                                    <td>
+                                    <td data-contributor-name="{{contributor_name}}">
                                         <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
                                                data-placeholder="Type your text..." data-title="Please enter name"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
-                                               title=""
-                                               data-contributor-name="{{contributor_name}}">{{contributor_name}}</a></span>
+                                               title="">{{contributor_name}}</a></span>
                                     </td>
-                                    <td>
+                                    <td data-independent-expenditure-desc="{{independent_expenditure_desc}}">
                                         <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
                                                data-placeholder="Type your text..." data-title="Please enter name"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
-                                               title=""
-                                               data-independent-expenditure-desc="{{independent_expenditure_desc}}">{{independent_expenditure_desc}}</a></span>
+                                               title="">{{independent_expenditure_desc}}</a></span>
                                     </td>
-                                    <td>
+                                    <td data-contribution-amount="{{contribution_amount}}">
                                         <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
                                                data-placeholder="Type your text..." data-title="Please enter name"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
-                                               title=""
-                                               data-contribution-amount="{{contribution_amount}}">{{contribution_amount}}</a></span>
+                                               title="">{{contribution_amount}}</a></span>
                                     </td>
-                                    <td>
+                                    <td data-contributor-type="{{contributor_type}}">
                                         <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
                                                data-placeholder="Type your text..." data-title="Please enter name"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
-                                               title=""
-                                               data-contributor-type="{{contributor_type}}">{{contributor_type}}</a></span>
+                                               title="">{{contributor_type}}</a></span>
                                     </td>
                                 {{/this}}
                             </tr>
@@ -362,26 +356,20 @@ echo <<<EOT
                             {{#endorsements}}
                             <tr data-id="{{id}}">
                                 {{#this}}
-                                    <td>
-                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                    <td data-election-year="{{election_year}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a data-type="textarea"
                                                data-placeholder="Type your text..." data-title="Please enter name"
-                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
-                                               title=""
-                                               data-election-year="{{election_year}}">{{election_year}}</a></span>
+                                               class="editable editable-pre-wrapped editable-click" data-original-title="">{{election_year}}</a></span>
                                     </td>
-                                    <td>
-                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                    <td data-name-of-endorser="{{name_of_endorser}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea"
                                                data-placeholder="Type your text..." data-title="Please enter name"
-                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
-                                               title=""
-                                               data-name-of-endorser="{{name_of_endorser}}">{{name_of_endorser}}</a></span>
+                                               class="editable editable-pre-wrapped editable-click" data-original-title="">{{name_of_endorser}}</a></span>
                                     </td>
-                                    <td>
-                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                    <td data-endorser-type="{{endorser_type}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea"
                                                data-placeholder="Type your text..." data-title="Please enter name"
-                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
-                                               title=""
-                                               data-endorser-type="{{endorser_type}}">{{endorser_type}}</a></span>
+                                               class="editable editable-pre-wrapped editable-click" data-original-title="">{{endorser_type}}</a></span>
                                     </td>
                                 {{/this}}
                             </tr>
