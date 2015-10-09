@@ -322,7 +322,6 @@ refresh_disqus = (newIdentifier, newUrl, newTitle) ->
             this.page.title = newTitle
 
 initHandlerForTables = () ->
-    $.fn.editable.defaults.mode = 'inline';
     $('table').on 'click', 'td', (e) ->
         if e.target.dataset.noEditable isnt undefined then return
         $.ajax 'http://45.55.0.145/editrequest/create', {
@@ -332,7 +331,7 @@ initHandlerForTables = () ->
                 if response.status is 401
                     showModal('/login')
                 else
-                    $(e.target).editable()
+                    $(e.target).editable({type: 'textarea', showbuttons: 'bottom'})
             error: (error) ->
                 if error.status is 401 then showModal('/login')
         }
