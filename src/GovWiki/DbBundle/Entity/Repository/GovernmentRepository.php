@@ -29,7 +29,13 @@ class GovernmentRepository extends EntityRepository
         $serializedGovernment = $serializer->serialize($government, 'json', SerializationContext::create()->enableMaxDepthChecks());
         $serializedMaxRanks   = $serializer->serialize($maxRanks, 'json');
 
-        $finData = $em->getRepository('GovWikiDbBundle:FinData')->findByGovernment($government);
+        $finData = $em->createQuery(
+            'SELECT fd FROM GovWikiDbBundle:FinData fd
+            LEFT JOIN fd.government g
+            LEFT JOIN fd.captionCategory cc
+            WHERE g = :government
+            ORDER BY cc.id, fd.displayOrder'
+        )->setParameter('government', $government)->getResult();
         foreach ($finData as $finDataItem) {
             $financialStatementsGroups[$finDataItem->getCaption()][] = $finDataItem;
         }
