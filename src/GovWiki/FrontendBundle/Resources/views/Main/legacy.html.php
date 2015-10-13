@@ -256,10 +256,29 @@ echo <<<EOT
                             {{#votes}}
                                 <tr data-id="{{legislation.id}}">
                                 {{#this}}
-                                    <td data-date-considered="{{date-considered}}" data-no-editable>{{legislation.date_considered}}</td>
-                                    <td data-name="{{legislation.name}}">{{legislation.name}}</td>
-                                    <td data-summary="{{legislation.summary}}">{{legislation.summary}}</td>
-                                    <td align="center" data-vote="{{vote}}" data-no-editable>{{vote}}</td>
+                                    <td data-date-considered="{{date-considered}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"
+                                              data-no-editable>
+                                            {{legislation.date_considered}}
+                                        </span>
+                                    </td>
+                                    <td data-name="{{legislation.name}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1" data-placeholder="Type your text..." data-title="Please enter name" class="editable editable-pre-wrapped editable-click"
+                                                                                                                       data-original-title=""
+                                                                                                                       title="">{{legislation.name}}</a></span>
+                                    </td>
+                                    <td data-summary="{{legislation.summary}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                           data-placeholder="Type your text..." data-title="Please enter name"
+                                           class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                           title="">{{legislation.summary}}</a></span>
+                                    </td>
+                                    <td data-vote="{{vote}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"
+                                              data-no-editable>
+                                            {{vote}}
+                                        </span>
+                                    </td>
                                     <td align="center" date-did-elected-official-propose-this="{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}" data-no-editable>{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}</td>
                                     <td data-issue-category="{{legislation.issue_category.name}}" data-no-editable>{{legislation.issue_category.name}}</td>
                                     <td data-no-editable><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}">0</span></td>
@@ -286,11 +305,36 @@ echo <<<EOT
                             {{#contributions}}
                             <tr data-id="{{id}}">
                                 {{#this}}
-                                    <td data-election-year="{{election_year}}">{{election_year}}</td>
-                                    <td data-contributor-name="{{contributor_name}}<">{{contributor_name}}</td>
-                                    <td data-independent-expenditure-desc="{{independent_expenditure_desc}}">{{independent_expenditure_desc}}</td>
-                                    <td data-contribution-amount="{{contribution_amount}}">{{contribution_amount}}</td>
-                                    <td data-contributor-type="{{contributor_type}}">{{contributor_type}}</td>
+                                    <td data-election-year="{{election_year}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                               data-placeholder="Type your text..." data-title="Please enter name"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                               title="">{{election_year}}</a></span>
+                                    </td>
+                                    <td data-contributor-name="{{contributor_name}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                               data-placeholder="Type your text..." data-title="Please enter name"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                               title="">{{contributor_name}}</a></span>
+                                    </td>
+                                    <td data-independent-expenditure-desc="{{independent_expenditure_desc}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                               data-placeholder="Type your text..." data-title="Please enter name"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                               title="">{{independent_expenditure_desc}}</a></span>
+                                    </td>
+                                    <td data-contribution-amount="{{contribution_amount}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                               data-placeholder="Type your text..." data-title="Please enter name"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                               title="">{{contribution_amount}}</a></span>
+                                    </td>
+                                    <td data-contributor-type="{{contributor_type}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                               data-placeholder="Type your text..." data-title="Please enter name"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                               title="">{{contributor_type}}</a></span>
+                                    </td>
                                 {{/this}}
                             </tr>
                             {{/contributions}}
@@ -312,9 +356,21 @@ echo <<<EOT
                             {{#endorsements}}
                             <tr data-id="{{id}}">
                                 {{#this}}
-                                    <td data-election-year="{{election_year}}">{{election_year}}</td>
-                                    <td data-name-of-endorser="{{name_of_endorser}}">{{name_of_endorser}}</td>
-                                    <td data-endorser-type="{{endorser_type}}">{{endorser_type}}</td>
+                                    <td data-election-year="{{election_year}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a data-type="textarea"
+                                               data-placeholder="Type your text..." data-title="Please enter name"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title="">{{election_year}}</a></span>
+                                    </td>
+                                    <td data-name-of-endorser="{{name_of_endorser}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea"
+                                               data-placeholder="Type your text..." data-title="Please enter name"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title="">{{name_of_endorser}}</a></span>
+                                    </td>
+                                    <td data-endorser-type="{{endorser_type}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"><a href="javascript:void(0);" data-type="textarea"
+                                               data-placeholder="Type your text..." data-title="Please enter name"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title="">{{endorser_type}}</a></span>
+                                    </td>
                                 {{/this}}
                             </tr>
                             {{/endorsements}}
@@ -337,7 +393,7 @@ echo <<<EOT
 <script id="search-container-template" type="text/x-handlebars-template">
     <div style="padding-top:40px;margin-bottom:10px;" class="row search-form">
         <div id="typeahed-container" style="border:0px solid red" class="col-sm-5">
-            <input id="myinput" type="text" placeholder="Loading the list of 91,000 US governments..."
+            <input id="myinput" type="text" placeholder="Loading the list of governments"
                    style="width:412px" class="text-uppercase typeahead form-control0">
 
             <p class="text-center text-nowrap hidden-xs hidden-sm">Type part of the agency's name &nbsp;&nbsp;<img
@@ -417,16 +473,13 @@ echo <<<EOT
     </div>
 </div>
 
-<!-- Modal -->
-<div id="modal-window" class="modal fade">
-    <div class="modal-dialog">
+    <div id="modal-window" class="modal fade">
+      <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-body">Loading...</div>
         </div>
+      </div>
     </div>
-</div>
-
-    <!-- Scripts -- Placed at the end of the document so the pages load faster-->
     <script src="/legacy/js_files/jquery.min.js"></script>
     <script src="/legacy/js/vendor/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug-->
@@ -444,13 +497,14 @@ echo <<<EOT
     <script src="/legacy/js/vendor/markerwithlabel_packed.js"></script>
     <script src="/legacy/js_files/disqus.js"></script>
     <script src="/legacy/js/vendor/history.js"></script>
+    <script src="/legacy/js/vendor/cookies.js"></script>
     <script src="/legacy/js/vendor/bootstrap-table/bootstrap-table.min.js"></script>
     <script src="/legacy/js/vendor/bootstrap-table/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js"></script>
     <script src="/legacy/js/vendor/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js"></script>
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
-    <script src="/legacy/static/bundle.js"></script>
+    <script src="/legacy/static/bundle.min.js"></script>
   </body>
 </html>
 EOT;

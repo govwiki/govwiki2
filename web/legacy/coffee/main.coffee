@@ -17,6 +17,7 @@ gov_selector = null
 templates = new Templates2
 active_tab = ""
 undef = null
+authorized = false
 
 Handlebars.registerHelper 'if_eq', (a, b, opts) ->
     if `a == b`
@@ -363,6 +364,49 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     $('#details').html html
                     $('#dataContainer').css('display': 'block');
 
+                    $('[data-toggle="tooltip"]').tooltip()
+                    $('table').on 'click', 'a', (e) ->
+                        if e.currentTarget.dataset.noEditable isnt undefined then return
+                        if (!authorized)
+                            $.ajax 'http://45.55.0.145/editrequest/new', {
+                                method: 'POST',
+                                complete: (response) ->
+                                    if response.status is 401
+                                        showModal('/login')
+                                    else if response.status is 200
+                                        authorized = true
+                                        $(e.currentTarget).editable({type: 'textarea', showbuttons: 'bottom', display: true, emptytext: 'CPC Civic Profiles'})
+                                error: (error) ->
+                                    if error.status is 401 then showModal('/login')
+                            }
+                        else
+                            $(e.currentTarget).editable({type: 'textarea', showbuttons: 'bottom', display: true, emptytext: 'CPC Civic Profiles'})
+
+                    $('a').on 'save', (e, params) ->
+                        entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
+                        id = $(e.currentTarget).closest('tr')[0].dataset.id
+                        field = Object.keys($(e.currentTarget).closest('td')[0].dataset)[0]
+                        sendObject = {
+                            editRequest: {
+                                entityName: entityType,
+                                entityId: id,
+                                changes: {}
+                            }
+                        }
+                        sendObject.editRequest.changes[field] = params.newValue
+                        sendObject.editRequest = JSON.stringify(sendObject.editRequest);
+                        console.log sendObject
+                        $.ajax 'http://45.55.0.145/editrequest/create', {
+                                method: 'POST',
+                                data: sendObject,
+                                dataType: 'text/json',
+                                complete: (response) ->
+                                    text = JSON.parse(response.responseText)
+                                    alert text.message
+                                error: (error) ->
+                                    if error.status is 401 then showModal('/login')
+                            }
+
                     $('.vote').on 'click', (e) ->
                         id = e.currentTarget.id
                         # If legislationName is undefined use person name
@@ -507,18 +551,28 @@ if routeType is 3
             $('#details').html html
             $('#dataContainer').css('display': 'block');
 
-            console.log person
-            $.fn.editable.defaults.mode = 'inline';
-            $('table').on 'click', 'td', (e) ->
-                console.log e.target.dataset.noEditable
-                if e.target.dataset.noEditable isnt undefined then return
-                $(e.target).editable();
+            $('[data-toggle="tooltip"]').tooltip()
+            $('table').on 'click', 'a', (e) ->
+                if e.currentTarget.dataset.noEditable isnt undefined then return
+                if (!authorized)
+                    $.ajax 'http://45.55.0.145/editrequest/new', {
+                        method: 'POST',
+                        complete: (response) ->
+                            if response.status is 401
+                                showModal('/login')
+                            else if response.status is 200
+                                authorized = true
+                                $(e.currentTarget).editable({type: 'textarea', showbuttons: 'bottom', display: true, emptytext: 'CPC Civic Profiles'})
+                        error: (error) ->
+                            if error.status is 401 then showModal('/login')
+                    }
+                else
+                    $(e.currentTarget).editable({type: 'textarea', showbuttons: 'bottom', display: true, emptytext: 'CPC Civic Profiles'})
 
-            $('td').on 'save', (e, params) ->
-                console.log $(e.target).closest('table')[0].dataset
-                entityType = $(e.target).closest('table')[0].dataset.entityType
-                id = e.target.parentNode.dataset.id
-                field = Object.keys(e.target.dataset)[0]
+            $('a').on 'save', (e, params) ->
+                entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
+                id = $(e.currentTarget).closest('tr')[0].dataset.id
+                field = Object.keys($(e.currentTarget).closest('td')[0].dataset)[0]
                 sendObject = {
                     editRequest: {
                         entityName: entityType,

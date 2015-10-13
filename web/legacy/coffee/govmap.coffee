@@ -8,6 +8,7 @@ map = new GMaps
   zoom: 6
   minZoom: 6
   scrollwheel: true
+  mapTypeControl: false
   panControl: false
   zoomControl: true
   zoomControlOptions:
