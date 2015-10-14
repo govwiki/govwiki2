@@ -322,6 +322,101 @@ refresh_disqus = (newIdentifier, newUrl, newTitle) ->
             this.page.url = newUrl
             this.page.title = newTitle
 
+
+initTableHandlers = () ->
+    $('[data-toggle="tooltip"]').tooltip()
+
+    $('.editable').editable({stylesheets: false,type: 'textarea', showbuttons: 'bottom', display: true, emptytext: ' '})
+    $('.editable').off('click');
+
+    $('table').on 'click', '.glyphicon-pencil', (e) ->
+        e.preventDefault();
+        e.stopPropagation();
+#        if e.currentTarget.dataset.noEditable isnt undefined then return
+#        if (!authorized)
+#            $.ajax 'http://gw2.local/editrequest/new', {
+#                method: 'POST',
+#                complete: (response) ->
+#                    if response.status is 401
+#                        showModal('/login')
+#                    else if response.status is 200
+#                        authorized = true
+#                        $(e.currentTarget).closest('td').find('.editable').editable('toggle');
+#                error: (error) ->
+#                    if error.status is 401 then showModal('/login')
+#            }
+#        else
+        $(e.currentTarget).closest('td').find('.editable').editable('toggle');
+
+
+    $('a').on 'save', (e, params) ->
+        entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
+        id = $(e.currentTarget).closest('tr')[0].dataset.id
+        field = Object.keys($(e.currentTarget).closest('td')[0].dataset)[0]
+        sendObject = {
+            editRequest: {
+                entityName: entityType,
+                entityId: id,
+                changes: {}
+            }
+        }
+        sendObject.editRequest.changes[field] = params.newValue
+        sendObject.editRequest = JSON.stringify(sendObject.editRequest);
+        console.log sendObject
+        $.ajax 'http://45.55.0.145/editrequest/create', {
+            method: 'POST',
+            data: sendObject,
+            dataType: 'text/json',
+            complete: (response) ->
+                text = JSON.parse(response.responseText)
+            error: (error) ->
+                if error.status is 401 then showModal('/login')
+        }
+
+    $('table').on 'click', '.add', (e) ->
+        tableType = $(e.target).closest('.tab-pane')[0].id
+        if tableType is 'Votes'
+            $('#addVotes').modal('toggle')
+        else if tableType is 'Contributions'
+            $('#addContributions').modal('toggle')
+        else if tableType is 'Endorsements'
+            $('#addEndorsements').modal('toggle')
+
+    window.addItem = (e) ->
+        newRecord = {}
+        modal = $(e.target).closest('.modal')
+        modalType = modal[0].id
+        entityType = modal[0].dataset.entityType
+
+        modal.find('input[type="text"]').each (index, element) ->
+            fieldName = Object.keys(element.dataset)[0]
+            newRecord[fieldName] = element.value
+
+        sendObject = {
+            editRequest: {
+                entityName: entityType,
+                create: newRecord
+            }
+        }
+
+        tr = document.createElement 'tr'
+        for key, value of sendObject.editRequest.create
+            console.log #{key}
+            console.log #{value}
+            tr.innerHTML += "<td><a href='javascript:void(0);'
+            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
+
+        if modalType is 'addVotes'
+            $('#Votes tr:last-child').before(tr);
+        else if modalType is 'addContributions'
+            $('#Contributions tr:last-child').before(tr);
+        else if modalType is 'addEndorsements'
+            $('#Endorsements tr:last-child').before(tr);
+
+        sendObject.editRequest = JSON.stringify(sendObject.editRequest);
+        console.log sendObject
+
+
 $('#dataContainer').on 'click', '.elected_link', (e) ->
     e.preventDefault();
     url = e.currentTarget.pathname
@@ -364,73 +459,7 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     $('#details').html html
                     $('#dataContainer').css('display': 'block');
 
-                    $('[data-toggle="tooltip"]').tooltip()
-                    $('.editable').editable({stylesheets: false,type: 'textarea', showbuttons: 'bottom', display: true, emptytext: 'CPC Civic Profiles'})
-                    $('.editable').off('click');
-
-                    $('table').on 'click', '.glyphicon-pencil', (e) ->
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if e.currentTarget.dataset.noEditable isnt undefined then return
-                        if (!authorized)
-                            $.ajax 'http://45.55.0.145/editrequest/new', {
-                                method: 'POST',
-                                complete: (response) ->
-                                    if response.status is 401
-                                        showModal('/login')
-                                    else if response.status is 200
-                                        authorized = true
-                                        $(e.currentTarget).closest('td').find('.editable').editable('toggle');
-                                error: (error) ->
-                                    if error.status is 401 then showModal('/login')
-                            }
-                        else
-                            $(e.currentTarget).closest('td').find('.editable').editable('toggle');
-
-
-                    $('a').on 'save', (e, params) ->
-                        entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
-                        id = $(e.currentTarget).closest('tr')[0].dataset.id
-                        field = Object.keys($(e.currentTarget).closest('td')[0].dataset)[0]
-                        sendObject = {
-                            editRequest: {
-                                entityName: entityType,
-                                entityId: id,
-                                changes: {}
-                            }
-                        }
-                        sendObject.editRequest.changes[field] = params.newValue
-                        sendObject.editRequest = JSON.stringify(sendObject.editRequest);
-                        console.log sendObject
-                        $.ajax 'http://45.55.0.145/editrequest/create', {
-                            method: 'POST',
-                            data: sendObject,
-                            dataType: 'text/json',
-                            complete: (response) ->
-                                text = JSON.parse(response.responseText)
-                                alert text.message
-                            error: (error) ->
-                                if error.status is 401 then showModal('/login')
-                        }
-
-                    $('table').on 'click', '.add', (e) ->
-                        tableType = $(e.target).closest('.tab-pane')[0].id
-                        if tableType is 'Votes'
-                            $('#addVotes').modal('toggle')
-                        else if tableType is 'Contributions'
-                            $('#addContributions').modal('toggle')
-                        else if tableType is 'Endorsements'
-                            $('#addEndorsements').modal('toggle')
-
-                    window.addItem = (e) ->
-                        $modal = $(e.target).closest('.modal')
-                        modalType = $modal[0].id
-                        if modalType is 'addVotes'
-                            console.log $modal.find('form')
-                        else if modalType is 'addContributions'
-                            console.log $modal.find('form')
-                        else if modalType is 'addEndorsements'
-                            console.log $modal.find('form')
+                    initTableHandlers();
 
                     $('.vote').on 'click', (e) ->
                         id = e.currentTarget.id
@@ -576,74 +605,7 @@ if routeType is 3
             $('#details').html html
             $('#dataContainer').css('display': 'block');
 
-            $('[data-toggle="tooltip"]').tooltip()
-
-            $('.editable').editable({stylesheets: false,type: 'textarea', showbuttons: 'bottom', display: true, emptytext: 'CPC Civic Profiles'})
-            $('.editable').off('click');
-
-            $('table').on 'click', '.glyphicon-pencil', (e) ->
-                e.preventDefault();
-                e.stopPropagation();
-                if e.currentTarget.dataset.noEditable isnt undefined then return
-                if (!authorized)
-                    $.ajax 'http://45.55.0.145/editrequest/new', {
-                        method: 'POST',
-                        complete: (response) ->
-                            if response.status is 401
-                                showModal('/login')
-                            else if response.status is 200
-                                authorized = true
-                                $(e.currentTarget).closest('td').find('.editable').editable('toggle');
-                        error: (error) ->
-                            if error.status is 401 then showModal('/login')
-                    }
-                else
-                    $(e.currentTarget).closest('td').find('.editable').editable('toggle');
-
-
-            $('a').on 'save', (e, params) ->
-                entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
-                id = $(e.currentTarget).closest('tr')[0].dataset.id
-                field = Object.keys($(e.currentTarget).closest('td')[0].dataset)[0]
-                sendObject = {
-                    editRequest: {
-                        entityName: entityType,
-                        entityId: id,
-                        changes: {}
-                    }
-                }
-                sendObject.editRequest.changes[field] = params.newValue
-                sendObject.editRequest = JSON.stringify(sendObject.editRequest);
-                console.log sendObject
-                $.ajax 'http://45.55.0.145/editrequest/create', {
-                    method: 'POST',
-                    data: sendObject,
-                    dataType: 'text/json',
-                    complete: (response) ->
-                        text = JSON.parse(response.responseText)
-                        alert text.message
-                    error: (error) ->
-                        if error.status is 401 then showModal('/login')
-                }
-
-            $('table').on 'click', '.add', (e) ->
-                tableType = $(e.target).closest('.tab-pane')[0].id
-                if tableType is 'Votes'
-                    $('#addVotes').modal('toggle')
-                else if tableType is 'Contributions'
-                    $('#addContributions').modal('toggle')
-                else if tableType is 'Endorsements'
-                    $('#addEndorsements').modal('toggle')
-
-            window.addItem = (e) ->
-                $modal = $(e.target).closest('.modal')
-                modalType = $modal[0].id
-                if modalType is 'addVotes'
-                    console.log $modal.find('form')
-                else if modalType is 'addContributions'
-                    console.log $modal.find('form')
-                else if modalType is 'addEndorsements'
-                    console.log $modal.find('form')
+            initTableHandlers();
 
             $('.vote').on 'click', (e) ->
                 id = e.currentTarget.id

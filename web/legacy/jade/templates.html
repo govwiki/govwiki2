@@ -198,14 +198,14 @@
                                     </td>
                                     <td data-name="{{legislation.name}}">
                                         <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-                                           data-placeholder="Please edit name" data-title="Please edit name"
+                                           data-placeholder="Please edit Measure" data-title="Please edit Measure"
                                            class="editable editable-pre-wrapped editable-click" data-original-title=""
                                             title="">{{legislation.name}}</a>
                                         <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
                                     <td data-summary="{{legislation.summary}}">
                                         <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-                                           data-placeholder="Please edit name" data-title="Please edit name"
+                                           data-placeholder="Please edit Summary" data-title="Please edit Summary"
                                            class="editable editable-pre-wrapped editable-click" data-original-title=""
                                            title="">{{legislation.summary}}</a>
                                         <span class="glyphicon glyphicon-pencil edit"></span>
@@ -223,7 +223,7 @@
                             {{/votes}}
                             <tr>
                                 <td colspan="7" class="add">
-                                    Add new Item
+                                    Add new Vote
                                     <span class="glyphicon glyphicon-plus"></span>
                                 </td>
                             </tr>
@@ -249,34 +249,34 @@
                                 {{#this}}
                                     <td data-election-year="{{election_year}}">
                                         <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-                                               data-placeholder="Please edit name" data-title="Please edit name"
+                                               data-placeholder="Please edit Date" data-title="Please edit Date"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
                                                title="">{{election_year}}</a>
                                     </td>
                                     <td data-contributor-name="{{contributor_name}}">
                                         <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-                                               data-placeholder="Please edit name" data-title="Please edit name"
+                                               data-placeholder="Please edit Contributor Name" data-title="Please edit Contributor Name"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
                                                title="">{{contributor_name}}</a>
                                         <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
                                     <td data-independent-expenditure-desc="{{independent_expenditure_desc}}">
                                         <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-                                               data-placeholder="Please edit name" data-title="Please edit name"
+                                               data-placeholder="Please edit Ind. Exp. Desc." data-title="Please edit Ind. Exp. Desc."
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
                                                title="">{{independent_expenditure_desc}}</a>
                                         <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
                                     <td data-contribution-amount="{{contribution_amount}}">
                                         <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-                                               data-placeholder="Please edit name" data-title="Please edit name"
+                                               data-placeholder="Please edit Amount" data-title="Please edit Amount"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
                                                title="">{{contribution_amount}}</a>
                                         <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
                                     <td data-contributor-type="{{contributor_type}}">
                                         <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-                                               data-placeholder="Please edit name" data-title="Please edit name"
+                                               data-placeholder="Please edit Contributor Type" data-title="Please edit Contributor Type"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
                                                title="">{{contributor_type}}</a>
                                         <span class="glyphicon glyphicon-pencil edit"></span>
@@ -286,7 +286,7 @@
                             {{/contributions}}
                             <tr>
                                 <td colspan="7" class="add">
-                                    Add new Item
+                                    Add new Contribution
                                     <span class="glyphicon glyphicon-plus"></span>
                                 </td>
                             </tr>
@@ -310,18 +310,18 @@
                                 {{#this}}
                                     <td data-election-year="{{election_year}}">
                                         <a data-type="textarea"
-                                               data-placeholder="Please edit name" data-title="Please edit name"
+                                               data-placeholder="Please edit Election Year" data-title="Please edit Election Year"
                                                class="editable editable-pre-wrapped editable-click" data-original-title="">{{election_year}}</a>
                                     </td>
                                     <td data-name-of-endorser="{{name_of_endorser}}">
                                         <a href="javascript:void(0);" data-type="textarea"
-                                               data-placeholder="Please edit name" data-title="Please edit name"
+                                               data-placeholder="Please edit Endorser Name" data-title="Please edit Endorser Name"
                                                class="editable editable-pre-wrapped editable-click" data-original-title="">{{name_of_endorser}}</a>
                                         <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
                                     <td data-endorser-type="{{endorser_type}}">
                                         <a href="javascript:void(0);" data-type="textarea"
-                                               data-placeholder="Please edit name" data-title="Please edit name"
+                                               data-placeholder="Please edit Endorser Type" data-title="Please edit Endorser Type"
                                                class="editable editable-pre-wrapped editable-click" data-original-title="">{{endorser_type}}</a>
                                         <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
@@ -330,7 +330,7 @@
                             {{/endorsements}}
                             <tr>
                                 <td colspan="7" class="add">
-                                    Add new Item
+                                    Add new Endorsements
                                     <span class="glyphicon glyphicon-plus"></span>
                                 </td>
                             </tr>
@@ -349,7 +349,7 @@
     </div>
 
     <!-- Votes Modal -->
-    <div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Legislation">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -360,27 +360,27 @@
                     <form name="addVotes">
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Date">
+                            <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Title of Measure: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Title of Measure">
+                            <input type="text" class="form-control" placeholder="Please enter Title of Measure" data-name>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Summary of Measure: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Summary of Measure">
+                            <input type="text" class="form-control" placeholder="Please enter Summary of Measure" data-summary>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">How official Voted: </span>
-                            <input type="text" class="form-control" placeholder="Please enter How official Voted">
+                            <input type="text" class="form-control" placeholder="Please enter How official Voted" data-vote>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Sponsored by this official? </span>
-                            <input type="text" class="form-control" placeholder="Sponsored by this official?">
+                            <input type="text" class="form-control" data-did-elected-official-propose-this placeholder="Sponsored by this official?">
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Category: </span>
-                            <input type="text" class="form-control" placeholder="Please enter your Category">
+                            <input type="text" class="form-control" placeholder="Please enter your Category" data-issue-category>
                         </div>
                     </form>
                 </div>
@@ -404,23 +404,23 @@
                     <form name="addContributions">
                         <div class="input-group">
                             <span class="input-group-addon">Election Year: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Election Year">
+                            <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Name of contributor: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Name of contributor">
+                            <input type="text" class="form-control" placeholder="Please enter Name of contributor" data-contributor-name>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Ind. Exp. Desc.: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Ind. Exp. Desc.">
+                            <input type="text" class="form-control" placeholder="Please enter Ind. Exp. Desc." data-independent-expenditure-desc>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Amount: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Amount">
+                            <input type="text" class="form-control" placeholder="Please enter Amount" data-contribution-amount>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Contributor Type? </span>
-                            <input type="text" class="form-control" placeholder="Please enter Contributor Type">
+                            <input type="text" class="form-control" placeholder="Please enter Contributor Type" data-contributor-type>
                         </div>
                     </form>
                 </div>
@@ -444,15 +444,15 @@
                     <form name="addEndorsements">
                         <div class="input-group">
                             <span class="input-group-addon">Election Year: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Election Year">
+                            <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Name: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Name">
+                            <input type="text" class="form-control" placeholder="Please enter Name" data-name-of-endorser>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Type: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Type">
+                            <input type="text" class="form-control" placeholder="Please enter Type" data-endorser-type>
                         </div>
                     </form>
                 </div>

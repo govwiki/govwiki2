@@ -554,17 +554,17 @@ td {
   vertical-align: middle !important;
 }
 .add {
-  color: #90b05f;
+  color: #0b4d70;
   text-align: center;
   cursor: pointer;
 }
 .add:hover {
-  background-color: #90b05f;
+  background-color: #0b4d70;
   color: #fff;
 }
 .edit {
   color: #fff;
-  background-color: #90b05f;
+  background-color: #0b4d70;
   border-radius: 5px;
   padding: 5px;
   cursor: pointer;
