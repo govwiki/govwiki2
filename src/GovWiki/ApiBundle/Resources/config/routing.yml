@@ -7,3 +7,8 @@ elected-official:
     resource: "@GovWikiApiBundle/Controller/ElectedOfficialController.php"
     type:     annotation
     prefix:   elected-official
+
+createrequest:
+    resource: "@GovWikiApiBundle/Controller/CreateRequestController.php"
+    type:     annotation
+    prefix:   createrequest
