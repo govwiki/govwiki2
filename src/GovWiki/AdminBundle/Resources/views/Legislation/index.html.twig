@@ -2,9 +2,11 @@
 {% block title %}Legislations{% endblock %}
 {% block body %}
     <div class="container-fluid">
-        <div class="navigation">
-            {{ knp_pagination_render(legislations) }}
-            <a class="btn btn-primary pull-right" href="{{ path('govwiki_admin_legislation_create') }}" style="margin-bottom:20px;">Create</a>
+        <div class="index-page-head">
+            <div class="navigation">
+                {{ knp_pagination_render(legislations) }}
+                <a class="btn btn-primary pull-right" href="{{ path('govwiki_admin_legislation_create') }}" style="margin-bottom:20px;">Create</a>
+            </div>
         </div>
         <table class="table table-bordered">
             <thead>

@@ -2,20 +2,22 @@
 {% block title %}Governments{% endblock %}
 {% block body %}
     <div class="container-fluid">
-        <div class="navigation">
-            <div class="row">
-                <div class="col-md-5">
-                    {{ knp_pagination_render(governments) }}
-                </div>
-                <div class="col-md-6">
-                    <form action="" class="form-inline" style="margin-top:20px;">
-                        <input name="filter[id]" type="text" class="form-control" placeholder="Id"{% if app.request.query.get('filter') %} value="{{app.request.query.get('filter').id}}"{% endif %}>
-                        <input name="filter[name]" type="text" class="form-control" placeholder="Name"{% if app.request.query.get('filter') %} value="{{app.request.query.get('filter').name}}"{% endif %}>
-                        <input type="submit" class="form-control" value="Filter">
-                    </form>
-                </div>
-                <div class="col-md-1">
-                    <a class="btn btn-primary pull-right" href="{{ path('govwiki_admin_government_create') }}" style="margin-top:20px;margin-bottom:20px;">Create</a>
+        <div class="index-page-head">
+            <div class="navigation">
+                <div class="row">
+                    <div class="col-md-5">
+                        {{ knp_pagination_render(governments) }}
+                    </div>
+                    <div class="col-md-6">
+                        <form action="" class="form-inline">
+                            <input name="filter[id]" type="text" class="form-control" placeholder="Id"{% if app.request.query.get('filter') %} value="{{app.request.query.get('filter').id}}"{% endif %}>
+                            <input name="filter[name]" type="text" class="form-control" placeholder="Name"{% if app.request.query.get('filter') %} value="{{app.request.query.get('filter').name}}"{% endif %}>
+                            <input type="submit" class="form-control" value="Filter">
+                        </form>
+                    </div>
+                    <div class="col-md-1">
+                        <a class="btn btn-primary pull-right" href="{{ path('govwiki_admin_government_create') }}">Create</a>
+                    </div>
                 </div>
             </div>
         </div>
