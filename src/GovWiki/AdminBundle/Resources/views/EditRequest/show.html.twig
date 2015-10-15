@@ -34,12 +34,12 @@
                             <td>{{ editRequest.created|date('m/d/y g:i a') }}</td>
                         </tr>
                         <tr>
-                            <td>Entity name</td>
+                            <td>Data Type</td>
                             <td>{{ editRequest.entityName }}</td>
                         </tr>
                         <tr>
-                            <td>Entity id</td>
-                            <td>{{ editRequest.entityId }}</td>
+                            <td>Government Name</td>
+                            <td>{{ governmentName }}</td>
                         </tr>
                     </table>
                     <div class="panel-footer">
@@ -93,8 +93,8 @@
             $('span.ajax-choice:not(.disabled)').on('click', function() {
                 if (confirm('Are you sure?')) {
                     $.post($(this).data('link'), function(response) {
-                        if (response.reload) {
-                            location.reload()
+                        if (response.redirect) {
+                            location = response.redirect;
                         };
                     });
                 };
