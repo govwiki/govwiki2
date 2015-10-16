@@ -19,6 +19,11 @@ class User extends BaseUser
     protected $id;
 
     /**
+     * @ORM\OneToMany(targetEntity="GovWiki\DbBundle\Entity\CreateRequest", mappedBy="user")
+     */
+    private $createRequests;
+
+    /**
      * @ORM\OneToMany(targetEntity="GovWiki\DbBundle\Entity\EditRequest", mappedBy="user")
      */
     private $editRequests;
@@ -30,7 +35,41 @@ class User extends BaseUser
     {
         parent::__construct();
 
-        $this->editRequests = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->createRequests = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->editRequests   = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add createRequests
+     *
+     * @param \GovWiki\DbBundle\Entity\CreateRequest $createRequests
+     * @return User
+     */
+    public function addCreateRequest(\GovWiki\DbBundle\Entity\CreateRequest $createRequests)
+    {
+        $this->createRequests[] = $createRequests;
+
+        return $this;
+    }
+
+    /**
+     * Remove createRequests
+     *
+     * @param \GovWiki\DbBundle\Entity\CreateRequest $createRequests
+     */
+    public function removeCreateRequest(\GovWiki\DbBundle\Entity\CreateRequest $createRequests)
+    {
+        $this->createRequests->removeElement($createRequests);
+    }
+
+    /**
+     * Get createRequests
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCreateRequests()
+    {
+        return $this->createRequests;
     }
 
     /**

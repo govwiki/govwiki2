@@ -415,7 +415,7 @@ echo <<<EOT
     </div>
 
     <!-- Votes Modal -->
-    <div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Legislation">
+    <div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="ElectedOfficialVote">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -424,6 +424,10 @@ echo <<<EOT
                 </div>
                 <div class="modal-body">
                     <form name="addVotes">
+                        <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <select></select>
+                        </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
                             <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
@@ -459,7 +463,7 @@ echo <<<EOT
     </div>
 
     <!-- Contributions Modal -->
-    <div class="modal fade" id="addContributions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="addContributions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Contribution">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -468,6 +472,10 @@ echo <<<EOT
                 </div>
                 <div class="modal-body">
                     <form name="addContributions">
+                        <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <select></select>
+                        </div>
                         <div class="input-group">
                             <span class="input-group-addon">Election Year: </span>
                             <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>
@@ -499,7 +507,7 @@ echo <<<EOT
     </div>
 
     <!-- Endorsements Modal -->
-    <div class="modal fade" id="addEndorsements" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="addEndorsements" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Endorsement">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -508,6 +516,10 @@ echo <<<EOT
                 </div>
                 <div class="modal-body">
                     <form name="addEndorsements">
+                        <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <select></select>
+                        </div>
                         <div class="input-group">
                             <span class="input-group-addon">Election Year: </span>
                             <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>

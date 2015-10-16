@@ -29,8 +29,9 @@ class EditRequestController extends Controller
         $editRequestsQuery = $em->createQuery(
             'SELECT er FROM GovWikiDbBundle:EditRequest er
             LEFT JOIN er.user u
+            WHERE er.status != :status
             ORDER BY er.created DESC'
-        );
+        )->setParameter('status', 'discarded');
 
         $editRequests = $this->get('knp_paginator')->paginate(
             $editRequestsQuery,
@@ -60,6 +61,15 @@ class EditRequestController extends Controller
             $errors[]     = "Can't find entity with name '{$editRequest->getEntityName()}', due to bad entry or internal system error";
         }
 
+        $governmentName = '';
+        if (is_object($targetEntity)) {
+            if (method_exists($targetEntity, 'getGovernment')) {
+                $governmentName = $targetEntity->getGovernment()->getName();
+            } elseif (method_exists($targetEntity, 'getElectedOfficial')) {
+                $governmentName = $targetEntity->getElectedOfficial()->getGovernment()->getName();
+            }
+        }
+
         $changes = [];
         foreach ($editRequest->getChanges() as $field => $newValue) {
             $changes[] = [
@@ -70,10 +80,11 @@ class EditRequestController extends Controller
         }
 
         return [
-            'editRequest'  => $editRequest,
-            'targetEntity' => $targetEntity,
-            'changes'      => $changes,
-            'errors'       => $errors,
+            'editRequest'    => $editRequest,
+            'targetEntity'   => $targetEntity,
+            'governmentName' => $governmentName,
+            'changes'        => $changes,
+            'errors'         => $errors,
         ];
     }
 
@@ -100,7 +111,7 @@ class EditRequestController extends Controller
 
         $em->flush();
 
-        return new JsonResponse(['reload' => true]);
+        return new JsonResponse(['redirect' => $this->generateUrl('govwiki_admin_editrequest_index')]);
     }
 
     /**
@@ -115,7 +126,7 @@ class EditRequestController extends Controller
         $editRequest->setStatus('discarded');
         $em->flush();
 
-        return new JsonResponse(['reload' => true]);
+        return new JsonResponse(['redirect' => $this->generateUrl('govwiki_admin_editrequest_index')]);
     }
 
     /**

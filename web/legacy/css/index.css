@@ -563,11 +563,10 @@ td {
   color: #fff;
 }
 .edit {
-  color: #fff;
-  background-color: #0b4d70;
-  border-radius: 5px;
+  color: #d3d3d3;
   padding: 5px;
   cursor: pointer;
+  font-size: 12px;
 }
 .editable {
   text-decoration: none !important;

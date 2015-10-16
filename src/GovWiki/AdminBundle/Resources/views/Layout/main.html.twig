@@ -6,10 +6,10 @@
     {% endstylesheets %}
 {% endblock %}
 {% block header %}
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default navbar-branded">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="{{ path('govwiki_admin_main_home') }}">GovWiki</a>
+            <a class="navbar-brand" href="{{ path('govwiki_admin_main_home') }}"><img src="{{ asset('img/a_logo.png') }}"></a>
                 <ul class="nav navbar-nav">
                     <li{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} class="active"{% endif %}>
                         <a href="{{ path('govwiki_admin_government_index') }}">Governments</a>
@@ -19,6 +19,9 @@
                     </li>
                     <li{% if app.request.attributes.get('_route') == 'govwiki_admin_legislation_index' %} class="active"{% endif %}>
                         <a href="{{ path('govwiki_admin_legislation_index') }}">Legislation</a>
+                    </li>
+                    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_createrequest_index' %} class="active"{% endif %}>
+                        <a href="{{ path('govwiki_admin_createrequest_index') }}">Create Requests</a>
                     </li>
                     <li{% if app.request.attributes.get('_route') == 'govwiki_admin_editrequest_index' %} class="active"{% endif %}>
                         <a href="{{ path('govwiki_admin_editrequest_index') }}">Edit Requests</a>

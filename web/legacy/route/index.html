@@ -413,7 +413,7 @@
     </div>
 
     <!-- Votes Modal -->
-    <div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Legislation">
+    <div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="ElectedOfficialVote">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -422,6 +422,10 @@
                 </div>
                 <div class="modal-body">
                     <form name="addVotes">
+                        <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <select></select>
+                        </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
                             <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
@@ -457,7 +461,7 @@
     </div>
 
     <!-- Contributions Modal -->
-    <div class="modal fade" id="addContributions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="addContributions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Contribution">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -466,6 +470,10 @@
                 </div>
                 <div class="modal-body">
                     <form name="addContributions">
+                        <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <select></select>
+                        </div>
                         <div class="input-group">
                             <span class="input-group-addon">Election Year: </span>
                             <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>
@@ -497,7 +505,7 @@
     </div>
 
     <!-- Endorsements Modal -->
-    <div class="modal fade" id="addEndorsements" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="addEndorsements" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Endorsement">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -506,6 +514,10 @@
                 </div>
                 <div class="modal-body">
                     <form name="addEndorsements">
+                        <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <select></select>
+                        </div>
                         <div class="input-group">
                             <span class="input-group-addon">Election Year: </span>
                             <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>
@@ -644,6 +656,6 @@
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="{$view['assets']-&gt;getUrl('bundles/govwikifrontend/js/script.js')}"></script>
-    <script src="/legacy/static/bundle.min.js"></script>
+    <script src="/legacy/static/bundle.js"></script>
   </body>
 </html>
