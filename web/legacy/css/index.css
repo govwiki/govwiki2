@@ -553,6 +553,26 @@ span.rank {
 td {
   vertical-align: middle !important;
 }
+.add {
+  color: #0b4d70;
+  text-align: center;
+  cursor: pointer;
+}
+.add:hover {
+  background-color: #0b4d70;
+  color: #fff;
+}
+.edit {
+  color: #d3d3d3;
+  padding: 5px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.editable {
+  text-decoration: none !important;
+  color: #000 !important;
+  border-bottom: none !important;
+}
 @-moz-keyframes load8 {
   0% {
     -webkit-transform: rotate(0deg);
