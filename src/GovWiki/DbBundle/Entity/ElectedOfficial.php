@@ -126,6 +126,14 @@ class ElectedOfficial
     }
 
     /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->fullName;
+    }
+
+    /**
      * Set id
      *
      * @param int $id
