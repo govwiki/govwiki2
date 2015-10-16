@@ -64,7 +64,7 @@ class CreateRequest
     private $created;
 
     /**
-     * @ORM\ManyToOne(targetEntity="GovWiki\UserBundle\Entity\User", inversedBy="editRequests")
+     * @ORM\ManyToOne(targetEntity="GovWiki\UserBundle\Entity\User", inversedBy="createRequests")
      */
     private $user;
 
