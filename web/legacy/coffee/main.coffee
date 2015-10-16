@@ -334,7 +334,7 @@ initTableHandlers = (person) ->
         e.stopPropagation();
         if e.currentTarget.dataset.noEditable isnt undefined then return
         if (!authorized)
-            $.ajax 'http://gw2.local/editrequest/new', {
+            $.ajax 'http://45.55.0.145/editrequest/new', {
                 method: 'POST',
                 complete: (response) ->
                     if response.status is 401
@@ -391,7 +391,7 @@ initTableHandlers = (person) ->
         if tabPane.hasClass('loaded') then return false
         tabPane[0].classList.add('loaded')
 
-        $.post('/api/createrequest/new', {"createRequest":{"entityName":currentEntity,"knownFields":{"electedOfficial":person.id}}}, (data) ->
+        $.post('http://45.55.0.145/api/createrequest/new', {"createRequest":{"entityName":currentEntity,"knownFields":{"electedOfficial":person.id}}}, (data) ->
             endObj = {}
             data.choices[0].choices.forEach (item, index) ->
               ids = Object.keys item
@@ -458,7 +458,7 @@ initTableHandlers = (person) ->
 
         console.log sendObject
         $.ajax({
-            url: '/api/createrequest/create',
+            url: 'http://45.55.0.145/api/createrequest/create',
             method: 'POST',
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
