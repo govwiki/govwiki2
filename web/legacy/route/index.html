@@ -239,18 +239,18 @@
             <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
 
                 <div role="tabpanel" class="tab-pane active" id="Votes">
-                    {{#if votes}}
-                        <table class="table table-hover" data-entity-type="Legislation">
-                            <tr>
-                                <th>Date</th>
-                                <th>Title of Measure</th>
-                                <th>Summary of Measure</th>
-                                <th style="text-align:center;">How official Voted</th>
-                                <th style="text-align:center;">Sponsored by this official?</th>
-                                <th>Category</th>
-                                <th></th>
-                            </tr>
 
+                    <table class="table table-hover" data-entity-type="Legislation">
+                        <tr>
+                            <th>Date</th>
+                            <th>Title of Measure</th>
+                            <th>Summary of Measure</th>
+                            <th style="text-align:center;">How official Voted</th>
+                            <th style="text-align:center;">Sponsored by this official?</th>
+                            <th>Category</th>
+                            <th></th>
+                        </tr>
+                        {{#if votes}}
                             {{#votes}}
                                 <tr data-id="{{legislation.id}}">
                                 {{#this}}
@@ -285,28 +285,36 @@
                                 {{/this}}
                                 </tr>
                             {{/votes}}
+
+                        {{else}}
                             <tr>
-                                <td colspan="7" class="add">
-                                    Add new Vote
-                                    <span class="glyphicon glyphicon-plus"></span>
+                                <td colspan="7" align="center">
+                                    <p style="font-size:18px;">No information at this time. Please check back later.</p>
                                 </td>
                             </tr>
-                        </table>
-                    {{else}}
-                        <p style="font-size:18px;">No information at this time. Please check back later.</p>
-                    {{/if}}
+                        {{/if}}
+                        <tr>
+                            <td colspan="7" class="add">
+                                Add new Vote
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </td>
+                        </tr>
+                    </table>
+
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="Contributions">
-                    {{#if contributions}}
-                        <table class="table table-hover" data-entity-type="Contribution">
-                            <tr>
-                                <th>Election Year</th>
-                                <th>Name of contributor</th>
-                                <th>Ind. Exp. Desc.</th>
-                                <th>Amount</th>
-                                <th>Contributor Type</th>
-                            </tr>
+
+                    <table class="table table-hover" data-entity-type="Contribution">
+                        <tr>
+                            <th>Election Year</th>
+                            <th>Name of contributor</th>
+                            <th>Ind. Exp. Desc.</th>
+                            <th>Amount</th>
+                            <th>Contributor Type</th>
+                        </tr>
+
+                        {{#if contributions}}
 
                             {{#contributions}}
                             <tr data-id="{{id}}">
@@ -348,27 +356,35 @@
                                 {{/this}}
                             </tr>
                             {{/contributions}}
-                            <tr>
-                                <td colspan="7" class="add">
-                                    Add new Contribution
-                                    <span class="glyphicon glyphicon-plus"></span>
-                                </td>
-                            </tr>
 
-                        </table>
-                    {{else}}
-                        <p style="font-size:18px;">No information at this time. Please check back later.</p>
-                    {{/if}}
+                        {{else}}
+                        <tr>
+                            <td colspan="7" align="center">
+                                <p style="font-size:18px;">No information at this time. Please check back later.</p>
+                            </td>
+                        </tr>
+                        {{/if}}
+                        <tr>
+                            <td colspan="7" class="add">
+                                Add new Contribution
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </td>
+                        </tr>
+
+                    </table>
+
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="Endorsements">
-                    {{#if endorsements}}
-                        <table class="table table-hover" data-entity-type="Endorsement">
-                            <tr>
-                                <th>Election Year</th>
-                                <th>Name</th>
-                                <th>Type</th>
-                            </tr>
+
+                    <table class="table table-hover" data-entity-type="Endorsement">
+                        <tr>
+                            <th>Election Year</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                        </tr>
+
+                        {{#if endorsements}}
                             {{#endorsements}}
                             <tr data-id="{{id}}">
                                 {{#this}}
@@ -392,16 +408,22 @@
                                 {{/this}}
                             </tr>
                             {{/endorsements}}
-                            <tr>
-                                <td colspan="7" class="add">
-                                    Add new Endorsements
-                                    <span class="glyphicon glyphicon-plus"></span>
-                                </td>
-                            </tr>
-                        </table>
-                    {{else}}
-                        <p style="font-size:18px;">No information at this time. Please check back later.</p>
-                    {{/if}}
+
+                        {{else}}
+                        <tr>
+                            <td colspan="7" align="center">
+                                <p style="font-size:18px;">No information at this time. Please check back later.</p>
+                            </td>
+                        </tr>
+                        {{/if}}
+                        <tr>
+                            <td colspan="7" class="add">
+                                Add new Endorsements
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </td>
+                        </tr>
+                    </table>
+
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="Statements">
@@ -424,7 +446,7 @@
                     <form name="addVotes">
                         <div class="input-group">
                             <span class="input-group-addon">Category: </span>
-                            <select></select>
+                            <select class="form-control"></select>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
@@ -472,7 +494,7 @@
                     <form name="addContributions">
                         <div class="input-group">
                             <span class="input-group-addon">Category: </span>
-                            <select></select>
+                            <select class="form-control"></select>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Election Year: </span>
@@ -516,7 +538,7 @@
                     <form name="addEndorsements">
                         <div class="input-group">
                             <span class="input-group-addon">Category: </span>
-                            <select></select>
+                            <select class="form-control"></select>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Election Year: </span>
