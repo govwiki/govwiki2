@@ -1,0 +1,107 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% block title %}Show edit request{% endblock %}
+{% block body %}
+    <div class="container">
+        {% if errors %}
+            <div class="col-md-2">
+                <a href="{{path('govwiki_admin_createrequest_index')}}" class="btn btn-default">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    Go back
+                </a>
+            </div>
+                <div class="col-md-10">
+                    {% for error in errors %}
+                        <div class="alert alert-danger">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+        {% else %}
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Information</div>
+                    <table class="table">
+                        <tr>
+                            <td>User</td>
+                            <td>{% if createRequest.user %}{{ createRequest.user.username }}{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>{{ createRequest.status|capitalize }}</td>
+                        </tr>
+                        <tr>
+                            <td>Created</td>
+                            <td>{{ createRequest.created|date('m/d/y g:i a') }}</td>
+                        </tr>
+                        <tr>
+                            <td>Data Type</td>
+                            <td>{{ createRequest.entityName }}</td>
+                        </tr>
+                    </table>
+                    <div class="panel-footer">
+                        <div class="btn-group" style="width:100%;">
+                            <span data-link="{{path('govwiki_admin_createrequest_apply', {'id': createRequest.id})}}" style="width:50%;" class="btn btn-success ajax-choice{% if createRequest.status != 'pending' %} disabled{% endif %}">Apply</span>
+                            <span data-link="{{path('govwiki_admin_createrequest_discard', {'id': createRequest.id})}}" style="width:50%;" class="btn btn-danger ajax-choice{% if createRequest.status != 'pending' %} disabled{% endif %}">Discard</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <td>Field</td>
+                            <td>Value</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for field in fields %}
+                            <tr{% if not field.correct %} class="danger"{% endif %}>
+                                <td>{{ field.field }}</td>
+                                <td>
+                                    {% if field.value.timestamp is defined %}
+                                        {{ field.value|date('m/d/y g:i a') }}
+                                    {% else %}
+                                        {{ field.value }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <td>Association</td>
+                            <td>Value</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for association in associations %}
+                            <tr{% if not association.correct %} class="danger"{% endif %}>
+                                <td>{{ association.field }}</td>
+                                <td>{{ association.name }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(function() {
+            $('span.ajax-choice:not(.disabled)').on('click', function() {
+                if (confirm('Are you sure?')) {
+                    $.post($(this).data('link'), function(response) {
+                        if (response.redirect) {
+                            location = response.redirect;
+                        };
+                    });
+                };
+            });
+        });
+    </script>
+{% endblock %}

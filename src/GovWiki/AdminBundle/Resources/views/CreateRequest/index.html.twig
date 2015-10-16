@@ -1,0 +1,68 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% block title %}Create requests{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="index-page-head">
+            <div class="navigation">
+                <div class="row">
+                    <div class="col-md-5">
+                        {{ knp_pagination_render(createRequests) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>{{ knp_pagination_sortable(createRequests, 'Id',        'cr.id') }}</td>
+                    <td>{{ knp_pagination_sortable(createRequests, 'Created',   'cr.created') }}</td>
+                    <td>{{ knp_pagination_sortable(createRequests, 'Status',    'cr.status') }}</td>
+                    <td>{{ knp_pagination_sortable(createRequests, 'User',      'u.username') }}</td>
+                    <td>{{ knp_pagination_sortable(createRequests, 'Data Type', 'cr.entityName') }}</td>
+                    <td>Actions</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for createRequest in createRequests %}
+                    <tr>
+                        <td>{{ createRequest.id }}</td>
+                        <td>{{ createRequest.created|date('m/d/y g:i a') }}</td>
+                        <td>{{ createRequest.status|capitalize }}</td>
+                        <td>{% if createRequest.user %}{{ createRequest.user.username }}{% endif %}</td>
+                        <td>{{ createRequest.entityName }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{path('govwiki_admin_createrequest_show', {'id': createRequest.id})}}" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-search"></span> Show
+                                </a>
+                                <span class="btn btn-danger remove-action" data-link="{{path('govwiki_admin_createrequest_remove', {'id': createRequest.id})}}">
+                                    <span class="glyphicon glyphicon-remove"></span> Remove
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="navigation">
+            {{ knp_pagination_render(createRequests) }}
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(function() {
+            $('span.remove-action').on('click', function() {
+                $this = $(this);
+                if (confirm('Are you sure?')) {
+                    $.post($(this).data('link'), function(response) {
+                        if (response.status == 'ok') {
+                            $this.closest('tr').remove();
+                        };
+                    });
+                };
+            });
+        });
+    </script>
+{% endblock %}
