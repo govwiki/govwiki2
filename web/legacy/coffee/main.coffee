@@ -439,7 +439,7 @@ initTableHandlers = (person) ->
         sendObject = {
             createRequest: {
                 entityName: entityType,
-                fields: { fields: newRecord, association: associations},
+                fields: { fields: newRecord, associations: associations},
 
             }
         }
