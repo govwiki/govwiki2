@@ -256,16 +256,43 @@ echo <<<EOT
                             {{#votes}}
                                 <tr data-id="{{legislation.id}}">
                                 {{#this}}
-                                    <td data-date-considered="{{date-considered}}" data-no-editable>{{legislation.date_considered}}</td>
-                                    <td data-name="{{legislation.name}}">{{legislation.name}}</td>
-                                    <td data-summary="{{legislation.summary}}">{{legislation.summary}}</td>
-                                    <td align="center" data-vote="{{vote}}" data-no-editable>{{vote}}</td>
+                                    <td data-date-considered="{{date-considered}}">
+                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"
+                                              data-no-editable>
+                                            {{legislation.date_considered}}
+                                        </span>
+                                    </td>
+                                    <td data-name="{{legislation.name}}">
+                                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                           data-placeholder="Please edit Measure" data-title="Please edit Measure"
+                                           class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                            title="">{{legislation.name}}</a>
+                                        <span class="glyphicon glyphicon-pencil edit"></span>
+                                    </td>
+                                    <td data-summary="{{legislation.summary}}">
+                                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                           data-placeholder="Please edit Summary" data-title="Please edit Summary"
+                                           class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                           title="">{{legislation.summary}}</a>
+                                        <span class="glyphicon glyphicon-pencil edit"></span>
+                                    </td>
+                                    <td data-vote="{{vote}}">
+                                        <span data-no-editable>
+                                            {{vote}}
+                                        </span>
+                                    </td>
                                     <td align="center" date-did-elected-official-propose-this="{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}" data-no-editable>{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}</td>
                                     <td data-issue-category="{{legislation.issue_category.name}}" data-no-editable>{{legislation.issue_category.name}}</td>
                                     <td data-no-editable><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}">0</span></td>
                                 {{/this}}
                                 </tr>
                             {{/votes}}
+                            <tr>
+                                <td colspan="7" class="add">
+                                    Add new Vote
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </td>
+                            </tr>
                         </table>
                     {{else}}
                         <p style="font-size:18px;">No information at this time. Please check back later.</p>
@@ -274,7 +301,7 @@ echo <<<EOT
 
                 <div role="tabpanel" class="tab-pane" id="Contributions">
                     {{#if contributions}}
-                        <table class="table table-hover" data-entity-type="Contributions">
+                        <table class="table table-hover" data-entity-type="Contribution">
                             <tr>
                                 <th>Election Year</th>
                                 <th>Name of contributor</th>
@@ -286,14 +313,49 @@ echo <<<EOT
                             {{#contributions}}
                             <tr data-id="{{id}}">
                                 {{#this}}
-                                    <td data-election-year="{{election_year}}">{{election_year}}</td>
-                                    <td data-contributor-name="{{contributor_name}}<">{{contributor_name}}</td>
-                                    <td data-independent-expenditure-desc="{{independent_expenditure_desc}}">{{independent_expenditure_desc}}</td>
-                                    <td data-contribution-amount="{{contribution_amount}}">{{contribution_amount}}</td>
-                                    <td data-contributor-type="{{contributor_type}}">{{contributor_type}}</td>
+                                    <td data-election-year="{{election_year}}">
+                                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                               data-placeholder="Please edit Date" data-title="Please edit Date"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                               title="">{{election_year}}</a>
+                                    </td>
+                                    <td data-contributor-name="{{contributor_name}}">
+                                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                               data-placeholder="Please edit Contributor Name" data-title="Please edit Contributor Name"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                               title="">{{contributor_name}}</a>
+                                        <span class="glyphicon glyphicon-pencil edit"></span>
+                                    </td>
+                                    <td data-independent-expenditure-desc="{{independent_expenditure_desc}}">
+                                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                               data-placeholder="Please edit Ind. Exp. Desc." data-title="Please edit Ind. Exp. Desc."
+                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                               title="">{{independent_expenditure_desc}}</a>
+                                        <span class="glyphicon glyphicon-pencil edit"></span>
+                                    </td>
+                                    <td data-contribution-amount="{{contribution_amount}}">
+                                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                               data-placeholder="Please edit Amount" data-title="Please edit Amount"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                               title="">{{contribution_amount}}</a>
+                                        <span class="glyphicon glyphicon-pencil edit"></span>
+                                    </td>
+                                    <td data-contributor-type="{{contributor_type}}">
+                                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                               data-placeholder="Please edit Contributor Type" data-title="Please edit Contributor Type"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                               title="">{{contributor_type}}</a>
+                                        <span class="glyphicon glyphicon-pencil edit"></span>
+                                    </td>
                                 {{/this}}
                             </tr>
                             {{/contributions}}
+                            <tr>
+                                <td colspan="7" class="add">
+                                    Add new Contribution
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </td>
+                            </tr>
 
                         </table>
                     {{else}}
@@ -303,7 +365,7 @@ echo <<<EOT
 
                 <div role="tabpanel" class="tab-pane" id="Endorsements">
                     {{#if endorsements}}
-                        <table class="table table-hover" data-entity-type="Endorsements">
+                        <table class="table table-hover" data-entity-type="Endorsement">
                             <tr>
                                 <th>Election Year</th>
                                 <th>Name</th>
@@ -312,12 +374,32 @@ echo <<<EOT
                             {{#endorsements}}
                             <tr data-id="{{id}}">
                                 {{#this}}
-                                    <td data-election-year="{{election_year}}">{{election_year}}</td>
-                                    <td data-name-of-endorser="{{name_of_endorser}}">{{name_of_endorser}}</td>
-                                    <td data-endorser-type="{{endorser_type}}">{{endorser_type}}</td>
+                                    <td data-election-year="{{election_year}}">
+                                        <a data-type="textarea"
+                                               data-placeholder="Please edit Election Year" data-title="Please edit Election Year"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title="">{{election_year}}</a>
+                                    </td>
+                                    <td data-name-of-endorser="{{name_of_endorser}}">
+                                        <a href="javascript:void(0);" data-type="textarea"
+                                               data-placeholder="Please edit Endorser Name" data-title="Please edit Endorser Name"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title="">{{name_of_endorser}}</a>
+                                        <span class="glyphicon glyphicon-pencil edit"></span>
+                                    </td>
+                                    <td data-endorser-type="{{endorser_type}}">
+                                        <a href="javascript:void(0);" data-type="textarea"
+                                               data-placeholder="Please edit Endorser Type" data-title="Please edit Endorser Type"
+                                               class="editable editable-pre-wrapped editable-click" data-original-title="">{{endorser_type}}</a>
+                                        <span class="glyphicon glyphicon-pencil edit"></span>
+                                    </td>
                                 {{/this}}
                             </tr>
                             {{/endorsements}}
+                            <tr>
+                                <td colspan="7" class="add">
+                                    Add new Endorsements
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </td>
+                            </tr>
                         </table>
                     {{else}}
                         <p style="font-size:18px;">No information at this time. Please check back later.</p>
@@ -332,12 +414,140 @@ echo <<<EOT
         </div>
     </div>
 
+    <!-- Votes Modal -->
+    <div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="ElectedOfficialVote">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add new Votes</h4>
+                </div>
+                <div class="modal-body">
+                    <form name="addVotes">
+                        <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <select></select>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Date: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Title of Measure: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Title of Measure" data-name>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Summary of Measure: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Summary of Measure" data-summary>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">How official Voted: </span>
+                            <input type="text" class="form-control" placeholder="Please enter How official Voted" data-vote>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Sponsored by this official? </span>
+                            <input type="text" class="form-control" data-did-elected-official-propose-this placeholder="Sponsored by this official?">
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <input type="text" class="form-control" placeholder="Please enter your Category" data-issue-category>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add new one</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contributions Modal -->
+    <div class="modal fade" id="addContributions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Contribution">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add new Contributions</h4>
+                </div>
+                <div class="modal-body">
+                    <form name="addContributions">
+                        <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <select></select>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Election Year: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Name of contributor: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Name of contributor" data-contributor-name>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Ind. Exp. Desc.: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Ind. Exp. Desc." data-independent-expenditure-desc>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Amount: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Amount" data-contribution-amount>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Contributor Type? </span>
+                            <input type="text" class="form-control" placeholder="Please enter Contributor Type" data-contributor-type>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add new one</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Endorsements Modal -->
+    <div class="modal fade" id="addEndorsements" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Endorsement">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add new Endorsements</h4>
+                </div>
+                <div class="modal-body">
+                    <form name="addEndorsements">
+                        <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <select></select>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Election Year: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Name: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Name" data-name-of-endorser>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Type: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Type" data-endorser-type>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add new one</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </script>
 
 <script id="search-container-template" type="text/x-handlebars-template">
     <div style="padding-top:40px;margin-bottom:10px;" class="row search-form">
         <div id="typeahed-container" style="border:0px solid red" class="col-sm-5">
-            <input id="myinput" type="text" placeholder="Loading the list of 91,000 US governments..."
+            <input id="myinput" type="text" placeholder="Loading the list of governments"
                    style="width:412px" class="text-uppercase typeahead form-control0">
 
             <p class="text-center text-nowrap hidden-xs hidden-sm">Type part of the agency's name &nbsp;&nbsp;<img
@@ -417,16 +627,13 @@ echo <<<EOT
     </div>
 </div>
 
-<!-- Modal -->
-<div id="modal-window" class="modal fade">
-    <div class="modal-dialog">
+    <div id="modal-window" class="modal fade">
+      <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-body">Loading...</div>
         </div>
+      </div>
     </div>
-</div>
-
-    <!-- Scripts -- Placed at the end of the document so the pages load faster-->
     <script src="/legacy/js_files/jquery.min.js"></script>
     <script src="/legacy/js/vendor/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug-->

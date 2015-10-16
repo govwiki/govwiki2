@@ -323,7 +323,7 @@ refresh_disqus = (newIdentifier, newUrl, newTitle) ->
             this.page.title = newTitle
 
 
-initTableHandlers = () ->
+initTableHandlers = (person) ->
     $('[data-toggle="tooltip"]').tooltip()
 
     $('.editable').editable({stylesheets: false,type: 'textarea', showbuttons: 'bottom', display: true, emptytext: ' '})
@@ -374,43 +374,78 @@ initTableHandlers = () ->
         }
 
     $('table').on 'click', '.add', (e) ->
-        tableType = $(e.target).closest('.tab-pane')[0].id
+        tabPane = $(e.target).closest('.tab-pane')
+        tableType = tabPane[0].id
 
+        currentEntity = null
         if tableType is 'Votes'
+            currentEntity = 'ElectedOfficialVote'
             $('#addVotes').modal('toggle')
         else if tableType is 'Contributions'
+            currentEntity = 'Contribution'
             $('#addContributions').modal('toggle')
         else if tableType is 'Endorsements'
+            currentEntity = 'Endorsement'
             $('#addEndorsements').modal('toggle')
 
-        sendObj = {"createRequest":{"entityName":"Endorsement","knownFields":{"electedOfficial":'7610001'}}}
-        sendObj.createRequest = JSON.stringify(sendObj.createRequest);
-        $.post 'http://45.55.0.145/api/createrequest/new', {
-            data: sendObj,
-        }, (response) ->
-            console.log response
+        if tabPane.hasClass('loaded') then return false
+        tabPane[0].classList.add('loaded')
+
+        $.post('/api/createrequest/new', {"createRequest":{"entityName":currentEntity,"knownFields":{"electedOfficial":person.id}}}, (data) ->
+            endObj = {}
+            data.choices[0].choices.forEach (item, index) ->
+              ids = Object.keys item
+              ids.forEach (id) ->
+                  endObj[id] = item[id]
+
+            select = null
+
+            if currentEntity is 'Endorsement'
+                select = $('#addEndorsements select')[0]
+            else if currentEntity is 'Contribution'
+                select = $('#addContributions select')[0]
+            else if currentEntity is 'ElectedOfficialVote'
+                select = $('#addVotes select')[0]
+
+            select.setAttribute('name', data.choices[0].name)
+            for key of endObj
+                option = document.createElement('option')
+                option.setAttribute('value', key)
+                option.textContent = endObj[key]
+                select.innerHTML += option.outerHTML;
+
+        );
+
 
     window.addItem = (e) ->
         newRecord = {}
         modal = $(e.target).closest('.modal')
         modalType = modal[0].id
         entityType = modal[0].dataset.entityType
+        console.log(entityType);
 
         modal.find('input[type="text"]').each (index, element) ->
             fieldName = Object.keys(element.dataset)[0]
             newRecord[fieldName] = element.value
 
+        select = modal.find('select')[0]
+        selectName = select.name
+        selectedValue = select.options[select.selectedIndex].value
+
+        associations = {}
+        associations["electedOfficial"] = person.id
+        associations[selectName] = selectedValue
+
         sendObject = {
-            editRequest: {
+            createRequest: {
                 entityName: entityType,
-                create: newRecord
+                fields: { fields: newRecord, association: associations},
+
             }
         }
 
         tr = document.createElement 'tr'
-        for key, value of sendObject.editRequest.create
-            console.log #{key}
-            console.log #{value}
+        for key, value of sendObject.createRequest.fields
             tr.innerHTML += "<td><a href='javascript:void(0);'
             class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
 
@@ -421,8 +456,17 @@ initTableHandlers = () ->
         else if modalType is 'addEndorsements'
             $('#Endorsements tr:last-child').before(tr);
 
-        sendObject.editRequest = JSON.stringify(sendObject.editRequest);
         console.log sendObject
+        $.ajax({
+            url: '/api/createrequest/create',
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: sendObject,
+            complete: (data) ->
+                console.log(data);
+        });
 
 
 $('#dataContainer').on 'click', '.elected_link', (e) ->
@@ -467,7 +511,7 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     $('#details').html html
                     $('#dataContainer').css('display': 'block');
 
-                    initTableHandlers();
+                    initTableHandlers(person);
 
                     $('.vote').on 'click', (e) ->
                         id = e.currentTarget.id
@@ -613,7 +657,7 @@ if routeType is 3
             $('#details').html html
             $('#dataContainer').css('display': 'block');
 
-            initTableHandlers();
+            initTableHandlers(person);
 
             $('.vote').on 'click', (e) ->
                 id = e.currentTarget.id
