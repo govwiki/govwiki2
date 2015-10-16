@@ -445,7 +445,7 @@ initTableHandlers = (person) ->
         }
 
         tr = document.createElement 'tr'
-        for key, value of sendObject.createRequest.fields
+        for key, value of sendObject.createRequest.fields.fields
             tr.innerHTML += "<td><a href='javascript:void(0);'
             class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
 
