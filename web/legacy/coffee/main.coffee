@@ -334,7 +334,7 @@ initTableHandlers = (person) ->
         e.stopPropagation();
         if e.currentTarget.dataset.noEditable isnt undefined then return
         if (!authorized)
-            $.ajax 'http://45.55.0.145/editrequest/new', {
+            $.ajax '/editrequest/new', {
                 method: 'POST',
                 complete: (response) ->
                     if response.status is 401
@@ -363,11 +363,11 @@ initTableHandlers = (person) ->
         sendObject.editRequest.changes[field] = params.newValue
         sendObject.editRequest = JSON.stringify(sendObject.editRequest);
         console.log sendObject
-        $.ajax 'http://45.55.0.145/editrequest/create', {
+        $.ajax '/editrequest/create', {
             method: 'POST',
             data: sendObject,
             dataType: 'text/json',
-            complete: (response) ->
+            success: (response) ->
                 text = JSON.parse(response.responseText)
             error: (error) ->
                 if error.status is 401 then showModal('/login')
@@ -391,29 +391,43 @@ initTableHandlers = (person) ->
         if tabPane.hasClass('loaded') then return false
         tabPane[0].classList.add('loaded')
 
-        $.post('http://45.55.0.145/api/createrequest/new', {"createRequest":{"entityName":currentEntity,"knownFields":{"electedOfficial":person.id}}}, (data) ->
-            endObj = {}
-            data.choices[0].choices.forEach (item, index) ->
-              ids = Object.keys item
-              ids.forEach (id) ->
-                  endObj[id] = item[id]
+        personMeta = {"createRequest":{"entityName":currentEntity,"knownFields":{"electedOfficial":person.id}}}
+        $.ajax(
+            method: 'POST',
+            url: '/api/createrequest/new',
+            data: personMeta,
+            success: (data) ->
+                console.log(data);
 
-            select = null
+                endObj = {}
+                data.choices[0].choices.forEach (item, index) ->
+                  ids = Object.keys item
+                  ids.forEach (id) ->
+                      endObj[id] = item[id]
 
-            if currentEntity is 'Endorsement'
-                select = $('#addEndorsements select')[0]
-            else if currentEntity is 'Contribution'
-                select = $('#addContributions select')[0]
-            else if currentEntity is 'ElectedOfficialVote'
-                select = $('#addVotes select')[0]
+                insertCategories = () ->
+                    select.setAttribute('name', data.choices[0].name)
+                    for key of endObj
+                        option = document.createElement('option')
+                        option.setAttribute('value', key)
+                        option.textContent = endObj[key]
+                        select.innerHTML += option.outerHTML;
 
-            select.setAttribute('name', data.choices[0].name)
-            for key of endObj
-                option = document.createElement('option')
-                option.setAttribute('value', key)
-                option.textContent = endObj[key]
-                select.innerHTML += option.outerHTML;
+                select = null
 
+                if currentEntity is 'Endorsement'
+                    select = $('#addEndorsements select')[0]
+                    insertCategories();
+                else if currentEntity is 'Contribution'
+
+                else if currentEntity is 'ElectedOfficialVote'
+                    select = $('#addVotes select')[0]
+                    insertCategories()
+
+
+
+            error: (error) ->
+                if(error.status == 401) then showModal('/login')
         );
 
 
@@ -428,13 +442,18 @@ initTableHandlers = (person) ->
             fieldName = Object.keys(element.dataset)[0]
             newRecord[fieldName] = element.value
 
-        select = modal.find('select')[0]
-        selectName = select.name
-        selectedValue = select.options[select.selectedIndex].value
-
         associations = {}
         associations["electedOfficial"] = person.id
-        associations[selectName] = selectedValue
+
+        if modalType is 'addVotes'
+
+        else if modalType is 'addContributions'
+
+        else if modalType is 'addEndorsements'
+            select = modal.find('select')[0]
+            selectName = select.name
+            selectedValue = select.options[select.selectedIndex].value
+            associations[selectName] = selectedValue
 
         sendObject = {
             createRequest: {
@@ -458,13 +477,13 @@ initTableHandlers = (person) ->
 
         console.log sendObject
         $.ajax({
-            url: 'http://45.55.0.145/api/createrequest/create',
+            url: '/api/createrequest/create',
             method: 'POST',
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             data: sendObject,
-            complete: (data) ->
+            success: (data) ->
                 console.log(data);
         });
 
