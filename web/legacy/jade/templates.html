@@ -363,7 +363,58 @@
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="Statements">
-                    <p style="font-size:18px;">No information at this time. Please check back later.</p>
+                    <table class="table table-hover" data-entity-type="Statements">
+                        <tr>
+                            <th>Date</th>
+                            <th>Summary</th>
+                            <th>URL</th>
+                        </tr>
+
+                        {{#if public_statements}}
+
+                        {{#public_statements}}
+                        <tr data-id="{{id}}">
+                            {{#this}}
+                            <td data-date="{{date}}">
+                                <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                   data-placeholder="Please edit" data-title="Please edit"
+                                   class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                   title="">{{date}}</a>
+                            </td>
+                            <td data-contributor-name="{{summary}}">
+                                <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                   data-placeholder="Please edit" data-title="Please edit"
+                                   class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                   title="">{{summary}}</a>
+                                <span class="glyphicon glyphicon-pencil edit"></span>
+                            </td>
+                            <td data-url="{{url}}">
+                                <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                   data-placeholder="Please edit" data-title="Please edit"
+                                   class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                   title="">{{url}}</a>
+                                <span class="glyphicon glyphicon-pencil edit"></span>
+                            </td>
+                            {{/this}}
+                        </tr>
+                        {{/public_statements}}
+
+                        {{else}}
+                        <tr>
+                            <td colspan="7" align="center">
+                                <p style="font-size:18px;">No information at this time. Please check back later.</p>
+                            </td>
+                        </tr>
+                        {{/if}}
+                        <tr>
+                            <td colspan="7" class="add">
+                                Add new Statements
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </td>
+                        </tr>
+
+                    </table>
+
                 </div>
             </div>
 
@@ -483,6 +534,42 @@
                         <div class="input-group">
                             <span class="input-group-addon">Type: </span>
                             <input type="text" class="form-control" placeholder="Please enter Type" data-endorser-type>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add new one</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contributions Modal -->
+    <div class="modal fade" id="addStatements" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="PublicStatement">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add new Statements</h4>
+                </div>
+                <div class="modal-body">
+                    <form name="addStatements">
+                        <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <select class="form-control"></select>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Date: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Date" data-date>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Summary: </span>
+                            <input type="text" class="form-control" placeholder="Please enter Summary" data-summary>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">URL: </span>
+                            <input type="text" class="form-control" placeholder="Please enter URL" data-url>
                         </div>
                     </form>
                 </div>

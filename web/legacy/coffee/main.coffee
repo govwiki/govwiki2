@@ -387,6 +387,9 @@ initTableHandlers = (person) ->
         else if tableType is 'Endorsements'
             currentEntity = 'Endorsement'
             $('#addEndorsements').modal('toggle')
+        else if tableType is 'Statements'
+            currentEntity = 'PublicStatement'
+            $('#addStatements').modal('toggle')
 
         if tabPane.hasClass('loaded') then return false
         tabPane[0].classList.add('loaded')
@@ -423,6 +426,9 @@ initTableHandlers = (person) ->
                 else if currentEntity is 'ElectedOfficialVote'
                     select = $('#addVotes select')[0]
                     insertCategories()
+                else if currentEntity is 'PublicStatement'
+                    select = $('#addStatements select')[0]
+                    insertCategories()
 
 
 
@@ -454,6 +460,12 @@ initTableHandlers = (person) ->
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
             associations[selectName] = selectedValue
+        else if modalType is 'addStatements'
+            select = modal.find('select')[0]
+            selectName = select.name
+            selectedValue = select.options[select.selectedIndex].value
+            associations[selectName] = selectedValue
+
 
         sendObject = {
             createRequest: {
@@ -474,6 +486,8 @@ initTableHandlers = (person) ->
             $('#Contributions tr:last-child').before(tr);
         else if modalType is 'addEndorsements'
             $('#Endorsements tr:last-child').before(tr);
+        else if modalType is 'addStatements'
+            $('#Statements tr:last-child').before(tr);
 
         console.log sendObject
         $.ajax({
