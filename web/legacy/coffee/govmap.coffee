@@ -9,6 +9,7 @@ map = new GMaps
   minZoom: 6
   scrollwheel: true
   panControl: false
+  mapTypeControl: false
   zoomControl: true
   zoomControlOptions:
     style: google.maps.ZoomControlStyle.SMALL
