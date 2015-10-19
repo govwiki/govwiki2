@@ -10,6 +10,7 @@ map = new GMaps
   scrollwheel: true
   mapTypeControl: false
   panControl: false
+  mapTypeControl: false
   zoomControl: true
   zoomControlOptions:
     style: google.maps.ZoomControlStyle.SMALL
