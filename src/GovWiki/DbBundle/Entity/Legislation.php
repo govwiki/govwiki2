@@ -48,7 +48,7 @@ class Legislation
     /**
      * @var string
      *
-     * @ORM\Column(name="summary", type="string", length=255, nullable=true)
+     * @ORM\Column(name="summary", type="text", nullable=true)
      */
     private $summary;
 
