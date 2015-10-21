@@ -310,8 +310,8 @@ window.addEventListener 'popstate', (event) ->
         route = document.location.pathname.split('/').length-1;
         if route is 2 then $('#stantonIcon').hide()
         if route is 1 then $('#searchContainer').show()
-    else
-        document.location.reload()
+#    else
+#        document.location.reload()
 
 # Refresh Disqus thread
 refresh_disqus = (newIdentifier, newUrl, newTitle) ->
