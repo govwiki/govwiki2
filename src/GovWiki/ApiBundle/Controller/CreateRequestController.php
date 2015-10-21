@@ -2,6 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller;
 
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,6 +53,7 @@ class CreateRequestController extends Controller
                         unset($associationMappings[$associationFieldName]);
                     } else {
                         $choicesObject = $em->getRepository($associationMapping['targetEntity'])->findAll();
+                        $choices = [];
                         foreach ($choicesObject as $choiceObject) {
                             $choices[] = [$choiceObject->getId() => (string) $choiceObject];
                         }
