@@ -281,7 +281,7 @@
                                     </td>
                                     <td align="center" date-did-elected-official-propose-this="{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}" data-no-editable>{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}</td>
                                     <td data-issue-category="{{legislation.issue_category.name}}" data-no-editable>{{legislation.issue_category.name}}</td>
-                                    <td data-no-editable><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}">0</span></td>
+                                    <td data-no-editable><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-legislation-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}">0</span></td>
                                 {{/this}}
                                 </tr>
                             {{/votes}}
