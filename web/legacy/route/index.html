@@ -307,10 +307,10 @@
 
                     <table class="table table-hover" data-entity-type="Contribution">
                         <tr>
-                            <th>Election Year</th>
-                            <th>Name of contributor</th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="year">Election Year</a></th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="name">Name of contributor</a></th>
                             <th>Ind. Exp. Desc.</th>
-                            <th>Amount</th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="amount">Amount</a></th>
                             <th>Contributor Type</th>
                         </tr>
 
@@ -496,20 +496,12 @@
                 <div class="modal-body">
                     <form name="addVotes">
                         <div class="input-group">
-                            <span class="input-group-addon">Category: </span>
-                            <select class="form-control"></select>
+                            <span class="input-group-addon">Legislation: </span>
+                            <select class="form-control" data-legislation></select>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
                             <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
-                        </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">Title of Measure: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Title of Measure" data-name>
-                        </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">Summary of Measure: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Summary of Measure" data-summary>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">How official Voted: </span>
@@ -519,10 +511,34 @@
                             <span class="input-group-addon">Sponsored by this official? </span>
                             <input type="text" class="form-control" data-did-elected-official-propose-this placeholder="Sponsored by this official?">
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">Category: </span>
-                            <input type="text" class="form-control" placeholder="Please enter your Category" data-issue-category>
-                        </div>
+                        <!--<div class="input-group">-->
+                            <!--<span class="input-group-addon">Category: </span>-->
+                            <!--<select class="form-control"></select>-->
+                        <!--</div>-->
+                        <!--<div class="input-group">-->
+                            <!--<span class="input-group-addon">Date: </span>-->
+                            <!--<input type="text" class="form-control" placeholder="Please enter Date" data-date-considered>-->
+                        <!--</div>-->
+                        <!--<div class="input-group">-->
+                            <!--<span class="input-group-addon">Title of Measure: </span>-->
+                            <!--<input type="text" class="form-control" placeholder="Please enter Title of Measure" data-name>-->
+                        <!--</div>-->
+                        <!--<div class="input-group">-->
+                            <!--<span class="input-group-addon">Summary of Measure: </span>-->
+                            <!--<input type="text" class="form-control" placeholder="Please enter Summary of Measure" data-summary>-->
+                        <!--</div>-->
+                        <!--<div class="input-group">-->
+                            <!--<span class="input-group-addon">How official Voted: </span>-->
+                            <!--<input type="text" class="form-control" placeholder="Please enter How official Voted" data-vote>-->
+                        <!--</div>-->
+                        <!--<div class="input-group">-->
+                            <!--<span class="input-group-addon">Sponsored by this official? </span>-->
+                            <!--<input type="text" class="form-control" data-did-elected-official-propose-this placeholder="Sponsored by this official?">-->
+                        <!--</div>-->
+                        <!--<div class="input-group">-->
+                            <!--<span class="input-group-addon">Category: </span>-->
+                            <!--<input type="text" class="form-control" placeholder="Please enter your Category" data-issue-category>-->
+                        <!--</div>-->
                     </form>
                 </div>
                 <div class="modal-footer">

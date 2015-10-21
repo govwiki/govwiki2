@@ -348,6 +348,29 @@ initTableHandlers = (person) ->
         else
             $(e.currentTarget).closest('td').find('.editable').editable('toggle');
 
+    #
+    # Add sort handlers.
+    #
+    $('.sort').on 'click', (e) ->
+      e.preventDefault();
+      e.stopPropagation();
+      type = $(this).attr('data-sort-type');
+
+      if type is 'year'
+        #
+        # Sort by year.
+        #
+        alert('year');
+      else if type is 'name'
+        #
+        # Sort by name.
+        #
+        alert('name');
+      else if type is 'amount'
+        #
+        # Sort by amount.
+        #
+        alert('amount');
 
     $('a').on 'save', (e, params) ->
         entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
@@ -376,6 +399,19 @@ initTableHandlers = (person) ->
     $('table').on 'click', '.add', (e) ->
         tabPane = $(e.target).closest('.tab-pane')
         tableType = tabPane[0].id
+        if (!authorized)
+          $.ajax '/editrequest/new', {
+            method: 'POST',
+            complete: (response) ->
+              if response.status is 401
+                showModal('/login')
+              else if response.status is 200
+                authorized = true
+            error: (error) ->
+              if error.status is 401 then showModal('/login')
+          }
+
+        if (!authorized) then return false;
 
         currentEntity = null
         if tableType is 'Votes'
@@ -387,9 +423,6 @@ initTableHandlers = (person) ->
         else if tableType is 'Endorsements'
             currentEntity = 'Endorsement'
             $('#addEndorsements').modal('toggle')
-        else if tableType is 'Statements'
-            currentEntity = 'PublicStatement'
-            $('#addStatements').modal('toggle')
 
         if tabPane.hasClass('loaded') then return false
         tabPane[0].classList.add('loaded')
@@ -426,9 +459,6 @@ initTableHandlers = (person) ->
                 else if currentEntity is 'ElectedOfficialVote'
                     select = $('#addVotes select')[0]
                     insertCategories()
-                else if currentEntity is 'PublicStatement'
-                    select = $('#addStatements select')[0]
-                    insertCategories()
 
 
 
@@ -452,7 +482,10 @@ initTableHandlers = (person) ->
         associations["electedOfficial"] = person.id
 
         if modalType is 'addVotes'
-
+            select = modal.find('select')[0]
+            selectName = select.name
+            selectedValue = select.options[select.selectedIndex].value
+            associations[selectName] = selectedValue
         else if modalType is 'addContributions'
 
         else if modalType is 'addEndorsements'
@@ -460,12 +493,6 @@ initTableHandlers = (person) ->
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
             associations[selectName] = selectedValue
-        else if modalType is 'addStatements'
-            select = modal.find('select')[0]
-            selectName = select.name
-            selectedValue = select.options[select.selectedIndex].value
-            associations[selectName] = selectedValue
-
 
         sendObject = {
             createRequest: {
@@ -486,8 +513,6 @@ initTableHandlers = (person) ->
             $('#Contributions tr:last-child').before(tr);
         else if modalType is 'addEndorsements'
             $('#Endorsements tr:last-child').before(tr);
-        else if modalType is 'addStatements'
-            $('#Statements tr:last-child').before(tr);
 
         console.log sendObject
         $.ajax({
