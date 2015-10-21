@@ -376,6 +376,19 @@ initTableHandlers = (person) ->
     $('table').on 'click', '.add', (e) ->
         tabPane = $(e.target).closest('.tab-pane')
         tableType = tabPane[0].id
+        if (!authorized)
+          $.ajax '/editrequest/new', {
+            method: 'POST',
+            complete: (response) ->
+              if response.status is 401
+                showModal('/login')
+              else if response.status is 200
+                authorized = true
+            error: (error) ->
+              if error.status is 401 then showModal('/login')
+          }
+
+        if (!authorized) then return false;
 
         currentEntity = null
         if tableType is 'Votes'
@@ -446,7 +459,10 @@ initTableHandlers = (person) ->
         associations["electedOfficial"] = person.id
 
         if modalType is 'addVotes'
-
+            select = modal.find('select')[0]
+            selectName = select.name
+            selectedValue = select.options[select.selectedIndex].value
+            associations[selectName] = selectedValue
         else if modalType is 'addContributions'
 
         else if modalType is 'addEndorsements'
@@ -462,18 +478,6 @@ initTableHandlers = (person) ->
 
             }
         }
-
-        tr = document.createElement 'tr'
-        for key, value of sendObject.createRequest.fields.fields
-            tr.innerHTML += "<td><a href='javascript:void(0);'
-            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
-
-        if modalType is 'addVotes'
-            $('#Votes tr:last-child').before(tr);
-        else if modalType is 'addContributions'
-            $('#Contributions tr:last-child').before(tr);
-        else if modalType is 'addEndorsements'
-            $('#Endorsements tr:last-child').before(tr);
 
         console.log sendObject
         $.ajax({
