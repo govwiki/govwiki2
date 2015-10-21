@@ -309,10 +309,10 @@ echo <<<EOT
 
                     <table class="table table-hover" data-entity-type="Contribution">
                         <tr>
-                            <th>Election Year</th>
-                            <th>Name of contributor</th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="year">Election Year</a></th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="name">Name of contributor</a></th>
                             <th>Ind. Exp. Desc.</th>
-                            <th>Amount</th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="amount">Amount</a></th>
                             <th>Contributor Type</th>
                         </tr>
 

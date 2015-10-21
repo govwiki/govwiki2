@@ -348,6 +348,29 @@ initTableHandlers = (person) ->
         else
             $(e.currentTarget).closest('td').find('.editable').editable('toggle');
 
+    #
+    # Add sort handlers.
+    #
+    $('.sort').on 'click', (e) ->
+      e.preventDefault();
+      e.stopPropagation();
+      type = $(this).attr('data-sort-type');
+
+      if type is 'year'
+        #
+        # Sort by year.
+        #
+        alert('year');
+      else if type is 'name'
+        #
+        # Sort by name.
+        #
+        alert('name');
+      else if type is 'amount'
+        #
+        # Sort by amount.
+        #
+        alert('amount');
 
     $('a').on 'save', (e, params) ->
         entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
