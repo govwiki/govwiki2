@@ -413,6 +413,20 @@ initTableHandlers = (person) ->
 
         if (!authorized) then return false;
 
+        if (!authorized)
+            $.ajax '/editrequest/new', {
+                method: 'POST',
+                complete: (response) ->
+                    if response.status is 401
+                        showModal('/login')
+                    else if response.status is 200
+                        authorized = true
+                error: (error) ->
+                    if error.status is 401 then showModal('/login')
+            }
+
+        if (!authorized) then return false;
+
         currentEntity = null
         if tableType is 'Votes'
             currentEntity = 'ElectedOfficialVote'
