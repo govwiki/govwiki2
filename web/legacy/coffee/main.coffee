@@ -322,6 +322,79 @@ refresh_disqus = (newIdentifier, newUrl, newTitle) ->
             this.page.url = newUrl
             this.page.title = newTitle
 
+#
+# Sort table by column.
+# @param string table  JQuery selector.
+# @param number colNum Column number.
+#
+sortTable = (table, colNum) ->
+    #
+    # Data rows to sort
+    #
+    rows = $(table + ' tbody  [data-id]').get()
+    #
+    # Last row which contains "Add new ..."
+    #
+    lastRow = $(table + ' tbody  tr:last').get();
+    #
+    # Clicked column.
+    #
+    column = $(table + ' tbody tr:first').children('th').eq(colNum)
+    makeSort = true
+
+    if column.hasClass('desc')
+      #
+      # Table currently sorted in descending order.
+      # Restore row order.
+      #
+      column.removeClass('desc').addClass('origin')
+      rows = column.data('origin')
+      makeSort = false;
+    else if column.hasClass('asc')
+      #
+      # Table currently sorted in ascending order.
+      # Sort in desc order.
+      #
+      column.removeClass('asc').addClass('desc')
+      sortFunction = (a, b) ->
+        A = $(a).children('td').eq(colNum).text().toUpperCase()
+        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        if A < B then return 1
+        if A > B then return -1
+        return 0
+
+    else if column.hasClass('origin')
+      #
+      # Original table data order.
+      # Sort in asc order.
+      #
+      column.addClass('asc')
+      sortFunction = (a, b) ->
+        A = $(a).children('td').eq(colNum).text().toUpperCase()
+        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        if A < B then return -1
+        if A > B then return 1
+        return 0
+    else
+      #
+      # Table not ordered yet.
+      # Store original data position and sort in asc order.
+      #
+
+      column.addClass('asc')
+      column.data('origin', rows.slice(0))
+
+      sortFunction = (a, b) ->
+        A = $(a).children('td').eq(colNum).text().toUpperCase()
+        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        if A < B then return -1
+        if A > B then return 1
+        return 0
+
+    if (makeSort) then rows.sort sortFunction
+    $.each rows, (index, row) ->
+        $(table).children('tbody').append(row)
+    $(table).children('tbody').append(lastRow)
 
 initTableHandlers = (person) ->
     $('[data-toggle="tooltip"]').tooltip()
@@ -352,25 +425,25 @@ initTableHandlers = (person) ->
     # Add sort handlers.
     #
     $('.sort').on 'click', (e) ->
-      e.preventDefault();
-      e.stopPropagation();
-      type = $(this).attr('data-sort-type');
+      e.preventDefault()
+      e.stopPropagation()
+      type = $(this).attr('data-sort-type')
 
       if type is 'year'
         #
         # Sort by year.
         #
-        alert('year');
+        sortTable('[data-entity-type="Contribution"]', 0)
       else if type is 'name'
         #
         # Sort by name.
         #
-        alert('name');
+        sortTable('[data-entity-type="Contribution"]', 1)
       else if type is 'amount'
         #
         # Sort by amount.
         #
-        alert('amount');
+        sortTable('[data-entity-type="Contribution"]', 3)
 
     $('a').on 'save', (e, params) ->
         entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
