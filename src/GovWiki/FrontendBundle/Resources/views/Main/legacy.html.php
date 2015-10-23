@@ -289,11 +289,11 @@ echo <<<EOT
                             {{/votes}}
 
                         {{else}}
-                            <tr>
+                            <!--<tr>
                                 <td colspan="7" align="center">
                                     <p style="font-size:18px;">No information at this time. Please check back later.</p>
                                 </td>
-                            </tr>
+                            </tr>-->
                         {{/if}}
                         <tr>
                             <td colspan="7" class="add">
@@ -360,11 +360,11 @@ echo <<<EOT
                             {{/contributions}}
 
                         {{else}}
-                        <tr>
+                        <!--<tr>
                             <td colspan="7" align="center">
                                 <p style="font-size:18px;">No information at this time. Please check back later.</p>
                             </td>
-                        </tr>
+                        </tr>-->
                         {{/if}}
                         <tr>
                             <td colspan="7" class="add">
@@ -412,11 +412,11 @@ echo <<<EOT
                             {{/endorsements}}
 
                         {{else}}
-                        <tr>
+                        <!--<tr>
                             <td colspan="7" align="center">
                                 <p style="font-size:18px;">No information at this time. Please check back later.</p>
                             </td>
-                        </tr>
+                        </tr>-->
                         {{/if}}
                         <tr>
                             <td colspan="7" class="add">
@@ -466,11 +466,11 @@ echo <<<EOT
                         {{/public_statements}}
 
                         {{else}}
-                        <tr>
+                        <!--<tr>
                             <td colspan="7" align="center">
                                 <p style="font-size:18px;">No information at this time. Please check back later.</p>
                             </td>
-                        </tr>
+                        </tr>-->
                         {{/if}}
                         <tr>
                             <td colspan="7" class="add">
