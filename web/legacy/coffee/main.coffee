@@ -136,7 +136,6 @@ $(document).on 'click', '#fieldTabs a', (e) ->
         $('.fin-values-block [data-col="2"] .currency-sign').css('right', finValWidthMax2 + 27)
         $('.fin-values-block [data-col="3"] .currency-sign').css('right', finValWidthMax3 + 27)
 
-
 $(document).tooltip({selector: "[class='media-tooltip']", trigger: 'click'})
 
 activate_tab = () ->
@@ -490,34 +489,34 @@ initTableHandlers = (person) ->
 
         if (!authorized) then return false;
 
-        if (!authorized)
-            $.ajax '/editrequest/new', {
-                method: 'POST',
-                complete: (response) ->
-                    if response.status is 401
-                        showModal('/login')
-                    else if response.status is 200
-                        authorized = true
-                error: (error) ->
-                    if error.status is 401 then showModal('/login')
-            }
-
-        if (!authorized) then return false;
+#        if (!authorized)
+#            $.ajax '/editrequest/new', {
+#                method: 'POST',
+#                complete: (response) ->
+#                    if response.status is 401
+#                        showModal('/login')
+#                    else if response.status is 200
+#                        authorized = true
+#                error: (error) ->
+#                    if error.status is 401 then showModal('/login')
+#            }
+#
+#        if (!authorized) then return false;
 
         currentEntity = null
         console.log(tableType)
         if tableType is 'Votes'
             currentEntity = 'ElectedOfficialVote'
-            $('#addVotes').modal('toggle')
+            $('#addVotes').modal('toggle').find('form')[0].reset()
         else if tableType is 'Contributions'
             currentEntity = 'Contribution'
-            $('#addContributions').modal('toggle')
+            $('#addContributions').modal('toggle').find('form')[0].reset()
         else if tableType is 'Endorsements'
             currentEntity = 'Endorsement'
-            $('#addEndorsements').modal('toggle')
+            $('#addEndorsements').modal('toggle').find('form')[0].reset()
         else if tableType is 'Statements'
             currentEntity = 'PublicStatement'
-            $('#addStatements').modal('toggle')
+            $('#addStatements').modal('toggle').find('form')[0].reset()
 
         if tabPane.hasClass('loaded') then return false
         tabPane[0].classList.add('loaded')
@@ -601,10 +600,10 @@ initTableHandlers = (person) ->
             }
         }
 
-        tr = document.createElement 'tr'
-        for key, value of sendObject.createRequest.fields.fields
-            tr.innerHTML += "<td><a href='javascript:void(0);'
-            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
+#        tr = document.createElement 'tr'
+#        for key, value of sendObject.createRequest.fields.fields
+#            tr.innerHTML += "<td><a href='javascript:void(0);'
+#            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
 
 #        if modalType is 'addVotes'
 #            $('#Votes tr:last-child').before(tr);

@@ -8,7 +8,8 @@ function showModal(target) {
 
 $('#modal-window').on('hidden.bs.modal', function() {
     $(this).find('.modal-content').html('<div class="modal-body">Loading...</div>');
-})
+});
+
 
 // Login
 
