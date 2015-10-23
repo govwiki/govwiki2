@@ -3,6 +3,8 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
+use GovWiki\DbBundle\Entity\ElectedOfficial;
 use JMS\Serializer\SerializationContext;
 
 /**
@@ -109,6 +111,35 @@ class GovernmentRepository extends EntityRepository
         }
 
         return $result;
+    }
+
+    /**
+     * Get list of all elected officials from government by one of
+     * elected official.
+     *
+     * @param integer $id Elected official id.
+     *
+     * @return ElectedOfficial[]
+     */
+    public function governmentElectedOfficial($id)
+    {
+        $qb2 = $this->createQueryBuilder('Gov2');
+        $qb2
+            ->select('Gov2.id')
+            ->join('Gov2.electedOfficials', 'EO2')
+            ->where(
+                $qb2->expr()->eq('EO2.id', $id)
+            );
+
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        return $qb
+            ->from('GovWikiDbBundle:ElectedOfficial', 'EO')
+            ->select('EO.id, EO.fullName')
+            ->where(
+                $qb->expr()->in('EO.government', $qb2->getDQL())
+            )
+            ->getQuery()
+            ->getResult();
     }
 
     /**

@@ -506,7 +506,7 @@ initTableHandlers = (person) ->
         currentEntity = null
         console.log(tableType)
         if tableType is 'Votes'
-            currentEntity = 'ElectedOfficialVote'
+            currentEntity = 'Legislation'
             $('#addVotes').modal('toggle').find('form')[0].reset()
         else if tableType is 'Contributions'
             currentEntity = 'Contribution'
@@ -549,9 +549,15 @@ initTableHandlers = (person) ->
 
                 else if currentEntity is 'Contribution'
 
-                else if currentEntity is 'ElectedOfficialVote'
+                else if currentEntity is 'Legislation'
                     select = $('#addVotes select')[0]
                     insertCategories()
+                    #
+                    # Fill elected officials votes table.
+                    #
+                    compiledTemplate = Handlebars.compile($('#legislation-vote').html())
+                    $('#electedVotes').html compiledTemplate(data);
+
                 else if currentEntity is 'PublicStatement'
                     select = $('#addStatements select')[0]
                     insertCategories()
@@ -578,6 +584,18 @@ initTableHandlers = (person) ->
         associations["electedOfficial"] = person.id
 
         if modalType is 'addVotes'
+            ###
+                Add information about votes.
+            ###
+            newRecord['votes'] = []
+            modal.find('#electedVotes').find('tr[data-elected]'). each (idx, element) ->
+                element = $(element)
+                data = {
+                  id: element.attr 'data-elected'
+                  vote: element.find('[data-vote]').val()
+                  sponsored: element.find('[data-sponsored]').val()
+                }
+                newRecord['votes'].push(data);
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
