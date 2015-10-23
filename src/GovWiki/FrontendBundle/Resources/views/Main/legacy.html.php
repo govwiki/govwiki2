@@ -660,7 +660,7 @@ echo <<<EOT
                 </td>
                 <td>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Please enter sponsored by?" data-sponsored>
+                        <input type="text" class="form-control" placeholder="Please enter sponsored by?" data-did_elected_official_propose_this>
                     </div>
                 </td>
             </tr>
