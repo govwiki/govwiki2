@@ -664,6 +664,7 @@ class Templates2
       url: url
       dataType: 'json'
       cache: true
+      async: false
       success: (template_json) =>
         @add_template(template_name, template_json)
 
@@ -672,6 +673,7 @@ class Templates2
       url: url
       dataType: 'json'
       cache: true
+      async: false
       success: (template_json) =>
         t = convert_fusion_template template_json
         @add_template(template_name, t)

@@ -305,11 +305,15 @@ GOVWIKI.history = (index) ->
         document.location.pathname = '/' + route.join('/')
 
 window.addEventListener 'popstate', (event) ->
+    console.log(window.history.state)
     if window.history.state isnt null
         $('#details').html event.state.template
         route = document.location.pathname.split('/').length-1;
         if route is 2 then $('#stantonIcon').hide()
         if route is 1 then $('#searchContainer').show()
+        GOVWIKI.show_data_page()
+    else
+        GOVWIKI.show_search_page()
 #    else
 #        document.location.reload()
 

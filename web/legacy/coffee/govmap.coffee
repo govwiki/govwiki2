@@ -30,7 +30,8 @@ rebuild_filter = ->
 # legendType = city, school district, special district, counties
 get_records2 = (legendType, onsuccess) ->
   $.ajax
-    url:"http://45.55.0.145/api/government/get-markers-data"
+    url:"http://45.55.0.145/api/government/get-markers-data?limit=600"
+#    url:"http://45.55.0.145/api/government/get-markers-data"
     data: { altTypes: legendType }
     dataType: 'json'
     cache: true
