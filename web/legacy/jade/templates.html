@@ -577,7 +577,7 @@
 </script>
 
 <script id="legislation-vote" type="text/x-handlebars-template">
-    <table class="table table-hover" style="margin-top: 20px" data-entity-type="ElectedOfficialType">
+    <table class="table table-hover" style="margin-top: 20px" data-entity-type="electedOfficialVote">
         <tr>
             <th>Elected official</th>
             <th>How Vote</th>
@@ -585,7 +585,7 @@
         </tr>
         {{#electedOfficials}}
         {{#this}}
-            <tr data-elected="{{id}}" data-entity-type="ElectedOfficial">
+            <tr data-elected="{{id}}" data-entity-type="electedOfficial">
                 <td>{{fullName}}</td>
                 <td>
                     <div class="input-group">

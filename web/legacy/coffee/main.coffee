@@ -585,7 +585,7 @@ initTableHandlers = (person) ->
         #
         # Array of sub entities.
         #
-        childes = []
+        childs = []
 
         if modalType is 'addVotes'
             ###
@@ -597,23 +597,25 @@ initTableHandlers = (person) ->
                 #
                 # Get all sub entity fields.
                 #
-                fields = {}
-                childe_associations = {}
+                fields = Object.create null, {}
+                child_associations = {}
 
                 element.find('input[type="text"]').each (index, element) ->
-                    fieldName = Object.keys(element.dataset)[0]
-                    fields[fieldName] = element.value
-                console.log(fields)
-                childEntityName = element.parent().parent().attr 'data-entity-type'
-                childe_associations[element.attr('data-entity-type')] = element.attr('data-elected')
-                childes.push({
-                    # Child type.
-                    entityName: childEntityName
-                    # Child fields.
-                    fields: fields
-                    # Child associations.
-                    associations: childe_associations
-                });
+                    if element.value
+                        fieldName = Object.keys(element.dataset)[0]
+                        fields[fieldName] = element.value
+
+                if Object.keys(fields).length > 0
+                    childEntityName = element.parent().parent().attr 'data-entity-type'
+                    child_associations[element.attr('data-entity-type')] = element.attr('data-elected')
+                    childs.push({
+                        # Child type.
+                        entityName: childEntityName
+                        # Child fields.
+                        fields: fields
+                        # Child associations.
+                        associations: child_associations
+                    });
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
@@ -631,8 +633,7 @@ initTableHandlers = (person) ->
         sendObject = {
             createRequest: {
                 entityName: entityType,
-                fields: { fields: newRecord, associations: associations},
-                childes: childes,
+                fields: { fields: newRecord, associations: associations, childs: childs},
             }
         }
 
