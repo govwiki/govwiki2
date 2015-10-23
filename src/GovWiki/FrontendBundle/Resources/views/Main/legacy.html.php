@@ -602,10 +602,6 @@ echo <<<EOT
                 <div class="modal-body">
                     <form name="addEndorsements">
                         <div class="input-group">
-                            <span class="input-group-addon">Category: </span>
-                            <select class="form-control"></select>
-                        </div>
-                        <div class="input-group">
                             <span class="input-group-addon">Election Year: </span>
                             <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>
                         </div>

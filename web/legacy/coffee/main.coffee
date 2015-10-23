@@ -547,8 +547,7 @@ initTableHandlers = (person) ->
                 select = null
 
                 if currentEntity is 'Endorsement'
-                    select = $('#addEndorsements select')[0]
-                    insertCategories()
+
                 else if currentEntity is 'Contribution'
 
                 else if currentEntity is 'ElectedOfficialVote'
@@ -587,16 +586,12 @@ initTableHandlers = (person) ->
         else if modalType is 'addContributions'
 
         else if modalType is 'addEndorsements'
+
+        else if modalType is 'addStatements'
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
             associations[selectName] = selectedValue
-
-        else if modalType is 'addStatements'
-          select = modal.find('select')[0]
-          selectName = select.name
-          selectedValue = select.options[select.selectedIndex].value
-          associations[selectName] = selectedValue
 
         sendObject = {
             createRequest: {
@@ -611,12 +606,12 @@ initTableHandlers = (person) ->
             tr.innerHTML += "<td><a href='javascript:void(0);'
             class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
 
-        if modalType is 'addVotes'
-            $('#Votes tr:last-child').before(tr);
-        else if modalType is 'addContributions'
-            $('#Contributions tr:last-child').before(tr);
-        else if modalType is 'addEndorsements'
-            $('#Endorsements tr:last-child').before(tr);
+#        if modalType is 'addVotes'
+#            $('#Votes tr:last-child').before(tr);
+#        else if modalType is 'addContributions'
+#            $('#Contributions tr:last-child').before(tr);
+#        else if modalType is 'addEndorsements'
+#            $('#Endorsements tr:last-child').before(tr);
 
         console.log sendObject
         $.ajax({
