@@ -643,7 +643,7 @@ echo <<<EOT
 </script>
 
 <script id="legislation-vote" type="text/x-handlebars-template">
-    <table class="table table-hover" style="margin-top: 20px" data-entity-type="electedOfficialVote">
+    <table class="table table-hover" style="margin-top: 20px" data-entity-type="ElectedOfficialVote">
         <tr>
             <th>Elected official</th>
             <th>How Vote</th>

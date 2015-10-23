@@ -581,7 +581,8 @@ initTableHandlers = (person) ->
             newRecord[fieldName] = element.value
 
         associations = {}
-        associations["electedOfficial"] = person.id
+        if modalType != 'addVotes'
+            associations["electedOfficial"] = person.id
         #
         # Array of sub entities.
         #
@@ -598,7 +599,6 @@ initTableHandlers = (person) ->
                 # Get all sub entity fields.
                 #
                 fields = Object.create null, {}
-                child_associations = {}
 
                 element.find('input[type="text"]').each (index, element) ->
                     if element.value
@@ -606,15 +606,14 @@ initTableHandlers = (person) ->
                         fields[fieldName] = element.value
 
                 if Object.keys(fields).length > 0
+                    fields['associations'] = []
+                    fields['associations'][element.attr('data-entity-type')] = element.attr('data-elected')
                     childEntityName = element.parent().parent().attr 'data-entity-type'
-                    child_associations[element.attr('data-entity-type')] = element.attr('data-elected')
                     childs.push({
                         # Child type.
                         entityName: childEntityName
                         # Child fields.
                         fields: fields
-                        # Child associations.
-                        associations: child_associations
                     });
             select = modal.find('select')[0]
             selectName = select.name
