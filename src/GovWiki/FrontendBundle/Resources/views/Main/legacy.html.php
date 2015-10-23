@@ -639,7 +639,7 @@ echo <<<EOT
                     <form name="addStatements">
                         <div class="input-group">
                             <span class="input-group-addon">Category: </span>
-                            <select class="form-control"></select>
+                            <select class="form-control" data-issue-category></select>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
@@ -779,7 +779,7 @@ echo <<<EOT
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
-    <script src="/legacy/static/bundle.js"></script>
+    <script src="/legacy/static/bundle.min.js"></script>
   </body>
 </html>
 EOT;
