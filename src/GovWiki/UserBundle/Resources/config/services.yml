@@ -1,1 +1,8 @@
 services:
+  govwiki.user_bundle.listener.registration:
+    class: GovWiki\UserBundle\EventListener\RegistrationListener
+    arguments:
+      - @session
+      - @security.token_storage
+    tags:
+      - { name: kernel.event_subscriber }

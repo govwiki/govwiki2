@@ -488,7 +488,7 @@ echo <<<EOT
     </div>
 
     <!-- Votes Modal -->
-    <div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="ElectedOfficialVote">
+    <div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Legislation">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -643,7 +643,7 @@ echo <<<EOT
 </script>
 
 <script id="legislation-vote" type="text/x-handlebars-template">
-    <table class="table table-hover" style="margin-top: 20px">
+    <table class="table table-hover" style="margin-top: 20px" data-entity-type="ElectedOfficialVote">
         <tr>
             <th>Elected official</th>
             <th>How Vote</th>
@@ -651,7 +651,7 @@ echo <<<EOT
         </tr>
         {{#electedOfficials}}
         {{#this}}
-            <tr data-elected="{{id}}">
+            <tr data-elected="{{id}}" data-entity-type="ElectedOfficial">
                 <td>{{fullName}}</td>
                 <td>
                     <div class="input-group">

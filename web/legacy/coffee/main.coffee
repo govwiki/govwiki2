@@ -582,20 +582,38 @@ initTableHandlers = (person) ->
 
         associations = {}
         associations["electedOfficial"] = person.id
+        #
+        # Array of sub entities.
+        #
+        childes = []
 
         if modalType is 'addVotes'
             ###
                 Add information about votes.
             ###
-            newRecord['votes'] = []
             modal.find('#electedVotes').find('tr[data-elected]'). each (idx, element) ->
                 element = $(element)
-                data = {
-                  id: element.attr 'data-elected'
-                  vote: element.find('[data-vote]').val()
-                  sponsored: element.find('[data-sponsored]').val()
-                }
-                newRecord['votes'].push(data);
+
+                #
+                # Get all sub entity fields.
+                #
+                fields = {}
+                childe_associations = {}
+
+                element.find('input[type="text"]').each (index, element) ->
+                    fieldName = Object.keys(element.dataset)[0]
+                    fields[fieldName] = element.value
+                console.log(fields)
+                childEntityName = element.parent().parent().attr 'data-entity-type'
+                childe_associations[element.attr('data-entity-type')] = element.attr('data-elected')
+                childes.push({
+                    # Child type.
+                    entityName: childEntityName
+                    # Child fields.
+                    fields: fields
+                    # Child associations.
+                    associations: childe_associations
+                });
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
@@ -614,7 +632,7 @@ initTableHandlers = (person) ->
             createRequest: {
                 entityName: entityType,
                 fields: { fields: newRecord, associations: associations},
-
+                childes: childes,
             }
         }
 
