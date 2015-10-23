@@ -48,8 +48,22 @@ class CreateRequestController extends Controller
                 }
 
                 $associationMappings = $metaData->getAssociationMappings();
+
+                if ('Legislation' === $data['entityName']) {
+                    /*
+                     * Don't send information about votes and governments.
+                     */
+                    $knownFields['electedOfficialVotes'] = true;
+                    $knownFields['government'] = true;
+                }
                 foreach ($associationMappings as $associationFieldName => $associationMapping) {
                     if (array_key_exists($associationFieldName, $knownFields)) {
+                        if ('electedOfficialVotes' === $associationFieldName) {
+                            /*
+                             * Fetch information about all elected officials on this.
+                             */
+                            $response['electedOfficials'] = $em->getRepository('GovWikiDbBundle:Government')->governmentElectedOfficial((int) $knownFields['electedOfficial']);
+                        }
                         unset($associationMappings[$associationFieldName]);
                     } else {
                         $choicesObject = $em->getRepository($associationMapping['targetEntity'])->findAll();

@@ -136,7 +136,6 @@ $(document).on 'click', '#fieldTabs a', (e) ->
         $('.fin-values-block [data-col="2"] .currency-sign').css('right', finValWidthMax2 + 27)
         $('.fin-values-block [data-col="3"] .currency-sign').css('right', finValWidthMax3 + 27)
 
-
 $(document).tooltip({selector: "[class='media-tooltip']", trigger: 'click'})
 
 activate_tab = () ->
@@ -305,13 +304,17 @@ GOVWIKI.history = (index) ->
         document.location.pathname = '/' + route.join('/')
 
 window.addEventListener 'popstate', (event) ->
+    console.log(window.history.state)
     if window.history.state isnt null
         $('#details').html event.state.template
         route = document.location.pathname.split('/').length-1;
         if route is 2 then $('#stantonIcon').hide()
         if route is 1 then $('#searchContainer').show()
+        GOVWIKI.show_data_page()
     else
-        document.location.reload()
+        GOVWIKI.show_search_page()
+#    else
+#        document.location.reload()
 
 # Refresh Disqus thread
 refresh_disqus = (newIdentifier, newUrl, newTitle) ->
@@ -322,6 +325,79 @@ refresh_disqus = (newIdentifier, newUrl, newTitle) ->
             this.page.url = newUrl
             this.page.title = newTitle
 
+#
+# Sort table by column.
+# @param string table  JQuery selector.
+# @param number colNum Column number.
+#
+sortTable = (table, colNum) ->
+    #
+    # Data rows to sort
+    #
+    rows = $(table + ' tbody  [data-id]').get()
+    #
+    # Last row which contains "Add new ..."
+    #
+    lastRow = $(table + ' tbody  tr:last').get();
+    #
+    # Clicked column.
+    #
+    column = $(table + ' tbody tr:first').children('th').eq(colNum)
+    makeSort = true
+
+    if column.hasClass('desc')
+      #
+      # Table currently sorted in descending order.
+      # Restore row order.
+      #
+      column.removeClass('desc').addClass('origin')
+      rows = column.data('origin')
+      makeSort = false;
+    else if column.hasClass('asc')
+      #
+      # Table currently sorted in ascending order.
+      # Sort in desc order.
+      #
+      column.removeClass('asc').addClass('desc')
+      sortFunction = (a, b) ->
+        A = $(a).children('td').eq(colNum).text().toUpperCase()
+        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        if A < B then return 1
+        if A > B then return -1
+        return 0
+
+    else if column.hasClass('origin')
+      #
+      # Original table data order.
+      # Sort in asc order.
+      #
+      column.addClass('asc')
+      sortFunction = (a, b) ->
+        A = $(a).children('td').eq(colNum).text().toUpperCase()
+        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        if A < B then return -1
+        if A > B then return 1
+        return 0
+    else
+      #
+      # Table not ordered yet.
+      # Store original data position and sort in asc order.
+      #
+
+      column.addClass('asc')
+      column.data('origin', rows.slice(0))
+
+      sortFunction = (a, b) ->
+        A = $(a).children('td').eq(colNum).text().toUpperCase()
+        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        if A < B then return -1
+        if A > B then return 1
+        return 0
+
+    if (makeSort) then rows.sort sortFunction
+    $.each rows, (index, row) ->
+        $(table).children('tbody').append(row)
+    $(table).children('tbody').append(lastRow)
 
 initTableHandlers = (person) ->
     $('[data-toggle="tooltip"]').tooltip()
@@ -348,6 +424,29 @@ initTableHandlers = (person) ->
         else
             $(e.currentTarget).closest('td').find('.editable').editable('toggle');
 
+    #
+    # Add sort handlers.
+    #
+    $('.sort').on 'click', (e) ->
+      e.preventDefault()
+      e.stopPropagation()
+      type = $(this).attr('data-sort-type')
+
+      if type is 'year'
+        #
+        # Sort by year.
+        #
+        sortTable('[data-entity-type="Contribution"]', 0)
+      else if type is 'name'
+        #
+        # Sort by name.
+        #
+        sortTable('[data-entity-type="Contribution"]', 1)
+      else if type is 'amount'
+        #
+        # Sort by amount.
+        #
+        sortTable('[data-entity-type="Contribution"]', 3)
 
     $('a').on 'save', (e, params) ->
         entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
@@ -390,16 +489,34 @@ initTableHandlers = (person) ->
 
         if (!authorized) then return false;
 
+#        if (!authorized)
+#            $.ajax '/editrequest/new', {
+#                method: 'POST',
+#                complete: (response) ->
+#                    if response.status is 401
+#                        showModal('/login')
+#                    else if response.status is 200
+#                        authorized = true
+#                error: (error) ->
+#                    if error.status is 401 then showModal('/login')
+#            }
+#
+#        if (!authorized) then return false;
+
         currentEntity = null
+        console.log(tableType)
         if tableType is 'Votes'
-            currentEntity = 'ElectedOfficialVote'
-            $('#addVotes').modal('toggle')
+            currentEntity = 'Legislation'
+            $('#addVotes').modal('toggle').find('form')[0].reset()
         else if tableType is 'Contributions'
             currentEntity = 'Contribution'
-            $('#addContributions').modal('toggle')
+            $('#addContributions').modal('toggle').find('form')[0].reset()
         else if tableType is 'Endorsements'
             currentEntity = 'Endorsement'
-            $('#addEndorsements').modal('toggle')
+            $('#addEndorsements').modal('toggle').find('form')[0].reset()
+        else if tableType is 'Statements'
+            currentEntity = 'PublicStatement'
+            $('#addStatements').modal('toggle').find('form')[0].reset()
 
         if tabPane.hasClass('loaded') then return false
         tabPane[0].classList.add('loaded')
@@ -429,12 +546,20 @@ initTableHandlers = (person) ->
                 select = null
 
                 if currentEntity is 'Endorsement'
-                    select = $('#addEndorsements select')[0]
-                    insertCategories();
+
                 else if currentEntity is 'Contribution'
 
-                else if currentEntity is 'ElectedOfficialVote'
+                else if currentEntity is 'Legislation'
                     select = $('#addVotes select')[0]
+                    insertCategories()
+                    #
+                    # Fill elected officials votes table.
+                    #
+                    compiledTemplate = Handlebars.compile($('#legislation-vote').html())
+                    $('#electedVotes').html compiledTemplate(data);
+
+                else if currentEntity is 'PublicStatement'
+                    select = $('#addStatements select')[0]
                     insertCategories()
 
 
@@ -459,6 +584,18 @@ initTableHandlers = (person) ->
         associations["electedOfficial"] = person.id
 
         if modalType is 'addVotes'
+            ###
+                Add information about votes.
+            ###
+            newRecord['votes'] = []
+            modal.find('#electedVotes').find('tr[data-elected]'). each (idx, element) ->
+                element = $(element)
+                data = {
+                  id: element.attr 'data-elected'
+                  vote: element.find('[data-vote]').val()
+                  sponsored: element.find('[data-sponsored]').val()
+                }
+                newRecord['votes'].push(data);
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
@@ -466,6 +603,8 @@ initTableHandlers = (person) ->
         else if modalType is 'addContributions'
 
         else if modalType is 'addEndorsements'
+
+        else if modalType is 'addStatements'
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
@@ -478,6 +617,18 @@ initTableHandlers = (person) ->
 
             }
         }
+
+#        tr = document.createElement 'tr'
+#        for key, value of sendObject.createRequest.fields.fields
+#            tr.innerHTML += "<td><a href='javascript:void(0);'
+#            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
+
+#        if modalType is 'addVotes'
+#            $('#Votes tr:last-child').before(tr);
+#        else if modalType is 'addContributions'
+#            $('#Contributions tr:last-child').before(tr);
+#        else if modalType is 'addEndorsements'
+#            $('#Endorsements tr:last-child').before(tr);
 
         console.log sendObject
         $.ajax({
