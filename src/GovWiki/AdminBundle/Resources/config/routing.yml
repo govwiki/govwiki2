@@ -47,3 +47,8 @@ editrequest:
     resource: "@GovWikiAdminBundle/Controller/EditRequestController.php"
     type:     annotation
     prefix:   /editrequest
+
+user:
+    resource: "@GovWikiAdminBundle/Controller/UserController.php"
+    type:     annotation
+    prefix:   /user
