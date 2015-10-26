@@ -598,15 +598,17 @@ initTableHandlers = (person) ->
                 #
                 # Get all sub entity fields.
                 #
-                fields = Object.create null, {}
+                data = Object.create null, {}
 
                 element.find('input[type="text"]').each (index, element) ->
                     if element.value
                         fieldName = Object.keys(element.dataset)[0]
-                        fields[fieldName] = element.value
+                        data[fieldName] = element.value
 
-                if Object.keys(fields).length > 0
-                    fields['associations'] = []
+                if Object.keys(data).length > 0
+                    fields = Object.create null, {}
+                    fields['fields'] = data
+                    fields['associations'] = Object.create null, {}
                     fields['associations'][element.attr('data-entity-type')] = element.attr('data-elected')
                     childEntityName = element.parent().parent().attr 'data-entity-type'
                     childs.push({

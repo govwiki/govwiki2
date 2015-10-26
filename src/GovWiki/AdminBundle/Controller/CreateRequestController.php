@@ -51,6 +51,7 @@ class CreateRequestController extends Controller
      */
     public function showAction(CreateRequest $createRequest)
     {
+        dump($createRequest);
         $em = $this->getDoctrine()->getManager();
         $errors = [];
 
@@ -96,6 +97,63 @@ class CreateRequestController extends Controller
             ];
         }
 
+        $childs = [];
+        if (!empty($data['childs'])) {
+            foreach ($data['childs'] as $child) {
+                dump($child);
+                $correctChild = true;
+                try {
+                    $childClassMetadata = $em->getClassMetadata("GovWikiDbBundle:{$child['entityName']}");
+                } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+                    $childClassMetadata = null;
+                    $correctChild = false;
+                }
+
+                if ($correctChild) {
+                    $newChildEntity = $childClassMetadata->newInstance();
+                    foreach ($child['fields']['fields'] as $field => $value) {
+                        $correctField = true;
+                        $setter = 'set'.ucfirst($field);
+
+                        if (!method_exists($newChildEntity, $setter)) {
+                            $correctField = false;
+                        }
+
+                        $childFields[] = [
+                            'field'   => $field,
+                            'value'   => $value,
+                            'correct' => $correctField,
+                        ];
+                    }
+
+                    foreach ($child['fields']['associations'] as $field => $value) {
+                        $correctField = true;
+                        $setter = 'set'.ucfirst($field);
+
+                        if (!method_exists($newChildEntity, $setter)) {
+                            $correctField = false;
+                        }
+
+                        $childFields[] = [
+                            'field'   => $field,
+                            'value'   => $value,
+                            'correct' => $correctField,
+                        ];
+                    }
+                }
+
+                $childs[] = [
+                    'dataType'     => $child['entityName'],
+                    'fields'       => $childFields,
+                    'associations' => $childAssociations,
+                    'correct'      => $correctChild,
+                ];
+
+                $childFields       = [];
+                $childAssociations = [];
+            }
+        }
+
         $fields = [];
         foreach ($data['fields'] as $field => $value) {
             $correctField = true;
@@ -111,11 +169,13 @@ class CreateRequestController extends Controller
                 'correct' => $correctField,
             ];
         }
-
+        dump($childs);
+        // die;
         return [
             'createRequest' => $createRequest,
             'fields'        => $fields,
             'associations'  => $associations,
+            'childs'        => $childs,
             'errors'        => $errors,
         ];
     }

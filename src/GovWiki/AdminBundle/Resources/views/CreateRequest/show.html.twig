@@ -47,6 +47,7 @@
                 </div>
             </div>
             <div class="col-md-6">
+                <h3 style="margin-top:0px;">Fields</h3>
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -69,6 +70,8 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                <hr>
+                <h3>Associations</h3>
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -85,6 +88,44 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                <hr>
+                <h3>Childs</h3>
+                {% for child in childs %}
+                    <h4>{{ child.dataType }}</h4>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <td>Field</td>
+                                <td>Value</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for field in child.fields %}
+                                <tr{% if not field.correct %} class="danger"{% endif %}>
+                                    <td>{{ field.field }}</td>
+                                    <td>{{ field.value }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <td>Association</td>
+                                <td>Value</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for association in child.associations %}
+                                <tr{% if not association.correct %} class="danger"{% endif %}>
+                                    <td>{{ association.field }}</td>
+                                    <td>{{ association.name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if not loop.last %}<hr>{% endif %}
+                {% endfor %}
             </div>
         {% endif %}
     </div>
