@@ -1,0 +1,18 @@
+{% extends 'GovWikiAdminBundle:Layout:main.html.twig' %}
+{% block title %}Edit user{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="col-md-6 col-md-offset-3">
+            {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <button type="submit" class="btn btn-primary">
+                   <i class="glyphicon glyphicon-ok"></i> Update
+                </button>
+                <a class="btn btn-default" href="{{ path('govwiki_admin_user_index') }}">
+                    <i class="glyphicon glyphicon-chevron-left"></i> Back
+                </a>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock body %}

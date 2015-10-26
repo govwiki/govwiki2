@@ -1,0 +1,5 @@
+services:
+    govwiki_admin.twig.extension:
+      class: GovWiki\AdminBundle\Twig\TwigExtensions
+      tags:
+        - { name: twig.extension }
