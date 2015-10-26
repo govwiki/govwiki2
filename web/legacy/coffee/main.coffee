@@ -600,12 +600,15 @@ initTableHandlers = (person) ->
                 #
                 data = Object.create null, {}
 
-                element.find('input[type="text"]').each (index, element) ->
+                element.find('select').each (index, element) ->
                     if element.value
                         fieldName = Object.keys(element.dataset)[0]
                         data[fieldName] = element.value
 
-                if Object.keys(data).length > 0
+                ###
+                  Add only if all fields is set.
+                ###
+                if Object.keys(data).length == 2
                     fields = Object.create null, {}
                     fields['fields'] = data
                     fields['associations'] = Object.create null, {}

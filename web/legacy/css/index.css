@@ -634,4 +634,8 @@ td {
 .icon-arrow-left:before { content: "\e091"; }
 .icon-arrow-right:before { content: "\e092"; }
 
+/*
+
+*/
+#electedVotes .input-group { width: 100%; }
 
