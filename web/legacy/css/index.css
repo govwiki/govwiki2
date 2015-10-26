@@ -613,3 +613,25 @@ td {
     transform: rotate(360deg);
   }
 }
+
+/*
+    By some reasons bootstrap datepicker arrow icons is broken
+    this part of css fix it.
+*/
+.icon-arrow-left,
+.icon-arrow-right {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-arrow-left:before { content: "\e091"; }
+.icon-arrow-right:before { content: "\e092"; }
+
+

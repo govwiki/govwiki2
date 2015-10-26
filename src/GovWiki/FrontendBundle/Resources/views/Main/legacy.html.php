@@ -503,7 +503,7 @@ echo <<<EOT
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
+                            <input data-provide="datepicker" type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Title of Measure: </span>
@@ -620,7 +620,7 @@ echo <<<EOT
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Date" data-date>
+                            <input data-provide="datepicker" type="text" class="form-control" placeholder="Please enter Date" data-date>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Summary: </span>
