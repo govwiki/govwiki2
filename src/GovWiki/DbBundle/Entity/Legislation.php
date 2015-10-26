@@ -286,6 +286,7 @@ class Legislation
     public function addElectedOfficialVote(\GovWiki\DbBundle\Entity\ElectedOfficialVote $electedOfficialVotes)
     {
         $this->electedOfficialVotes[] = $electedOfficialVotes;
+        $electedOfficialVotes->setLegislation($this);
 
         return $this;
     }
