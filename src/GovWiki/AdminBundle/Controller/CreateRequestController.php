@@ -51,7 +51,6 @@ class CreateRequestController extends Controller
      */
     public function showAction(CreateRequest $createRequest)
     {
-        dump($createRequest);
         $em = $this->getDoctrine()->getManager();
         $errors = [];
 
@@ -64,118 +63,13 @@ class CreateRequestController extends Controller
 
         $newEntity = $targetClassMetadata->newInstance();
 
-        $data = $createRequest->getFields();
+        $data = $this->buildData($createRequest->getFields(), $targetClassMetadata);
 
-        $associations = [];
-        foreach ($data['associations'] as $association => $id) {
-            $correctAssociation = true;
-            $associationName    = '';
-            try {
-                $associationRepository = $em->getRepository("GovWikiDbBundle:{$association}");
-            } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
-                $associationRepository = null;
-                $correctAssociation = false;
-            }
-
-            if ($correctAssociation) {
-                $associationEntity = $associationRepository->find($id);
-                if ($associationEntity) {
-                    if (method_exists($associationEntity, '__toString')) {
-                        $associationName = (string) $associationEntity;
-                    } else {
-                        $associationName = 'Can\'t display name';
-                    }
-                } else {
-                    $correctAssociation = false;
-                }
-            }
-
-            $associations[] = [
-                'field'   => $association,
-                'name'    => $associationName,
-                'correct' => $correctAssociation,
-            ];
-        }
-
-        $childs = [];
-        if (!empty($data['childs'])) {
-            foreach ($data['childs'] as $child) {
-                dump($child);
-                $correctChild = true;
-                try {
-                    $childClassMetadata = $em->getClassMetadata("GovWikiDbBundle:{$child['entityName']}");
-                } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
-                    $childClassMetadata = null;
-                    $correctChild = false;
-                }
-
-                if ($correctChild) {
-                    $newChildEntity = $childClassMetadata->newInstance();
-                    foreach ($child['fields']['fields'] as $field => $value) {
-                        $correctField = true;
-                        $setter = 'set'.ucfirst($field);
-
-                        if (!method_exists($newChildEntity, $setter)) {
-                            $correctField = false;
-                        }
-
-                        $childFields[] = [
-                            'field'   => $field,
-                            'value'   => $value,
-                            'correct' => $correctField,
-                        ];
-                    }
-
-                    foreach ($child['fields']['associations'] as $field => $value) {
-                        $correctField = true;
-                        $setter = 'set'.ucfirst($field);
-
-                        if (!method_exists($newChildEntity, $setter)) {
-                            $correctField = false;
-                        }
-
-                        $childFields[] = [
-                            'field'   => $field,
-                            'value'   => $value,
-                            'correct' => $correctField,
-                        ];
-                    }
-                }
-
-                $childs[] = [
-                    'dataType'     => $child['entityName'],
-                    'fields'       => $childFields,
-                    'associations' => $childAssociations,
-                    'correct'      => $correctChild,
-                ];
-
-                $childFields       = [];
-                $childAssociations = [];
-            }
-        }
-
-        $fields = [];
-        foreach ($data['fields'] as $field => $value) {
-            $correctField = true;
-            $setter = 'set'.ucfirst($field);
-
-            if (!method_exists($newEntity, $setter)) {
-                $correctField = false;
-            }
-
-            $fields[] = [
-                'field'   => $field,
-                'value'   => $value,
-                'correct' => $correctField,
-            ];
-        }
-        dump($childs);
-        // die;
         return [
             'createRequest' => $createRequest,
-            'fields'        => $fields,
-            'associations'  => $associations,
-            'childs'        => $childs,
+            'fields'        => $data['fields'],
+            'associations'  => $data['associations'],
+            'childs'        => $data['childs'],
             'errors'        => $errors,
         ];
     }
@@ -190,42 +84,12 @@ class CreateRequestController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $targetClassMetadata = $em->getClassMetadata("GovWikiDbBundle:{$createRequest->getEntityName()}");
-        $newEntity = $targetClassMetadata->newInstance();
-
         $data = $createRequest->getFields();
 
-        foreach ($data['associations'] as $association => $id) {
-            $correctAssociation = true;
-            $associationName    = '';
-            try {
-                $associationRepository = $em->getRepository("GovWikiDbBundle:{$association}");
-            } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
-                $associationRepository = null;
-                $correctAssociation = false;
-            }
-
-            if ($correctAssociation) {
-                $associationEntity = $associationRepository->find($id);
-                if ($associationEntity) {
-                    $associationSetter = 'set'.ucfirst($association);
-                    $newEntity->$associationSetter($associationEntity);
-                }
-            }
-        }
-
-        foreach ($data['fields'] as $field => $value) {
-            $correctField = true;
-            $setter = 'set'.ucfirst($field);
-
-            if (method_exists($newEntity, $setter)) {
-                $newEntity->$setter($value);
-            }
-        }
+        $this->persistData($createRequest->getEntityName(), $data, $em);
 
         $createRequest->setStatus('applied');
 
-        $em->persist($newEntity);
         $em->flush();
 
         return new JsonResponse(['redirect' => $this->generateUrl('govwiki_admin_createrequest_index')]);
@@ -249,7 +113,7 @@ class CreateRequestController extends Controller
     /**
      * @Route("/{id}/remove")
      *
-     * @param  CreateRequest $createRequest
+     * @param CreateRequest $createRequest
      * @return JsonReponse
      */
     public function removeAction(CreateRequest $createRequest)
@@ -259,5 +123,146 @@ class CreateRequestController extends Controller
         $em->flush();
 
         return new JsonResponse(['status' => 'ok']);
+    }
+
+    /**
+     * @param array  $data
+     * @param object $targetClassMetadata
+     * @return array
+     */
+    private function buildData(array $data, $targetClassMetadata)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $newEntity = $targetClassMetadata->newInstance();
+
+        $result['fields'] = [];
+        foreach ($data['fields'] as $field => $value) {
+            $correctField = true;
+            $setter = 'set'.ucfirst($field);
+
+            if (!method_exists($newEntity, $setter)) {
+                $correctField = false;
+            }
+
+            $result['fields'][] = [
+                'field'   => $field,
+                'value'   => $value,
+                'correct' => $correctField,
+            ];
+        }
+
+        $result['associations'] = [];
+        foreach ($data['associations'] as $association => $id) {
+            $correctAssociation = true;
+            $associationName    = '';
+            try {
+                $associationRepository = $em->getRepository("GovWikiDbBundle:{$association}");
+            } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+                $associationRepository = null;
+                $correctAssociation = false;
+            }
+
+            if ($correctAssociation) {
+                $associationEntity = $associationRepository->find($id);
+                if ($associationEntity) {
+                    if (method_exists($associationEntity, '__toString')) {
+                        $associationName = (string) $associationEntity;
+                    } else {
+                        $associationName = 'Can\'t display name';
+                    }
+                } else {
+                    $correctAssociation = false;
+                }
+            }
+
+            $result['associations'][] = [
+                'field'   => $association,
+                'name'    => $associationName,
+                'correct' => $correctAssociation,
+            ];
+        }
+
+        $result['childs'] = [];
+        if (!empty($data['childs'])) {
+            foreach ($data['childs'] as $child) {
+                try {
+                    $childClassMetadata = $em->getClassMetadata("GovWikiDbBundle:{$child['entityName']}");
+                } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+                    $childClassMetadata = null;
+                    $errors[] = "Can't find entity with name '{$child['entityName']}', due to bad entry or internal system error";
+                }
+
+                if (empty($errors)) {
+                    $result['childs'][] = $this->buildData($child['fields'], $childClassMetadata) + ['dataType' => $child['entityName']];
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $entityName
+     * @param array  $data
+     * @return object
+     */
+    private function persistData($entityName, array $data, $em)
+    {
+        // $em = $this->getDoctrine()->getManager();
+
+        $targetClassMetadata = $em->getClassMetadata("GovWikiDbBundle:$entityName");
+        $newEntity = $targetClassMetadata->newInstance();
+
+        if (!empty($data['fields'])) {
+            foreach ($data['fields'] as $field => $value) {
+                $correctField = true;
+                $setter = 'set'.ucfirst($field);
+
+                if (method_exists($newEntity, $setter)) {
+                    if ($targetClassMetadata->getFieldMapping($field)['type'] == 'date') {
+                        $newEntity->$setter(new \Datetime($value));
+                    } else {
+                        $newEntity->$setter($value);
+                    }
+                }
+            }
+        }
+
+        if (!empty($data['associations'])) {
+            foreach ($data['associations'] as $association => $id) {
+                $correctAssociation = true;
+                $associationName    = '';
+                try {
+                    $associationRepository = $em->getRepository("GovWikiDbBundle:{$association}");
+                } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+                    $associationRepository = null;
+                    $correctAssociation = false;
+                }
+
+                if ($correctAssociation) {
+                    $associationEntity = $associationRepository->find($id);
+                    if ($associationEntity) {
+                        $associationSetter = 'set'.ucfirst($association);
+                        $newEntity->$associationSetter($associationEntity);
+                    }
+                }
+            }
+        }
+
+        if (!empty($data['childs'])) {
+            foreach ($data['childs'] as $child) {
+                $adder = 'add'.$child['entityName'];
+
+                if (method_exists($newEntity, $adder)) {
+                    $child = $this->persistData($child['entityName'], $child['fields'], $em);
+                    $em->persist($child);
+                    $newEntity->$adder($child);
+                }
+            }
+        }
+
+        $em->persist($newEntity);
+
+        return $newEntity;
     }
 }
