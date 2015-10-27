@@ -18,6 +18,10 @@ templates = new Templates2
 active_tab = ""
 undef = null
 authorized = false
+#
+# Information about current user.
+#
+user = Object.create null, {}
 
 Handlebars.registerHelper 'if_eq', (a, b, opts) ->
     if `a == b`
@@ -595,7 +599,7 @@ initTableHandlers = (person) ->
             newRecord[fieldName] = element.value
 
         ###
-          Get value from texarea.
+          Get value from texarea's.
         ###
         modal.find('textarea').each (index, element) ->
             fieldName = Object.keys(element.dataset)[0]
@@ -664,10 +668,10 @@ initTableHandlers = (person) ->
             }
         }
 
-        tr = document.createElement 'tr'
-        for key, value of sendObject.createRequest.fields.fields
-            tr.innerHTML += "<td><a href='javascript:void(0);'
-            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
+        ###
+          Append new entity to table.
+        ###
+        #rowTemplate = Handlebars.compile($("#row-#{modalType}").html());
 
         if modalType is 'addVotes'
             ###
@@ -686,12 +690,14 @@ initTableHandlers = (person) ->
             # If we found, show.
             #
             if (add)
-              for key, value of data.fields
-                tr.innerHTML += "<td><a href='javascript:void(0);'
-            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
-              tr.innerHTML += "<td><a href='javascript:void(0);'
-            class='editable editable-pre-wrapped editable-click'>#{selectedText}</a></td>"
-              $('#Votes tr:last-child').before(tr);
+              legislation = Object.create data.fields, {}
+              legislation.date_considered = sendObject.createRequest.fields.fields.dateConsidered
+              legislation.name = sendObject.createRequest.fields.fields.name
+              legislation.summary = sendObject.createRequest.fields.fields.summary
+              legislation.category = selectedText
+              legislation.user = user.username
+              console.log legislation
+              $('#Votes tr:last-child').before rowTemplate({legislation: legislation})
         else if modalType is 'addContributions'
             $('#Contributions tr:last-child').before(tr);
         else if modalType is 'addEndorsements'
@@ -709,6 +715,35 @@ initTableHandlers = (person) ->
                 console.log(data);
         });
 
+###
+  Append create requests to all current electedOfficial page.
+###
+showCreateRequests = (createRequests) ->
+    legislationRow = Handlebars.compile($('#row-addVotes').html())
+    contributionRow = Handlebars.compile($('#row-addContributions').html())
+    endorsementRow = Handlebars.compile($('#row-addEndorsements').html())
+    statementRow = Handlebars.compile($('#row-addStatements').html())
+
+    for request in createRequests
+        # Find out where we place request and prepare data.
+        if request.entity_name is "Legislation"
+            name = 'Votes'
+            template = legislationRow
+            data = {}
+        else if request.entity_name is "Contribution"
+            name = 'Contributions'
+            template = contributionRow
+            data = {}
+        else if request.entity_name is "Endorsement"
+            name = 'Endorsements'
+            template = endorsementRow
+            data = {}
+        else if request.entity_name is "PublicStatement"
+            name = 'Statements'
+            template = statementRow
+            data = {}
+
+        $("\##{name} tr:last-child").before(template(data))
 
 $('#dataContainer').on 'click', '.elected_link', (e) ->
     e.preventDefault();
@@ -723,12 +758,13 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
     jQuery.get url, {}, (data) ->
         if data
             $.ajax
-                url: "http://45.55.0.145/api/elected-official" + url,
+                url: "/api/elected-official" + url,
                 dataType: 'json'
                 cache: true
                 success: (data) ->
 
-                    person = data[0]
+                    person = data.person
+                    createRequests = data.createRequests
 
                     if $.isEmptyObject(person)
                         $('.loader').hide()
@@ -753,6 +789,7 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     $('#dataContainer').css('display': 'block');
 
                     initTableHandlers(person);
+                    showCreateRequests(createRequests);
 
                     $('.vote').on 'click', (e) ->
                         id = e.currentTarget.id
@@ -869,11 +906,12 @@ if routeType is 3
     $('#stantonIcon').show()
     $('#searchIcon').show()
     $.ajax
-        url: "http://45.55.0.145/api/elected-official" + window.path,
+        url: "/api/elected-official" + window.path,
         dataType: 'json'
         success: (data) ->
 
-            person = data[0]
+            person = data.person
+            createRequests = data.createRequests
 
             if $.isEmptyObject(person)
                 $('.loader').hide()
@@ -899,6 +937,7 @@ if routeType is 3
             $('#dataContainer').css('display': 'block');
 
             initTableHandlers(person);
+            showCreateRequests(createRequests);
 
             $('.vote').on 'click', (e) ->
                 id = e.currentTarget.id
@@ -916,13 +955,14 @@ if routeType is 3
             console.log e
 
 $ ->
-  $.ajax '/editrequest/new', {
-    method: 'POST',
-    complete: (response) ->
-      if response.status is 401
-        authorized = false
-      else if response.status is 200
-        authorized = true
+  ###
+    Get current user.
+  ###
+  $.ajax '/api/user', {
+    method: 'GET',
+    success: (response) ->
+      user.username = response.username;
+      authorized = true;
     error: (error) ->
       if error.status is 401 then authorized = false
   }

@@ -503,7 +503,7 @@ echo <<<EOT
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
-                            <input data-provide="datepicker" type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
+                            <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered data-provide="datepicker">
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Title of Measure: </span>
@@ -525,8 +525,8 @@ echo <<<EOT
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add new one</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add</button>
                 </div>
             </div>
         </div>
@@ -565,8 +565,8 @@ echo <<<EOT
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add new one</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add</button>
                 </div>
             </div>
         </div>
@@ -597,8 +597,8 @@ echo <<<EOT
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add new one</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add</button>
                 </div>
             </div>
         </div>
@@ -620,7 +620,7 @@ echo <<<EOT
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
-                            <input data-provide="datepicker" type="text" class="form-control" placeholder="Please enter Date" data-date>
+                            <input type="text" class="form-control" placeholder="Please enter Date" data-date data-provide="datepicker">
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Summary: </span>
@@ -633,13 +633,47 @@ echo <<<EOT
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add new one</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add</button>
                 </div>
             </div>
         </div>
     </div>
 
+</script>
+
+<script id="row-addVotes" type="text//x-handlebars-template">
+    <tr style="background: rgba(80, 0, 0, 0.1)">
+        <td data-date-considered="{{legislation.date_considered}}">
+            <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up" data-no-editable>
+                {{legislation.date_considered}}
+            </span>
+        </td>
+        <td data-name="{{legislation.name}}">
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">{{legislation.name}}</a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td data-summary="{{legislation.summary}}">
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">{{legislation.summary}}</a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td data-vote="{{legislation.vote}}">
+            <span data-no-editable>
+                {{legislation.vote}}
+            </span>
+        </td>
+        <td align="center" date-did-elected-official-propose-this="{{legislation.didElectedOfficialProposeThis}}" data-no-editable>
+            {{legislation.didElectedOfficialProposeThis}}
+        </td>
+        <td data-issue-category="{{legislation.category}}" data-no-editable>{{legislation.category}}</td>
+        <td data-no-editable>{{legislation.user}}</td>
+    </tr>
 </script>
 
 <script id="legislation-vote" type="text/x-handlebars-template">
@@ -656,12 +690,12 @@ echo <<<EOT
                 <td>
                     <div class="input-group">
                        <!-- <input type="text" class="form-control" placeholder="Please enter Vote" data-vote>-->
-                        <select class="form-control" placeholder="Select Vote" data-vote>
+                        <select class="form-control" placeholder="Please enter Vote" data-vote>
                             <option value=""></option>
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
                             <option value="Abstain">Abstain</option>
-                            <option value="Absences">Absences</option>
+                            <option value="Absence">Absence</option>
                             <option value="Not in Office">Not in Office</option>
                         </select>
                     </div>
