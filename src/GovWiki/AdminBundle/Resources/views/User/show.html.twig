@@ -6,72 +6,56 @@
 
 {% block body %}
     <div class="container">
-        {% if errors %}
-            <div class="col-md-2">
-                <a href="{{path('govwiki_admin_user_index')}}" class="btn btn-default">
-                    <span class="glyphicon glyphicon-chevron-left"></span>
-                    Go back
-                </a>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Information</div>
+                <table class="table">
+                    <tr>
+                        <td>Username</td>
+                        <td>{{ user.username }}</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <td>Locked</td>
+                        <td>
+                            {{ macro.renderBoolean(user.locked) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Roles</td>
+                        <td>
+                            {{ user.roles|roles_beautify|join(', ') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Last login at:</td>
+                        <td>{{ user.lastLogin|date('m/d/y g:i a') }}</td>
+                    </tr>
+                </table>
             </div>
-                <div class="col-md-10">
-                    {% for error in errors %}
-                        <div class="alert alert-danger">
-                            {{ error }}
-                        </div>
-                    {% endfor %}
-                </div>
-        {% else %}
-            <div class="col-md-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Information</div>
-                    <table class="table">
-                        <tr>
-                            <td>Username</td>
-                            <td>{{ user.username }}</td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td>{{ user.email }}</td>
-                        </tr>
-                        <tr>
-                            <td>Locked</td>
-                            <td>
-                                {{ macro.renderBoolean(user.locked) }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Roles</td>
-                            <td>
-                                {{ user.roles|roles_beautify|join(', ') }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Last login at:</td>
-                            <td>{{ user.lastLogin|date('m/d/y g:i a') }}</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Actions</div>
-                    <div style="padding: 10px" class="btn-group">
-                            <a href="{{ path('govwiki_admin_user_edit', {'id': user.id}) }}" class="btn btn-default">
-                                <i class="glyphicon glyphicon-pencil"></i> Edit
-                            </a>
-                            {% set glyph = 'glyphicon-ban-circle' %}
-                            {% set title = 'Disable' %}
-                            {% if user.locked %}
-                                {% set glyph = 'glyphicon-ok-circle' %}
-                                {% set title = 'Enable' %}
-                            {% endif %}
-                            <a href="{{ path('govwiki_admin_user_enabletoggle', {'id': user.id}) }}" class="btn btn-default">
-                                <i class="glyphicon {{ glyph }}"> {{ title }}</i>
-                            </a>
-                    </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Actions</div>
+                <div style="padding: 10px" class="btn-group">
+                        <a href="{{ path('govwiki_admin_user_edit', {'id': user.id}) }}" class="btn btn-default">
+                            <i class="glyphicon glyphicon-pencil"></i> Edit
+                        </a>
+                        {% set glyph = 'glyphicon-ban-circle' %}
+                        {% set title = 'Disable' %}
+                        {% if user.locked %}
+                            {% set glyph = 'glyphicon-ok-circle' %}
+                            {% set title = 'Enable' %}
+                        {% endif %}
+                        <a href="{{ path('govwiki_admin_user_enabletoggle', {'id': user.id}) }}" class="btn btn-default">
+                            <i class="glyphicon {{ glyph }}"> {{ title }}</i>
+                        </a>
                 </div>
             </div>
-        {% endif %}
+        </div>
     </div>
 {% endblock %}
 {% block javascripts %}
