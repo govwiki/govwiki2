@@ -486,8 +486,9 @@ initTableHandlers = (person) ->
             error: (error) ->
               if error.status is 401 then showModal('/login')
           }
+          return false;
 
-        if (!authorized) then return false;
+#        if (!authorized) then return false;
 
 #        if (!authorized)
 #            $.ajax '/editrequest/new', {
@@ -576,7 +577,17 @@ initTableHandlers = (person) ->
         entityType = modal[0].dataset.entityType
         console.log(entityType);
 
+        ###
+          Get value from input fields.
+        ###
         modal.find('input[type="text"]').each (index, element) ->
+            fieldName = Object.keys(element.dataset)[0]
+            newRecord[fieldName] = element.value
+
+        ###
+          Get value from texarea.
+        ###
+        modal.find('textarea').each (index, element) ->
             fieldName = Object.keys(element.dataset)[0]
             newRecord[fieldName] = element.value
 
@@ -600,12 +611,15 @@ initTableHandlers = (person) ->
                 #
                 data = Object.create null, {}
 
-                element.find('input[type="text"]').each (index, element) ->
+                element.find('select').each (index, element) ->
                     if element.value
                         fieldName = Object.keys(element.dataset)[0]
                         data[fieldName] = element.value
 
-                if Object.keys(data).length > 0
+                ###
+                  Add only if all fields is set.
+                ###
+                if Object.keys(data).length == 2
                     fields = Object.create null, {}
                     fields['fields'] = data
                     fields['associations'] = Object.create null, {}
@@ -620,6 +634,7 @@ initTableHandlers = (person) ->
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
+            selectedText = $(select).find(':selected').text();
             associations[selectName] = selectedValue
         else if modalType is 'addContributions'
 
@@ -629,6 +644,7 @@ initTableHandlers = (person) ->
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
+            selectedText = $(select).find(':selected').text();
             associations[selectName] = selectedValue
 
         sendObject = {
@@ -638,17 +654,38 @@ initTableHandlers = (person) ->
             }
         }
 
-#        tr = document.createElement 'tr'
-#        for key, value of sendObject.createRequest.fields.fields
-#            tr.innerHTML += "<td><a href='javascript:void(0);'
-#            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
+        tr = document.createElement 'tr'
+        for key, value of sendObject.createRequest.fields.fields
+            tr.innerHTML += "<td><a href='javascript:void(0);'
+            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
 
-#        if modalType is 'addVotes'
-#            $('#Votes tr:last-child').before(tr);
-#        else if modalType is 'addContributions'
-#            $('#Contributions tr:last-child').before(tr);
-#        else if modalType is 'addEndorsements'
-#            $('#Endorsements tr:last-child').before(tr);
+        if modalType is 'addVotes'
+            ###
+              Check if user specified how current elected official voted.
+            ###
+            add = false;
+            data = Object.create null, {}
+            console.log sendObject.createRequest.fields.childs
+            for obj in sendObject.createRequest.fields.childs
+              if Number(obj.fields.associations.electedOfficial) == Number(person.id)
+                add = true
+                data = obj.fields
+                break
+
+            #
+            # If we found, show.
+            #
+            if (add)
+              for key, value of data.fields
+                tr.innerHTML += "<td><a href='javascript:void(0);'
+            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
+              tr.innerHTML += "<td><a href='javascript:void(0);'
+            class='editable editable-pre-wrapped editable-click'>#{selectedText}</a></td>"
+              $('#Votes tr:last-child').before(tr);
+        else if modalType is 'addContributions'
+            $('#Contributions tr:last-child').before(tr);
+        else if modalType is 'addEndorsements'
+            $('#Endorsements tr:last-child').before(tr);
 
         console.log sendObject
         $.ajax({
@@ -867,3 +904,15 @@ if routeType is 3
 
         error: (e) ->
             console.log e
+
+$ ->
+  $.ajax '/editrequest/new', {
+    method: 'POST',
+    complete: (response) ->
+      if response.status is 401
+        authorized = false
+      else if response.status is 200
+        authorized = true
+    error: (error) ->
+      if error.status is 401 then authorized = false
+  }

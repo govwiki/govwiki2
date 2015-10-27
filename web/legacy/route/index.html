@@ -486,7 +486,7 @@
     </div>
 
     <!-- Votes Modal -->
-    <div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="ElectedOfficialVote">
+    <div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Legislation">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -501,7 +501,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
+                            <input data-provide="datepicker" type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Title of Measure: </span>
@@ -509,7 +509,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Summary of Measure: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Summary of Measure" data-summary>
+                            <textarea class="form-control" placeholder="Please enter Summary of Measure" data-summary></textarea>
                         </div>
                         <div id="electedVotes"></div>
                         <!--<div class="input-group">
@@ -618,7 +618,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Date" data-date>
+                            <input data-provide="datepicker" type="text" class="form-control" placeholder="Please enter Date" data-date>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Summary: </span>
@@ -641,24 +641,36 @@
 </script>
 
 <script id="legislation-vote" type="text/x-handlebars-template">
-    <table class="table table-hover" style="margin-top: 20px">
+    <table class="table table-hover" style="margin-top: 20px" data-entity-type="ElectedOfficialVote">
         <tr>
             <th>Elected official</th>
-            <th>How Vote</th>
+            <th>How Voted</th>
             <th>Sponsored by?</th>
         </tr>
         {{#electedOfficials}}
         {{#this}}
-            <tr data-elected-{{id}}>
+            <tr data-elected="{{id}}" data-entity-type="electedOfficial">
                 <td>{{fullName}}</td>
                 <td>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Please enter Vote" data-elected-{{id}}-vote>
+                       <!-- <input type="text" class="form-control" placeholder="Please enter Vote" data-vote>-->
+                        <select class="form-control" placeholder="Please enter Vote" data-vote>
+                            <option value=""></option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                            <option value="Abstain">Abstain</option>
+                            <option value="Absences">Absences</option>
+                            <option value="Not in Office">Not in Office</option>
+                        </select>
                     </div>
                 </td>
                 <td>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Please enter Vote" data-elected-{{id}}-sponsored>
+                        <select class="form-control" data-did-elected-official-propose-this>
+                            <option value="No" selected="selected">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                        <!--<input type="" class="form-control" placeholder="Please enter sponsored by?" data-did-elected-official-propose-this>-->
                     </div>
                 </td>
             </tr>

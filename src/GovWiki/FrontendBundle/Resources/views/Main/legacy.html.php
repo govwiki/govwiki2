@@ -503,7 +503,7 @@ echo <<<EOT
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
+                            <input data-provide="datepicker" type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Title of Measure: </span>
@@ -511,7 +511,7 @@ echo <<<EOT
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Summary of Measure: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Summary of Measure" data-summary>
+                            <textarea class="form-control" placeholder="Please enter Summary of Measure" data-summary></textarea>
                         </div>
                         <div id="electedVotes"></div>
                         <!--<div class="input-group">
@@ -620,7 +620,7 @@ echo <<<EOT
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Date" data-date>
+                            <input data-provide="datepicker" type="text" class="form-control" placeholder="Please enter Date" data-date>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Summary: </span>
@@ -646,7 +646,7 @@ echo <<<EOT
     <table class="table table-hover" style="margin-top: 20px" data-entity-type="ElectedOfficialVote">
         <tr>
             <th>Elected official</th>
-            <th>How Vote</th>
+            <th>How Voted</th>
             <th>Sponsored by?</th>
         </tr>
         {{#electedOfficials}}
@@ -655,12 +655,24 @@ echo <<<EOT
                 <td>{{fullName}}</td>
                 <td>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Please enter Vote" data-vote>
+                       <!-- <input type="text" class="form-control" placeholder="Please enter Vote" data-vote>-->
+                        <select class="form-control" placeholder="Select Vote" data-vote>
+                            <option value=""></option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                            <option value="Abstain">Abstain</option>
+                            <option value="Absences">Absences</option>
+                            <option value="Not in Office">Not in Office</option>
+                        </select>
                     </div>
                 </td>
                 <td>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Please enter sponsored by?" data-did-elected-official-propose-this>
+                        <select class="form-control" data-did-elected-official-propose-this>
+                            <option value="No" selected="selected">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                        <!--<input type="" class="form-control" placeholder="Please enter sponsored by?" data-did-elected-official-propose-this>-->
                     </div>
                 </td>
             </tr>
