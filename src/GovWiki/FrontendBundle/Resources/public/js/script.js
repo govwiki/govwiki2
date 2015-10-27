@@ -10,6 +10,15 @@ $('#modal-window').on('hidden.bs.modal', function() {
     $(this).find('.modal-content').html('<div class="modal-body">Loading...</div>');
 });
 
+$(function (){
+    /*
+     Datepicker.
+     Add hide on select.
+     */
+    $('[data-provide="datepicker"]').on('changeDate', function() {
+        $(this).datepicker('hide');
+    });
+});
 
 // Login
 

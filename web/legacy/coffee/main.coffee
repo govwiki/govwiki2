@@ -553,6 +553,11 @@ initTableHandlers = (person) ->
                 else if currentEntity is 'Legislation'
                     select = $('#addVotes select')[0]
                     insertCategories()
+                    $('#addVotes').find('[data-provide="datepicker"]').on(
+                      'changeDate',
+                      () ->
+                        $(this).datepicker 'hide'
+                    )
                     #
                     # Fill elected officials votes table.
                     #
@@ -562,6 +567,11 @@ initTableHandlers = (person) ->
                 else if currentEntity is 'PublicStatement'
                     select = $('#addStatements select')[0]
                     insertCategories()
+                    $('#addStatements').find('[data-provide="datepicker"]').on(
+                      'changeDate',
+                      () ->
+                        $(this).datepicker 'hide'
+                    )
 
 
 
