@@ -563,7 +563,17 @@ echo <<<EOT
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Contributor Type? </span>
-                            <input type="text" class="form-control" placeholder="Please enter Contributor Type" data-contributor-type>
+                            <select class="form-control" name="contributorType" data-contributor-type>
+                                <option value=""></option>
+                                <option value="Candidate Committee">Candidate Committee</option>
+                                <option value="Corporate">Corporate</option>
+                                <option value="Individual">Individual</option>
+                                <option value="Political Party">Political Party</option>
+                                <option value="Political Action Committee">Political Action Committee</option>
+                                <option value="Self">Self</option>
+                                <option value="Union">Union</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -595,7 +605,14 @@ echo <<<EOT
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Type: </span>
-                            <input type="text" class="form-control" placeholder="Please enter Type" data-endorser-type>
+                            <select class="form-control" name="endorserType" data-endorser-type>
+                                <option value=""></option>
+                                <option value="Elected Official">Elected Official</option>
+                                <option value="Organization">Organization</option>
+                                <option value="Political Party">Political Party</option>
+                                <option value="Union">Union</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -708,12 +725,8 @@ echo <<<EOT
                title="">{{contributionAmount}}</a>
             <span class="glyphicon glyphicon-pencil edit"></span>
         </td>
-        <td data-contributor-type="{{contributorType}}">
-            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{contributorType}}</a>
-            <span class="glyphicon glyphicon-pencil edit"></span>
+        <td data-contributor-type="{{contributorType}}" data-no-editable=>
+            {{contributorType}}
         </td>
         <td data-no-editable>{{user}}</td>
     </tr>
@@ -732,11 +745,8 @@ echo <<<EOT
                class="editable editable-pre-wrapped editable-click" data-original-title="">{{nameOfEndorser}}</a>
             <span class="glyphicon glyphicon-pencil edit"></span>
         </td>
-        <td data-endorser-type="{{endorserType}}">
-            <a href="javascript:void(0);" data-type="textarea"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title="">{{endorserType}}</a>
-            <span class="glyphicon glyphicon-pencil edit"></span>
+        <td data-endorser-type="{{endorserType}}" data-no-editable>
+            {{endorserType}}
         </td>
         <td data-no-editable>{{user}}</td>
     </tr>

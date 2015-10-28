@@ -644,10 +644,20 @@ initTableHandlers = (person) ->
             selectedValue = select.options[select.selectedIndex].value
             selectedText = $(select).find(':selected').text();
             associations[selectName] = selectedValue
-#        else if modalType is 'addContributions'
-#
-#        else if modalType is 'addEndorsements'
-#
+        else if modalType is 'addContributions'
+            select = modal.find('select')[0]
+            selectName = select.name
+            selectedValue = select.options[select.selectedIndex].value
+            selectedText = $(select).find(':selected').text()
+            newRecord[selectName] = selectedValue
+
+        else if modalType is 'addEndorsements'
+            select = modal.find('select')[0]
+            selectName = select.name
+            selectedValue = select.options[select.selectedIndex].value
+            selectedText = $(select).find(':selected').text()
+            newRecord[selectName] = selectedValue
+
         else if modalType is 'addStatements'
             select = modal.find('select')[0]
             selectName = select.name
@@ -697,9 +707,11 @@ initTableHandlers = (person) ->
             ###
               Format contribution amount.
             ###
+            data.contributorType = selectedText
             data.contributionAmount = numeral(data.contributionAmount).format('0,000')
             $('#Contributions tr:last-child').before rowTemplate(data);
         else if modalType is 'addEndorsements'
+            data.endorserType = selectedText
             $('#Endorsements tr:last-child').before rowTemplate(data);
         else if modalType is 'addStatements'
             data['category'] = selectedText
