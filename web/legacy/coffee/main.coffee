@@ -359,6 +359,7 @@ sortTable = (table, colNum) ->
       # Restore row order.
       #
       column.removeClass('desc').addClass('origin')
+      column.find('i').removeClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-top')
       rows = column.data('origin')
       makeSort = false;
     else if column.hasClass('asc')
@@ -367,9 +368,10 @@ sortTable = (table, colNum) ->
       # Sort in desc order.
       #
       column.removeClass('asc').addClass('desc')
+      column.find('i').removeClass('glyphicon-triangle-bottom').addClass('glyphicon-triangle-top')
       sortFunction = (a, b) ->
-        A = $(a).children('td').eq(colNum).text().toUpperCase()
-        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        A = $(a).children('td').eq(colNum).text().toUpperCase().trim()
+        B = $(b).children('td').eq(colNum).text().toUpperCase().trim()
         if A < B then return 1
         if A > B then return -1
         return 0
@@ -379,10 +381,11 @@ sortTable = (table, colNum) ->
       # Original table data order.
       # Sort in asc order.
       #
-      column.addClass('asc')
+      column.removeClass('origin').addClass('asc')
+      column.find('i').addClass('glyphicon-triangle-bottom')
       sortFunction = (a, b) ->
-        A = $(a).children('td').eq(colNum).text().toUpperCase()
-        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        A = $(a).children('td').eq(colNum).text().toUpperCase().trim()
+        B = $(b).children('td').eq(colNum).text().toUpperCase().trim()
         if A < B then return -1
         if A > B then return 1
         return 0
@@ -394,10 +397,10 @@ sortTable = (table, colNum) ->
 
       column.addClass('asc')
       column.data('origin', rows.slice(0))
-
+      column.find('i').addClass('glyphicon-triangle-bottom')
       sortFunction = (a, b) ->
-        A = $(a).children('td').eq(colNum).text().toUpperCase()
-        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        A = $(a).children('td').eq(colNum).text().toUpperCase().trim()
+        B = $(b).children('td').eq(colNum).text().toUpperCase().trim()
         if A < B then return -1
         if A > B then return 1
         return 0
@@ -455,6 +458,11 @@ initTableHandlers = (person) ->
         # Sort by amount.
         #
         sortTable('[data-entity-type="Contribution"]', 3)
+      else if type is 'contributor-type'
+        #
+        # Sort by contributor type.
+        #
+        sortTable('[data-entity-type="Contribution"]', 4)
 
     $('a').on 'save', (e, params) ->
         entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
@@ -640,12 +648,12 @@ initTableHandlers = (person) ->
 #
 #        else if modalType is 'addEndorsements'
 #
-#        else if modalType is 'addStatements'
-#            select = modal.find('select')[0]
-#            selectName = select.name
-#            selectedValue = select.options[select.selectedIndex].value
-#            selectedText = $(select).find(':selected').text();
-#            associations[selectName] = selectedValue
+        else if modalType is 'addStatements'
+            select = modal.find('select')[0]
+            selectName = select.name
+            selectedValue = select.options[select.selectedIndex].value
+            selectedText = $(select).find(':selected').text();
+            associations[selectName] = selectedValue
 
         sendObject = {
             createRequest: {
@@ -662,7 +670,9 @@ initTableHandlers = (person) ->
         #
         # Collect data.
         #
-        data = sendObject.createRequest.fields.fields
+        data = Object.create null, {}
+        for key, value of sendObject.createRequest.fields.fields
+          data[key] = value
         data['user'] = user.username
 
         if modalType is 'addVotes'
@@ -682,14 +692,17 @@ initTableHandlers = (person) ->
             #
             if (add)
               data['category'] = selectedText
-              console.log 'sssss'
-              console.log data
               $('#Votes tr:last-child').before rowTemplate(data)
         else if modalType is 'addContributions'
+            ###
+              Format contribution amount.
+            ###
+            data.contributionAmount = numeral(data.contributionAmount).format('0,000')
             $('#Contributions tr:last-child').before rowTemplate(data);
         else if modalType is 'addEndorsements'
             $('#Endorsements tr:last-child').before rowTemplate(data);
         else if modalType is 'addStatements'
+            data['category'] = selectedText
             $('#Statements tr:last-child').before rowTemplate(data);
 
         ###
@@ -736,12 +749,16 @@ showCreateRequests = (person, createRequests) ->
         else if request.entity_name is "Contribution"
             name = 'Contributions'
             template = contributionRow
+
+            data['contributionAmount'] = numeral(data['contributionAmount']).format('0,000')
         else if request.entity_name is "Endorsement"
             name = 'Endorsements'
             template = endorsementRow
         else if request.entity_name is "PublicStatement"
             name = 'Statements'
             template = statementRow
+
+            data['category'] = categories[request.fields.associations.issueCategory - 1].name
 
         $("\##{name} tr:last-child").before(template(data))
 
@@ -766,6 +783,12 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     person = data.person
                     createRequests = data.createRequests
                     categories = data.categories
+
+                    ###
+                      Format contribution amount.
+                    ###
+                    for contribution in person.contributions
+                        contribution.contribution_amount = numeral(contribution.contribution_amount).format('0,000')
 
                     console.log data
 
@@ -916,6 +939,13 @@ if routeType is 3
             person = data.person
             createRequests = data.createRequests
             categories = data.categories
+
+            ###
+              Format contribution amount.
+            ###
+            for contribution in person.contributions
+                contribution.contribution_amount = numeral(contribution.contribution_amount).format('0,000')
+
             console.log data
 
             if $.isEmptyObject(person)

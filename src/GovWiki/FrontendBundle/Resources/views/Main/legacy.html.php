@@ -309,11 +309,11 @@ echo <<<EOT
 
                     <table class="table table-hover" data-entity-type="Contribution">
                         <tr>
-                            <th><a class="sort" href="javascript:void(0);" data-sort-type="year">Election Year</a></th>
-                            <th><a class="sort" href="javascript:void(0);" data-sort-type="name">Name of contributor</a></th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="year">Election Year</a> <i class="glyphicon"></i></th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="name">Name of contributor</a> <i class="glyphicon"></i></th>
                             <th>Ind. Exp. Desc.</th>
-                            <th><a class="sort" href="javascript:void(0);" data-sort-type="amount">Amount</a></th>
-                            <th>Contributor Type</th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="amount">Amount</a> <i class="glyphicon"></i></th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="contributor-type">Contributor Type</a> <i class="glyphicon"></i></th>
                         </tr>
 
                         {{#if contributions}}
@@ -420,7 +420,7 @@ echo <<<EOT
                         {{/if}}
                         <tr>
                             <td colspan="7" class="add">
-                                Add new Endorsements
+                                Add new Endorsement
                                 <span class="glyphicon glyphicon-plus"></span>
                             </td>
                         </tr>
@@ -434,6 +434,7 @@ echo <<<EOT
                             <th>Date</th>
                             <th>Summary</th>
                             <th>URL</th>
+                            <th>Category</th>
                         </tr>
 
                         {{#if public_statements}}
@@ -461,6 +462,8 @@ echo <<<EOT
                                    title="">{{url}}</a>
                                 <span class="glyphicon glyphicon-pencil edit"></span>
                             </td>
+                            <td data-issue-category="{{issue_category.name}}" data-no-editable>{{issue_category.name}}
+                            </td>
                             {{/this}}
                         </tr>
                         {{/public_statements}}
@@ -474,7 +477,7 @@ echo <<<EOT
                         {{/if}}
                         <tr>
                             <td colspan="7" class="add">
-                                Add new Statements
+                                Add new Statement
                                 <span class="glyphicon glyphicon-plus"></span>
                             </td>
                         </tr>
@@ -614,6 +617,10 @@ echo <<<EOT
                 </div>
                 <div class="modal-body">
                     <form name="addStatements">
+                         <div class="input-group">
+                            <span class="input-group-addon">Category: </span>
+                            <select class="form-control" data-issue-category></select>
+                        </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
                             <input type="text" class="form-control" placeholder="Please enter Date" data-date data-provide="datepicker">
@@ -639,7 +646,7 @@ echo <<<EOT
 </script>
 
 <script id="row-addVotes" type="text//x-handlebars-template">
-    <tr style="background: rgba(80, 0, 0, 0.1)">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
         <td data-date-considered="{{dateConsidered}}">
             <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up" data-no-editable>
                 {{dateConsidered}}
@@ -673,7 +680,7 @@ echo <<<EOT
 </script>
 
 <script id="row-addContributions" type="text//x-handlebars-template">
-    <tr style="background: rgba(80, 0, 0, 0.1)">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
         <td data-election-year="{{electionYear}}">
             <a href="javascript:void(0);" data-type="textarea" data-pk="1"
                data-placeholder="Please edit" data-title="Please edit"
@@ -713,7 +720,7 @@ echo <<<EOT
 </script>
 
 <script id="row-addEndorsements" type="text//x-handlebars-template">
-    <tr style="background: rgba(80, 0, 0, 0.1)">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
         <td data-election-year="{{electionYear}}">
             <a data-type="textarea"
                data-placeholder="Please edit" data-title="Please edit"
@@ -736,7 +743,7 @@ echo <<<EOT
 </script>
 
 <script id="row-addStatements" type="text//x-handlebars-template">
-    <tr style="background: rgba(80, 0, 0, 0.1)">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
         <td data-date="{{date}}">
             <a href="javascript:void(0);" data-type="textarea" data-pk="1"
                data-placeholder="Please edit" data-title="Please edit"
@@ -756,6 +763,9 @@ echo <<<EOT
                class="editable editable-pre-wrapped editable-click" data-original-title=""
                title="">{{url}}</a>
             <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td data-url="{{category}}" data-no-editable="">
+            {{category}}
         </td>
         <td data-no-editable>{{user}}</td>
     </tr>
