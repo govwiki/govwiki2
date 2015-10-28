@@ -22,6 +22,10 @@ authorized = false
 # Information about current user.
 #
 user = Object.create null, {}
+#
+# Issues category, fill in elected official page.
+#
+categories = Object.create null, {}
 
 Handlebars.registerHelper 'if_eq', (a, b, opts) ->
     if `a == b`
@@ -492,22 +496,6 @@ initTableHandlers = (person) ->
           }
           return false;
 
-#        if (!authorized) then return false;
-
-#        if (!authorized)
-#            $.ajax '/editrequest/new', {
-#                method: 'POST',
-#                complete: (response) ->
-#                    if response.status is 401
-#                        showModal('/login')
-#                    else if response.status is 200
-#                        authorized = true
-#                error: (error) ->
-#                    if error.status is 401 then showModal('/login')
-#            }
-#
-#        if (!authorized) then return false;
-
         currentEntity = null
         console.log(tableType)
         if tableType is 'Votes'
@@ -576,8 +564,6 @@ initTableHandlers = (person) ->
                       () ->
                         $(this).datepicker 'hide'
                     )
-
-
 
             error: (error) ->
                 if(error.status == 401) then showModal('/login')
@@ -650,16 +636,16 @@ initTableHandlers = (person) ->
             selectedValue = select.options[select.selectedIndex].value
             selectedText = $(select).find(':selected').text();
             associations[selectName] = selectedValue
-        else if modalType is 'addContributions'
-
-        else if modalType is 'addEndorsements'
-
-        else if modalType is 'addStatements'
-            select = modal.find('select')[0]
-            selectName = select.name
-            selectedValue = select.options[select.selectedIndex].value
-            selectedText = $(select).find(':selected').text();
-            associations[selectName] = selectedValue
+#        else if modalType is 'addContributions'
+#
+#        else if modalType is 'addEndorsements'
+#
+#        else if modalType is 'addStatements'
+#            select = modal.find('select')[0]
+#            selectName = select.name
+#            selectedValue = select.options[select.selectedIndex].value
+#            selectedText = $(select).find(':selected').text();
+#            associations[selectName] = selectedValue
 
         sendObject = {
             createRequest: {
@@ -671,38 +657,44 @@ initTableHandlers = (person) ->
         ###
           Append new entity to table.
         ###
-        #rowTemplate = Handlebars.compile($("#row-#{modalType}").html());
+        rowTemplate = Handlebars.compile($("#row-#{modalType}").html());
+
+        #
+        # Collect data.
+        #
+        data = sendObject.createRequest.fields.fields
+        data['user'] = user.username
 
         if modalType is 'addVotes'
             ###
               Check if user specified how current elected official voted.
             ###
             add = false;
-            data = Object.create null, {}
-            console.log sendObject.createRequest.fields.childs
             for obj in sendObject.createRequest.fields.childs
               if Number(obj.fields.associations.electedOfficial) == Number(person.id)
                 add = true
-                data = obj.fields
+                for key, value of obj.fields.fields
+                  data[key] = value
                 break
 
             #
             # If we found, show.
             #
             if (add)
-              legislation = Object.create data.fields, {}
-              legislation.date_considered = sendObject.createRequest.fields.fields.dateConsidered
-              legislation.name = sendObject.createRequest.fields.fields.name
-              legislation.summary = sendObject.createRequest.fields.fields.summary
-              legislation.category = selectedText
-              legislation.user = user.username
-              console.log legislation
-              $('#Votes tr:last-child').before rowTemplate({legislation: legislation})
+              data['category'] = selectedText
+              console.log 'sssss'
+              console.log data
+              $('#Votes tr:last-child').before rowTemplate(data)
         else if modalType is 'addContributions'
-            $('#Contributions tr:last-child').before(tr);
+            $('#Contributions tr:last-child').before rowTemplate(data);
         else if modalType is 'addEndorsements'
-            $('#Endorsements tr:last-child').before(tr);
+            $('#Endorsements tr:last-child').before rowTemplate(data);
+        else if modalType is 'addStatements'
+            $('#Statements tr:last-child').before rowTemplate(data);
 
+        ###
+          Send create request to api.
+        ###
         console.log sendObject
         $.ajax({
             url: '/api/createrequest/create',
@@ -718,30 +710,38 @@ initTableHandlers = (person) ->
 ###
   Append create requests to all current electedOfficial page.
 ###
-showCreateRequests = (createRequests) ->
+showCreateRequests = (person, createRequests) ->
     legislationRow = Handlebars.compile($('#row-addVotes').html())
     contributionRow = Handlebars.compile($('#row-addContributions').html())
     endorsementRow = Handlebars.compile($('#row-addEndorsements').html())
     statementRow = Handlebars.compile($('#row-addStatements').html())
 
     for request in createRequests
-        # Find out where we place request and prepare data.
+        #
+        # Prepare create request data for template.
+        #
+        data = request.fields.fields
+        data['user'] = request.user.username
+
+        #
+        # Find out template for current request and additional values.
+        #
         if request.entity_name is "Legislation"
             name = 'Votes'
             template = legislationRow
-            data = {}
+            for key, value of request.fields.childs[0].fields.fields
+                data[key] = value
+            data['category'] = categories[request.fields.associations.issueCategory - 1].name
+
         else if request.entity_name is "Contribution"
             name = 'Contributions'
             template = contributionRow
-            data = {}
         else if request.entity_name is "Endorsement"
             name = 'Endorsements'
             template = endorsementRow
-            data = {}
         else if request.entity_name is "PublicStatement"
             name = 'Statements'
             template = statementRow
-            data = {}
 
         $("\##{name} tr:last-child").before(template(data))
 
@@ -765,6 +765,9 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
 
                     person = data.person
                     createRequests = data.createRequests
+                    categories = data.categories
+
+                    console.log data
 
                     if $.isEmptyObject(person)
                         $('.loader').hide()
@@ -789,7 +792,7 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     $('#dataContainer').css('display': 'block');
 
                     initTableHandlers(person);
-                    showCreateRequests(createRequests);
+                    showCreateRequests(person, createRequests);
 
                     $('.vote').on 'click', (e) ->
                         id = e.currentTarget.id
@@ -912,6 +915,8 @@ if routeType is 3
 
             person = data.person
             createRequests = data.createRequests
+            categories = data.categories
+            console.log data
 
             if $.isEmptyObject(person)
                 $('.loader').hide()
@@ -937,7 +942,7 @@ if routeType is 3
             $('#dataContainer').css('display': 'block');
 
             initTableHandlers(person);
-            showCreateRequests(createRequests);
+            showCreateRequests(person, createRequests);
 
             $('.vote').on 'click', (e) ->
                 id = e.currentTarget.id

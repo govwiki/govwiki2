@@ -35,11 +35,11 @@ class ElectedOfficialController extends Controller
         $serializer = $this->get('jms_serializer');
 
         $response = new Response();
-//        $response->setContent($serializer->serialize($electedOfficial, 'json', SerializationContext::create()->enableMaxDepthChecks()));
         $response->setContent($serializer->serialize(
             [
                 'person' => $electedOfficial,
                 'createRequests' => $repository->getCreateRequestFor($electedOfficial->getId()),
+                'categories' => $em->getRepository('GovWikiDbBundle:IssueCategory')->findAll(),
             ],
             'json',
             SerializationContext::create()->enableMaxDepthChecks()

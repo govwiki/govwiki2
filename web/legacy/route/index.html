@@ -501,7 +501,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Date: </span>
-                            <input data-provide="datepicker" type="text" class="form-control" placeholder="Please enter Date" data-date-considered>
+                            <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered data-provide="datepicker">
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Title of Measure: </span>
@@ -613,12 +613,8 @@
                 <div class="modal-body">
                     <form name="addStatements">
                         <div class="input-group">
-                            <span class="input-group-addon">Category: </span>
-                            <select class="form-control" data-issue-category></select>
-                        </div>
-                        <div class="input-group">
                             <span class="input-group-addon">Date: </span>
-                            <input data-provide="datepicker" type="text" class="form-control" placeholder="Please enter Date" data-date>
+                            <input type="text" class="form-control" placeholder="Please enter Date" data-date data-provide="datepicker">
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">Summary: </span>
@@ -641,36 +637,125 @@
 </script>
 
 <script id="row-addVotes" type="text//x-handlebars-template">
-    <tr>
-        <td data-date-considered="{{legislation.date_considered}}">
+    <tr style="background: rgba(80, 0, 0, 0.1)">
+        <td data-date-considered="{{dateConsidered}}">
             <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up" data-no-editable>
-                {{legislation.date_considered}}
+                {{dateConsidered}}
             </span>
         </td>
-        <td data-name="{{legislation.name}}">
+        <td data-name="{{name}}">
             <a href="javascript:void(0);" data-type="textarea" data-pk="1"
                data-placeholder="Please edit" data-title="Please edit"
                class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{legislation.name}}</a>
+               title="">{{name}}</a>
             <span class="glyphicon glyphicon-pencil edit"></span>
         </td>
-        <td data-summary="{{legislation.summary}}">
+        <td data-summary="{{summary}}">
             <a href="javascript:void(0);" data-type="textarea" data-pk="1"
                data-placeholder="Please edit" data-title="Please edit"
                class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{legislation.summary}}</a>
+               title="">{{summary}}</a>
             <span class="glyphicon glyphicon-pencil edit"></span>
         </td>
-        <td data-vote="{{legislation.vote}}">
+        <td data-vote="{{vote}}">
             <span data-no-editable>
-                {{legislation.vote}}
+                {{vote}}
             </span>
         </td>
-        <td align="center" date-did-elected-official-propose-this="{{legislation.didElectedOfficialProposeThis}}" data-no-editable>
-            {{legislation.didElectedOfficialProposeThis}}
+        <td align="center" date-did-elected-official-propose-this="{{didElectedOfficialProposeThis}}" data-no-editable>
+            {{didElectedOfficialProposeThis}}
         </td>
-        <td data-issue-category="{{legislation.category}}" data-no-editable>{{legislation.category}}</td>
-        <td data-no-editable>{{legislation.user}}</td>
+        <td data-issue-category="{{category}}" data-no-editable>{{category}}</td>
+        <td data-no-editable>{{user}}</td>
+    </tr>
+</script>
+
+<script id="row-addContributions" type="text//x-handlebars-template">
+    <tr style="background: rgba(80, 0, 0, 0.1)">
+        <td data-election-year="{{electionYear}}">
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">{{electionYear}}</a>
+        </td>
+        <td data-contributor-name="{{contributorName}}">
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">{{contributorName}}</a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td data-independent-expenditure-desc="{{independentExpenditureDesc}}">
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">{{independentExpenditureDesc}}</a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td data-contribution-amount="{{contributionAmount}}">
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">{{contributionAmount}}</a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td data-contributor-type="{{contributorType}}">
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">{{contributorType}}</a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td data-no-editable>{{user}}</td>
+    </tr>
+</script>
+
+<script id="row-addEndorsements" type="text//x-handlebars-template">
+    <tr style="background: rgba(80, 0, 0, 0.1)">
+        <td data-election-year="{{electionYear}}">
+            <a data-type="textarea"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title="">{{electionYear}}</a>
+        </td>
+        <td data-name-of-endorser="{{nameOfEndorser}}">
+            <a href="javascript:void(0);" data-type="textarea"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title="">{{nameOfEndorser}}</a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td data-endorser-type="{{endorserType}}">
+            <a href="javascript:void(0);" data-type="textarea"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title="">{{endorserType}}</a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td data-no-editable>{{user}}</td>
+    </tr>
+</script>
+
+<script id="row-addStatements" type="text//x-handlebars-template">
+    <tr style="background: rgba(80, 0, 0, 0.1)">
+        <td data-date="{{date}}">
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">{{date}}</a>
+        </td>
+        <td data-contributor-name="{{summary}}">
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">{{summary}}</a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td data-url="{{url}}">
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">{{url}}</a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td data-no-editable>{{user}}</td>
     </tr>
 </script>
 
