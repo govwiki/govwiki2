@@ -134,9 +134,6 @@
   padding-top: 10px;
   padding-bottom: 30px;
 }
-#fieldTabs {
-  font-size: 140%;
-}
 #tabsContent {
   font-size: 140%;
   line-height: 2;
@@ -672,3 +669,5 @@ th i { font-size: 10px }
 */
 #user-text a:hover { background-color: transparent; }
 #user-text a { padding-right: 0; }
+
+#details .nav { font-size: 140%; }
