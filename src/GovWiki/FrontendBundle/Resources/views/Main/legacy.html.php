@@ -33,6 +33,8 @@ echo <<<EOT
         <div class="container">
           <div class="innder-container"><strong class="logo"><a href="http://californiapolicycenter.org/"><img src="/legacy/img/logo_cpc_v2_244x60.png" alt="California Policy Center"></a></strong>
             <ul class="nav navbar-nav navbar-right search-icon">
+              <li id="user-text"><a></a><span style="font-size:200%;vertical-align:middle;"></span></li>
+              <li id="user"><a href="javascript:void(0);">&nbsp;&nbsp;&nbsp;<span style="font-size:200%;vertical-align:middle;"></span></a></li>
               <li id="searchIcon"><a href="javascript:void(0);" onclick="GOVWIKI.history(0)">Return to Map &nbsp;&nbsp;&nbsp;<span style="font-size:200%;vertical-align:middle;"></span></a></li>
               <li id="stantonIcon"><a href="javascript:void(0);" onclick="GOVWIKI.history(-1)">Return to Stanton &nbsp;&nbsp;&nbsp;<span style="font-size:200%;vertical-align:middle;"></span></a></li>
             </ul>
@@ -650,7 +652,7 @@ echo <<<EOT
                             <span class="input-group-addon">URL: </span>
                             <input type="text" class="form-control url-input" placeholder="Please enter URL" data-url>
                         </div>
-                        <div id="url-statement" class="url-content">
+                        <div id="statement" class="url-content">
                             <img class="url-content-img">
                             <div class="url-content-title"></div>
                             <div class="url-content-body"></div>

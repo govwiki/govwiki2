@@ -666,3 +666,9 @@ th i { font-size: 10px }
 .url-content-body { margin-left: 110px; }
 .url-content-title { font-weight: bold; }
 .url-content-body { padding: 5px 2px; }
+
+/*
+    Login
+*/
+#user-text a:hover { background-color: transparent; }
+#user-text a { padding-right: 0; }

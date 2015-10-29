@@ -1,1 +1,3 @@
 services:
+  govwiki_frontend.redirection.logout:
+    class: GovWiki\FrontendBundle\Redirection\LogoutRedirection

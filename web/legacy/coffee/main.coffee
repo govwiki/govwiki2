@@ -1050,11 +1050,23 @@ $ ->
   ###
     Get current user.
   ###
+  $userBtn = $('#user')
+  $userBtnLink = $userBtn.find('a');
   $.ajax '/api/user', {
     method: 'GET',
     success: (response) ->
       user.username = response.username;
       authorized = true;
+
+      console.log($userBtn)
+
+      $userText = $('#user-text').find('a');
+      $userText.html("Logged in us #{user.username}" + $userText.html())
+      $userBtnLink.html("Sign Out" + $userBtnLink.html()).click () ->
+        window.location = '/logout'
+
     error: (error) ->
       if error.status is 401 then authorized = false
+      $userBtnLink.html("Login / Sign Up" + $userBtnLink.html()).click () ->
+        showModal('/login')
   }
