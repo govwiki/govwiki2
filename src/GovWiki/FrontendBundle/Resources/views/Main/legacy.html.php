@@ -648,7 +648,12 @@ echo <<<EOT
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">URL: </span>
-                            <input type="text" class="form-control" placeholder="Please enter URL" data-url>
+                            <input type="text" class="form-control url-input" placeholder="Please enter URL" data-url>
+                        </div>
+                        <div id="url-statement" class="url-content">
+                            <img class="url-content-img">
+                            <div class="url-content-title"></div>
+                            <div class="url-content-body"></div>
                         </div>
                     </form>
                 </div>

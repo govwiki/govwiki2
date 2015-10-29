@@ -649,3 +649,20 @@ td {
     Set font size for icon in sortable columns.
 */
 th i { font-size: 10px }
+
+/*
+    Url preview.
+*/
+.url-content {
+    padding: 0 16px;
+    display: none;
+    margin-top: 5px;
+}
+.url-content-img {
+    width: 100px;
+    float: left;
+}
+.url-content-title,
+.url-content-body { margin-left: 110px; }
+.url-content-title { font-weight: bold; }
+.url-content-body { padding: 5px 2px; }

@@ -518,6 +518,51 @@ initTableHandlers = (person) ->
         else if tableType is 'Statements'
             currentEntity = 'PublicStatement'
             $('#addStatements').modal('toggle').find('form')[0].reset()
+            ###
+            Set get url callback.
+            ###
+            $('.url-input').on 'keyup', () ->
+              match_url = /\b(https?):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#\/%=~_|!:,.;]*)?/i
+              if (match_url.test($(this).val()))
+                $.ajax '/api/url/extract', {
+                  method: 'GET',
+                  data: {
+                    url: $(this).val().match(match_url)[0]
+                  }
+                  success: (response) ->
+                    console.log response
+                    urlContent = $('#url-statement')
+
+                    #
+                    # Clear.
+                    #
+                    urlContent.find('.url-content-title').text('')
+                    urlContent.find('.url-content-body').text('')
+                    urlContent.find('.url-content-img').attr('src', '')
+
+                    urlContent.find('.url-content-title').text(response.data.title)
+
+                    if (response.type is 'html')
+                      urlContent.find('.url-content-body').text(response.data.body);
+                    if (response.type is 'youtube')
+                      urlContent.find('.url-content-img').attr('src', response.data.preview);
+                    if (response.type is 'image')
+                      urlContent.find('.url-content-img').attr('src', response.data.preview);
+                    urlContent.slideDown()
+                  error: (error) ->
+                    console.log error
+                    urlContent = $('#url-statement')
+
+                    #
+                    # Clear.
+                    #
+                    urlContent.find('.url-content-title').text('')
+                    urlContent.find('.url-content-body').text('')
+                    urlContent.find('.url-content-img').attr('src', '')
+
+                    urlContent.find('.url-content-body').text(error.responseText)
+                    urlContent.slideDown();
+                }
 
         if tabPane.hasClass('loaded') then return false
         tabPane[0].classList.add('loaded')
