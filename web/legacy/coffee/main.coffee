@@ -492,16 +492,21 @@ initTableHandlers = (person) ->
         tabPane = $(e.target).closest('.tab-pane')
         tableType = tabPane[0].id
         if (!authorized)
-          $.ajax '/editrequest/new', {
-            method: 'POST',
-            complete: (response) ->
-              if response.status is 401
-                showModal('/login')
-              else if response.status is 200
-                authorized = true
-            error: (error) ->
-              if error.status is 401 then showModal('/login')
-          }
+          showModal('/login')
+          window.sessionStorage.setItem 'tableType', tableType
+#          $.ajax '/editrequest/new', {
+#            method: 'POST',
+#            complete: (response) ->
+#              if response.status is 401
+#                showModal('/login')
+#                window.sessionStorage.setItem('tableType', tableType)
+#              else if response.status is 200
+#                authorized = true
+#            error: (error) ->
+#              if error.status is 401
+#                showModal('/login')
+#                window.sessionStorage.setItem('tableType', tableType)
+#          }
           return false;
 
         currentEntity = null
@@ -621,7 +626,6 @@ initTableHandlers = (person) ->
             error: (error) ->
                 if(error.status == 401) then showModal('/login')
         );
-
 
     window.addItem = (e) ->
         newRecord = {}
@@ -1023,9 +1027,11 @@ if routeType is 3
             compiledTemplate = Handlebars.compile(tpl)
             $('.loader').hide()
             $('#details').show()
+
             html = compiledTemplate(person)
 
             $('#details').html html
+
             $('#dataContainer').css('display': 'block');
 
             initTableHandlers(person);
@@ -1064,6 +1070,19 @@ $ ->
       $userText.html("Logged in us #{user.username}" + $userText.html())
       $userBtnLink.html("Sign Out" + $userBtnLink.html()).click () ->
         window.location = '/logout'
+
+      ###
+        If user try to add or update some data without logged in, we
+        show him login/sign up window. After authorizing user redirect back
+        to page, where he pres add/edit button. In that case we show him appropriate
+        modal window.
+      ###
+      type = window.sessionStorage.getItem('tableType')
+      console.log type
+      if (type)
+        $('div#' + type).find('.add').click();
+        $('a[aria-controls="' + type + '"]').click();
+        window.sessionStorage.setItem('tableType', '');
 
     error: (error) ->
       if error.status is 401 then authorized = false

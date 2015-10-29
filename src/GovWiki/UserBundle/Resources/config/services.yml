@@ -6,3 +6,6 @@ services:
       - @security.token_storage
     tags:
       - { name: kernel.event_subscriber }
+
+  govwiki_frontend.redirection.logout:
+      class: GovWiki\UserBundle\Redirection\LogoutRedirection
