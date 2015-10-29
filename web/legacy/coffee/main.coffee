@@ -18,6 +18,14 @@ templates = new Templates2
 active_tab = ""
 undef = null
 authorized = false
+#
+# Information about current user.
+#
+user = Object.create null, {}
+#
+# Issues category, fill in elected official page.
+#
+categories = Object.create null, {}
 
 Handlebars.registerHelper 'if_eq', (a, b, opts) ->
     if `a == b`
@@ -351,6 +359,7 @@ sortTable = (table, colNum) ->
       # Restore row order.
       #
       column.removeClass('desc').addClass('origin')
+      column.find('i').removeClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-top')
       rows = column.data('origin')
       makeSort = false;
     else if column.hasClass('asc')
@@ -359,9 +368,10 @@ sortTable = (table, colNum) ->
       # Sort in desc order.
       #
       column.removeClass('asc').addClass('desc')
+      column.find('i').removeClass('glyphicon-triangle-bottom').addClass('glyphicon-triangle-top')
       sortFunction = (a, b) ->
-        A = $(a).children('td').eq(colNum).text().toUpperCase()
-        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        A = $(a).children('td').eq(colNum).text().toUpperCase().trim()
+        B = $(b).children('td').eq(colNum).text().toUpperCase().trim()
         if A < B then return 1
         if A > B then return -1
         return 0
@@ -371,10 +381,11 @@ sortTable = (table, colNum) ->
       # Original table data order.
       # Sort in asc order.
       #
-      column.addClass('asc')
+      column.removeClass('origin').addClass('asc')
+      column.find('i').addClass('glyphicon-triangle-bottom')
       sortFunction = (a, b) ->
-        A = $(a).children('td').eq(colNum).text().toUpperCase()
-        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        A = $(a).children('td').eq(colNum).text().toUpperCase().trim()
+        B = $(b).children('td').eq(colNum).text().toUpperCase().trim()
         if A < B then return -1
         if A > B then return 1
         return 0
@@ -386,10 +397,10 @@ sortTable = (table, colNum) ->
 
       column.addClass('asc')
       column.data('origin', rows.slice(0))
-
+      column.find('i').addClass('glyphicon-triangle-bottom')
       sortFunction = (a, b) ->
-        A = $(a).children('td').eq(colNum).text().toUpperCase()
-        B = $(b).children('td').eq(colNum).text().toUpperCase()
+        A = $(a).children('td').eq(colNum).text().toUpperCase().trim()
+        B = $(b).children('td').eq(colNum).text().toUpperCase().trim()
         if A < B then return -1
         if A > B then return 1
         return 0
@@ -447,6 +458,11 @@ initTableHandlers = (person) ->
         # Sort by amount.
         #
         sortTable('[data-entity-type="Contribution"]', 3)
+      else if type is 'contributor-type'
+        #
+        # Sort by contributor type.
+        #
+        sortTable('[data-entity-type="Contribution"]', 4)
 
     $('a').on 'save', (e, params) ->
         entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
@@ -487,22 +503,6 @@ initTableHandlers = (person) ->
               if error.status is 401 then showModal('/login')
           }
           return false;
-
-#        if (!authorized) then return false;
-
-#        if (!authorized)
-#            $.ajax '/editrequest/new', {
-#                method: 'POST',
-#                complete: (response) ->
-#                    if response.status is 401
-#                        showModal('/login')
-#                    else if response.status is 200
-#                        authorized = true
-#                error: (error) ->
-#                    if error.status is 401 then showModal('/login')
-#            }
-#
-#        if (!authorized) then return false;
 
         currentEntity = null
         console.log(tableType)
@@ -553,6 +553,11 @@ initTableHandlers = (person) ->
                 else if currentEntity is 'Legislation'
                     select = $('#addVotes select')[0]
                     insertCategories()
+                    $('#addVotes').find('[data-provide="datepicker"]').on(
+                      'changeDate',
+                      () ->
+                        $(this).datepicker 'hide'
+                    )
                     #
                     # Fill elected officials votes table.
                     #
@@ -562,8 +567,11 @@ initTableHandlers = (person) ->
                 else if currentEntity is 'PublicStatement'
                     select = $('#addStatements select')[0]
                     insertCategories()
-
-
+                    $('#addStatements').find('[data-provide="datepicker"]').on(
+                      'changeDate',
+                      () ->
+                        $(this).datepicker 'hide'
+                    )
 
             error: (error) ->
                 if(error.status == 401) then showModal('/login')
@@ -585,7 +593,7 @@ initTableHandlers = (person) ->
             newRecord[fieldName] = element.value
 
         ###
-          Get value from texarea.
+          Get value from texarea's.
         ###
         modal.find('textarea').each (index, element) ->
             fieldName = Object.keys(element.dataset)[0]
@@ -637,8 +645,18 @@ initTableHandlers = (person) ->
             selectedText = $(select).find(':selected').text();
             associations[selectName] = selectedValue
         else if modalType is 'addContributions'
+            select = modal.find('select')[0]
+            selectName = select.name
+            selectedValue = select.options[select.selectedIndex].value
+            selectedText = $(select).find(':selected').text()
+            newRecord[selectName] = selectedValue
 
         else if modalType is 'addEndorsements'
+            select = modal.find('select')[0]
+            selectName = select.name
+            selectedValue = select.options[select.selectedIndex].value
+            selectedText = $(select).find(':selected').text()
+            newRecord[selectName] = selectedValue
 
         else if modalType is 'addStatements'
             select = modal.find('select')[0]
@@ -654,39 +672,54 @@ initTableHandlers = (person) ->
             }
         }
 
-        tr = document.createElement 'tr'
+        ###
+          Append new entity to table.
+        ###
+        rowTemplate = Handlebars.compile($("#row-#{modalType}").html());
+
+        #
+        # Collect data.
+        #
+        data = Object.create null, {}
         for key, value of sendObject.createRequest.fields.fields
-            tr.innerHTML += "<td><a href='javascript:void(0);'
-            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
+          data[key] = value
+        data['user'] = user.username
 
         if modalType is 'addVotes'
             ###
               Check if user specified how current elected official voted.
             ###
             add = false;
-            data = Object.create null, {}
-            console.log sendObject.createRequest.fields.childs
             for obj in sendObject.createRequest.fields.childs
               if Number(obj.fields.associations.electedOfficial) == Number(person.id)
                 add = true
-                data = obj.fields
+                for key, value of obj.fields.fields
+                  data[key] = value
                 break
 
             #
             # If we found, show.
             #
             if (add)
-              for key, value of data.fields
-                tr.innerHTML += "<td><a href='javascript:void(0);'
-            class='editable editable-pre-wrapped editable-click'>#{value}</a></td>"
-              tr.innerHTML += "<td><a href='javascript:void(0);'
-            class='editable editable-pre-wrapped editable-click'>#{selectedText}</a></td>"
-              $('#Votes tr:last-child').before(tr);
+              data['category'] = selectedText
+              $('#Votes tr:last-child').before rowTemplate(data)
         else if modalType is 'addContributions'
-            $('#Contributions tr:last-child').before(tr);
+            ###
+              Format contribution amount.
+            ###
+            data.contributorType = selectedText
+            data.contributionAmount = numeral(data.contributionAmount).format('0,000')
+            $('#Contributions tr:last-child').before rowTemplate(data);
         else if modalType is 'addEndorsements'
-            $('#Endorsements tr:last-child').before(tr);
+            data.endorserType = selectedText
+            $('#Endorsements tr:last-child').before rowTemplate(data);
+        else if modalType is 'addStatements'
+            data['category'] = selectedText
+            $('#Statements tr:last-child').before rowTemplate(data);
 
+        ###
+          Send create request to api.
+        ###
         console.log sendObject
         $.ajax({
             url: '/api/createrequest/create',
@@ -699,6 +732,47 @@ initTableHandlers = (person) ->
                 console.log(data);
         });
 
+###
+  Append create requests to all current electedOfficial page.
+###
+showCreateRequests = (person, createRequests) ->
+    legislationRow = Handlebars.compile($('#row-addVotes').html())
+    contributionRow = Handlebars.compile($('#row-addContributions').html())
+    endorsementRow = Handlebars.compile($('#row-addEndorsements').html())
+    statementRow = Handlebars.compile($('#row-addStatements').html())
+
+    for request in createRequests
+        #
+        # Prepare create request data for template.
+        #
+        data = request.fields.fields
+        data['user'] = request.user.username
+
+        #
+        # Find out template for current request and additional values.
+        #
+        if request.entity_name is "Legislation"
+            name = 'Votes'
+            template = legislationRow
+            for key, value of request.fields.childs[0].fields.fields
+                data[key] = value
+            data['category'] = categories[request.fields.associations.issueCategory - 1].name
+
+        else if request.entity_name is "Contribution"
+            name = 'Contributions'
+            template = contributionRow
+
+            data['contributionAmount'] = numeral(data['contributionAmount']).format('0,000')
+        else if request.entity_name is "Endorsement"
+            name = 'Endorsements'
+            template = endorsementRow
+        else if request.entity_name is "PublicStatement"
+            name = 'Statements'
+            template = statementRow
+
+            data['category'] = categories[request.fields.associations.issueCategory - 1].name
+
+        $("\##{name} tr:last-child").before(template(data))
 
 $('#dataContainer').on 'click', '.elected_link', (e) ->
     e.preventDefault();
@@ -713,12 +787,22 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
     jQuery.get url, {}, (data) ->
         if data
             $.ajax
-                url: "http://45.55.0.145/api/elected-official" + url,
+                url: "/api/elected-official" + url,
                 dataType: 'json'
                 cache: true
                 success: (data) ->
 
-                    person = data[0]
+                    person = data.person
+                    createRequests = data.createRequests
+                    categories = data.categories
+
+                    ###
+                      Format contribution amount.
+                    ###
+                    for contribution in person.contributions
+                        contribution.contribution_amount = numeral(contribution.contribution_amount).format('0,000')
+
+                    console.log data
 
                     if $.isEmptyObject(person)
                         $('.loader').hide()
@@ -743,6 +827,7 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     $('#dataContainer').css('display': 'block');
 
                     initTableHandlers(person);
+                    showCreateRequests(person, createRequests);
 
                     $('.vote').on 'click', (e) ->
                         id = e.currentTarget.id
@@ -859,11 +944,21 @@ if routeType is 3
     $('#stantonIcon').show()
     $('#searchIcon').show()
     $.ajax
-        url: "http://45.55.0.145/api/elected-official" + window.path,
+        url: "/api/elected-official" + window.path,
         dataType: 'json'
         success: (data) ->
 
-            person = data[0]
+            person = data.person
+            createRequests = data.createRequests
+            categories = data.categories
+
+            ###
+              Format contribution amount.
+            ###
+            for contribution in person.contributions
+                contribution.contribution_amount = numeral(contribution.contribution_amount).format('0,000')
+
+            console.log data
 
             if $.isEmptyObject(person)
                 $('.loader').hide()
@@ -889,6 +984,7 @@ if routeType is 3
             $('#dataContainer').css('display': 'block');
 
             initTableHandlers(person);
+            showCreateRequests(person, createRequests);
 
             $('.vote').on 'click', (e) ->
                 id = e.currentTarget.id
@@ -906,13 +1002,14 @@ if routeType is 3
             console.log e
 
 $ ->
-  $.ajax '/editrequest/new', {
-    method: 'POST',
-    complete: (response) ->
-      if response.status is 401
-        authorized = false
-      else if response.status is 200
-        authorized = true
+  ###
+    Get current user.
+  ###
+  $.ajax '/api/user', {
+    method: 'GET',
+    success: (response) ->
+      user.username = response.username;
+      authorized = true;
     error: (error) ->
       if error.status is 401 then authorized = false
   }

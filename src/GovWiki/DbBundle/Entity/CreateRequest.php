@@ -9,7 +9,7 @@ use Gedmo\Mapping\Annotation\Timestampable;
  * CreateRequest
  *
  * @ORM\Table(name="create_requests")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\CreateRequestRepository")
  */
 class CreateRequest
 {

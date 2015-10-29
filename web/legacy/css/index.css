@@ -645,3 +645,7 @@ td {
     padding: 5px;
 }
 
+/*
+    Set font size for icon in sortable columns.
+*/
+th i { font-size: 10px }

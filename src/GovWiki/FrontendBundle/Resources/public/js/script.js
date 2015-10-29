@@ -10,7 +10,6 @@ $('#modal-window').on('hidden.bs.modal', function() {
     $(this).find('.modal-content').html('<div class="modal-body">Loading...</div>');
 });
 
-
 // Login
 
 $('body').on('submit', '#ajax-login-form', function(event) {
