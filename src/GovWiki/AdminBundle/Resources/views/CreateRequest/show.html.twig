@@ -1,4 +1,7 @@
 {% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% import _self as macro %}
+
 {% block title %}Show create request{% endblock %}
 {% block body %}
     <div class="container">
@@ -54,7 +57,7 @@
             </div>
             <div class="col-md-6">
                 <h3 style="margin-top:0px;">Fields</h3>
-                <table class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered" id="fields">
                     <thead>
                         <tr>
                             <td>Field</td>
@@ -66,11 +69,7 @@
                             <tr{% if not field.correct %} class="danger"{% endif %}>
                                 <td>{{ field.field }}</td>
                                 <td>
-                                    {% if field.value.timestamp is defined %}
-                                        {{ field.value|date('m/d/y g:i a') }}
-                                    {% else %}
-                                        {{ field.value }}
-                                    {% endif %}
+                                    {{ macro.renderField(field) }}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -79,7 +78,7 @@
                 {% if associations %}
                     <hr>
                     <h3>Associations</h3>
-                    <table class="table table-striped table-bordered">
+                    <table class="table table-striped table-bordered" id="associations">
                         <thead>
                             <tr>
                                 <td>Association</td>
@@ -90,7 +89,17 @@
                             {% for association in associations %}
                                 <tr{% if not association.correct %} class="danger"{% endif %}>
                                     <td>{{ association.field }}</td>
-                                    <td>{{ association.name }}</td>
+                                    <td>
+                                        {%- if association.field == 'issueCategory' -%}
+                                            <select data-association-name="issueCategory" class="form-control">
+                                                {% for key,value in association.choices %}
+                                                    <option value="{{ key }}" {% if value == association.name %}selected=""{% endif %}>{{ value }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        {%- else -%}
+                                            {{ association.name }}
+                                        {%- endif -%}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -102,7 +111,7 @@
             {% if createRequest.entityName == 'Legislation' %}
                 <div class="col-md-10 col-md-offset-1">
                     <h3>Votes</h3>
-                    <table id="votes" class="table table-striped table-bordered">
+                    <table id="votes" class="table table-striped table-bordered" id="childs">
                         <thead>
                         <tr>
                             <td>Elected official</td>
@@ -116,7 +125,7 @@
                                 <tr>
                                     <td>{{ child.associations[0].name }}</td>
                                     {% for field in child.fields %}
-                                        <td{% if not field.correct %} class="danger"{% endif %}>{{ field.value }}</td>
+                                        <td{% if not field.correct %} class="danger"{% endif %}>{{ macro.renderField(field) }}</td>
                                     {% endfor %}
                                     <td>
                                         <input data-id="{{ child.associations[0].id }}" type="checkbox" id="sendEmail-{{ loop.index0 }}" name="send_email[{{ loop.index0 }}]" checked>
@@ -174,8 +183,54 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
+
+        function fetch($base)
+        {
+            var data = [];
+            /*
+                Get from input.
+            */
+
+            var eachCallback = function(idx, element) {
+                var $element = $(element);
+                data[$element.attr('data-field-name')] = $element.val();
+            };
+
+            $base.find('input[data-field-name]').each(eachCallback);
+
+            /*
+                Get from select.
+            */
+            $base.find('select[data-field-name]').each(eachCallback);
+
+            return data;
+        }
+
+        /**
+         * Collect data from page.
+         */
+        function collectData()
+        {
+            /*
+                Get fields.
+            */
+            return {
+                fields: fetch($('#fields')),
+                associations: fetch($('#associations')),
+                childs: fetch($('#chidls'))
+            }
+        }
+
         $(function() {
+            $('[data-provide="datepicker"]').on('changeDate', function() {
+                $(this).datepicker('hide');
+            });
+
             $('span.ajax-choice:not(.disabled)').on('click', function() {
+
+                collectData();
+                return false;
+
                 if (confirm('Are you sure?')) {
                     /*
                      Get send email flags.
@@ -208,3 +263,29 @@
         });
     </script>
 {% endblock %}
+
+{% macro renderField(field) %}
+    {% set tagName = 'data-field-name="' ~ field.field ~ '"' %}
+    {% if field.value matches '|\\d+/\\d+/\\d+|' %}
+        {#
+            Current field is date.
+        #}
+        <input data-provide="datepicker" {{ tagName }} class="form-control" value="{{ field.value }}">
+    {% elseif field.choices is defined %}
+        {#
+            Current field is choice.
+        #}
+        <select {{ tagName }} class="form-control" >
+            {% for key,value in field.choices %}
+                <option value="{{ key }}" {% if value == field.value %}selected="selected"{% endif %}>
+                    {{- value -}}
+                </option>
+            {% endfor %}
+        </select>
+    {% else %}
+        {#
+            Current field is simple text.
+        #}
+        <input class="form-control" {{ tagName }} value="{{ field.value }}">
+    {% endif %}
+{% endmacro %}

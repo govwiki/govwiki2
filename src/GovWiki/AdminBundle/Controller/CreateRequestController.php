@@ -6,7 +6,11 @@ use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\DbBundle\Entity\Contribution;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
+use GovWiki\DbBundle\Entity\ElectedOfficialVote;
+use GovWiki\DbBundle\Entity\Endorsement;
+use GovWiki\DbBundle\Entity\IssueCategory;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -196,8 +200,10 @@ class CreateRequestController extends Controller
      *
      * @return array
      */
-    private function buildData(array $data, $targetClassMetadata)
+    private function buildData(array $data, ClassMetadata $targetClassMetadata)
     {
+        static $associationCache = [];
+
         $em = $this->getDoctrine()->getManager();
         $newEntity = $targetClassMetadata->newInstance();
 
@@ -210,11 +216,50 @@ class CreateRequestController extends Controller
                 $correctField = false;
             }
 
-            $result['fields'][] = [
+            $fields = [
                 'field'   => $field,
                 'value'   => $value,
                 'correct' => $correctField,
             ];
+            if (($newEntity instanceof Contribution) &&
+                ('contributorType' === $field)) {
+                $fields['choices'] = [
+                    'Candidate Committee' => 'Candidate Committee',
+                    'Corporate' => 'Corporate',
+                    'Individual' => 'Individual',
+                    'Political Party' => 'Political Party',
+                    'Political Action Committee' => 'Political Action Committee',
+                    'Self' => 'Self',
+                    'Union' => 'Union',
+                    'Other' => 'Other',
+                ];
+            } elseif (($newEntity instanceof Endorsement) &&
+                ('endorserType' === $field)) {
+                $fields['choices'] = [
+                    'Elected Official' => 'Elected Official',
+                    'Organization' => 'Organization',
+                    'Political Party' => 'Political Party',
+                    'Union' => 'Union',
+                    'Other' => 'Other',
+                ];
+            } elseif (($newEntity instanceof ElectedOfficialVote)) {
+                if ('vote' === $field) {
+                    $fields['choices'] = [
+                        'Yes' => 'Yes',
+                        'No' => 'No',
+                        'Abstain' => 'Abstain',
+                        'Absence' => 'Absence',
+                        'Not in Office' => 'Not in Office',
+                    ];
+                } elseif ('didElectedOfficialProposeThis' === $field) {
+                    $fields['choices'] = [
+                        'Yes' => 'Yes',
+                        'No' => 'No',
+                    ];
+                }
+            }
+
+            $result['fields'][] = $fields;
         }
 
         $result['associations'] = [];
@@ -248,6 +293,23 @@ class CreateRequestController extends Controller
                 $associationData = [
                     'id' => $associationEntity->getId(),
                 ];
+                if ($associationEntity instanceof IssueCategory) {
+                    /*
+                     * Get association choices.
+                     */
+                    if (empty($associationCache[$association])) {
+                        $associationCache[$association] = $associationRepository->findAll();
+                        foreach ($associationCache[$association] as &$entity) {
+                            if (method_exists($associationEntity, '__toString')) {
+                                $entity = (string) $entity;
+                            } else {
+                                $entity = 'Can\'t display name';
+                            }
+                        }
+                    }
+
+                    $associationData['choices'] = $associationCache[$association];
+                }
             }
             $associationData['field'] = $association;
             $associationData['name'] = $associationName;
