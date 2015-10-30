@@ -421,17 +421,24 @@ initTableHandlers = (person) ->
         e.stopPropagation();
         if e.currentTarget.dataset.noEditable isnt undefined then return
         if (!authorized)
-            $.ajax '/editrequest/new', {
-                method: 'POST',
-                complete: (response) ->
-                    if response.status is 401
-                        showModal('/login')
-                    else if response.status is 200
-                        authorized = true
-                        $(e.currentTarget).closest('td').find('.editable').editable('toggle');
-                error: (error) ->
-                    if error.status is 401 then showModal('/login')
-            }
+          showModal('/login')
+          window.sessionStorage.setItem('tableType', $(e.target).closest('.tab-pane')[0].id)
+          window.sessionStorage.setItem('dataId', $(e.currentTarget).closest('tr').attr('data-id'))
+          window.sessionStorage.setItem('field', Number(($(e.currentTarget).closest('td'))[0].cellIndex) + 1)
+#            $.ajax '/editrequest/new', {
+#                method: 'POST',
+#                complete: (response) ->
+#                    if response.status is 401
+#
+#                    else if response.status is 200
+#                        authorized = true
+#                        $(e.currentTarget).closest('td').find('.editable').editable('toggle');
+#                error: (error) ->
+#                    if error.status is 401
+#                        showModal('/login')
+#                        window.sessionStorage.setItem('target', e.target)
+#                        window.sessionStorage.setItem('tableType', $(e.target).closest('.tab-pane')[0].id)
+#            }
         else
             $(e.currentTarget).closest('td').find('.editable').editable('toggle');
 
@@ -781,6 +788,38 @@ initTableHandlers = (person) ->
                 console.log(data);
         });
 
+    ###
+        If user try to add or update some data without logged in, we
+        show him login/sign up window. After authorizing user redirect back
+        to page, where he pres add/edit button. In that case we show him appropriate
+        modal window.
+
+        Timeout need because we don't know when we get user information and elected official information.
+    ###
+    window.setTimeout( () ->
+      if (!authorized)
+        return
+
+      type = window.sessionStorage.getItem('tableType')
+      dataId = window.sessionStorage.getItem('dataId')
+      field = window.sessionStorage.getItem('field')
+
+      if (dataId && field)
+        $('a[aria-controls="' + type + '"]').click()
+        $('tr[data-id='+dataId+']').find('td:nth-child('+field+')').find('.editable').editable('toggle');
+        window.sessionStorage.setItem('tableType', '')
+        window.sessionStorage.setItem('dataId', '')
+        window.sessionStorage.setItem('field', '')
+
+      else if (type)
+        $('div#' + type).find('.add').click()
+        $('a[aria-controls="' + type + '"]').click()
+        window.sessionStorage.setItem('tableType', '')
+    ,
+    2000
+    )
+
+
 ###
   Append create requests to all current electedOfficial page.
 ###
@@ -1070,19 +1109,6 @@ $ ->
       $userText.html("Logged in us #{user.username}" + $userText.html())
       $userBtnLink.html("Sign Out" + $userBtnLink.html()).click () ->
         window.location = '/logout'
-
-      ###
-        If user try to add or update some data without logged in, we
-        show him login/sign up window. After authorizing user redirect back
-        to page, where he pres add/edit button. In that case we show him appropriate
-        modal window.
-      ###
-      type = window.sessionStorage.getItem('tableType')
-      console.log type
-      if (type)
-        $('div#' + type).find('.add').click();
-        $('a[aria-controls="' + type + '"]').click();
-        window.sessionStorage.setItem('tableType', '');
 
     error: (error) ->
       if error.status is 401 then authorized = false
