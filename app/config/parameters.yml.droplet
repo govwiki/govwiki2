@@ -9,3 +9,5 @@ parameters:
     mailer_user: null
     mailer_password: null
     secret: e041e2bb13e567asdf76as45fa546sf5467as01a36a659
+    admin_email: contact@calpolicycenter.org
+    email_subject: California Policy Center

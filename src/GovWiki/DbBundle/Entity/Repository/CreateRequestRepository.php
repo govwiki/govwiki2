@@ -22,6 +22,12 @@ class CreateRequestRepository extends EntityRepository
         $qb = $this->createQueryBuilder('CreateRequest');
         return $qb
             ->where("regexp('electedOfficial\";s:7:\"$electedOfficial', CreateRequest.fields) != false")
+            ->andWhere(
+                $qb->expr()->neq(
+                    'CreateRequest.status',
+                    $qb->expr()->literal('applied')
+                )
+            )
             ->getQuery()
             ->getResult();
     }

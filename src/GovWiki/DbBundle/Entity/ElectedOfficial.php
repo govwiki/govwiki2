@@ -11,7 +11,7 @@ use JMS\Serializer\Annotation\VirtualProperty;
  * ElectedOfficial
  *
  * @ORM\Table(name="elected_officials")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository")
  * @ExclusionPolicy("none")
  */
 class ElectedOfficial
