@@ -14,6 +14,9 @@ map = new GMaps
   zoomControl: true
   zoomControlOptions:
     style: google.maps.ZoomControlStyle.SMALL
+  markerClusterer: (map) ->
+    options = {gridSize: 0}
+    return new MarkerClusterer(map, [], options);
 
 map.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(document.getElementById('legend'))
 
