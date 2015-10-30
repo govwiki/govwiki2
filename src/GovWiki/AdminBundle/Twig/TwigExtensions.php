@@ -36,11 +36,13 @@ class TwigExtensions extends \Twig_Extension
      */
     public function rolesBeautify(array $roles = [])
     {
-        foreach ($roles as &$role) {
-            // Remove ROLE_ prefix
-            $role = substr($role, 5);
-            $role = strtolower($role);
+        $result = [];
+        foreach ($roles as $role) {
+            if ('ROLE_SUPER_ADMIN' !== $role) {
+                // Remove ROLE_ prefix
+                $result[] = strtolower(substr($role, 5));
+            }
         }
-        return $roles;
+        return $result;
     }
 }
