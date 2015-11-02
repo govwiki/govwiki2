@@ -107,7 +107,6 @@
                         </thead>
                         <tbody>
                             {% for association in associations %}
-                                {% dump association %}
                                 <tr {% if not association.correct %} class="danger"{% endif %}>
                                     <td>{{ association.field }}</td>
                                     <td>
