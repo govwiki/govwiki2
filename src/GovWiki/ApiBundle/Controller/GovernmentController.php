@@ -43,7 +43,8 @@ class GovernmentController extends Controller
      *
      * Get markers data
      *
-     * @param  Request $request
+     * @param  Request $request A Request instance.
+     *
      * @return JsonResponse
      */
     public function getMarkersDataAction(Request $request)

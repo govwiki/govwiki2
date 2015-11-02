@@ -78,28 +78,29 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
-     * Get markers for map
+     * Get markers for map.
      *
-     * @param  array $altTypes
-     * @param  int   $limit
+     * @param  array   $altTypes Ignored altTypes.
+     * @param  integer $limit    Max Markers.
      * @return array
      */
     public function getMarkers($altTypes, $limit = 200)
     {
         $qb = $this->createQueryBuilder('g')
-            ->select('g.id', 'g.name', 'g.altType', 'g.type', 'g.city', 'g.zip', 'g.state', 'g.latitude', 'g.longitude', 'g.altTypeSlug', 'g.slug')
-            ->where('g.altType != :altType')
-            ->setParameter('altType', 'County');
+            ->select('g.id', 'g.name', 'g.altType', 'g.type', 'g.city', 'g.zip', 'g.state', 'g.latitude', 'g.longitude', 'g.altTypeSlug', 'g.slug');
+//            ->where('g.altType != :altType')
+//            ->setParameter('altType', $altTypes);
 
         if (!empty($altTypes)) {
             $orX = $qb->expr()->orX();
+            $parameters = [];
             foreach ($altTypes as $key => $type) {
                 if ($type != 'Special District') {
                     $orX->add($qb->expr()->eq('g.altType', ':altType'.$key));
                     $parameters['altType'.$key]  = $type;
                 }
             }
-            $parameters['altType'] = 'County';
+//            $parameters['altType'] = 'County';
             $qb->andWhere($orX)->setParameters($parameters);
         }
 
