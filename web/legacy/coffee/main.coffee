@@ -1131,7 +1131,7 @@ $ ->
       authorized = true;
 
       $userText = $('#user-text').find('a');
-      $userText.html("Logged in us #{user.username}" + $userText.html())
+      $userText.html("Logged in as #{user.username}" + $userText.html())
       $userBtnLink.html("Sign Out" + $userBtnLink.html()).click () ->
         window.location = '/logout'
 

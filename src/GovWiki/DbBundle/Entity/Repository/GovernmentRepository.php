@@ -144,6 +144,44 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
+     * Compute max ranks for given alt type.
+     *
+     * @param string $altType One of the government alt type.
+     *
+     * @return array
+     */
+    public function computeMaxRanks($altType)
+    {
+        $qb = $this->createQueryBuilder('Government');
+
+        /*
+         * Get all class property with 'Rank' postfix.
+         */
+        $fields = [];
+        foreach ($this->getClassMetadata()->columnNames as $key => $value) {
+            $pos = strpos($key, 'Rank');
+            if (false !== $pos) {
+                $fields[] = $qb->expr()->max("Government.$key") .
+                    ' AS ' . substr($key, 0, $pos) . 'MaxRank';
+//                $fields[] = "max(Government.$key) as $key";
+            }
+        }
+
+        $qb
+            ->select(join(',', $fields))
+            ->where(
+                $qb->expr()->eq(
+                    'Government.altType',
+                    $qb->expr()->literal($altType)
+                )
+            );
+
+        return $qb
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * @return array
      */
     private function fetchSpecialDistricts()

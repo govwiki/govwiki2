@@ -1,0 +1,5 @@
+services:
+  govwiki_db.service.max_ranks_computer:
+    class: GovWiki\DbBundle\Service\MaxRankComputer
+    arguments:
+      - @doctrine.orm.entity_manager
