@@ -1,6 +1,5 @@
 <?php
 echo <<<EOT
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <!--include head.jade-->
@@ -652,7 +651,7 @@ echo <<<EOT
                             <span class="input-group-addon">URL: </span>
                             <input type="text" class="form-control url-input" placeholder="Please enter URL" data-url>
                         </div>
-                        <div id="statement" class="url-content">
+                        <div id="url-statement" class="url-content">
                             <img class="url-content-img">
                             <div class="url-content-title"></div>
                             <div class="url-content-body"></div>
