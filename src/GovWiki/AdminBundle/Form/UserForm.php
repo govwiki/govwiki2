@@ -23,7 +23,6 @@ class UserForm extends AbstractType
             ->add('plainPassword', 'password', [ 'required' => false ])
             ->add('roles', 'choice', [
                 'choices' => [
-                    'ROLE_SUPER_ADMIN' => 'super_admin',
                     'ROLE_ADMIN' => 'admin',
                     'ROLE_USER' => 'user',
                 ],
