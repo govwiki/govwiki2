@@ -643,9 +643,22 @@ td {
 }
 
 /*
-    Set font size for icon in sortable columns.
+    Set icon for sortable columns.
 */
-th i { font-size: 10px }
+i.icon {
+    background: url('/legacy/img/bg.gif');
+    width: 21px;
+    height: 9px;
+    display: inline-block;
+}
+i.icon__bottom,
+i.icon__top {
+    height: 4px;
+    margin-bottom: 4px;
+}
+i.icon__bottom { background: url('/legacy/img/desc.gif'); }
+i.icon__top { background: url('/legacy/img/asc.gif'); }
+
 
 /*
     Url preview.

@@ -359,7 +359,7 @@ sortTable = (table, colNum) ->
       # Restore row order.
       #
       column.removeClass('desc').addClass('origin')
-      column.find('i').removeClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-top')
+      column.find('i').removeClass('icon__bottom').removeClass('icon__top')
       rows = column.data('origin')
       makeSort = false;
     else if column.hasClass('asc')
@@ -368,7 +368,7 @@ sortTable = (table, colNum) ->
       # Sort in desc order.
       #
       column.removeClass('asc').addClass('desc')
-      column.find('i').removeClass('glyphicon-triangle-bottom').addClass('glyphicon-triangle-top')
+      column.find('i').removeClass('icon__bottom').addClass('icon__top')
       sortFunction = (a, b) ->
         A = $(a).children('td').eq(colNum).text().toUpperCase().trim()
         B = $(b).children('td').eq(colNum).text().toUpperCase().trim()
@@ -382,7 +382,7 @@ sortTable = (table, colNum) ->
       # Sort in asc order.
       #
       column.removeClass('origin').addClass('asc')
-      column.find('i').addClass('glyphicon-triangle-bottom')
+      column.find('i').addClass('icon__bottom')
       sortFunction = (a, b) ->
         A = $(a).children('td').eq(colNum).text().toUpperCase().trim()
         B = $(b).children('td').eq(colNum).text().toUpperCase().trim()
@@ -397,7 +397,7 @@ sortTable = (table, colNum) ->
 
       column.addClass('asc')
       column.data('origin', rows.slice(0))
-      column.find('i').addClass('glyphicon-triangle-bottom')
+      column.find('i').addClass('icon__bottom')
       sortFunction = (a, b) ->
         A = $(a).children('td').eq(colNum).text().toUpperCase().trim()
         B = $(b).children('td').eq(colNum).text().toUpperCase().trim()
