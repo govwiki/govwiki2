@@ -824,6 +824,9 @@ initTableHandlers = (person) ->
   Append create requests to all current electedOfficial page.
 ###
 showCreateRequests = (person, createRequests) ->
+    # Don't show not approved create request to anon.
+    if (!authorized) then return
+
     legislationRow = Handlebars.compile($('#row-addVotes').html())
     contributionRow = Handlebars.compile($('#row-addContributions').html())
     endorsementRow = Handlebars.compile($('#row-addEndorsements').html())
@@ -1099,11 +1102,10 @@ $ ->
   $userBtnLink = $userBtn.find('a');
   $.ajax '/api/user', {
     method: 'GET',
+    async: false,
     success: (response) ->
       user.username = response.username;
       authorized = true;
-
-      console.log($userBtn)
 
       $userText = $('#user-text').find('a');
       $userText.html("Logged in us #{user.username}" + $userText.html())
