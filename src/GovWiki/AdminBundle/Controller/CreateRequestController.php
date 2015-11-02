@@ -97,7 +97,7 @@ class CreateRequestController extends Controller
 
         if (! $request->request->has('data')) {
             /*
-             * In request we don't get any data, ignore request and
+             * If in request we don't get any data, ignore request and
              * redirect back to create request show.
              */
             return new JsonResponse(
