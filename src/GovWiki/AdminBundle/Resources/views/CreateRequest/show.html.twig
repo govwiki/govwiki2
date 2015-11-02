@@ -6,6 +6,11 @@
 {% block body %}
     <div class="container">
         {% if errors %}
+            {#
+
+                Some errors occurs.
+
+            #}
             <div class="col-md-2">
                 <a href="{{path('govwiki_admin_createrequest_index')}}" class="btn btn-default">
                     <span class="glyphicon glyphicon-chevron-left"></span>
@@ -20,6 +25,11 @@
                     {% endfor %}
                 </div>
         {% else %}
+            {#
+
+                Show information about create request.
+
+            #}
             <div class="col-md-6">
                 <div class="panel panel-default">
                     <div class="panel-heading">Information</div>
@@ -55,6 +65,11 @@
                     </div>
                 </div>
             </div>
+            {#
+
+                Show create request fields.
+
+            #}
             <div class="col-md-6">
                 <h3 style="margin-top:0px;">Fields</h3>
                 <table class="table table-striped table-bordered" id="fields">
@@ -75,6 +90,11 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {#
+
+                    Show create request associations.
+
+                #}
                 {% if associations %}
                     <hr>
                     <h3>Associations</h3>
@@ -87,16 +107,18 @@
                         </thead>
                         <tbody>
                             {% for association in associations %}
-                                <tr{% if not association.correct %} class="danger"{% endif %}>
+                                {% dump association %}
+                                <tr {% if not association.correct %} class="danger"{% endif %}>
                                     <td>{{ association.field }}</td>
                                     <td>
                                         {%- if association.field == 'issueCategory' -%}
-                                            <select data-association-name="issueCategory" class="form-control">
+                                            <select data-field-name="{{ association.field }}" class="form-control">
                                                 {% for key,value in association.choices %}
                                                     <option value="{{ key }}" {% if value == association.name %}selected=""{% endif %}>{{ value }}</option>
                                                 {% endfor %}
                                             </select>
                                         {%- else -%}
+                                            <input type="hidden" data-field-name="{{ association.field }}" value="{{ association.id }}">
                                             {{ association.name }}
                                         {%- endif -%}
                                     </td>
@@ -107,11 +129,16 @@
                 {% endif %}
             </div>
         {% endif %}
+        {#
+
+            Show create request childs.
+
+        #}
         {% if childs %}
             {% if createRequest.entityName == 'Legislation' %}
                 <div class="col-md-10 col-md-offset-1">
                     <h3>Votes</h3>
-                    <table id="votes" class="table table-striped table-bordered" id="childs">
+                    <table data-entity="ElectedOfficialVote" class="table table-striped table-bordered" id="childs">
                         <thead>
                         <tr>
                             <td>Elected official</td>
@@ -122,13 +149,13 @@
                         </thead>
                         <tbody>
                             {% for child in childs %}
-                                <tr>
+                                <tr data-id="{{ child.associations[0].id }}">
                                     <td>{{ child.associations[0].name }}</td>
                                     {% for field in child.fields %}
                                         <td{% if not field.correct %} class="danger"{% endif %}>{{ macro.renderField(field) }}</td>
                                     {% endfor %}
                                     <td>
-                                        <input data-id="{{ child.associations[0].id }}" type="checkbox" id="sendEmail-{{ loop.index0 }}" name="send_email[{{ loop.index0 }}]" checked>
+                                        <input type="checkbox" id="sendEmail-{{ loop.index0 }}" name="send_email[{{ loop.index0 }}]" checked>
                                         <label for="sendEmail-{{ loop.index0 }}">Email this vote to elected official</label>
                                     </td>
                                 </tr>
@@ -141,7 +168,7 @@
                     <h3>Childs</h3>
                     {% for child in childs %}
                         <h4>{{ child.dataType }}</h4>
-                        <table class="table table-striped table-bordered">
+                        <table class="table table-striped table-bordered" id="childs">
                             <thead>
                             <tr>
                                 <td>Field</td>
@@ -186,7 +213,7 @@
 
         function fetch($base)
         {
-            var data = [];
+            var data = Object.create(null, {});
             /*
                 Get from input.
             */
@@ -214,46 +241,69 @@
             /*
                 Get fields.
             */
+
+            var childs = [];
+            $('#childs').find('[data-id]').each(function(idx, element) {
+                var $element = $(element);
+
+                childs.push({
+                    fields: {
+                        fields: fetch($element),
+                        associations: { electedOfficial: $element.attr('data-id') }
+                    },
+                    entityName: $('#childs').attr('data-entity')
+                });
+            });
+
             return {
                 fields: fetch($('#fields')),
                 associations: fetch($('#associations')),
-                childs: fetch($('#chidls'))
+                childs: childs
             }
         }
 
         $(function() {
+            /*
+                Close datepicker when user chose date.
+            */
             $('[data-provide="datepicker"]').on('changeDate', function() {
                 $(this).datepicker('hide');
             });
 
+            /*
+                Apply callback;
+            */
             $('span.ajax-choice:not(.disabled)').on('click', function() {
-
-                collectData();
-                return false;
-
+                console.log(collectData());
                 if (confirm('Are you sure?')) {
+
+                    /*
+                        Collect data.
+                    */
+                    var data = collectData();
+
                     /*
                      Get send email flags.
                      */
                     var statementEmailFlag = $('#send-email');
-                    var legislationEmailFlags = $('#votes').find('input[type="checkbox"]');
+                    var legislationEmailFlags = $('#childs').find('input[type="checkbox"]');
 
                     var flags = {};
                     if (statementEmailFlag.length > 0) {
                         /*
                          Get statement send email flag status.
                          */
-                        flags[statementEmailFlag.attr('data-id')] = statementEmailFlag[0].checked
+                        flags[statementEmailFlag.closest('[data-id]').attr('data-id')] = statementEmailFlag[0].checked
                     } else if (legislationEmailFlags.length > 0) {
                         /*
                          Get elected officials votes send email flag status.
                          */
                         legislationEmailFlags.each(function( idx, element) {
-                            flags[$(element).attr('data-id')] = element.checked;
+                            flags[$(element).closest('[data-id]').attr('data-id')] = element.checked;
                         });
                     }
 
-                    $.post($(this).data('link'), {emailFlags: flags}, function(response) {
+                    $.post($(this).data('link'), {emailFlags: flags, data: data}, function(response) {
                         if (response.redirect) {
                             location = response.redirect;
                         };
@@ -265,7 +315,7 @@
 {% endblock %}
 
 {% macro renderField(field) %}
-    {% set tagName = 'data-field-name="' ~ field.field ~ '"' %}
+    {% set tagName = 'data-field-name=' ~ field.field %}
     {% if field.value matches '|\\d+/\\d+/\\d+|' %}
         {#
             Current field is date.

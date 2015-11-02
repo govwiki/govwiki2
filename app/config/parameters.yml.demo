@@ -11,3 +11,4 @@ parameters:
     secret: e041e2bb13ea3e53a78a558952a785601a36a659
     admin_email: contact@calpolicycenter.org
     email_subject: California Policy Center
+    debug: 0

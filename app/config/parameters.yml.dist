@@ -20,3 +20,4 @@ parameters:
 
     admin_email:  ~
     email_subject: ~
+    debug: ~

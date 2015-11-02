@@ -95,9 +95,29 @@ class CreateRequestController extends Controller
         /** @var EntityManagerInterface $em */
         $em = $this->getDoctrine()->getManager();
 
-        $data = $createRequest->getFields();
+        if (! $request->request->has('data')) {
+            /*
+             * In request we don't get any data, ignore request and
+             * redirect back to create request show.
+             */
+            return new JsonResponse(
+                [
+                    'redirect' => $this->generateUrl(
+                        'govwiki_admin_createrequest_show',
+                        [
+                            'id' => $createRequest->getId(),
+                        ]
+                    ),
+                ]
+            );
+        }
 
-        $this->persistData($createRequest->getEntityName(), $data, $em);
+
+        $this->persistData(
+            $createRequest->getEntityName(),
+            $request->request->get('data'),
+            $em
+        );
 
         $createRequest->setStatus('applied');
 
@@ -134,10 +154,15 @@ class CreateRequestController extends Controller
 
                 foreach ($data as $row) {
                     $message = \Swift_Message::newInstance();
+                    if ($this->getParameter('debug')) {
+                        $message->setTo('user1@mail1.dev');
+                    } else {
+                        $message->setTo($row['emailAddress']);
+                    }
+
                     $message
                         ->setSubject($this->getParameter('email_subject'))
                         ->setFrom($this->getParameter('admin_email'))
-                        ->setTo('user1@mail1.dev')
                         ->setBody(
                             $this->renderView(
                                 'GovWikiAdminBundle::email.html.twig',
