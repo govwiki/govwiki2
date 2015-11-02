@@ -501,19 +501,6 @@ initTableHandlers = (person) ->
         if (!authorized)
           showModal('/login')
           window.sessionStorage.setItem 'tableType', tableType
-#          $.ajax '/editrequest/new', {
-#            method: 'POST',
-#            complete: (response) ->
-#              if response.status is 401
-#                showModal('/login')
-#                window.sessionStorage.setItem('tableType', tableType)
-#              else if response.status is 200
-#                authorized = true
-#            error: (error) ->
-#              if error.status is 401
-#                showModal('/login')
-#                window.sessionStorage.setItem('tableType', tableType)
-#          }
           return false;
 
         currentEntity = null
@@ -531,7 +518,7 @@ initTableHandlers = (person) ->
             currentEntity = 'PublicStatement'
             $('#addStatements').modal('toggle').find('form')[0].reset()
             ###
-            Set get url callback.
+              Set get url callback.
             ###
             $('.url-input').on 'keyup', () ->
               match_url = /\b(https?):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#\/%=~_|!:,.;]*)?/i
@@ -595,11 +582,16 @@ initTableHandlers = (person) ->
 
                 insertCategories = () ->
                     select.setAttribute('name', data.choices[0].name)
+                    # Add first blank option.
+                    option = document.createElement('option')
+                    option.setAttribute('value', '')
+                    option.textContent = ''
+                    select.innerHTML += option.outerHTML
                     for key of endObj
                         option = document.createElement('option')
                         option.setAttribute('value', key)
                         option.textContent = endObj[key]
-                        select.innerHTML += option.outerHTML;
+                        select.innerHTML += option.outerHTML
 
                 select = null
 
@@ -698,12 +690,26 @@ initTableHandlers = (person) ->
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
+
+            if (selectedValue is '')
+              # User don't select any value.
+              window.alert('Please select category.')
+              select.focus();
+              return false;
+
             selectedText = $(select).find(':selected').text();
             associations[selectName] = selectedValue
         else if modalType is 'addContributions'
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
+
+            if (selectedValue is '')
+              # User don't select any value.
+              window.alert('Please select type.')
+              select.focus();
+              return false;
+
             selectedText = $(select).find(':selected').text()
             newRecord[selectName] = selectedValue
 
@@ -711,6 +717,13 @@ initTableHandlers = (person) ->
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
+
+            if (selectedValue is '')
+              # User don't select any value.
+              window.alert('Please select type.')
+              select.focus();
+              return false;
+
             selectedText = $(select).find(':selected').text()
             newRecord[selectName] = selectedValue
 
@@ -718,6 +731,13 @@ initTableHandlers = (person) ->
             select = modal.find('select')[0]
             selectName = select.name
             selectedValue = select.options[select.selectedIndex].value
+
+            if (selectedValue is '')
+              # User don't select any value.
+              window.alert('Please select category.')
+              select.focus();
+              return false;
+
             selectedText = $(select).find(':selected').text();
             associations[selectName] = selectedValue
 
@@ -787,6 +807,9 @@ initTableHandlers = (person) ->
             success: (data) ->
                 console.log(data);
         });
+
+        # Close modal window
+        modal.modal 'hide'
 
     ###
         If user try to add or update some data without logged in, we

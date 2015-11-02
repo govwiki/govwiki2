@@ -531,7 +531,7 @@ echo <<<EOT
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)">Add</button>
                 </div>
             </div>
         </div>
@@ -581,7 +581,7 @@ echo <<<EOT
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)">Add</button>
                 </div>
             </div>
         </div>
@@ -620,7 +620,7 @@ echo <<<EOT
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)">Add</button>
                 </div>
             </div>
         </div>
@@ -661,7 +661,7 @@ echo <<<EOT
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)" data-dismiss="modal">Add</button>
+                    <button type="button" class="btn btn-primary" onclick="window.addItem(event)">Add</button>
                 </div>
             </div>
         </div>
