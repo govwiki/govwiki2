@@ -15,7 +15,12 @@ map = new GMaps
   zoomControlOptions:
     style: google.maps.ZoomControlStyle.SMALL
   markerClusterer: (map) ->
-    options = {gridSize: 0}
+    options = {
+      gridSize: 0,
+      minimumClusterSize: 5 # Allow minimum 5 marker in cluster.
+      ignoreHidden: true # Don't show hidden markers.
+      # In some reason don't work :(
+    }
     return new MarkerClusterer(map, [], options);
 
 map.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(document.getElementById('legend'))
@@ -54,13 +59,43 @@ $ ->
     hidden_field = $(this).find('input')
     value = hidden_field.val()
     hidden_field.val(if value == '1' then '0' else '1')
+    #
+    # Clicked legend alt type.
+    altType = hidden_field.attr('name')
+
     rebuild_filter()
-    map.removeMarkers()
-    rerender_markers()
+
+    #
+    # Toggle marker visible with type equal to clicked legend.
+    #
+    for marker in map.markers
+      if marker.type is altType
+        # Remove|add markers from cluster because MarkerCluster ignore
+        # his option 'ignoreHidden'.
+        if (value is '1')
+          map.markerClusterer.removeMarker(marker, true)
+        else
+          map.markerClusterer.addMarker(marker, true)
+#        marker.setVisible(! marker.getVisible())
+
+    map.markerClusterer.repaint();
+    console.log(map.markerClusterer);
 
   $('#legend li.counties-trigger').on 'click', ->
     $(this).toggleClass('active')
-    if $(this).hasClass('active') then GOVWIKI.get_counties GOVWIKI.draw_polygons else map.removePolygons()
+    if $(this).hasClass('active')
+      #
+      # Show counties.
+      #
+      for polygon in map.polygons
+        polygon.setVisible(true)
+    else
+      #
+      # Hide counties.
+      #
+      for polygon in map.polygons
+        polygon.setVisible(false)
+
 
 
 
@@ -70,15 +105,15 @@ get_icon =(alt_type) ->
   _circle =(color)->
     path: google.maps.SymbolPath.CIRCLE
     fillOpacity: 1
-    fillColor:color
+    fillColor: color
     strokeWeight: 1
-    strokeColor:'white'
+    strokeColor: 'white'
     #strokePosition: google.maps.StrokePosition.OUTSIDE
-    scale:6
+    scale: 6
 
   switch alt_type
     when 'City' then return _circle 'red'
-    when 'School District' then return _circle 'lightblue'
+    when 'School District' then return _circle 'blue'
     when 'Special District' then return _circle 'purple'
     else return _circle 'white'
 
@@ -92,15 +127,32 @@ add_marker = (rec)->
   #console.log "#{rec.rand} #{rec.inc_id} #{rec.zip} #{rec.latitude} #{rec.longitude} #{rec.gov_name}"
   exist = in_array rec.altType, GOVWIKI.gov_type_filter_2
   if exist is false then return false
-  map.addMarker
-    lat: rec.latitude
-    lng: rec.longitude
-    icon: get_icon(rec.altType)
-    title:  "#{rec.name}, #{rec.type}"
-    infoWindow:
-      content: "
-        <div><a href='javascript:void(0);' class='info-window-uri' data-uri='/#{rec.altTypeSlug}/#{rec.slug}'><strong>#{rec.name}</strong></a></div>
-        <div> #{rec.type}  #{rec.city} #{rec.zip} #{rec.state}</div>"
+
+  marker = new google.maps.Marker({
+    position: new google.maps.LatLng(rec.latitude, rec.longitude),
+    icon: get_icon(rec.altType),
+    title:  "#{rec.name}, #{rec.type}",
+    #
+    # For legend click handler.
+    type: rec.altType
+  })
+  #
+  # On click redirect user to entity page.
+  #
+  marker.addListener 'click', () ->
+    window.location = "#{rec.altTypeSlug}/#{rec.slug}"
+  map.addMarker marker
+
+#  map.addMarker
+#    lat: rec.latitude
+#    lng: rec.longitude
+#    icon: get_icon(rec.altType)
+#    title:  "#{rec.name}, #{rec.type}"
+#    infoWindow:
+#      content: "
+#        <div><a href='javascript:void(0);' class='info-window-uri' data-uri='/#{rec.altTypeSlug}/#{rec.slug}'><strong>#{rec.name}</strong></a></div>
+#        <div> #{rec.type}  #{rec.city} #{rec.zip} #{rec.state}</div>"
+
 
 
 # GEOCODING ========================================
