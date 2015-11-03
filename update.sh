@@ -98,4 +98,12 @@ if [ $? -ne 0 ] ; then
 fi
 printf "%-120s %s\n" "Migrate: [${txtgrn}Ok${txtrst}]"
 
+# compute max-rank
+./app/console db:max-ranks
+if [ $? -ne 0 ] ; then
+    echo "${txtred}Max ranks: compute fail${txtrst}"
+    exit 4;
+fi
+printf "%-120s %s\n" "Max ranks: [${txtgrn}Ok${txtrst}]"
+
 exit 0;
