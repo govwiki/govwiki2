@@ -36,6 +36,6 @@ class MaxRanksCommand extends ContainerAwareCommand
     {
         $computer = $this->getContainer()->get(GovWikiDbServices::MAX_RANKS_COMPUTER);
 
-        $computer->clear()->compute();
+        $computer->compute();
     }
 }

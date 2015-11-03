@@ -26,23 +26,6 @@ class MaxRankComputer
     }
 
     /**
-     * Remove old max ranks.
-     *
-     * @return MaxRankComputer
-     */
-    public function clear()
-    {
-        $this->em
-            ->createQueryBuilder()
-            ->delete()
-            ->from('GovWikiDbBundle:MaxRank', 'MaxRank')
-            ->getQuery()
-            ->execute();
-
-        return $this;
-    }
-
-    /**
      * Compute and persist to database new max ranks values.
      *
      * @return MaxRankComputer
@@ -71,6 +54,12 @@ class MaxRankComputer
             $this->em->persist($maxRank);
         }
 
+        $this->em
+            ->createQueryBuilder()
+            ->delete()
+            ->from('GovWikiDbBundle:MaxRank', 'MaxRank')
+            ->getQuery()
+            ->execute();
         $this->em->flush();
 
         return $this;

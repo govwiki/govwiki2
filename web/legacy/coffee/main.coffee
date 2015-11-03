@@ -96,7 +96,8 @@ GOVWIKI.draw_polygons = draw_polygons = (countiesJSON) ->
                     $('#dataContainer').show()
                     uri = "/#{county.alt_type_slug}/#{county.properties.slug}"
                     $.ajax
-                        url: "http://45.55.0.145/api/government" + uri,
+#                        url: "http://45.55.0.145/api/government" + uri,
+                        url: "/api/government" + uri,
                         dataType: 'json'
                         cache: true
                         success: (govs) ->
@@ -973,7 +974,8 @@ if routeType is 0
         jQuery.get url, {}, (data) ->
             if data
                 $.ajax
-                    url: "http://45.55.0.145/api/government" + url,
+#                    url: "http://45.55.0.145/api/government" + url,
+                    url: "/api/government" + url,
                     dataType: 'json'
                     cache: true
                     success: (elected_officials_data) ->
@@ -1009,7 +1011,8 @@ if routeType is 0
         $('#searchContainer').hide()
         $('#dataContainer').show()
         $.ajax
-            url: "http://45.55.0.145/api/government" + uri,
+#            url: "http://45.55.0.145/api/government" + uri,
+            url: "/api/government" + uri,
             dataType: 'json'
             cache: true
             success: (govs) ->
@@ -1030,7 +1033,8 @@ if routeType is 2
     $('#stantonIcon').hide()
     templates.load_fusion_template "tabs", "https://www.googleapis.com/fusiontables/v2/query?sql=SELECT%20*%20FROM%201z2oXQEYQ3p2OoMI8V5gKgHWB5Tz990BrQ1xc1tVo&key=AIzaSyCXDQyMDpGA2g3Qjuv4CDv7zRj-ix4IQJA"
     $.ajax
-        url: "http://45.55.0.145/api/government" + window.path,
+#        url: "http://45.55.0.145/api/government" + window.path,
+        url: "/api/government" + window.path,
         dataType: 'json'
         cache: true
         success: (elected_officials_data) ->

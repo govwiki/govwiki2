@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
+use GovWiki\DbBundle\Entity\Government;
 use JMS\Serializer\SerializationContext;
 
 /**
@@ -25,8 +26,11 @@ class GovernmentRepository extends EntityRepository
     {
         $em = $this->getEntityManager();
 
+        /** @var Government $government */
         $government = $this->findOneBy(['altTypeSlug' => $altTypeSlug, 'slug' => $slug]);
-        $maxRanks   = $em->getRepository('GovWikiDbBundle:MaxRank')->find(1);
+        $maxRanks   = $em->getRepository('GovWikiDbBundle:MaxRank')->findOneBy([
+            'altType' => $government->getAltType(),
+        ]);
 
         $serializedGovernment = $serializer->serialize($government, 'json', SerializationContext::create()->enableMaxDepthChecks());
         $serializedMaxRanks   = $serializer->serialize($maxRanks, 'json');
