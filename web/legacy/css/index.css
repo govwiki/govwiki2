@@ -387,12 +387,12 @@ span.rank {
   background: #f00;
 }
 .blue-circle {
-  background: #add8e6;
+  background: #0000ff;
 }
 .purple-circle {
   background: #800080;
 }
-.counties-trigger .grey-line {
+.list-group-item .grey-line {
   width: 12px;
   height: 2px;
   background: #808080;

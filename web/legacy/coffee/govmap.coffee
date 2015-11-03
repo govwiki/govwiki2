@@ -18,6 +18,8 @@ map = new GMaps
     options = {
       gridSize: 0,
       minimumClusterSize: 5 # Allow minimum 5 marker in cluster.
+      ignoreHidden: true # Don't show hidden markers.
+      # In some reason don't work :(
     }
     return new MarkerClusterer(map, [], options);
 
@@ -57,13 +59,43 @@ $ ->
     hidden_field = $(this).find('input')
     value = hidden_field.val()
     hidden_field.val(if value == '1' then '0' else '1')
+    #
+    # Clicked legend alt type.
+    altType = hidden_field.attr('name')
+
     rebuild_filter()
-    map.removeMarkers()
-    rerender_markers()
+
+    #
+    # Toggle marker visible with type equal to clicked legend.
+    #
+    for marker in map.markers
+      if marker.type is altType
+        # Remove|add markers from cluster because MarkerCluster ignore
+        # his option 'ignoreHidden'.
+        if (value is '1')
+          map.markerClusterer.removeMarker(marker, true)
+        else
+          map.markerClusterer.addMarker(marker, true)
+#        marker.setVisible(! marker.getVisible())
+
+    map.markerClusterer.repaint();
+    console.log(map.markerClusterer);
 
   $('#legend li.counties-trigger').on 'click', ->
     $(this).toggleClass('active')
-    if $(this).hasClass('active') then GOVWIKI.get_counties GOVWIKI.draw_polygons else map.removePolygons()
+    if $(this).hasClass('active')
+      #
+      # Show counties.
+      #
+      for polygon in map.polygons
+        polygon.setVisible(true)
+    else
+      #
+      # Hide counties.
+      #
+      for polygon in map.polygons
+        polygon.setVisible(false)
+
 
 
 
@@ -73,15 +105,15 @@ get_icon =(alt_type) ->
   _circle =(color)->
     path: google.maps.SymbolPath.CIRCLE
     fillOpacity: 1
-    fillColor:color
+    fillColor: color
     strokeWeight: 1
-    strokeColor:'white'
+    strokeColor: 'white'
     #strokePosition: google.maps.StrokePosition.OUTSIDE
-    scale:6
+    scale: 6
 
   switch alt_type
     when 'City' then return _circle 'red'
-    when 'School District' then return _circle 'lightblue'
+    when 'School District' then return _circle 'blue'
     when 'Special District' then return _circle 'purple'
     else return _circle 'white'
 
@@ -99,8 +131,14 @@ add_marker = (rec)->
   marker = new google.maps.Marker({
     position: new google.maps.LatLng(rec.latitude, rec.longitude),
     icon: get_icon(rec.altType),
-    title:  "#{rec.name}, #{rec.type}"
+    title:  "#{rec.name}, #{rec.type}",
+    #
+    # For legend click handler.
+    type: rec.altType
   })
+  #
+  # On click redirect user to entity page.
+  #
   marker.addListener 'click', () ->
     window.location = "#{rec.altTypeSlug}/#{rec.slug}"
   map.addMarker marker

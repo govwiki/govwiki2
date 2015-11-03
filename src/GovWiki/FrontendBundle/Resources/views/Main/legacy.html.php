@@ -1,5 +1,6 @@
 <?php
 echo <<<EOT
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <!--include head.jade-->
@@ -874,7 +875,8 @@ echo <<<EOT
                     <input type="hidden" name="City" value="1" class="type_filter">
                 </li>
                 <li class="list-group-item active counties-trigger"><span class="glyphicon glyphicon-ok"></span><i
-                    class="grey-line"></i><!--<span class="counties-title">-->Counties<!--</span>--></li>
+                    class="grey-line"></i><!--<span class="counties-title">-->Counties<!--</span>-->
+                    <input type="hidden" name="County" value="1"></li>
                 <li class="list-group-item active"><span class="glyphicon glyphicon-ok"></span><i
                     class="blue-circle marker-circle"></i>School Districts
                     <input type="hidden" name="School District" value="1" class="type_filter">
