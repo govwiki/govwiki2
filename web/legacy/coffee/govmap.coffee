@@ -15,7 +15,10 @@ map = new GMaps
   zoomControlOptions:
     style: google.maps.ZoomControlStyle.SMALL
   markerClusterer: (map) ->
-    options = {gridSize: 0}
+    options = {
+      gridSize: 0,
+      minimumClusterSize: 5 # Allow minimum 5 marker in cluster.
+    }
     return new MarkerClusterer(map, [], options);
 
 map.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(document.getElementById('legend'))
@@ -92,15 +95,26 @@ add_marker = (rec)->
   #console.log "#{rec.rand} #{rec.inc_id} #{rec.zip} #{rec.latitude} #{rec.longitude} #{rec.gov_name}"
   exist = in_array rec.altType, GOVWIKI.gov_type_filter_2
   if exist is false then return false
-  map.addMarker
-    lat: rec.latitude
-    lng: rec.longitude
-    icon: get_icon(rec.altType)
+
+  marker = new google.maps.Marker({
+    position: new google.maps.LatLng(rec.latitude, rec.longitude),
+    icon: get_icon(rec.altType),
     title:  "#{rec.name}, #{rec.type}"
-    infoWindow:
-      content: "
-        <div><a href='javascript:void(0);' class='info-window-uri' data-uri='/#{rec.altTypeSlug}/#{rec.slug}'><strong>#{rec.name}</strong></a></div>
-        <div> #{rec.type}  #{rec.city} #{rec.zip} #{rec.state}</div>"
+  })
+  marker.addListener 'click', () ->
+    window.location = "#{rec.altTypeSlug}/#{rec.slug}"
+  map.addMarker marker
+
+#  map.addMarker
+#    lat: rec.latitude
+#    lng: rec.longitude
+#    icon: get_icon(rec.altType)
+#    title:  "#{rec.name}, #{rec.type}"
+#    infoWindow:
+#      content: "
+#        <div><a href='javascript:void(0);' class='info-window-uri' data-uri='/#{rec.altTypeSlug}/#{rec.slug}'><strong>#{rec.name}</strong></a></div>
+#        <div> #{rec.type}  #{rec.city} #{rec.zip} #{rec.state}</div>"
+
 
 
 # GEOCODING ========================================
