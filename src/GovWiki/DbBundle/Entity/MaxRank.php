@@ -23,6 +23,13 @@ class MaxRank
     private $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="alt_type", type="string", length=20, nullable=true)
+     */
+    private $altType;
+
+    /**
      * @var integer
      *
      * @SerializedName("violent_crimes_per_100000_population_max_rank")
@@ -992,5 +999,26 @@ class MaxRank
     public function getEnrollmentMaxRank()
     {
         return $this->enrollmentMaxRank;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAltType()
+    {
+        return $this->altType;
+    }
+
+    /**
+     * @param string $altType Alt type, for more see
+     *                        {@see Government::altType}.
+     *
+     * @return MaxRank
+     */
+    public function setAltType($altType)
+    {
+        $this->altType = $altType;
+
+        return $this;
     }
 }

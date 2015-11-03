@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
+use GovWiki\DbBundle\Entity\Government;
 use JMS\Serializer\SerializationContext;
 
 /**
@@ -25,8 +26,11 @@ class GovernmentRepository extends EntityRepository
     {
         $em = $this->getEntityManager();
 
+        /** @var Government $government */
         $government = $this->findOneBy(['altTypeSlug' => $altTypeSlug, 'slug' => $slug]);
-        $maxRanks   = $em->getRepository('GovWikiDbBundle:MaxRank')->find(1);
+        $maxRanks   = $em->getRepository('GovWikiDbBundle:MaxRank')->findOneBy([
+            'altType' => $government->getAltType(),
+        ]);
 
         $serializedGovernment = $serializer->serialize($government, 'json', SerializationContext::create()->enableMaxDepthChecks());
         $serializedMaxRanks   = $serializer->serialize($maxRanks, 'json');
@@ -141,6 +145,44 @@ class GovernmentRepository extends EntityRepository
             )
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Compute max ranks for given alt type.
+     *
+     * @param string $altType One of the government alt type.
+     *
+     * @return array
+     */
+    public function computeMaxRanks($altType)
+    {
+        $qb = $this->createQueryBuilder('Government');
+
+        /*
+         * Get all class property with 'Rank' postfix.
+         */
+        $fields = [];
+        foreach ($this->getClassMetadata()->columnNames as $key => $value) {
+            $pos = strpos($key, 'Rank');
+            if (false !== $pos) {
+                $fields[] = $qb->expr()->max("Government.$key") .
+                    ' AS ' . substr($key, 0, $pos) . 'MaxRank';
+//                $fields[] = "max(Government.$key) as $key";
+            }
+        }
+
+        $qb
+            ->select(join(',', $fields))
+            ->where(
+                $qb->expr()->eq(
+                    'Government.altType',
+                    $qb->expr()->literal($altType)
+                )
+            );
+
+        return $qb
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
