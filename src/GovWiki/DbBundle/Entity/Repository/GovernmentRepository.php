@@ -167,12 +167,11 @@ class GovernmentRepository extends EntityRepository
             if (false !== $pos) {
                 $fields[] = $qb->expr()->max("Government.$key") .
                     ' AS ' . substr($key, 0, $pos) . 'MaxRank';
-//                $fields[] = "max(Government.$key) as $key";
             }
         }
 
         $qb
-            ->select(join(',', $fields))
+            ->select($fields)
             ->where(
                 $qb->expr()->eq(
                     'Government.altType',
