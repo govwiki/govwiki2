@@ -540,14 +540,21 @@ initTableHandlers = (person) ->
                     urlContent.find('.url-content-body').text('')
                     urlContent.find('.url-content-img').attr('src', '')
 
+                    #
+                    # Set title.
                     urlContent.find('.url-content-title').text(response.data.title)
 
                     if (response.type is 'html')
-                      urlContent.find('.url-content-body').text(response.data.body);
+                      #
+                      # If url point to html, hide img and set body.
+                      urlContent.find('.url-content-img').hide()
+                      urlContent.find('.url-content-body').text(response.data.body)
                     if (response.type is 'youtube')
-                      urlContent.find('.url-content-img').attr('src', response.data.preview);
+                      #
+                      # If url point to youtube, show youtube preview image.
+                      urlContent.find('.url-content-img').attr('src', response.data.preview)
                     if (response.type is 'image')
-                      urlContent.find('.url-content-img').attr('src', response.data.preview);
+                      urlContent.find('.url-content-img').attr('src', response.data.preview)
                     urlContent.slideDown()
                   error: (error) ->
                     console.log error

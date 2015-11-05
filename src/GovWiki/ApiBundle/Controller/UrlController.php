@@ -27,12 +27,6 @@ class UrlController extends Controller
      */
     public function extractAction(Request $request)
     {
-        /*
-         * Check http referer.
-         */
-//        if (strstr($request->server->get('HTTP_REFERER'), $request->getHost()) === false) {
-//            return new JsonResponse([], 400);
-//        }
         $url = urldecode($request->query->get('url'));
 
         /*

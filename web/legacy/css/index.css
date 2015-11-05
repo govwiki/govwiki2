@@ -671,9 +671,8 @@ i.icon__top { background: url('/legacy/img/asc.gif'); }
 .url-content-img {
     width: 100px;
     float: left;
+    margin-right: 10px;
 }
-.url-content-title,
-.url-content-body { margin-left: 110px; }
 .url-content-title { font-weight: bold; }
 .url-content-body { padding: 5px 2px; }
 

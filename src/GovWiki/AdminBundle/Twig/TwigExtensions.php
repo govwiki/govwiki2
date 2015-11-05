@@ -26,6 +26,11 @@ class TwigExtensions extends \Twig_Extension
                 $this,
                 'rolesBeautify'
             ]),
+
+            new \Twig_SimpleFilter('name_beautify', [
+                $this,
+                'nameBeautify',
+            ])
         ];
     }
 
@@ -44,5 +49,19 @@ class TwigExtensions extends \Twig_Extension
             }
         }
         return $result;
+    }
+
+    /**
+     * @param string $name Field name.
+     *
+     * @return string
+     */
+    public function nameBeautify($name)
+    {
+        /*
+         * Split name by uppercase letters.
+         */
+        return ucfirst(preg_replace('/([A-Z])/', ' $1', $name));
+
     }
 }

@@ -311,11 +311,11 @@ echo <<<EOT
 
                     <table class="table table-hover" data-entity-type="Contribution">
                         <tr>
-                            <th><a class="sort" href="javascript:void(0);" data-sort-type="year">Election Year</a> <i class="icon"></i></th>
-                            <th><a class="sort" href="javascript:void(0);" data-sort-type="name">Name of contributor</a> <i class="icon"></i></th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="year">Election Year <i class="icon"></i></a></th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="name">Name of contributor <i class="icon"></i></a></th>
                             <th>Ind. Exp. Desc.</th>
-                            <th><a class="sort" href="javascript:void(0);" data-sort-type="amount">Amount</a> <i class="icon"></i></th>
-                            <th><a class="sort" href="javascript:void(0);" data-sort-type="contributor-type">Contributor Type</a> <i class="glyphicon"></i></th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="amount">Amount <i class="icon"></i></a></th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="contributor-type">Contributor Type <i class="glyphicon"></i></a></th>
                         </tr>
 
                         {{#if contributions}}
@@ -875,8 +875,7 @@ echo <<<EOT
                     <input type="hidden" name="City" value="1" class="type_filter">
                 </li>
                 <li class="list-group-item active counties-trigger"><span class="glyphicon glyphicon-ok"></span><i
-                    class="grey-line"></i><!--<span class="counties-title">-->Counties<!--</span>-->
-                    <input type="hidden" name="County" value="1"></li>
+                    class="grey-line"></i><!--<span class="counties-title">-->Counties<!--</span>--></li>
                 <li class="list-group-item active"><span class="glyphicon glyphicon-ok"></span><i
                     class="blue-circle marker-circle"></i>School Districts
                     <input type="hidden" name="School District" value="1" class="type_filter">
