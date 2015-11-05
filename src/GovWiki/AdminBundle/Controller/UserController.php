@@ -80,16 +80,17 @@ class UserController extends Controller
 
     /**
      * @Route(path="/{id}/edit")
+     * @Template(template="GovWikiAdminBundle:User:manage.html.twig")
      *
      * @param Request $request A Request instance.
      * @param User    $user    Update user.
      * @ParamConverter(name="user", class="GovWiki\UserBundle\Entity\User")
      *
-     * @return RedirectResponse
+     * @return array
      */
     public function editAction(Request $request, User $user)
     {
-        $form = $this->createForm(new UserForm(), $user);
+        $form = $this->createForm(new UserForm(false), $user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -97,8 +98,38 @@ class UserController extends Controller
             $userManager->updateUser($user);
         }
 
-        return $this->render('GovWikiAdminBundle:User:manage.html.twig', [
+        return [
             'form' => $form->createView(),
-        ]);
+            'btn_caption' => 'Update',
+        ];
+    }
+
+    /**
+     * @Route(path="/new")
+     * @Template(template="GovWikiAdminBundle:User:manage.html.twig")
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return RedirectResponse|array
+     */
+    public function newAction(Request $request)
+    {
+        $userManager = $this->get('fos_user.user_manager');
+        $user = $userManager->createUser();
+
+        $form = $this->createForm(new UserForm(), $user);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setEnabled(true);
+            $userManager->updateUser($user);
+
+            return $this->redirectToRoute('govwiki_admin_user_index');
+        }
+
+        return [
+            'form' => $form->createView(),
+            'btn_caption' => 'Add',
+        ];
     }
 }

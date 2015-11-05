@@ -13,20 +13,38 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class UserForm extends AbstractType
 {
     /**
+     * @var boolean
+     */
+    private $new;
+
+    /**
+     * @param boolean $new If set, all fields required. Otherwise, optional.
+     */
+    public function __construct($new = true)
+    {
+        $this->new = $new;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $fieldOptions = [ 'required' => false ];
+        if ($this->new) {
+            $fieldOptions = [];
+        }
+
         $builder
-            ->add('username', null, [ 'required' => false ])
+            ->add('username', null)
             ->add('email', null)
-            ->add('plainPassword', 'password', [ 'required' => false ])
+            ->add('plainPassword', 'password', $fieldOptions)
             ->add('roles', 'choice', [
                 'choices' => [
                     'ROLE_ADMIN' => 'admin',
                     'ROLE_USER' => 'user',
                 ],
-                'expanded' => true,
+                'expanded' => false,
                 'multiple' => true,
             ]);
     }

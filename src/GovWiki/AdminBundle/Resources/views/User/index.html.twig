@@ -57,5 +57,8 @@
         <div class="navigation">
             {{ knp_pagination_render(users) }}
         </div>
+        <div class="btn-group">
+            <a class="btn btn-primary" href="{{ path('govwiki_admin_user_new') }}">Add new user</a>
+        </div>
     </div>
 {% endblock body %}
