@@ -20,49 +20,13 @@ map = new GMaps
       gridSize: 0
       minimumClusterSize: 5 # Allow minimum 5 marker in cluster.
       ignoreHidden: true # Don't show hidden markers. In some reason don't work :(
+      # For draw chart.
       legend:
         "City" : "red"
         "School District" : "blue"
         "Special District" : "purple"
     }
-    cluster = new MarkerClusterer(map, [], options);
-    ###
-      Set custom calculator function
-    ###
-#    cluster.setCalculator (markers, numStyles) ->
-#      #
-#      # Count all markers altTypes.
-#      #
-#      altTypesCount = [];
-#      for marker in markers
-#        if ! altTypesCount[marker.type] then altTypesCount[marker.type] = 0
-#        altTypesCount[marker.type]++
-#
-#      index = 0;
-#      count = markers.length;
-#      dv = count;
-#      while (dv != 0)
-#        dv = parseInt(dv / 10, 10)
-#        index++
-#
-#      index = Math.min(index, numStyles);
-#
-#      #
-#      # Prepare cluster tooltip.
-#      #
-#      tooltip = ''
-#      for type,value of altTypesCount
-#        tooltip += "#{type}: #{value}\n"
-#
-#      console.log tooltip
-#
-#      return {
-#        text: count
-#        index: index + 1
-#        title: tooltip
-#      };
-
-    return cluster;
+    return new MarkerClusterer(map, [], options);
 
 map.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(document.getElementById('legend'))
 
@@ -78,20 +42,30 @@ rebuild_filter = ->
 
 # legendType = city, school district, special district, counties
 get_records2 = (legendType, onsuccess) ->
-  $.ajax
-    url:"/api/government/get-markers-data"
-#    url:"http://45.55.0.145/api/government/get-markers-data"
-    data: { altTypes: legendType, limit: 5000 }
-    dataType: 'json'
-    cache: true
-    success: onsuccess
-    error:(e) ->
-      console.log e
+  data = window.localStorage.getItem('points');
+  if (data)
+    #
+    # Restore markers data from local storage.
+    onsuccess JSON.parse(data)
+  else
+    #
+    # Retrieve new markers data from server.
+    $.ajax
+      url:"/api/government/get-markers-data"
+  #    url:"http://45.55.0.145/api/government/get-markers-data"
+      data: { altTypes: legendType, limit: 5000 }
+      dataType: 'json'
+      cache: true
+      success: onsuccess
+      error:(e) ->
+        console.log e
 
 $ ->
-
   rebuild_filter()
   get_records2 GOVWIKI.gov_type_filter_2, (data) ->
+    #
+    # Store markers data.
+    window.localStorage.setItem('points', JSON.stringify(data))
     GOVWIKI.markers = data;
     rerender_markers()
 
@@ -120,7 +94,6 @@ $ ->
 #        marker.setVisible(! marker.getVisible())
 
     map.markerClusterer.repaint();
-    console.log(map.markerClusterer);
 
   $('#legend li.counties-trigger').on 'click', ->
     $(this).toggleClass('active')

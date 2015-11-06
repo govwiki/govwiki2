@@ -941,11 +941,10 @@ echo <<<EOT
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
-    <!--script src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js"></script-->
+    <!--script(src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js")-->
     <script src="/legacy/js/vendor/markerclusterer.js"></script>
-    <script>
-        google.load("visualization", "1", {packages: ["corechart"]});
-    </script>
+    <script src="/legacy/js/vendor/jquery.cookie.js"></script>
+    <script>google.load("visualization", "1", {packages: ["corechart"]});</script>
     <script src="/legacy/static/bundle.min.js"></script>
   </body>
 </html>
