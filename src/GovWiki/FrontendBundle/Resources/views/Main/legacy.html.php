@@ -315,7 +315,7 @@ echo <<<EOT
                             <th><a class="sort" href="javascript:void(0);" data-sort-type="name">Name of contributor <i class="icon"></i></a></th>
                             <th>Ind. Exp. Desc.</th>
                             <th><a class="sort" href="javascript:void(0);" data-sort-type="amount">Amount <i class="icon"></i></a></th>
-                            <th><a class="sort" href="javascript:void(0);" data-sort-type="contributor-type">Contributor Type <i class="glyphicon"></i></a></th>
+                            <th><a class="sort" href="javascript:void(0);" data-sort-type="contributor-type">Contributor Type <i class="icon"></i></a></th>
                         </tr>
 
                         {{#if contributions}}
@@ -943,7 +943,6 @@ echo <<<EOT
     <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
     <!--script(src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js")-->
     <script src="/legacy/js/vendor/markerclusterer.js"></script>
-    <script src="/legacy/js/vendor/jquery.cookie.js"></script>
     <script>google.load("visualization", "1", {packages: ["corechart"]});</script>
     <script src="/legacy/static/bundle.min.js"></script>
   </body>
