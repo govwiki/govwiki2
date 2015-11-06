@@ -1,6 +1,5 @@
 bounds_timeout=undefined
 
-
 map = new GMaps
   el: '#govmap'
   lat: 37.3
@@ -16,12 +15,54 @@ map = new GMaps
     style: google.maps.ZoomControlStyle.SMALL
   markerClusterer: (map) ->
     options = {
-      gridSize: 0,
+      textSize: 14
+      textColor: 'red'
+      gridSize: 0
       minimumClusterSize: 5 # Allow minimum 5 marker in cluster.
-      ignoreHidden: true # Don't show hidden markers.
-      # In some reason don't work :(
+      ignoreHidden: true # Don't show hidden markers. In some reason don't work :(
+      legend:
+        "City" : "red"
+        "School District" : "blue"
+        "Special District" : "purple"
     }
-    return new MarkerClusterer(map, [], options);
+    cluster = new MarkerClusterer(map, [], options);
+    ###
+      Set custom calculator function
+    ###
+#    cluster.setCalculator (markers, numStyles) ->
+#      #
+#      # Count all markers altTypes.
+#      #
+#      altTypesCount = [];
+#      for marker in markers
+#        if ! altTypesCount[marker.type] then altTypesCount[marker.type] = 0
+#        altTypesCount[marker.type]++
+#
+#      index = 0;
+#      count = markers.length;
+#      dv = count;
+#      while (dv != 0)
+#        dv = parseInt(dv / 10, 10)
+#        index++
+#
+#      index = Math.min(index, numStyles);
+#
+#      #
+#      # Prepare cluster tooltip.
+#      #
+#      tooltip = ''
+#      for type,value of altTypesCount
+#        tooltip += "#{type}: #{value}\n"
+#
+#      console.log tooltip
+#
+#      return {
+#        text: count
+#        index: index + 1
+#        title: tooltip
+#      };
+
+    return cluster;
 
 map.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(document.getElementById('legend'))
 
@@ -129,9 +170,10 @@ add_marker = (rec)->
   if exist is false then return false
 
   marker = new google.maps.Marker({
-    position: new google.maps.LatLng(rec.latitude, rec.longitude),
-    icon: get_icon(rec.altType),
-    title:  "#{rec.name}, #{rec.type}",
+    position: new google.maps.LatLng(rec.latitude, rec.longitude)
+    icon: get_icon(rec.altType)
+#    title:  "#{rec.name}, #{rec.type}",
+    title: "#{rec.altType}"
     #
     # For legend click handler.
     type: rec.altType
