@@ -145,8 +145,8 @@ add_marker = (rec)->
   marker = new google.maps.Marker({
     position: new google.maps.LatLng(rec.latitude, rec.longitude)
     icon: get_icon(rec.altType)
-#    title:  "#{rec.name}, #{rec.type}",
-    title: "#{rec.altType}"
+    title:  "#{rec.name}, #{rec.type}",
+#    title: "#{rec.altType}"
     #
     # For legend click handler.
     type: rec.altType

@@ -284,16 +284,21 @@ MarkerClusterer.prototype.setupLegend_ = function (markers) {
         }
     }
 
+    /*
+        Edited be freedemster.
+        Use type instead title.
+      */
+
     var colorIndex = 0;
     for (var i = 0, marker; marker = markers[i]; i++) {
-        if (!(marker.title in this.legend_)) {
-            this.legend_[marker.title] = (colorSeries[colorIndex]);
+        if (!(marker.type in this.legend_)) {
+            this.legend_[marker.type] = (colorSeries[colorIndex]);
             markerSymbol["fillColor"] = (colorSeries[colorIndex]);
             marker.setIcon(markerSymbol);
             colorIndex++;
         }
         else {
-            markerSymbol["fillColor"] = this.legend_[marker.title];
+            markerSymbol["fillColor"] = this.legend_[marker.type];
             marker.setIcon(markerSymbol);
         }
     }
@@ -969,7 +974,8 @@ Cluster.prototype.addMarker = function (marker) {
     marker.isAdded = true;
     this.markers_.push(marker);
 
-    this.chartData_[marker.getTitle()]++; //Hassan
+    //this.chartData_[marker.getTitle()]++; //Hassan
+    this.chartData_[marker.type]++; // Use type instead title.
     //console.log(this.chartData_);
 
     var len = this.markers_.length;
