@@ -258,9 +258,10 @@ render_tabs = (initial_layout, data, tabset, parent) ->
           if graph
             `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['median-comp-graph'] ='median-comp-graph'
+
         if not plot_handles['median-pension-graph']
           graph = true
-          if data['median_pension_30_year_retiree'] == 0
+          if ! data.hasOwnProperty('median_pension_30_year_retiree') || ( data['median_pension_30_year_retiree'] == 0)
             graph = false
           drawChart = () ->
             setTimeout ( ->
@@ -289,12 +290,12 @@ render_tabs = (initial_layout, data, tabset, parent) ->
                  }
                 'isStacked': 'true'
                 'colors': ['#005ce6', '#009933']
-              if graph
-                chart = new google.visualization.ColumnChart document.getElementById 'median-pension-graph'
-                chart.draw vis_data, options
+              chart = new google.visualization.ColumnChart document.getElementById 'median-pension-graph'
+              chart.draw vis_data, options
               return
             ), 1000
-          `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
+          if graph
+            `google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()})`
           plot_handles['median-pension-graph'] ='median-pension-graph'
       when 'Financial Health'
         h = ''
