@@ -917,6 +917,7 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     person = data.person
                     createRequests = data.createRequests
                     categories = data.categories
+                    person.categories = data.categories
 
                     ###
                       Format contribution amount.
@@ -1076,6 +1077,14 @@ if routeType is 3
             person = data.person
             createRequests = data.createRequests
             categories = data.categories
+            person.category_select = []
+
+            for category in categories
+              person.category_select.push {
+                value: category.id
+                text: category.name
+              }
+            person.category_select = JSON.stringify(person.category_select);
 
             ###
               Format contribution amount.
@@ -1083,7 +1092,7 @@ if routeType is 3
             for contribution in person.contributions
                 contribution.contribution_amount = numeral(contribution.contribution_amount).format('0,000')
 
-            console.log data
+            console.log person
 
             if $.isEmptyObject(person)
                 $('.loader').hide()

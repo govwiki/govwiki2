@@ -45,4 +45,4 @@ assetic:
     use_controller: true
 
 #swiftmailer:
-#    delivery_address: me@example.com
+#    delivery_address: user1@mail1.dev

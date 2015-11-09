@@ -265,10 +265,11 @@ echo <<<EOT
                                 <tr data-id="{{legislation.id}}">
                                 {{#this}}
                                     <td data-date-considered="{{date-considered}}">
-                                        <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up"
-                                              data-no-editable>
-                                            {{legislation.date_considered}}
-                                        </span>
+                                        <a href="javascript:void(0);" data-type="date" data-pk="1"  data-format="mm/dd/yyyy"
+                                           data-placeholder="Please edit" data-title="Please edit"
+                                           class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                           title="">{{legislation.date_considered}}</a>
+                                        <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
                                     <td data-name="{{legislation.name}}">
                                         <a href="javascript:void(0);" data-type="textarea" data-pk="1"
@@ -330,10 +331,10 @@ echo <<<EOT
                             <tr data-id="{{id}}">
                                 {{#this}}
                                     <td data-election-year="{{election_year}}">
-                                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                        <a href="javascript:void(0);" data-type="text" data-pk="1"
                                                data-placeholder="Please edit" data-title="Please edit"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
-                                               title="">{{election_year}}</a>
+                                               title="">{{election_year}}<span class="glyphicon glyphicon-pencil edit"></span></a>
                                     </td>
                                     <td data-contributor-name="{{contributor_name}}">
                                         <a href="javascript:void(0);" data-type="textarea" data-pk="1"
@@ -350,14 +351,14 @@ echo <<<EOT
                                         <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
                                     <td data-contribution-amount="{{contribution_amount}}">
-                                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                        <a href="javascript:void(0);" data-type="text" data-pk="1"
                                                data-placeholder="Please edit" data-title="Please edit"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
                                                title="">{{contribution_amount}}</a>
                                         <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
                                     <td data-contributor-type="{{contributor_type}}">
-                                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                        <a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{'Candidate Committee': 'Candidate Committee'}, {'Corporate': 'Corporate', 'Individual': 'Individual', 'Political Party': 'Political Party', 'Political Action Committee': 'Political Action Committee', 'Self': 'Self', 'Union': 'Union', 'Other': 'Other'}"
                                                data-placeholder="Please edit" data-title="Please edit"
                                                class="editable editable-pre-wrapped editable-click" data-original-title=""
                                                title="">{{contributor_type}}</a>
@@ -399,9 +400,9 @@ echo <<<EOT
                             <tr data-id="{{id}}">
                                 {{#this}}
                                     <td data-election-year="{{election_year}}">
-                                        <a data-type="textarea"
+                                        <a data-type="text"
                                                data-placeholder="Please edit" data-title="Please edit"
-                                               class="editable editable-pre-wrapped editable-click" data-original-title="">{{election_year}}</a>
+                                               class="editable editable-pre-wrapped editable-click" data-original-title="">{{election_year}}<span class="glyphicon glyphicon-pencil edit"></span></a>
                                     </td>
                                     <td data-name-of-endorser="{{name_of_endorser}}">
                                         <a href="javascript:void(0);" data-type="textarea"
@@ -410,8 +411,7 @@ echo <<<EOT
                                         <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
                                     <td data-endorser-type="{{endorser_type}}">
-                                        <a href="javascript:void(0);" data-type="textarea"
-                                               data-placeholder="Please edit" data-title="Please edit"
+                                        <a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{'Elected Official': 'Elected Official', 'Organization': 'Organization', 'Political Party': 'Political Party', 'Union': 'Union', 'Other': 'Other'}" data-placeholder="Please edit" data-title="Please edit"
                                                class="editable editable-pre-wrapped editable-click" data-original-title="">{{endorser_type}}</a>
                                         <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
@@ -451,10 +451,10 @@ echo <<<EOT
                         <tr data-id="{{id}}">
                             {{#this}}
                             <td data-date="{{date}}">
-                                <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                <a href="javascript:void(0);" data-type="date" data-pk="1"
                                    data-placeholder="Please edit" data-title="Please edit"
-                                   class="editable editable-pre-wrapped editable-click" data-original-title=""
-                                   title="">{{date}}</a>
+                                   class="editable editable-pre-wrapped editable-click" data-original-title=""  data-format="mm/dd/yyyy"
+                                   title="">{{date}}<span class="glyphicon glyphicon-pencil edit"></span></a>
                             </td>
                             <td data-contributor-name="{{summary}}">
                                 <a href="javascript:void(0);" data-type="textarea" data-pk="1"
@@ -464,13 +464,18 @@ echo <<<EOT
                                 <span class="glyphicon glyphicon-pencil edit"></span>
                             </td>
                             <td data-url="{{url}}">
-                                <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                <a href="javascript:void(0);" data-type="text" data-pk="1"
                                    data-placeholder="Please edit" data-title="Please edit"
                                    class="editable editable-pre-wrapped editable-click" data-original-title=""
                                    title="">{{url}}</a>
                                 <span class="glyphicon glyphicon-pencil edit"></span>
                             </td>
-                            <td data-issue-category="{{issue_category.name}}" data-no-editable>{{issue_category.name}}
+                            <td data-issue-category="{{issue_category.name}}">
+                                <a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{{../../category_select}}"
+                                   data-placeholder="Please edit" data-title="Please edit"
+                                   class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                   title="">{{issue_category.name}}</a>
+                                <span class="glyphicon glyphicon-pencil edit"></span>
                             </td>
                             {{/this}}
                         </tr>

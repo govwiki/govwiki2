@@ -98,7 +98,7 @@ class CreateRequestController extends Controller
         if (! $request->request->has('data')) {
             /*
              * If in request we don't get any data, ignore request and
-             * redirect back to create request show.
+             * redirect back to create request show page.
              */
             return new JsonResponse(
                 [
@@ -111,7 +111,6 @@ class CreateRequestController extends Controller
                 ]
             );
         }
-
 
         $this->persistData(
             $createRequest->getEntityName(),
@@ -130,7 +129,7 @@ class CreateRequestController extends Controller
              */
             $ids = [];
             foreach ($request->request->get('emailFlags') as $id => $isSend) {
-                if ($isSend) {
+                if ('true' === $isSend) {
                     $ids[] = $id;
                 }
             }
