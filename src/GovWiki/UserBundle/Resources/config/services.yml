@@ -7,5 +7,9 @@ services:
     tags:
       - { name: kernel.event_subscriber }
 
-  govwiki_frontend.redirection.logout:
-      class: GovWiki\UserBundle\Redirection\LogoutRedirection
+  govwiki.user_bundle.redirection.logout:
+      class: GovWiki\UserBundle\Security\LogoutSuccessHandler
+
+  govwiki.user_bundle.redirection.access_denied:
+      class: GovWiki\UserBundle\Security\AccessDeniedHandler
+      arguments: [@session]

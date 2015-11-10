@@ -11,11 +11,14 @@ security:
 
         main:
             pattern: ^/
+            access_denied_handler: govwiki.user_bundle.redirection.access_denied
             form_login:
                 provider: fos_userbundle
                 csrf_provider: form.csrf_provider
+                use_referer: true
+
             logout:
-                success_handler: govwiki_frontend.redirection.logout
+                success_handler: govwiki.user_bundle.redirection.logout
 
             anonymous:    true
 

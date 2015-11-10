@@ -14,6 +14,8 @@ class MainController extends Controller
     /**
      * @Route("/")
      * @Template()
+     *
+     * @return array
      */
     public function homeAction()
     {

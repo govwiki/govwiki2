@@ -1,16 +1,16 @@
 <?php
 
-namespace GovWiki\UserBundle\Redirection;
+namespace GovWiki\UserBundle\Security;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Logout\LogoutSuccessHandlerInterface;
 
 /**
- * Class LogoutRedirection
+ * Class LogoutSuccessHandler
  * @package GovWiki\FrontendBundle\Redirection
  */
-class LogoutRedirection implements LogoutSuccessHandlerInterface
+class LogoutSuccessHandler implements LogoutSuccessHandlerInterface
 {
     /**
      * {@inheritdoc}
