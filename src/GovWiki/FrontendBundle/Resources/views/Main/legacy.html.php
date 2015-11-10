@@ -264,7 +264,7 @@ echo <<<EOT
                             {{#votes}}
                                 <tr data-id="{{legislation.id}}">
                                 {{#this}}
-                                    <td data-date-considered="{{date-considered}}">
+                                    <td data-date-considered="{{legislation.date-considered}}">
                                         <a href="javascript:void(0);" data-type="date" data-pk="1"  data-format="mm/dd/yyyy"
                                            data-placeholder="Please edit" data-title="Please edit"
                                            class="editable editable-pre-wrapped editable-click" data-original-title=""
@@ -286,11 +286,16 @@ echo <<<EOT
                                         <span class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
                                     <td data-vote="{{vote}}">
-                                        <span data-no-editable>
-                                            {{vote}}
-                                        </span>
+                                        <a href="javascript:void(0);" data-type="select" data-source="{'Yes': 'Yes', 'No': 'No', 'Abstain': 'Abstain', 'Absence': 'Absence', 'Not in Office': 'Not in Office'}" data-pk="1"
+                                           data-placeholder="Please edit" data-title="Please edit"
+                                           class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                           title="">{{vote}}</a>
+                                        <span data-id="{{id}}" class="glyphicon glyphicon-pencil edit"></span>
                                     </td>
-                                    <td align="center" date-did-elected-official-propose-this="{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}" data-no-editable>{{#if_eq did_elected_official_propose_this true}} Yes {{else}} No {{/if_eq}}</td>
+                                    <td data-did-elected-official-propose-this="{{#if did_elected_official_propose_this}}Yes{{else}}No{{/if}}" align="center" >
+                                        <a href="javascript:void(0);" data-type="select" data-source="{'0': 'No', '1': 'Yes'}" data-pk="1" data-placeholder="Please edit" data-title="Please edit" class="editable editable-pre-wrapped editable-click" data-original-title="" title="">{{#if did_elected_official_propose_this}}Yes{{else}}No{{/if}}</a>
+                                        <span data-id="{{id}}" class="glyphicon glyphicon-pencil edit"></span>
+                                    </td>
                                     <td data-issue-category="{{legislation.issue_category.name}}" data-no-editable>{{legislation.issue_category.name}}</td>
                                     <td data-no-editable><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-legislation-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}">0</span></td>
                                 {{/this}}
@@ -688,31 +693,19 @@ echo <<<EOT
 <script id="row-addVotes" type="text//x-handlebars-template">
     <tr data-id style="background: rgba(80, 0, 0, 0.1)">
         <td data-date-considered="{{dateConsidered}}">
-            <span data-toggle="tooltip" data-placement="bottom" title="Log In/Sign Up" data-no-editable>
-                {{dateConsidered}}
-            </span>
+            {{dateConsidered}}
         </td>
-        <td data-name="{{name}}">
-            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{name}}</a>
-            <span class="glyphicon glyphicon-pencil edit"></span>
+        <td data-name="{{name}}" data-no-editable>
+            {{name}}
         </td>
-        <td data-summary="{{summary}}">
-            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{summary}}</a>
-            <span class="glyphicon glyphicon-pencil edit"></span>
+        <td data-summary="{{summary}}" data-no-editable>
+            {{summary}}
         </td>
-        <td data-vote="{{vote}}">
-            <span data-no-editable>
-                {{vote}}
-            </span>
+        <td data-vote="{{vote}}" data-no-editable>
+            {{vote}}
         </td>
-        <td align="center" date-did-elected-official-propose-this="{{didElectedOfficialProposeThis}}" data-no-editable>
-            {{didElectedOfficialProposeThis}}
+        <td align="center" data-did-elected-official-propose-this="{{#if did_elected_official_propose_this}}Yes{{else}}No{{/if}}" data-no-editable>
+            {{#if did_elected_official_propose_this}}Yes{{else}}No{{/if}}
         </td>
         <td data-issue-category="{{category}}" data-no-editable>{{category}}</td>
         <td data-no-editable>{{user}}</td>
@@ -721,32 +714,17 @@ echo <<<EOT
 
 <script id="row-addContributions" type="text//x-handlebars-template">
     <tr data-id style="background: rgba(80, 0, 0, 0.1)">
-        <td data-election-year="{{electionYear}}">
-            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{electionYear}}</a>
+        <td data-election-year="{{electionYear}}" data-no-editable>
+            {{electionYear}}
         </td>
-        <td data-contributor-name="{{contributorName}}">
-            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{contributorName}}</a>
-            <span class="glyphicon glyphicon-pencil edit"></span>
+        <td data-contributor-name="{{contributorName}}" data-no-editable>
+            {{contributorName}}
         </td>
-        <td data-independent-expenditure-desc="{{independentExpenditureDesc}}">
-            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{independentExpenditureDesc}}</a>
-            <span class="glyphicon glyphicon-pencil edit"></span>
+        <td data-independent-expenditure-desc="{{independentExpenditureDesc}}" data-no-editable>
+            {{independentExpenditureDesc}}
         </td>
-        <td data-contribution-amount="{{contributionAmount}}">
-            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{contributionAmount}}</a>
-            <span class="glyphicon glyphicon-pencil edit"></span>
+        <td data-contribution-amount="{{contributionAmount}}" data-no-editable>
+            {{contributionAmount}}
         </td>
         <td data-contributor-type="{{contributorType}}" data-no-editable=>
             {{contributorType}}
@@ -757,16 +735,11 @@ echo <<<EOT
 
 <script id="row-addEndorsements" type="text//x-handlebars-template">
     <tr data-id style="background: rgba(80, 0, 0, 0.1)">
-        <td data-election-year="{{electionYear}}">
-            <a data-type="textarea"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title="">{{electionYear}}</a>
+        <td data-election-year="{{electionYear}}" data-no-editable>
+            {{electionYear}}
         </td>
-        <td data-name-of-endorser="{{nameOfEndorser}}">
-            <a href="javascript:void(0);" data-type="textarea"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title="">{{nameOfEndorser}}</a>
-            <span class="glyphicon glyphicon-pencil edit"></span>
+        <td data-name-of-endorser="{{nameOfEndorser}}" data-no-editable>
+            {{nameOfEndorser}}
         </td>
         <td data-endorser-type="{{endorserType}}" data-no-editable>
             {{endorserType}}
@@ -777,25 +750,14 @@ echo <<<EOT
 
 <script id="row-addStatements" type="text//x-handlebars-template">
     <tr data-id style="background: rgba(80, 0, 0, 0.1)">
-        <td data-date="{{date}}">
-            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{date}}</a>
+        <td data-date="{{date}}" data-no-editable>
+            {{date}}
         </td>
-        <td data-contributor-name="{{summary}}">
-            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{summary}}</a>
-            <span class="glyphicon glyphicon-pencil edit"></span>
+        <td data-contributor-name="{{summary}}" data-no-editable>
+            {{summary}}
         </td>
-        <td data-url="{{url}}">
-            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">{{url}}</a>
-            <span class="glyphicon glyphicon-pencil edit"></span>
+        <td data-url="{{url}}" data-no-editable>
+            {{url}}
         </td>
         <td data-url="{{category}}" data-no-editable="">
             {{category}}
@@ -831,8 +793,8 @@ echo <<<EOT
                 <td>
                     <div class="input-group">
                         <select class="form-control" data-did-elected-official-propose-this>
-                            <option value="No" selected="selected">No</option>
-                            <option value="Yes">Yes</option>
+                            <option value="0" selected="selected">No</option>
+                            <option value="1">Yes</option>
                         </select>
                         <!--<input type="" class="form-control" placeholder="Please enter sponsored by?" data-did-elected-official-propose-this>-->
                     </div>

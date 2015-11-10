@@ -46,8 +46,9 @@ class EditRequestController extends Controller
      * @Route("/{id}")
      * @Template
      *
-     * @param EditRequest $editRequest
-     * @return Response
+     * @param EditRequest $editRequest A EditRequest instance.
+     *
+     * @return array
      */
     public function showAction(EditRequest $editRequest)
     {
@@ -91,7 +92,8 @@ class EditRequestController extends Controller
     /**
      * @Route("/{id}/apply")
      *
-     * @param EditRequest $editRequest
+     * @param EditRequest $editRequest A EditRequest instance.
+     *
      * @return JsonResponse
      */
     public function applyAction(EditRequest $editRequest)
@@ -99,7 +101,7 @@ class EditRequestController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $targetEntity = $em->getRepository("GovWikiDbBundle:{$editRequest->getEntityName()}")->find($editRequest->getEntityId());
-        $changes = [];
+
         foreach ($editRequest->getChanges() as $field => $newValue) {
             if (method_exists($targetEntity, 'get'.ucfirst($field))) {
                 $setter = 'set'.ucfirst($field);

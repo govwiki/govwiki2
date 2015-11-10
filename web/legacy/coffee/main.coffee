@@ -426,20 +426,6 @@ initTableHandlers = (person) ->
           window.sessionStorage.setItem('tableType', $(e.target).closest('.tab-pane')[0].id)
           window.sessionStorage.setItem('dataId', $(e.currentTarget).closest('tr').attr('data-id'))
           window.sessionStorage.setItem('field', Number(($(e.currentTarget).closest('td'))[0].cellIndex) + 1)
-#            $.ajax '/editrequest/new', {
-#                method: 'POST',
-#                complete: (response) ->
-#                    if response.status is 401
-#
-#                    else if response.status is 200
-#                        authorized = true
-#                        $(e.currentTarget).closest('td').find('.editable').editable('toggle');
-#                error: (error) ->
-#                    if error.status is 401
-#                        showModal('/login')
-#                        window.sessionStorage.setItem('target', e.target)
-#                        window.sessionStorage.setItem('tableType', $(e.target).closest('.tab-pane')[0].id)
-#            }
         else
             $(e.currentTarget).closest('td').find('.editable').editable('toggle');
 
@@ -476,6 +462,14 @@ initTableHandlers = (person) ->
         entityType = $(e.currentTarget).closest('table')[0].dataset.entityType
         id = $(e.currentTarget).closest('tr')[0].dataset.id
         field = Object.keys($(e.currentTarget).closest('td')[0].dataset)[0]
+
+        if field is 'vote' or field is 'didElectedOfficialProposeThis'
+          ###
+            Current field owned by ElectedOfficialVote
+          ###
+          entityType = 'ElectedOfficialVote'
+          id = $(e.currentTarget).parent().find('span')[0].dataset.id
+
         sendObject = {
             editRequest: {
                 entityName: entityType,
@@ -483,9 +477,9 @@ initTableHandlers = (person) ->
                 changes: {}
             }
         }
+        console.log sendObject
         sendObject.editRequest.changes[field] = params.newValue
         sendObject.editRequest = JSON.stringify(sendObject.editRequest);
-        console.log sendObject
         $.ajax '/editrequest/create', {
             method: 'POST',
             data: sendObject,
@@ -1079,6 +1073,9 @@ if routeType is 3
             categories = data.categories
             person.category_select = []
 
+            ###
+              Prepare options for select in IssuesCategory edit.
+            ###
             for category in categories
               person.category_select.push {
                 value: category.id
