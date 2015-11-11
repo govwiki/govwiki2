@@ -576,6 +576,111 @@ td {
 th {
   vertical-align: middle !important;
 }
+.blue-circle {
+  background: #00f;
+}
+.list-group-item .grey-line {
+  width: 12px;
+  height: 2px;
+  background: #808080;
+  display: inline-block;
+  margin: 0 4px;
+  vertical-align: middle;
+}
+/*
+    By some reasons bootstrap datepicker arrow icons is broken
+    this part of css fix it.
+*/
+.icon-arrow-left,
+.icon-arrow-right {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.icon-arrow-left:before {
+  content: "\e091";
+}
+.icon-arrow-right:before {
+  content: "\e092";
+}
+/*
+
+*/
+#electedVotes .input-group {
+  width: 100%;
+}
+.input-group textarea {
+  resize: none;
+  width: 100%;
+  height: 100px;
+  padding: 5px;
+}
+/*
+    Set icon for sortable columns.
+*/
+i.icon {
+  background: url("/legacy/img/bg.gif");
+  width: 21px;
+  height: 9px;
+  display: inline-block;
+}
+i.icon__bottom,
+i.icon__top {
+  height: 4px;
+  margin-bottom: 4px;
+}
+i.icon__bottom {
+  background: url("/legacy/img/desc.gif");
+}
+i.icon__top {
+  background: url("/legacy/img/asc.gif");
+}
+/*
+    Url preview.
+*/
+.url-content {
+  padding: 0 16px;
+  display: none;
+  margin-top: 5px;
+}
+.url-content-img {
+  width: 100px;
+  float: left;
+  margin-right: 10px;
+}
+.url-content-title {
+  font-weight: bold;
+}
+.url-content-body {
+  padding: 5px 2px;
+}
+/*
+    Login
+*/
+#user-text a:hover {
+  background-color: transparent;
+}
+#user-text a {
+  padding-right: 0;
+}
+#details .nav {
+  font-size: 140%;
+}
+/*
+    Entity notice
+*/
+.notice {
+  width: 50%;
+  margin: 0 auto;
+  border: 1px solid #f7a4af;
+  box-shadow: 0 1px 4px rgba(255,0,0,0.6);
+}
 @-moz-keyframes load8 {
   0% {
     -webkit-transform: rotate(0deg);
