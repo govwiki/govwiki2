@@ -935,7 +935,7 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                         return false;
 
                     person.votes.forEach (item, itemList) ->
-                        date = moment(item.legislation.date_considered);
+                        date = moment(item.legislation.date_considered, 'YYYY-MM-DD');
                         item.legislation.date_considered = date.format 'L'
 
                     tpl = $('#person-info-template').html()
@@ -1115,7 +1115,7 @@ if routeType is 3
             format = {year: 'numeric', month: 'numeric', day: 'numeric'};
             if person.votes != undefined
                 person.votes.forEach (item, itemList) ->
-                    date = moment(item.legislation.date_considered);
+                    date = moment(item.legislation.date_considered, 'YYYY-MM-DD');
                     item.legislation.date_considered = date.format 'L'
 
             tpl = $('#person-info-template').html()
