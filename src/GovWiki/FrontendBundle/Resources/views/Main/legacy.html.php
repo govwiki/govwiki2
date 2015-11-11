@@ -897,6 +897,7 @@ echo <<<EOT
     </div>
     <script src="/legacy/js_files/jquery.min.js"></script>
     <script src="/legacy/js/vendor/bootstrap.min.js"></script>
+    <script src="/legacy/js/vendor/moment.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug-->
     <script src="/legacy/js_files/ie10-viewport-bug-workaround.js"></script>
     <script src="/legacy/js/plugins.js"></script>

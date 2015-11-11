@@ -929,10 +929,9 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                         $('#dataContainer').show()
                         return false;
 
-                    format = {year: 'numeric', month: 'numeric', day: 'numeric'};
                     person.votes.forEach (item, itemList) ->
-                        date = new Date item.legislation.date_considered;
-                        item.legislation.date_considered = date.toLocaleString 'en-US', format
+                        date = moment(item.legislation.date_considered);
+                        item.legislation.date_considered = date.format 'L'
 
                     tpl = $('#person-info-template').html()
                     compiledTemplate = Handlebars.compile(tpl)
@@ -1102,8 +1101,8 @@ if routeType is 3
             format = {year: 'numeric', month: 'numeric', day: 'numeric'};
             if person.votes != undefined
                 person.votes.forEach (item, itemList) ->
-                    date = new Date item.legislation.date_considered;
-                    item.legislation.date_considered = date.toLocaleString 'en-US', format
+                    date = moment(item.legislation.date_considered);
+                    item.legislation.date_considered = date.format 'L'
 
             tpl = $('#person-info-template').html()
             compiledTemplate = Handlebars.compile(tpl)
