@@ -49,6 +49,9 @@ window.GOVWIKI =
         $('#dataContainer').fadeIn(300)
         $('#searchContainer').hide()
 
+GOVWIKI.templates = templates;
+GOVWIKI.tplLoaded = false
+
 GOVWIKI.get_counties = get_counties = (callback) ->
     $.ajax
         url: '/legacy/data/county_geography_ca_2.json'
@@ -106,6 +109,7 @@ GOVWIKI.draw_polygons = draw_polygons = (countiesJSON) ->
                             $('.loader').hide()
                             $('#details').show()
                             $('#searchIcon').show()
+                            GOVWIKI.tplLoaded = true
                             window.history.pushState {template: compiled_gov_template}, 'CPC Civic Profiles', uri
             })
 
@@ -298,9 +302,9 @@ GOVWIKI.history = (index) ->
     if index == 0
         searchContainer = $('#searchContainer').text();
         if(searchContainer != '')
-            window.history.pushState {}, 'CPC Civic Profiles', '/'
-            $('#searchIcon').hide()
-            $('#stantonIcon').hide()
+#            window.history.pushState {}, 'CPC Civic Profiles', '/'
+#            $('#searchIcon').hide()
+#            $('#stantonIcon').hide()
         else
             document.location.pathname = '/'
         $('#details').hide()
@@ -315,15 +319,16 @@ GOVWIKI.history = (index) ->
 window.addEventListener 'popstate', (event) ->
     console.log(window.history.state)
     if window.history.state isnt null
-        $('#details').html event.state.template
-        route = document.location.pathname.split('/').length-1;
-        if route is 2 then $('#stantonIcon').hide()
-        if route is 1 then $('#searchContainer').show()
-        GOVWIKI.show_data_page()
+        route = document.location.pathname.split('/').filter((itm)-> if itm isnt "" then itm else false);
+        route = route.length;
+        if route is 0
+          GOVWIKI.show_search_page()
+        if route isnt 0
+          $('#details').html event.state.template
+          GOVWIKI.show_data_page()
     else
         GOVWIKI.show_search_page()
-#    else
-#        document.location.reload()
+        if GOVWIKI.tplLoaded is false then document.location.reload()
 
 # Refresh Disqus thread
 refresh_disqus = (newIdentifier, newUrl, newTitle) ->
@@ -938,6 +943,7 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     $('.loader').hide()
                     $('#details').show()
                     html = compiledTemplate(person)
+                    GOVWIKI.tplLoaded = true
                     window.history.pushState {template: html}, 'CPC Politician Profiles', url
                     $('#details').html html
                     $('#dataContainer').css('display': 'block');
@@ -984,6 +990,7 @@ if routeType is 0
                         $('.loader').hide()
                         $('#details').show()
                         compiled_gov_template = templates.get_html(0, govs)
+                        GOVWIKI.tplLoaded = true
                         window.history.pushState {template: compiled_gov_template}, 'CPC Civic Profiles', url
                         $('#details').html compiled_gov_template
                         activate_tab()
@@ -996,6 +1003,8 @@ if routeType is 0
         $.get "/legacy/texts/intro-text.html", (data) -> $("#intro-text").html data
         govmap = require './govmap.coffee'
         get_counties GOVWIKI.draw_polygons
+        GOVWIKI.tplLoaded = true
+        window.history.pushState {template: $('#searchContainer').html()}, 'CPC Civic Profiles', '/'
         undef = true
         $('.loader').hide()
     adjust_typeahead_width()
@@ -1022,6 +1031,7 @@ if routeType is 0
                 $('.loader').hide()
                 $('#details').show()
                 $('#searchIcon').show()
+                GOVWIKI.tplLoaded = true
                 window.history.pushState {template: compiled_gov_template}, 'CPC Civic Profiles', uri
 
 # Route /:alt_name/:city_name
@@ -1042,15 +1052,19 @@ if routeType is 2
             govs = elected_officials_data
             $('.loader').hide()
             $('#details').show()
-            $('#details').html templates.get_html(0, govs)
+            run = templates.get_html(0, govs)
+            $('#details').html run
             activate_tab()
             GOVWIKI.show_data_page()
+            GOVWIKI.tplLoaded = true
+            window.history.pushState {template: run}, 'CPC Civic Profiles', window.path
         error: (e) ->
             console.log e
 
     $('#btnBackToSearch').click (e)->
         e.preventDefault()
         GOVWIKI.show_search_page()
+
 
 # Route /:alt_name/:city_name/:elected_name
 if routeType is 3

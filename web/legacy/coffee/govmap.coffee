@@ -155,7 +155,27 @@ add_marker = (rec)->
   # On click redirect user to entity page.
   #
   marker.addListener 'click', () ->
-    window.location = "#{rec.altTypeSlug}/#{rec.slug}"
+    console.log('Click on marker');
+    url = "#{rec.altTypeSlug}/#{rec.slug}"
+    console.log(url);
+    jQuery.get url, {}, (data) ->
+      if data
+        $.ajax
+#                    url: "http://45.55.0.145/api/government" + url,
+          url: "/api/government/" + url,
+          dataType: 'json'
+          cache: true
+          success: (elected_officials_data) ->
+            govs = elected_officials_data
+            $('.loader').hide()
+            $('#details').show()
+            compiled_gov_template = GOVWIKI.templates.get_html(0, govs)
+            GOVWIKI.tplLoaded = true
+            window.history.pushState {template: compiled_gov_template}, 'CPC Civic Profiles', url
+            $('#details').html compiled_gov_template
+            GOVWIKI.show_data_page()
+          error: (e) ->
+            console.log e
   map.addMarker marker
 
 #  map.addMarker
