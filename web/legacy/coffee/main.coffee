@@ -895,6 +895,16 @@ showCreateRequests = (person, createRequests) ->
 
         $("\##{name} tr:last-child").before(template(data))
 
+
+$('#dataContainer').popover({
+    selector: '.rank'
+    animation: true
+});
+
+$('#dataContainer').on 'click', '.rank', (e) ->
+    $('.rank').not(e.target).popover('hide');
+
+
 $('#dataContainer').on 'click', '.elected_link', (e) ->
     e.preventDefault();
     url = e.currentTarget.pathname
