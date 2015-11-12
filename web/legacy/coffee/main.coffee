@@ -915,17 +915,21 @@ $('#dataContainer').popover({
     animation: true
 });
 
-$('#dataContainer').on 'click', '.rank', () ->
-    $element = $(this);
-    $('.rank').not($element).popover('destroy')
-    $.ajax
-        url: '/api/government'+window.location.pathname+'/get_ranks'
-        dataType: 'json',
-        data:
-            field_name: $element.attr('data-field')
-        success: (data) ->
-            compiledTemplate = Handlebars.compile($('#rankPopover').html())
-            $element.parent().find('.popover-content').html compiledTemplate(data)
+$('#dataContainer').on 'click', (e) ->
+    $element = $(e.target);
+    $('.rank').not(e.target).popover('destroy')
+    fieldName = $element.attr('data-field');
+    if fieldName
+        fieldNameInCamelCase = fieldName.replace /_([a-z])/g, (g) -> return g[1].toUpperCase()
+        $.ajax
+            url: '/api/government'+window.location.pathname+'/get_ranks'
+            dataType: 'json',
+            data:
+                # Transform to camelCase
+                field_name: fieldNameInCamelCase
+            success: (data) ->
+                compiledTemplate = Handlebars.compile($('#rankPopover').html())
+                $element.parent().find('.popover-content').html compiledTemplate(data)
 
 
 
