@@ -15,7 +15,7 @@ class MainController extends Controller
      * @Route("/")
      * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
      *
-     * @return Response
+     * @return array
      */
     public function mapAction()
     {
@@ -26,9 +26,20 @@ class MainController extends Controller
      * @Route("/{altTypeSlug}/{slug}")
      * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
      *
-     * @return Response
+     * @return array
      */
     public function governmentAction()
+    {
+        return [];
+    }
+
+    /**
+     * @Route("/rank_order")
+     * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
+     *
+     * @return array
+     */
+    public function rankOrderAction()
     {
         return [];
     }
@@ -37,7 +48,7 @@ class MainController extends Controller
      * @Route("/{govAltTypeSlug}/{govSlug}/{eoSlug}")
      * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
      *
-     * @return Response
+     * @return array
      */
     public function electedOfficialAction()
     {

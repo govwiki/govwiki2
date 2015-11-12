@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Query\ResultSetMapping;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Government;
 use JMS\Serializer\SerializationContext;
@@ -13,6 +14,71 @@ use JMS\Serializer\SerializationContext;
  */
 class GovernmentRepository extends EntityRepository
 {
+    /**
+     * @return string[]
+     */
+    public function getGovernments()
+    {
+        $qb = $this->createQueryBuilder('Government');
+        $qb->select('Government.name, Government.altType');
+
+        /*
+        * Get all class property with 'Rank' postfix.
+        */
+        foreach ($this->getClassMetadata()->columnNames as $key => $value) {
+            $pos = strpos($key, 'Rank');
+            if (false !== $pos) {
+                $key = str_replace('Rank', '', $key);
+                $qb->addSelect("Government.$key");
+            }
+        }
+
+        return $qb
+            ->orderBy($qb->expr()->asc('Government.altType'))
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
+     * @param string $altTypeSlug
+     * @param string $governmentSlug
+     * @param string $rankFieldName
+     *
+     * @return array
+     */
+    public function getGovernmentRank($altTypeSlug, $governmentSlug, $rankFieldName, $limit, $page = null, $order = null)
+    {
+        $qb = $this->createQueryBuilder('Government');
+        $id = $qb
+            ->select('Government.id')
+            ->where(
+                $qb->expr()->andX(
+                    $qb->expr()->eq('Government.altTypeSlug', $qb->expr()->literal($altTypeSlug)),
+                    $qb->expr()->eq('Government.slug', $qb->expr()->literal($governmentSlug))
+                )
+            )
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $qb = $this->createQueryBuilder('Government');
+        $qb->select('Government.name, Government.'. $rankFieldName);
+        if (null === $page) {
+            $qb->where($qb->expr()->between('Government.id', $id - $limit, $id + $limit));
+        } else {
+            $qb->setFirstResult($page * $limit);
+            if ('desc' === $order) {
+                $qb->orderBy($qb->expr()->desc('Government.'. $rankFieldName));
+            } elseif ('asc' === $order) {
+                $qb->orderBy($qb->expr()->asc('Government.'. $rankFieldName));
+            }
+        }
+
+        return $qb
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     /**
      * Find government by slug and altTypeSlug
      * Append maxRanks and financialStatements

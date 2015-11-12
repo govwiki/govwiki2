@@ -33,6 +33,18 @@ Handlebars.registerHelper 'if_eq', (a, b, opts) ->
     else
         return opts.inverse this
 
+Handlebars.registerHelper 'debug', (emberObject) ->
+  if emberObject and emberObject.contexts
+    out = '';
+
+    for context in emberObject.contexts
+      for prop in context
+        out += prop + ": " + context[prop] + "\n"
+
+    if (console && console.log)
+        console.log("Debug\n----------------\n" + out)
+
+
 window.GOVWIKI =
     state_filter: ''
     gov_type_filter: ''
@@ -156,6 +168,7 @@ activate_tab = () ->
 
 
 get_record2 = (recid) ->
+    console.log('!!@#@');
 # clear wikipedia place
     $("#wikipediaContainer").html("")
     $.ajax
@@ -1044,6 +1057,37 @@ if routeType is 0
                 GOVWIKI.tplLoaded = true
                 window.history.pushState {template: compiled_gov_template}, 'CPC Civic Profiles', uri
 
+# Route /rank_order
+if routeType is 1
+  document.title = 'CPC Civic Profiles'
+  $('#details').hide()
+  $('#dataContainer').show()
+  $('.loader').show()
+  $('#wikipediaContainer').hide()
+  $('#stantonIcon').hide()
+
+  $.ajax
+    url: "/api/rank_order"
+    dataType: 'json'
+    cache: true
+    success: (data) ->
+      #
+      # Render rank order template.
+      #
+      tpl = Handlebars.compile($('#rank-order-page').html())
+      console.log data
+      $('#details').html tpl(data)
+      $('.loader').hide()
+      $('#details').show()
+      GOVWIKI.show_data_page();
+
+      #
+      # Push template.
+      #
+      GOVWIKI.tplLoaded = true
+#      window.history.pushState {template: tpl}, 'CPC Civic Profiles', '/rank_order'
+
+
 # Route /:alt_name/:city_name
 if routeType is 2
     document.title = 'CPC Civic Profiles'
@@ -1122,7 +1166,6 @@ if routeType is 3
                 $('#dataContainer').show()
                 return false;
 
-            format = {year: 'numeric', month: 'numeric', day: 'numeric'};
             if person.votes != undefined
                 person.votes.forEach (item, itemList) ->
                     date = moment(item.legislation.date_considered, 'YYYY-MM-DD');

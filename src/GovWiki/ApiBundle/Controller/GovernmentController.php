@@ -2,6 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller;
 
+use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,5 +59,56 @@ class GovernmentController extends Controller
         }
 
         return new JsonResponse($data);
+    }
+
+    /**
+     * @Route("/{altTypeSlug}/{slug}/get_ranks", methods={"GET"})
+     *
+     * Query parameter:
+     *  limit - max entities per request, default 25.
+     *  page  - calculate offset based on this value, default null.
+     *  order - sorting order, 'desc' or 'asc', default null. Ignore if page is null.
+     *
+     * @param Request $request     A Request instance.
+     * @param string  $altTypeSlug Alt type slug.
+     * @param string  $slug        Government slug.
+     *
+     * @return JsonResponse
+     */
+    public function getRanksAction(Request $request, $altTypeSlug, $slug)
+    {
+        /** @var GovernmentRepository $repository */
+        $repository = $this->getDoctrine()->getRepository("GovWikiDbBundle:Government");
+        $fieldName = $request->query->get('field_name', null);
+        if (empty($fieldName)) {
+            return new JsonResponse([ 'message' => 'Provide field_name query parameter.' ], 400);
+        }
+
+        /*
+         * Check field name.
+         */
+        $fields = $this->getDoctrine()->getManager()->getClassMetadata('GovWikiDbBundle:Government')
+            ->getFieldNames();
+        $found = false;
+        foreach ($fields as $field) {
+            if ($field === $fieldName) {
+                $found = true;
+                break;
+            }
+        }
+        if (! $found) {
+            return new JsonResponse([ 'message'  => 'Unknown field name, provide in camel case like in Government entity.'], 400);
+        }
+
+        return new JsonResponse(
+            $repository->getGovernmentRank(
+                $altTypeSlug,
+                $slug,
+                $fieldName,
+                $request->query->getInt('limit', 25),
+                $request->query->get('page', null),
+                $request->query->get('order', null)
+            )
+        );
     }
 }

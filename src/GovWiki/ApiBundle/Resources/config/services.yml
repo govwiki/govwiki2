@@ -4,3 +4,17 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request,  method: onKernelRequest,  priority: 100}
             - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: -100}
+
+    govwiki_api.serializer.serialization_visitor:
+        class: GovWiki\ApiBundle\Serializer\ArraySerializationVisitor
+        arguments: [@jms_serializer.naming_strategy]
+        tags:
+            - { name: jms_serializer.serialization_visitor, format: array }
+
+    govwiki_api.serizlizer.deserialization_visitor:
+        class: GovWiki\ApiBundle\Serializer\ArrayDeserializationVisitor
+        arguments:
+          - @jms_serializer.naming_strategy
+          - @jms_serializer.object_constructor
+        tags:
+            - { name: jms_serializer.deserialization_visitor, format: array }
