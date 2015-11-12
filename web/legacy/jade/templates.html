@@ -860,3 +860,18 @@
         </div>
     </div>
 </div>
+
+<script id="rankPopover" type="text/x-handlebars-template">
+    <table>
+        <tr>
+            <th>City</th>
+            <th>Value</th>
+        </tr>
+        {{#this}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{enrollment}}</td>
+            </tr>
+        {{/this}}
+    </table>
+</script>

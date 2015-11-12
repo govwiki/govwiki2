@@ -682,6 +682,10 @@ i.icon__top {
   border: 1px solid #f7a4af;
   box-shadow: 0 1px 4px rgba(255,0,0,0.6);
 }
+.popover-content {
+  overflow-y: scroll;
+  height: 300px;
+}
 @-moz-keyframes load8 {
   0% {
     -webkit-transform: rotate(0deg);

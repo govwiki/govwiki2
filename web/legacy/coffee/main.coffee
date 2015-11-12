@@ -910,12 +910,23 @@ showCreateRequests = (person, createRequests) ->
 
 
 $('#dataContainer').popover({
+    placement: 'bottom'
     selector: '.rank'
     animation: true
 });
 
-$('#dataContainer').on 'click', '.rank', (e) ->
-    $('.rank').not(e.target).popover('hide');
+$('#dataContainer').on 'click', '.rank', () ->
+    $element = $(this);
+    $('.rank').not($element).popover('destroy')
+    $.ajax
+        url: '/api/government'+window.location.pathname+'/get_ranks'
+        dataType: 'json',
+        data:
+            field_name: $element.attr('data-field')
+        success: (data) ->
+            compiledTemplate = Handlebars.compile($('#rankPopover').html())
+            $element.parent().find('.popover-content').html compiledTemplate(data)
+
 
 
 $('#dataContainer').on 'click', '.elected_link', (e) ->
