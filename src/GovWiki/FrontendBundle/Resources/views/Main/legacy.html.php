@@ -929,6 +929,20 @@ echo <<<EOT
     </div>
 </div>
 
+<script id="rankPopover" type="text/x-handlebars-template">
+    <table>
+        <tr>
+            <th>City</th>
+            <th>Value</th>
+        </tr>
+        {{#this}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{value}}</td>
+            </tr>
+        {{/this}}
+    </table>
+</script>
     <div id="modal-window" class="modal fade">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -964,7 +978,7 @@ echo <<<EOT
     <!--script(src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js")-->
     <script src="/legacy/js/vendor/markerclusterer.js"></script>
     <script>google.load("visualization", "1", {packages: ["corechart"]});</script>
-    <script src="/legacy/static/bundle.min.js"></script>
+    <script src="/legacy/static/bundle.js"></script>
   </body>
 </html>
 EOT;

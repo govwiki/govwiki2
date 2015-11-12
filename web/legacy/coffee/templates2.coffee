@@ -27,7 +27,7 @@ render_field_value = (n,mask,data) ->
       if data[n+'_rank'] and data.max_ranks and data.max_ranks[n+'_max_rank']
         v = numeral(v).format(mask)
         return "#{v} <a class='rank'
-                      data-field='#{n}'
+                      data-field='#{n}_rank'
                       title='#{n} ranks'>
                       (#{data[n+'_rank']} of #{data.max_ranks[n+'_max_rank']})</a>"
       if n == "number_of_full_time_employees"

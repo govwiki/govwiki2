@@ -928,6 +928,7 @@ $('#dataContainer').on 'click', (e) ->
                 # Transform to camelCase
                 field_name: fieldNameInCamelCase
             success: (data) ->
+                console.log(data)
                 compiledTemplate = Handlebars.compile($('#rankPopover').html())
                 $element.parent().find('.popover-content').html compiledTemplate(data)
 

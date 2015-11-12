@@ -61,9 +61,11 @@ class GovernmentRepository extends EntityRepository
             ->getSingleScalarResult();
 
         $qb = $this->createQueryBuilder('Government');
-        $qb->select('Government.name, Government.'. $rankFieldName);
+        $qb
+            ->select('Government.name, Government.'. $rankFieldName .' AS value')
+            ->where($qb->expr()->eq('Government.altTypeSlug', $qb->expr()->literal($altTypeSlug)));
         if (null === $page) {
-            $qb->where($qb->expr()->between('Government.id', $id - $limit, $id + $limit));
+            $qb->andWhere($qb->expr()->between('Government.id', $id - $limit, $id + $limit));
         } else {
             $qb->setFirstResult($page * $limit);
             if ('desc' === $order) {
