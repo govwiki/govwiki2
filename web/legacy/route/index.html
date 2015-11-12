@@ -865,6 +865,47 @@
     </div>
 </script>
 
+<!--
+
+    URL: /rank_order
+    Rank order page template.
+    Show sortable tables with governments ranks by alt type.
+
+-->
+<script id="rank-order-page" type="text/x-handlebars-template">
+    <div class="row person-info-header">
+        <div class="col-md-10 col-md-push-1">
+            <h5>RANK ORDER</h5>
+        </div>
+    </div>
+    <div class="row person-info-tabs">
+        <div class="col-md-10 col-md-push-1">
+
+            {{!-- Nav tabs --}}
+            <ul class="nav nav-pills" role="tablist">
+                <li role="presentation" class="active"><a href="#city" aria-controls="City" role="tab" data-toggle="tab">City</a></li>
+                <li role="presentation"><a href="#county" aria-controls="County" role="tab" data-toggle="tab">County</a></li>
+                <li role="presentation"><a href="#school_district" aria-controls="School District" role="tab" data-toggle="tab">School District</a></li>
+                <li role="presentation"><a href="#special_district" aria-controls="Special District" role="tab" data-toggle="tab">Public Special District</a></li>
+            </ul>
+
+            <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
+                {{!-- City table --}}
+                <div role="tabpanel" class="tab-pane active" id="city">
+                     <table class="table table-hover">
+                         <tr>
+                             <th>Name</th>
+                             {{#maxRanks.city}}
+                                 <th>{{name}}</th>
+                             {{/maxRanks.city}}
+                         </tr>
+                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
 
 <!-- Modal -->
 <div class="modal fade" id="conversation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -921,6 +962,6 @@
     <!--script(src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js")-->
     <script src="/legacy/js/vendor/markerclusterer.js"></script>
     <script>google.load("visualization", "1", {packages: ["corechart"]});</script>
-    <script src="/legacy/static/bundle.js"></script>
+    <script src="/legacy/static/bundle.min.js"></script>
   </body>
 </html>

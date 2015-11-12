@@ -22,3 +22,8 @@ url:
     resource: "@GovWikiApiBundle/Controller/UrlController.php"
     type:     annotation
     prefix:   url
+
+rank_order:
+    resource: "@GovWikiApiBundle/Controller/RankOrderController.php"
+    type:     annotation
+    prefix:   rank_order

@@ -14,6 +14,31 @@ use JMS\Serializer\SerializationContext;
 class GovernmentRepository extends EntityRepository
 {
     /**
+     * @return string[]
+     */
+    public function getGovernments()
+    {
+        $qb = $this->createQueryBuilder('Government');
+        $qb->select('Government.name, Government.altType');
+
+        /*
+        * Get all class property with 'Rank' postfix.
+        */
+        foreach ($this->getClassMetadata()->columnNames as $key => $value) {
+            $pos = strpos($key, 'Rank');
+            if (false !== $pos) {
+                $key = str_replace('Rank', '', $key);
+                $qb->addSelect("Government.$key");
+            }
+        }
+
+        return $qb
+            ->orderBy($qb->expr()->asc('Government.altType'))
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
      * Find government by slug and altTypeSlug
      * Append maxRanks and financialStatements
      *
