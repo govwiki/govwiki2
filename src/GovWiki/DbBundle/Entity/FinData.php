@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * FinData
@@ -28,6 +29,7 @@ class FinData
      * @var integer
      *
      * @ORM\Column(name="year", type="integer", nullable=true)
+     * @Groups({"government"})
      */
     private $year;
 
@@ -35,6 +37,7 @@ class FinData
      * @var string
      *
      * @ORM\Column(name="caption", type="string", length=255, nullable=true)
+     * @Groups({"government"})
      */
     private $caption;
 
@@ -42,6 +45,7 @@ class FinData
      * @var integer
      *
      * @ORM\Column(name="display_order", type="integer", nullable=true)
+     * @Groups({"government"})
      */
     private $displayOrder;
 
@@ -49,6 +53,7 @@ class FinData
      * @var string
      *
      * @ORM\Column(name="dollar_amount", type="decimal", precision=20, scale=2, nullable=true)
+     * @Groups({"government"})
      */
     private $dollarAmount;
 
@@ -60,11 +65,13 @@ class FinData
 
     /**
      * @ORM\ManyToOne(targetEntity="Fund", inversedBy="finData")
+     * @Groups({"government"})
      */
     private $fund;
 
     /**
      * @ORM\ManyToOne(targetEntity="CaptionCategory", inversedBy="finData")
+     * @Groups({"government"})
      */
     private $captionCategory;
 

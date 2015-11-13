@@ -256,7 +256,7 @@ echo <<<EOT
                             <th>Title of Measure</th>
                             <th>Summary of Measure</th>
                             <th class="legislation-column-vote">How official Voted</th>
-                            <th class="legislation-column-sponsored">Sponsored by this official?</th>
+                            <th>Sponsored by this official?</th>
                             <th>Category</th>
                             <th></th>
                         </tr>
@@ -953,6 +953,7 @@ echo <<<EOT
     </tr>
     {{/this}}
 </script>
+
     <div id="modal-window" class="modal fade">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -988,7 +989,7 @@ echo <<<EOT
     <!--script(src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js")-->
     <script src="/legacy/js/vendor/markerclusterer.js"></script>
     <script>google.load("visualization", "1", {packages: ["corechart"]});</script>
-    <script src="/legacy/static/bundle.js"></script>
+    <script src="/legacy/static/bundle.min.js"></script>
   </body>
 </html>
 EOT;

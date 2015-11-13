@@ -1151,6 +1151,10 @@ if routeType is 2
         cache: true
         success: (elected_officials_data) ->
             govs = elected_officials_data
+
+            console.log 'GOV:'
+            console.log govs
+
             $('.loader').hide()
             $('#details').show()
             run = templates.get_html(0, govs)

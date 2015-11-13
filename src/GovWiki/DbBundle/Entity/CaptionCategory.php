@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * CaptionCategory
@@ -28,6 +29,7 @@ class CaptionCategory
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @Groups({"government"})
      */
     private $name;
 
@@ -35,6 +37,7 @@ class CaptionCategory
      * @var boolean
      *
      * @ORM\Column(name="display", type="boolean", nullable=true)
+     * @Groups({"government"})
      */
     private $display;
 

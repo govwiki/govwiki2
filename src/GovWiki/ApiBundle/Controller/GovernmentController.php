@@ -18,18 +18,23 @@ class GovernmentController extends Controller
     /**
      * @Route("/{altTypeSlug}/{slug}", methods="GET")
      *
-     * @param  string $altTypeSlug
-     * @param  string $slug
+     * @param  string $altTypeSlug Government alt type.
+     * @param  string $slug        Government slugged name.
+     *
      * @return Response
      */
     public function showAction($altTypeSlug, $slug)
     {
         $em = $this->getDoctrine()->getManager();
+        $context = SerializationContext::create()
+            ->setGroups('government')
+            ->enableMaxDepthChecks();
 
-        $government = $em->getRepository('GovWikiDbBundle:Government')->findGovernment(
-            $altTypeSlug,
-            $slug,
-            $this->get('jms_serializer')
+        $government = $this->get('jms_serializer')->serialize(
+            $em->getRepository('GovWikiDbBundle:Government')
+                ->findGovernment($altTypeSlug, $slug),
+            'json',
+            $context
         );
 
         $response = new Response();

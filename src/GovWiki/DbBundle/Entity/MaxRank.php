@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
 
 /**
@@ -34,6 +35,7 @@ class MaxRank
      *
      * @SerializedName("violent_crimes_per_100000_population_max_rank")
      * @ORM\Column(name="violent_crimes_per_100000_population_max_rank", type="integer", nullable=true)
+     * @Groups({"government"})
      */
     private $violentCrimesPer100000PopulationMaxRank;
 
@@ -42,6 +44,7 @@ class MaxRank
      *
      * @SerializedName("property_crimes_per_100000_population_max_rank")
      * @ORM\Column(name="property_crimes_per_100000_population_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $propertyCrimesPer100000PopulationMaxRank;
 
@@ -49,6 +52,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="frpm_rate_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $frpmRateMaxRank;
 
@@ -56,6 +60,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="median_salary_per_full_time_emp_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $medianSalaryPerFullTimeEmpMaxRank;
 
@@ -63,6 +68,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="median_benefits_per_ft_emp_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $medianBenefitsPerFtEmpMaxRank;
 
@@ -70,6 +76,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="median_total_comp_per_ft_emp_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $medianTotalCompPerFtEmpMaxRank;
 
@@ -77,6 +84,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="median_total_comp_over_median_individual_comp_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $medianTotalCompOverMedianIndividualCompMaxRank;
 
@@ -84,6 +92,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="total_comp_for_highest_paid_emp_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $totalCompForHighestPaidEmpMaxRank;
 
@@ -91,6 +100,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="full_time_employees_over_population_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $fullTimeEmployeesOverPopulationMaxRank;
 
@@ -98,6 +108,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="pension_contribution_over_total_revenue_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $pensionContributionOverTotalRevenueMaxRank;
 
@@ -105,6 +116,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="opeb_arc_over_total_revenue_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $opebArcOverTotalRevenueMaxRank;
 
@@ -112,6 +124,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="pension_plus_opeb_arc_over_tot_rev_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $pensionPlusOpebArcOverTotRevMaxRank;
 
@@ -119,6 +132,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="academic_performance_index_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $academicPerformanceIndexMaxRank;
 
@@ -126,6 +140,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="sat_scores_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $satScoresMaxRank;
 
@@ -133,6 +148,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="sales_tax_rate_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $salesTaxRateMaxRank;
 
@@ -140,6 +156,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="library_hours_per_week_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $libraryHoursPerWeekMaxRank;
 
@@ -147,6 +164,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="graduation_rate_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $graduationRateMaxRank;
 
@@ -154,6 +172,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="dropout_rate_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $dropoutRateMaxRank;
 
@@ -161,6 +180,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="total_debt_over_total_revenue_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $totalDebtOverTotalRevenueMaxRank;
 
@@ -168,6 +188,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="expenditure_per_student_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $expenditurePerStudentMaxRank;
 
@@ -175,6 +196,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="general_fund_balance_over_general_fund_exp_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $generalFundBalanceOverGeneralFundExpMaxRank;
 
@@ -182,6 +204,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="gf_surplus_over_gf_revenue_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $gfSurplusOverGfRevenueMaxRank;
 
@@ -189,6 +212,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="change_in_governmental_fund_revenue_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $changeInGovernmentalFundRevenueMaxRank;
 
@@ -196,6 +220,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="default_probability_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $defaultProbabilityMaxRank;
 
@@ -203,6 +228,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="public_safety_exp_over_tot_gov_fund_revenue_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $publicSafetyExpOverTotGovFundRevenueMaxRank;
 
@@ -210,6 +236,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="public_safety_exp_over_general_fund_revenue_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $publicSafetyExpOverGeneralFundRevenueMaxRank;
 
@@ -217,6 +244,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="total_revenue_per_capita_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $totalRevenuePerCapitaMaxRank;
 
@@ -224,6 +252,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="total_expenditures_per_capita_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $totalExpendituresPerCapitaMaxRank;
 
@@ -231,6 +260,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="median_total_comp_general_public_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $medianTotalCompGeneralPublicMaxRank;
 
@@ -238,6 +268,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="median_home_price_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $medianHomePriceMaxRank;
 
@@ -245,6 +276,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="population_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $populationMaxRank;
 
@@ -252,6 +284,7 @@ class MaxRank
      * @var integer
      *
      * @ORM\Column(name="enrollment_max_rank", type="integer", nullable=true)
+	 * @Groups({"government"})
      */
     private $enrollmentMaxRank;
 

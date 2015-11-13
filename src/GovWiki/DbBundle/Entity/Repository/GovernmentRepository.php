@@ -5,11 +5,9 @@ namespace GovWiki\DbBundle\Entity\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
-use Doctrine\ORM\Query\ResultSetMapping;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\FinData;
 use GovWiki\DbBundle\Entity\Government;
-use JMS\Serializer\SerializationContext;
 
 /**
  * GovernmentRepository
@@ -89,16 +87,17 @@ class GovernmentRepository extends EntityRepository
      *
      * @param  string                     $altTypeSlug
      * @param  string                     $slug
-     * @param  \JMS\Serializer\Serializer $serializer
-     * @return string serialized json
+     *
+     * @return Government
      */
-    public function findGovernment($altTypeSlug, $slug, \JMS\Serializer\Serializer $serializer)
+    public function findGovernment($altTypeSlug, $slug)
     {
         $qb = $this->createQueryBuilder('Government');
         $data = $qb
-            ->addSelect('FinData, CaptionCategory, MaxRank, Fund')
+            ->addSelect('FinData, CaptionCategory, MaxRank, ElectedOfficial, Fund')
             ->leftJoin('Government.finData', 'FinData')
             ->leftJoin('FinData.captionCategory', 'CaptionCategory')
+            ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
             ->leftJoin('FinData.fund', 'Fund')
             ->join(
                 'GovWikiDbBundle:MaxRank',
@@ -124,12 +123,12 @@ class GovernmentRepository extends EntityRepository
         $finData = $government->getFinData()->toArray();
         /** @var FinData $finDataItem */
         foreach ($finData as $finDataItem) {
-            $financialStatementsGroups[$finDataItem->getCaption()] = $finDataItem;
+            $financialStatementsGroups[$finDataItem->getCaption()][] = $finDataItem;
         }
         $i = 0;
         $financialStatements = [];
-        foreach ($financialStatementsGroups as $caption => $finDataItem) {
-//            foreach ($finData as $finDataItem) {
+        foreach ($financialStatementsGroups as $caption => $finData) {
+            foreach ($finData as $finDataItem) {
                 $financialStatements[$i]['caption'] = $caption;
                 $financialStatements[$i]['category_name'] = $finDataItem->getCaptionCategory()->getName();
                 $financialStatements[$i]['display_order'] = $finDataItem->getDisplayOrder();
@@ -150,7 +149,7 @@ class GovernmentRepository extends EntityRepository
                         $financialStatements[$i]['totalfunds'] = $finDataItem->getDollarAmount();
                     }
                 }
-//            }
+            }
             $i++;
         }
 
@@ -160,7 +159,7 @@ class GovernmentRepository extends EntityRepository
         $government->setMaxRanks($data[1]);
         $government->setFinancialStatements($financialStatements);
 
-        return $serializer->serialize($government, 'json', SerializationContext::create()->enableMaxDepthChecks());
+        return $government;
 
 //
 //          OLD CODE.
