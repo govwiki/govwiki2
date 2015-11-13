@@ -15,19 +15,27 @@ use GovWiki\DbBundle\Entity\Government;
 class GovernmentRepository extends EntityRepository
 {
     /**
+     * @param string $altTypeSlug Government slugged alt type.
+     *
      * @return string[]
      */
     public function getGovernments()
     {
         $qb = $this->createQueryBuilder('Government');
-        $qb->select('Government.name, Government.altType');
+        $qb
+            ->select('Government.name, Government.altType, MaxRank')
+            ->join(
+                'GovWikiDbBundle:MaxRank',
+                'MaxRank',
+                Join::WITH,
+                $qb->expr()->eq('MaxRank.altType', 'Government.altType')
+            );
 
         /*
         * Get all class property with 'Rank' postfix.
         */
         foreach ($this->getClassMetadata()->columnNames as $key => $value) {
-            $pos = strpos($key, 'Rank');
-            if (false !== $pos) {
+            if (false !== strpos($key, 'Rank')) {
                 $key = str_replace('Rank', '', $key);
                 $qb->addSelect("Government.$key");
             }

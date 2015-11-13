@@ -69,10 +69,11 @@ class GovernmentController extends Controller
     /**
      * @Route("/{altTypeSlug}/{slug}/get_ranks", methods={"GET"})
      *
-     * Query parameter:
-     *  limit - max entities per request, default 25.
-     *  page  - calculate offset based on this value, default null.
-     *  order - sorting order, 'desc' or 'asc', default null. Ignore if page is null.
+     * Query parameters:
+     *  field_name - field name in camelCase.
+     *  limit      - max entities per request, default 25.
+     *  page       - calculate offset based on this value, default null.
+     *  order      - sorting order, 'desc' or 'asc', default null. Ignore if page is null.
      *
      * @param Request $request     A Request instance.
      * @param string  $altTypeSlug Alt type slug.

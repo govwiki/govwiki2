@@ -14,7 +14,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class RankOrderController extends Controller
 {
     /**
-     * @Route(path="/")
+     * @Route(path="/", methods={"GET"})
+     *
+     * Query parameters:
+     *  alt type - alt type.
+     *  limit    - max entities per request, default 25.
+     *  page     - calculate offset based on this value, default null.
+     *  order    - sorting order, 'desc' or 'asc', default null.
      *
      * @return JsonResponse
      */
@@ -54,6 +60,8 @@ class RankOrderController extends Controller
             }
             $maxRanks[$this->canonizeAltType($maxRank->getAltType())] = $result;
         }
+
+
 
         /*
          * Fetch governments.

@@ -941,6 +941,7 @@ $('#dataContainer').on 'click', (e) ->
     previousScrollTop = 0;
     currentPage = 0;
     loading = false;
+    popoverOrder = null;
 
     # Close all other popovers
     if !$element.closest('.popover')[0]
@@ -949,13 +950,17 @@ $('#dataContainer').on 'click', (e) ->
     # order [desc, asc]
     loadNewRows = (order) ->
         loading = true;
+        popoverOrder = order
         preloader.show()
         table = popoverContent.find('table tbody')
         table.html ''
+        currentPage = 0;
+        previousScrollTop = 0
         $.ajax
             url: '/api/government'+window.location.pathname+'/get_ranks'
             dataType: 'json',
             data:
+                page: currentPage
                 order: order
                 field_name: fieldNameInCamelCase # Transform to camelCase
             success: (data) ->
@@ -981,7 +986,7 @@ $('#dataContainer').on 'click', (e) ->
                 $column.find('i').addClass('icon__top')
 
     if fieldName
-        fieldNameInCamelCase = fieldName.replace /_([a-z])/g, (g) -> return g[1].toUpperCase()
+        fieldNameInCamelCase = fieldName.replace /_([a-z0-9])/g, (g) -> return g[1].toUpperCase()
         $.ajax
             url: '/api/government'+window.location.pathname+'/get_ranks'
             dataType: 'json',
@@ -993,28 +998,26 @@ $('#dataContainer').on 'click', (e) ->
 
     # Lazy load for popover
     popoverContent.scroll () ->
+      currentScrollTop = popoverContent.scrollTop()
+      if  previousScrollTop < currentScrollTop && currentScrollTop > 0.5 * popoverContent[0].scrollHeight
+        console.log('asdasd');
+        previousScrollTop = currentScrollTop
         if loading is false
-            loading = true
-            window.setTimeout(() ->
-                currentScrollTop = popoverContent.scrollTop()
-                if  previousScrollTop < currentScrollTop && currentScrollTop > 0.7 * popoverContent[0].scrollHeight
-                    preloader.show();
-                    $.ajax
-                        url: '/api/government' + window.location.pathname + '/get_ranks'
-                        dataType: 'json',
-                        data:
-                            page: ++currentPage
-                            field_name: fieldNameInCamelCase # Transform to camelCase
-                        success: (data) ->
-                            loading = false
-                            preloader.hide()
-                            compiledTemplate = Handlebars.compile(additionalRowsTpl)
-                            popoverContent.find('table tbody')[0].innerHTML += compiledTemplate(data)
-                            console.log data
-            , 3000)
-
-
-
+          loading = true
+          preloader.show();
+          $.ajax
+              url: '/api/government' + window.location.pathname + '/get_ranks'
+              dataType: 'json',
+              data:
+                  page: ++currentPage
+                  order: popoverOrder
+                  field_name: fieldNameInCamelCase # Transform to camelCase
+              success: (data) ->
+                  loading = false
+                  preloader.hide()
+                  compiledTemplate = Handlebars.compile(additionalRowsTpl)
+                  popoverContent.find('table tbody')[0].innerHTML += compiledTemplate(data)
+                  console.log data
 
 $('#dataContainer').on 'click', '.elected_link', (e) ->
     e.preventDefault();

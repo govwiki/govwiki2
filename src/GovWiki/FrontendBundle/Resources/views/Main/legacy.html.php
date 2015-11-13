@@ -941,7 +941,13 @@ echo <<<EOT
             {{#this}}
                 <tr>
                     <td>{{name}}</td>
-                    <td>{{value}}</td>
+                    <td>
+                        {{#if value}}
+                            {{value}}
+                        {{else}}
+                            No data
+                        {{/if}}
+                    </td>
                 </tr>
             {{/this}}
         </tbody>
@@ -953,7 +959,13 @@ echo <<<EOT
     {{#this}}
     <tr>
         <td>{{name}}</td>
-        <td>{{enrollment}}</td>
+        <td>
+            {{#if value}}
+                {{value}}
+            {{else}}
+                No data
+            {{/if}}
+        </td>
     </tr>
     {{/this}}
 </script>
