@@ -373,7 +373,6 @@ ul.search-icon li > a:hover {
 a.rank {
   font-style: italic;
   font-size: 75%;
-  cursor: pointer;
 }
 /*map legend circles*/
 .marker-circle {
@@ -689,6 +688,19 @@ i.icon__top {
 .popover-content table th,
 .popover-content table td {
   font-size: 80%;
+}
+/*
+  Legislation table columns.
+*/
+.legislation-column-date {
+  width: 112px;
+}
+.legislation-column-vote,
+.legislation-column-sponsored {
+  text-align: center;
+}
+.legislation-column-vote {
+  width: 115px;
 }
 @-moz-keyframes load8 {
   0% {

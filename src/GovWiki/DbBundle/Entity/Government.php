@@ -4,9 +4,9 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\VirtualProperty;
 
 /**
  * Government
@@ -824,6 +824,50 @@ class Government
      * @ORM\Column(name="enrollment_rank", type="integer", nullable=true)
      */
     private $enrollmentRank;
+
+    /**
+     * @var array
+     */
+    private $maxRanks;
+
+    /**
+     * @var array
+     */
+    private $financialStatements;
+
+    /**
+     * @return array
+     * @VirtualProperty()
+     */
+    public function getMaxRanks()
+    {
+        return $this->maxRanks;
+    }
+
+    /**
+     * @param array $maxRanks
+     */
+    public function setMaxRanks($maxRanks)
+    {
+        $this->maxRanks = $maxRanks;
+    }
+
+    /**
+     * @return array
+     * @VirtualProperty()
+     */
+    public function getFinancialStatements()
+    {
+        return $this->financialStatements;
+    }
+
+    /**
+     * @param array $financialStatements
+     */
+    public function setFinancialStatements($financialStatements)
+    {
+        $this->financialStatements = $financialStatements;
+    }
 
     /**
      * Constructor
