@@ -21,7 +21,9 @@ class RankOrderController extends Controller
      *  alt type     - slugged alt type, default 'City'.
      *  limit        - max entities per request, default 25.
      *  page         - calculate offset based on this value, default 0.
-     *  fields_order - assoc array of fields sorting order. Field name (camelCase) as key and sort order as value ('desc' or 'asc').
+     *  fields_order - assoc array of fields sorting order. Field name
+     *                 (in camelCase) as key and sort order as value
+     *                 ('desc' or 'asc').
      *
      * @param Request $request A Request instance.
      *
