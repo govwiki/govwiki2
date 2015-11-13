@@ -26,9 +26,13 @@ render_field_value = (n,mask,data) ->
     if '' != mask
       if data[n+'_rank'] and data.max_ranks and data.max_ranks[n+'_max_rank']
         v = numeral(v).format(mask)
+        # Transform from underscore (some_fieldName) to readable format
+        title = n.toString()
+        title = title.charAt(0).toUpperCase() + title.slice(1)
+        title = title.replace /_([a-z])/g, (g) -> return ' ' + g[1].toUpperCase()
         return "#{v} <a class='rank'
                       data-field='#{n}_rank'
-                      title='#{n} ranks'>
+                      title='#{title} ranks'>
                       (#{data[n+'_rank']} of #{data.max_ranks[n+'_max_rank']})</a>"
       if n == "number_of_full_time_employees"
         return numeral(v).format('0,0')

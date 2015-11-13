@@ -929,16 +929,20 @@
 
 <script id="rankPopover" type="text/x-handlebars-template">
     <table class="table table-condensed table-hover">
-        <tr>
-            <th>City</th>
-            <th>Value</th>
-        </tr>
-        {{#this}}
+        <thead>
             <tr>
-                <td>{{name}}</td>
-                <td>{{value}}</td>
+                <th>City</th>
+                <th class="sortable">Value<i class="icon"></i></th>
             </tr>
-        {{/this}}
+        </thead>
+        <tbody>
+            {{#this}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{value}}</td>
+                </tr>
+            {{/this}}
+        </tbody>
     </table>
     <div class="loader"></div>
 </script>
