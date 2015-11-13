@@ -15,42 +15,77 @@ use GovWiki\DbBundle\Entity\Government;
 class GovernmentRepository extends EntityRepository
 {
     /**
-     * @param string $altTypeSlug Government slugged alt type.
+     * @param string  $altTypeSlug Government slugged alt type.
+     * @param integer $page        Page to show.
+     * @param integer $limit       Max entities per page.
+     * @param array   $orderFields Assoc array, fields name as key and
+     *                             sort direction ('desc' or 'asc' (default))
+     *                             as value.
      *
      * @return string[]
      */
-    public function getGovernments()
+    public function getGovernments($altTypeSlug, $page, $limit, array $orderFields = [])
     {
         $qb = $this->createQueryBuilder('Government');
         $qb
-            ->select('Government.name, Government.altType, MaxRank')
-            ->join(
-                'GovWikiDbBundle:MaxRank',
-                'MaxRank',
-                Join::WITH,
-                $qb->expr()->eq('MaxRank.altType', 'Government.altType')
-            );
+            ->select('Government.name, Government.altTypeSlug, Government.slug')
+            ->where(
+                $qb->expr()->eq(
+                    'Government.altTypeSlug',
+                    $qb->expr()->literal($altTypeSlug)
+                )
+            )
+            ->setMaxResults($limit);
 
         /*
         * Get all class property with 'Rank' postfix.
         */
         foreach ($this->getClassMetadata()->columnNames as $key => $value) {
             if (false !== strpos($key, 'Rank')) {
-                $key = str_replace('Rank', '', $key);
                 $qb->addSelect("Government.$key");
             }
         }
 
-        return $qb
-            ->orderBy($qb->expr()->asc('Government.altType'))
+        if (null !== $page) {
+            $qb->setFirstResult($page * $limit);
+        }
+
+        if ($orderFields) {
+            foreach ($orderFields as $fieldName => $direction) {
+                if ('desc' === $direction) {
+                    $qb->addOrderBy($qb->expr()->desc('Government.'. $fieldName));
+                } else {
+                    $qb->addOrderBy($qb->expr()->asc('Government.'. $fieldName));
+                }
+            }
+        }
+
+        $data = $qb
             ->getQuery()
             ->getArrayResult();
+
+        /*
+         * Remove empty fields.
+         */
+        foreach ($data as &$row) {
+            foreach ($row as $key => $field) {
+                if (empty($field)) {
+                    unset($row[$key]);
+                }
+            }
+        }
+
+        return $data;
     }
 
     /**
-     * @param string $altTypeSlug
-     * @param string $governmentSlug
-     * @param string $rankFieldName
+     * @param string  $altTypeSlug    Slugged alt type.
+     * @param string  $governmentSlug Slugged government name
+     * @param string  $rankFieldName  One of government rank field.
+     * @param integer $limit          Max result per page.
+     * @param integer $page           Page to show.
+     * @param string  $order          Sorting order 'desc' or 'asc'. Ignore
+     *                                if page is null.
      *
      * @return array
      */
