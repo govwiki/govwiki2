@@ -917,8 +917,40 @@ $('#dataContainer').popover({
 
 $('#dataContainer').on 'click', (e) ->
     $element = $(e.target);
+    popoverContent = $element.parent().find('.popover-content')
+    fieldName = $element.attr('data-field')
+    popoverTpl = $('#rankPopover').html()
+    additionalRowsTpl = $('#additionalRows').html()
+    preloader = popoverContent.find('loader')
+    previousScrollTop = 0;
+    currentPage = 0;
+    loading = false;
+
+    # Close all other popovers
     $('.rank').not(e.target).popover('destroy')
-    fieldName = $element.attr('data-field');
+
+    # Lazy load for popover
+    popoverContent.scroll () ->
+        if loading is false
+            loading = true
+            window.setTimeout(() ->
+                currentScrollTop = popoverContent.scrollTop()
+                if  previousScrollTop < currentScrollTop && currentScrollTop > 0.7 * popoverContent[0].scrollHeight
+                    preloader.show();
+                    $.ajax
+                        url: '/api/government' + window.location.pathname + '/get_ranks'
+                        dataType: 'json',
+                        data:
+                            page: ++currentPage
+                            field_name: fieldNameInCamelCase # Transform to camelCase
+                        success: (data) ->
+                            loading = false
+                            preloader.hide()
+                            compiledTemplate = Handlebars.compile(additionalRowsTpl)
+                            popoverContent.find('table tbody')[0].innerHTML += compiledTemplate(data)
+                            console.log data
+            , 3000)
+
     if fieldName
         fieldNameInCamelCase = fieldName.replace /_([a-z])/g, (g) -> return g[1].toUpperCase()
         $.ajax
@@ -928,9 +960,8 @@ $('#dataContainer').on 'click', (e) ->
                 # Transform to camelCase
                 field_name: fieldNameInCamelCase
             success: (data) ->
-                console.log(data)
-                compiledTemplate = Handlebars.compile($('#rankPopover').html())
-                $element.parent().find('.popover-content').html compiledTemplate(data)
+                compiledTemplate = Handlebars.compile(popoverTpl)
+                popoverContent.html compiledTemplate(data)
 
 
 

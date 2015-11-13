@@ -930,7 +930,7 @@ echo <<<EOT
 </div>
 
 <script id="rankPopover" type="text/x-handlebars-template">
-    <table>
+    <table class="table table-condensed table-hover">
         <tr>
             <th>City</th>
             <th>Value</th>
@@ -942,6 +942,16 @@ echo <<<EOT
             </tr>
         {{/this}}
     </table>
+    <div class="loader"></div>
+</script>
+
+<script id="additionalRows" type="text/x-handlebars-template">
+    {{#this}}
+    <tr>
+        <td>{{name}}</td>
+        <td>{{enrollment}}</td>
+    </tr>
+    {{/this}}
 </script>
     <div id="modal-window" class="modal fade">
       <div class="modal-dialog">

@@ -686,6 +686,10 @@ i.icon__top {
   overflow-y: scroll;
   height: 300px;
 }
+.popover-content table th,
+.popover-content table td {
+  font-size: 80%;
+}
 @-moz-keyframes load8 {
   0% {
     -webkit-transform: rotate(0deg);
