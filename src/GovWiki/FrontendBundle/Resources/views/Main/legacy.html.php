@@ -252,11 +252,11 @@ echo <<<EOT
 
                     <table class="table table-hover" data-entity-type="Legislation">
                         <tr>
-                            <th>Date</th>
+                            <th class="legislation-column-date">Date</th>
                             <th>Title of Measure</th>
                             <th>Summary of Measure</th>
-                            <th style="text-align:center;">How official Voted</th>
-                            <th style="text-align:center;">Sponsored by this official?</th>
+                            <th class="legislation-column-vote">How official Voted</th>
+                            <th class="legislation-column-sponsored">Sponsored by this official?</th>
                             <th>Category</th>
                             <th></th>
                         </tr>
