@@ -316,8 +316,8 @@ GOVWIKI.history = (index) ->
         searchContainer = $('#searchContainer').text();
         if(searchContainer != '')
 #            window.history.pushState {}, 'CPC Civic Profiles', '/'
-#            $('#searchIcon').hide()
-#            $('#stantonIcon').hide()
+            $('#searchIcon').hide()
+            $('#stantonIcon').hide()
         else
             document.location.pathname = '/'
         $('#details').hide()
@@ -334,8 +334,13 @@ window.addEventListener 'popstate', (event) ->
     if window.history.state isnt null
         route = document.location.pathname.split('/').filter((itm)-> if itm isnt "" then itm else false);
         route = route.length;
+
+        console.log(route)
         if route is 0
           GOVWIKI.show_search_page()
+
+        if route is 2
+          $('#stantonIcon').hide();
         if route isnt 0
           $('#details').html event.state.template
           GOVWIKI.show_data_page()
