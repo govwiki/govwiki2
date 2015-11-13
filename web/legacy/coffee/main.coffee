@@ -918,7 +918,7 @@ $('#dataContainer').popover({
                     <div class="popover-title-custom">
                         <h3 class="popover-title"></h3>
                         <div class="popover-btn">
-                            <a href="rank_order">All ranks</button></a>
+                            <a href="/rank_order">All ranks</button></a>
                         </div>
                     </div>
                     <div class="popover-content"></div>
