@@ -2,6 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller;
 
+use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,6 +33,9 @@ class RankOrderController extends Controller
             ->getClassMetadata('GovWikiDbBundle:MaxRank')
             ->getFieldNames();
 
+        /*
+         * Get max ranks fields name without id and alt type.
+         */
         $maxRanksFields = [];
         foreach ($tmp as $fieldName) {
             if ('id' !== $fieldName && 'altType' !== $fieldName) {
@@ -39,17 +43,22 @@ class RankOrderController extends Controller
             }
         }
 
+        $altTypeSlug = $request->query->get('alt_type', 'City');
+        /** @var GovernmentRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Government');
+
         return new JsonResponse(
             [
-                'governments' => $this->getDoctrine()
-                    ->getRepository('GovWikiDbBundle:Government')
+                'governments' => $repository
                     ->getGovernments(
-                        $request->query->get('alt_type', 'City'),
+                        $altTypeSlug,
                         $request->query->getInt('page', 0),
                         $request->query->getInt('limit', 25),
                         $request->query->get('fields_order', [])
                     ),
                 'max_ranks' => $maxRanksFields,
+                'count' => $repository->countGovernments($altTypeSlug),
             ]
         );
     }

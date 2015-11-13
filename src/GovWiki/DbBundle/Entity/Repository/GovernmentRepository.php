@@ -15,6 +15,26 @@ use GovWiki\DbBundle\Entity\Government;
 class GovernmentRepository extends EntityRepository
 {
     /**
+     * @param string $altTypeSlug Government slugged alt type.
+     *
+     * @return integer
+     */
+    public function countGovernments($altTypeSlug)
+    {
+        $qb = $this->createQueryBuilder('Government');
+        return $qb
+            ->select($qb->expr()->count('Government.id'))
+            ->where(
+                $qb->expr()->eq(
+                    'Government.altTypeSlug',
+                    $qb->expr()->literal($altTypeSlug)
+                )
+            )
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * @param string  $altTypeSlug Government slugged alt type.
      * @param integer $page        Page to show.
      * @param integer $limit       Max entities per page.
