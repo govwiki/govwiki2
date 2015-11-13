@@ -913,6 +913,16 @@ $('#dataContainer').popover({
     placement: 'bottom'
     selector: '.rank'
     animation: true
+    template: '<div class="popover" role="tooltip">
+                    <div class="arrow"></div>
+                    <div class="popover-title-custom">
+                        <h3 class="popover-title"></h3>
+                        <div class="popover-btn">
+                            <a href="rank_order">All ranks</button></a>
+                        </div>
+                    </div>
+                    <div class="popover-content"></div>
+                </div>'
 });
 
 $('#dataContainer').on 'click', (e) ->
@@ -922,12 +932,59 @@ $('#dataContainer').on 'click', (e) ->
     popoverTpl = $('#rankPopover').html()
     additionalRowsTpl = $('#additionalRows').html()
     preloader = popoverContent.find('loader')
+
     previousScrollTop = 0;
     currentPage = 0;
     loading = false;
 
     # Close all other popovers
-    $('.rank').not(e.target).popover('destroy')
+    if !$element.closest('.popover')[0]
+        $('.rank').not(e.target).popover('destroy')
+
+    # order [desc, asc]
+    loadNewRows = (order) ->
+        loading = true;
+        preloader.show()
+        table = popoverContent.find('table tbody')
+        table.html ''
+        $.ajax
+            url: '/api/government'+window.location.pathname+'/get_ranks'
+            dataType: 'json',
+            data:
+                order: order
+                field_name: fieldNameInCamelCase # Transform to camelCase
+            success: (data) ->
+                compiledTemplate = Handlebars.compile(additionalRowsTpl)
+                table.html compiledTemplate(data)
+                loading = false;
+                preloader.hide()
+
+    popoverContent.on 'click', 'th', (e) ->
+        $column = `$(e.target).hasClass('sortable') ? $(e.target) : $(e.target).closest('th');`
+        if $column.hasClass('sortable')
+            if $column.hasClass('desc')
+                loadNewRows('asc')
+                $column.removeClass('desc').addClass('asc')
+                $column.find('i').removeClass('icon__bottom').addClass('icon__top')
+            else if $column.hasClass('asc')
+                loadNewRows('desc')
+                $column.removeClass('asc').addClass('desc')
+                $column.find('i').removeClass('icon__top').addClass('icon__bottom')
+            else
+                loadNewRows('asc')
+                $column.addClass('asc')
+                $column.find('i').addClass('icon__top')
+
+    if fieldName
+        fieldNameInCamelCase = fieldName.replace /_([a-z])/g, (g) -> return g[1].toUpperCase()
+        $.ajax
+            url: '/api/government'+window.location.pathname+'/get_ranks'
+            dataType: 'json',
+            data:
+                field_name: fieldNameInCamelCase # Transform to camelCase
+            success: (data) ->
+                compiledTemplate = Handlebars.compile(popoverTpl)
+                popoverContent.html compiledTemplate(data)
 
     # Lazy load for popover
     popoverContent.scroll () ->
@@ -951,17 +1008,6 @@ $('#dataContainer').on 'click', (e) ->
                             console.log data
             , 3000)
 
-    if fieldName
-        fieldNameInCamelCase = fieldName.replace /_([a-z])/g, (g) -> return g[1].toUpperCase()
-        $.ajax
-            url: '/api/government'+window.location.pathname+'/get_ranks'
-            dataType: 'json',
-            data:
-                # Transform to camelCase
-                field_name: fieldNameInCamelCase
-            success: (data) ->
-                compiledTemplate = Handlebars.compile(popoverTpl)
-                popoverContent.html compiledTemplate(data)
 
 
 
