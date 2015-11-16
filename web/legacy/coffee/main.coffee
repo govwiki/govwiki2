@@ -27,6 +27,12 @@ user = Object.create null, {}
 #
 categories = Object.create null, {}
 
+Handlebars.registerPartial 'table-city', $('#table-city').html()
+Handlebars.registerPartial 'table-county', $('#table-county').html()
+Handlebars.registerPartial 'table-school-district', $('#table-school-district').html()
+Handlebars.registerPartial 'table-special-district', $('#table-special-district').html()
+
+
 Handlebars.registerHelper 'getName', (name, obj) ->
     return obj[name+'Rank'];
 
@@ -37,7 +43,6 @@ Handlebars.registerHelper 'if_eq', (a, b, opts) ->
         return opts.inverse this
 
 Handlebars.registerHelper 'some', (arr, target, opts) ->
-    console.log(arr[target+'Rank']);
     return !!arr[target+'Rank'];
 
 Handlebars.registerHelper 'debug', (emberObject) ->
@@ -1246,11 +1251,50 @@ if routeType is 1
           GOVWIKI.tplLoaded = true
           window.history.pushState {template: $('#details').html()}, 'CPC Civic Profiles', '/rank_order'
 
+    altTypesData = {}
+    GOVWIKI.currentAltType = 'City'
+    GOVWIKI.currentAltTypeLowerCase = 'city'
+    GOVWIKI.itemsPerPage = 10;
+    GOVWIKI.currentPage = 0;
+
+    setEvents = () ->
+        $('a[data-toggle="tab"]').on 'shown.bs.tab', (e) ->
+            GOVWIKI.currentAltType = $(e.target).attr("href").replace('#', '')
+            GOVWIKI.currentAltTypeLowerCase = GOVWIKI.currentAltType.toLowerCase()
+            GOVWIKI.currentPage = 0;
+            renderPagination()
+
+        $('.pagination').on 'click', 'a', (e) ->
+            page = $(e.target).attr('data-page')
+            if page isnt undefined
+                GOVWIKI.currentPage = parseInt(page)-1
+                renderTemplate(GOVWIKI.currentPage)
+
+    renderPagination = () ->
+        $paginationContainer = $('#'+GOVWIKI.currentAltType+' .pagination')
+        $paginationContainer.html('')
+        paginationControls = ''
+        if GOVWIKI.currentPage > 0
+            paginationControls += '<li><a href="javascript:void(0)" aria-label="Previous" onclick="GOVWIKI.prevPage(event)"><span aria-hidden="true">&laquo;</span></a></li>'
+            paginationControls += '<li><a href="javascript:void(0)" data-page="'+GOVWIKI.currentPage+'">' + (GOVWIKI.currentPage) + '</a></li>'
+        else
+            paginationControls += '<li class="disabled"><a href="javascript:void(0)" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>'
+
+        paginationControls += '<li class="active"><a href="javascript:void(0)" data-page="'+(GOVWIKI.currentPage+1)+'">' + (GOVWIKI.currentPage+1) + '</a></li>'
+
+        if GOVWIKI.currentPage is GOVWIKI.lastPage()
+            paginationControls += '<li class="disabled"><a href="javascript:void(0)" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>'
+        else
+            paginationControls += '<li><a href="javascript:void(0)" data-page="'+(GOVWIKI.currentPage+2)+'">' + (GOVWIKI.currentPage+2) + '</a></li>'
+            paginationControls += '<li><a href="javascript:void(0)" aria-label="Next" onclick="GOVWIKI.nextPage(event)"><span aria-hidden="true">&raquo;</span></a></li>'
+        $paginationContainer.append(paginationControls);
+
     $.ajax
         url: "/api/rank_order"
         dataType: 'json'
         cache: true
-        success: (altTypesData) ->
+        success: (data) ->
+            altTypesData = data;
             #
             # Render rank order template.
             #
@@ -1260,13 +1304,51 @@ if routeType is 1
             $('#details').show()
             GOVWIKI.show_data_page();
 
-            console.log(altTypesData)
+            setEvents()
+            renderPagination()
 
             #
             # Push template.
             #
             GOVWIKI.tplLoaded = true
-            window.history.pushState {template: tpl}, 'CPC Civic Profiles', '/rank_order'
+#            window.history.pushState {template: tpl}, 'CPC Civic Profiles', '/rank_order'
+
+    renderTemplate = (page) ->
+        $.ajax
+            url: "/api/rank_order"
+            dataType: 'json'
+            cache: true
+            data:
+                alt_type: GOVWIKI.currentAltType
+                page: page || GOVWIKI.currentPage
+                limit: GOVWIKI.itemsPerPage
+            success: (data) ->
+                altTypesData[GOVWIKI.currentAltTypeLowerCase] = data
+                tpl = Handlebars.compile($('#table-city').html())
+                $('#'+GOVWIKI.currentAltType).html tpl(altTypesData)
+                setEvents()
+                renderPagination()
+
+    GOVWIKI.nextPage = (e) ->
+        ++GOVWIKI.currentPage
+        renderTemplate()
+
+
+    GOVWIKI.prevPage = (e) ->
+        --GOVWIKI.currentPage
+        renderTemplate()
+
+
+    GOVWIKI.firstPage =  () ->
+        return `GOVWIKI.currentPage == 0`
+
+    GOVWIKI.lastPage =  () ->
+        lastPage = Math.ceil(altTypesData.count / GOVWIKI.itemsPerPage - 1)
+        return GOVWIKI.currentPage == lastPage
+
+    GOVWIKI.numberOfPages = () ->
+        return Math.ceil(altTypesData.count / GOVWIKI.itemsPerPage)
+    
 
 
 # Route /:alt_name/:city_name

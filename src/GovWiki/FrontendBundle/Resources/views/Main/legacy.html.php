@@ -914,232 +914,274 @@ echo <<<EOT
             </ul>
 
             <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
+
                 <div role="tabpanel" class="tab-pane active" id="City">
 
-                    <div class="custom-wrap">
-
-                        <div class="fixed-th-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each city.max_ranks}}
-                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
-                                    {{/each}}
-                                </tr>
-                                {{#each city.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../city.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td style="color: white">{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-
-                        <div class="scrolled-td-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each city.max_ranks}}
-                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
-                                    {{/each}}
-                                </tr>
-                                {{#each city.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../city.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-                    </div>
+                    {{> table-city}}
 
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="County">
-                    <div class="custom-wrap">
 
-                        <div class="fixed-th-table-wrapper">
+                    {{> table-county}}
 
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each county.max_ranks}}
-                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
-                                    {{/each}}
-                                </tr>
-                                {{#each county.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../county.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-
-                        <div class="scrolled-td-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each county.max_ranks}}
-                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
-                                    {{/each}}
-                                </tr>
-                                {{#each county.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../county.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-                    </div>
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="School_District">
-                    <div class="custom-wrap">
 
-                        <div class="fixed-th-table-wrapper">
+                    {{> table-school-district }}
 
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each school_district.max_ranks}}
-                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
-                                    {{/each}}
-                                </tr>
-                                {{#each school_district.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../school_district.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-
-                        <div class="scrolled-td-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each school_district.max_ranks}}
-                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
-                                    {{/each}}
-                                </tr>
-                                {{#each school_district.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../school_district.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-                    </div>
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="Special_District">
-                    <div class="custom-wrap">
 
-                        <div class="fixed-th-table-wrapper">
+                    {{> table-special-district }}
 
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each special_district.max_ranks}}
-                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
-                                    {{/each}}
-                                </tr>
-                                {{#each special_district.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../special_district.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-
-                        <div class="scrolled-td-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each special_district.max_ranks}}
-                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
-                                    {{/each}}
-                                </tr>
-                                {{#each special_district.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../special_district.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-                    </div>
                 </div>
 
             </div>
         </div>
     </div>
 </script>
+
+
+<script id="table-city" type="text/x-handlebars-template">
+
+    <nav><ul class="pagination"></ul></nav>
+
+    <div class="custom-wrap">
+
+        <div class="fixed-th-table-wrapper">
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>&nbsp;</th>
+                    {{#each city.max_ranks}}
+                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
+                    {{/each}}
+                </tr>
+                {{#each city.governments as |entity|}}
+                <tr>
+                    <th>{{entity.name}}</th>
+                    {{#each ../city.max_ranks}}
+                    {{#if (some entity this) }}
+                    <td style="color: white">{{getName this entity}}</td>
+                    {{else}}
+                    <td>&nbsp;</td>
+                    {{/if}}
+                    {{/each}}
+                </tr>
+                {{/each}}
+            </table>
+
+        </div>
+
+        <div class="scrolled-td-table-wrapper">
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>&nbsp;</th>
+                    {{#each city.max_ranks}}
+                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
+                    {{/each}}
+                </tr>
+                {{#each city.governments as |entity|}}
+                <tr>
+                    <th>{{entity.name}}</th>
+                    {{#each ../city.max_ranks}}
+                    {{#if (some entity this) }}
+                    <td>{{getName this entity}}</td>
+                    {{else}}
+                    <td>&nbsp;</td>
+                    {{/if}}
+                    {{/each}}
+                </tr>
+                {{/each}}
+            </table>
+
+        </div>
+    </div>
+
+</script>
+
+<script id="table-county" type="text/x-handlebars-template">
+
+    <nav><ul class="pagination"></ul></nav>
+
+    <div class="custom-wrap">
+
+        <div class="fixed-th-table-wrapper">
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>&nbsp;</th>
+                    {{#each county.max_ranks}}
+                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
+                    {{/each}}
+                </tr>
+                {{#each county.governments as |entity|}}
+                <tr>
+                    <th>{{entity.name}}</th>
+                    {{#each ../county.max_ranks}}
+                    {{#if (some entity this) }}
+                    <td>{{getName this entity}}</td>
+                    {{else}}
+                    <td>&nbsp;</td>
+                    {{/if}}
+                    {{/each}}
+                </tr>
+                {{/each}}
+            </table>
+
+        </div>
+
+        <div class="scrolled-td-table-wrapper">
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>&nbsp;</th>
+                    {{#each county.max_ranks}}
+                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
+                    {{/each}}
+                </tr>
+                {{#each county.governments as |entity|}}
+                <tr>
+                    <th>{{entity.name}}</th>
+                    {{#each ../county.max_ranks}}
+                    {{#if (some entity this) }}
+                    <td>{{getName this entity}}</td>
+                    {{else}}
+                    <td>&nbsp;</td>
+                    {{/if}}
+                    {{/each}}
+                </tr>
+                {{/each}}
+            </table>
+
+        </div>
+    </div>
+</script>
+
+<script id="table-school-district" type="text/x-handlebars-template">
+
+    <nav><ul class="pagination"></ul></nav>
+
+    <div class="custom-wrap">
+
+        <div class="fixed-th-table-wrapper">
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>&nbsp;</th>
+                    {{#each school_district.max_ranks}}
+                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
+                    {{/each}}
+                </tr>
+                {{#each school_district.governments as |entity|}}
+                <tr>
+                    <th>{{entity.name}}</th>
+                    {{#each ../school_district.max_ranks}}
+                    {{#if (some entity this) }}
+                    <td>{{getName this entity}}</td>
+                    {{else}}
+                    <td>&nbsp;</td>
+                    {{/if}}
+                    {{/each}}
+                </tr>
+                {{/each}}
+            </table>
+
+        </div>
+
+        <div class="scrolled-td-table-wrapper">
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>&nbsp;</th>
+                    {{#each school_district.max_ranks}}
+                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
+                    {{/each}}
+                </tr>
+                {{#each school_district.governments as |entity|}}
+                <tr>
+                    <th>{{entity.name}}</th>
+                    {{#each ../school_district.max_ranks}}
+                    {{#if (some entity this) }}
+                    <td>{{getName this entity}}</td>
+                    {{else}}
+                    <td>&nbsp;</td>
+                    {{/if}}
+                    {{/each}}
+                </tr>
+                {{/each}}
+            </table>
+
+        </div>
+    </div>
+
+</script>
+
+<script id="table-special-district" type="text/x-handlebars-template">
+
+    <nav><ul class="pagination"></ul></nav>
+
+    <div class="custom-wrap">
+
+        <div class="fixed-th-table-wrapper">
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>&nbsp;</th>
+                    {{#each special_district.max_ranks}}
+                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
+                    {{/each}}
+                </tr>
+                {{#each special_district.governments as |entity|}}
+                <tr>
+                    <th>{{entity.name}}</th>
+                    {{#each ../special_district.max_ranks}}
+                    {{#if (some entity this) }}
+                    <td>{{getName this entity}}</td>
+                    {{else}}
+                    <td>&nbsp;</td>
+                    {{/if}}
+                    {{/each}}
+                </tr>
+                {{/each}}
+            </table>
+
+        </div>
+
+        <div class="scrolled-td-table-wrapper">
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>&nbsp;</th>
+                    {{#each special_district.max_ranks}}
+                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
+                    {{/each}}
+                </tr>
+                {{#each special_district.governments as |entity|}}
+                <tr>
+                    <th>{{entity.name}}</th>
+                    {{#each ../special_district.max_ranks}}
+                    {{#if (some entity this) }}
+                    <td>{{getName this entity}}</td>
+                    {{else}}
+                    <td>&nbsp;</td>
+                    {{/if}}
+                    {{/each}}
+                </tr>
+                {{/each}}
+            </table>
+
+        </div>
+
+    </div>
+
+</script>
+
+
 
 <script id="rankPopover" type="text/x-handlebars-template">
     <table class="table table-condensed table-hover">

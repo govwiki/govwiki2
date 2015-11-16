@@ -69,7 +69,7 @@ class RankOrderController extends Controller
                             $request->query->getInt('limit', 25),
                             $request->query->get('fields_order', [])
                         ),
-//                    'max_ranks'   => $this->getMaxRanksFields($altTypeSlug),
+                    'max_ranks'   => $this->getMaxRanksFields($altTypeSlug),
                     'count'       => $repository->countGovernments($altTypeSlug),
                 ]
             );
