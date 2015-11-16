@@ -51,7 +51,7 @@ class RankOrderController extends Controller
                         ->getGovernments(
                             $slug,
                             $request->query->getInt('page', 0),
-                            $request->query->getInt('limit', 25),
+                            $request->query->getInt('limit', 10),
                             $request->query->get('fields_order', [])
                         ),
                     'max_ranks'   => $this->getMaxRanksFields($slug),
@@ -66,7 +66,7 @@ class RankOrderController extends Controller
                         ->getGovernments(
                             $altTypeSlug,
                             $request->query->getInt('page', 0),
-                            $request->query->getInt('limit', 25),
+                            $request->query->getInt('limit', 10),
                             $request->query->get('fields_order', [])
                         ),
                     'max_ranks'   => $this->getMaxRanksFields($altTypeSlug),

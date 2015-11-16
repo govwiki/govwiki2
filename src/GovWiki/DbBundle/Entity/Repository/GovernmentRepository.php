@@ -69,6 +69,7 @@ class GovernmentRepository extends EntityRepository
 
         if ($orderFields) {
             foreach ($orderFields as $fieldName => $direction) {
+                $fieldName .= 'Rank';
                 if ('desc' === $direction) {
                     $qb->addOrderBy($qb->expr()->desc('Government.'. $fieldName));
                 } else {

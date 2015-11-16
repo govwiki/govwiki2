@@ -947,7 +947,7 @@ echo <<<EOT
 
 <script id="table-city" type="text/x-handlebars-template">
 
-    <nav><ul class="pagination"></ul></nav>
+    <div class="text-center"><nav><ul class="pagination"></ul></nav></div>
 
     <div class="custom-wrap">
 
@@ -1006,7 +1006,7 @@ echo <<<EOT
 
 <script id="table-county" type="text/x-handlebars-template">
 
-    <nav><ul class="pagination"></ul></nav>
+    <div class="text-center"><nav><ul class="pagination"></ul></nav></div>
 
     <div class="custom-wrap">
 
@@ -1064,7 +1064,7 @@ echo <<<EOT
 
 <script id="table-school-district" type="text/x-handlebars-template">
 
-    <nav><ul class="pagination"></ul></nav>
+    <div class="text-center"><nav><ul class="pagination"></ul></nav></div>
 
     <div class="custom-wrap">
 
@@ -1123,7 +1123,7 @@ echo <<<EOT
 
 <script id="table-special-district" type="text/x-handlebars-template">
 
-    <nav><ul class="pagination"></ul></nav>
+    <div class="text-center"><nav><ul class="pagination"></ul></nav></div>
 
     <div class="custom-wrap">
 
