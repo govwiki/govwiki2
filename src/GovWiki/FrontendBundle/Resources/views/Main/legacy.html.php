@@ -919,36 +919,36 @@ echo <<<EOT
                     <div class="custom-wrap">
 
 
-                        <div class="fixed-th-table-wrapper">
+                        <!--<div class="fixed-th-table-wrapper">-->
 
-                            <table class="table table-bordered">
+                            <!--<table class="table table-bordered">-->
 
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each max_ranks}}
-                                        <td>{{this}}</td>
-                                    {{/each}}
-                                </tr>
+                                <!--<tr>-->
+                                    <!--<th>&nbsp;</th>-->
+                                    <!--{{#each max_ranks}}-->
+                                        <!--<td>{{this}}</td>-->
+                                    <!--{{/each}}-->
+                                <!--</tr>-->
 
-                                {{#each governments as |city|}}
-                                    <tr>
-                                        <th>{{city.name}}</th>
-                                        {{#each city as |value|}}
+                                <!--{{#each governments as |city|}}-->
+                                    <!--<tr>-->
+                                        <!--<th>{{city.name}}</th>-->
+                                        <!--{{#each city as |value|}}-->
 
-                                            {{#each ../../max_ranks}}
-                                                {{#if_eq (concat this 'Rank') @../key}}
-                                                    <td>{{value}}</td>
-                                                {{/if_eq}}
-                                            {{/each}}
+                                            <!--{{#each ../../max_ranks}}-->
+                                                <!--{{#if_eq (concat this 'Rank') @../key}}-->
+                                                    <!--<td>{{value}}</td>-->
+                                                <!--{{/if_eq}}-->
+                                            <!--{{/each}}-->
 
-                                        {{/each}}
+                                        <!--{{/each}}-->
 
-                                    </tr>
-                                {{/each}}
+                                    <!--</tr>-->
+                                <!--{{/each}}-->
 
-                            </table>
+                            <!--</table>-->
 
-                        </div>
+                        <!--</div>-->
 
                         <div class="scrolled-td-table-wrapper">
 
@@ -962,19 +962,20 @@ echo <<<EOT
                                 </tr>
 
                                 {{#each governments as |city|}}
-                                <tr>
-                                    <th>{{city.name}}</th>
-                                    {{#each city as |value|}}
 
-                                    {{#each ../../max_ranks}}
-                                        {{#if_eq (concat this 'Rank') @../key}}
-                                            <td>{{value}}</td>
-                                        {{/if_eq}}
-                                    {{/each}}
+                                        <tr>
+                                            <th>{{city.name}}</th>
+                                            {{#each ../max_ranks}}
 
-                                    {{/each}}
+                                                {{#if (some city this) }}
+                                                    <td>{{getName this city}}</td>
+                                                {{else}}
+                                                    <td>&nbsp;</td>
+                                                {{/if}}
 
-                                </tr>
+                                            {{/each}}
+                                        </tr>
+
                                 {{/each}}
 
                             </table>

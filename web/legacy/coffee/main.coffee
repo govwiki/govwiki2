@@ -27,13 +27,19 @@ user = Object.create null, {}
 #
 categories = Object.create null, {}
 
+
+Handlebars.registerHelper 'getName', (name, obj) ->
+    return obj[name+'Rank'];
+
 Handlebars.registerHelper 'if_eq', (a, b, opts) ->
-    console.log(a)
-    console.log(b)
     if `a == b`
         return opts.fn this
     else
         return opts.inverse this
+
+Handlebars.registerHelper 'some', (arr, target, opts) ->
+    console.log(arr[target+'Rank']);
+    return !!arr[target+'Rank'];
 
 Handlebars.registerHelper 'debug', (emberObject) ->
   if emberObject and emberObject.contexts
@@ -1172,32 +1178,35 @@ if routeType is 0
 
 # Route /rank_order
 if routeType is 1
-  document.title = 'CPC Civic Profiles'
-  $('#details').hide()
-  $('#dataContainer').show()
-  $('.loader').show()
-  $('#wikipediaContainer').hide()
-  $('#stantonIcon').hide()
+    document.title = 'CPC Civic Profiles'
+    $('#details').hide()
+    $('#dataContainer').show()
+    $('.loader').show()
+    $('#wikipediaContainer').hide()
+    $('#stantonIcon').hide()
 
-  $.ajax
-    url: "/api/rank_order"
-    dataType: 'json'
-    cache: true
-    success: (data) ->
-      #
-      # Render rank order template.
-      #
-      tpl = Handlebars.compile($('#rank-order-page').html())
-      console.log data
-      $('#details').html tpl(data)
-      $('.loader').hide()
-      $('#details').show()
-      GOVWIKI.show_data_page();
+    $.ajax
+        url: "/api/rank_order"
+        dataType: 'json'
+        cache: true
+        success: (data) ->
+#            data.governments.some (item) ->
+#                if item.altTypeSlug == "City" then console.log item
 
-      #
-      # Push template.
-      #
-      GOVWIKI.tplLoaded = true
+            #
+            # Render rank order template.
+            #
+            tpl = Handlebars.compile($('#rank-order-page').html())
+            console.log data
+            $('#details').html tpl(data)
+            $('.loader').hide()
+            $('#details').show()
+            GOVWIKI.show_data_page();
+
+            #
+            # Push template.
+            #
+            GOVWIKI.tplLoaded = true
 #      window.history.pushState {template: tpl}, 'CPC Civic Profiles', '/rank_order'
 
 
@@ -1318,25 +1327,25 @@ if routeType is 3
             console.log e
 
 $ ->
-  ###
-    Get current user.
-  ###
-  $userBtn = $('#user')
-  $userBtnLink = $userBtn.find('a');
-  $.ajax '/api/user', {
-    method: 'GET',
-    async: false,
-    success: (response) ->
-      user.username = response.username;
-      authorized = true;
+    ###
+      Get current user.
+    ###
+    $userBtn = $('#user')
+    $userBtnLink = $userBtn.find('a');
+    $.ajax '/api/user', {
+          method: 'GET',
+          async: false,
+          success: (response) ->
+              user.username = response.username;
+              authorized = true;
 
-      $userText = $('#user-text').find('a');
-      $userText.html("Logged in as #{user.username}" + $userText.html())
-      $userBtnLink.html("Sign Out" + $userBtnLink.html()).click () ->
-        window.location = '/logout'
+              $userText = $('#user-text').find('a');
+              $userText.html("Logged in as #{user.username}" + $userText.html())
+              $userBtnLink.html("Sign Out" + $userBtnLink.html()).click () ->
+                  window.location = '/logout'
 
-    error: (error) ->
-      if error.status is 401 then authorized = false
-      $userBtnLink.html("Login / Sign Up" + $userBtnLink.html()).click () ->
-        showModal('/login')
-  }
+          error: (error) ->
+              if error.status is 401 then authorized = false
+              $userBtnLink.html("Login / Sign Up" + $userBtnLink.html()).click () ->
+                  showModal('/login')
+      }
