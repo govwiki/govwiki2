@@ -967,6 +967,8 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <th>&nbsp;</th>
+                                    {{#each max_ranks}}
+                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
                                     {{#each school_district.max_ranks}}
                                     <td>{{this}}</td>
                                     {{/each}}

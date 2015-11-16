@@ -18,7 +18,7 @@ class RankOrderController extends Controller
      * @Route(path="/", methods={"GET"})
      *
      * Query parameters:
-     *  alt type     - slugged alt type, default 'City'.
+     *  alt_type     - slugged alt type, default 'City'.
      *  limit        - max entities per request, default 25.
      *  page         - calculate offset based on this value, default 0.
      *  fields_order - assoc array of fields sorting order. Field name

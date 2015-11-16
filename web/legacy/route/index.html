@@ -894,7 +894,6 @@
 
 -->
 <script id="rank-order-page" type="text/x-handlebars-template">
-
     <div class="row person-info-header">
         <div class="col-md-10 col-md-push-1">
             <h5>RANK ORDER</h5>
@@ -905,236 +904,51 @@
 
             {{!-- Nav tabs --}}
             <ul class="nav nav-pills" role="tablist">
-                <li role="presentation" class="active"><a href="#City" aria-controls="City" role="tab" data-toggle="tab">City</a></li>
-                <li role="presentation"><a href="#County" aria-controls="County" role="tab" data-toggle="tab">County</a></li>
-                <li role="presentation"><a href="#School_district" aria-controls="School District" role="tab" data-toggle="tab">School District</a></li>
-                <li role="presentation"><a href="#Special_district" aria-controls="Special District" role="tab" data-toggle="tab">Public Special District</a></li>
+                <li role="presentation" class="active"><a href="#city" aria-controls="City" role="tab" data-toggle="tab">City</a></li>
+                <li role="presentation"><a href="#county" aria-controls="County" role="tab" data-toggle="tab">County</a></li>
+                <li role="presentation"><a href="#school_district" aria-controls="School District" role="tab" data-toggle="tab">School District</a></li>
+                <li role="presentation"><a href="#special_district" aria-controls="Special District" role="tab" data-toggle="tab">Public Special District</a></li>
             </ul>
 
             <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
                 {{!-- City table --}}
-                <div role="tabpanel" class="tab-pane active" id="City">
+                <div role="tabpanel" class="tab-pane active" id="city">
 
                     <div class="custom-wrap">
-
-                        <div class="fixed-th-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each city.max_ranks}}
-                                        <td>{{this}}</td>
-                                    {{/each}}
-                                </tr>
-                                {{#each city.governments as |entity|}}
-                                    <tr>
-                                        <th>{{entity.name}}</th>
-                                        {{#each ../city.max_ranks}}
-                                            {{#if (some entity this) }}
-                                                <td>{{getName this entity}}</td>
-                                            {{else}}
-                                                <td>&nbsp;</td>
-                                            {{/if}}
-                                        {{/each}}
-                                    </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-
                         <div class="scrolled-td-table-wrapper">
 
                             <table class="table table-bordered">
+
                                 <tr>
                                     <th>&nbsp;</th>
-                                    {{#each city.max_ranks}}
-                                        <td>{{this}}</td>
+                                    {{#each max_ranks}}
+                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
                                     {{/each}}
                                 </tr>
-                                {{#each city.governments as |entity|}}
-                                    <tr>
-                                        <th>{{entity.name}}</th>
-                                        {{#each ../city.max_ranks}}
-                                            {{#if (some entity this) }}
-                                                <td>{{getName this entity}}</td>
-                                            {{else}}
-                                                <td>&nbsp;</td>
-                                            {{/if}}
-                                        {{/each}}
-                                    </tr>
+
+                                {{#each governments as |city|}}
+
+                                        <tr>
+                                            <th>{{city.name}}</th>
+                                            {{#each ../max_ranks}}
+
+                                                {{#if (some city this) }}
+                                                    <td>{{getName this city}}</td>
+                                                {{else}}
+                                                    <td>&nbsp;</td>
+                                                {{/if}}
+
+                                            {{/each}}
+                                        </tr>
+
                                 {{/each}}
+
                             </table>
 
                         </div>
                     </div>
 
                 </div>
-
-                <div role="tabpanel" class="tab-pane" id="County">
-                    <div class="custom-wrap">
-
-                        <div class="fixed-th-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each county.max_ranks}}
-                                    <td>{{this}}</td>
-                                    {{/each}}
-                                </tr>
-                                {{#each county.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../county.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-
-                        <div class="scrolled-td-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each county.max_ranks}}
-                                    <td>{{this}}</td>
-                                    {{/each}}
-                                </tr>
-                                {{#each county.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../county.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div role="tabpanel" class="tab-pane" id="School_district">
-                    <div class="custom-wrap">
-
-                        <div class="fixed-th-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each school_district.max_ranks}}
-                                    <td>{{this}}</td>
-                                    {{/each}}
-                                </tr>
-                                {{#each school_district.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../school_district.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-
-                        <div class="scrolled-td-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each school_district.max_ranks}}
-                                    <td>{{this}}</td>
-                                    {{/each}}
-                                </tr>
-                                {{#each school_district.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../school_district.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div role="tabpanel" class="tab-pane" id="Special_district">
-                    <div class="custom-wrap">
-
-                        <div class="fixed-th-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each special_district.max_ranks}}
-                                    <td>{{this}}</td>
-                                    {{/each}}
-                                </tr>
-                                {{#each special_district.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../special_district.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-
-                        <div class="scrolled-td-table-wrapper">
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    {{#each special_district.max_ranks}}
-                                    <td>{{this}}</td>
-                                    {{/each}}
-                                </tr>
-                                {{#each special_district.governments as |entity|}}
-                                <tr>
-                                    <th>{{entity.name}}</th>
-                                    {{#each ../special_district.max_ranks}}
-                                    {{#if (some entity this) }}
-                                    <td>{{getName this entity}}</td>
-                                    {{else}}
-                                    <td>&nbsp;</td>
-                                    {{/if}}
-                                    {{/each}}
-                                </tr>
-                                {{/each}}
-                            </table>
-
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
