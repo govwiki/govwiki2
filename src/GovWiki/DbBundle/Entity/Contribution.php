@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Contribution
@@ -18,6 +19,7 @@ class Contribution
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"elected_official"})
      */
     private $id;
 
@@ -25,6 +27,7 @@ class Contribution
      * @var integer
      *
      * @ORM\Column(name="election_year", type="integer", nullable=true)
+     * @Groups({"elected_official"})
      */
     private $electionYear;
 
@@ -32,6 +35,7 @@ class Contribution
      * @var string
      *
      * @ORM\Column(name="contributor_name", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $contributorName;
 
@@ -39,6 +43,7 @@ class Contribution
      * @var string
      *
      * @ORM\Column(name="independent_expenditure_desc", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $independentExpenditureDesc;
 
@@ -46,6 +51,7 @@ class Contribution
      * @var float
      *
      * @ORM\Column(name="contribution_amount", type="float", nullable=true)
+     * @Groups({"elected_official"})
      */
     private $contributionAmount;
 
@@ -53,6 +59,7 @@ class Contribution
      * @var string
      *
      * @ORM\Column(name="contributor_type", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $contributorType;
 

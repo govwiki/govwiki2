@@ -310,7 +310,7 @@ class GovernmentRepository extends EntityRepository
 
         $result = $qb->setMaxResults($limit)->orderBy('g.rand', 'ASC')->getQuery()->getArrayResult();
 
-        if (in_array('Special District', $altTypes)) {
+        if (!empty($altTypes) && in_array('Special District', $altTypes)) {
             $specialDistricts = $this->fetchSpecialDistricts();
             $result = array_merge($result, $specialDistricts);
         }

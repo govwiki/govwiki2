@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * ElectedOfficialVote
@@ -18,6 +19,7 @@ class ElectedOfficialVote
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"elected_official"})
      */
     private $id;
 
@@ -25,6 +27,7 @@ class ElectedOfficialVote
      * @var string
      *
      * @ORM\Column(name="vote", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $vote;
 
@@ -32,6 +35,7 @@ class ElectedOfficialVote
      * @var boolean
      *
      * @ORM\Column(name="did_elected_official_propose_this", type="boolean", nullable=true)
+     * @Groups({"elected_official"})
      */
     private $didElectedOfficialProposeThis;
 
@@ -42,6 +46,7 @@ class ElectedOfficialVote
 
     /**
      * @ORM\ManyToOne(targetEntity="Legislation", inversedBy="electedOfficialVotes")
+     * @Groups({"elected_official"})
      */
     private $legislation;
 

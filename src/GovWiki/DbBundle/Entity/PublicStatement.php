@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * PublicStatement
@@ -18,6 +19,7 @@ class PublicStatement
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"elected_official"})
      */
     private $id;
 
@@ -25,6 +27,7 @@ class PublicStatement
      * @var \DateTime
      *
      * @ORM\Column(name="date", type="date", nullable=true)
+     * @Groups({"elected_official"})
      */
     private $date;
 
@@ -32,6 +35,7 @@ class PublicStatement
      * @var string
      *
      * @ORM\Column(name="summary", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $summary;
 
@@ -39,6 +43,7 @@ class PublicStatement
      * @var string
      *
      * @ORM\Column(name="url", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $url;
 
@@ -49,6 +54,7 @@ class PublicStatement
 
     /**
      * @ORM\ManyToOne(targetEntity="IssueCategory", inversedBy="publicStatements")
+     * @Groups({"elected_official"})
      */
     private $issueCategory;
 

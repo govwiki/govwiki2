@@ -1,4 +1,6 @@
 bounds_timeout=undefined
+# Set lifetime on 1 days, format: days * hours * minutes * seconds * milliseconds.
+pointsCacheLifetime = 24 * 60 * 60 * 1000;
 
 map = new GMaps
   el: '#govmap'
@@ -62,12 +64,38 @@ get_records2 = (legendType, onsuccess) ->
 
 $ ->
   rebuild_filter()
-  get_records2 GOVWIKI.gov_type_filter_2, (data) ->
+  data = window.localStorage.getItem('points')
+
+  #
+  # Load markers data
+  #
+  date = new Date();
+
+  if data and ((Number(window.localStorage.getItem('points_last_update')) + pointsCacheLifetime) >= date.getTime())
     #
-    # Store markers data.
-    window.localStorage.setItem('points', JSON.stringify(data))
-    GOVWIKI.markers = data;
-    rerender_markers()
+    # If points data cached in local storage and in actual state, load from cache.
+    #
+    console.log('From cache')
+    console.log(JSON.parse(data));
+    GOVWIKI.markers = JSON.parse(data)
+  else
+    #
+    # Get new data from server.
+    #
+    get_records2 GOVWIKI.gov_type_filter_2, (data) ->
+      #
+      # Store markers data.
+      #
+      console.log('From server')
+      window.localStorage.setItem('points', JSON.stringify(data))
+      date = new Date();
+      window.localStorage.setItem('points_last_update', date.getTime())
+      GOVWIKI.markers = data
+
+  #
+  # Render points stored in GOVWIKI.markers
+  #
+  rerender_markers()
 
   $('#legend li:not(.counties-trigger)').on 'click', ->
     $(this).toggleClass('active')
@@ -155,6 +183,13 @@ add_marker = (rec)->
   # On click redirect user to entity page.
   #
   marker.addListener 'click', () ->
+    $('#details').hide()
+    $('#searchContainer').hide()
+    $('#dataContainer').show()
+    $('#wikipediaContainer').hide()
+    $('.loader').show()
+    $('#stantonIcon').show()
+    $('#searchIcon').show()
     console.log('Click on marker');
     url = "#{rec.altTypeSlug}/#{rec.slug}"
     console.log(url);

@@ -2,7 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller;
 
-use JMS\Serializer\SerializationContext;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,70 +18,69 @@ class CreateRequestController extends Controller
 {
     /**
      * @Route("new")
+     * @Security("is_granted('ROLE_USER')")
      *
-     * @param Request $request
+     * @param Request $request A Request instance.
+     *
      * @return Response|JsonResponse
      */
     public function newAction(Request $request)
     {
-        if ($request->isXmlHttpRequest()) {
-            if ($this->getUser() and $this->getUser()->hasRole('ROLE_USER')) {
-                $data        = $request->request->get('createRequest');
+        if (!$request->isXmlHttpRequest()) {
+            $data        = $request->request->get('createRequest');
 
-                $knownFields = $data['knownFields'];
-                $knownFields = empty($knownFields) ? [] : $knownFields;
+            $knownFields = $data['knownFields'];
+            $knownFields = empty($knownFields) ? [] : $knownFields;
 
-                $errors = $this->getErrors($data);
-                if (!empty($errors)) {
-                    return new JsonResponse(['errors' => $errors], 400);
-                }
-
-                $em = $this->getDoctrine()->getManager();
-
-                $metaData = $em->getClassMetaData("GovWikiDbBundle:{$data['entityName']}");
-
-                $response = [];
-
-                $response['fields'] = $metaData->getFieldNames();
-                if ($response['fields'][0] === 'id') {
-                    unset($response['fields'][0]);
-                }
-
-                $associationMappings = $metaData->getAssociationMappings();
-
-                if ('Legislation' === $data['entityName']) {
-                    /*
-                     * Don't send information about votes and governments.
-                     */
-                    $knownFields['electedOfficialVotes'] = true;
-                    $knownFields['government'] = true;
-                }
-                foreach ($associationMappings as $associationFieldName => $associationMapping) {
-                    if (array_key_exists($associationFieldName, $knownFields)) {
-                        if ('electedOfficialVotes' === $associationFieldName) {
-                            /*
-                             * Fetch information about all elected officials on this.
-                             */
-                            $response['electedOfficials'] = $em->getRepository('GovWikiDbBundle:Government')->governmentElectedOfficial((int) $knownFields['electedOfficial']);
-                        }
-                        unset($associationMappings[$associationFieldName]);
-                    } else {
-                        $choicesObject = $em->getRepository($associationMapping['targetEntity'])->findAll();
-                        $choices = [];
-                        foreach ($choicesObject as $choiceObject) {
-                            $choices[] = [$choiceObject->getId() => (string) $choiceObject];
-                        }
-                        $response['choices'][] = [
-                            'name'    => $associationFieldName,
-                            'choices' => $choices,
-                        ];
-                    }
-                }
-
-                return new JsonResponse($response);
-            } else {
-                return new Response(null, 401);
+            $errors = $this->getErrors($data);
+            if (!empty($errors)) {
+                return new JsonResponse(['errors' => $errors], 400);
             }
+
+            $em = $this->getDoctrine()->getManager();
+
+            /** @var \Doctrine\ORM\Mapping\ClassMetadata $metaData */
+            $metaData = $em->getClassMetaData("GovWikiDbBundle:{$data['entityName']}");
+
+            $response = [];
+
+            $response['fields'] = $metaData->getFieldNames();
+            if ($response['fields'][0] === 'id') {
+                unset($response['fields'][0]);
+            }
+
+            $associationMappings = $metaData->getAssociationMappings();
+
+            if ('Legislation' === $data['entityName']) {
+                /*
+                 * Don't send information about votes and governments.
+                 */
+                $knownFields['electedOfficialVotes'] = true;
+                $knownFields['government'] = true;
+            }
+            foreach ($associationMappings as $associationFieldName => $associationMapping) {
+                if (array_key_exists($associationFieldName, $knownFields)) {
+                    if ('electedOfficialVotes' === $associationFieldName) {
+                        /*
+                         * Fetch information about all elected officials on this.
+                         */
+                        $response['electedOfficials'] = $em->getRepository('GovWikiDbBundle:Government')->governmentElectedOfficial((int) $knownFields['electedOfficial']);
+                    }
+                    unset($associationMappings[$associationFieldName]);
+                } else {
+                    $choicesObject = $em->getRepository($associationMapping['targetEntity'])->findAll();
+                    $choices = [];
+                    foreach ($choicesObject as $choiceObject) {
+                        $choices[] = [$choiceObject->getId() => (string) $choiceObject];
+                    }
+                    $response['choices'][] = [
+                        'name'    => $associationFieldName,
+                        'choices' => $choices,
+                    ];
+                }
+            }
+
+            return new JsonResponse($response);
         } else {
             throw new HttpException(400);
         }
@@ -90,7 +89,8 @@ class CreateRequestController extends Controller
     /**
      * @Route("create")
      *
-     * @param Request $request
+     * @param Request $request A Request instance.
+     *
      * @return Response|JsonResponse
      */
     public function createAction(Request $request)
@@ -105,10 +105,7 @@ class CreateRequestController extends Controller
                     return new JsonResponse(['errors' => $errors], 400);
                 }
 
-                $em = $this->getDoctrine()->getManager();
-                $metaData = $em->getClassMetaData("GovWikiDbBundle:{$data['entityName']}");
-
-                $createRequest = new CreateRequest;
+                $createRequest = new CreateRequest();
                 $createRequest->setEntityName($data['entityName'])
                               ->setFields($data['fields'])
                               ->setUser($this->getUser());
@@ -127,10 +124,11 @@ class CreateRequestController extends Controller
     }
 
     /**
-     * @param  array $data
+     * @param array $data Create request data.
+     *
      * @return array
      */
-    private function getErrors($data)
+    private function getErrors(array $data = [])
     {
         $errors = [];
 
@@ -141,7 +139,7 @@ class CreateRequestController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         try {
-            $metaData = $em->getClassMetaData("GovWikiDbBundle:{$data['entityName']}");
+            $em->getClassMetaData("GovWikiDbBundle:{$data['entityName']}");
         } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
             $errors[] = "Can't find entity with name '{$data['entityName']}', due to bad entry or internal system error";
         }
