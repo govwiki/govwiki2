@@ -31,6 +31,60 @@ class RankOrderController extends Controller
      */
     public function listAction(Request $request)
     {
+        $altTypeSlug = $request->query->get('alt_type', null);
+        /** @var GovernmentRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Government');
+
+        if (null === $altTypeSlug) {
+            $data = [];
+            $altTypes = [
+                'city' => 'City',
+                'county' => 'County',
+                'school_district' => 'School_District',
+                'special_district' => 'Special_District',
+            ];
+
+            foreach ($altTypes as $name => $slug) {
+                $data[$name] = [
+                    'governments' => $repository
+                        ->getGovernments(
+                            $slug,
+                            $request->query->getInt('page', 0),
+                            $request->query->getInt('limit', 25),
+                            $request->query->get('fields_order', [])
+                        ),
+                    'max_ranks'   => $this->getMaxRanksFields($slug),
+                    'count'       => $repository->countGovernments($slug),
+                ];
+            }
+            return new JsonResponse($data);
+        } else {
+            return new JsonResponse(
+                [
+                    'governments' => $repository
+                        ->getGovernments(
+                            $altTypeSlug,
+                            $request->query->getInt('page', 0),
+                            $request->query->getInt('limit', 25),
+                            $request->query->get('fields_order', [])
+                        ),
+                    'max_ranks'   => $this->getMaxRanksFields($altTypeSlug),
+                    'count'       => $repository->countGovernments($altTypeSlug),
+                ]
+            );
+        }
+    }
+
+    /**
+     * Get max ranks field for given government alt type.
+     *
+     * @param string $altTypeSlug Slugged alt type.
+     *
+     * @return array
+     */
+    private function getMaxRanksFields($altTypeSlug)
+    {
         $tmp = $this->getDoctrine()->getManager()
             ->getClassMetadata('GovWikiDbBundle:MaxRank')
             ->getFieldNames();
@@ -44,24 +98,6 @@ class RankOrderController extends Controller
                 $maxRanksFields[] = str_replace('MaxRank', '', $fieldName);
             }
         }
-
-        $altTypeSlug = $request->query->get('alt_type', 'City');
-        /** @var GovernmentRepository $repository */
-        $repository = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Government');
-
-        return new JsonResponse(
-            [
-                'governments' => $repository
-                    ->getGovernments(
-                        $altTypeSlug,
-                        $request->query->getInt('page', 0),
-                        $request->query->getInt('limit', 25),
-                        $request->query->get('fields_order', [])
-                    ),
-                'max_ranks' => $maxRanksFields,
-                'count' => $repository->countGovernments($altTypeSlug),
-            ]
-        );
+        return $maxRanksFields;
     }
 }

@@ -1193,10 +1193,12 @@ if routeType is 1
             # Render rank order template.
             #
             tpl = Handlebars.compile($('#rank-order-page').html())
-            $('#details').html tpl(altTypeData)
+            $('#details').html tpl(altTypesData)
             $('.loader').hide()
             $('#details').show()
             GOVWIKI.show_data_page();
+
+            console.log(altTypesData)
 
             #
             # Push template.
