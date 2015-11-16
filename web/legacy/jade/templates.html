@@ -849,39 +849,6 @@
                 <div role="tabpanel" class="tab-pane active" id="city">
 
                     <div class="custom-wrap">
-
-
-                        <!--<div class="fixed-th-table-wrapper">-->
-
-                            <!--<table class="table table-bordered">-->
-
-                                <!--<tr>-->
-                                    <!--<th>&nbsp;</th>-->
-                                    <!--{{#each max_ranks}}-->
-                                        <!--<td>{{this}}</td>-->
-                                    <!--{{/each}}-->
-                                <!--</tr>-->
-
-                                <!--{{#each governments as |city|}}-->
-                                    <!--<tr>-->
-                                        <!--<th>{{city.name}}</th>-->
-                                        <!--{{#each city as |value|}}-->
-
-                                            <!--{{#each ../../max_ranks}}-->
-                                                <!--{{#if_eq (concat this 'Rank') @../key}}-->
-                                                    <!--<td>{{value}}</td>-->
-                                                <!--{{/if_eq}}-->
-                                            <!--{{/each}}-->
-
-                                        <!--{{/each}}-->
-
-                                    <!--</tr>-->
-                                <!--{{/each}}-->
-
-                            <!--</table>-->
-
-                        <!--</div>-->
-
                         <div class="scrolled-td-table-wrapper">
 
                             <table class="table table-bordered">
@@ -889,7 +856,7 @@
                                 <tr>
                                     <th>&nbsp;</th>
                                     {{#each max_ranks}}
-                                    <td>{{this}}</td>
+                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
                                     {{/each}}
                                 </tr>
 

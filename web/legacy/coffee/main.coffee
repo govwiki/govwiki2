@@ -1185,6 +1185,55 @@ if routeType is 1
     $('#wikipediaContainer').hide()
     $('#stantonIcon').hide()
 
+    orderedFields = []
+    tpl = Handlebars.compile($('#rank-order-page').html())
+
+    #
+    # Set sort callback.
+    #
+    $(document).on 'click', '.rank_sort', (e) ->
+      $('#details').hide()
+      $('#dataContainer').show()
+      $('.loader').show()
+      $('#wikipediaContainer').hide()
+      $('#stantonIcon').hide()
+
+      column = $(e.currentTarget)
+      fieldName = column.attr('data-sort-type')
+      icon = column.find('i')
+
+      if icon.hasClass('icon__top')
+        #
+        # Sort in descending order.
+        #
+        icon.addClass('icon__bottom').removeClass('icon__top')
+        orderedFields[fieldName] = 'desc'
+      else if icon.hasClass('icon__bottom')
+        #
+        # Remove sort by this field.
+        #
+        icon.removeClass('icon__bottom')
+        delete orderedFields[fieldName]
+      else
+        #
+        # Sort in ascending order.
+        #
+        icon.addClass('icon__top')
+        orderedFields[fieldName] = 'asc'
+
+      $.ajax
+        url: "/api/rank_order"
+        dataType: 'json'
+        data:
+          fields_order: $.extend({}, orderedFields)
+        cache: true
+        success: (data) ->
+          console.log data
+          $('#details').html tpl(data)
+          $('.loader').hide()
+          $('#details').show()
+          GOVWIKI.show_data_page();
+
     $.ajax
         url: "/api/rank_order"
         dataType: 'json'
@@ -1192,11 +1241,10 @@ if routeType is 1
         success: (data) ->
 #            data.governments.some (item) ->
 #                if item.altTypeSlug == "City" then console.log item
-
             #
             # Render rank order template.
             #
-            tpl = Handlebars.compile($('#rank-order-page').html())
+
             console.log data
             $('#details').html tpl(data)
             $('.loader').hide()

@@ -625,6 +625,9 @@ th {
 /*
     Set icon for sortable columns.
 */
+.sort {
+  white-space: nowrap;
+}
 i.icon {
   background: url("/legacy/img/bg.gif");
   width: 21px;

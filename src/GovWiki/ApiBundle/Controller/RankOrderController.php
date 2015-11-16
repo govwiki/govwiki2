@@ -18,7 +18,7 @@ class RankOrderController extends Controller
      * @Route(path="/", methods={"GET"})
      *
      * Query parameters:
-     *  alt type     - slugged alt type, default 'City'.
+     *  alt_type     - slugged alt type, default 'City'.
      *  limit        - max entities per request, default 25.
      *  page         - calculate offset based on this value, default 0.
      *  fields_order - assoc array of fields sorting order. Field name
@@ -46,6 +46,25 @@ class RankOrderController extends Controller
         }
 
         $altTypeSlug = $request->query->get('alt_type', 'City');
+
+        /*
+         * Remove some ranks based on current slugged alt type.
+         */
+
+        switch ($altTypeSlug) {
+            case 'City':
+                $maxRanksFields = array_filter($maxRanksFields, function($name) {
+                    return ('frmpRate' !== $name) &&
+                    ('academicPerformanceIndex' !== $name) &&
+                    ('satScores' !== $name) &&
+                    ('graduationRate' !== $name) &&
+                    ('dropoutRate' !== $name) &&
+                    ('expenditurePerStudent' !== $name) &&
+                    ('enrollment ' !== $name);
+                });
+                break;
+        }
+
         /** @var GovernmentRepository $repository */
         $repository = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:Government');
