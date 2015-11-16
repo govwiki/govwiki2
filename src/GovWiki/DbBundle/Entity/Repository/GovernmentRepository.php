@@ -145,8 +145,8 @@ class GovernmentRepository extends EntityRepository
      * Find government by slug and altTypeSlug.
      * Append maxRanks and financialStatements.
      *
-     * @param  string $altTypeSlug Slugged alt type.
-     * @param  string $slug        Slugged government name.
+     * @param  string $altTypeSlug
+     * @param  string $slug
      *
      * @return Government
      */
