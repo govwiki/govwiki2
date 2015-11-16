@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Endorsement
@@ -18,6 +19,7 @@ class Endorsement
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"elected_official"})
      */
     private $id;
 
@@ -25,6 +27,7 @@ class Endorsement
      * @var string
      *
      * @ORM\Column(name="name_of_endorser", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $nameOfEndorser;
 
@@ -32,6 +35,7 @@ class Endorsement
      * @var string
      *
      * @ORM\Column(name="endorser_type", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $endorserType;
 
@@ -39,6 +43,7 @@ class Endorsement
      * @var integer
      *
      * @ORM\Column(name="election_year", type="integer", nullable=true)
+     * @Groups({"elected_official"})
      */
     private $electionYear;
 
@@ -49,6 +54,7 @@ class Endorsement
 
     /**
      * @ORM\ManyToOne(targetEntity="IssueCategory", inversedBy="endorsements")
+     * @Groups({"elected_official"})
      */
     private $issueCategory;
 

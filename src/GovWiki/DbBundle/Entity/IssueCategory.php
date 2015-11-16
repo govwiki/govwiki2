@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * IssueCategory
@@ -21,6 +22,7 @@ class IssueCategory
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"elected_official"})
      */
     private $id;
 
@@ -28,6 +30,7 @@ class IssueCategory
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $name;
 

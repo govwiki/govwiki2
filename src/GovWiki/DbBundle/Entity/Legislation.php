@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Legislation
@@ -21,6 +22,7 @@ class Legislation
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"elected_official"})
      */
     private $id;
 
@@ -28,6 +30,7 @@ class Legislation
      * @var string
      *
      * @ORM\Column(name="gov_assigned_number", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $govAssignedNumber;
 
@@ -35,6 +38,7 @@ class Legislation
      * @var \DateTime
      *
      * @ORM\Column(name="date_considered", type="date", nullable=true)
+     * @Groups({"elected_official"})
      */
     private $dateConsidered;
 
@@ -42,6 +46,7 @@ class Legislation
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $name;
 
@@ -49,6 +54,7 @@ class Legislation
      * @var string
      *
      * @ORM\Column(name="summary", type="text", nullable=true)
+     * @Groups({"elected_official"})
      */
     private $summary;
 
@@ -56,6 +62,7 @@ class Legislation
      * @var string
      *
      * @ORM\Column(name="evaluator_approved_position", type="string", length=255, nullable=true)
+     * @Groups({"elected_official"})
      */
     private $evaluatorApprovedPosition;
 
@@ -63,6 +70,7 @@ class Legislation
      * @var integer
      *
      * @ORM\Column(name="weighting", type="integer", nullable=true)
+     * @Groups({"elected_official"})
      */
     private $weighting;
 
@@ -70,6 +78,7 @@ class Legislation
      * @var string
      *
      * @ORM\Column(name="notes", type="text", nullable=true)
+     * @Groups({"elected_official"})
      */
     private $notes;
 
@@ -81,6 +90,7 @@ class Legislation
 
     /**
      * @ORM\ManyToOne(targetEntity="IssueCategory", inversedBy="legislations")
+     * @Groups({"elected_official"})
      */
     private $issueCategory;
 

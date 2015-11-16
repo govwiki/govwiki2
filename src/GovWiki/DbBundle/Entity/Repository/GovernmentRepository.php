@@ -55,6 +55,7 @@ class GovernmentRepository extends EntityRepository
                     $qb->expr()->literal($altTypeSlug)
                 )
             )
+            ->setFirstResult($page * $limit)
             ->setMaxResults($limit);
 
         /*
@@ -64,10 +65,6 @@ class GovernmentRepository extends EntityRepository
             if (false !== strpos($key, 'Rank')) {
                 $qb->addSelect("Government.$key");
             }
-        }
-
-        if (null !== $page) {
-            $qb->setFirstResult($page * $limit);
         }
 
         if ($orderFields) {
@@ -100,7 +97,7 @@ class GovernmentRepository extends EntityRepository
 
     /**
      * @param string  $altTypeSlug    Slugged alt type.
-     * @param string  $governmentSlug Slugged government name
+     * @param string  $governmentSlug Slugged government name.
      * @param string  $rankFieldName  One of government rank field.
      * @param integer $limit          Max result per page.
      * @param integer $page           Page to show.
@@ -145,11 +142,11 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
-     * Find government by slug and altTypeSlug
-     * Append maxRanks and financialStatements
+     * Find government by slug and altTypeSlug.
+     * Append maxRanks and financialStatements.
      *
-     * @param  string                     $altTypeSlug
-     * @param  string                     $slug
+     * @param  string $altTypeSlug Slugged alt type.
+     * @param  string $slug        Slugged government name.
      *
      * @return Government
      */
@@ -313,7 +310,7 @@ class GovernmentRepository extends EntityRepository
 
         $result = $qb->setMaxResults($limit)->orderBy('g.rand', 'ASC')->getQuery()->getArrayResult();
 
-        if (in_array('Special District', $altTypes)) {
+        if (!empty($altTypes) && in_array('Special District', $altTypes)) {
             $specialDistricts = $this->fetchSpecialDistricts();
             $result = array_merge($result, $specialDistricts);
         }
