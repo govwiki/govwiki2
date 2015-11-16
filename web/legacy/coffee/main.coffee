@@ -1185,7 +1185,6 @@ if routeType is 1
     $('#stantonIcon').hide()
 
     orderedFields = []
-    tpl = Handlebars.compile($('#rank-order-page').html())
 
     #
     # Set sort callback.
@@ -1198,6 +1197,7 @@ if routeType is 1
       $('#stantonIcon').hide()
 
       column = $(e.currentTarget)
+      tabPanel = column.closest('.tab-pane')
       fieldName = column.attr('data-sort-type')
       icon = column.find('i')
 
@@ -1224,14 +1224,27 @@ if routeType is 1
         url: "/api/rank_order"
         dataType: 'json'
         data:
+          alt_type: tabPanel.attr('id')
           fields_order: $.extend({}, orderedFields)
         cache: true
         success: (data) ->
           console.log data
-          $('#details').html tpl(data)
+
+          #
+          # Update table
+          #
+          table = tabPanel.find('table')
+          head = table.find('tr:first')
+
           $('.loader').hide()
           $('#details').show()
           GOVWIKI.show_data_page();
+
+          #
+          # Push template.
+          #
+          GOVWIKI.tplLoaded = true
+          window.history.pushState {template: $('#details').html()}, 'CPC Civic Profiles', '/rank_order'
 
     $.ajax
         url: "/api/rank_order"

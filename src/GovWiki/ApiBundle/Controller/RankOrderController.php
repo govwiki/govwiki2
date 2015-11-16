@@ -69,7 +69,7 @@ class RankOrderController extends Controller
                             $request->query->getInt('limit', 25),
                             $request->query->get('fields_order', [])
                         ),
-                    'max_ranks'   => $this->getMaxRanksFields($altTypeSlug),
+//                    'max_ranks'   => $this->getMaxRanksFields($altTypeSlug),
                     'count'       => $repository->countGovernments($altTypeSlug),
                 ]
             );
@@ -98,6 +98,76 @@ class RankOrderController extends Controller
                 $maxRanksFields[] = str_replace('MaxRank', '', $fieldName);
             }
         }
-        return $maxRanksFields;
+
+        switch ($altTypeSlug) {
+            case 'City':
+                $callback = function ($name) {
+                    return ('frpmRate' !== $name) &&
+                    ('academicPerformanceIndex' !== $name) &&
+                    ('satScores' !== $name) &&
+                    ('graduationRate' !== $name) &&
+                    ('dropoutRate' !== $name) &&
+                    ('expenditurePerStudent' !== $name) &&
+                    ('enrollment' !== $name);
+                };
+                break;
+
+            case 'County':
+                $callback = function ($name) {
+                    return ('frpmRate' !== $name) &&
+                    ('medianTotalCompOverMedianIndividualComp' !== $name) &&
+                    ('academicPerformanceIndex' !== $name) &&
+                    ('enrollment' !== $name);
+                };
+                break;
+
+            case 'School_District':
+                $callback = function ($name) {
+                    return ('violentCrimesPer100000Population' !== $name) &&
+                    ('propertyCrimesPer100000Population' !== $name) &&
+                    ('fullTimeEmployeesOverPopulation' !== $name) &&
+                    ('salesTaxRate' !== $name) &&
+                    ('libraryHoursPerWeek' !== $name) &&
+                    ('changeInGovernmentalFundRevenue' !== $name) &&
+                    ('defaultProbability' !== $name) &&
+                    ('publicSafetyExpOverTotGovFundRevenue' !== $name) &&
+                    ('publicSafetyExpOverGeneralFundRevenue' !== $name) &&
+                    ('totalRevenuePerCapita' !== $name) &&
+                    ('totalExpendituresPerCapita' !== $name) &&
+                    ('medianTotalCompGeneralPublic' !== $name) &&
+                    ('medianHomePrice' !== $name) &&
+                    ('population' !== $name);
+                };
+                break;
+
+            case 'Special_District':
+                $callback = function ($name) {
+                    return  ('frpmRate' !== $name) &&
+                    ('violentCrimesPer100000Population' !== $name) &&
+                    ('propertyCrimesPer100000Population' !== $name) &&
+                    ('academicPerformanceIndex' !== $name) &&
+                    ('satScores' !== $name) &&
+                    ('salesTaxRate' !== $name) &&
+                    ('libraryHoursPerWeek' !== $name) &&
+                    ('graduationRate' !== $name) &&
+                    ('dropoutRate' !== $name) &&
+                    ('expenditurePerStudent' !== $name) &&
+                    ('changeInGovernmentalFundRevenue' !== $name) &&
+                    ('publicSafetyExpOverTotGovFundRevenue' !== $name) &&
+                    ('publicSafetyExpOverGeneralFundRevenue' !== $name) &&
+                    ('totalRevenuePerCapita' !== $name) &&
+                    ('totalExpendituresPerCapita' !== $name) &&
+                    ('medianTotalCompGeneralPublic' !== $name) &&
+                    ('medianHomePrice' !== $name) &&
+                    ('population' !== $name) &&
+                    ('enrollment' !== $name);
+                };
+                break;
+
+            default:
+                throw new \InvalidArgumentException("Unknown alt type '$altTypeSlug'");
+        }
+
+        return array_filter($maxRanksFields, $callback);
     }
 }

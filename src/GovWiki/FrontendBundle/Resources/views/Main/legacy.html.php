@@ -909,12 +909,11 @@ echo <<<EOT
             <ul class="nav nav-pills" role="tablist">
                 <li role="presentation" class="active"><a href="#City" aria-controls="City" role="tab" data-toggle="tab">City</a></li>
                 <li role="presentation"><a href="#County" aria-controls="County" role="tab" data-toggle="tab">County</a></li>
-                <li role="presentation"><a href="#School_district" aria-controls="School District" role="tab" data-toggle="tab">School District</a></li>
-                <li role="presentation"><a href="#Special_district" aria-controls="Special District" role="tab" data-toggle="tab">Public Special District</a></li>
+                <li role="presentation"><a href="#School_District" aria-controls="School District" role="tab" data-toggle="tab">School District</a></li>
+                <li role="presentation"><a href="#Special_District" aria-controls="Special District" role="tab" data-toggle="tab">Public Special District</a></li>
             </ul>
 
             <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
-                {{!-- City table --}}
                 <div role="tabpanel" class="tab-pane active" id="City">
 
                     <div class="custom-wrap">
@@ -925,20 +924,20 @@ echo <<<EOT
                                 <tr>
                                     <th>&nbsp;</th>
                                     {{#each city.max_ranks}}
-                                        <td>{{this}}</td>
+                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
                                     {{/each}}
                                 </tr>
                                 {{#each city.governments as |entity|}}
-                                    <tr>
-                                        <th>{{entity.name}}</th>
-                                        {{#each ../city.max_ranks}}
-                                            {{#if (some entity this) }}
-                                                <td>{{getName this entity}}</td>
-                                            {{else}}
-                                                <td>&nbsp;</td>
-                                            {{/if}}
-                                        {{/each}}
-                                    </tr>
+                                <tr>
+                                    <th>{{entity.name}}</th>
+                                    {{#each ../city.max_ranks}}
+                                    {{#if (some entity this) }}
+                                    <td style="color: white">{{getName this entity}}</td>
+                                    {{else}}
+                                    <td>&nbsp;</td>
+                                    {{/if}}
+                                    {{/each}}
+                                </tr>
                                 {{/each}}
                             </table>
 
@@ -950,20 +949,20 @@ echo <<<EOT
                                 <tr>
                                     <th>&nbsp;</th>
                                     {{#each city.max_ranks}}
-                                        <td>{{this}}</td>
+                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
                                     {{/each}}
                                 </tr>
                                 {{#each city.governments as |entity|}}
-                                    <tr>
-                                        <th>{{entity.name}}</th>
-                                        {{#each ../city.max_ranks}}
-                                            {{#if (some entity this) }}
-                                                <td>{{getName this entity}}</td>
-                                            {{else}}
-                                                <td>&nbsp;</td>
-                                            {{/if}}
-                                        {{/each}}
-                                    </tr>
+                                <tr>
+                                    <th>{{entity.name}}</th>
+                                    {{#each ../city.max_ranks}}
+                                    {{#if (some entity this) }}
+                                    <td>{{getName this entity}}</td>
+                                    {{else}}
+                                    <td>&nbsp;</td>
+                                    {{/if}}
+                                    {{/each}}
+                                </tr>
                                 {{/each}}
                             </table>
 
@@ -981,7 +980,7 @@ echo <<<EOT
                                 <tr>
                                     <th>&nbsp;</th>
                                     {{#each county.max_ranks}}
-                                    <td>{{this}}</td>
+                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
                                     {{/each}}
                                 </tr>
                                 {{#each county.governments as |entity|}}
@@ -1006,7 +1005,7 @@ echo <<<EOT
                                 <tr>
                                     <th>&nbsp;</th>
                                     {{#each county.max_ranks}}
-                                    <td>{{this}}</td>
+                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
                                     {{/each}}
                                 </tr>
                                 {{#each county.governments as |entity|}}
@@ -1027,7 +1026,7 @@ echo <<<EOT
                     </div>
                 </div>
 
-                <div role="tabpanel" class="tab-pane" id="School_district">
+                <div role="tabpanel" class="tab-pane" id="School_District">
                     <div class="custom-wrap">
 
                         <div class="fixed-th-table-wrapper">
@@ -1036,7 +1035,7 @@ echo <<<EOT
                                 <tr>
                                     <th>&nbsp;</th>
                                     {{#each school_district.max_ranks}}
-                                    <td>{{this}}</td>
+                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
                                     {{/each}}
                                 </tr>
                                 {{#each school_district.governments as |entity|}}
@@ -1061,7 +1060,7 @@ echo <<<EOT
                                 <tr>
                                     <th>&nbsp;</th>
                                     {{#each school_district.max_ranks}}
-                                    <td>{{this}}</td>
+                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
                                     {{/each}}
                                 </tr>
                                 {{#each school_district.governments as |entity|}}
@@ -1082,7 +1081,7 @@ echo <<<EOT
                     </div>
                 </div>
 
-                <div role="tabpanel" class="tab-pane" id="Special_district">
+                <div role="tabpanel" class="tab-pane" id="Special_District">
                     <div class="custom-wrap">
 
                         <div class="fixed-th-table-wrapper">
@@ -1091,7 +1090,7 @@ echo <<<EOT
                                 <tr>
                                     <th>&nbsp;</th>
                                     {{#each special_district.max_ranks}}
-                                    <td>{{this}}</td>
+                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
                                     {{/each}}
                                 </tr>
                                 {{#each special_district.governments as |entity|}}
@@ -1116,7 +1115,7 @@ echo <<<EOT
                                 <tr>
                                     <th>&nbsp;</th>
                                     {{#each special_district.max_ranks}}
-                                    <td>{{this}}</td>
+                                    <td><a class="rank_sort" href="javascript:void(0);" data-sort-type="{{this}}"><nobr>{{this}} <i class="icon"></i></nobr></a></td>
                                     {{/each}}
                                 </tr>
                                 {{#each special_district.governments as |entity|}}
