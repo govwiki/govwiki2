@@ -865,6 +865,27 @@
     </div>
 </script>
 
+
+<!-- Modal -->
+<div class="modal fade" id="conversation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel"></h4>
+            </div>
+            <div class="modal-body">
+                <div id="disqus_thread"></div>
+                <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!--
 
     URL: /rank_order
@@ -892,40 +913,78 @@
             <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
                 {{!-- City table --}}
                 <div role="tabpanel" class="tab-pane active" id="city">
-                     <table class="table table-hover">
-                         <tr>
-                             <th>Name</th>
-                             {{#maxRanks.city}}
-                                 <th>{{name}}</th>
-                             {{/maxRanks.city}}
-                         </tr>
-                     </table>
+
+                    <div class="custom-wrap">
+
+
+                        <div class="fixed-th-table-wrapper">
+
+                            <table class="table table-bordered">
+
+                                <tr>
+                                    <th>&nbsp;</th>
+                                    {{#each max_ranks}}
+                                        <td>{{this}}</td>
+                                    {{/each}}
+                                </tr>
+
+                                {{#each governments as |city|}}
+                                    <tr>
+                                        <th>{{city.name}}</th>
+                                        {{#each city as |value|}}
+
+                                            {{#each ../../max_ranks}}
+                                                {{#if_eq (concat this 'Rank') @../key}}
+                                                    <td>{{value}}</td>
+                                                {{/if_eq}}
+                                            {{/each}}
+
+                                        {{/each}}
+
+                                    </tr>
+                                {{/each}}
+
+                            </table>
+
+                        </div>
+
+                        <div class="scrolled-td-table-wrapper">
+
+                            <table class="table table-bordered">
+
+                                <tr>
+                                    <th>&nbsp;</th>
+                                    {{#each max_ranks}}
+                                    <td>{{this}}</td>
+                                    {{/each}}
+                                </tr>
+
+                                {{#each governments as |city|}}
+                                <tr>
+                                    <th>{{city.name}}</th>
+                                    {{#each city as |value|}}
+
+                                    {{#each ../../max_ranks}}
+                                        {{#if_eq (concat this 'Rank') @../key}}
+                                            <td>{{value}}</td>
+                                        {{/if_eq}}
+                                    {{/each}}
+
+                                    {{/each}}
+
+                                </tr>
+                                {{/each}}
+
+                            </table>
+
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
 </script>
-
-
-<!-- Modal -->
-<div class="modal fade" id="conversation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel"></h4>
-            </div>
-            <div class="modal-body">
-                <div id="disqus_thread"></div>
-                <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-                <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script id="rankPopover" type="text/x-handlebars-template">
     <table class="table table-condensed table-hover">
@@ -1003,6 +1062,6 @@
     <!--script(src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js")-->
     <script src="/legacy/js/vendor/markerclusterer.js"></script>
     <script>google.load("visualization", "1", {packages: ["corechart"]});</script>
-    <script src="/legacy/static/bundle.min.js"></script>
+    <script src="/legacy/static/bundle.js"></script>
   </body>
 </html>

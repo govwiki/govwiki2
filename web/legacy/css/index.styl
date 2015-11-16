@@ -841,3 +841,45 @@ i.icon__top
 
 .legislation-column-vote
   width: 115px
+
+
+.custom-wrap
+  width: 100%
+  position: relative
+  overflow: hidden
+
+
+.fixed-th-table-wrapper td,
+.fixed-th-table-wrapper th,
+.scrolled-td-table-wrapper td,
+.scrolled-td-table-wrapper th
+  background white
+
+.fixed-th-table-wrapper
+  position absolute
+  th
+    position relative
+    z-index 1
+
+.scrolled-td-table-wrapper
+  overflow-x auto
+  td
+    position relative
+
+table
+  border-spacing 0
+
+td, th
+  border-style solid
+  border-color black
+  border-width 1px 1px 0 0
+  padding 5px
+
+th
+  &:first-child
+    border-left-width 1px
+
+tr:last-child td,
+tr:last-child th
+  border-bottom-width 1px
+

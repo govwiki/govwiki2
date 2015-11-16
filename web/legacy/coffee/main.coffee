@@ -28,6 +28,8 @@ user = Object.create null, {}
 categories = Object.create null, {}
 
 Handlebars.registerHelper 'if_eq', (a, b, opts) ->
+    console.log(a)
+    console.log(b)
     if `a == b`
         return opts.fn this
     else
@@ -929,6 +931,16 @@ $('#dataContainer').popover({
                     <div class="popover-content"></div>
                 </div>'
 });
+
+Handlebars.registerHelper 'if_eq', (a, b, opts) ->
+    if(a == b)
+        return opts.fn this
+    else
+        return opts.inverse this
+
+Handlebars.registerHelper 'concat', (param1, param2) ->
+    temp = [param1, param2]
+    return temp.join('')
 
 $('#dataContainer').on 'click', (e) ->
     $element = $(e.target);

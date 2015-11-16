@@ -750,6 +750,47 @@ i.icon__top {
 .legislation-column-vote {
   width: 115px;
 }
+.custom-wrap {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.fixed-th-table-wrapper td,
+.fixed-th-table-wrapper th,
+.scrolled-td-table-wrapper td,
+.scrolled-td-table-wrapper th {
+  background: #fff;
+}
+.fixed-th-table-wrapper {
+  position: absolute;
+}
+.fixed-th-table-wrapper th {
+  position: relative;
+  z-index: 1;
+}
+.scrolled-td-table-wrapper {
+  overflow-x: auto;
+}
+.scrolled-td-table-wrapper td {
+  position: relative;
+}
+table {
+  border-spacing: 0;
+}
+td,
+th {
+  border-style: solid;
+  border-color: #000;
+  border-width: 1px 1px 0 0;
+  padding: 5px;
+}
+th:first-child {
+  border-left-width: 1px;
+}
+tr:last-child td,
+tr:last-child th {
+  border-bottom-width: 1px;
+}
 @-moz-keyframes load8 {
   0% {
     -webkit-transform: rotate(0deg);
