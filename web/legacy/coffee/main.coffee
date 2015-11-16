@@ -1324,7 +1324,8 @@ if routeType is 1
                 limit: GOVWIKI.itemsPerPage
             success: (data) ->
                 altTypesData[GOVWIKI.currentAltTypeLowerCase] = data
-                tpl = Handlebars.compile($('#table-city').html())
+
+                tpl = Handlebars.compile($('#table-'+GOVWIKI.currentAltTypeLowerCase.replace(/_/, '-')).html())
                 $('#'+GOVWIKI.currentAltType).html tpl(altTypesData)
                 setEvents()
                 renderPagination()
