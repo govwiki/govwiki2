@@ -758,40 +758,69 @@ i.icon__top {
   position: relative;
   overflow: hidden;
 }
-.fixed-th-table-wrapper td,
-.fixed-th-table-wrapper th,
-.scrolled-td-table-wrapper td,
-.scrolled-td-table-wrapper th {
+#City .fixed-th-table-wrapper td,
+#County .fixed-th-table-wrapper td,
+#School_District .fixed-th-table-wrapper td,
+#Special_District .fixed-th-table-wrapper td,
+#City .fixed-th-table-wrapper th,
+#County .fixed-th-table-wrapper th,
+#School_District .fixed-th-table-wrapper th,
+#Special_District .fixed-th-table-wrapper th,
+#City .scrolled-td-table-wrapper td,
+#County .scrolled-td-table-wrapper td,
+#School_District .scrolled-td-table-wrapper td,
+#Special_District .scrolled-td-table-wrapper td,
+#City .scrolled-td-table-wrapper th,
+#County .scrolled-td-table-wrapper th,
+#School_District .scrolled-td-table-wrapper th,
+#Special_District .scrolled-td-table-wrapper th {
   background: #fff;
 }
-.fixed-th-table-wrapper {
+#City .fixed-th-table-wrapper,
+#County .fixed-th-table-wrapper,
+#School_District .fixed-th-table-wrapper,
+#Special_District .fixed-th-table-wrapper {
   position: absolute;
 }
-.fixed-th-table-wrapper th {
+#City .fixed-th-table-wrapper th,
+#County .fixed-th-table-wrapper th,
+#School_District .fixed-th-table-wrapper th,
+#Special_District .fixed-th-table-wrapper th {
   position: relative;
   z-index: 1;
 }
-.scrolled-td-table-wrapper {
+#City .scrolled-td-table-wrapper,
+#County .scrolled-td-table-wrapper,
+#School_District .scrolled-td-table-wrapper,
+#Special_District .scrolled-td-table-wrapper {
   overflow-x: auto;
 }
-.scrolled-td-table-wrapper td {
+#City .scrolled-td-table-wrapper td,
+#County .scrolled-td-table-wrapper td,
+#School_District .scrolled-td-table-wrapper td,
+#Special_District .scrolled-td-table-wrapper td {
   position: relative;
 }
-table {
+#City table,
+#County table,
+#School_District table,
+#Special_District table {
   border-spacing: 0;
 }
-td,
-th {
-  border-style: solid;
-  border-color: #000;
-  border-width: 1px 1px 0 0;
-  padding: 5px;
-}
-th:first-child {
+#City th:first-child,
+#County th:first-child,
+#School_District th:first-child,
+#Special_District th:first-child {
   border-left-width: 1px;
 }
-tr:last-child td,
-tr:last-child th {
+#City tr:last-child td,
+#County tr:last-child td,
+#School_District tr:last-child td,
+#Special_District tr:last-child td,
+#City tr:last-child th,
+#County tr:last-child th,
+#School_District tr:last-child th,
+#Special_District tr:last-child th {
   border-bottom-width: 1px;
 }
 @-moz-keyframes load8 {
