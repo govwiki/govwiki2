@@ -27,7 +27,6 @@ user = Object.create null, {}
 #
 categories = Object.create null, {}
 
-
 Handlebars.registerHelper 'getName', (name, obj) ->
     return obj[name+'Rank'];
 
@@ -1189,16 +1188,12 @@ if routeType is 1
         url: "/api/rank_order"
         dataType: 'json'
         cache: true
-        success: (data) ->
-#            data.governments.some (item) ->
-#                if item.altTypeSlug == "City" then console.log item
-
+        success: (altTypesData) ->
             #
             # Render rank order template.
             #
             tpl = Handlebars.compile($('#rank-order-page').html())
-            console.log data
-            $('#details').html tpl(data)
+            $('#details').html tpl(altTypeData)
             $('.loader').hide()
             $('#details').show()
             GOVWIKI.show_data_page();
@@ -1207,7 +1202,7 @@ if routeType is 1
             # Push template.
             #
             GOVWIKI.tplLoaded = true
-#      window.history.pushState {template: tpl}, 'CPC Civic Profiles', '/rank_order'
+            window.history.pushState {template: tpl}, 'CPC Civic Profiles', '/rank_order'
 
 
 # Route /:alt_name/:city_name
