@@ -72,6 +72,10 @@ $ ->
     console.log('From cache')
     GOVWIKI.markers = JSON.parse(data)
     $(document).trigger('markersLoaded')
+    #
+    # Render points stored in GOVWIKI.markers
+    #
+    rerender_markers()
   else
     #
     # Get new data from server.
@@ -86,11 +90,10 @@ $ ->
       window.localStorage.setItem('points_last_update', date.getTime())
       GOVWIKI.markers = data
       $(document).trigger('markersLoaded')
-
-  #
-  # Render points stored in GOVWIKI.markers
-  #
-  rerender_markers()
+      #
+      # Render points stored in GOVWIKI.markers
+      #
+      rerender_markers()
 
   $('#legend li:not(.counties-trigger)').on 'click', ->
     $(this).toggleClass('active')

@@ -18,6 +18,11 @@ echo <<<EOT
     <link href="/legacy/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this page-->
     <link rel="stylesheet" href="/legacy/css/index.css">
+    <script>
+      var authorized = {$authorized}
+      var user = {username: '{$username}'}
+      
+    </script>
     <!--script(src='js_files/ie-emulation-modes-warning.js')-->
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries-->
     <!--if lt IE 9
@@ -1199,7 +1204,8 @@ echo <<<EOT
         <thead>
             <tr>
                 <th>City</th>
-                <th class="sortable">Value<i class="icon"></i></th>
+                <th class="sortable"><nobr>Value<i class="icon"></i></nobr></th>
+                <th>Amount</th>
             </tr>
         </thead>
         <tbody>
@@ -1212,6 +1218,9 @@ echo <<<EOT
                         {{else}}
                             No data
                         {{/if}}
+                    </td>
+                    <td>
+                        {{amount}}
                     </td>
                 </tr>
             {{/this}}
@@ -1230,6 +1239,9 @@ echo <<<EOT
             {{else}}
                 No data
             {{/if}}
+        </td>
+        <td>
+            {{amount}}
         </td>
     </tr>
     {{/this}}

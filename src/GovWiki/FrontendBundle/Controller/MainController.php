@@ -5,6 +5,7 @@ namespace GovWiki\FrontendBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * MainController
@@ -19,7 +20,7 @@ class MainController extends Controller
      */
     public function mapAction()
     {
-        return [];
+        return $this->renderMainTemplate();
     }
 
     /**
@@ -30,7 +31,7 @@ class MainController extends Controller
      */
     public function governmentAction()
     {
-        return [];
+        return $this->renderMainTemplate();
     }
 
     /**
@@ -41,7 +42,7 @@ class MainController extends Controller
      */
     public function rankOrderAction()
     {
-        return [];
+        return $this->renderMainTemplate();
     }
 
     /**
@@ -52,6 +53,23 @@ class MainController extends Controller
      */
     public function electedOfficialAction()
     {
-        return [];
+        return $this->renderMainTemplate();
+    }
+
+    /**
+     * @return array
+     */
+    private function renderMainTemplate()
+    {
+        /** @var UserInterface $user */
+        $user = $this->getUser();
+        $username = '';
+        if (null !== $user) {
+            $username = $user->getUsername();
+        }
+        return [
+            'authorized' => (null !== $user) ? 1 : 0,
+            'username' => $username,
+        ];
     }
 }

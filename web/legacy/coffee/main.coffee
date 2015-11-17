@@ -17,11 +17,10 @@ gov_selector = null
 templates = new Templates2
 active_tab = ""
 undef = null
-authorized = false
 #
-# Information about current user.
-#
-user = Object.create null, {}
+# Now init in FrontendBundle main template.
+#authorized = false
+#user = Object.create null, {}
 #
 # Issues category, fill in elected official page.
 #
@@ -1479,20 +1478,33 @@ $ ->
     ###
     $userBtn = $('#user')
     $userBtnLink = $userBtn.find('a');
-    $.ajax '/api/user', {
-          method: 'GET',
-          async: false,
-          success: (response) ->
-              user.username = response.username;
-              authorized = true;
+    console.log authorized
+    console.log user
+    console.log user.username
 
-              $userText = $('#user-text').find('a');
-              $userText.html("Logged in as #{user.username}" + $userText.html())
-              $userBtnLink.html("Sign Out" + $userBtnLink.html()).click () ->
-                  window.location = '/logout'
+    if (authorized)
+      $userText = $('#user-text').find('a');
+      $userText.html("Logged in as #{user.username}" + $userText.html())
+      $userBtnLink.html("Sign Out" + $userBtnLink.html()).click () ->
+          window.location = '/logout'
+    else
+      $userBtnLink.html("Login / Sign Up" + $userBtnLink.html()).click () ->
+        showModal('/login')
 
-          error: (error) ->
-              if error.status is 401 then authorized = false
-              $userBtnLink.html("Login / Sign Up" + $userBtnLink.html()).click () ->
-                  showModal('/login')
-      }
+#    $.ajax '/api/user', {
+#          method: 'GET',
+#          async: false,
+#          success: (response) ->
+#              user.username = response.username;
+#              authorized = true;
+#
+#              $userText = $('#user-text').find('a');
+#              $userText.html("Logged in as #{user.username}" + $userText.html())
+#              $userBtnLink.html("Sign Out" + $userBtnLink.html()).click () ->
+#                  window.location = '/logout'
+#
+#          error: (error) ->
+#              if error.status is 401 then authorized = false
+#              $userBtnLink.html("Login / Sign Up" + $userBtnLink.html()).click () ->
+#                  showModal('/login')
+#      }

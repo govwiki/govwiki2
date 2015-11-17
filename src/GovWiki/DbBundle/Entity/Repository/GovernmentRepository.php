@@ -109,24 +109,28 @@ class GovernmentRepository extends EntityRepository
      */
     public function getGovernmentRank($altTypeSlug, $governmentSlug, $rankFieldName, $limit, $page = null, $order = null)
     {
-        $qb = $this->createQueryBuilder('Government');
-        $id = $qb
-            ->select('Government.id')
+        $amountFieldName = str_replace('Rank', '', $rankFieldName);
+
+        $qb2 = $this->createQueryBuilder('Government2');
+        $qb2
+            ->select('Government2.id')
             ->where(
-                $qb->expr()->andX(
-                    $qb->expr()->eq('Government.altTypeSlug', $qb->expr()->literal($altTypeSlug)),
-                    $qb->expr()->eq('Government.slug', $qb->expr()->literal($governmentSlug))
+                $qb2->expr()->andX(
+                    $qb2->expr()->eq('Government2.altTypeSlug', $qb2->expr()->literal($altTypeSlug)),
+                    $qb2->expr()->eq('Government2.slug', $qb2->expr()->literal($governmentSlug))
                 )
-            )
-            ->getQuery()
-            ->getSingleScalarResult();
+            );
 
         $qb = $this->createQueryBuilder('Government');
         $qb
-            ->select('Government.name, Government.'. $rankFieldName .' AS value')
+            ->select(
+                "Government.name, Government.$rankFieldName AS value, Government.$amountFieldName as amount"
+            )
             ->where($qb->expr()->eq('Government.altTypeSlug', $qb->expr()->literal($altTypeSlug)));
         if (null === $page) {
-            $qb->andWhere($qb->expr()->between('Government.id', $id - $limit, $id + $limit));
+            $qb->andWhere(
+                $qb->expr()->gte('Government.id', '('. $qb2->getDQL() .')')
+            );
         } else {
             $qb->setFirstResult($page * $limit);
             if ('desc' === $order) {
