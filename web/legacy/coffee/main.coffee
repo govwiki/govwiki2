@@ -1146,7 +1146,8 @@ if routeType is 0
     if !undef
         $('#searchContainer').html $('#search-container-template').html()
         # Load introductory text from texts/intro-text.html to #intro-text container.
-        $.get "/legacy/texts/intro-text.html", (data) -> $("#intro-text").html data
+        #$.get "/legacy/texts/intro-text.html", (data) -> $("#intro-text").html data
+        #$("#intro-text").html $("#intro")
         govmap = require './govmap.coffee'
         get_counties GOVWIKI.draw_polygons
         GOVWIKI.tplLoaded = true
@@ -1407,6 +1408,11 @@ if routeType is 3
             createRequests = data.createRequests
             categories = data.categories
             person.category_select = []
+            person.gov_alt_name = person.government.city[0] + person.government.city.slice(1).toLowerCase()
+            console.log(person)
+
+
+            console.log(data)
 
             ###
               Prepare options for select in IssuesCategory edit.
@@ -1461,7 +1467,6 @@ if routeType is 3
                 $('#myModalLabel').text(name + ' (' + person.gov_alt_name + ')');
                 $('#conversation').modal 'show'
                 refresh_disqus id, 'http://govwiki.us' + '/' + id, name
-
             $('#stantonIcon a').text 'Return to ' + person.gov_alt_name
             window.DISQUSWIDGETS.getCount()
 

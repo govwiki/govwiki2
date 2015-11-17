@@ -31,7 +31,7 @@ class ElectedOfficial
      * @var Government
      *
      * @ORM\ManyToOne(targetEntity="Government", inversedBy="electedOfficials")
-     * @Exclude
+     * @Groups({"elected_official"})
      */
     private $government;
 

@@ -35,7 +35,7 @@ class ElectedOfficialController extends Controller
         /** @var \Doctrine\ORM\QueryBuilder $qb */
         $qb = $em->getRepository('GovWikiDbBundle:ElectedOfficial')->createQueryBuilder('ElectedOfficial');
         $electedOfficial = $qb
-            ->addSelect('Contribution, Endorsement, PublicStatement, Vote, Legislation')
+            ->addSelect('Contribution, Endorsement, PublicStatement, Vote, Legislation, Government')
             ->leftJoin('ElectedOfficial.contributions', 'Contribution')
             ->leftJoin('ElectedOfficial.endorsements', 'Endorsement')
             ->leftJoin('ElectedOfficial.publicStatements', 'PublicStatement')

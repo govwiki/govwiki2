@@ -8,23 +8,22 @@ class GovSelector
 
 
   constructor: (@html_selector, docs_url, @num_items) ->
-    $.ajax
-      url: docs_url
-      dataType: 'json'
-      cache: true
-      success: @startSuggestion
-      
-
-
+#    $.ajax
+#      url: docs_url
+#      dataType: 'json'
+#      cache: true
+#      success: @startSuggestion
+    $(document).on 'markersLoaded', () =>
+      console.log 'Markers loaded'
+      console.log GOVWIKI.markers
+      @startSuggestion(GOVWIKI.markers)
 
   suggestionTemplate : Handlebars.compile("""
     <div class="sugg-box">
       <div class="sugg-state">{{{state}}}</div>
-      <div class="sugg-name">{{{gov_name}}}</div>
-      <div class="sugg-type">{{{gov_type}}}</div>
+      <div class="sugg-name">{{{name}}}</div>
+      <div class="sugg-type">{{{type}}}</div>
     </div>""")
-
-
 
   entered_value = ""
 
@@ -34,14 +33,14 @@ class GovSelector
     count =0
     for d in @govs_array
       if GOVWIKI.state_filter and d.state isnt GOVWIKI.state_filter then continue
-      if GOVWIKI.gov_type_filter and d.gov_type isnt GOVWIKI.gov_type_filter then continue
+      if GOVWIKI.gov_type_filter and d.type isnt GOVWIKI.gov_type_filter then continue
       count++
     return count
 
 
   startSuggestion : (govs) =>
-    #@govs_array = govs
-    @govs_array = govs.record
+    @govs_array = govs
+    #@govs_array = govs.record
     $('.typeahead').keyup (event) =>
       @entered_value = $(event.target).val()
 
@@ -51,13 +50,13 @@ class GovSelector
 
     $(@html_selector).typeahead(
         hint: false
-        highlight: false
+        highlight: true
         minLength: 1
         classNames:
         	menu: 'tt-dropdown-menu'
       ,
-        name: 'gov_name'
-        displayKey: 'gov_name'
+        name: 'name'
+        displayKey: 'name'
         source: query_matcher(@govs_array, @num_items)
         #source: bloodhound.ttAdapter()
         templates: suggestion: @suggestionTemplate

@@ -11,6 +11,7 @@ echo <<<EOT
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
     <title>CPC Civic Profiles</title>
     <!-- Bootstrap core CSS-->
     <!--link(href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css", rel='stylesheet')-->
@@ -840,7 +841,19 @@ echo <<<EOT
             </div>
         </div>
         <div class="col-lg-7 col-md-6 col-sm-12">
-            <div id="intro-text"></div>
+            <div id="intro-text">
+                <h3 style="text-align:center;">Welcome to California Policy Center’s Civic Performance Profiles</h3>
+                <font size="3">
+                    <p>Is your local government giving you value for money? Use CPC’s Civic Performance Profiles to see how your city, county, school district or special district stacks up.</p>
+                    <p>Among the surprising facts we learned while compiling this database:</p>
+                    <ul>
+                        <li><a href="County/Los_Angeles">Los Angeles County</a> has unfunded retiree health liabilities of $26.7 billion.</li>
+                        <li>Median full time public employee salary and benefits in <a href="/City/San_Jose">San Jose</a> exceeds $157,000.</li>
+                        <li>The Superintendent of <a href="/School_District/New_Haven_Unified_School_District">New Haven Unified School District</a> in Alameda County received almost $650,000 in salary and benefits while the district’s Academic Performance Index is below the state median.</li>
+                    </ul>
+                    <p>To learn more about a California local government that affects you, please select it from the map or by typing its name.</p>
+                </font>
+            </div>
             <!--include right_panel.html-->
         </div>
     </div>
@@ -1181,8 +1194,6 @@ echo <<<EOT
 
 </script>
 
-
-
 <script id="rankPopover" type="text/x-handlebars-template">
     <table class="table table-condensed table-hover">
         <thead>
@@ -1231,33 +1242,32 @@ echo <<<EOT
         </div>
       </div>
     </div>
-    <script src="/legacy/js_files/jquery.min.js"></script>
-    <script src="/legacy/js/vendor/bootstrap.min.js"></script>
-    <script src="/legacy/js/vendor/moment.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug-->
-    <script src="/legacy/js_files/ie10-viewport-bug-workaround.js"></script>
-    <script src="/legacy/js/plugins.js"></script>
-    <script src="/legacy/bower_components/flot/jquery.flot.js"></script>
-    <script src="/legacy/js/vendor/jquery.flot.stack.patched.js"></script>
-    <script src="/legacy/bower_components/flot/jquery.flot.pie.js"></script>
-    <script src="/legacy/bower_components/numeral/numeral.js"></script>
-    <script src="/legacy/bower_components/typeahead-0.10.5.js/dist/typeahead.bundle.min.js"></script>
-    <script src="/legacy/bower_components/handlebars/handlebars.min.js"></script>
     <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
-    <script src="/legacy/bower_components/gmaps/gmaps.js"></script>
     <script src="http://www.google.com/jsapi"></script>
-    <script src="/legacy/js/vendor/markerwithlabel_packed.js"></script>
-    <script src="/legacy/js_files/disqus.js"></script>
-    <script src="/legacy/js/vendor/history.js"></script>
-    <script src="/legacy/js/vendor/cookies.js"></script>
-    <script src="/legacy/js/vendor/bootstrap-table/bootstrap-table.min.js"></script>
-    <script src="/legacy/js/vendor/bootstrap-table/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js"></script>
-    <script src="/legacy/js/vendor/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js"></script>
-    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+    <script src="/legacy/static/vendors.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+    <!--script(src='/legacy/js_files/jquery.min.js')-->
+    <!--script(src='/legacy/js/vendor/bootstrap.min.js')-->
+    <!--script(src='/legacy/js/vendor/moment.min.js')-->
+    <!--// IE10 viewport hack for Surface/desktop Windows 8 bug-->
+    <!--script(src='/legacy/js_files/ie10-viewport-bug-workaround.js')-->
+    <!--script(src='/legacy/js/plugins.js')-->
+    <!--script(src='/legacy/bower_components/flot/jquery.flot.js')-->
+    <!--script(src='/legacy/js/vendor/jquery.flot.stack.patched.js')-->
+    <!--script(src='/legacy/bower_components/flot/jquery.flot.pie.js')-->
+    <!--script(src='/legacy/bower_components/numeral/numeral.js')-->
+    <!--script(src='/legacy/bower_components/typeahead-0.10.5.js/dist/typeahead.bundle.min.js')-->
+    <!--script(src='/legacy/bower_components/handlebars/handlebars.min.js')-->
+    <!--script(src='/legacy/bower_components/gmaps/gmaps.js')-->
+    <script src="/legacy/js/vendor/markerwithlabel_packed.js"></script>
+    <!--script(src='/legacy/js_files/disqus.js')-->
+    <!--script(src='/legacy/js/vendor/history.js')-->
+    <!--script(src='/legacy/js/vendor/cookies.js')-->
+    <!--script(src='/legacy/js/vendor/bootstrap-table/bootstrap-table.min.js')-->
+    <!--script(src='/legacy/js/vendor/bootstrap-table/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js')-->
+    <!--script(src='/legacy/js/vendor/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js')-->
     <script src="{$view['assets']->getUrl('bundles/govwikifrontend/js/script.js')}"></script>
-    <!--script(src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js")-->
-    <script src="/legacy/js/vendor/markerclusterer.js"></script>
+    <!--script(src="/legacy/js/vendor/markerclusterer.js")-->
     <script>google.load("visualization", "1", {packages: ["corechart"]});</script>
     <script src="/legacy/static/bundle.js"></script>
   </body>

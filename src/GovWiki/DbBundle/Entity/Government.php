@@ -26,7 +26,7 @@ class Government
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"government"})
+     * @Groups({"government", "elected_official"})
      */
     private $id;
 
@@ -34,7 +34,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="state_id", type="string", length=255, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "elected_official"})
      */
     private $stateId;
 
@@ -68,7 +68,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="slug", type="string", length=255, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "elected_official"})
      */
     private $slug;
 
@@ -92,7 +92,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="alt_type", type="string", length=20, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $altType;
 
@@ -100,7 +100,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="alt_type_slug", type="string", length=20, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "elected_official"})
      */
     private $altTypeSlug;
 
@@ -116,7 +116,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="city", type="string", length=255, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "elected_official"})
      */
     private $city;
 
@@ -156,7 +156,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="population_as_of_year", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $populationAsOfYear;
 
@@ -164,7 +164,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="enrollment", type="string", length=50, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $enrollment;
 
@@ -172,7 +172,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="enrollment_as_of_year", type="string", length=50, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $enrollmentAsOfYear;
 
@@ -180,7 +180,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="frpm_rate", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $frpmRate;
 
@@ -188,7 +188,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="fips_county", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $fipsCounty;
 
@@ -196,7 +196,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="fips_place", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $fipsPlace;
 
@@ -204,7 +204,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="county_area_name", type="text", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $countyAreaName;
 
@@ -212,7 +212,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="latitude", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $latitude;
 
@@ -220,7 +220,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="longitude", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $longitude;
 
@@ -228,7 +228,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="rand", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $rand;
 
@@ -236,7 +236,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="median_wages_general_public", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianWagesGeneralPublic;
 
@@ -244,7 +244,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="median_benefits_general_public", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianBenefitsGeneralPublic;
 
@@ -252,7 +252,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="median_total_comp_general_public", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianTotalCompGeneralPublic;
 
@@ -260,7 +260,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="median_home_price", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianHomePrice;
 
@@ -268,7 +268,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="median_salary_per_full_time_emp", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianSalaryPerFullTimeEmp;
 
@@ -276,7 +276,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="median_benefits_per_ft_emp", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianBenefitsPerFtEmp;
 
@@ -284,7 +284,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="median_total_comp_per_ft_emp", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianTotalCompPerFtEmp;
 
@@ -292,7 +292,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="median_total_comp_over_median_individual_comp", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianTotalCompOverMedianIndividualComp;
 
@@ -300,7 +300,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="name_of_highest_paid_employee", type="text", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $nameOfHighestPaidEmployee;
 
@@ -308,7 +308,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="title_of_highest_paid_employee", type="text", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $titleOfHighestPaidEmployee;
 
@@ -316,7 +316,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="total_comp_for_highest_paid_emp", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalCompForHighestPaidEmp;
 
@@ -324,7 +324,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="number_of_full_time_employees", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $numberOfFullTimeEmployees;
 
@@ -332,7 +332,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="full_time_employees_over_population", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $fullTimeEmployeesOverPopulation;
 
@@ -340,7 +340,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="total_wages", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalWages;
 
@@ -348,7 +348,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="total_salaries_plus_benefits", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalSalariesPlusBenefits;
 
@@ -356,7 +356,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="pension_contribution", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $pensionContribution;
 
@@ -364,7 +364,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="pension_uaal", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $pensionUaal;
 
@@ -372,7 +372,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="median_pension_30_year_retiree", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianPension30YearRetiree;
 
@@ -380,7 +380,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="pension_contribution_over_total_revenue", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $pensionContributionOverTotalRevenue;
 
@@ -388,7 +388,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="former_emp_with_largest_pension", type="text", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $formerEmpWithLargestPension;
 
@@ -396,7 +396,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="amount_of_largest_pension", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $amountOfLargestPension;
 
@@ -404,7 +404,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="opeb_arc", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $opebArc;
 
@@ -412,7 +412,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="opeb_actual_contribution", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $opebActualContribution;
 
@@ -420,7 +420,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="opeb_uaal", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $opebUaal;
 
@@ -428,7 +428,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="opeb_arc_over_total_revenue", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $opebArcOverTotalRevenue;
 
@@ -436,7 +436,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="pension_plus_opeb_arc_over_tot_rev", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $pensionPlusOpebArcOverTotRev;
 
@@ -444,7 +444,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="academic_performance_index", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $academicPerformanceIndex;
 
@@ -452,7 +452,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="sat_scores", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $satScores;
 
@@ -460,7 +460,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="parent_trigger_eligible_schools", type="text", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $parentTriggerEligibleSchools;
 
@@ -468,27 +468,23 @@ class Government
      * @var string
      *
      * @ORM\Column(name="open_enrollment_schools", type="text", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $openEnrollmentSchools;
 
     /**
      * @var float
      *
-     * @SerializedName("violent_crimes_per_100000_population")
-	 * @Groups({"government"})
      * @ORM\Column(name="violent_crimes_per_100000_population", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $violentCrimesPer100000Population;
 
     /**
      * @var float
      *
-     * @SerializedName("property_crimes_per_100000_population")
-	 * @Groups({"government"})
      * @ORM\Column(name="property_crimes_per_100000_population", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $propertyCrimesPer100000Population;
 
@@ -496,7 +492,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="pavement_condition_index", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $pavementConditionIndex;
 
@@ -504,7 +500,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="sales_tax_rate", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $salesTaxRate;
 
@@ -512,7 +508,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="library_hours_per_week", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $libraryHoursPerWeek;
 
@@ -520,7 +516,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="graduation_rate", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $graduationRate;
 
@@ -528,7 +524,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="dropout_rate", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $dropoutRate;
 
@@ -536,7 +532,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="public_safety_exp_over_tot_gov_fund_revenue", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $publicSafetyExpOverTotGovFundRevenue;
 
@@ -544,7 +540,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="public_safety_exp_over_general_fund_revenue", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $publicSafetyExpOverGeneralFundRevenue;
 
@@ -552,7 +548,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="general_fund_balance_over_general_fund_exp", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $generalFundBalanceOverGeneralFundExp;
 
@@ -560,7 +556,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="total_debt_over_total_revenue", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalDebtOverTotalRevenue;
 
@@ -568,7 +564,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="default_probability", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $defaultProbability;
 
@@ -576,7 +572,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="total_governmental_fund_revenues", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalGovernmentalFundRevenues;
 
@@ -584,7 +580,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="total_revenue", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalRevenue;
 
@@ -592,7 +588,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="total_revenue_per_capita", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalRevenuePerCapita;
 
@@ -600,7 +596,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="total_governmental_fund_expenditures", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+      * @Groups({"government"})
      */
     private $totalGovernmentalFundExpenditures;
 
@@ -608,7 +604,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="total_expenditures", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalExpenditures;
 
@@ -616,7 +612,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="total_expenditures_per_capita", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalExpendituresPerCapita;
 
@@ -624,7 +620,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="expenditure_per_student", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $expenditurePerStudent;
 
@@ -632,7 +628,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="gf_surplus_over_gf_revenue", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $gfSurplusOverGfRevenue;
 
@@ -640,7 +636,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="change_in_governmental_fund_revenue", type="float", precision=10, scale=0, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $changeInGovernmentalFundRevenue;
 
@@ -648,7 +644,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="inc_id", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $incId;
 
@@ -656,7 +652,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="wikipedia_page_name", type="string", length=255, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $wikipediaPageName;
 
@@ -664,7 +660,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="wikipedia_page_exists", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $wikipediaPageExists;
 
@@ -672,7 +668,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="transparent_california_page_name", type="string", length=255, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $transparentCaliforniaPageName;
 
@@ -680,7 +676,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="latest_audit_url", type="string", length=255, nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $latestAuditUrl;
 
@@ -688,7 +684,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="frpm_rate_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $frpmRateRank;
 
@@ -696,7 +692,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="median_salary_per_full_time_emp_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianSalaryPerFullTimeEmpRank;
 
@@ -704,7 +700,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="median_benefits_per_ft_emp_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianBenefitsPerFtEmpRank;
 
@@ -712,7 +708,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="median_total_comp_per_ft_emp_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianTotalCompPerFtEmpRank;
 
@@ -720,7 +716,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="median_total_comp_over_median_individual_comp_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianTotalCompOverMedianIndividualCompRank;
 
@@ -728,7 +724,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="total_comp_for_highest_paid_emp_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalCompForHighestPaidEmpRank;
 
@@ -736,7 +732,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="full_time_employees_over_population_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $fullTimeEmployeesOverPopulationRank;
 
@@ -744,7 +740,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="pension_contribution_over_total_revenue_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $pensionContributionOverTotalRevenueRank;
 
@@ -752,7 +748,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="opeb_arc_over_total_revenue_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $opebArcOverTotalRevenueRank;
 
@@ -760,7 +756,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="pension_plus_opeb_arc_over_tot_rev_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $pensionPlusOpebArcOverTotRevRank;
 
@@ -768,9 +764,9 @@ class Government
      * @var integer
      *
      * @SerializedName("violent_crimes_per_100000_population_rank")
-	 * @Groups({"government"})
+     * @Groups({"government"})
      * @ORM\Column(name="violent_crimes_per_100000_population_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $violentCrimesPer100000PopulationRank;
 
@@ -778,9 +774,9 @@ class Government
      * @var integer
      *
      * @SerializedName("property_crimes_per_100000_population_rank")
-	 * @Groups({"government"})
+     * @Groups({"government"})
      * @ORM\Column(name="property_crimes_per_100000_population_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $propertyCrimesPer100000PopulationRank;
 
@@ -788,7 +784,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="academic_performance_index_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $academicPerformanceIndexRank;
 
@@ -796,7 +792,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="sat_scores_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $satScoresRank;
 
@@ -804,7 +800,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="sales_tax_rate_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $salesTaxRateRank;
 
@@ -812,7 +808,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="library_hours_per_week_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $libraryHoursPerWeekRank;
 
@@ -820,7 +816,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="graduation_rate_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $graduationRateRank;
 
@@ -828,7 +824,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="dropout_rate_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $dropoutRateRank;
 
@@ -836,7 +832,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="total_debt_over_total_revenue_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalDebtOverTotalRevenueRank;
 
@@ -844,7 +840,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="expenditure_per_student_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $expenditurePerStudentRank;
 
@@ -852,7 +848,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="general_fund_balance_over_general_fund_exp_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $generalFundBalanceOverGeneralFundExpRank;
 
@@ -860,7 +856,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="gf_surplus_over_gf_revenue_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $gfSurplusOverGfRevenueRank;
 
@@ -868,7 +864,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="change_in_governmental_fund_revenue_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $changeInGovernmentalFundRevenueRank;
 
@@ -876,7 +872,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="default_probability_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $defaultProbabilityRank;
 
@@ -884,7 +880,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="public_safety_exp_over_tot_gov_fund_revenue_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $publicSafetyExpOverTotGovFundRevenueRank;
 
@@ -892,7 +888,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="public_safety_exp_over_general_fund_revenue_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $publicSafetyExpOverGeneralFundRevenueRank;
 
@@ -900,7 +896,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="total_revenue_per_capita_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalRevenuePerCapitaRank;
 
@@ -908,7 +904,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="total_expenditures_per_capita_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $totalExpendituresPerCapitaRank;
 
@@ -916,7 +912,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="median_total_comp_general_public_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianTotalCompGeneralPublicRank;
 
@@ -924,7 +920,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="median_home_price_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $medianHomePriceRank;
 
@@ -932,7 +928,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="population_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $populationRank;
 
@@ -940,7 +936,7 @@ class Government
      * @var integer
      *
      * @ORM\Column(name="enrollment_rank", type="integer", nullable=true)
-	 * @Groups({"government"})
+     * @Groups({"government"})
      */
     private $enrollmentRank;
 

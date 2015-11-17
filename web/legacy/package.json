@@ -20,7 +20,12 @@
     "live-reload": "live-reload  index.html css static --port=9090 --delay=500",
     "dev": "npm run live-reload & npm run start & npm run watch & echo 'Launch browser and start editing files' ",
     "start": "http-server --cors -s -o",
-    "serve": "node server.js"
+    "serve": "node server.js",
+    "combine_min_vendors": "cat js_files/jquery.min.js js/vendor/bootstrap.min.js js/vendor/moment.min.js bower_components/flot/jquery.flot.js bower_components/flot/jquery.flot.js bower_components/flot/jquery.flot.pie.js bower_components/numeral/numeral.js bower_components/typeahead-0.10.5.js/dist/typeahead.bundle.min.js bower_components/handlebars/handlebars.min.js bower_components/gmaps/gmaps.js js/vendor/history.js js/vendor/cookies.js js/vendor/bootstrap-table/bootstrap-table.min.js js/vendor/bootstrap-table/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js > static/vendors.min.js",
+    "combine_vendors": "cat js_files/ie10-viewport-bug-workaround.js js_files/disqus.js js/vendor/markerclusterer.js > static/vendors.js",
+    "minify_vendors": "uglifyjs static/vendors.js --compress --mangle >> static/vendors.min.js",
+    "pwd": "pwd",
+    "combine": "npm run combine_min_vendors && npm run combine_vendors && npm run minify_vendors"
   },
   "repository": {
     "type": "git",

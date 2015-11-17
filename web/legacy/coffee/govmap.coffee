@@ -44,23 +44,17 @@ rebuild_filter = ->
 
 # legendType = city, school district, special district, counties
 get_records2 = (legendType, onsuccess) ->
-  data = window.localStorage.getItem('points');
-  if (data)
-    #
-    # Restore markers data from local storage.
-    onsuccess JSON.parse(data)
-  else
-    #
-    # Retrieve new markers data from server.
-    $.ajax
-      url:"/api/government/get-markers-data"
-  #    url:"http://45.55.0.145/api/government/get-markers-data"
-      data: { altTypes: legendType, limit: 5000 }
-      dataType: 'json'
-      cache: true
-      success: onsuccess
-      error:(e) ->
-        console.log e
+  #
+  # Retrieve new markers data from server.
+  $.ajax
+    url:"/api/government/get-markers-data"
+#    url:"http://45.55.0.145/api/government/get-markers-data"
+    data: { altTypes: legendType, limit: 5000 }
+    dataType: 'json'
+    cache: true
+    success: onsuccess
+    error:(e) ->
+      console.log e
 
 $ ->
   rebuild_filter()
@@ -76,8 +70,8 @@ $ ->
     # If points data cached in local storage and in actual state, load from cache.
     #
     console.log('From cache')
-    console.log(JSON.parse(data));
     GOVWIKI.markers = JSON.parse(data)
+    $(document).trigger('markersLoaded')
   else
     #
     # Get new data from server.
@@ -91,6 +85,7 @@ $ ->
       date = new Date();
       window.localStorage.setItem('points_last_update', date.getTime())
       GOVWIKI.markers = data
+      $(document).trigger('markersLoaded')
 
   #
   # Render points stored in GOVWIKI.markers
