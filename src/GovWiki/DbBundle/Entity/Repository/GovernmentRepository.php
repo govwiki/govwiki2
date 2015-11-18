@@ -127,7 +127,7 @@ class GovernmentRepository extends EntityRepository
                 "Government.name, Government.$rankFieldName AS value, Government.$amountFieldName as amount"
             )
             ->where($qb->expr()->eq('Government.altTypeSlug', $qb->expr()->literal($altTypeSlug)));
-        if (null === $page) {
+        if (empty($page)) {
             $qb->andWhere(
                 $qb->expr()->gte('Government.id', '('. $qb2->getDQL() .')')
             );
