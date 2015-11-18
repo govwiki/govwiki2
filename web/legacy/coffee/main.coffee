@@ -952,6 +952,7 @@ $('#dataContainer').on 'click', (e) ->
     $element = $(e.target);
     popoverContent = $element.parent().find('.popover-content')
     fieldName = $element.attr('data-field')
+    mask = $element.attr('data-mask')
     popoverTpl = $('#rankPopover').html()
     additionalRowsTpl = $('#additionalRows').html()
     preloader = popoverContent.find('loader')
@@ -965,6 +966,11 @@ $('#dataContainer').on 'click', (e) ->
     if !$element.closest('.popover')[0]
         $('.rank').not(e.target).popover('destroy')
 
+    formatData = (data) ->
+        if mask
+            data.forEach (rank) ->
+                rank.amount = numeral(rank.amount).format(mask)
+
     # order [desc, asc]
     loadNewRows = (order) ->
         loading = true;
@@ -974,6 +980,7 @@ $('#dataContainer').on 'click', (e) ->
         table.html ''
         currentPage = 0;
         previousScrollTop = 0
+        fieldNameInCamelCase = fieldName.replace /_([a-z0-9])/g, (g) -> return g[1].toUpperCase()
         $.ajax
             url: '/api/government'+window.location.pathname+'/get_ranks'
             dataType: 'json',
@@ -987,13 +994,15 @@ $('#dataContainer').on 'click', (e) ->
                 loading = false;
                 preloader.hide()
 
+    # Sort table in popover
     popoverContent.on 'click', 'th', (e) ->
         $column = `$(e.target).hasClass('sortable') ? $(e.target) : $(e.target).closest('th');`
         if $column.hasClass('sortable')
             if $column.hasClass('desc')
-                loadNewRows('asc')
-                $column.removeClass('desc').addClass('asc')
-                $column.find('i').removeClass('icon__bottom').addClass('icon__top')
+                currentPage = 0
+                loadNewRows('')
+                $column.removeClass('desc').removeClass('asc')
+                $column.find('i').removeClass('icon__bottom').removeClass('icon__top')
             else if $column.hasClass('asc')
                 loadNewRows('desc')
                 $column.removeClass('asc').addClass('desc')
@@ -1003,6 +1012,7 @@ $('#dataContainer').on 'click', (e) ->
                 $column.addClass('asc')
                 $column.find('i').addClass('icon__top')
 
+    # Render table and insert into popover-content
     if fieldName
         fieldNameInCamelCase = fieldName.replace /_([a-z0-9])/g, (g) -> return g[1].toUpperCase()
         $.ajax
@@ -1011,6 +1021,7 @@ $('#dataContainer').on 'click', (e) ->
             data:
                 field_name: fieldNameInCamelCase # Transform to camelCase
             success: (data) ->
+                formatData(data)
                 compiledTemplate = Handlebars.compile(popoverTpl)
                 popoverContent.html compiledTemplate(data)
 
@@ -1031,6 +1042,7 @@ $('#dataContainer').on 'click', (e) ->
                   order: popoverOrder
                   field_name: fieldNameInCamelCase # Transform to camelCase
               success: (data) ->
+                  formatData(data)
                   loading = false
                   preloader.hide()
                   compiledTemplate = Handlebars.compile(additionalRowsTpl)

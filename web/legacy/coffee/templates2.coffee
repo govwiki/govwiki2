@@ -26,13 +26,15 @@ render_field_value = (n,mask,data) ->
     if '' != mask
       if data[n+'_rank'] and data.max_ranks and data.max_ranks[n+'_max_rank']
         v = numeral(v).format(mask)
-        # Transform from underscore (some_fieldName) to readable format
-        title = n.toString()
-        title = title.charAt(0).toUpperCase() + title.slice(1)
-        title = title.replace /_([a-z])/g, (g) -> return ' ' + g[1].toUpperCase()
+
+        # Find description from fusion tables, set if exist
+        title = 'No title'
+        GOVWIKI.fusion.rows.forEach (row) -> if row[2] is n then title = row[3]
+
         return "#{v} <a class='rank'
                       data-field='#{n}_rank'
-                      title='#{title} ranks'>
+                      title='#{title} ranks'
+                      data-mask='#{mask}''>
                       (#{data[n+'_rank']} of #{data.max_ranks[n+'_max_rank']})</a>"
       if n == "number_of_full_time_employees"
         return numeral(v).format('0,0')
@@ -683,6 +685,7 @@ class Templates2
       cache: true
       async: false
       success: (template_json) =>
+        GOVWIKI.fusion = template_json
         t = convert_fusion_template template_json
         @add_template(template_name, t)
 
