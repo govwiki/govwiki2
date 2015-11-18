@@ -978,7 +978,7 @@ $('#dataContainer').on 'click', (e) ->
         preloader.show()
         table = popoverContent.find('table tbody')
         table.html ''
-        currentPage = 0;
+        currentPage = if order isnt undefined then order else currentPage
         previousScrollTop = 0
         fieldNameInCamelCase = fieldName.replace /_([a-z0-9])/g, (g) -> return g[1].toUpperCase()
         $.ajax
@@ -989,6 +989,7 @@ $('#dataContainer').on 'click', (e) ->
                 order: order
                 field_name: fieldNameInCamelCase # Transform to camelCase
             success: (data) ->
+                formatData(data)
                 compiledTemplate = Handlebars.compile(additionalRowsTpl)
                 table.html compiledTemplate(data)
                 loading = false;

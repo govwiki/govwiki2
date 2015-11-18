@@ -1204,7 +1204,7 @@ echo <<<EOT
         <thead>
             <tr>
                 <th>City</th>
-                <th class="sortable"><nobr>Value<i class="icon"></i></nobr></th>
+                <th class="sortable"><nobr>Rank<i class="icon"></i></nobr></th>
                 <th>Amount</th>
             </tr>
         </thead>
