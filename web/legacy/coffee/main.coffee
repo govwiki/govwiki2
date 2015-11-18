@@ -978,7 +978,7 @@ $('#dataContainer').on 'click', (e) ->
         preloader.show()
         table = popoverContent.find('table tbody')
         table.html ''
-        currentPage = if order isnt undefined then order else currentPage
+        currentPage = if order isnt undefined then 0 else currentPage
         previousScrollTop = 0
         fieldNameInCamelCase = fieldName.replace /_([a-z0-9])/g, (g) -> return g[1].toUpperCase()
         $.ajax
@@ -1377,11 +1377,7 @@ if routeType is 2
         url: "/api/government" + window.path,
         dataType: 'json'
         cache: true
-        success: (elected_officials_data) ->
-            govs = elected_officials_data
-
-            console.log 'GOV:'
-            console.log govs
+        success: (govs) ->
 
             $('.loader').hide()
             $('#details').show()

@@ -105,15 +105,20 @@ class GovernmentController extends Controller
         if (! $found) {
             return new JsonResponse([ 'message'  => 'Unknown field name, provide in camel case like in Government entity.'], 400);
         }
-        return new JsonResponse(
-            $repository->getGovernmentRank(
-                $altTypeSlug,
-                $slug,
-                $fieldName,
-                $request->query->getInt('limit', 25),
-                $request->query->get('page', null),
-                $request->query->get('order', null)
-            )
+
+        $data = $repository->getGovernmentRank(
+            $altTypeSlug,
+            $slug,
+            $fieldName,
+            $request->query->getInt('limit', 25),
+            $request->query->get('page', null),
+            $request->query->get('order', null)
         );
+
+        foreach ($data as &$row) {
+            $row['name'] = str_replace('_', ' ', $row['name']);
+        }
+
+        return new JsonResponse($data);
     }
 }

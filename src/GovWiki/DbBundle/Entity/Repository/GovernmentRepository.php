@@ -112,25 +112,29 @@ class GovernmentRepository extends EntityRepository
         $amountFieldName = str_replace('Rank', '', $rankFieldName);
 
         $qb2 = $this->createQueryBuilder('Government2');
-        $qb2
+        $id = $qb2
             ->select('Government2.id')
             ->where(
                 $qb2->expr()->andX(
                     $qb2->expr()->eq('Government2.altTypeSlug', $qb2->expr()->literal($altTypeSlug)),
                     $qb2->expr()->eq('Government2.slug', $qb2->expr()->literal($governmentSlug))
                 )
-            );
+            )
+            ->getQuery()
+            ->getSingleScalarResult();
 
         $qb = $this->createQueryBuilder('Government');
         $qb
             ->select(
-                "Government.name, Government.$rankFieldName AS value, Government.$amountFieldName as amount"
+                "Government.slug as name, Government.$rankFieldName AS value, Government.$amountFieldName as amount"
             )
             ->where($qb->expr()->eq('Government.altTypeSlug', $qb->expr()->literal($altTypeSlug)));
-        if (empty($page)) {
-            $qb->andWhere(
-                $qb->expr()->gte('Government.id', '('. $qb2->getDQL() .')')
-            );
+        if (! isset($page)) {
+            $qb
+                ->andWhere(
+                    $qb->expr()->gte('Government.id', $id)
+                )
+                ->orderBy($qb->expr()->asc('Government.id'));
         } else {
             $qb->setFirstResult($page * $limit);
             if ('desc' === $order) {
