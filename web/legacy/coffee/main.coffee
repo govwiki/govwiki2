@@ -933,9 +933,6 @@ $('#dataContainer').popover({
                     <div class="arrow"></div>
                     <div class="popover-title-custom">
                         <h3 class="popover-title"></h3>
-                        <div class="popover-btn">
-                            <a href="/rank_order">All ranks</button></a>
-                        </div>
                     </div>
                     <div class="popover-content"></div>
                 </div>'
@@ -1062,6 +1059,7 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     createRequests = data.createRequests
                     categories = data.categories
                     person.categories = data.categories
+                    person.gov_alt_name = person.government.city[0] + person.government.city.slice(1).toLowerCase()
 
                     ###
                       Format contribution amount.
