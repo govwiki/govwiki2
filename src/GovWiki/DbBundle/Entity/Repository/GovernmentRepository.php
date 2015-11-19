@@ -99,52 +99,72 @@ class GovernmentRepository extends EntityRepository
     /**
      * @param string  $altTypeSlug    Slugged alt type.
      * @param string  $governmentSlug Slugged government name.
-     * @param string  $rankFieldName  One of government rank field.
+     * @param string  $rankFieldName  One of government rank field name.
      * @param integer $limit          Max result per page.
-     * @param integer $page           Page to show.
-     * @param string  $order          Sorting order 'desc' or 'asc'. Ignore
-     *                                if page is null.
+     * @param integer $page           Page index, start from 0.
+     * @param string  $order          Sorting order 'desc' or 'asc'. If null start from
+     *                                given entity.
      *
      * @return array
      */
-    public function getGovernmentRank($altTypeSlug, $governmentSlug, $rankFieldName, $limit, $page = null, $order = null)
+    public function getGovernmentRank($altTypeSlug, $governmentSlug, $rankFieldName, $limit, $page = 0, $order = null)
     {
+        /*
+         * Remove rank postfix from field name, in order to get
+         * concrete amount field name.
+         */
         $amountFieldName = str_replace('Rank', '', $rankFieldName);
-
-        $qb2 = $this->createQueryBuilder('Government2');
-        $id = $qb2
-            ->select('Government2.id')
-            ->where(
-                $qb2->expr()->andX(
-                    $qb2->expr()->eq('Government2.altTypeSlug', $qb2->expr()->literal($altTypeSlug)),
-                    $qb2->expr()->eq('Government2.slug', $qb2->expr()->literal($governmentSlug))
-                )
-            )
-            ->getQuery()
-            ->getSingleScalarResult();
 
         $qb = $this->createQueryBuilder('Government');
         $qb
             ->select(
                 "Government.slug as name, Government.$rankFieldName AS value, Government.$amountFieldName as amount"
             )
-            ->where($qb->expr()->eq('Government.altTypeSlug', $qb->expr()->literal($altTypeSlug)));
-        if (! isset($page)) {
+            ->where(
+                $qb->expr()->eq(
+                    'Government.altTypeSlug',
+                    $qb->expr()->literal($altTypeSlug)
+                )
+            );
+
+        /*
+         * Get list of rank started from given government.
+         */
+        if (empty($order)) {
+            /*
+             * Get rank for given government.
+             */
+            $qb2 = $this->createQueryBuilder('Government');
+            $rank = $qb2
+                ->select('Government.'. $rankFieldName)
+                ->where(
+                    $qb2->expr()->andX(
+                        $qb2->expr()->eq('Government.altTypeSlug', $qb2->expr()->literal($altTypeSlug)),
+                        $qb2->expr()->eq('Government.slug', $qb2->expr()->literal($governmentSlug))
+                    )
+                )
+                ->orderBy($qb2->expr()->asc('Government.'. $rankFieldName))
+                ->getQuery()
+                ->getSingleScalarResult();
+
+
             $qb
                 ->andWhere(
-                    $qb->expr()->gte('Government.id', $id)
+                    $qb->expr()->gte('Government.'. $rankFieldName, $rank)
                 )
-                ->orderBy($qb->expr()->asc('Government.id'));
-        } else {
-            $qb->setFirstResult($page * $limit);
-            if ('desc' === $order) {
-                $qb->orderBy($qb->expr()->desc('Government.'. $rankFieldName));
-            } elseif ('asc' === $order) {
-                $qb->orderBy($qb->expr()->asc('Government.'. $rankFieldName));
-            }
+                ->orderBy($qb->expr()->asc('Government.'. $rankFieldName));
+
+        /*
+         * Get sorted information from offset computed on given page and limit.
+         */
+        } elseif ('desc' === $order) {
+            $qb->orderBy($qb->expr()->desc('Government.'. $rankFieldName));
+        } elseif ('asc' === $order) {
+            $qb->orderBy($qb->expr()->asc('Government.'. $rankFieldName));
         }
 
         return $qb
+            ->setFirstResult($page * $limit)
             ->setMaxResults($limit)
             ->getQuery()
             ->getArrayResult();

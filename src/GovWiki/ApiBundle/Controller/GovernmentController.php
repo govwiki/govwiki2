@@ -111,7 +111,7 @@ class GovernmentController extends Controller
             $slug,
             $fieldName,
             $request->query->getInt('limit', 25),
-            $request->query->get('page', null),
+            $request->query->get('page', 0),
             $request->query->get('order', null)
         );
 
