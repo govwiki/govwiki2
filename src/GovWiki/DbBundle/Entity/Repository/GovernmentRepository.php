@@ -129,12 +129,6 @@ class GovernmentRepository extends EntityRepository
                 )
             );
 
-        if ('desc' === $nameOrder) {
-            $qb->orderBy($qb->expr()->desc('Government.slug'));
-        } elseif ('asc' === $nameOrder) {
-            $qb->orderBy($qb->expr()->asc('Government.slug'));
-        }
-
         /*
          * Get list of rank started from given government.
          */
@@ -157,8 +151,8 @@ class GovernmentRepository extends EntityRepository
 
 
             $qb->andWhere(
-                    $qb->expr()->gte('Government.'. $rankFieldName, $rank)
-                );
+                $qb->expr()->gte('Government.'. $rankFieldName, $rank)
+            );
             if (empty($nameOrder)) {
                 $qb->orderBy($qb->expr()->asc('Government.' . $rankFieldName));
             }
@@ -170,6 +164,12 @@ class GovernmentRepository extends EntityRepository
             $qb->orderBy($qb->expr()->desc('Government.'. $rankFieldName));
         } elseif ('asc' === $order) {
             $qb->orderBy($qb->expr()->asc('Government.'. $rankFieldName));
+        }
+
+        if ('desc' === $nameOrder) {
+            $qb->AddOrderBy($qb->expr()->desc('Government.slug'));
+        } elseif ('asc' === $nameOrder) {
+            $qb->AddOrderBy($qb->expr()->asc('Government.slug'));
         }
 
         return $qb
