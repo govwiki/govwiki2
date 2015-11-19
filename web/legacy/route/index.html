@@ -1201,13 +1201,13 @@
     <table class="table table-condensed table-hover">
         <thead>
             <tr>
-                <th>City</th>
-                <th class="sortable"><nobr>Rank<i class="icon"></i></nobr></th>
+                <th data-sort-type="name_order" class="sortable"><nobr>{{alt_type}}<i class="icon"></i></nobr></th>
+                <th data-sort-type="order" class="sortable"><nobr>Rank<i class="icon"></i></nobr></th>
                 <th>Amount</th>
             </tr>
         </thead>
         <tbody>
-            {{#this}}
+            {{#data}}
                 <tr>
                     <td>{{name}}</td>
                     <td>
@@ -1221,14 +1221,14 @@
                         {{amount}}
                     </td>
                 </tr>
-            {{/this}}
+            {{/data}}
         </tbody>
     </table>
     <div class="loader"></div>
 </script>
 
 <script id="additionalRows" type="text/x-handlebars-template">
-    {{#this}}
+    {{#data}}
     <tr>
         <td>{{name}}</td>
         <td>
@@ -1242,7 +1242,7 @@
             {{amount}}
         </td>
     </tr>
-    {{/this}}
+    {{/data}}
 </script>
 
     <div id="modal-window" class="modal fade">
