@@ -961,6 +961,7 @@ $('#dataContainer').on 'click', (e) ->
     currentPage = 0;
     loading = false;
     popoverOrder = null;
+    popoverNameOrder = null;
 
     # Close all other popovers
     if !$element.closest('.popover')[0]
@@ -968,17 +969,15 @@ $('#dataContainer').on 'click', (e) ->
 
     formatData = (data) ->
         if mask
-            data.forEach (rank) ->
+            data.data.forEach (rank) ->
                 rank.amount = numeral(rank.amount).format(mask)
 
-    # order [desc, asc]
-    loadNewRows = (order) ->
+    loadNewRows = () ->
         loading = true;
-        popoverOrder = order
         preloader.show()
         table = popoverContent.find('table tbody')
         table.html ''
-        currentPage = if order isnt undefined then 0 else currentPage
+        currentPage = 0
         previousScrollTop = 0
         fieldNameInCamelCase = fieldName.replace /_([a-z0-9])/g, (g) -> return g[1].toUpperCase()
         $.ajax
@@ -986,7 +985,8 @@ $('#dataContainer').on 'click', (e) ->
             dataType: 'json',
             data:
                 page: currentPage
-                order: order
+                order: popoverOrder
+                name_order: popoverNameOrder
                 field_name: fieldNameInCamelCase # Transform to camelCase
             success: (data) ->
                 formatData(data)
@@ -1000,16 +1000,27 @@ $('#dataContainer').on 'click', (e) ->
         $column = `$(e.target).hasClass('sortable') ? $(e.target) : $(e.target).closest('th');`
         if $column.hasClass('sortable')
             if $column.hasClass('desc')
-                currentPage = 0
-                loadNewRows('')
+                if $column.attr('data-sort-type') is 'name_order'
+                    popoverNameOrder = ''
+                else
+                    popoverOrder = ''
+                loadNewRows()
                 $column.removeClass('desc').removeClass('asc')
                 $column.find('i').removeClass('icon__bottom').removeClass('icon__top')
             else if $column.hasClass('asc')
-                loadNewRows('desc')
+                if $column.attr('data-sort-type') is 'name_order'
+                    popoverNameOrder = 'desc'
+                else
+                    popoverOrder = 'desc'
+                loadNewRows()
                 $column.removeClass('asc').addClass('desc')
                 $column.find('i').removeClass('icon__top').addClass('icon__bottom')
             else
-                loadNewRows('asc')
+                if $column.attr('data-sort-type') is 'name_order'
+                    popoverNameOrder = 'asc'
+                else
+                    popoverOrder = 'asc'
+                loadNewRows()
                 $column.addClass('asc')
                 $column.find('i').addClass('icon__top')
 
@@ -1041,6 +1052,7 @@ $('#dataContainer').on 'click', (e) ->
               data:
                   page: ++currentPage
                   order: popoverOrder
+                  name_order: popoverNameOrder
                   field_name: fieldNameInCamelCase # Transform to camelCase
               success: (data) ->
                   formatData(data)
@@ -1072,7 +1084,7 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     createRequests = data.createRequests
                     categories = data.categories
                     person.categories = data.categories
-                    person.gov_alt_name = person.government.city[0] + person.government.city.slice(1).toLowerCase()
+                    person.gov_alt_name = person.government.slug.replace(/_/g, ' ')
 
                     ###
                       Format contribution amount.
@@ -1414,11 +1426,7 @@ if routeType is 3
             createRequests = data.createRequests
             categories = data.categories
             person.category_select = []
-            person.gov_alt_name = person.government.city[0] + person.government.city.slice(1).toLowerCase()
-            console.log(person)
-
-
-            console.log(data)
+            person.gov_alt_name = person.government.slug.replace(/_/g, ' ')
 
             ###
               Prepare options for select in IssuesCategory edit.

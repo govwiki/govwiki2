@@ -73,7 +73,10 @@ class GovernmentController extends Controller
      *  field_name - field name in camelCase.
      *  limit      - max entities per request, default 25.
      *  page       - calculate offset based on this value, default null.
-     *  order      - sorting order, 'desc' or 'asc', default null. Ignore if page is null.
+     *  order      - sorting order by given field_name, 'desc' or 'asc',
+     *               default null.
+     *  name_order - sorting order by government name, 'desc' or 'asc',
+     *               default null.
      *
      * @param Request $request     A Request instance.
      * @param string  $altTypeSlug Alt type slug.
@@ -112,13 +115,20 @@ class GovernmentController extends Controller
             $fieldName,
             $request->query->getInt('limit', 25),
             $request->query->get('page', 0),
-            $request->query->get('order', null)
+            $request->query->get('order', null),
+            $request->query->get('name_order', null)
         );
 
+        /*
+         * Canonize field name and value.
+         */
         foreach ($data as &$row) {
             $row['name'] = str_replace('_', ' ', $row['name']);
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse([
+            'data' => $data,
+            'alt_type' => str_replace('_', ' ', $altTypeSlug),
+        ]);
     }
 }
