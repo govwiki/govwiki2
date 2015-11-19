@@ -40,17 +40,15 @@ render_field_value = (n,mask,data) ->
         return numeral(v).format('0,0')
       return numeral(v).format(mask)
     else
-      if v.length > 20 and
-      n == "open_enrollment_schools"
-      then v = v.substring(0, 19) + "<div style='display:inline;color:#074d71'  title='#{v}'>&hellip;</div>"
-      if v.length > 20 and
-      n == "parent_trigger_eligible_schools"
-      then v = v.substring(0, 19) + "<div style='display:inline;color:#074d71'  title='#{v}'>&hellip;</div>"
+      if v.length > 20 and n == "open_enrollment_schools"
+        v = v.substring(0, 19) + "<div style='display:inline;color:#074d71'  title='#{v}'>&hellip;</div>"
+      else if v.length > 20 and n == "parent_trigger_eligible_schools"
+        v = v.substring(0, 19) + "<div style='display:inline;color:#074d71'  title='#{v}'>&hellip;</div>"
       else
         if v.length > 21
-        then v = v.substring(0, 21)
+          v = v.substring(0, 21)
         else
-        return v
+          return v
 
 
 render_field_name_help = (fName) ->
