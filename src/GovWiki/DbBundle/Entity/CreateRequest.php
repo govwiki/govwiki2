@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation\Timestampable;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * CreateRequest
@@ -26,6 +27,7 @@ class CreateRequest
      * @var string
      *
      * @ORM\Column(name="entity_name", type="string", length=255)
+     * @Groups({"elected_official"})
      */
     private $entityName;
 
@@ -33,6 +35,7 @@ class CreateRequest
      * @var array
      *
      * @ORM\Column(name="fields", type="array")
+     * @Groups({"elected_official"})
      */
     private $fields;
 
@@ -47,6 +50,7 @@ class CreateRequest
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=255)
+     * @Groups({"elected_official"})
      */
     private $status = 'pending';
 
@@ -65,6 +69,7 @@ class CreateRequest
 
     /**
      * @ORM\ManyToOne(targetEntity="GovWiki\UserBundle\Entity\User", inversedBy="createRequests")
+     * @Groups({"elected_official"})
      */
     private $user;
 

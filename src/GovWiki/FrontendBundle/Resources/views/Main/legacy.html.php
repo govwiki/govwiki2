@@ -779,7 +779,6 @@ echo <<<EOT
             <th>How Voted</th>
             <th>Sponsored by?</th>
         </tr>
-        {{#electedOfficials}}
         {{#this}}
             <tr data-elected="{{id}}" data-entity-type="electedOfficial">
                 <td>{{fullName}}</td>
@@ -799,15 +798,14 @@ echo <<<EOT
                 <td>
                     <div class="input-group">
                         <select class="form-control" data-did-elected-official-propose-this>
-                            <option value="0" selected="selected">No</option>
-                            <option value="1">Yes</option>
+                            <option value="No" selected="selected">No</option>
+                            <option value="Yes">Yes</option>
                         </select>
                         <!--<input type="" class="form-control" placeholder="Please enter sponsored by?" data-did-elected-official-propose-this>-->
                     </div>
                 </td>
             </tr>
         {{/this}}
-        {{/electedOfficials}}
     </table>
 </script>
 

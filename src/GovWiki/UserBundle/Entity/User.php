@@ -4,6 +4,7 @@ namespace GovWiki\UserBundle\Entity;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity
@@ -17,6 +18,12 @@ class User extends BaseUser
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
+    /**
+     * @var string
+     * @Groups({"elected_official"})
+     */
+    protected $username;
 
     /**
      * @ORM\OneToMany(targetEntity="GovWiki\DbBundle\Entity\CreateRequest", mappedBy="user")

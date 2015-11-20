@@ -2,6 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller;
 
+use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Repository\CreateRequestRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -34,6 +35,7 @@ class ElectedOfficialController extends Controller
 
         /** @var \Doctrine\ORM\QueryBuilder $qb */
         $qb = $em->getRepository('GovWikiDbBundle:ElectedOfficial')->createQueryBuilder('ElectedOfficial');
+        /** @var ElectedOfficial $electedOfficial */
         $electedOfficial = $qb
             ->addSelect('Contribution, Endorsement, PublicStatement, Vote, Legislation, Government')
             ->leftJoin('ElectedOfficial.contributions', 'Contribution')
@@ -72,6 +74,7 @@ class ElectedOfficialController extends Controller
                 'person' => $electedOfficial,
                 'createRequests' => $repository->getCreateRequestFor($electedOfficial->getId()),
                 'categories' => $em->getRepository('GovWikiDbBundle:IssueCategory')->findAll(),
+                'electedOfficials' => $em->getRepository('GovWikiDbBundle:Government')->governmentElectedOfficial($electedOfficial->getId()),
             ],
             'json',
             $context

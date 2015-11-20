@@ -2,6 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -25,6 +26,7 @@ class GovernmentController extends Controller
      */
     public function showAction($altTypeSlug, $slug)
     {
+        /** @var EntityManagerInterface $em */
         $em = $this->getDoctrine()->getManager();
         $context = SerializationContext::create()
             ->setGroups('government')

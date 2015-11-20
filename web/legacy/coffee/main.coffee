@@ -445,7 +445,7 @@ sortTable = (table, colNum) ->
         $(table).children('tbody').append(row)
     $(table).children('tbody').append(lastRow)
 
-initTableHandlers = (person) ->
+initTableHandlers = (person, categories, electedOfficials) ->
     $('[data-toggle="tooltip"]').tooltip()
 
     $('.editable').editable({stylesheets: false,type: 'textarea', showbuttons: 'bottom', display: true, emptytext: ' '})
@@ -599,68 +599,49 @@ initTableHandlers = (person) ->
                     urlContent.slideDown();
                 }
 
+        insertCategories = (select) ->
+          endObj = {}
+          categories.forEach (item) ->
+            endObj[item.id] = item.name
+          select.setAttribute('name', 'issueCategory')
+          # Add first blank option.
+          option = document.createElement('option')
+          option.setAttribute('value', '')
+          option.textContent = ''
+          select.innerHTML += option.outerHTML
+          for key of endObj
+              option = document.createElement('option')
+              option.setAttribute('value', key)
+              option.textContent = endObj[key]
+              select.innerHTML += option.outerHTML
+
         if tabPane.hasClass('loaded') then return false
         tabPane[0].classList.add('loaded')
 
-        personMeta = {"createRequest":{"entityName":currentEntity,"knownFields":{"electedOfficial":person.id}}}
-        $.ajax(
-            method: 'POST',
-            url: '/api/createrequest/new',
-            data: personMeta,
-            success: (data) ->
-                console.log(data);
+        if currentEntity is 'Endorsement'
 
-                endObj = {}
-                data.choices[0].choices.forEach (item, index) ->
-                  ids = Object.keys item
-                  ids.forEach (id) ->
-                      endObj[id] = item[id]
+        else if currentEntity is 'Contribution'
 
-                insertCategories = () ->
-                    select.setAttribute('name', data.choices[0].name)
-                    # Add first blank option.
-                    option = document.createElement('option')
-                    option.setAttribute('value', '')
-                    option.textContent = ''
-                    select.innerHTML += option.outerHTML
-                    for key of endObj
-                        option = document.createElement('option')
-                        option.setAttribute('value', key)
-                        option.textContent = endObj[key]
-                        select.innerHTML += option.outerHTML
+        else if currentEntity is 'Legislation'
+            insertCategories($('#addVotes select')[0])
+            $('#addVotes').find('[data-provide="datepicker"]').on(
+              'changeDate',
+              () ->
+                $(this).datepicker 'hide'
+            )
+            #
+            # Fill elected officials votes table.
+            #
+            compiledTemplate = Handlebars.compile($('#legislation-vote').html())
+            $('#electedVotes').html compiledTemplate(electedOfficials);
 
-                select = null
-
-                if currentEntity is 'Endorsement'
-
-                else if currentEntity is 'Contribution'
-
-                else if currentEntity is 'Legislation'
-                    select = $('#addVotes select')[0]
-                    insertCategories()
-                    $('#addVotes').find('[data-provide="datepicker"]').on(
-                      'changeDate',
-                      () ->
-                        $(this).datepicker 'hide'
-                    )
-                    #
-                    # Fill elected officials votes table.
-                    #
-                    compiledTemplate = Handlebars.compile($('#legislation-vote').html())
-                    $('#electedVotes').html compiledTemplate(data);
-
-                else if currentEntity is 'PublicStatement'
-                    select = $('#addStatements select')[0]
-                    insertCategories()
-                    $('#addStatements').find('[data-provide="datepicker"]').on(
-                      'changeDate',
-                      () ->
-                        $(this).datepicker 'hide'
-                    )
-
-            error: (error) ->
-                if(error.status == 401) then showModal('/login')
-        );
+        else if currentEntity is 'PublicStatement'
+            insertCategories($('#addStatements select')[0])
+            $('#addStatements').find('[data-provide="datepicker"]').on(
+              'changeDate',
+              () ->
+                $(this).datepicker 'hide'
+            )
 
     window.addItem = (e) ->
         newRecord = {}
@@ -797,6 +778,8 @@ initTableHandlers = (person) ->
           data[key] = value
         data['user'] = user.username
 
+        console.log person
+
         if modalType is 'addVotes'
             ###
               Check if user specified how current elected official voted.
@@ -852,31 +835,25 @@ initTableHandlers = (person) ->
         show him login/sign up window. After authorizing user redirect back
         to page, where he pres add/edit button. In that case we show him appropriate
         modal window.
-
-        Timeout need because we don't know when we get user information and elected official information.
     ###
-    window.setTimeout( () ->
-      if (!authorized)
-        return
+    if (!authorized)
+      return
 
-      type = window.sessionStorage.getItem('tableType')
-      dataId = window.sessionStorage.getItem('dataId')
-      field = window.sessionStorage.getItem('field')
+    type = window.sessionStorage.getItem('tableType')
+    dataId = window.sessionStorage.getItem('dataId')
+    field = window.sessionStorage.getItem('field')
 
-      if (dataId && field)
-        $('a[aria-controls="' + type + '"]').click()
-        $('tr[data-id='+dataId+']').find('td:nth-child('+field+')').find('.editable').editable('toggle');
-        window.sessionStorage.setItem('tableType', '')
-        window.sessionStorage.setItem('dataId', '')
-        window.sessionStorage.setItem('field', '')
+    if (dataId && field)
+      $('a[aria-controls="' + type + '"]').click()
+      $('tr[data-id='+dataId+']').find('td:nth-child('+field+')').find('.editable').editable('toggle');
+      window.sessionStorage.setItem('tableType', '')
+      window.sessionStorage.setItem('dataId', '')
+      window.sessionStorage.setItem('field', '')
 
-      else if (type)
-        $('div#' + type).find('.add').click()
-        $('a[aria-controls="' + type + '"]').click()
-        window.sessionStorage.setItem('tableType', '')
-    ,
-    2000
-    )
+    else if (type)
+      $('div#' + type).find('.add').click()
+      $('a[aria-controls="' + type + '"]').click()
+      window.sessionStorage.setItem('tableType', '')
 
 
 ###
@@ -1116,7 +1093,7 @@ $('#dataContainer').on 'click', '.elected_link', (e) ->
                     $('#details').html html
                     $('#dataContainer').css('display': 'block');
 
-                    initTableHandlers(person);
+                    initTableHandlers(person, categories, data.electedOfficials);
                     showCreateRequests(person, createRequests);
 
                     $('.vote').on 'click', (e) ->
@@ -1427,6 +1404,7 @@ if routeType is 3
             categories = data.categories
             person.category_select = []
             person.gov_alt_name = person.government.slug.replace(/_/g, ' ')
+            console.log data
 
             ###
               Prepare options for select in IssuesCategory edit.
@@ -1470,7 +1448,7 @@ if routeType is 3
 
             $('#dataContainer').css('display': 'block');
 
-            initTableHandlers(person);
+            initTableHandlers(person, categories, data.electedOfficials);
             showCreateRequests(person, createRequests);
 
             $('.vote').on 'click', (e) ->
