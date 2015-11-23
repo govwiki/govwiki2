@@ -182,6 +182,12 @@ class CreateRequestController extends Controller
             }
         }
 
+        /*
+         * Update CreateRequest entity.
+         */
+        $createRequest->setFields($request->request->get('data'));
+        $em->persist($createRequest);
+
         $em->flush();
 
         return new JsonResponse(['redirect' => $this->generateUrl('govwiki_admin_createrequest_index')]);
@@ -322,12 +328,12 @@ class CreateRequestController extends Controller
                      * Get association choices.
                      */
                     if (empty($associationCache[$association])) {
-                        $associationCache[$association] = $associationRepository->findAll();
-                        foreach ($associationCache[$association] as &$entity) {
+                        $tmp = $associationRepository->findAll();
+                        foreach ($tmp as $entity) {
                             if (method_exists($associationEntity, '__toString')) {
-                                $entity = (string) $entity;
+                                $associationCache[$association][$entity->getId()] = (string) $entity;
                             } else {
-                                $entity = 'Can\'t display name';
+                                $associationCache[$association][$entity->getId()] = 'Can\'t display name';
                             }
                         }
                     }

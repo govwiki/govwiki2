@@ -71,7 +71,7 @@
 
             #}
             <div class="col-md-6">
-                <h3 style="margin-top:0px;">Details</h3>
+                <h3 style="margin-top:0;">Details</h3>
                 {#<h3 style="margin-top:0px;">Fields</h3>#}
                 <table class="table table-striped table-bordered" id="fields">
                     <thead>
@@ -108,6 +108,7 @@
                         </thead>
                         <tbody>
                             {% for association in associations %}
+                                {% dump association %}
                                 <tr {% if not association.correct %} class="danger"{% endif %}>
                                     <td>{{ association.field|name_beautify }}</td>
                                     <td>
@@ -306,9 +307,9 @@
                     $.post($(this).data('link'), {emailFlags: flags, data: data}, function(response) {
                         if (response.redirect) {
                             location = response.redirect;
-                        };
+                        }
                     });
-                };
+                }
             });
         });
     </script>

@@ -667,6 +667,8 @@ initTableHandlers = (person, categories, electedOfficials) ->
         associations = {}
         if modalType != 'addVotes'
             associations["electedOfficial"] = person.id
+        else
+            associations["government"] = person.government.id
         #
         # Array of sub entities.
         #
