@@ -27,3 +27,7 @@ rank_order:
     resource: "@GovWikiApiBundle/Controller/RankOrderController.php"
     type:     annotation
     prefix:   rank_order
+
+environment:
+    resource: "@GovWikiApiBundle/Controller/EnvironmentController.php"
+    type:     annotation

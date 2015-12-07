@@ -26,7 +26,7 @@ class Government
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"government", "elected_official"})
+     * @Groups({"government", "elected_official", "map"})
      */
     private $id;
 
@@ -68,7 +68,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="slug", type="string", length=255, nullable=true)
-     * @Groups({"government", "elected_official"})
+     * @Groups({"government", "elected_official", "map"})
      */
     private $slug;
 
@@ -100,7 +100,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="alt_type_slug", type="string", length=20, nullable=true)
-     * @Groups({"government", "elected_official"})
+     * @Groups({"government", "elected_official", "map"})
      */
     private $altTypeSlug;
 
@@ -212,7 +212,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="latitude", type="float", precision=10, scale=0, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "map"})
      */
     private $latitude;
 
@@ -220,7 +220,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="longitude", type="float", precision=10, scale=0, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "map"})
      */
     private $longitude;
 
@@ -951,6 +951,14 @@ class Government
      * @Groups({"government"})
      */
     private $financialStatements;
+
+    /**
+     * @var Map
+     *
+     * @ORM\ManyToOne(targetEntity="Map", inversedBy="governments")
+     * @ORM\JoinColumn(name="map_id")
+     */
+    private $map;
 
     /**
      * @return array
@@ -3681,5 +3689,25 @@ class Government
     public function getEnrollmentRank()
     {
         return $this->enrollmentRank;
+    }
+
+    /**
+     * @param Map $map A Map instance.
+     *
+     * @return Map
+     */
+    public function setMap(Map $map)
+    {
+        $this->map = $map;
+
+        return $this->map;
+    }
+
+    /**
+     * @return Map
+     */
+    public function getMap()
+    {
+        return $this->map;
     }
 }

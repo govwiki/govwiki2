@@ -24,8 +24,6 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new GovWiki\DbBundle\GovWikiDbBundle(),
             new GovWiki\ApiBundle\GovWikiApiBundle(),
-            new GovWiki\AdminBundle\GovWikiAdminBundle(),
-            new GovWiki\FrontendBundle\GovWikiFrontendBundle(),
             new GovWiki\UserBundle\GovWikiUserBundle(),
         );
 

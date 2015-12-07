@@ -41,12 +41,13 @@ twig:
     strict_variables: "%kernel.debug%"
     form:
         resources: ['bootstrap_3_layout.html.twig']
+    exception_controller:  GovWikiApiBundle:Exception:showException
 
 # Assetic Configuration
 assetic:
     debug:          "%kernel.debug%"
     use_controller: false
-    bundles:        [ 'GovWikiAdminBundle' ]
+    bundles:        []
     #java: /usr/bin/java
     filters:
         cssrewrite: ~
@@ -65,12 +66,8 @@ doctrine:
         user:     "%database_user%"
         password: "%database_password%"
         charset:  UTF8
-        # if using pdo_sqlite as your database driver:
-        #   1. add the path in parameters.yml
-        #     e.g. database_path: "%kernel.root_dir%/data/data.db3"
-        #   2. Uncomment database_path in parameters.yml.dist
-        #   3. Uncomment next line:
-        #     path:     "%database_path%"
+        types:
+            lat_lng: GovWiki\DbBundle\Doctrine\DBAL\Type\LatLngType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
@@ -78,7 +75,7 @@ doctrine:
         auto_mapping: true
         dql:
             numeric_functions:
-                regexp: GovWiki\DbBundle\DoctrineFunctions\RegexpFunction
+                regexp: GovWiki\DbBundle\Doctrine\Functions\RegexpFunction
 
 
 
