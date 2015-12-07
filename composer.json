@@ -26,7 +26,8 @@
         "helthe/turbolinks-bundle": "~1.1",
         "stof/doctrine-extensions-bundle": "^1.2",
         "friendsofsymfony/user-bundle": "~2.0@dev",
-        "guzzlehttp/guzzle": "~6.1"
+        "guzzlehttp/guzzle": "~6.1",
+        "friendsofsymfony/oauth-server-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
