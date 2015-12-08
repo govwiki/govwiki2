@@ -13,6 +13,8 @@ security:
             pattern: ^/api
             fos_oauth: true
             stateless: true
+            logout:
+                path: /logout
 
         authorize:
             pattern: ^/authorize

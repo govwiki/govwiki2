@@ -16,3 +16,6 @@ fos_oauth_server_token:
 fos_oauth_server_authorize:
     path: /authorize
     defaults: { _controller: FOSOAuthServerBundle:Authorize:authorize }
+
+logout:
+    path: /api/logout

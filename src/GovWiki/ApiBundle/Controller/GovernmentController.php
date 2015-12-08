@@ -4,17 +4,17 @@ namespace GovWiki\ApiBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use JMS\Serializer\SerializationContext;
 
 /**
  * GovernmentController
+ *
+ * @Route("government")
  */
-class GovernmentController extends Controller
+class GovernmentController extends AbstractGovWikiController
 {
     /**
      * @Route("/{altTypeSlug}/{slug}", methods="GET")
@@ -28,22 +28,12 @@ class GovernmentController extends Controller
     {
         /** @var EntityManagerInterface $em */
         $em = $this->getDoctrine()->getManager();
-        $context = SerializationContext::create()
-            ->setGroups('government')
-            ->enableMaxDepthChecks();
 
-        $government = $this->get('jms_serializer')->serialize(
+        return $this->serializedResponse(
             $em->getRepository('GovWikiDbBundle:Government')
                 ->findGovernment($altTypeSlug, $slug),
-            'json',
-            $context
+            [ 'government' ]
         );
-
-        $response = new Response();
-        $response->setContent($government);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
     }
 
     /**

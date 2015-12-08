@@ -54,6 +54,11 @@ class AbstractGovWikiController extends Controller
             $context->setGroups($groups);
         }
 
+//        $data = [
+//            'status' => 'success',
+//            'data' => $data,
+//        ];
+
         $response = new Response();
         $response->setContent($serializer->serialize($data, 'json', $context));
         $response->headers->set('Content-Type', 'application/json');

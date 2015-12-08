@@ -7,6 +7,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * Class UserController
+ * @package GovWiki\ApiBundle\Controller
+ *
+ * @Route("/user")
+ */
 class UserController extends Controller
 {
     /**
@@ -26,7 +32,11 @@ class UserController extends Controller
         }
 
         return new JsonResponse([
-            'username' => $user->getUsername(),
+            'data' => [
+                'username' => $user->getUsername(),
+                'roles' => $user->getRoles(),
+            ],
+            'status' => 'ok',
         ]);
     }
 }
