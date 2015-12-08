@@ -34,6 +34,6 @@ class EnvironmentRepository extends EntityRepository
             return $environment[0];
         }
 
-        return $environment;
+        return null;
     }
 }

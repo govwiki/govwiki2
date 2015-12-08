@@ -6,26 +6,27 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * Class EnvironmentController
+ * Class MapController
  * @package GovWiki\ApiBundle\Controller
  *
- * @Configuration\Route("/env")
+ * @Configuration\Route("/map")
  */
-class EnvironmentController extends AbstractGovWikiController
+class MapController extends AbstractGovWikiController
 {
     /**
-     * @Configuration\Route("/{name}/map")
+     * @Configuration\Route()
      *
-     * @param string $name A Environment name.
+     * @param string $environment Given by
+     *                            {@see EnvironmentListener}.
      *
      * @return JsonResponse
      */
-    public function indexAction($name)
+    public function indexAction($environment)
     {
         try {
             $env = $this->getDoctrine()
                 ->getRepository('GovWikiDbBundle:Environment')
-                ->getByName($name);
+                ->getByName($environment);
         } catch (\Exception $e) {
             return new JsonResponse([
                 'status' => 'critical',
@@ -34,7 +35,9 @@ class EnvironmentController extends AbstractGovWikiController
         }
 
         if (null === $env) {
-            return $this->notFoundResponse("Can't find env with name '$name'.");
+            return $this->notFoundResponse(
+                "Can't find environment with name '$environment'."
+            );
         }
 
         return $this->successResponse($env);

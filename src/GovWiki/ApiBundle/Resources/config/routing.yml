@@ -28,6 +28,6 @@ rank_order:
     type:     annotation
     prefix:   rank_order
 
-environment:
-    resource: "@GovWikiApiBundle/Controller/EnvironmentController.php"
+map:
+    resource: "@GovWikiApiBundle/Controller/MapController.php"
     type:     annotation
