@@ -10,19 +10,30 @@ security:
             security: false
 
         main:
+            pattern: ^/admin
+            form_login:
+                provider: fos_userbundle
+                check_path: fos_user_security_check
+                login_path: fos_user_security_login
+            logout:
+                path: fos_user_security_logout
+                success_handler: govwiki.user_bundle.redirection.logout
+            anonymous: true
+
+        api:
             pattern: ^/api
             fos_oauth: true
             stateless: true
             logout:
-                path: /logout
+                path: logout
 
         authorize:
             pattern: ^/authorize
             anonymous: true
-            form_login:
-                provider: fos_userbundle
-                check_path: login_check
-                login_path: login
+#            form_login:
+#                provider: fos_userbundle
+#                check_path: login_check
+#                login_path: login
 
         oauth_token:
             pattern: ^/token
@@ -35,5 +46,7 @@ security:
 #        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
 #        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
 #        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-#        - { path: ^/admin, role: ROLE_ADMIN }
+        - { path: ^/admin/login_check$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin, role: ROLE_ADMIN }
         - { path: ^/authorize/auth_login$, role: IS_AUTHENTICATED_ANONYMOUSLY }

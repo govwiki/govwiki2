@@ -18,7 +18,10 @@ class GovernmentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('stateId')
+            ->add('map', 'entity', [
+                'class' => 'GovWiki\DbBundle\Entity\Map',
+                'choice_label' => 'name',
+            ])
             ->add('name')
             ->add('slug')
             ->add('specialDistrictFunctionCode')

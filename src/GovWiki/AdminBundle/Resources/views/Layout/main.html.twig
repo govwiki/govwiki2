@@ -1,0 +1,68 @@
+{% extends "::base.html.twig" %}
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets '@GovWikiAdminBundle/Resources/public/css/*' %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+{% block header %}
+<nav class="navbar navbar-default navbar-branded">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{{ path('govwiki_admin_main_home') }}"><img src="{{ asset('img/a_logo.png') }}"></a>
+                <ul class="nav navbar-nav">
+                    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} class="active"{% endif %}>
+                        <a href="{{ path('govwiki_admin_government_index') }}">Governments</a>
+                    </li>
+                    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_electedofficial_index' %} class="active"{% endif %}>
+                        <a href="{{ path('govwiki_admin_electedofficial_index') }}">Elected Officials</a>
+                    </li>
+                    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_legislation_index' %} class="active"{% endif %}>
+                        <a href="{{ path('govwiki_admin_legislation_index') }}">Legislation</a>
+                    </li>
+                    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_createrequest_index' %} class="active"{% endif %}>
+                        <a href="{{ path('govwiki_admin_createrequest_index') }}">Create Requests</a>
+                    </li>
+                    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_editrequest_index' %} class="active"{% endif %}>
+                        <a href="{{ path('govwiki_admin_editrequest_index') }}">Edit Requests</a>
+                    </li>
+                    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_user_index' %} class="active"{% endif %}>
+                        <a href="{{ path('govwiki_admin_user_index') }}">Users</a>
+                    </li>
+                    <li{% if app.request.attributes.get('_route') == 'map_list' %} class="active"{% endif %}>
+                        <a href="{{ path('map_list') }}">Maps</a>
+                    </li>
+                    <li{% if app.request.attributes.get('_route') == 'client_list' %} class="active"{% endif %}>
+                        <a href="{{ path('client_list') }}">OAuth Clients</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('fos_user_security_logout') }}">Logout</a>
+                    </li>
+                </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    {% for flashMessage in app.session.flashbag.get('info') %}
+        <div class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            {{ flashMessage }}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block modal %}
+<div id="modal-window" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">Loading...</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@HeltheTurbolinksBundle/Resources/public/js/turbolinks.js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

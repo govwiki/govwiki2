@@ -64,4 +64,12 @@ class AbstractGovWikiController extends Controller
         $response->headers->set('Content-Type', 'application/json');
         return $response;
     }
+
+    /**
+     * @return \GovWiki\ApiBundle\Manager\EnvironmentManager
+     */
+    protected function environmentManager()
+    {
+        return $this->get('govwiki_api.manager.environment');
+    }
 }

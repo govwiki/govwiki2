@@ -2,8 +2,7 @@
 
 namespace GovWiki\ApiBundle\Listener;
 
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use GovWiki\ApiBundle\Manager\EnvironmentManager;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 /**
@@ -15,37 +14,40 @@ class EnvironmentListener
     const PARAM_NAME = 'env';
 
     /**
-     * @param FilterControllerEvent $event A FilterControllerEvent instance.
+     * @var EnvironmentManager
+     */
+    private $manager;
+
+    /**
+     * @param EnvironmentManager $manager A EnvironmentManager instance.
+     */
+    public function __construct(EnvironmentManager $manager)
+    {
+        $this->manager = $manager;
+    }
+
+    /**
+     * @param GetResponseEvent $event A GetResponseEvent instance.
      *
      * @return void
      *
      * @throws \RuntimeException PARAM_NAME not found in request.
      */
-    public function onKernelController(FilterControllerEvent $event)
+    public function onKernelRequest(GetResponseEvent $event)
     {
-        $controller = $event->getController();
-        $parameters = (new \ReflectionMethod($controller[0], $controller[1]))
-            ->getParameters();
+        $request = $event->getRequest();
+        $environment = $request->query->get(self::PARAM_NAME, null);
 
-        $hasEnvironmentParam = false;
-        foreach ($parameters as $parameter) {
-            if ('environment' === $parameter->getName()) {
-                $hasEnvironmentParam = true;
-                break;
-            }
-        }
-
-        if ($hasEnvironmentParam) {
-            $environment = $event->getRequest()->query
-                ->get(self::PARAM_NAME, null);
-
+        if (strpos($request->getPathInfo(), 'api') !== false) {
             if (null === $environment) {
                 throw new \RuntimeException(
-                    'Provide query param '. self::PARAM_NAME
+                    'Provide query param ' . self::PARAM_NAME
                 );
             }
 
-            $event->getRequest()->attributes->set('environment', $environment);
+            $this->manager->setEnvironment($environment);
         }
+
+
     }
 }

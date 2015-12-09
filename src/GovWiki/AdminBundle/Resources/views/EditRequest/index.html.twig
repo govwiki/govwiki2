@@ -1,0 +1,70 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% block title %}Edit requests{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="index-page-head">
+            <div class="navigation">
+                <div class="row">
+                    <div class="col-md-5">
+                        {{ knp_pagination_render(editRequests) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>{{ knp_pagination_sortable(editRequests, 'Id',        'er.id') }}</td>
+                    <td>{{ knp_pagination_sortable(editRequests, 'Created',   'er.created') }}</td>
+                    <td>{{ knp_pagination_sortable(editRequests, 'Status',    'er.status') }}</td>
+                    <td>{{ knp_pagination_sortable(editRequests, 'User',      'u.username') }}</td>
+                    <td>{{ knp_pagination_sortable(editRequests, 'Data Type', 'er.entityName') }}</td>
+                    <td>{{ knp_pagination_sortable(editRequests, 'Entity id', 'er.entityId') }}</td>
+                    <td>Actions</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for editRequest in editRequests %}
+                    <tr>
+                        <td>{{ editRequest.id }}</td>
+                        <td>{{ editRequest.created|date('m/d/y g:i a') }}</td>
+                        <td>{{ editRequest.status|capitalize }}</td>
+                        <td>{% if editRequest.user %}{{ editRequest.user.username }}{% endif %}</td>
+                        <td>{{ editRequest.entityName }}</td>
+                        <td>{{ editRequest.entityId }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{path('govwiki_admin_editrequest_show', {'id': editRequest.id})}}" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-search"></span> Show
+                                </a>
+                                <span class="btn btn-danger remove-action" data-link="{{path('govwiki_admin_editrequest_remove', {'id': editRequest.id})}}">
+                                    <span class="glyphicon glyphicon-remove"></span> Remove
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="navigation">
+            {{ knp_pagination_render(editRequests) }}
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(function() {
+            $('span.remove-action').on('click', function() {
+                $this = $(this);
+                if (confirm('Are you sure?')) {
+                    $.post($(this).data('link'), function(response) {
+                        if (response.status == 'ok') {
+                            $this.closest('tr').remove();
+                        };
+                    });
+                };
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends '@GovWikiAdmin/Layout/main.html.twig' %}
+
+{% block title %}OAuth clients{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        {{ knp_pagination_render(clients) }}
+        <table class="table table-responsive">
+            <tr>
+                <th>Name</th>
+                <th>Public</th>
+                <th>Secret</th>
+                <th>Actions</th>
+            </tr>
+            {% for client in clients %}
+                <tr>
+                    <td>{{ client.name }}</td>
+                    <td>{{ client.getPublicId() }}</td>
+                    <td>{{ client.secret }}</td>
+                    <td>
+                        <a href="{{ path('client_edit', {name: client.name}) }}">Edit</a>
+                        <a href="{{ path('client_remove', {name: client.name}) }}">Remove</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        {{ knp_pagination_render(clients) }}
+
+        <a class="btn btn-primary" href="{{ path('client_new') }}">Add client</a>
+    </div>
+{% endblock %}

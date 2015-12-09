@@ -22,6 +22,7 @@ class AppKernel extends Kernel
             new Helthe\Bundle\TurbolinksBundle\HeltheTurbolinksBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new FOS\UserBundle\FOSUserBundle(),
+            new GovWiki\AdminBundle\GovWikiAdminBundle(),
             new GovWiki\DbBundle\GovWikiDbBundle(),
             new GovWiki\ApiBundle\GovWikiApiBundle(),
             new GovWiki\UserBundle\GovWikiUserBundle(),

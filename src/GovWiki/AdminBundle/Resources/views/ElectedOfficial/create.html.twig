@@ -1,0 +1,30 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% block title %}Create elected official{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        {{ form_start(form) }}
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form_row(form.fullName) }}
+                    {{ form_row(form.slug) }}
+                    {{ form_row(form.displayOrder) }}
+                </div>
+                <div class="col-md-4">
+                    {{ form_row(form.title) }}
+                    {{ form_row(form.emailAddress) }}
+                    {{ form_row(form.telephoneNumber) }}
+                </div>
+                <div class="col-md-4">
+                    {{ form_row(form.photoUrl) }}
+                    {{ form_row(form.bioUrl) }}
+                    {{ form_row(form.termExpires) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="submit" class="btn btn-primary">
+                </div>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

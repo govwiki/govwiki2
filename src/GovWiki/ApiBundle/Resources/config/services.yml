@@ -7,8 +7,13 @@ services:
 
     govwiki_api.listener.environment:
         class: GovWiki\ApiBundle\Listener\EnvironmentListener
+        arguments: [@govwiki_api.manager.environment]
         tags:
-            - { name: kernel.event_listener, event: kernel.controller }
+            - { name: kernel.event_listener, event: kernel.request }
+
+    govwiki_api.manager.environment:
+        class: GovWiki\ApiBundle\Manager\EnvironmentManager
+        arguments: [@doctrine.orm.default_entity_manager]
 
     govwiki_api.serializer.serialization_visitor:
         class: GovWiki\ApiBundle\Serializer\ArraySerializationVisitor

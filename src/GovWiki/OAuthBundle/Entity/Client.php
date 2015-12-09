@@ -6,7 +6,7 @@ use FOS\OAuthServerBundle\Entity\Client as BaseClient;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="GovWiki\OAuthBundle\Entity\Repository\ClientRepository")
  */
 class Client extends BaseClient
 {

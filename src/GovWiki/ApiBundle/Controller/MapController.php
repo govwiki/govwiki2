@@ -16,17 +16,12 @@ class MapController extends AbstractGovWikiController
     /**
      * @Configuration\Route()
      *
-     * @param string $environment Given by
-     *                            {@see EnvironmentListener}.
-     *
      * @return JsonResponse
      */
-    public function indexAction($environment)
+    public function indexAction()
     {
         try {
-            $env = $this->getDoctrine()
-                ->getRepository('GovWikiDbBundle:Environment')
-                ->getByName($environment);
+            $environment = $this->environmentManager()->getMap();
         } catch (\Exception $e) {
             return new JsonResponse([
                 'status' => 'critical',
@@ -34,12 +29,12 @@ class MapController extends AbstractGovWikiController
             ]);
         }
 
-        if (null === $env) {
+        if (null === $environment) {
             return $this->notFoundResponse(
-                "Can't find environment with name '$environment'."
+                "Can't find environment with name '{$this->environmentManager()->getEnvironment()}'."
             );
         }
 
-        return $this->successResponse($env);
+        return $this->successResponse($environment);
     }
 }

@@ -1,0 +1,9 @@
+<div class="panel-body">
+    {{ form_start(form, {'attr': {'class': 'ajax-form'}, 'action': action}) }}
+        {{ form_row(form.date) }}
+        {{ form_row(form.summary) }}
+        {{ form_row(form.url) }}
+        {{ form_row(form.issueCategory) }}
+        <input type="submit" class="btn btn-primary">
+    {{ form_end(form) }}
+</div>

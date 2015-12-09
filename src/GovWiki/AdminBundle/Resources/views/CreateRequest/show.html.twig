@@ -1,0 +1,342 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% import _self as macro %}
+
+{% block title %}Show create request{% endblock %}
+{% block body %}
+    <div class="container">
+        {% if errors %}
+            {#
+
+                Some errors occurs.
+
+            #}
+            <div class="col-md-2">
+                <a href="{{path('govwiki_admin_createrequest_index')}}" class="btn btn-default">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    Go back
+                </a>
+            </div>
+                <div class="col-md-10">
+                    {% for error in errors %}
+                        <div class="alert alert-danger">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+        {% else %}
+            {#
+
+                Show information about create request.
+
+            #}
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Information</div>
+                    <table class="table">
+                        <tr>
+                            <td>User</td>
+                            <td>{% if createRequest.user %}{{ createRequest.user.username }}{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>{{ createRequest.status|capitalize }}</td>
+                        </tr>
+                        <tr>
+                            <td>Created</td>
+                            <td>{{ createRequest.created|date('m/d/y g:i a') }}</td>
+                        </tr>
+                        <tr>
+                            <td>Data Type</td>
+                            <td>{{ createRequest.entityName }}</td>
+                        </tr>
+                    </table>
+                    <div class="panel-footer">
+                        <div class="btn-group" style="width:100%;">
+                            <span data-link="{{path('govwiki_admin_createrequest_apply', {'id': createRequest.id})}}" style="width:50%;" class="btn btn-success ajax-choice{% if createRequest.status != 'pending' %} disabled{% endif %}">Apply</span>
+                            <span data-link="{{path('govwiki_admin_createrequest_discard', {'id': createRequest.id})}}" style="width:50%;" class="btn btn-danger ajax-choice{% if createRequest.status != 'pending' %} disabled{% endif %}">Discard</span>
+                        </div>
+                        {% if createRequest.entityName == 'PublicStatement' %}
+                            <div>
+                                <input data-id="{{ associations[0].id }}" id="send-email" type="checkbox" checked>
+                                <label for="send-email">Email this statement to elected official</label>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {#
+
+                Show create request fields.
+
+            #}
+            <div class="col-md-6">
+                <h3 style="margin-top:0;">Details</h3>
+                {#<h3 style="margin-top:0px;">Fields</h3>#}
+                <table class="table table-striped table-bordered" id="fields">
+                    <thead>
+                        <tr>
+                            <td>Field</td>
+                            <td>Value</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for field in fields %}
+                            <tr{% if not field.correct %} class="danger"{% endif %}>
+                                <td>{{ field.field|name_beautify }}</td>
+                                <td>
+                                    {{ macro.renderField(field) }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {#
+
+                    Show create request associations.
+
+                #}
+                {% if associations %}
+                    {#<hr>#}
+                    {#<h3>Associations</h3>#}
+                    <table class="table table-striped table-bordered" id="associations">
+                        <thead>
+                            <tr>
+                                <td>Association</td>
+                                <td>Value</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for association in associations %}
+                                {% dump association %}
+                                <tr {% if not association.correct %} class="danger"{% endif %}>
+                                    <td>{{ association.field|name_beautify }}</td>
+                                    <td>
+                                        {%- if association.field == 'issueCategory' -%}
+                                            <select data-field-name="{{ association.field }}" class="form-control">
+                                                {% for key,value in association.choices %}
+                                                    <option value="{{ key }}" {% if value == association.name %}selected=""{% endif %}>{{ value }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        {%- else -%}
+                                            <input type="hidden" data-field-name="{{ association.field }}" value="{{ association.id }}">
+                                            {{ association.name }}
+                                        {%- endif -%}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        {% endif %}
+        {#
+
+            Show create request childs.
+
+        #}
+        {% if childs %}
+            {% if createRequest.entityName == 'Legislation' %}
+                <div class="col-md-10 col-md-offset-1">
+                    <h3>Votes</h3>
+                    <table data-entity="ElectedOfficialVote" class="table table-striped table-bordered" id="childs">
+                        <thead>
+                        <tr>
+                            <td>Elected official</td>
+                            <td>How Voted</td>
+                            <td>Sponsored by?</td>
+                            <td></td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for child in childs %}
+                                <tr data-id="{{ child.associations[0].id }}">
+                                    <td>{{ child.associations[0].name|name_beautify }}</td>
+                                    {% for field in child.fields %}
+                                        <td{% if not field.correct %} class="danger"{% endif %}>{{ macro.renderField(field) }}</td>
+                                    {% endfor %}
+                                    <td>
+                                        <input type="checkbox" id="sendEmail-{{ loop.index0 }}" name="send_email[{{ loop.index0 }}]" checked>
+                                        <label for="sendEmail-{{ loop.index0 }}">Email this vote to elected official</label>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="col-md-12">
+                    <h3>Childs</h3>
+                    {% for child in childs %}
+                        <h4>{{ child.dataType }}</h4>
+                        <table class="table table-striped table-bordered" id="childs">
+                            <thead>
+                            <tr>
+                                <td>Field</td>
+                                <td>Value</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for field in child.fields %}
+                                <tr{% if not field.correct %} class="danger"{% endif %}>
+                                    <td>{{ field.field|name_beautify }}</td>
+                                    <td>{{ field.value }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <td>Association</td>
+                                <td>Value</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for association in child.associations %}
+                                <tr{% if not association.correct %} class="danger"{% endif %}>
+                                    <td>{{ associations.field|name_beautify }}</td>
+                                    <td>{{ association.name }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% if not loop.last %}<hr>{% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+
+        function fetch($base)
+        {
+            var data = Object.create(null, {});
+            /*
+                Get from input.
+            */
+
+            var eachCallback = function(idx, element) {
+                var $element = $(element);
+                data[$element.attr('data-field-name')] = $element.val();
+            };
+
+            $base.find('input[data-field-name]').each(eachCallback);
+
+            /*
+                Get from select.
+            */
+            $base.find('select[data-field-name]').each(eachCallback);
+
+            return data;
+        }
+
+        /**
+         * Collect data from page.
+         */
+        function collectData()
+        {
+            /*
+                Get fields.
+            */
+
+            var childs = [];
+            $('#childs').find('[data-id]').each(function(idx, element) {
+                var $element = $(element);
+
+                childs.push({
+                    fields: {
+                        fields: fetch($element),
+                        associations: { electedOfficial: $element.attr('data-id') }
+                    },
+                    entityName: $('#childs').attr('data-entity')
+                });
+            });
+
+            return {
+                fields: fetch($('#fields')),
+                associations: fetch($('#associations')),
+                childs: childs
+            }
+        }
+
+        $(function() {
+            /*
+                Close datepicker when user chose date.
+            */
+            $('[data-provide="datepicker"]').on('changeDate', function() {
+                $(this).datepicker('hide');
+            });
+
+            /*
+                Apply callback;
+            */
+            $('span.ajax-choice:not(.disabled)').on('click', function() {
+                console.log(collectData());
+                if (confirm('Are you sure?')) {
+
+                    /*
+                        Collect data.
+                    */
+                    var data = collectData();
+
+                    /*
+                     Get send email flags.
+                     */
+                    var statementEmailFlag = $('#send-email');
+                    var legislationEmailFlags = $('#childs').find('input[type="checkbox"]');
+
+                    var flags = {};
+                    if (statementEmailFlag.length > 0) {
+                        /*
+                         Get statement send email flag status.
+                         */
+                        flags[statementEmailFlag.closest('[data-id]').attr('data-id')] = statementEmailFlag[0].checked
+                    } else if (legislationEmailFlags.length > 0) {
+                        /*
+                         Get elected officials votes send email flag status.
+                         */
+                        legislationEmailFlags.each(function( idx, element) {
+                            flags[$(element).closest('[data-id]').attr('data-id')] = element.checked;
+                        });
+                    }
+
+                    $.post($(this).data('link'), {emailFlags: flags, data: data}, function(response) {
+                        if (response.redirect) {
+                            location = response.redirect;
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% macro renderField(field) %}
+    {% set tagName = 'data-field-name=' ~ field.field %}
+    {% if field.value matches '|\\d+/\\d+/\\d+|' %}
+        {#
+            Current field is date.
+        #}
+        <input data-provide="datepicker" {{ tagName }} class="form-control" value="{{ field.value }}">
+    {% elseif field.choices is defined %}
+        {#
+            Current field is choice.
+        #}
+        <select {{ tagName }} class="form-control" >
+            {% for key,value in field.choices %}
+                <option value="{{ key }}" {% if value == field.value %}selected="selected"{% endif %}>
+                    {{- value -}}
+                </option>
+            {% endfor %}
+        </select>
+    {% else %}
+        {#
+            Current field is simple text.
+        #}
+        <input class="form-control" {{ tagName }} value="{{ field.value }}">
+    {% endif %}
+{% endmacro %}

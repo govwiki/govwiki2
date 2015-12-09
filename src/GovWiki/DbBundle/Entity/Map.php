@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation\Groups;
  * Map
  *
  * @ORM\Table(name="maps")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\MapRepository")
  */
 class Map
 {
@@ -26,44 +26,11 @@ class Map
     private $id;
 
     /**
-     * @var LatLng
+     * @var string
      *
-     * @ORM\Column(type="lat_lng")
-     * @Groups({"map"})
+     * @ORM\Column()
      */
-    private $center;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(type="integer")
-     * @Groups({"map"})
-     */
-    private $zoom;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(type="integer")
-     * @Groups({"map"})
-     */
-    private $width;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(type="integer")
-     * @Groups({"map"})
-     */
-    private $height;
-
-    /**
-     * @var array
-     *
-     * @ORM\Column(type="array", nullable=true)
-     * @Groups({"map"})
-     */
-    private $style;
+    private $name;
 
     /**
      * @var Collection
@@ -87,106 +54,6 @@ class Map
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return LatLng
-     */
-    public function getCenter()
-    {
-        return $this->center;
-    }
-
-    /**
-     * @param LatLng $center Coordinates of the center of the map.
-     *
-     * @return Map
-     */
-    public function setMapCenter(LatLng $center)
-    {
-        $this->center = $center;
-
-        return $this;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getZoom()
-    {
-        return $this->zoom;
-    }
-
-    /**
-     * @param integer $zoom Zoom level.
-     *
-     * @return Map
-     */
-    public function setZoom($zoom)
-    {
-        $this->zoom = $zoom;
-
-        return $this;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getWidth()
-    {
-        return $this->width;
-    }
-
-    /**
-     * @param integer $width Map width.
-     *
-     * @return Map
-     */
-    public function setWidth($width)
-    {
-        $this->width = $width;
-
-        return $this;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getHeight()
-    {
-        return $this->height;
-    }
-
-    /**
-     * @param integer $height Map height.
-     *
-     * @return Map
-     */
-    public function setHeight($height)
-    {
-        $this->height = $height;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getStyle()
-    {
-        return $this->style;
-    }
-
-    /**
-     * @param array $style Map style, see google map api document.
-     *
-     * @return Map
-     */
-    public function setStyle(array $style)
-    {
-        $this->style = $style;
-
-        return $this;
     }
 
     /**
@@ -219,5 +86,25 @@ class Map
     public function getGovernments()
     {
         return $this->governments;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Map
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
     }
 }

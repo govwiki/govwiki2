@@ -15,6 +15,39 @@ use GovWiki\DbBundle\Entity\Government;
 class GovernmentRepository extends EntityRepository
 {
     /**
+     * @param integer $id   Government id.
+     * @param string  $name Government name.
+     * @param string  $map  Map name.
+     *
+     * @return Query
+     */
+    public function getListQuery($id = null, $name = null, $map = null)
+    {
+        $qb = $this
+            ->createQueryBuilder('Government')
+            ->leftJoin('Government.map', 'Map')
+            ->addSelect('partial Map.{id,name}');
+        $expr = $qb->expr();
+
+        if (null !== $id) {
+            $qb->andWhere($expr->eq('Government.id', $id));
+        }
+        if (null !== $name) {
+            $qb->andWhere($expr->eq(
+                'Government.name',
+                $expr->literal($name)
+            ));
+        }
+        if (null !== $map) {
+            $qb->andWhere($expr->eq(
+                    'Map.name',
+                    $expr->literal($map)
+            ));
+        }
+
+        return $qb->getQuery();
+    }
+    /**
      * @param string $altTypeSlug Government slugged alt type.
      *
      * @return integer
