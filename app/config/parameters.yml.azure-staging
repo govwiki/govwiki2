@@ -1,0 +1,14 @@
+parameters:
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: govwiki
+    database_user: root
+    database_password: 6bE4tM
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    secret: e041y4j3j3094v503409jv5fa546sf5467as01a36a659
+    admin_email: contact@calpolicycenter.org
+    email_subject: California Policy Center
+    debug: 0
