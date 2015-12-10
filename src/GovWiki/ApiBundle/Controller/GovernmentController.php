@@ -5,6 +5,7 @@ namespace GovWiki\ApiBundle\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,10 +13,37 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 /**
  * GovernmentController
  *
- * @Route("government")
+ * @Route("governments")
  */
 class GovernmentController extends AbstractGovWikiController
 {
+    /**
+     * @Route("/")
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return JsonResponse
+     */
+    public function listAction(Request $request)
+    {
+        $governments = $this->environmentManager()->listGovernments(
+            $request->query->getInt('page', 1),
+            $request->query->getInt('limit', 25),
+            $request->query->get('sort', null),
+            $request->query->get('direction', null)
+        );
+
+        return $this->paginatorResponse($governments);
+    }
+
+    /**
+     * @Route("/{id}/edit")
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function editAction(Request $request)
+    {
+    }
+
     /**
      * @Route("/{altTypeSlug}/{slug}", methods="GET")
      *
@@ -36,27 +64,27 @@ class GovernmentController extends AbstractGovWikiController
         );
     }
 
-    /**
-     * @Route("/get-markers-data", methods="GET")
-     *
-     * Get markers data
-     *
-     * @param  Request $request A Request instance.
-     *
-     * @return JsonResponse
-     */
-    public function getMarkersDataAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        if ($limit = $request->query->get('limit')) {
-            $data = $em->getRepository('GovWikiDbBundle:Government')->getMarkers($request->query->get('altTypes'), $limit);
-        } else {
-            $data = $em->getRepository('GovWikiDbBundle:Government')->getMarkers($request->query->get('altTypes'));
-        }
-
-        return new JsonResponse($data);
-    }
+//    /**
+//     * @Route("/get-markers-data", methods="GET")
+//     *
+//     * Get markers data
+//     *
+//     * @param  Request $request A Request instance.
+//     *
+//     * @return JsonResponse
+//     */
+//    public function getMarkersDataAction(Request $request)
+//    {
+//        $em = $this->getDoctrine()->getManager();
+//
+//        if ($limit = $request->query->get('limit')) {
+//            $data = $em->getRepository('GovWikiDbBundle:Government')->getMarkers($request->query->get('altTypes'), $limit);
+//        } else {
+//            $data = $em->getRepository('GovWikiDbBundle:Government')->getMarkers($request->query->get('altTypes'));
+//        }
+//
+//        return new JsonResponse($data);
+//    }
 
     /**
      * @Route("/{altTypeSlug}/{slug}/get_ranks", methods={"GET"})

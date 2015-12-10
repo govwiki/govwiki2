@@ -3,6 +3,7 @@
 namespace GovWiki\ApiBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * Class EnvironmentManager
@@ -55,5 +56,43 @@ class EnvironmentManager
     {
         return $this->em->getRepository('GovWikiDbBundle:Map')
             ->getWithGovernments($this->environment);
+    }
+
+    /**
+     * @param integer $page  Current page index.
+     * @param integer $limit Max governments per page.
+     *
+     * @return Paginator
+     */
+    public function listGovernments(
+        $page,
+        $limit,
+        $sort = null,
+        $direction = null
+    ) {
+        $qb = $this->em->getRepository('GovWikiDbBundle:Government')
+            ->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
+        if (null !== $sort) {
+            $field = "Government.{$sort}";
+            if ('desc' === $direction) {
+                $qb->orderBy($expr->desc($field));
+            } else {
+                $qb->orderBy($expr->asc($field));
+            }
+        }
+
+        return new Paginator(
+            $qb
+                ->select('partial Government.{id,name,slug,type,altType}')
+                ->leftJoin('Government.map', 'Map')
+                ->where(
+                    $expr->eq('Map.name', $expr->literal($this->environment))
+                )
+                ->setFirstResult($page * $limit)
+                ->setMaxResults($limit),
+            false
+        );
     }
 }

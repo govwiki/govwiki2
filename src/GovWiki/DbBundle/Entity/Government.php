@@ -26,7 +26,7 @@ class Government
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"government", "elected_official", "map"})
+     * @Groups({"government", "government_list", "elected_official", "map"})
      */
     private $id;
 
@@ -60,7 +60,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "government_list"})
      */
     private $name;
 
@@ -68,7 +68,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="slug", type="string", length=255, nullable=true)
-     * @Groups({"government", "elected_official", "map"})
+     * @Groups({"government", "government_list", "elected_official", "map"})
      */
     private $slug;
 
@@ -84,7 +84,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "government_list"})
      */
     private $type;
 
@@ -92,7 +92,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="alt_type", type="string", length=20, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "government_list"})
      */
     private $altType;
 

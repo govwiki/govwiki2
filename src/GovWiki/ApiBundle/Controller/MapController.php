@@ -21,7 +21,7 @@ class MapController extends AbstractGovWikiController
     public function indexAction()
     {
         try {
-            $environment = $this->environmentManager()->getMap();
+            $map = $this->environmentManager()->getMap();
         } catch (\Exception $e) {
             return new JsonResponse([
                 'status' => 'critical',
@@ -29,12 +29,12 @@ class MapController extends AbstractGovWikiController
             ]);
         }
 
-        if (null === $environment) {
+        if (null === $map) {
             return $this->notFoundResponse(
-                "Can't find environment with name '{$this->environmentManager()->getEnvironment()}'."
+                "Can't find map with name '{$this->environmentManager()->getEnvironment()}'."
             );
         }
 
-        return $this->successResponse($environment);
+        return $this->successResponse($map);
     }
 }

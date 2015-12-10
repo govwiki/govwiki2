@@ -8,6 +8,9 @@
         {{ form_widget(form) }}
         <button class="btn btn-success">Update</button>
         <a class="btn btn-default" href="{{ path('map_list') }}">Back</a>
+        <a class="btn btn-primary{%- if not canExport %} disabled{%- endif -%}" href="{{ path('map_export', {name: name}) }}">
+            Export to CartoDB
+        </a>
         {{ form_end(form) }}
     </div>
 {% endblock body %}

@@ -113,3 +113,9 @@ fos_oauth_server:
         user_provider: fos_user.user_provider.username
         options:
             supported_scopes: user
+
+jms_serializer:
+    property_naming:
+        separator: ~
+        lower_case: false
+

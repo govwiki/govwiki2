@@ -21,3 +21,6 @@ parameters:
     admin_email:  ~
     email_subject: ~
     debug: ~
+
+    carto_db.account: ~
+    carto_db.api_key: ~

@@ -18,7 +18,7 @@ class MapRepository extends EntityRepository
         $expr = $qb->expr();
 
         return $qb
-            ->select('partial Map.{id,name}')
+            ->select('partial Map.{id,name,vizUrl}')
             ->orderBy($expr->asc('Map.name'))
             ->getQuery();
     }
@@ -35,7 +35,7 @@ class MapRepository extends EntityRepository
         $expr = $qb->expr();
 
         return $qb
-            ->select('partial Map.{id,name}')
+            ->select('partial Map.{id,name,itemQueueId}')
             ->where($expr->eq('Map.name', $expr->literal($name)))
             ->getQuery()
             ->getOneOrNullResult();

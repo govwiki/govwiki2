@@ -26,6 +26,7 @@ security:
             stateless: true
             logout:
                 path: logout
+#            security: false
 
         authorize:
             pattern: ^/authorize

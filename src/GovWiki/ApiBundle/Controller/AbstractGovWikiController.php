@@ -2,6 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,6 +38,31 @@ class AbstractGovWikiController extends Controller
             'status' => 'success',
             'data' => $data,
         ]);
+    }
+
+    /**
+     * @param Paginator $paginator A Paginator instance.
+     *
+     * @return Response
+     */
+    protected function paginatorResponse(Paginator $paginator)
+    {
+        $data = $this->get('jms_serializer')
+            ->serialize(
+                [
+                    'status' => 'success',
+                    'data' => iterator_to_array($paginator),
+                    'count' => $paginator->count(),
+                ],
+                'json',
+                (new SerializationContext())->setGroups([ 'government_list' ])
+            );
+
+        return new Response(
+            $data,
+            200,
+            [ 'Content-Type' => 'application/json' ]
+        );
     }
 
     /**

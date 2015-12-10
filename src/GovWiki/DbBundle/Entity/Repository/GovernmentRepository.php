@@ -456,6 +456,26 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
+     * @param string $map Map name.
+     *
+     * @return array
+     */
+    public function exportGovernments($map)
+    {
+        $qb = $this->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select(
+                'partial Government.{id,latitude,longitude,slug,altTypeSlug}'
+            )
+            ->leftJoin('Government.map', 'Map')
+            ->where($expr->eq('Map.name', $expr->literal($map)))
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
      * @return array
      */
     private function fetchSpecialDistricts()

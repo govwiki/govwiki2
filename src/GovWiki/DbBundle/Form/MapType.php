@@ -17,7 +17,11 @@ class MapType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name');
+        $builder
+            ->add('name')
+            ->add('centerLatitude', 'number')
+            ->add('centerLongitude', 'number')
+            ->add('vizUrl', 'url');
     }
 
     /**
