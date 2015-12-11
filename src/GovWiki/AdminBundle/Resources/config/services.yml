@@ -3,9 +3,3 @@ services:
         class: GovWiki\AdminBundle\Twig\TwigExtensions
         tags:
             - { name: twig.extension }
-
-    govwiki_admin.carto_db.api:
-        class: GovWiki\AdminBundle\Utils\CartoDBApi
-        arguments:
-            - %carto_db.api_key%
-            - %carto_db.account%

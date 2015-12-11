@@ -1,26 +1,19 @@
-gov_wiki_api:
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/security.xml"
+    prefix:   /
+
+govwiki_api:
     resource: "@GovWikiApiBundle/Resources/config/routing.yml"
     prefix:   /api
 
-fos_user:
-    resource: "@FOSUserBundle/Resources/config/routing/security.xml"
-    prefix:   /admin
+govwiki_user:
+    resource: "@GovWikiUserBundle/Resources/config/routing.yml"
+    prefix:   /
 
-#gov_wiki_user:
-#    resource: "@GovWikiUserBundle/Resources/config/routing.yml"
-#    prefix:   /admin
-
-fos_oauth_server_token:
-    path: /token
-    defaults: { _controller: fos_oauth_server.controller.token:tokenAction }
-
-fos_oauth_server_authorize:
-    path: /authorize
-    defaults: { _controller: FOSOAuthServerBundle:Authorize:authorize }
-
-api_logout:
-    path: /api/logout
-
-gov_wiki_admin:
+govwiki_admin:
     resource: "@GovWikiAdminBundle/Resources/config/routing.yml"
     prefix:   /admin
+
+govwiki_frontend:
+    resource: "@GovWikiFrontendBundle/Resources/config/routing.yml"
+    prefix: /

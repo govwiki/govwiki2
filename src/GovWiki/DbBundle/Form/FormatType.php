@@ -40,9 +40,7 @@ class FormatType extends AbstractType
         }
 
         $builder
-            ->add('category', 'choice', [
-                'choices' =>
-            ])
+            ->add('category', 'choice')
             ->add('field')
             ->add('category', 'number')
             ->add('centerLongitude', 'number')

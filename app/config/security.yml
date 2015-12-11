@@ -4,12 +4,12 @@ security:
             id: fos_user.user_provider.username
 
     firewalls:
-        # disables authentication for assets and the profiler, adapt it according to your needs
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
         main:
+            access_denied_handler: govwiki.user_bundle.redirection.access_denied
             form_login:
                 provider: fos_userbundle
                 check_path: fos_user_security_check
@@ -18,26 +18,6 @@ security:
                 path: fos_user_security_logout
                 success_handler: govwiki.user_bundle.redirection.logout
             anonymous: true
-
-#        api:
-#            pattern: ^/api
-#            fos_oauth: true
-#            stateless: true
-#            logout:
-#                path: logout
-##            security: false
-#
-#        authorize:
-#            pattern: ^/authorize
-#            anonymous: true
-##            form_login:
-##                provider: fos_userbundle
-##                check_path: login_check
-##                login_path: login
-#
-#        oauth_token:
-#            pattern: ^/token
-#            security: false
 
     encoders:
         FOS\UserBundle\Model\UserInterface: bcrypt

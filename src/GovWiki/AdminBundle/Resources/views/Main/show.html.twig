@@ -1,0 +1,19 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% block title %}{{ parent() }} - {{ environment.name }}{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h3>{{ environment.name|capitalize }} environment</h3>
+
+        <div class="btn-group">
+            <a class="btn btn-primary" href="{{ path('govwiki_admin_main_new') }}">
+                Edit
+            </a>
+            <a class="btn btn-danger" href="{{ path('govwiki_admin_main_remove',
+                {environment: environment.name}) }}">
+                Delete
+            </a>
+        </div>
+    </div>
+{% endblock %}

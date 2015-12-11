@@ -1,4 +1,5 @@
 {% extends "::base.html.twig" %}
+{% block title %}GovWiki Admin{% endblock title %}
 {% block stylesheets %}
     {{ parent() }}
     {% stylesheets '@GovWikiAdminBundle/Resources/public/css/*' %}
@@ -8,10 +9,12 @@
 {% block header %}
 <nav class="navbar navbar-default navbar-branded">
     <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="{{ path('govwiki_admin_main_home') }}"><img src="{{ asset('img/a_logo.png') }}"></a>
+        <div class="navbar-header" style="width: 100%;">
+            <a class="navbar-brand" href="{{ path('govwiki_admin_main_home') }}"><img src="{{ asset('legacy/img/logo_cpc_v2_244x60.png') }}"></a>
                 <ul class="nav navbar-nav">
-                    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} class="active"{% endif %}>
+                    {% block enviroment_menu %}
+                    {% endblock enviroment_menu %}
+                    {#<li{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} class="active"{% endif %}>
                         <a href="{{ path('govwiki_admin_government_index') }}">Governments</a>
                     </li>
                     <li{% if app.request.attributes.get('_route') == 'govwiki_admin_electedofficial_index' %} class="active"{% endif %}>
@@ -28,13 +31,9 @@
                     </li>
                     <li{% if app.request.attributes.get('_route') == 'govwiki_admin_user_index' %} class="active"{% endif %}>
                         <a href="{{ path('govwiki_admin_user_index') }}">Users</a>
-                    </li>
-                    <li{% if app.request.attributes.get('_route') == 'map_list' %} class="active"{% endif %}>
-                        <a href="{{ path('map_list') }}">Maps</a>
-                    </li>
-                    <li{% if app.request.attributes.get('_route') == 'client_list' %} class="active"{% endif %}>
-                        <a href="{{ path('client_list') }}">OAuth Clients</a>
-                    </li>
+                    </li>#}
+                </ul>
+                <ul class="nav navbar-nav pull-right">
                     <li>
                         <a href="{{ path('fos_user_security_logout') }}">Logout</a>
                     </li>

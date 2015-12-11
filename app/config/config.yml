@@ -41,7 +41,7 @@ twig:
     strict_variables: "%kernel.debug%"
     form:
         resources: ['bootstrap_3_layout.html.twig']
-    exception_controller:  GovWikiApiBundle:Exception:showException
+#    exception_controller:  GovWikiApiBundle:Exception:showException
 
 # Assetic Configuration
 assetic:
@@ -103,19 +103,13 @@ fos_user:
     firewall_name: main
     user_class: GovWiki\UserBundle\Entity\User
 
-#fos_oauth_server:
-#    db_driver:           orm
-#    client_class:        GovWiki\OAuthBundle\Entity\Client
-#    access_token_class:  GovWiki\OAuthBundle\Entity\AccessToken
-#    refresh_token_class: GovWiki\OAuthBundle\Entity\RefreshToken
-#    auth_code_class:     GovWiki\OAuthBundle\Entity\AuthCode
-#    service:
-#        user_provider: fos_user.user_provider.username
-#        options:
-#            supported_scopes: user
-
 jms_serializer:
     property_naming:
         separator: ~
         lower_case: false
 
+ivory_ck_editor: ~
+
+carto_db:
+    api_key: %carto_db.api_key%
+    account_name: %carto_db.account%

@@ -6,6 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Asset;
 
 /**
  * Map
@@ -25,16 +27,13 @@ class Map
     private $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column()
-     */
-    private $name;
-
-    /**
      * @var Collection
      *
-     * @ORM\OneToMany(targetEntity="Government", mappedBy="map")
+     * @ORM\OneToMany(
+     *  targetEntity="Government",
+     *  mappedBy="map",
+     *  cascade={"remove"}
+     * )
      * @Groups({"map"})
      */
     private $governments;
@@ -52,6 +51,7 @@ class Map
      * @var string
      *
      * @ORM\Column(nullable=true)
+     * @Asset\Url()
      */
     private $vizUrl;
 
@@ -59,6 +59,7 @@ class Map
      * @var float
      *
      * @ORM\Column(type="float")
+     * @Asset\Type(type="float")
      */
     private $centerLatitude;
 
@@ -66,6 +67,7 @@ class Map
      * @var float
      *
      * @ORM\Column(type="float")
+     * @Asset\Type(type="float")
      */
     private $centerLongitude;
 
@@ -73,8 +75,34 @@ class Map
      * @var integer
      *
      * @ORM\Column(type="integer")
+     * @Asset\Type(type="integer")
      */
     private $zoom;
+
+    /**
+     * @var Environment
+     *
+     * @ORM\OneToOne(targetEntity="Environment", mappedBy="map")
+     */
+    private $environment;
+
+    /**
+     * Need to create process.
+     *
+     * @var UploadedFile
+     *
+     * @Asset\File()
+     */
+    private $countyFile;
+
+    /**
+     * Need to create process.
+     *
+     * @var UploadedFile
+     *
+     * @Asset\File()
+     */
+    private $governmentsFile;
 
     /**
      *
@@ -122,26 +150,6 @@ class Map
     public function getGovernments()
     {
         return $this->governments;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name Map name.
-     *
-     * @return Map
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
     }
 
     /**
@@ -240,6 +248,66 @@ class Map
     public function setCenterLatitude($centerLatitude)
     {
         $this->centerLatitude = $centerLatitude;
+
+        return $this;
+    }
+
+    /**
+     * @return Environment
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
+
+    /**
+     * @param Environment $environment Environment instance.
+     *
+     * @return Map
+     */
+    public function setEnvironment(Environment$environment)
+    {
+        $this->environment = $environment;
+
+        return $this;
+    }
+
+    /**
+     * @return UploadedFile
+     */
+    public function getCountyFile()
+    {
+        return $this->countyFile;
+    }
+
+    /**
+     * @param UploadedFile $countyFile A UploadedFile instance.
+     *
+     * @return Map
+     */
+    public function setCountyFile(UploadedFile $countyFile = null)
+    {
+        $this->countyFile = $countyFile;
+
+        return $this;
+    }
+
+    /**
+     * @return UploadedFile
+     */
+    public function getGovernmentsFile()
+    {
+        return $this->governmentsFile;
+    }
+
+    /**
+     * @param UploadedFile $governmentsFile A UploadedFile instance.
+     *
+     * @return Map
+     */
+    public function setGovernmentsFile(UploadedFile $governmentsFile = null)
+    {
+        $this->governmentsFile = $governmentsFile;
 
         return $this;
     }

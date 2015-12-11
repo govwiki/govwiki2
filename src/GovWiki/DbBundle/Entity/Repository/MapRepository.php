@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 
 /**
  * MapRepository
@@ -24,21 +25,25 @@ class MapRepository extends EntityRepository
     }
 
     /**
-     * @param $name
+     * @param string $environment Environment name.
      *
      * @return mixed
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function get($name)
+    public function getByEnvironment($environment)
     {
         $qb = $this->createQueryBuilder('Map');
         $expr = $qb->expr();
 
-        return $qb
-            ->select('partial Map.{id,name,itemQueueId}')
-            ->where($expr->eq('Map.name', $expr->literal($name)))
-            ->getQuery()
-            ->getOneOrNullResult();
+        try {
+            return $qb
+                ->select('partial Map.{id,name,itemQueueId}')
+                ->join('Map.environment', 'Environment')
+                ->where($expr->eq('Environment.name', $expr->literal($environment)))
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
     }
 
     /**

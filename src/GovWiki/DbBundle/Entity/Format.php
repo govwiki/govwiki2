@@ -82,12 +82,11 @@ class Format
     private $helpText = '';
 
     /**
-     * @var Map
+     * @var Environment
      *
-     * @ORM\ManyToOne(targetEntity="Map")
-     * @ORM\JoinColumn(name="map_id")
+     * @ORM\OneToOne(targetEntity="Environment", mappedBy="format")
      */
-    private $map;
+    private $environment;
 
     /**
      * @return integer
@@ -259,21 +258,21 @@ class Format
     }
 
     /**
-     * @return Map
+     * @return Environment
      */
-    public function getMap()
+    public function getEnvironment()
     {
-        return $this->map;
+        return $this->environment;
     }
 
     /**
-     * @param Map $map A Map instance.
+     * @param Environment $environment A Environment instance.
      *
      * @return Format
      */
-    public function setMap(Map $map)
+    public function setEnvironment(Environment $environment)
     {
-        $this->map = $map;
+        $this->environment = $environment;
 
         return $this;
     }

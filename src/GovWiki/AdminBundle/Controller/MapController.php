@@ -2,8 +2,10 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use CartoDbBundle\CartoDbServices;
+use CartoDbBundle\Service\CartoDbApi;
 use GovWiki\AdminBundle\Utils\GeoJsonFormater;
-use GovWiki\ApiBundle\Controller\AbstractGovWikiController;
+use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Form\MapType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
@@ -14,42 +16,28 @@ use Symfony\Component\HttpFoundation\Request;
  * Class MapController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/map")
+ * @Configuration\Route("/{environment}/map")
  */
-class MapController extends AbstractGovWikiController
+class MapController extends AbstractGovWikiAdminController
 {
     /**
-     * @Configuration\Route("/", name="map_list")
+     * @Configuration\Route("/")
      * @Configuration\Template()
      *
-     * @param Request $request A Request instance.
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
      *
      * @return array
      */
-    public function listAction(Request $request)
-    {
-        return [
-            'maps' => $this->get('knp_paginator')->paginate(
-                $this->repository()->listQuery(),
-                $request->query->getInt('page', 1),
-                10
-            ),
-        ];
-    }
-
-    /**
-     * @Configuration\Route("/{name}", name="map_show")
-     * @Configuration\Template()
-     *
-     * @param Request $request A Request instance.
-     * @param string  $name    Map name.
-     *
-     * @return array
-     */
-    public function editAction(Request $request, $name)
+    public function editAction(Request $request, $environment)
     {
         /** @var Map $map */
-        $map = $this->repository()->findOneBy([ 'name' => $name ]);
+        $map = $this->repository()->getByEnvironment($environment);
+        if (null === $map) {
+            throw $this->createNotFoundException(
+                "Map for environment $environment not found"
+            );
+        }
         $form = $this->createForm(new MapType(), $map);
 
         $form->handleRequest($request);
@@ -57,7 +45,10 @@ class MapController extends AbstractGovWikiController
 
         $isImported = null !== $map->getItemQueueId();
         if ($isImported) {
-            $result = $this->get('govwiki_admin.carto_db.api')
+            /*
+             * Governments data is now exported to CartoDB service.
+             */
+            $result = $this->get(CartoDbServices::CARTO_DB_API)
                 ->checkImportProcess($map->getItemQueueId());
 
             if ((true === $result['success']) ||
@@ -72,34 +63,64 @@ class MapController extends AbstractGovWikiController
 
         return [
             'form' => $form->createView(),
-            'name' => $name,
+            'environment' => $environment,
             'canExport' => ! $isImported,
         ];
     }
 
     /**
-     * @Configuration\Route("/new", name="map_new")
+     * Here it is forwarded from the {@see MainController::newAction}.
+     *
+     * @Configuration\Route("/new", methods={"POST"})
      * @Configuration\Template()
      *
-     * @param Request $request A Request instance.
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
      *
      * @return array
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $environment)
     {
+        $environmentObj = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Environment')
+            ->getReferenceByName($environment);
+
         $map = new Map();
+        $map->setEnvironment($environmentObj);
+
         $form = $this->createForm(new MapType(), $map);
 
         $form->handleRequest($request);
-        $form = $this->processForm($form);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            /** @var CartoDbApi $cartoDbApi */
+            $cartoDbApi = $this->get(CartoDbServices::CARTO_DB_API);
+            /*
+             * Upload county dataset to CartoDB.
+             */
+            $file = $map->getCountyFile();
+            $itemQueueId = $cartoDbApi->importDataset(
+                $file->getPath() .'/'. $file->getFilename()
+            );
+
+            $map->setItemQueueId($itemQueueId);
+            $em->persist($map);
+            $em->flush();
+
+            return $this->redirectToRoute('govwiki_admin_map_edit', [
+                'environment' => $environment,
+            ]);
+        }
 
         return [
             'form' => $form->createView(),
+            'environment' => $environment,
         ];
     }
 
     /**
-     * @Configuration\Route("/{name}/export", name="map_export")
+     * @Configuration\Route("/{name}/export")
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
