@@ -1,0 +1,32 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% block title %}Map {{ environment }} - formats{% endblock title %}
+
+{% block body %}
+    <div class="container-fluid">
+        {{ knp_pagination_render(fields) }}
+        <table class="table table-responsive">
+            <tr>
+                <th>Category</th>
+                <th>Field</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            {% for field in fields %}
+                <tr>
+                    <td>{{ field.category }}</td>
+                    <td>
+                        <a href="{{ path('government_format_edit', { environment: environment, id: field.id }) }}">
+                            {{ field.field }}</a>
+                    </td>
+                    <td>{{ field.description|raw }}</td>
+                    <td>
+                        <a class="btn btn-primary" href="{{ path('government_format_delete', { environment: environment, id: field.id }) }}">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        {{ knp_pagination_render(fields) }}
+        <a class="btn btn-primary" href="{{ path('government_format_new', { environment: environment }) }}">Add new</a>
+    </div>
+{% endblock body %}

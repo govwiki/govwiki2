@@ -57,6 +57,10 @@ map:
     resource: "@GovWikiAdminBundle/Controller/MapController.php"
     type:     annotation
 
+format:
+    resource: "@GovWikiAdminBundle/Controller/FormatController.php"
+    type:     annotation
+
 oauth:
     resource: "@GovWikiAdminBundle/Controller/ClientController.php"
     type:     annotation

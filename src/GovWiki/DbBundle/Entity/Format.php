@@ -8,7 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
  * Format
  *
  * @ORM\Table(name="formats")
- * @ORM\Entity
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\FormatRepository"
+ * )
  */
 class Format
 {
@@ -40,14 +42,14 @@ class Format
      *
      * @ORM\Column()
      */
-    private $description;
+    private $description = '';
 
     /**
      * @var array
      *
      * @ORM\Column(type="array")
      */
-    private $showIn;
+    private $showIn = [];
 
     /**
      * Unknown field, maybe useless.
@@ -56,28 +58,28 @@ class Format
      *
      * @ORM\Column()
      */
-    private $dataOrFormula;
+    private $dataOrFormula = 'data';
 
     /**
      * @var string
      *
      * @ORM\Column(type="boolean")
      */
-    private $ranked;
+    private $ranked = false;
 
     /**
      * @var string
      *
      * @ORM\Column()
      */
-    private $mask;
+    private $mask = '';
 
     /**
      * @var string
      *
      * @ORM\Column(type="text")
      */
-    private $helpText;
+    private $helpText = '';
 
     /**
      * @var Map
@@ -269,7 +271,7 @@ class Format
      *
      * @return Format
      */
-    public function setMap($map)
+    public function setMap(Map $map)
     {
         $this->map = $map;
 

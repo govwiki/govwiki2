@@ -9,6 +9,7 @@
             <tr>
                 <th>Name</th>
                 <th>Visualization url</th>
+                <th>Actions</th>
             </tr>
             {% for map in maps %}
                 <tr>
@@ -18,6 +19,9 @@
                     </td>
                     <td>
                         {{ map.vizUrl }}
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" href="{{ path('government_format', { environment: map.name }) }}">Edit format</a>
                     </td>
                 </tr>
             {% endfor %}
