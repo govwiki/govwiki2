@@ -12,7 +12,11 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class MainController extends AbstractGovWikiAdminController
 {
+    const ENVIRONMENTS_LIMIT = 25;
+
     /**
+     * Show list of available environments.
+     *
      * @Configuration\Route("/")
      * @Configuration\Template()
      *
@@ -27,13 +31,16 @@ class MainController extends AbstractGovWikiAdminController
                 ->getRepository('GovWikiDbBundle:Environment')
                 ->getListQuery(),
             $request->query->getInt('page', 1),
-            25
+            self::ENVIRONMENTS_LIMIT
         );
 
         return [ 'environments' => $environments ];
     }
 
     /**
+     * Create new environment. Show and process environment form. After success
+     * processing of form redirect to map creation.
+     *
      * @Configuration\Route("/new")
      * @Configuration\Template()
      *
@@ -56,7 +63,7 @@ class MainController extends AbstractGovWikiAdminController
              * Forward to map controller in order to create new map.
              */
             return $this->forward('GovWikiAdminBundle:Map:new', [
-                'environment' => $environment->getName(),
+                'environment' => $environment,
             ]);
         }
         return [ 'form' => $form->createView() ];

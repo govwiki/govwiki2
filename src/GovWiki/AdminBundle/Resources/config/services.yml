@@ -3,3 +3,7 @@ services:
         class: GovWiki\AdminBundle\Twig\TwigExtensions
         tags:
             - { name: twig.extension }
+
+    govwiki_admin.manager.transformer:
+        class: GovWiki\AdminBundle\Transformer\Service\TransformerManager
+        arguments: [@service_container]

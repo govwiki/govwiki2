@@ -9,7 +9,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
  * Class EnvironmentManager
  * @package GovWiki\ApiBundle\Manager
  */
-class EnvironmentManager
+class EnvironmentManager implements EnvironmentManagerAwareInterface
 {
     /**
      * @var EntityManagerInterface
@@ -30,9 +30,7 @@ class EnvironmentManager
     }
 
     /**
-     * @param string $environment Environment name, same as map name.
-     *
-     * @return EnvironmentManager
+     * {@inheritdoc}
      */
     public function setEnvironment($environment)
     {

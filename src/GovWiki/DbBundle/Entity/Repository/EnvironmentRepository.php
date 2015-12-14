@@ -2,6 +2,7 @@
 
 namespace GovWiki\DbBundle\Entity\Repository;
 
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\ORMException;
@@ -67,5 +68,31 @@ class EnvironmentRepository extends EntityRepository
         }
 
         return $this->_em->getReference($this->_entityName, $id);
+    }
+
+    /**
+     * Resolve domain name to environment name.
+     *
+     * @param string $domain Environment domain name.
+     *
+     * @return string|null
+     */
+    public function getNameByDomain($domain)
+    {
+        $qb = $this->createQueryBuilder('Environment');
+        $expr = $qb->expr();
+
+        try {
+            return $qb
+                ->select('Environment.name')
+                ->where($expr->eq(
+                    'Environment.domain',
+                    $expr->literal($domain)
+                ))
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (QueryException $e) {
+            return null;
+        }
     }
 }

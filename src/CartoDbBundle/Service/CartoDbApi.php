@@ -1,10 +1,12 @@
 <?php
 
 namespace CartoDbBundle\Service;
+
 use CartoDbBundle\Exception\CartoDBRequestFailException;
 
 /**
- * Class CartoDbApi
+ * Wrapper under carto db api.
+ *
  * @package GovWiki\CartoDbBundle\Service
  */
 class CartoDbApi
@@ -30,18 +32,33 @@ class CartoDbApi
     }
 
     /**
-     * Return item queue id.
+     * Send file with data to CartoDB.
      *
      * @param string $filePath Path to GeoJson data file.
      *
-     * @return string
+     * @return string Item queue id.
      *
      * @throws CartoDBRequestFailException Fail request.
      */
-    public function importDataset($filePath)
+    public function importDataset($filePath, $createNewMap = false)
     {
-        $response = $this
-            ->makeRequest('/imports', 'POST', [ 'file' => "@{$filePath}" ]);
+        $uri = '/imports';
+        if ($createNewMap) {
+            $uri .= '?create_vis=true&api_key='. $this->apiKey;
+        }
+        $filePath = realpath($filePath);
+
+        $handler = curl_init($this->endpoint . $uri);
+        curl_setopt_array($handler, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => [ 'file' => "@{$filePath}" ],
+            CURLOPT_RETURNTRANSFER => true,
+        ]);
+        $response = curl_exec($handler);
+        curl_close($handler);
+
+//        $response = $this
+//            ->makeRequest($uri, 'POST', [ 'file' => "@{$filePath}" ]);
 
         if (array_key_exists('success', $response)
             && $response['success'] === true) {
@@ -52,6 +69,8 @@ class CartoDbApi
     }
 
     /**
+     * Use item queue id returned from {@see CartoDbApi::importDataset}.
+     *
      * @param string $itemQueueId Carto db item queue id.
      *
      * @return array
@@ -71,6 +90,8 @@ class CartoDbApi
     }
 
     /**
+     * Wrapper under curl for making request to api.
+     *
      * @param string $uri        Relative to CartoDB api end point.
      * @param string $method     Http method.
      * @param array  $parameters Request parameters.
@@ -81,24 +102,37 @@ class CartoDbApi
     {
         $method = strtoupper($method);
 
-        if ('get' === $method) {
+        if ('GET' === $method) {
+            /*
+             * Add api key to parameters.
+             */
             $parameters = array_merge(
                 $parameters,
                 [ 'api_key' => $this->apiKey ]
             );
         } else {
-            $uri .= "?api_key={$this->apiKey}";
+            /*
+             * Add api key to query parameters.
+             */
+            if (strpos($uri, '?') === false) {
+                $uri .= "?api_key={$this->apiKey}";
+            } else {
+                $uri .= "&api_key={$this->apiKey}";
+            }
         }
 
         $handler = curl_init("{$this->endpoint}${uri}");
 
+        if ('GET' !== $method) {
+            curl_setopt($handler, CURLOPT_POST, true);
+        }
+
         curl_setopt_array($handler, [
-            CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_POSTFIELDS => $parameters,
         ]);
 
-        $response = curl_error($handler);
+        $response = curl_exec($handler);
         curl_close($handler);
 
         return json_decode($response, true);

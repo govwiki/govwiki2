@@ -29,8 +29,9 @@ class CartoDbExtension extends Extension
         $cartoDbApi = $container
             ->getDefinition(CartoDbServices::CARTO_DB_API);
 
-        $cartoDbApi
-            ->addArgument($config['api_key'])
-            ->addArgument($config['account_name']);
+        $cartoDbApi->setArguments([
+            $config['api_key'],
+            $config['account_name'],
+        ]);
     }
 }

@@ -36,7 +36,7 @@ class MapRepository extends EntityRepository
 
         try {
             return $qb
-                ->select('partial Map.{id,name,itemQueueId}')
+                ->select('partial Map.{id,itemQueueId}')
                 ->join('Map.environment', 'Environment')
                 ->where($expr->eq('Environment.name', $expr->literal($environment)))
                 ->getQuery()

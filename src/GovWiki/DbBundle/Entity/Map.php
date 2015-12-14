@@ -80,6 +80,13 @@ class Map
     private $zoom;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $created = false;
+
+    /**
      * @var Environment
      *
      * @ORM\OneToOne(targetEntity="Environment", mappedBy="map")
@@ -221,7 +228,7 @@ class Map
     }
 
     /**
-     * @param float $centerLongitude
+     * @param float $centerLongitude Longitude of map center.
      *
      * @return Map
      */
@@ -241,7 +248,7 @@ class Map
     }
 
     /**
-     * @param float $centerLatitude
+     * @param float $centerLatitude Latitude of map center.
      *
      * @return Map
      */
@@ -308,6 +315,26 @@ class Map
     public function setGovernmentsFile(UploadedFile $governmentsFile = null)
     {
         $this->governmentsFile = $governmentsFile;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param boolean $created Flag, if true use update to manage map.
+     *
+     * @return Map
+     */
+    public function setCreated($created)
+    {
+        $this->created = $created;
 
         return $this;
     }

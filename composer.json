@@ -27,7 +27,6 @@
         "stof/doctrine-extensions-bundle": "^1.2",
         "friendsofsymfony/user-bundle": "~2.0@dev",
         "guzzlehttp/guzzle": "~6.1",
-        "friendsofsymfony/oauth-server-bundle": "dev-master",
         "egeloen/ckeditor-bundle": "^2.5"
     },
     "require-dev": {

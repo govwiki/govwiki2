@@ -34,10 +34,11 @@ class MapController extends AbstractGovWikiAdminController
         /** @var Map $map */
         $map = $this->repository()->getByEnvironment($environment);
         if (null === $map) {
-            throw $this->createNotFoundException(
-                "Map for environment $environment not found"
-            );
+            return $this->forward('GovWikiAdminBundle:Map:new', [
+                'environment' => $environment,
+            ]);
         }
+
         $form = $this->createForm(new MapType(), $map);
 
         $form->handleRequest($request);
@@ -46,7 +47,7 @@ class MapController extends AbstractGovWikiAdminController
         $isImported = null !== $map->getItemQueueId();
         if ($isImported) {
             /*
-             * Governments data is now exported to CartoDB service.
+             * Governments data exported to CartoDB service.
              */
             $result = $this->get(CartoDbServices::CARTO_DB_API)
                 ->checkImportProcess($map->getItemQueueId());
@@ -70,20 +71,33 @@ class MapController extends AbstractGovWikiAdminController
 
     /**
      * Here it is forwarded from the {@see MainController::newAction}.
+     * Set up map parameters and import county or municipals GeoJson file to
+     * CartoDB server.
      *
      * @Configuration\Route("/new", methods={"POST"})
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request            $request     A Request instance.
+     * @param Environment|string $environment A Environment instance or
+     *                                        environment name.
      *
      * @return array
      */
     public function newAction(Request $request, $environment)
     {
-        $environmentObj = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Environment')
-            ->getReferenceByName($environment);
+        if ($environment instanceof Environment) {
+            $environmentObj = $environment;
+            $environment = $environment->getName();
+        } else {
+            $environmentObj = $this->getDoctrine()
+                ->getRepository('GovWikiDbBundle:Environment')
+                ->getReferenceByName($environment);
+            if (null === $environmentObj) {
+                throw $this->createNotFoundException(
+                    "Environment with name '$environment' not found"
+                );
+            }
+        }
 
         $map = new Map();
         $map->setEnvironment($environmentObj);
@@ -100,9 +114,10 @@ class MapController extends AbstractGovWikiAdminController
              * Upload county dataset to CartoDB.
              */
             $file = $map->getCountyFile();
-            $itemQueueId = $cartoDbApi->importDataset(
-                $file->getPath() .'/'. $file->getFilename()
-            );
+            $file->move($this->getParameter('kernel.logs_dir'), "{$environment}_county.json");
+            $file = $this->getParameter('kernel.logs_dir'). "/{$environment}_county.json";
+            $itemQueueId = $cartoDbApi->importDataset($file, true);
+            unlink($file);
 
             $map->setItemQueueId($itemQueueId);
             $em->persist($map);
