@@ -2,7 +2,6 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
-use GovWiki\ApiBundle\GovWikiApiServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -15,44 +14,11 @@ class MainController extends Controller
 {
     /**
      * @Route("/")
-     * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
+     * @Template("GovWikiFrontendBundle:Home:home.html.twig")
      *
      * @return array
      */
     public function mapAction()
-    {
-        return $this->renderMainTemplate();
-    }
-
-    /**
-     * @Route("/{altTypeSlug}/{slug}", name="government_show")
-     * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
-     *
-     * @return array
-     */
-    public function governmentAction()
-    {
-        return $this->renderMainTemplate();
-    }
-
-    /**
-     * @Route("/rank_order")
-     * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
-     *
-     * @return array
-     */
-    public function rankOrderAction()
-    {
-        return $this->renderMainTemplate();
-    }
-
-    /**
-     * @Route("/{govAltTypeSlug}/{govSlug}/{eoSlug}")
-     * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
-     *
-     * @return array
-     */
-    public function electedOfficialAction()
     {
         return $this->renderMainTemplate();
     }
@@ -68,9 +34,12 @@ class MainController extends Controller
         if (null !== $user) {
             $username = $user->getUsername();
         }
-        return [
-            'authorized' => (null !== $user) ? 1 : 0,
-            'username' => $username,
-        ];
+
+        $authorized = (null !== $user) ? 1 : 0;
+
+        $this->get('twig')->addGlobal('authorized', $authorized);
+        $this->get('twig')->addGlobal('username', $username);
+
+        return [];
     }
 }

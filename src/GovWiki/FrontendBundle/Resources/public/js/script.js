@@ -1,3 +1,67 @@
+
+map = new GMaps({
+    el: '#govmap',
+    lat: 37.3,
+    lng: -119.3,
+    zoom: 6,
+    minZoom: 6,
+    scrollwheel: true,
+    mapTypeControl: false,
+    panControl: false,
+    zoomControl: true,
+    zoomControlOptions:{
+        style: google.maps.ZoomControlStyle.SMALL
+    },
+    markerClusterer: function (map) {
+        options = {
+            textSize: 14,
+            textColor: 'red',
+            gridSize: 0,
+            minimumClusterSize: 5,
+            ignoreHidden: true,
+            legend: {
+                "City":"red",
+                "School District" : "blue",
+                "Special District" : "purple"
+            }
+        };
+
+        return new MarkerClusterer(map, [], options);
+    }
+
+});
+
+$.ajax({
+    url:"/api/government/get-markers-data",
+    data: { limit: 100 },
+    dataType: 'json',
+    cache: true,
+    success: function (success) {
+
+        success.forEach(function (rec) {
+
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(rec.latitude, rec.longitude),
+                title:  rec.name + ' ' + rec.type,
+                type: rec.altType
+            });
+
+            marker.addListener('click', function (e) {
+                window.location.pathname = '/app_dev.php/' + rec.altTypeSlug + '/' + rec.slug;
+            });
+
+            map.markerClusterer.addMarker(marker, true);
+
+        });
+
+    },
+    error: function (err) {
+        console.log(err);
+    }
+});
+
+
+
 // Modal
 
 function showModal(target) {

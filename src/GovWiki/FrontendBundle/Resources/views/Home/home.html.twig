@@ -1,0 +1,83 @@
+{% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
+
+{% block content %}
+
+    <!-- Search & Filters-->
+    <div id="searchContainer" style="width0:100%" class="container container-fluid">
+
+        <div style="padding-top:40px;margin-bottom:10px;" class="row search-form">
+            <div id="typeahed-container" style="border:0px solid red" class="col-sm-5">
+                <input id="myinput" type="text" placeholder="Loading the list of governments"
+                       style="width:412px" class="text-uppercase typeahead form-control0">
+
+                <p class="text-center text-nowrap hidden-xs hidden-sm">Type part of the agency's name &nbsp;&nbsp;<img
+                            src="/legacy/img/FullSizeRender.gif" style="width:40px">
+                    <!--span(style="font-size:150%; position:relative; top:-6px;")⤴-->&nbsp; or click it on the map &nbsp;&nbsp;<img
+                            src="/legacy/img/FullSizeRender1.gif" style="width:40px">
+                    <!--span(style="font-size:150%;position: relative; top:12px;")⤵-->
+                </p>
+            </div>
+            <div style="border:0px solid red; opacity:0.5;padding:0;margin:0; line-height:1"
+                 class="col-sm-2 text-center hidden-xs">
+                <div style="margin-top:8px; font-size:150%;font-weight:bold;" class="gov-counter"></div>
+            </div>
+        </div>
+        <div style="margin-bottom:100px;" class="row">
+            <div style="padding:0;" class="col-sm-12 col-lg-5 col-md-6">
+                <div id="maparea" style="border:1px solid #e1e1e1;margin-left:10px;">
+                    <div id="govmap"></div>
+                    <!-- Controls to show results of geocoding-->
+                    <!--div
+                    .input-group
+                      span.input-group-addon
+                        strong FIND:
+                      input#govaddress.form-control.input-sm ss
+                      .input-group-btn
+                        button.glyphicon.glyphicon-search.btn.btn-default.input-sm(onclick="geocode_addr('#govaddress')")
+                    .govmap-found
+                    -->
+                </div>
+            </div>
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <div id="intro-text">
+                    <h3 style="text-align:center;">Welcome to California Policy Center’s Civic Performance Profiles</h3>
+                    <font size="3">
+                        <p>Is your local government giving you value for money? Use CPC’s Civic Performance Profiles to see how your city, county, school district or special district stacks up.</p>
+                        <p>Among the surprising facts we learned while compiling this database:</p>
+                        <ul>
+                            <li><a href="County/Los_Angeles">Los Angeles County</a> has unfunded retiree health liabilities of $26.7 billion.</li>
+                            <li>Median full time public employee salary and benefits in <a href="/City/San_Jose">San Jose</a> exceeds $157,000.</li>
+                            <li>The Superintendent of <a href="/School_District/New_Haven_Unified_School_District">New Haven Unified School District</a> in Alameda County received almost $650,000 in salary and benefits while the district’s Academic Performance Index is below the state median.</li>
+                        </ul>
+                        <p>To learn more about a California local government that affects you, please select it from the map or by typing its name.</p>
+                    </font>
+                </div>
+                <!--include right_panel.html-->
+            </div>
+        </div>
+        <div style="display:none;">
+            <div id="legend" class="panel panel-default">
+                <div class="panel-heading">Select type(s):</div>
+                <ul class="list-group">
+                    <li class="list-group-item active"><span class="glyphicon glyphicon-ok"></span><i
+                                class="red-circle marker-circle"></i>Cities
+                        <input type="hidden" name="City" value="1" class="type_filter">
+                    </li>
+                    <li class="list-group-item active counties-trigger"><span class="glyphicon glyphicon-ok"></span><i
+                                class="grey-line"></i><!--<span class="counties-title">-->Counties<!--</span>--></li>
+                    <li class="list-group-item active"><span class="glyphicon glyphicon-ok"></span><i
+                                class="blue-circle marker-circle"></i>School Districts
+                        <input type="hidden" name="School District" value="1" class="type_filter">
+                    </li>
+                    <li class="list-group-item active"><span class="glyphicon glyphicon-ok"></span><i
+                                class="purple-circle marker-circle"></i>Special Districts
+                        <input type="hidden" name="Special District" value="1" class="type_filter">
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+{% block body %}{% endblock %}

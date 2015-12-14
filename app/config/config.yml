@@ -47,7 +47,7 @@ twig:
 assetic:
     debug:          "%kernel.debug%"
     use_controller: false
-    bundles:        [ 'GovWikiAdminBundle' ]
+    bundles:        [ 'GovWikiAdminBundle', 'GovWikiFrontendBundle' ]
     #java: /usr/bin/java
     filters:
         cssrewrite: ~
