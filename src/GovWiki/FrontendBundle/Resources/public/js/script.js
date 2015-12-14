@@ -76,6 +76,11 @@ $('#modal-window').on('hidden.bs.modal', function() {
 
 // Login
 
+$(document).on('click', '.show-login-modal', function(event) {
+    event.preventDefault();
+    showModal('/login');
+});
+
 $('body').on('submit', '#ajax-login-form', function(event) {
     event.preventDefault();
     $form = $(this);
