@@ -38,7 +38,8 @@ class EnvironmentRepository extends EntityRepository
 
         try {
             return $qb
-                ->select('Environment')
+                ->addSelect('Map')
+                ->leftJoin('Environment.map', 'Map')
                 ->where($expr->eq('Environment.name', $expr->literal($environment)))
                 ->getQuery()
                 ->getOneOrNullResult();
@@ -85,13 +86,16 @@ class EnvironmentRepository extends EntityRepository
         try {
             return $qb
                 ->select('Environment.name')
-                ->where($expr->eq(
-                    'Environment.domain',
-                    $expr->literal($domain)
+                ->where($expr->andX(
+                    $expr->eq(
+                        'Environment.domain',
+                        $expr->literal($domain)
+                    ),
+                    $expr->eq('Environment.enabled', 1)
                 ))
                 ->getQuery()
                 ->getSingleScalarResult();
-        } catch (QueryException $e) {
+        } catch (ORMException $e) {
             return null;
         }
     }

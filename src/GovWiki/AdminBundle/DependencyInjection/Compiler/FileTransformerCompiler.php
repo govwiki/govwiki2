@@ -30,7 +30,8 @@ class FileTransformerCompiler implements CompilerPassInterface
         foreach ($transformers as $id => $tags) {
             $transformerManager->addMethodCall('addTransformer', [
                 $id,
-                $tags['alias'],
+                $tags[0]['alias'],
+                $container->getDefinition($id)->getClass()
             ]);
         }
     }

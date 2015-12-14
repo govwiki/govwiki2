@@ -36,7 +36,6 @@ class MapRepository extends EntityRepository
 
         try {
             return $qb
-                ->select('partial Map.{id,itemQueueId}')
                 ->join('Map.environment', 'Environment')
                 ->where($expr->eq('Environment.name', $expr->literal($environment)))
                 ->getQuery()
@@ -47,7 +46,7 @@ class MapRepository extends EntityRepository
     }
 
     /**
-     * @param string $name Map name.
+     * @param string $name Environment name.
      *
      * @return array|null
      */
@@ -57,11 +56,11 @@ class MapRepository extends EntityRepository
         $expr = $qb->expr();
 
         $map = $qb
-            ->addSelect(
-                'partial Government.{id,name,type,slug,altType,altTypeSlug,latitude,longitude}'
+            ->select(
+                'partial Map.{id, vizUrl, centerLatitude, centerLongitude, zoom}'
             )
-            ->leftJoin('Map.governments', 'Government')
-            ->where($expr->eq('Map.name', $expr->literal($name)))
+            ->leftJoin('Map.environment', 'Environment')
+            ->where($expr->eq('Environment.name', $expr->literal($name)))
             ->getQuery()
             ->getArrayResult();
 

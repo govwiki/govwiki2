@@ -28,13 +28,14 @@ class CartoDbApi
     public function __construct($apiKey, $account)
     {
         $this->apiKey = $apiKey;
-        $this->endpoint = "https://{$account}.cartodb.com/api/v1";
+        $this->endpoint = "https://{$account}.cartodb.com/api";
     }
 
     /**
      * Send file with data to CartoDB.
      *
-     * @param string $filePath Path to GeoJson data file.
+     * @param string  $filePath     Path to GeoJson data file.
+     * @param boolean $createNewMap If set create new 'Unnamed map'.
      *
      * @return string Item queue id.
      *
@@ -42,23 +43,14 @@ class CartoDbApi
      */
     public function importDataset($filePath, $createNewMap = false)
     {
-        $uri = '/imports';
+        $uri = '/v1/imports';
         if ($createNewMap) {
-            $uri .= '?create_vis=true&api_key='. $this->apiKey;
+            $uri .= '?create_vis=true';
         }
         $filePath = realpath($filePath);
 
-        $handler = curl_init($this->endpoint . $uri);
-        curl_setopt_array($handler, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => [ 'file' => "@{$filePath}" ],
-            CURLOPT_RETURNTRANSFER => true,
-        ]);
-        $response = curl_exec($handler);
-        curl_close($handler);
-
-//        $response = $this
-//            ->makeRequest($uri, 'POST', [ 'file' => "@{$filePath}" ]);
+        $response = $this
+            ->makeRequest($uri, 'POST', [ 'file' => "@{$filePath}" ]);
 
         if (array_key_exists('success', $response)
             && $response['success'] === true) {
@@ -69,7 +61,8 @@ class CartoDbApi
     }
 
     /**
-     * Use item queue id returned from {@see CartoDbApi::importDataset}.
+     * Check import status by using item queue id returned from
+     * {@see CartoDbApi::importDataset}.
      *
      * @param string $itemQueueId Carto db item queue id.
      *
@@ -79,7 +72,7 @@ class CartoDbApi
      */
     public function checkImportProcess($itemQueueId)
     {
-        $response = $this->makeRequest("/imports/{$itemQueueId}");
+        $response = $this->makeRequest("/v1/imports/{$itemQueueId}");
 
         if (array_key_exists('success', $response)
             && $response['success'] === true) {
@@ -87,6 +80,25 @@ class CartoDbApi
         }
 
         throw new CartoDBRequestFailException($response);
+    }
+
+    /**
+     * Fetch visualization url from response.
+     *
+     * @param array $response Response from
+     *                        {@see CartoDbApi::checkImpostProcess}.
+     *
+     * @return string
+     */
+    public function getVizUrl(array $response)
+    {
+        if (array_key_exists('visualization_id', $response) &&
+            'complete' === $response['state']) {
+            $vizId = $response['visualization_id'];
+            return "{$this->endpoint}/v2/viz/{$vizId}/viz.json";
+        }
+
+        return null;
     }
 
     /**
@@ -102,35 +114,22 @@ class CartoDbApi
     {
         $method = strtoupper($method);
 
-        if ('GET' === $method) {
-            /*
-             * Add api key to parameters.
-             */
-            $parameters = array_merge(
-                $parameters,
-                [ 'api_key' => $this->apiKey ]
-            );
+        if (strpos($uri, '?') === false) {
+            $uri .= "?api_key={$this->apiKey}";
         } else {
-            /*
-             * Add api key to query parameters.
-             */
-            if (strpos($uri, '?') === false) {
-                $uri .= "?api_key={$this->apiKey}";
-            } else {
-                $uri .= "&api_key={$this->apiKey}";
-            }
+            $uri .= "&api_key={$this->apiKey}";
         }
 
         $handler = curl_init("{$this->endpoint}${uri}");
 
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
+
         if ('GET' !== $method) {
             curl_setopt($handler, CURLOPT_POST, true);
         }
-
-        curl_setopt_array($handler, [
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_POSTFIELDS => $parameters,
-        ]);
+        if (count($parameters) > 0) {
+            curl_setopt($handler, CURLOPT_POSTFIELDS, $parameters);
+        }
 
         $response = curl_exec($handler);
         curl_close($handler);

@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\ApiBundle\Controller;
+namespace GovWiki\ApiBundle\Controller\V1;
 
 use GuzzleHttp\Client;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\ApiBundle\Controller;
+namespace GovWiki\ApiBundle\Controller\V1;
 
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Repository\CreateRequestRepository;

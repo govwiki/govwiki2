@@ -2,6 +2,8 @@
 
 namespace GovWiki\DbBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -81,16 +83,39 @@ class Environment
     private $map;
 
     /**
-     * @var Format
+     * @var Collection
      *
-     * @ORM\OneToOne(
-     *  targetEntity="Format",
-     *  inversedBy="environment",
-     *  cascade={"remove"}
-     *)
-     * @ORM\JoinColumn(name="format_id")
+     * @ORM\OneToMany(targetEntity="Government", mappedBy="environment")
      */
-    private $format;
+    private $governments;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(
+     *  targetEntity="Format",
+     *  mappedBy="environment",
+     *  cascade={"remove", "persist"}
+     *)
+     */
+    private $formats;
+
+    /**
+     *
+     */
+    public function __construct()
+    {
+        $this->governments = new ArrayCollection();
+        $this->formats = new ArrayCollection();
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
+    }
 
     /**
      * @return integer
@@ -109,7 +134,7 @@ class Environment
     }
 
     /**
-     * @param string $name
+     * @param string $name Environment name.
      *
      * @return Environment
      */
@@ -129,7 +154,7 @@ class Environment
     }
 
     /**
-     * @param string $domain
+     * @param string $domain Environment domain name.
      *
      * @return Environment
      */
@@ -210,10 +235,22 @@ class Environment
 
     /**
      * @param boolean $enabled
+     *
+     * @return Environment
      */
     public function setEnabled($enabled)
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * @return Environment
+     */
+    public function toggleEnabled()
+    {
+        $this->enabled = ! $this->enabled;
 
         return $this;
     }
@@ -243,7 +280,7 @@ class Environment
      */
     public function getFormat()
     {
-        return $this->format;
+        return $this->formats;
     }
 
     /**
@@ -251,10 +288,62 @@ class Environment
      *
      * @return Environment
      */
-    public function setFormat(Format $format)
+    public function addFormat(Format $format)
     {
-        $this->format = $format;
+        $format->setEnvironment($this);
+        $this->formats[] = $format;
 
         return $this;
+    }
+
+    /**
+     * @param Format $format A Format instance.
+     *
+     * @return Environment
+     */
+    public function removeFormat(Format $format)
+    {
+        $format->setEnvironment(null);
+        $this->formats->removeElement($format);
+
+        return $this;
+    }
+
+    /**
+     * Add government
+     *
+     * @param Government $government A Government instance.
+     *
+     * @return Government
+     */
+    public function addGovernment(Government $government)
+    {
+        $this->governments[] = $government;
+
+        return $this;
+    }
+
+    /**
+     * Remove government
+     *
+     * @param Government $government A Government instance.
+     *
+     * @return Government
+     */
+    public function removeGovernment(Government $government)
+    {
+        $this->governments->removeElement($government);
+
+        return $this;
+    }
+
+    /**
+     * Get government
+     *
+     * @return Collection
+     */
+    public function getGovernments()
+    {
+        return $this->governments;
     }
 }

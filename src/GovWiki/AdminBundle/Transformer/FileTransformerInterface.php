@@ -37,4 +37,11 @@ interface FileTransformerInterface
      * @return array
      */
     public static function supportedExtensions();
+
+    /**
+     * Return format name.
+     *
+     * @return string
+     */
+    public static function getFormatName();
 }

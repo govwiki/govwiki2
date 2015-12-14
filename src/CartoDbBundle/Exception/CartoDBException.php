@@ -3,7 +3,8 @@
 namespace CartoDbBundle\Exception;
 
 /**
- * Class CartoDBException
+ * Base class for all carto db api exception.
+ *
  * @package CartoDbBundle\Exception
  */
 class CartoDBException extends \RuntimeException

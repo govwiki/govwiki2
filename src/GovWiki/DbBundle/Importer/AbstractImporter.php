@@ -36,7 +36,7 @@ abstract class AbstractImporter
      * @throws InvalidFieldNameException One of field not found in entity.
      * @throws FileTransformerException File transformation fail.
      */
-    abstract protected function import(
+    abstract public function import(
         $filePath,
         FileTransformerInterface $transformer
     );
@@ -52,7 +52,7 @@ abstract class AbstractImporter
      * @throws InvalidFieldNameException One of field not found in entity.
      * @throws FileTransformerException File transformation fail.
      */
-    abstract protected function export(
+    abstract public function export(
         $filePath,
         array $columns,
         FileTransformerInterface $transformer

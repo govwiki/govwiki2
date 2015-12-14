@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\ApiBundle\Controller;
+namespace GovWiki\ApiBundle\Controller\V1;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  *
  * @Configuration\Route("/map")
  */
-class MapController extends AbstractGovWikiController
+class MapController extends AbstractGovWikiApiController
 {
     /**
      * @Configuration\Route()
@@ -20,6 +20,8 @@ class MapController extends AbstractGovWikiController
      */
     public function indexAction()
     {
+        $this->environmentManager();
+
         try {
             $map = $this->environmentManager()->getMap();
         } catch (\Exception $e) {

@@ -5,6 +5,7 @@ namespace GovWiki\AdminBundle\Controller;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Form\EnvironmentType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -73,11 +74,12 @@ class MainController extends AbstractGovWikiAdminController
      * @Configuration\Route("/{environment}")
      * @Configuration\Template()
      *
-     * @param string $environment Environment name.
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
      *
      * @return array
      */
-    public function showAction($environment)
+    public function showAction(Request $request, $environment)
     {
         $environmentObj = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:Environment')
@@ -89,7 +91,17 @@ class MainController extends AbstractGovWikiAdminController
             );
         }
 
-        return [ 'environment' => $environmentObj ];
+        $form = $this->createForm(new EnvironmentType(), $environmentObj);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->persist($environmentObj);
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        return [
+            'form' => $form->createView(),
+            'environment' => $environmentObj,
+        ];
     }
 
     /**
@@ -112,5 +124,63 @@ class MainController extends AbstractGovWikiAdminController
         }
 
         return $this->redirectToRoute('govwiki_admin_main_home');
+    }
+
+    /**
+     * @Configuration\Route("/{environment}/enable")
+     *
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
+     *
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function enableAction(Request $request, $environment)
+    {
+        $this->toggle($environment, true);
+
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse();
+        }
+
+        return $this->redirectToRoute('govwiki_admin_main_show', [
+            'environment' => $environment,
+        ]);
+    }
+
+    /**
+     * @Configuration\Route("/{environment}/disable")
+     *
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
+     *
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function disableAction(Request $request, $environment)
+    {
+        $this->toggle($environment, false);
+
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse();
+        }
+
+        return $this->redirectToRoute('govwiki_admin_main_show', [
+            'environment' => $environment,
+        ]);
+    }
+
+    /**
+     * @param string  $environment Environment name.
+     * @param boolean $isEnabled   New enabled value.
+     *
+     * @return void
+     */
+    private function toggle($environment, $isEnabled)
+    {
+        $environmentObj = $this->getDoctrine()->getRepository('GovWikiDbBundle:Environment')
+            ->findOneBy([ 'name' => $environment ]);
+
+        $environmentObj->setEnabled($isEnabled);
+        $this->getDoctrine()->getManager()->persist($environmentObj);
+        $this->getDoctrine()->getManager()->flush();
     }
 }

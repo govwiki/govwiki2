@@ -1,5 +1,19 @@
 services:
-  govwiki_db.service.max_ranks_computer:
-    class: GovWiki\DbBundle\Service\MaxRankComputer
-    arguments:
-      - @doctrine.orm.entity_manager
+    govwiki_db.service.max_ranks_computer:
+        class: GovWiki\DbBundle\Service\MaxRankComputer
+        arguments:
+            - @doctrine.orm.entity_manager
+
+    govwiki_db.importer.abstract:
+        class: GovWiki\DbBundle\Importer\AbstractImporter
+        arguments: [@doctrine.orm.default_entity_manager]
+
+    govwiki_db.importer.government:
+        class: GovWiki\DbBundle\Importer\GovernmentImporter
+        parent: govwiki_db.importer.abstract
+
+    govwiki_db.form.type.alt_type:
+        class: GovWiki\DbBundle\Form\Type\AltTypeType
+        arguments: [@govwiki_api.manager.environment]
+        tags:
+            - { name: form.type, alias: alt_type }

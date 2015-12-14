@@ -4,14 +4,22 @@ namespace GovWiki\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
+/**
+ * Class AbstractGovWikiAdminController
+ * @package GovWiki\AdminBundle\Controller
+ */
 class AbstractGovWikiAdminController extends Controller
 {
     /**
-     * @param $data
-     * @param $page
-     * @param $limit
+     * Helper method for pagination.
+     *
+     * @param mixed   $data  Paginated data.
+     * @param integer $page  Current viewed page, start from 1.
+     * @param integer $limit Max row per page.
      *
      * @return \Knp\Component\Pager\Pagination\PaginationInterface
+     *
+     * @throws \LogicException Can't found knp paginator.
      */
     protected function paginate($data, $page, $limit)
     {

@@ -66,8 +66,6 @@ doctrine:
         user:     "%database_user%"
         password: "%database_password%"
         charset:  UTF8
-        types:
-            lat_lng: GovWiki\DbBundle\Doctrine\DBAL\Type\LatLngType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
@@ -87,29 +85,34 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: memory }
 
-# KnpPaginatorBundle
+# KnpPaginatorBundle Configuration
 knp_paginator:
     template:
         pagination: KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig
 
+# StofDoctrineExtension Configuration
 stof_doctrine_extensions:
     orm:
         default:
             sluggable:     true
             timestampable: true
 
+# FosUserBundle Configuration
 fos_user:
     db_driver: orm
     firewall_name: main
     user_class: GovWiki\UserBundle\Entity\User
 
+# JmsSerializationBundle Configuration
 jms_serializer:
     property_naming:
         separator: ~
         lower_case: false
 
+# IvoryCkEditorBundle Configuration
 ivory_ck_editor: ~
 
+# CartoDbBundle Configuration
 carto_db:
     api_key: %carto_db.api_key%
     account_name: %carto_db.account%

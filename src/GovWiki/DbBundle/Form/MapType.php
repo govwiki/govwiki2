@@ -4,39 +4,55 @@ namespace GovWiki\DbBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * MapType
+ * Class MapType
+ * @package GovWiki\DbBundle\Form
  */
 class MapType extends AbstractType
 {
     /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
+     * @var boolean
+     */
+    private $isNew;
+
+    /**
+     * @param boolean $isNew Flag, is set build form for new map creation.
+     */
+    public function __construct($isNew = false)
+    {
+        $this->isNew = $isNew;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('centerLatitude', 'number')
             ->add('centerLongitude', 'number')
-            ->add('zoom', 'integer')
-            ->add('countyFile', 'file')
-            ->add('governmentsFile', 'file', [ 'required' => false ]);
+            ->add('zoom', 'integer');
+        if ($this->isNew) {
+            $builder
+                ->add('countyFile', 'file')
+                ->add('governmentsFile', 'file', ['required' => false]);
+        }
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'GovWiki\DbBundle\Entity\Map'
-        ));
+        $resolver->setDefaults([
+            'data_class' => 'GovWiki\DbBundle\Entity\Map',
+        ]);
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {

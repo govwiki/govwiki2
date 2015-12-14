@@ -3,54 +3,52 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use GovWiki\DbBundle\Entity\EditRequest;
 
 /**
  * EditRequestController
+ *
+ * @Configuration\Route("/{environment}/editrequest")
  */
 class EditRequestController extends Controller
 {
     /**
-     * @Route("/")
-     * @Template
+     * @Configuration\Route("/")
+     * @Configuration\Template
      *
-     * @param Request $request
-     * @return Response
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
+     *
+     * @return array
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $environment)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $editRequestsQuery = $em->createQuery(
-            'SELECT er FROM GovWikiDbBundle:EditRequest er
-            LEFT JOIN er.user u
-            WHERE er.status != :status
-            ORDER BY er.created DESC'
-        )->setParameter('status', 'discarded');
-
         $editRequests = $this->get('knp_paginator')->paginate(
-            $editRequestsQuery,
+            $this->getDoctrine()->getRepository('GovWikiDbBundle:EditRequest')
+                ->getListQuery($environment),
             $request->query->getInt('page', 1),
             50
         );
 
-        return ['editRequests' => $editRequests];
+        return [
+            'editRequests' => $editRequests,
+            'environment' => $environment,
+        ];
     }
 
     /**
-     * @Route("/{id}")
-     * @Template
+     * @Configuration\Route("/{id}")
+     * @Configuration\Template
      *
      * @param EditRequest $editRequest A EditRequest instance.
+     * @param string      $environment Environment name.
      *
      * @return array
      */
-    public function showAction(EditRequest $editRequest)
+    public function showAction(EditRequest $editRequest, $environment)
     {
         $em = $this->getDoctrine()->getManager();
         $errors = [];
@@ -86,17 +84,19 @@ class EditRequestController extends Controller
             'governmentName' => $governmentName,
             'changes'        => $changes,
             'errors'         => $errors,
+            'environment'    => $environment,
         ];
     }
 
     /**
-     * @Route("/{id}/apply")
+     * @Configuration\Route("/{id}/apply")
      *
      * @param EditRequest $editRequest A EditRequest instance.
+     * @param string      $environment Environment name.
      *
      * @return JsonResponse
      */
-    public function applyAction(EditRequest $editRequest)
+    public function applyAction(EditRequest $editRequest, $environment)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -113,29 +113,42 @@ class EditRequestController extends Controller
 
         $em->flush();
 
-        return new JsonResponse(['redirect' => $this->generateUrl('govwiki_admin_editrequest_index')]);
+        return new JsonResponse([
+            'redirect' => $this->generateUrl(
+                'govwiki_admin_editrequest_index',
+                [ 'environment' => $environment ]
+            )
+        ]);
     }
 
     /**
-     * @Route("/{id}/discard")
+     * @Configuration\Route("/{id}/discard")
      *
-     * @param EditRequest $editRequest
+     * @param EditRequest $editRequest A EditRequest instance.
+     * @param string      $environment Environment name.
+     *
      * @return JsonResponse
      */
-    public function discardAction(EditRequest $editRequest)
+    public function discardAction(EditRequest $editRequest, $environment)
     {
         $em = $this->getDoctrine()->getManager();
         $editRequest->setStatus('discarded');
         $em->flush();
 
-        return new JsonResponse(['redirect' => $this->generateUrl('govwiki_admin_editrequest_index')]);
+        return new JsonResponse([
+            'redirect' => $this->generateUrl(
+                'govwiki_admin_editrequest_index',
+                [ 'environment' => $environment ]
+            )
+        ]);
     }
 
     /**
-     * @Route("/{id}/remove")
+     * @Configuration\Route("/{id}/remove")
      *
-     * @param  EditRequest $editRequest
-     * @return JsonReponse
+     * @param EditRequest $editRequest A EditRequest instance.
+     *
+     * @return JsonResponse
      */
     public function removeAction(EditRequest $editRequest)
     {

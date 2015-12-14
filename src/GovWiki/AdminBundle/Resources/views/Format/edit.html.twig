@@ -1,16 +1,18 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
 
-{% block title %}Edit map {{ name }}{% endblock title %}
+{% block title %}{{ parent() }} - {{ environment|capitalize }} edit format{% endblock title %}
 
 {% block body %}
     <div class="container-fluid">
         {{ form_start(form) }}
         {{ form_widget(form) }}
         <button class="btn btn-success">Update</button>
-        <a class="btn btn-default" href="{{ path('map_list') }}">Back</a>
-        <a class="btn btn-primary{%- if not canExport %} disabled{%- endif -%}" href="{{ path('map_export', {name: name}) }}">
-            Export to CartoDB
-        </a>
+        <a class="btn btn-default" href="{{-
+            path(
+                'govwiki_admin_format_list',
+                { environment: environment }
+            )
+        -}}">Back</a>
         {{ form_end(form) }}
     </div>
 {% endblock body %}

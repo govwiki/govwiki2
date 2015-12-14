@@ -1,10 +1,15 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
 {% block title %}Show edit request{% endblock %}
 {% block body %}
     <div class="container">
         {% if errors %}
             <div class="col-md-2">
-                <a href="{{path('govwiki_admin_editrequest_index')}}" class="btn btn-default">
+                <a href="{{-
+                    path(
+                        'govwiki_admin_editrequest_index',
+                        { environment: environment }
+                    )
+                -}}" class="btn btn-default">
                     <span class="glyphicon glyphicon-chevron-left"></span>
                     Go back
                 </a>
@@ -44,8 +49,22 @@
                     </table>
                     <div class="panel-footer">
                         <div class="btn-group" style="width:100%;">
-                            <span data-link="{{path('govwiki_admin_editrequest_apply', {'id': editRequest.id})}}" style="width:50%;" class="btn btn-success ajax-choice{% if editRequest.status != 'pending' %} disabled{% endif %}">Apply</span>
-                            <span data-link="{{path('govwiki_admin_editrequest_discard', {'id': editRequest.id})}}" style="width:50%;" class="btn btn-danger ajax-choice{% if editRequest.status != 'pending' %} disabled{% endif %}">Discard</span>
+                            <span data-link="{{-
+                                path(
+                                    'govwiki_admin_editrequest_apply',
+                                    {
+                                        id: editRequest.id,
+                                        environment: environment
+                                    }
+                                )-}}" style="width:50%;" class="btn btn-success ajax-choice{% if editRequest.status != 'pending' %} disabled{% endif %}">Apply</span>
+                            <span data-link="{{-
+                                path(
+                                    'govwiki_admin_editrequest_discard',
+                                    {
+                                        id: editRequest.id,
+                                        environment: environment
+                                    }
+                                )-}}" style="width:50%;" class="btn btn-danger ajax-choice{% if editRequest.status != 'pending' %} disabled{% endif %}">Discard</span>
                         </div>
                     </div>
                 </div>

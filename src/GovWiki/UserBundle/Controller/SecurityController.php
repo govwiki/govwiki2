@@ -12,16 +12,16 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 /**
- * SecurityController
- *
- * @Route("/admin")
+ * Class SecurityController
+ * @package GovWiki\UserBundle\Controller
  */
 class SecurityController extends BaseController
 {
     /**
      * @Route("/login", name="login")
      *
-     * @param Request $request
+     * @param Request $request A Request instance.
+     *
      * @return Response|JsonResponse
      */
     public function loginAction(Request $request)
@@ -76,8 +76,9 @@ class SecurityController extends BaseController
     }
 
     /**
-     * @param array $data
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param array $data Template parameters.
+     *
+     * @return Response
      */
     protected function renderLogin(array $data)
     {

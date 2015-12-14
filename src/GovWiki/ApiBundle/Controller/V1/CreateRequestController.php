@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\ApiBundle\Controller;
+namespace GovWiki\ApiBundle\Controller\V1;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

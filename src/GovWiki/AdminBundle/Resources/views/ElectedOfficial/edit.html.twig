@@ -1,4 +1,4 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
 {% block title %}Edit elected official{% endblock %}
 {% block body %}
     <div class="container-fluid">
@@ -30,16 +30,48 @@
         <div class="row">
             <div class="col-md-12">
                 <ul class="nav nav-pills tabs-navigate">
-                    <li{% if app.request.query.get('tab') == 'votes' or not app.request.query.get('tab') %} class="active"{% endif %} data-link="{{ path('govwiki_admin_electedofficial_edit', {'id': electedOfficial.id, 'tab': 'votes'}) }}">
+                    <li{% if app.request.query.get('tab') == 'votes' or not app.request.query.get('tab') %} class="active"{% endif %} data-link="{{-
+                    path(
+                        'govwiki_admin_electedofficial_edit',
+                        {
+                            id: electedOfficial.id,
+                            tab: 'votes',
+                            environment: environment,
+                        }
+                    ) -}}">
                         <a href="#eo-votes" data-toggle="pill">Votes</a>
                     </li>
-                    <li{% if app.request.query.get('tab') == 'contributions' %} class="active"{% endif %} data-link="{{ path('govwiki_admin_electedofficial_edit', {'id': electedOfficial.id, 'tab': 'contributions'}) }}">
+                    <li{% if app.request.query.get('tab') == 'contributions' %} class="active"{% endif %} data-link="{{-
+                        path(
+                            'govwiki_admin_electedofficial_edit',
+                            {
+                                id: electedOfficial.id,
+                                tab: 'contributions',
+                                environment: environment,
+                            }
+                        ) -}}">
                         <a href="#eo-contributions" data-toggle="pill">Contributions</a>
                     </li>
-                    <li{% if app.request.query.get('tab') == 'endorsements' %} class="active"{% endif %} data-link="{{ path('govwiki_admin_electedofficial_edit', {'id': electedOfficial.id, 'tab': 'endorsements'}) }}">
+                    <li{% if app.request.query.get('tab') == 'endorsements' %} class="active"{% endif %} data-link="{{-
+                    path(
+                    'govwiki_admin_electedofficial_edit',
+                    {
+                        id: electedOfficial.id,
+                        tab: 'endorsements',
+                        environment: environment,
+                    }
+                    ) -}}">
                         <a href="#eo-endorsements" data-toggle="pill">Endorsements</a>
                     </li>
-                    <li{% if app.request.query.get('tab') == 'public-statements' %} class="active"{% endif %} data-link="{{ path('govwiki_admin_electedofficial_edit', {'id': electedOfficial.id, 'tab': 'public-statements'}) }}">
+                    <li{% if app.request.query.get('tab') == 'public-statements' %} class="active"{% endif %} data-link="{{-
+                    path(
+                    'govwiki_admin_electedofficial_edit',
+                    {
+                        id: electedOfficial.id,
+                        tab: 'public-statements',
+                        environment: environment,
+                    }
+                    ) -}}">
                         <a href="#eo-public-statements" data-toggle="pill">Public Statements</a>
                     </li>
                 </ul>
@@ -49,7 +81,15 @@
             <div class="tab-pane{% if app.request.query.get('tab') == 'votes' or not app.request.query.get('tab') %} active{% endif %}" id="eo-votes">
                 <div class="row">
                     <div class="col-md-12">
-                        <span data-link="{{path('govwiki_admin_electedofficialvote_create', {'id': electedOfficial.id})}}" class="ajax-create btn btn-primary pull-right btn-beside-pills">
+                        <span data-link="{{-
+                            path(
+                                'govwiki_admin_electedofficialvote_create',
+                                {
+                                    id: electedOfficial.id,
+                                    environment: environment
+                                }
+                        )
+                        -}}" class="ajax-create btn btn-primary pull-right btn-beside-pills">
                             <span class="glyphicon glyphicon-plus"></span> Add vote
                         </span>
                     </div>

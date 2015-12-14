@@ -48,6 +48,40 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * Get used alt types by government in current environment.
+     *
+     * @return array|null
+     */
+    public function getUsedAltTypes()
+    {
+        $qb =  $this->em->createQueryBuilder()
+            ->select('Government.altType')
+            ->from('GovWikiDbBundle:Government', 'Government');
+        $expr = $qb->expr();
+
+        $tmp = $qb
+            ->leftJoin('Government.environment', 'Environment')
+            ->where($expr->eq(
+                'Environment.name',
+                $expr->literal($this->environment)
+            ))
+            ->groupBy('Government.altType')
+            ->orderBy('Government.altType')
+            ->getQuery()
+            ->getArrayResult();
+
+        if (count($tmp) > 0) {
+            $result = [];
+            foreach ($tmp as $row) {
+                $result[$row['altType']] = $row['altType'];
+            }
+
+            return $result;
+        }
+        return [];
+    }
+
+    /**
      * @return array|null
      */
     public function getMap()
@@ -57,40 +91,18 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @param integer $page  Current page index.
-     * @param integer $limit Max governments per page.
+     * @param string $altTypeSlug Slugged government alt type.
+     * @param string $slug        Slugged government name.
      *
-     * @return Paginator
+     * @return array
      */
-    public function listGovernments(
-        $page,
-        $limit,
-        $sort = null,
-        $direction = null
-    ) {
-        $qb = $this->em->getRepository('GovWikiDbBundle:Government')
-            ->createQueryBuilder('Government');
-        $expr = $qb->expr();
-
-        if (null !== $sort) {
-            $field = "Government.{$sort}";
-            if ('desc' === $direction) {
-                $qb->orderBy($expr->desc($field));
-            } else {
-                $qb->orderBy($expr->asc($field));
-            }
-        }
-
-        return new Paginator(
-            $qb
-                ->select('partial Government.{id,name,slug,type,altType}')
-                ->leftJoin('Government.map', 'Map')
-                ->where(
-                    $expr->eq('Map.name', $expr->literal($this->environment))
-                )
-                ->setFirstResult($page * $limit)
-                ->setMaxResults($limit),
-            false
-        );
+    public function getGovernment($altTypeSlug, $slug)
+    {
+        return [
+            'government' => $this->em->getRepository('GovWikiDbBundle:Government')
+                ->findGovernment($this->environment, $altTypeSlug, $slug),
+            'formats' => $this->em->getRepository('GovWikiDbBundle:Format')
+                ->get($this->environment),
+        ];
     }
 }

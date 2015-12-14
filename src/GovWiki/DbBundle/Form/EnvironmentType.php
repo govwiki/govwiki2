@@ -9,7 +9,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * EnvironmentType
+ * Class EnvironmentType
+ * @package GovWiki\DbBundle\Form
  */
 class EnvironmentType extends AbstractType
 {
@@ -21,7 +22,6 @@ class EnvironmentType extends AbstractType
         $builder
             ->add('name')
             ->add('domain')
-            ->add('enabled', 'checkbox', [ 'required' => false ])
             ->add('header')
             ->add('greetingText', 'ckeditor')
             ->add('footer');
@@ -33,7 +33,7 @@ class EnvironmentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'GovWiki\DbBundle\Entity\Environment'
+            'data_class' => 'GovWiki\DbBundle\Entity\Environment',
         ]);
     }
 

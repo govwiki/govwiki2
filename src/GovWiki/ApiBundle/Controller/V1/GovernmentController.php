@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\ApiBundle\Controller;
+namespace GovWiki\ApiBundle\Controller\V1;
 
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
@@ -13,37 +13,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 /**
  * GovernmentController
  *
- * @Route("governments")
+ * @Route("government")
  */
-class GovernmentController extends AbstractGovWikiController
+class GovernmentController extends AbstractGovWikiApiController
 {
-    /**
-     * @Route("/")
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return JsonResponse
-     */
-    public function listAction(Request $request)
-    {
-        $governments = $this->environmentManager()->listGovernments(
-            $request->query->getInt('page', 1),
-            $request->query->getInt('limit', 25),
-            $request->query->get('sort', null),
-            $request->query->get('direction', null)
-        );
-
-        return $this->paginatorResponse($governments);
-    }
-
-    /**
-     * @Route("/{id}/edit")
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
-    public function editAction(Request $request)
-    {
-    }
-
     /**
      * @Route("/{altTypeSlug}/{slug}", methods="GET")
      *
@@ -54,14 +27,19 @@ class GovernmentController extends AbstractGovWikiController
      */
     public function showAction($altTypeSlug, $slug)
     {
-        /** @var EntityManagerInterface $em */
-        $em = $this->getDoctrine()->getManager();
-
+//        /** @var EntityManagerInterface $em */
+//        $em = $this->getDoctrine()->getManager();
+//
+//        return $this->serializedResponse(
+//            $em->getRepository('GovWikiDbBundle:Government')
+//                ->findGovernment($altTypeSlug, $slug),
+//            [ 'government' ]
+//        );
         return $this->serializedResponse(
-            $em->getRepository('GovWikiDbBundle:Government')
-                ->findGovernment($altTypeSlug, $slug),
+            $this->environmentManager()->getGovernment($altTypeSlug, $slug),
             [ 'government' ]
         );
+
     }
 
 //    /**

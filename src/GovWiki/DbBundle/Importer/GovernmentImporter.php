@@ -27,7 +27,7 @@ class GovernmentImporter extends AbstractImporter
     /**
      * {@inheritdoc}
      */
-    protected function import(
+    public function import(
         $filePath,
         FileTransformerInterface $transformer
     ) {
@@ -60,7 +60,7 @@ class GovernmentImporter extends AbstractImporter
     /**
      * {@inheritdoc}
      */
-    protected function export(
+    public function export(
         $filePath,
         array $columns,
         FileTransformerInterface $transformer

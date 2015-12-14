@@ -8,9 +8,9 @@ use GovWiki\AdminBundle\Exception\InvalidGeoJsonException;
  * Convert GeoJson file to plain array of data.
  * {@link http://geojson.org/geojson-spec.html}
  *
- * @package GovWiki\Library\Transformer
+ * @package GovWiki\AdminBundle\Transformer
  */
-class GeoJsonTransformerInterface implements FileTransformerInterface
+class GeoJsonTransformer implements FileTransformerInterface
 {
     /**
      * {@inheritdoc}
@@ -19,6 +19,15 @@ class GeoJsonTransformerInterface implements FileTransformerInterface
     {
         return [ 'json' ];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getFormatName()
+    {
+        return 'GeoJson';
+    }
+
 
     /**
      * {@inheritdoc}

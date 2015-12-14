@@ -36,12 +36,16 @@ class TransformerManager
     /**
      * @param string $id    Transformer service id.
      * @param string $alias Alias for transformer.
+     * @param string $class Transformer class name.
      *
      * @return void
      */
-    public function addTransformer($id, $alias)
+    public function addTransformer($id, $alias, $class)
     {
-        $this->transformers[$alias] = $id;
+        $this->transformers[$alias] = [
+            'id' => $id,
+            'class' => $class,
+        ];
     }
 
     /**
@@ -66,11 +70,33 @@ class TransformerManager
     }
 
     /**
+     * @return array Each element is assoc array with two keys:
+     *               <ul>
+     *                  <li>extension</li>
+     *                  <li>name</li>
+     *               </ul>
+     */
+    public function getSupportedExtension()
+    {
+        $supported = [];
+        foreach ($this->transformers as $alias => $transformer) {
+            /** @var FileTransformerInterface $transformerClass */
+            $transformerClass = $transformer['class'];
+            $supported[$alias] = [
+                'extension' => $transformerClass::supportedExtensions()[0],
+                'name' => $transformerClass::getFormatName(),
+            ];
+        }
+
+        return $supported;
+    }
+
+    /**
      * @param string $alias Transformer alias.
      *
      * @return FileTransformerInterface
      */
-    private function getTransformer($alias)
+    public function getTransformer($alias)
     {
         return $this->transformers[$alias]['id'];
     }

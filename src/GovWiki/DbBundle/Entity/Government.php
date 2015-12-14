@@ -955,10 +955,10 @@ class Government
     /**
      * @var Map
      *
-     * @ORM\ManyToOne(targetEntity="Map", inversedBy="governments")
-     * @ORM\JoinColumn(name="map_id")
+     * @ORM\ManyToOne(targetEntity="Environment", inversedBy="governments")
+     * @ORM\JoinColumn(name="environment_id")
      */
-    private $map;
+    private $environment;
 
     /**
      * @return array
@@ -3692,22 +3692,22 @@ class Government
     }
 
     /**
-     * @param Map $map A Map instance.
+     * @param Environment $environment A Environment instance.
      *
-     * @return Map
+     * @return Environment
      */
-    public function setMap(Map $map)
+    public function setEnvironment(Environment $environment)
     {
-        $this->map = $map;
+        $this->environment = $environment;
 
-        return $this->map;
+        return $this->environment;
     }
 
     /**
-     * @return Map
+     * @return Environment
      */
-    public function getMap()
+    public function getEnvironment()
     {
-        return $this->map;
+        return $this->environment;
     }
 }

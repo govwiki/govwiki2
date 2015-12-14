@@ -1,4 +1,4 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
 {% block title %}Create requests{% endblock %}
 {% block body %}
     <div class="container-fluid">
@@ -32,10 +32,25 @@
                         <td>{{ createRequest.entityName }}</td>
                         <td>
                             <div class="btn-group">
-                                <a href="{{path('govwiki_admin_createrequest_show', {'id': createRequest.id})}}" class="btn btn-default">
+                                <a href="{{-
+                                    path(
+                                        'govwiki_admin_createrequest_show',
+                                        {
+                                            id: createRequest.id,
+                                            environment: environment
+                                        }
+                                    )
+                                -}}" class="btn btn-default">
                                     <span class="glyphicon glyphicon-search"></span> Show
                                 </a>
-                                <span class="btn btn-danger remove-action" data-link="{{path('govwiki_admin_createrequest_remove', {'id': createRequest.id})}}">
+                                <span class="btn btn-danger remove-action" data-link="{{-
+                                    path(
+                                        'govwiki_admin_createrequest_remove',
+                                        {
+                                            id: createRequest.id,
+                                            environment: environment
+                                        }
+                                    ) -}}">
                                     <span class="glyphicon glyphicon-remove"></span> Remove
                                 </span>
                             </div>

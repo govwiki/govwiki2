@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Format
@@ -27,6 +28,7 @@ class Format
      * @var string
      *
      * @ORM\Column()
+     * @Groups({"government"})
      */
     private $category;
 
@@ -34,6 +36,7 @@ class Format
      * @var string
      *
      * @ORM\Column()
+     * @Groups({"government"})
      */
     private $field;
 
@@ -41,6 +44,7 @@ class Format
      * @var string
      *
      * @ORM\Column()
+     * @Groups({"government"})
      */
     private $description = '';
 
@@ -48,6 +52,7 @@ class Format
      * @var array
      *
      * @ORM\Column(type="array")
+     * @Groups({"government"})
      */
     private $showIn = [];
 
@@ -57,6 +62,7 @@ class Format
      * @var string
      *
      * @ORM\Column()
+     * @Groups({"government"})
      */
     private $dataOrFormula = 'data';
 
@@ -64,6 +70,7 @@ class Format
      * @var string
      *
      * @ORM\Column(type="boolean")
+     * @Groups({"government"})
      */
     private $ranked = false;
 
@@ -71,6 +78,7 @@ class Format
      * @var string
      *
      * @ORM\Column()
+     * @Groups({"government"})
      */
     private $mask = '';
 
@@ -78,13 +86,15 @@ class Format
      * @var string
      *
      * @ORM\Column(type="text")
+     * @Groups({"government"})
      */
     private $helpText = '';
 
     /**
      * @var Environment
      *
-     * @ORM\OneToOne(targetEntity="Environment", mappedBy="format")
+     * @ORM\ManyToOne(targetEntity="Environment", inversedBy="  format")
+     * @ORM\JoinColumn(name="environment_id")
      */
     private $environment;
 

@@ -15,19 +15,21 @@ use GovWiki\DbBundle\Entity\Government;
 class GovernmentRepository extends EntityRepository
 {
     /**
-     * @param integer $id   Government id.
-     * @param string  $name Government name.
-     * @param string  $map  Map name.
+     * @param string  $environment Environment name.
+     * @param integer $id          Government id.
+     * @param string  $name        Government name.
      *
      * @return Query
      */
-    public function getListQuery($id = null, $name = null, $map = null)
+    public function getListQuery($environment, $id = null, $name = null)
     {
         $qb = $this
             ->createQueryBuilder('Government')
-            ->leftJoin('Government.map', 'Map')
-            ->addSelect('partial Map.{id,name}');
+            ->leftJoin('Government.environment', 'Environment');
+
         $expr = $qb->expr();
+
+        $qb->where($expr->eq('Environment.name', $expr->literal($environment)));
 
         if (null !== $id) {
             $qb->andWhere($expr->eq('Government.id', $id));
@@ -36,12 +38,6 @@ class GovernmentRepository extends EntityRepository
             $qb->andWhere($expr->eq(
                 'Government.name',
                 $expr->literal($name)
-            ));
-        }
-        if (null !== $map) {
-            $qb->andWhere($expr->eq(
-                    'Map.name',
-                    $expr->literal($map)
             ));
         }
 
@@ -216,32 +212,44 @@ class GovernmentRepository extends EntityRepository
      * Find government by slug and altTypeSlug.
      * Append maxRanks and financialStatements.
      *
-     * @param  string $altTypeSlug
-     * @param  string $slug
+     * @param string $environment Environment name.
+     * @param string $altTypeSlug Slugged government alt type.
+     * @param string $slug        Slugged government name.
      *
      * @return Government
      */
-    public function findGovernment($altTypeSlug, $slug)
+    public function findGovernment($environment, $altTypeSlug, $slug)
     {
         $qb = $this->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
         $data = $qb
-            ->addSelect('FinData, CaptionCategory, MaxRank, ElectedOfficial, Fund')
+            ->addSelect(
+                'FinData, CaptionCategory, MaxRank, ElectedOfficial',
+                'Fund'
+            )
             ->leftJoin('Government.finData', 'FinData')
             ->leftJoin('FinData.captionCategory', 'CaptionCategory')
             ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
             ->leftJoin('FinData.fund', 'Fund')
+            ->leftJoin('Government.environment', 'Environment')
             ->join(
                 'GovWikiDbBundle:MaxRank',
                 'MaxRank',
                 Join::WITH,
-                $qb->expr()->eq('MaxRank.altType', 'Government.altType')
+                $expr->eq('MaxRank.altType', 'Government.altType')
             )
             ->where(
-                $qb->expr()->andX(
-                    $qb->expr()
-                        ->eq('Government.altTypeSlug', $qb->expr()->literal($altTypeSlug)),
-                    $qb->expr()
-                        ->eq('Government.slug', $qb->expr()->literal($slug))
+                $expr->andX(
+                    $expr->eq(
+                        'Government.altTypeSlug',
+                        $qb->expr()->literal($altTypeSlug)
+                    ),
+                    $expr->eq(
+                        'Government.slug',
+                        $qb->expr()->literal($slug)
+                    ),
+                    $expr->eq('Environment.name', $expr->literal($environment))
                 )
             )
             ->getQuery()

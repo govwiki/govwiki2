@@ -4,39 +4,40 @@ namespace GovWiki\DbBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * PublicStatementType
+ * Class PublicStatementType
+ * @package GovWiki\DbBundle\Form
  */
 class PublicStatementType extends AbstractType
 {
     /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
+     * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('date')
-            ->add('summary')
-            ->add('url')
-            ->add('issueCategory')
-        ;
+            ->add('date', 'date')
+            ->add('summary', 'textarea')
+            ->add('url', 'url')
+            ->add('issueCategory', 'entity', [
+                'class' => 'GovWiki\DbBundle\Entity\IssueCategory',
+            ]);
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'GovWiki\DbBundle\Entity\PublicStatement'
-        ));
+        $resolver->setDefaults([
+            'data_class' => 'GovWiki\DbBundle\Entity\PublicStatement',
+        ]);
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {

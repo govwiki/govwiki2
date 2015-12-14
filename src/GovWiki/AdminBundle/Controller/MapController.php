@@ -46,24 +46,42 @@ class MapController extends AbstractGovWikiAdminController
 
         $isImported = null !== $map->getItemQueueId();
         if ($isImported) {
+            $cartoDbApi = $this->get(CartoDbServices::CARTO_DB_API);
             /*
              * Governments data exported to CartoDB service.
              */
-            $result = $this->get(CartoDbServices::CARTO_DB_API)
+            $result = $cartoDbApi
                 ->checkImportProcess($map->getItemQueueId());
 
-            if ((true === $result['success']) ||
-                ('failure' === $result['state'])) {
-                $map->setItemQueueId(null);
+            if (true === $result['success']) {
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($map);
-                $em->flush();
-                $isImported = false;
+                if ('complete' === $result['state']) {
+                    if (! $map->isCreated()) {
+                        $map->setCreated(true);
+                        $map->setVizUrl($cartoDbApi->getVizUrl($result));
+                        $this->addFlash('admin_success', 'Map created');
+                    } else {
+                        $this->addFlash('admin_success', 'Map updated');
+                    }
+                    $map->setItemQueueId(null);
+                    $em->persist($map);
+                    $em->flush();
+                    $isImported = false;
+                } elseif ('failed' === $result['state']) {
+                    $em->remove($map->getEnvironment());
+                    $em->flush();
+                    $this->addFlash(
+                        'admin_error',
+                        "Can't create map: ({$result['error_code']})".
+                        "{$result['get_error_text']['what_about']}"
+                    );
+                }
             }
         }
 
         return [
             'form' => $form->createView(),
+            'vizUrl' => $map->getVizUrl(),
             'environment' => $environment,
             'canExport' => ! $isImported,
         ];
@@ -102,7 +120,7 @@ class MapController extends AbstractGovWikiAdminController
         $map = new Map();
         $map->setEnvironment($environmentObj);
 
-        $form = $this->createForm(new MapType(), $map);
+        $form = $this->createForm(new MapType(true), $map);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

@@ -2,64 +2,71 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
-use GovWiki\DbBundle\Entity\ElectedOfficialVote;
-use GovWiki\DbBundle\Entity\Legislation;
 use GovWiki\DbBundle\Form\ElectedOfficialType;
 
 /**
  * ElectedOfficialController
+ *
+ * @Configuration\Route("/{environment}/electedofficial")
  */
-class ElectedOfficialController extends Controller
+class ElectedOfficialController extends AbstractGovWikiAdminController
 {
     /**
-     * @Route("/", methods="GET")
-     * @Template()
+     * List all elected official for this environment.
      *
-     * @param Request $request
-     * @return Response
+     * @Configuration\Route("/", methods="GET")
+     * @Configuration\Template()
+     *
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
+     *
+     * @return array
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $environment)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $qb = $em->createQueryBuilder()->select('eo')->from('GovWikiDbBundle:ElectedOfficial', 'eo')->leftJoin('eo.government', 'g');
-
+        $id = null;
+        $fullName = null;
+        $government = null;
         if ($filter = $request->query->get('filter')) {
             if (!empty($filter['id'])) {
-                $qb->andWhere('eo.id = :id')->setParameter('id', $filter['id']);
+                $id = (int) $filter['id'];
             }
             if (!empty($filter['fullName'])) {
-                $qb->andWhere('eo.fullName LIKE :fullName')->setParameter('fullName', '%'.$filter['fullName'].'%');
+                $fullName = $filter['fullName'];
             }
             if (!empty($filter['governmentName'])) {
-                $qb->andWhere('g.name LIKE :governmentName')->setParameter('governmentName', '%'.$filter['governmentName'].'%');
+                $government = $filter['governmentName'];
             }
         }
 
-        $electedOfficials = $this->get('knp_paginator')->paginate(
-            $qb->getQuery(),
+        $electedOfficials = $this->paginate(
+            $this->getDoctrine()
+                ->getRepository('GovWikiDbBundle:ElectedOfficial')
+                ->getListQuery($environment, $id, $fullName, $government),
             $request->query->getInt('page', 1),
             50
         );
 
-        return ['electedOfficials' => $electedOfficials];
+        return [
+            'electedOfficials' => $electedOfficials,
+            'environment' => $environment,
+        ];
     }
 
     /**
-     * @Route("/create", methods="GET|POST")
-     * @Template()
+     * @Configuration\Route("/create")
+     * @Configuration\Template()
      *
-     * @param Request $request
-     * @return Response
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
+     *
+     * @return array
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $environment)
     {
         $electedOfficial = new ElectedOfficial;
 
@@ -71,34 +78,43 @@ class ElectedOfficialController extends Controller
 
             $em->persist($electedOfficial);
             $em->flush();
-            $this->addFlash('info', 'Created');
+            $this->addFlash('admin_success', 'New elected official created');
 
             return $this->redirectToRoute('govwiki_admin_electedofficial_index');
         }
 
-        return ['form' => $form->createView()];
+        return [
+            'form' => $form->createView(),
+            'environment' => $environment,
+        ];
     }
 
     /**
-     * @Route("/{id}/edit", methods="GET|POST", requirements={"id": "\d+"})
-     * @Template()
+     * @Configuration\Route("/{id}/edit", methods="GET|POST", requirements={"id": "\d+"})
+     * @Configuration\Template()
      *
-     * @param ElectedOfficial $electedOfficial
-     * @param Request         $request
-     * @return Response
+     * @param string          $environment     Environment name.
+     * @param ElectedOfficial $electedOfficial A ElectedOfficial instance.
+     * @param Request         $request         A Request instance.
+     *
+     * @return array
      */
-    public function editAction(ElectedOfficial $electedOfficial, Request $request)
+    public function editAction($environment, ElectedOfficial $electedOfficial, Request $request)
     {
         $form = $this->createForm(new ElectedOfficialType(), $electedOfficial);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
-            $this->addFlash('info', 'Saved');
+            $this->addFlash('info', 'Elected official updated');
 
             return $this->redirectToRoute('govwiki_admin_electedofficial_index');
         }
 
-        return ['form' => $form->createView(), 'electedOfficial' => $electedOfficial];
+        return [
+            'form' => $form->createView(),
+            'electedOfficial' => $electedOfficial,
+            'environment' => $environment,
+        ];
     }
 }

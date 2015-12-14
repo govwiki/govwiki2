@@ -27,18 +27,6 @@ class Map
     private $id;
 
     /**
-     * @var Collection
-     *
-     * @ORM\OneToMany(
-     *  targetEntity="Government",
-     *  mappedBy="map",
-     *  cascade={"remove"}
-     * )
-     * @Groups({"map"})
-     */
-    private $governments;
-
-    /**
      * Unique identifier of carto db process.
      *
      * @var string
@@ -125,38 +113,6 @@ class Map
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @param Government $government A Government instance.
-     *
-     * @return Map
-     */
-    public function addGovernment(Government $government)
-    {
-        $this->governments[] = $government;
-
-        return $this;
-    }
-
-    /**
-     * @param Government $government A Government instance.
-     *
-     * @return Map
-     */
-    public function removeGovernment(Government $government)
-    {
-        $this->governments->remove($government);
-
-        return $this;
-    }
-
-    /**
-     * @return ArrayCollection|Collection
-     */
-    public function getGovernments()
-    {
-        return $this->governments;
     }
 
     /**
@@ -272,8 +228,9 @@ class Map
      *
      * @return Map
      */
-    public function setEnvironment(Environment$environment)
+    public function setEnvironment(Environment $environment)
     {
+        $environment->setMap($this);
         $this->environment = $environment;
 
         return $this;

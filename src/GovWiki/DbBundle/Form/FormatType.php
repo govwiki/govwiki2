@@ -3,48 +3,38 @@
 namespace GovWiki\DbBundle\Form;
 
 use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\ApiBundle\Manager\EnvironmentManager;
 use GovWiki\DbBundle\Entity\Format;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * FormatType
+ * Class FormatType
+ * @package GovWiki\DbBundle\Form
  */
 class FormatType extends AbstractType
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    /**
-     * @param EntityManagerInterface $em A EntityManagerInterface instance.
-     */
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em = $em;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $format = $builder->getData();
-
-        if (! $format instanceof Format) {
-            throw new \RuntimeException(
-                'Invalid data, expect instance of '. Format::class
-            );
-        }
-
         $builder
-            ->add('category', 'choice')
+            ->add('category')
             ->add('field')
-            ->add('category', 'number')
-            ->add('centerLongitude', 'number')
-            ->add('vizUrl', 'url');
+            ->add('description')
+            ->add('helpText', 'textarea', [ 'required' => false ])
+            ->add('mask', null, [ 'required' => false ])
+            ->add('ranked', 'checkbox', [ 'required' => false ])
+            ->add('dataOrFormula', 'choice', [
+                'required' => false,
+                'choices' => [
+                    'data' => 'Data',
+                    'formula' => 'Formula',
+                ],
+            ])
+            ->add('showIn', 'alt_type');
     }
 
     /**
@@ -53,7 +43,7 @@ class FormatType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'GovWiki\DbBundle\Entity\Format'
+            'data_class' => 'GovWiki\DbBundle\Entity\Format',
         ]);
     }
 

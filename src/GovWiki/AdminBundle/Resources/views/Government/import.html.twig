@@ -1,0 +1,20 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% block title %}
+    {{ parent() }} - {{ environment|capitalize }} government import
+{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">Import</button>
+            <a class="btn btn-default" href="{{-
+                path(
+                    'govwiki_admin_government_index',
+                    { environment: environment }
+                )
+            -}}">Back</a>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

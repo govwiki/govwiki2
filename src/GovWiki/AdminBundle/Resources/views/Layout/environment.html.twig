@@ -1,0 +1,27 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% block enviroment_menu %}
+    <li>
+        <a href="{{ path('govwiki_admin_main_home') }}">Environments</a>
+    </li>
+    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} class="active"{% endif %}>
+        <a href="{{- path('govwiki_admin_government_index',
+            { environment: environment|env_name }) -}}">Governments</a>
+    </li>
+    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_electedofficial_index' %} class="active"{% endif %}>
+        <a href="{{- path('govwiki_admin_electedofficial_index',
+            { environment: environment|env_name }) -}}">Elected Officials</a>
+    </li>
+    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_legislation_index' %} class="active"{% endif %}>
+        <a href="{{- path('govwiki_admin_legislation_index',
+            { environment: environment|env_name }) -}}">Legislation</a>
+    </li>
+    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_createrequest_index' %} class="active"{% endif %}>
+        <a href="{{- path('govwiki_admin_createrequest_index',
+            { environment: environment|env_name }) -}}">Create Requests</a>
+    </li>
+    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_editrequest_index' %} class="active"{% endif %}>
+        <a href="{{- path('govwiki_admin_editrequest_index',
+            { environment: environment|env_name }) -}}">Edit Requests</a>
+    </li>
+    {{ parent() }}
+{% endblock enviroment_menu %}

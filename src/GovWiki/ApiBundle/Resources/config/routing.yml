@@ -1,31 +1,3 @@
-government:
-    resource: "@GovWikiApiBundle/Controller/GovernmentController.php"
-    type:     annotation
-
-elected-official:
-    resource: "@GovWikiApiBundle/Controller/ElectedOfficialController.php"
-    type:     annotation
-    prefix:   elected-official
-
-createrequest:
-    resource: "@GovWikiApiBundle/Controller/CreateRequestController.php"
-    type:     annotation
-    prefix:   createrequest
-
-user:
-    resource: "@GovWikiApiBundle/Controller/UserController.php"
-    type:     annotation
-
-url:
-    resource: "@GovWikiApiBundle/Controller/UrlController.php"
-    type:     annotation
-    prefix:   url
-
-rank_order:
-    resource: "@GovWikiApiBundle/Controller/RankOrderController.php"
-    type:     annotation
-    prefix:   rank_order
-
-map:
-    resource: "@GovWikiApiBundle/Controller/MapController.php"
-    type:     annotation
+api_v1:
+    resource: versions/v1.yml
+    prefix: /v1

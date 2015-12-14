@@ -2,21 +2,24 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\DbBundle\Entity\Format;
+use GovWiki\DbBundle\Form\FormatType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class FormatController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/format/{environment}")
+ * @Configuration\Route("/{environment}/format")
  */
 class FormatController extends Controller
 {
     /**
-     * @Configuration\Route("/", name="government_format")
+     * @Configuration\Route("/")
      * @Configuration\Template()
      *
      * @param Request $request     A Request instance.
@@ -40,54 +43,89 @@ class FormatController extends Controller
     }
 
     /**
-     * @Configuration\Route("/edit", name="government_format_edit")
+     * @Configuration\Route("/{id}/edit")
      * @Configuration\Template()
      *
-     * @param $environment
-     * @param $id
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
+     * @param Format  $format      A Format instance.
      *
      * @return array
      */
-    public function editAction($environment, $id)
+    public function editAction(Request $request, $environment, Format $format)
     {
-        return [];
+        $form = $this->createForm(new FormatType(), $format);
+        $form->handleRequest($request);
+        $this->processForm($form);
+
+        return [
+            'form' => $form->createView(),
+            'environment' => $environment,
+        ];
     }
 
     /**
-     * @Configuration\Route("/new", name="government_format_new")
+     * @Configuration\Route("/new")
      * @Configuration\Template()
      *
-     * @param $environment
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
      *
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function newAction($environment)
+    public function newAction(Request $request, $environment)
     {
-        return $this->redirectToRoute('government_format');
+        $format = new Format();
+        $format->setEnvironment(
+            $this->getDoctrine()->getRepository('GovWikiDbBundle:Environment')
+                ->getReferenceByName($environment)
+        );
+
+        $form = $this->createForm(new FormatType(), $format);
+        $form->handleRequest($request);
+        $this->processForm($form);
+
+        return [
+            'form' => $form->createView(),
+            'environment' => $environment,
+        ];
+        //return $this->redirectToRoute('');
     }
 
     /**
-     * @Configuration\Route("/delete", name="government_format_delete")
+     * @Configuration\Route("/{id}/delete")
      *
-     * @param $environment
-     * @param $id
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
+     * @param Format  $format      A Format instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function removeAction($environment, $id)
+    public function removeAction($environment, Format $format)
     {
-        return $this->redirectToRoute('government_format',[
-            'environment' => $environment,
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($format);
+        $em->flush();
+
+        return new JsonResponse([
+            'redirect' => $this->generateUrl(
+                'govwiki_admin_editrequest_index',
+                [ 'environment' => $environment ]
+            )
         ]);
     }
 
     /**
-     * @param FormInterface $form
+     * @param FormInterface $form A FormInterface instance.
      *
      * @return void
      */
     private function processForm(FormInterface $form)
     {
-
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($form->getData());
+            $em->flush();
+        }
     }
 }

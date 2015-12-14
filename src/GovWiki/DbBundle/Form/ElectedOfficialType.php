@@ -4,16 +4,16 @@ namespace GovWiki\DbBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * ElectedOfficialType
+ * Class ElectedOfficialType
+ * @package GovWiki\DbBundle\Form
  */
 class ElectedOfficialType extends AbstractType
 {
     /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
+     * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -22,26 +22,25 @@ class ElectedOfficialType extends AbstractType
             ->add('slug')
             ->add('displayOrder')
             ->add('title')
-            ->add('emailAddress')
+            ->add('emailAddress', 'email')
             ->add('telephoneNumber')
-            ->add('photoUrl')
-            ->add('bioUrl')
-            ->add('termExpires')
-        ;
+            ->add('photoUrl', 'url')
+            ->add('bioUrl', 'url')
+            ->add('termExpires');
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'GovWiki\DbBundle\Entity\ElectedOfficial'
-        ));
+        $resolver->setDefaults([
+            'data_class' => 'GovWiki\DbBundle\Entity\ElectedOfficial',
+        ]);
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {

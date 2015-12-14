@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use GovWiki\DbBundle\Entity\Format;
 
 /**
  * FormatRepository
@@ -24,34 +25,19 @@ class FormatRepository extends EntityRepository
                 'Format.id, Format.category, Format.field',
                 'Format.description'
             )
-            ->leftJoin('Format.map', 'Map')
-            ->where($expr->eq('Map.name', $expr->literal($environment)))
+            ->leftJoin('Format.environment', 'Environment')
+            ->where($expr->eq('Environment.name', $expr->literal($environment)))
             ->getQuery();
     }
 
     /**
      * @param string $environment Environment name.
      *
-     * @return array
+     * @return Format[]
      */
-    public function getCategories($environment)
+    public function get($environment)
     {
-        $qb = $this->createQueryBuilder('Format');
-        $expr = $qb->expr();
-
-        $data = $qb
-            ->select('Format.category')
-            ->leftJoin('Format.map', 'Map')
-            ->where($expr->eq('Map.name', $expr->literal($environment)))
-            ->groupBy('Format.category')
-            ->getQuery()
-            ->getArrayResult();
-
-        $result = [];
-        foreach ($data as $row) {
-            $result[$row['category']] = $row['category'];
-        }
-
-        return $result;
+        return $this->getListQuery($environment)
+            ->getResult();
     }
 }

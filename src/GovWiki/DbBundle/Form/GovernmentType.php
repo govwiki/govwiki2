@@ -4,24 +4,40 @@ namespace GovWiki\DbBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * GovernmentType
+ * Class GovernmentType
+ * @package GovWiki\DbBundle\Form
  */
 class GovernmentType extends AbstractType
 {
     /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
+     * @var boolean
+     */
+    private $isEdit;
+
+    /**
+     * @param boolean $isEdit Flag, set on edit.
+     */
+    public function __construct($isEdit = false)
+    {
+        $this->isEdit = $isEdit;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        if ($this->isEdit) {
+            $builder->add('environment', 'entity', [
+                'class' => 'GovWiki\DbBundle\Entity\Environment',
+            ]);
+        }
+
         $builder
-            ->add('map', 'entity', [
-                'class' => 'GovWiki\DbBundle\Entity\Map',
-                'choice_label' => 'name',
-            ])
             ->add('name')
             ->add('slug')
             ->add('specialDistrictFunctionCode')
@@ -131,22 +147,21 @@ class GovernmentType extends AbstractType
             ->add('medianTotalCompGeneralPublicRank')
             ->add('medianHomePriceRank')
             ->add('populationRank')
-            ->add('enrollmentRank')
-        ;
+            ->add('enrollmentRank');
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'GovWiki\DbBundle\Entity\Government'
-        ));
+        $resolver->setDefaults([
+            'data_class' => 'GovWiki\DbBundle\Entity\Government',
+        ]);
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
