@@ -105,4 +105,17 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                 ->get($this->environment),
         ];
     }
+
+    /**
+     * @param string $altTypeSlug Slugged government alt type.
+     * @param string $slug        Slugged government name.
+     * @param string $eoSlug      Slugged elected official full name.
+     *
+     * @return array
+     */
+    public function getElectedOfficial($altTypeSlug, $slug, $eoSlug)
+    {
+        return $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
+            ->findOne($this->environment, $altTypeSlug, $slug, $eoSlug);
+    }
 }

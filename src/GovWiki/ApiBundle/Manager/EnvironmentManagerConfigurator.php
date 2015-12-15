@@ -43,6 +43,7 @@ class EnvironmentManagerConfigurator
      * @param EnvironmentManagerAwareInterface $manager A
      *                                                  EnvironmentManagerAwareInterface
      *                                                  instance.
+     *
      * @return void
      */
     public function configure(EnvironmentManagerAwareInterface $manager)
