@@ -2,23 +2,49 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\ApiBundle\Exception\GovWikiApiEnvironmentNotFoundException;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Form\EnvironmentType;
+use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * MainController
+ * Class MainController
+ * @package GovWiki\AdminBundle\Controller
  */
 class MainController extends AbstractGovWikiAdminController
 {
     const ENVIRONMENTS_LIMIT = 25;
 
     /**
-     * Show list of available environments.
-     *
      * @Configuration\Route("/")
+     *
+     * @return array
+     */
+    public function indexAction()
+    {
+        try {
+            /*
+             * Try to get current environment.
+             */
+            $environment = $this->adminEnvironmentManager()
+                ->getEnvironment();
+            return $this->redirectToRoute('govwiki_admin_main_show', [
+                'environment' => $environment,
+            ]);
+        } catch (GovWikiApiEnvironmentNotFoundException $e) {
+            /*
+             * Show list of available environments.
+             */
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+    }
+
+    /**
+     * @Configuration\Route("/list")
      * @Configuration\Template()
      *
      * @param Request $request A Request instance.
@@ -27,14 +53,23 @@ class MainController extends AbstractGovWikiAdminController
      */
     public function homeAction(Request $request)
     {
+        /** @var User $user */
+        $user = $this->getUser();
+        if ($user->hasRole('ROLE_ADMIN')) {
+            $user = null;
+        } else {
+            $user = $user->getId();
+        }
+
+        $this->get('request');
+
         $environments = $this->paginate(
             $this->getDoctrine()
                 ->getRepository('GovWikiDbBundle:Environment')
-                ->getListQuery(),
+                ->getListQuery($user),
             $request->query->getInt('page', 1),
             self::ENVIRONMENTS_LIMIT
         );
-
         return [ 'environments' => $environments ];
     }
 
@@ -44,6 +79,7 @@ class MainController extends AbstractGovWikiAdminController
      *
      * @Configuration\Route("/new")
      * @Configuration\Template()
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param Request $request A Request instance.
      *
@@ -74,50 +110,48 @@ class MainController extends AbstractGovWikiAdminController
      * @Configuration\Route("/{environment}")
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
      *
      * @return array
      */
-    public function showAction(Request $request, $environment)
-    {
-        $environmentObj = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Environment')
-            ->getByName($environment);
+    public function showAction(
+        Request $request
+    ) {
+        $environment = $this->adminEnvironmentManager()->getEntity();
 
-        if (null === $environmentObj) {
+        if (null === $environment) {
             throw $this->createNotFoundException(
-                "Environment with name $environment not found"
+                "Environment with name {$environment->getName()} not found"
             );
         }
 
-        $form = $this->createForm(new EnvironmentType(), $environmentObj);
+        $form = $this->createForm(new EnvironmentType(), $environment);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->persist($environmentObj);
-            $this->getDoctrine()->getManager()->flush();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($environment);
+            $em->flush();
         }
 
         return [
             'form' => $form->createView(),
-            'environment' => $environmentObj,
+            'environment' => $environment,
         ];
     }
 
     /**
      * @Configuration\Route("/{environment}/delete")
      *
-     * @param string $environment Environment name.
+     * @param AdminEnvironmentManager $environment A AdminEnvironmentManager
+     *                                             instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function removeAction($environment)
+    public function removeAction(AdminEnvironmentManager $environment)
     {
-        $environmentObj = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Environment')
-            ->getReferenceByName($environment);
+        $environmentObj = $environment->getReference();
 
-        if ($environmentObj instanceof \Proxies\__CG__\GovWiki\DbBundle\Entity\Environment) {
+        if (is_object($environmentObj)) {
             $em = $this->getDoctrine()->getManager();
             $em->remove($environmentObj);
             $em->flush();
@@ -129,14 +163,17 @@ class MainController extends AbstractGovWikiAdminController
     /**
      * @Configuration\Route("/{environment}/enable")
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request                 $request     A Request instance.
+     * @param AdminEnvironmentManager $environment A AdminEnvironmentManager
+     *                                             instance.
      *
      * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function enableAction(Request $request, $environment)
-    {
-        $this->toggle($environment, true);
+    public function enableAction(
+        Request $request,
+        AdminEnvironmentManager $environment
+    ) {
+        $environment->enable();
 
         if ($request->isXmlHttpRequest()) {
             return new JsonResponse();
@@ -166,21 +203,5 @@ class MainController extends AbstractGovWikiAdminController
         return $this->redirectToRoute('govwiki_admin_main_show', [
             'environment' => $environment,
         ]);
-    }
-
-    /**
-     * @param string  $environment Environment name.
-     * @param boolean $isEnabled   New enabled value.
-     *
-     * @return void
-     */
-    private function toggle($environment, $isEnabled)
-    {
-        $environmentObj = $this->getDoctrine()->getRepository('GovWikiDbBundle:Environment')
-            ->findOneBy([ 'name' => $environment ]);
-
-        $environmentObj->setEnabled($isEnabled);
-        $this->getDoctrine()->getManager()->persist($environmentObj);
-        $this->getDoctrine()->getManager()->flush();
     }
 }

@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use GovWiki\UserBundle\Entity\User;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -99,6 +100,16 @@ class Environment
      *)
      */
     private $formats;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\ManyToMany(
+     *  targetEntity="GovWiki\UserBundle\Entity\User",
+     *  mappedBy="environments"
+     * )
+     */
+    private $users;
 
     /**
      *
@@ -345,5 +356,43 @@ class Environment
     public function getGovernments()
     {
         return $this->governments;
+    }
+
+    /**
+     * Add users
+     *
+     * @param User $user A User instance.
+     *
+     * @return User
+     */
+    public function addUser(User $user)
+    {
+        $this->users[] = $user;
+
+        return $this;
+    }
+
+    /**
+     * Remove users
+     *
+     * @param User $user A User instance.
+     *
+     * @return User
+     */
+    public function removeUser(User $user)
+    {
+        $this->users->removeElement($user);
+
+        return $this;
+    }
+
+    /**
+     * Get users
+     *
+     * @return Collection
+     */
+    public function getUsers()
+    {
+        return $this->users;
     }
 }

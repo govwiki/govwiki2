@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\AdminBundle\GovWikiAdminServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
@@ -28,5 +29,13 @@ class AbstractGovWikiAdminController extends Controller
             $page,
             $limit
         );
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\AdminEnvironmentManager
+     */
+    protected function adminEnvironmentManager()
+    {
+        return $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
     }
 }

@@ -1,9 +1,12 @@
 <?php
 
-namespace GovWiki\ApiBundle\Manager;
+namespace GovWiki\AdminBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\ApiBundle\Exception\GovWikiApiEnvironmentNotFoundException;
+use GovWiki\ApiBundle\Manager\EnvironmentManagerAwareInterface;
+use GovWiki\ApiBundle\Manager\EnvironmentManagerConfigurator;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -11,13 +14,8 @@ use Symfony\Component\Routing\RouterInterface;
  *
  * @package GovWiki\ApiBundle\Manager
  */
-class EnvironmentManagerConfigurator
+class AdminEnvironmentManagerConfigurator extends EnvironmentManagerConfigurator
 {
-    /**
-     * @var string
-     */
-    protected $environment;
-
     /**
      * @param EntityManagerInterface $em     A EntityManagerInterface instance.
      * @param RouterInterface        $router A RouterInterface instance.
@@ -28,26 +26,14 @@ class EnvironmentManagerConfigurator
      */
     public function __construct(
         EntityManagerInterface $em,
-        RouterInterface $router
+        RouterInterface $router,
+        RequestStack $requestStack
     ) {
-        $host = $router->getContext()->getHost();
 
         $this->environment = $em->getRepository('GovWikiDbBundle:Environment')
             ->getNameByDomain($host);
         if (null === $this->environment) {
             throw new GovWikiApiEnvironmentNotFoundException($host);
         }
-    }
-
-    /**
-     * @param EnvironmentManagerAwareInterface $manager A
-     *                                                  EnvironmentManagerAwareInterface
-     *                                                  instance.
-     *
-     * @return void
-     */
-    public function configure(EnvironmentManagerAwareInterface $manager)
-    {
-        $manager->setEnvironment($this->environment);
     }
 }

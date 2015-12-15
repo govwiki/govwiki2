@@ -53,7 +53,10 @@ class User extends BaseUser
     /**
      * @var Collection
      *
-     * @ORM\ManyToMany(targetEntity="GovWiki\DbBundle\Entity\Environment")
+     * @ORM\ManyToMany(
+     *  targetEntity="GovWiki\DbBundle\Entity\Environment",
+     *  inversedBy="users"
+     * )
      * @ORM\JoinTable(name="cross_users_environments")
      */
     private $environments;

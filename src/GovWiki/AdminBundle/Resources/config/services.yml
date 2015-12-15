@@ -7,3 +7,16 @@ services:
     govwiki_admin.manager.transformer:
         class: GovWiki\AdminBundle\Transformer\Service\TransformerManager
         arguments: [@service_container]
+
+    govwiki_admin.environment_manager.configurator:
+        class: GovWiki\AdminBundle\Manager\AdminEnvironmentManagerConfigurator
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @router
+
+    govwiki_admin.manager.environment:
+        class: GovWiki\AdminBundle\Manager\AdminEnvironmentManager
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @security.token_storage
+        configurator: [@govwiki_admin.environment_manager.configurator, configure]

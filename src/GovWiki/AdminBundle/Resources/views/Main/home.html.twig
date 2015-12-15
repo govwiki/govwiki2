@@ -22,18 +22,22 @@
                     </td>
                     <td>{{ environment.domain }}</td>
                     <td>
+                        {% if is_granted('ROLE_ADMIN') %}
                         <a class="btn btn-danger"
                            href="{{ path('govwiki_admin_main_remove',
                            { environment: environment.name }) }}">
                             Delete
                         </a>
+                        {% endif %}
                     </td>
                 </tr>
             {%- endfor -%}
         </table>
         {{ knp_pagination_render(environments) }}
-        <a class="btn btn-primary" href="{{ path('govwiki_admin_main_new') }}">
-            Add environment
-        </a>
+        {% if is_granted('ROLE_ADMIN') %}
+            <a class="btn btn-primary" href="{{ path('govwiki_admin_main_new') }}">
+                Add environment
+            </a>
+        {% endif %}
     </div>
 {% endblock %}
