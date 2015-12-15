@@ -2,10 +2,10 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
+use GovWiki\ApiBundle\GovWikiApiServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * MainController
@@ -19,19 +19,11 @@ class ElectedController extends Controller
      *
      * @return array
      */
-    public function governmentAction($altTypeSlug, $slug)
+    public function showAction($altTypeSlug, $slug, $electedSlug)
     {
-
-        $em = $this->getDoctrine()->getManager();
-
-        $government = $em->getRepository('GovWikiDbBundle:ElectedOfficial')->findAll();
-
-        $qb = $em->createQueryBuilder()->select('eo')->from('GovWikiDbBundle:ElectedOfficial', 'eo')
-            ->leftJoin('eo.government', 'g')
-            ->findOneBy(['altTypeSlug'=>$altTypeSlug, 'slug'=>$slug]);
-
-        return ['government' => $government];
+        return [
+            'elected' => $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+                ->getElectedOfficial($altTypeSlug, $slug, $electedSlug),
+        ];
     }
-
-
 }

@@ -2,6 +2,7 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
+use GovWiki\ApiBundle\GovWikiApiServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -26,7 +27,11 @@ class GovernmentController extends Controller
 
         $government = $em->getRepository('GovWikiDbBundle:Government')->findOneBy(['altTypeSlug'=>$altTypeSlug, 'slug'=>$slug]);
 
-        return ['government' => $government];
+        $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+            ->getGovernment($altTypeSlug, $slug);
+
+        return $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+            ->getGovernment($altTypeSlug, $slug);
     }
 
 

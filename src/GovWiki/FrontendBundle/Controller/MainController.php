@@ -2,10 +2,10 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
+use GovWiki\ApiBundle\GovWikiApiServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * MainController
@@ -20,26 +20,9 @@ class MainController extends Controller
      */
     public function mapAction()
     {
-        return $this->renderMainTemplate();
-    }
-
-    /**
-     * @return array
-     */
-    private function renderMainTemplate()
-    {
-        /** @var UserInterface $user */
-        $user = $this->getUser();
-        $username = '';
-        if (null !== $user) {
-            $username = $user->getUsername();
-        }
-
-        $authorized = (null !== $user) ? 1 : 0;
-
-        $this->get('twig')->addGlobal('authorized', $authorized);
-        $this->get('twig')->addGlobal('username', $username);
-
-        return [];
+        return [
+            'map' => $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+                ->getMap(),
+        ];
     }
 }

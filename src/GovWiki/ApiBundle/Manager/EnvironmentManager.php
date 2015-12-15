@@ -103,6 +103,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                 ->findGovernment($this->environment, $altTypeSlug, $slug),
             'formats' => $this->em->getRepository('GovWikiDbBundle:Format')
                 ->get($this->environment),
+            'categories' => $this->uniqueCategories(),
         ];
     }
 
@@ -117,5 +118,31 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     {
         return $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
             ->findOne($this->environment, $altTypeSlug, $slug, $eoSlug);
+    }
+
+    /**
+     * @return array
+     */
+    public function uniqueCategories()
+    {
+        $qb = $this->em->createQueryBuilder()
+            ->select('Format.category')
+            ->from('GovWikiDbBundle:Format', 'Format')
+            ->leftJoin('Format.environment', 'Env');
+        $expr = $qb->expr();
+
+        $result = $qb
+            ->where($expr->eq('Env.name', $expr->literal($this->environment)))
+            ->groupBy('Format.category')
+            ->getQuery()
+            ->getArrayResult();
+
+        if (count($result) > 0) {
+            foreach ($result as &$row) {
+                $row = $row['category'];
+            }
+        }
+
+        return $result;
     }
 }
