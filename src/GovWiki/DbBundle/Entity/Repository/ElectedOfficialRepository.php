@@ -78,7 +78,7 @@ class ElectedOfficialRepository extends EntityRepository
         return $qb
             ->addSelect(
                 'Contribution, Endorsement, PublicStatement, Vote',
-                'Legislation, Government, CreateRequest'
+                'Legislation, Government, IssueCategory, CreateRequest'
             )
             ->leftJoin('ElectedOfficial.contributions', 'Contribution')
             ->leftJoin('ElectedOfficial.endorsements', 'Endorsement')
@@ -86,7 +86,6 @@ class ElectedOfficialRepository extends EntityRepository
             ->leftJoin('ElectedOfficial.votes', 'Vote')
             ->leftJoin('ElectedOfficial.government', 'Government')
             ->leftJoin('Vote.legislation', 'Legislation')
-
             /*
              * Join made but not applied create requests.
              */

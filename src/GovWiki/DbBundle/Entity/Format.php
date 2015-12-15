@@ -93,7 +93,7 @@ class Format
     /**
      * @var Environment
      *
-     * @ORM\ManyToOne(targetEntity="Environment", inversedBy="  format")
+     * @ORM\ManyToOne(targetEntity="Environment", inversedBy="formats")
      * @ORM\JoinColumn(name="environment_id")
      */
     private $environment;

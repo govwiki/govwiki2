@@ -116,8 +116,27 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getElectedOfficial($altTypeSlug, $slug, $eoSlug)
     {
-        return $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
+        $data = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
             ->findOne($this->environment, $altTypeSlug, $slug, $eoSlug);
+
+        $dataCount = count($data);
+        if ($dataCount > 0) {
+            $electedOfficial = $data[0];
+            $createRequests = [];
+            for ($i = 1; $i < $dataCount; $i++) {
+                $createRequests[] = $data[$i];
+            }
+
+            return [
+                'electedOfficial' => $electedOfficial,
+                'createRequests' => $createRequests,
+                'issuesCategory' => $this->em
+                    ->getRepository('GovWikiDbBundle:IssueCategory')
+                    ->findAll(),
+            ];
+        }
+
+        return null;
     }
 
     /**

@@ -21,9 +21,10 @@ class ElectedController extends Controller
      */
     public function showAction($altTypeSlug, $slug, $electedSlug)
     {
-        return [
-            'elected' => $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-                ->getElectedOfficial($altTypeSlug, $slug, $electedSlug),
-        ];
+        dump($this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+            ->getElectedOfficial($altTypeSlug, $slug, $electedSlug));
+
+        return $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+                ->getElectedOfficial($altTypeSlug, $slug, $electedSlug);
     }
 }
