@@ -2,6 +2,8 @@
 
 namespace GovWiki\FrontendBundle\Twig;
 
+use GovWiki\DbBundle\Entity\Format;
+use GovWiki\DbBundle\Entity\Government;
 use Symfony\Component\Templating\EngineInterface;
 
 /**
@@ -31,27 +33,28 @@ class Extension extends \Twig_Extension
         return 'frontend';
     }
 
-    public function getFunctions()
+    public function getFilters()
     {
         return [
-            new \Twig_SimpleFunction('render_body', [ $this, 'renderBody' ]),
+            new \Twig_SimpleFilter('format_field', [
+                $this,
+                'formatGovernmentField',
+            ]),
         ];
     }
 
     /**
-     * @param array  $map  Map parameters.
-     * @param string $body Body text.
+     * @param Government $government
+     * @param Format     $format
      *
      * @return string
      */
-    public function renderBody(array $map, $body)
+    public function formatGovernmentField(Government $government, array $format)
     {
-        return $this->templating->render(
-            '@GovWikiFrontend/Partial/horizontal.html.twig',
+        return call_user_func(
             [
-                'width'  => $map['width'],
-                'height' => $map['height'],
-                'body'   => $body,
+                $government,
+                'get'. ucfirst($format['field']),
             ]
         );
     }

@@ -50,17 +50,16 @@
                 <div class="tab-content">
 
                     {% for category in categories %}
-
                         <div class="tabpanel" data-id="{{ category }}">
 
                             {% for format in formats %}
-
-                                {% if government[format.field] is defined %}
+                                {% set value = government|format_field(format) %}
+                                {% if value is defined %}
                                     <div>
                                         <span class="f-nam">{{ format.description }}</span>
                                         <span class="f-val">
                                             <a target="_blank" href="#">
-                                                {{ government[format.field] }}
+                                                {{ value }}
                                             </a>
                                         </span>
                                     </div>

@@ -117,7 +117,7 @@
     <script> window.gw.environment = '{{ environment }}' </script>
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/script.js'
     '@GovWikiFrontendBundle/Resources/public/js/home/search.js'
-    '@GovWikiFrontendBundle/Resources/public/js/home/map.js' %}
+    '@GovWikiFrontendBundle/Resources/public/js/home/map.js' output='js/main.js' %}
     <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 

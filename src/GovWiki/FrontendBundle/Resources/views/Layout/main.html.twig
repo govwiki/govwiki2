@@ -12,7 +12,7 @@
         <link href="https://bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
 
-        {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/*' filter='scss' %}
+        {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/*' filter='scss' output='css/main.css' %}
             <link rel="stylesheet" href="{{ asset_url }}">
         {% endstylesheets %}
 
