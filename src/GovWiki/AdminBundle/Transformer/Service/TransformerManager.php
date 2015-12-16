@@ -98,7 +98,7 @@ class TransformerManager
      */
     public function getTransformer($alias)
     {
-        return $this->transformers[$alias]['id'];
+        return $this->container->get($this->transformers[$alias]['id']);
     }
 
     /**

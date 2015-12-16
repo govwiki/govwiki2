@@ -100,7 +100,7 @@ abstract class AbstractImporter
     {
         $name = substr(
             $this->getEntityName(),
-            strrpos($this->getEntityName(), '\\')
+            strrpos($this->getEntityName(), '\\') + 1
         );
 
         foreach ($columns as &$column) {

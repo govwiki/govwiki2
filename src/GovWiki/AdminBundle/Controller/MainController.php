@@ -2,10 +2,13 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use CartoDbBundle\CartoDbServices;
+use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\ApiBundle\Exception\GovWikiApiEnvironmentNotFoundException;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Form\EnvironmentType;
+use GovWiki\DbBundle\GovWikiDbServices;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,30 +24,6 @@ class MainController extends AbstractGovWikiAdminController
 
     /**
      * @Configuration\Route("/")
-     *
-     * @return array
-     */
-    public function indexAction()
-    {
-        try {
-            /*
-             * Try to get current environment.
-             */
-            $environment = $this->adminEnvironmentManager()
-                ->getEnvironment();
-            return $this->redirectToRoute('govwiki_admin_main_show', [
-                'environment' => $environment,
-            ]);
-        } catch (GovWikiApiEnvironmentNotFoundException $e) {
-            /*
-             * Show list of available environments.
-             */
-            return $this->redirectToRoute('govwiki_admin_main_home');
-        }
-    }
-
-    /**
-     * @Configuration\Route("/list")
      * @Configuration\Template()
      *
      * @param Request $request A Request instance.
@@ -107,7 +86,7 @@ class MainController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{environment}")
+     * @Configuration\Route("/{environment}/show")
      * @Configuration\Template()
      *
      * @param Request $request     A Request instance.
@@ -156,6 +135,36 @@ class MainController extends AbstractGovWikiAdminController
         }
 
         return $this->redirectToRoute('govwiki_admin_main_home');
+    }
+
+    /**
+     * @Configuration\Route("/export")
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function updateAction()
+    {
+        $environment = $this->adminEnvironmentManager()->getEnvironment();
+        $filePath = $this->getParameter('kernel.logs_dir').'/'.
+            $environment.'.json';
+
+        $transformerManager = $this
+            ->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
+
+        $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
+            ->export(
+                $filePath,
+                [ 'id', 'altTypeSlug', 'slug', 'latitude', 'longitude' ],
+                $transformerManager->getTransformer('geo_json')
+            );
+
+        $this->get(CartoDbServices::CARTO_DB_API)
+            ->dropDataset($environment)
+            ->importDataset($filePath);
+
+        return $this->redirectToRoute('govwiki_admin_main_show', [
+            'environment' => $environment,
+        ]);
     }
 
     /**

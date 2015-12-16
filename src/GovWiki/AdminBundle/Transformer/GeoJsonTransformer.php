@@ -67,8 +67,8 @@ class GeoJsonTransformer implements FileTransformerInterface
             'features' => [],
         ];
         foreach ($data as $row) {
-            if (! array_key_exists('latitude', $row) &&
-                ! array_key_exists('longitude', $row)) {
+            if (array_key_exists('latitude', $row) &&
+                array_key_exists('longitude', $row)) {
                 $latitude = $row['latitude'];
                 $longitude = $row['longitude'];
 

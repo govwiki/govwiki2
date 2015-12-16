@@ -102,6 +102,20 @@ class CartoDbApi
     }
 
     /**
+     * @param string $name Dataset name.
+     *
+     * @return CartoDbApi
+     */
+    public function dropDataset($name)
+    {
+        $this->makeRequest("/v2/sql", 'GET', [
+            'q' => "DROP TABLE {$name}",
+        ]);
+
+        return $this;
+    }
+
+    /**
      * Wrapper under curl for making request to api.
      *
      * @param string $uri        Relative to CartoDB api end point.

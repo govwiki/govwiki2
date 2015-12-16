@@ -21,7 +21,7 @@ class GovernmentImporter extends AbstractImporter
      */
     protected function getEntityName()
     {
-        return 'GovWiki\AdminBundle\Entity\Government';
+        return 'GovWiki\DbBundle\Entity\Government';
     }
 
     /**
@@ -67,8 +67,13 @@ class GovernmentImporter extends AbstractImporter
     ) {
         /** @var GovernmentRepository $repository */
         $repository = $this->getRepository();
-        $data = $repository->createQueryBuilder('Government')
-            ->select($this->prepareSelect($columns))
+        $qb = $repository->createQueryBuilder('Government');
+
+        if (count($columns) > 0) {
+            $qb->select($this->prepareSelect($columns));
+        }
+
+        $data = $qb
             ->getQuery()
             ->getArrayResult();
 
