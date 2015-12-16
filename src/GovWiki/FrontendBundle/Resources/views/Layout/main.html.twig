@@ -1,86 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <!--include head.jade-->
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-9">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
-    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
-    <title>CPC Civic Profiles</title>
-    <!-- Bootstrap core CSS-->
-    <!--link(href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css", rel='stylesheet')-->
-    <link href="/legacy/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom styles for this page-->
-    <link rel="stylesheet" href="/legacy/css/index.css">
-</head>
-<body>
 
-<div style="padding:0" class="container">
-    <div id="header">
+<html lang="en">
+
+    <head>
+        <title>CPC Civic Profiles</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
+
+        <link href="https://bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+
+        {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/*' %}
+            <link rel="stylesheet" href="{{ asset_url }}">
+        {% endstylesheets %}
+
+    </head>
+
+    <body>
+
         <div class="container">
-            <div class="innder-container"><strong class="logo"><a href="http://californiapolicycenter.org/"><img src="/legacy/img/logo_cpc_v2_244x60.png" alt="California Policy Center"></a></strong>
-                <ul class="nav navbar-nav navbar-right search-icon">
-                    <li id="user-text"><a>{% if app.user %}Logged in as {{ app.user.username }}{% endif %}</a><span style="font-size:200%;vertical-align:middle;"></span></li>
-                    {% if app.user %}<li id="user"><a href="{{path('fos_user_security_logout')}}">Sign Out&nbsp;&nbsp;&nbsp;<span style="font-size:200%;vertical-align:middle;"></span></a></li>{% endif %}
-                    {% if not app.user %}<li id="user"><a href="#" class="show-login-modal">Login / Sign Up&nbsp;&nbsp;&nbsp;<span style="font-size:200%;vertical-align:middle;"></span></a></li>{% endif %}
-                    <li id="searchIcon"><a href="javascript:void(0);" onclick="GOVWIKI.history(0)">Return to Map &nbsp;&nbsp;&nbsp;<span style="font-size:200%;vertical-align:middle;"></span></a></li>
-                    <li id="stantonIcon"><a href="javascript:void(0);" onclick="GOVWIKI.history(-1)"><span style="font-size:200%;vertical-align:middle;"></span></a></li>
-                </ul>
+
+            <header>
+                {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
+            </header>
+
+            <main>
+                {% block main %}{% endblock %}
+            </main>
+
+            <footer>
+                {{ include('GovWikiFrontendBundle:Partial:footer.html.twig') }}
+            </footer>
+
+        </div>
+
+        <div id="modal-window" class="modal fade">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Login</h4>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <form id="ajax-login-form" action="/login_check" method="post">
+                            <input type="hidden" name="_csrf_token" value="qpkx1M6O5lzDwG4Eisz4fMM9A8oweUFEIXRPstJa6VA" />
+
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input class="form-control" type="text" id="username" name="_username" value="" required="required" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input class="form-control" type="password" id="password" name="_password" required="required" />
+                            </div>
+
+                            <div class="checkbox">
+                                <label for="remember_me">
+                                    <input class="" type="checkbox" id="remember_me" name="_remember_me" value="on" /> Remember me
+                                </label>
+                            </div>
+
+                            <input class="btn btn-default" type="submit" id="_submit" name="_submit" value="Log in" />
+                            <a href="/register/" class="btn btn-default pull-right">Sign up</a>
+                        </form>
+
+                    </div>
+
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-{% block content %}{% endblock %}
+        {#<script src="http://maps.google.com/maps/api/js?sensor=false"></script>#}
+        {#<script src="http://www.google.com/jsapi"></script>#}
+        {#<script src="/legacy/static/vendors.min.js"></script>#}
+        {#<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>#}
+        {#<script src="/legacy/js/vendor/markerwithlabel_packed.js"></script>#}
+        {#<script>google.load("visualization", "1", {packages: ["corechart"]});</script>#}
+        {#<script src="/legacy/static/bundle.js"></script>#}
+        <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.13/cartodb.js"></script>
+        <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+        <script src="legacy/js/vendor/handlebars-v3.0.0.js"></script>
+        <script src="/legacy/js/vendor/typeahead.js"></script>
 
-<!-- DATA-->
-<div id="dataContainer" class="container">
-    <!--p#pBackToSearch.text-center
-    a#btnBackToSearch.btn.btn-default(href='', role='button') back to search&nbsp;&nbsp;
-      span.glyphicon.glyphicon-search
-    -->
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="loader"></div>
-            <div id="details"></div>
-        </div>
-    </div>
-</div>
+        {% javascripts '@GovWikiFrontendBundle/Resources/public/js/*' %}
+            <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
 
-<div style="padding:0" class="container">
-    <footer class="container_wrap socket_color" id="socket" role="contentinfo" itemscope="itemscope" itemtype="https://schema.org/WPFooter">
-        <div class="container">
-            <span class="copyright">The California Policy Center is a 501c3 non-profit public charity. CA Corp. # 3295222. Federal EIN 27-2870463.<br>Copyright © California Policy Center 2015. All rights reserved</span>
-            <ul class="noLightbox social_bookmarks icon_count_3"><li class="social_bookmarks_facebook av-social-link-facebook social_icon_1"><a target="_blank" href="https://www.facebook.com/CalPolicyCenter" aria-hidden="true" data-av_icon="" data-av_iconfont="entypo-fontello" title="Facebook"><span class="avia_hidden_link_text">Facebook</span></a></li><li class="social_bookmarks_twitter av-social-link-twitter social_icon_2"><a target="_blank" href="https://twitter.com/calpolicycenter" aria-hidden="true" data-av_icon="" data-av_iconfont="entypo-fontello" title="Twitter"><span class="avia_hidden_link_text">Twitter</span></a></li><li class="social_bookmarks_linkedin av-social-link-linkedin social_icon_3"><a target="_blank" href="https://www.linkedin.com/company/california-policy-center" aria-hidden="true" data-av_icon="" data-av_iconfont="entypo-fontello" title="Linkedin"><span class="avia_hidden_link_text">Linkedin</span></a></li></ul><nav class="sub_menu_socket" role="navigation" itemscope="itemscope" itemtype="https://schema.org/SiteNavigationElement"><div class="avia3-menu"><ul id="avia3-menu" class="menu"><li id="menu-item-4677" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4677"><a href="http://californiapolicycenter.org">HOME</a></li>
-                        <li id="menu-item-4666" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4666"><a href="http://californiapolicycenter.org/contact/">CONTACT US</a></li>
-                    </ul></div></nav>
-        </div>
-    </footer>
-</div>
-<div id="modal-window" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">Loading...</div>
-        </div>
-    </div>
-</div>
-
-<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
-<script src="http://www.google.com/jsapi"></script>
-<script src="/legacy/static/vendors.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-<script src="/legacy/js/vendor/markerwithlabel_packed.js"></script>
-<script>google.load("visualization", "1", {packages: ["corechart"]});</script>
-<script src="/legacy/static/bundle.js"></script>
-
-
-{% javascripts '@GovWikiFrontendBundle/Resources/public/js/*' %}
-    <script src="{{ asset_url }}"></script>
-{% endjavascripts %}
-
-</body>
+    </body>
 </html>

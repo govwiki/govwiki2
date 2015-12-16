@@ -1,0 +1,69 @@
+
+@import "variables";
+@import "partials/head/head";
+@import "partials/typeahead/typeahead";
+@import "partials/footer/footer";
+
+html, body, #map {
+   height: 100%;
+   padding: 0;
+   margin: 0;
+}
+
+body {
+   background-color: $body-background;
+
+   & > .container {
+      padding: 0;
+   }
+}
+
+
+main {
+
+   background-color: white;
+   padding: 0 15px;
+
+   @import "partials/map/map";
+
+   .typeahead_wrap{
+      margin-top: 40px;
+      margin-bottom: 10px;
+   }
+
+   .intro-text {
+      .title h3{
+         text-align: center;
+         color: $main-text;
+      }
+
+      .content {
+         font-size: 16px;
+      }
+      
+   }
+
+}
+
+/* ========================= */
+/* ======== CartoDB ======== */
+/* ========================= */
+
+div.cartodb-tooltip {
+   min-width: inherit;
+   margin-top: 10px;
+   margin-left: 10px;
+}
+
+div.cartodb-tooltip-content-wrapper {
+   background-color: rgba(0, 0, 0, 0.9);
+}
+
+div.cartodb-tooltip-content-wrapper p {
+   color: white;
+}
+
+.leaflet-tile-pane .leaflet-layer:last-child{
+   z-index: 1000;
+}
+

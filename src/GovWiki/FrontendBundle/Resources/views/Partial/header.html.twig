@@ -1,0 +1,80 @@
+<div class="row">
+
+    {# Logo #}
+    <div class="col-xs-6 col-sm-6 col-md-4">
+
+        <a href="http://californiapolicycenter.org/">
+            <img src="/legacy/img/logo_cpc_v2_244x60.png" alt="California Policy Center" class="logo">
+        </a>
+
+    </div>
+
+    {# Menu button (hamburger) for mobile devices #}
+    <div class="col-xs-6 col-sm-6 visible-xs visible-sm">
+
+        <button type="button" class="hamburger navbar-toggle collapsed" data-toggle="collapse"
+                data-target="#bs-navigation-collapse" aria-expanded="false">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+
+    </div>
+
+    {# Navigation #}
+    <div class="col-xs-12 col-sm-12 col-md-8 text-right">
+
+        <ul class="navigation navbar-collapse collapse" id="bs-navigation-collapse">
+
+            {# Show User name (Athorized) #}
+            {% if app.user %}
+
+                <li>
+                    <a href="javascript:void(0)">
+                        Logged in as {{ app.user.username }}
+                    </a>
+                </li>
+
+            {% endif %}
+
+            {# Logout button #}
+            {% if app.user %}
+
+                <li>
+                    <a href="{{path('fos_user_security_logout')}}">
+                        Sign Out
+                    </a>
+                </li>
+
+            {% endif %}
+
+            {# Login button#}
+            {% if not app.user %}
+
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#modal-window">
+                        Login / Sign Up
+                    </a>
+                </li>
+
+            {% endif %}
+
+            {# Return to map #}
+            <li>
+                <a href="#">
+                    Return to Map
+                </a>
+            </li>
+
+            {# Return to some government #}
+            <li>
+                <a href="#">
+                    Return to Government
+                </a>
+            </li>
+
+        </ul>
+
+    </div>
+
+</div>
