@@ -98,6 +98,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getGovernment($altTypeSlug, $slug)
     {
+
         return [
             'government' => $this->em->getRepository('GovWikiDbBundle:Government')
                 ->findGovernment($this->environment, $altTypeSlug, $slug),

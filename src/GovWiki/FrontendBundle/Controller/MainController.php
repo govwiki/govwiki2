@@ -20,9 +20,17 @@ class MainController extends Controller
      */
     public function mapAction()
     {
+
+        $environmentManager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
+
+        $environment = $environmentManager->getEnvironment();
+
+        $map = $environmentManager->getMap();
+        $map = json_encode($map, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
         return [
-            'map' => $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-                ->getMap(),
+            'environment' => $environment,
+            'map' => $map,
         ];
     }
 }
