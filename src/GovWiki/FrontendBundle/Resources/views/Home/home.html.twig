@@ -2,6 +2,8 @@
 
 {% block main %}
 
+    {% dump map %}
+
     <div class="row">
         <div class="col-md-6 col-lg-5">
 
@@ -103,13 +105,22 @@
 
     </div>
 
-    {% block javascripts %}
-        <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.13/cartodb.js"></script>
-        <script src="/legacy/js/vendor/handlebars-v3.0.0.js"></script>
-        <script src="/legacy/js/vendor/typeahead.js"></script>
-        {% javascripts '@GovWikiFrontendBundle/Resources/public/js/script.js' %}
-            <script src="{{ asset_url }}"></script>
-        {% endjavascripts %}
-    {% endblock %}
+{% endblock %}
+
+{% block javascripts %}
+
+    {{parent()}}
+
+    <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.13/cartodb.js"></script>
+    <script src="/legacy/js/vendor/handlebars-v3.0.0.js"></script>
+    <script src="/legacy/js/vendor/typeahead.js"></script>
+
+    <script> window.gw.map = '{{ map | raw }}'; </script>
+    <script> window.gw.environment = '{{ environment }}' </script>
+    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/script.js'
+    '@GovWikiFrontendBundle/Resources/public/js/home/search.js'
+    '@GovWikiFrontendBundle/Resources/public/js/home/map.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 
 {% endblock %}

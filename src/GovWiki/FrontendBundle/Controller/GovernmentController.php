@@ -22,14 +22,6 @@ class GovernmentController extends Controller
      */
     public function governmentAction($altTypeSlug, $slug)
     {
-
-        $em = $this->getDoctrine()->getManager();
-
-        $government = $em->getRepository('GovWikiDbBundle:Government')->findOneBy(['altTypeSlug'=>$altTypeSlug, 'slug'=>$slug]);
-
-        $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-            ->getGovernment($altTypeSlug, $slug);
-
         return $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
             ->getGovernment($altTypeSlug, $slug);
     }
