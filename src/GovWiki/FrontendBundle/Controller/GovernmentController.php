@@ -15,7 +15,7 @@ class GovernmentController extends Controller
 {
 
     /**
-     * @Route("/{altTypeSlug}/{slug}")
+     * @Route("/{altTypeSlug}/{slug}", name="government")
      * @Template("GovWikiFrontendBundle:Government:index.html.twig")
      *
      * @return array

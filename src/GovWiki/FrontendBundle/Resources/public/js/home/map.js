@@ -167,7 +167,35 @@ $(function() {
                 });
 
                 layer.on('featureClick', function (event, latlng, pos, data, layerIndex) {
-                    console.log(data);
+
+
+
+                    /**
+                     * TODO: hardcoded, must be replaced on multi envirenment
+                     * @type {string}
+                     */
+                    var altTypeSlug = '';
+                    switch (layerIndex) {
+                        case 0:
+                            altTypeSlug = 'County';
+                            break;
+
+                        case 1:
+                            altTypeSlug = 'City';
+                            break;
+
+                        case 2:
+                            altTypeSlug = 'School_District';
+                            break;
+
+                        case 3:
+                            altTypeSlug = 'Special_District';
+                            break;
+                    }
+
+                    var governmentSlug = data.slug.replace(/ /g, '_');
+
+                    window.location.pathname = altTypeSlug + '/' + governmentSlug;
                 });
 
             });

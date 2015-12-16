@@ -14,8 +14,8 @@ class ElectedController extends Controller
 {
 
     /**
-     * @Route("/{altTypeSlug}/{slug}/{electedSlug}")
-     * @Template("GovWikiFrontendBundle:Government:index.html.twig")
+     * @Route("/{altTypeSlug}/{slug}/{electedSlug}", name="elected")
+     * @Template("GovWikiFrontendBundle:Elected:index.html.twig")
      *
      * @return array
      */

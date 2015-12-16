@@ -13,7 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 class MainController extends Controller
 {
     /**
-     * @Route("/")
+     * @Route("/", name="map")
      * @Template("GovWikiFrontendBundle:Home:home.html.twig")
      *
      * @return array

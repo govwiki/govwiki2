@@ -31,7 +31,7 @@
 
                 <li>
                     <a href="javascript:void(0)">
-                        Logged in as {{ app.user.username }}
+                        Logged in as {{ app.user.username }} {{ app.request.attributes.get('_route') }}
                     </a>
                 </li>
 
@@ -60,18 +60,22 @@
             {% endif %}
 
             {# Return to map #}
-            <li>
-                <a href="#">
-                    Return to Map
-                </a>
-            </li>
+            {% if app.request.attributes.get('_route') != "map" %}
+                <li>
+                    <a href="/">
+                        Return to Map
+                    </a>
+                </li>
+            {% endif %}
 
             {# Return to some government #}
-            <li>
-                <a href="#">
-                    Return to Government
-                </a>
-            </li>
+            {% if app.request.attributes.get('_route') == "elected" %}
+                <li>
+                    <a href="#">
+                        Return to Government
+                    </a>
+                </li>
+            {% endif %}
 
         </ul>
 
