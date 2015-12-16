@@ -128,4 +128,27 @@ class FormatController extends Controller
             $em->flush();
         }
     }
+
+    private function updateFieldsInFormats() {
+
+        $em = $this->getDoctrine()->getManager();
+        $result = $em->getRepository('GovWikiDbBundle:Format')->findAll();
+
+        foreach($result as $key => $value) {
+            $str = $value->getField();
+            $parts = explode('_', $str);
+
+            $str = $parts[0];
+            for ($i = 1; $i < count($parts); $i++) {
+                $str .= ucfirst($parts[$i]);
+            }
+
+            $value->setField($str);
+
+            $em->persist($value);
+            $em->flush();
+
+        }
+
+    }
 }
