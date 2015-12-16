@@ -83,15 +83,9 @@
         {#<script src="/legacy/js/vendor/markerwithlabel_packed.js"></script>#}
         {#<script>google.load("visualization", "1", {packages: ["corechart"]});</script>#}
         {#<script src="/legacy/static/bundle.js"></script>#}
-        <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.13/cartodb.js"></script>
         <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-        <script src="legacy/js/vendor/handlebars-v3.0.0.js"></script>
-        <script src="/legacy/js/vendor/typeahead.js"></script>
-
-        {% javascripts '@GovWikiFrontendBundle/Resources/public/js/*' %}
-            <script src="{{ asset_url }}"></script>
-        {% endjavascripts %}
+        {% block javascripts %}{% endblock %}
 
     </body>
 </html>

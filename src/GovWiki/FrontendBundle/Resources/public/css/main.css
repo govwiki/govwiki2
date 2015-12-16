@@ -105,7 +105,7 @@ header {
   line-height: 30px;
   text-align: left; }
 
-.tt-suggestion:hover {
+.tt-suggestion:hover, .tt-cursor {
   color: #fff;
   background-color: #0097cf;
   cursor: pointer; }

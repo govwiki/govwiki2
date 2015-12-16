@@ -24,6 +24,9 @@ function main() {
 
     $.get('/legacy/data/h_types_ca_2.json', function (data){
 
+        var searchValue = '';
+
+        // Init typeahead
         var $typeahead = $('.typeahead').typeahead({
             hint: true,
             minLength: 1
@@ -43,9 +46,20 @@ function main() {
             }
         });
 
+        // Pressed mouse or enter button
         $typeahead.bind("typeahead:selected", function(obj, selectedItemData) {
-            $('.typeahead').typeahead('val', selectedItemData.gov_name);
+            $typeahead.typeahead('val', selectedItemData.gov_name);
             window.location.pathname = [selectedItemData.altTypeSlug, selectedItemData.slug].join('/');
+        });
+
+        // Move cursor via arrows keys
+        $typeahead.bind("typeahead:cursorchange", function(obj) {
+            $typeahead.typeahead('val', searchValue);
+        });
+
+        // Store search value on typing
+        $typeahead.keyup(function(event) {
+            searchValue = $(event.target).val();
         });
 
     });
