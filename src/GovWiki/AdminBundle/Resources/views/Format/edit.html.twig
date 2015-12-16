@@ -3,7 +3,6 @@
 {% block title %}{{ parent() }} - {{ environment|capitalize }} edit format{% endblock title %}
 
 {% block body %}
-    {% dump environment %}
     <div class="container-fluid">
         {{ form_start(form) }}
         {{ form_widget(form) }}
