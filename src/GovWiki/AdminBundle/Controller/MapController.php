@@ -4,7 +4,8 @@ namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
 use CartoDbBundle\Service\CartoDbApi;
-use GovWiki\AdminBundle\Utils\GeoJsonFormater;
+use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Form\MapType;
@@ -16,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class MapController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/{environment}/map")
+ * @Configuration\Route("/map")
  */
 class MapController extends AbstractGovWikiAdminController
 {
@@ -24,18 +25,20 @@ class MapController extends AbstractGovWikiAdminController
      * @Configuration\Route("/")
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
      *
      * @return array
      */
-    public function editAction(Request $request, $environment)
+    public function editAction(Request $request)
     {
+        /** @var AdminEnvironmentManager $manager */
+        $manager = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
+
         /** @var Map $map */
-        $map = $this->repository()->getByEnvironment($environment);
+        $map = $manager->getMap();
         if (null === $map) {
             return $this->forward('GovWikiAdminBundle:Map:new', [
-                'environment' => $environment,
+                'environment' => $manager->getEnvironment(),
             ]);
         }
 
@@ -82,7 +85,6 @@ class MapController extends AbstractGovWikiAdminController
         return [
             'form' => $form->createView(),
             'vizUrl' => $map->getVizUrl(),
-            'environment' => $environment,
             'canExport' => ! $isImported,
         ];
     }
@@ -92,7 +94,7 @@ class MapController extends AbstractGovWikiAdminController
      * Set up map parameters and import county or municipals GeoJson file to
      * CartoDB server.
      *
-     * @Configuration\Route("/new", methods={"POST"})
+     * @Configuration\Route("/{environment}/new", methods={"POST"})
      * @Configuration\Template()
      *
      * @param Request            $request     A Request instance.
@@ -153,43 +155,6 @@ class MapController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{name}/export")
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function exportToCartoDBAction($name)
-    {
-        $filepath = $this->getParameter('kernel.logs_dir'). "/$name.json";
-        /** @var Map $map */
-        $map = $this->repository()
-            ->findOneBy([ 'name' => $name ]);
-
-        if (null === $map->getItemQueueId()) {
-            file_put_contents(
-                $filepath,
-                GeoJsonFormater::format(
-                    $this->getDoctrine()
-                        ->getRepository('GovWikiDbBundle:Government')
-                        ->exportGovernments($name)
-                )
-            );
-
-            $result = $this->get('govwiki_admin.carto_db.api')
-                ->importDataset(realpath($filepath));
-            unlink($filepath);
-
-            $map->setItemQueueId($result['item_queue_id']);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($map);
-            $em->flush();
-        }
-
-        return $this->redirectToRoute('map_show', [
-            'name' => $name,
-        ]);
-    }
-
-    /**
      * @param FormInterface $form A FormInterface instance.
      *
      * @return FormInterface
@@ -203,13 +168,5 @@ class MapController extends AbstractGovWikiAdminController
         }
 
         return $form;
-    }
-
-    /**
-     * @return \GovWiki\DbBundle\Entity\Repository\MapRepository
-     */
-    private function repository()
-    {
-        return $this->getDoctrine()->getRepository('GovWikiDbBundle:Map');
     }
 }

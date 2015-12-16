@@ -98,6 +98,15 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * @return
+     */
+    public function getMap()
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Map')
+            ->getByEnvironment($this->environment);
+    }
+
+    /**
      * @return AdminEnvironmentManager
      */
     public function clearEnvironment()

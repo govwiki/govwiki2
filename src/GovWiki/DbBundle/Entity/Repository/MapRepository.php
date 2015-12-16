@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use GovWiki\DbBundle\Entity\Map;
 
 /**
  * MapRepository
@@ -27,7 +28,7 @@ class MapRepository extends EntityRepository
     /**
      * @param string $environment Environment name.
      *
-     * @return mixed
+     * @return Map|null
      */
     public function getByEnvironment($environment)
     {

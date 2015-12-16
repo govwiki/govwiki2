@@ -144,7 +144,9 @@ class MainController extends AbstractGovWikiAdminController
      */
     public function updateAction()
     {
-        $environment = $this->adminEnvironmentManager()->getEnvironment();
+        $environmentManager = $this->adminEnvironmentManager();
+
+        $environment = $environmentManager->getEnvironment();
         $filePath = $this->getParameter('kernel.logs_dir').'/'.
             $environment.'.json';
 
