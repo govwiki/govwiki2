@@ -7,6 +7,7 @@ gov_finder.on_select = gov_details.show
 -----------------------------------------------------------------------------------------------------------------
 ###
 
+
 GovSelector = require './govselector.coffee'
 #_jqgs       = require './jquery.govselector.coffee'
 Templates2 = require './templates2.coffee'
@@ -1365,7 +1366,7 @@ if routeType is 2
     templates.load_fusion_template "tabs", "https://www.googleapis.com/fusiontables/v2/query?sql=SELECT%20*%20FROM%201z2oXQEYQ3p2OoMI8V5gKgHWB5Tz990BrQ1xc1tVo&key=AIzaSyCXDQyMDpGA2g3Qjuv4CDv7zRj-ix4IQJA"
     $.ajax
 #        url: "http://45.55.0.145/api/government" + window.path,
-        url: "/api/government" + window.path,
+        url: backend + "/api/government" + window.path,
         dataType: 'json'
         cache: true
         success: (govs) ->

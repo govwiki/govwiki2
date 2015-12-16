@@ -1,0 +1,17 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% block title %}New map{% endblock title %}
+
+{% block body %}
+    <div class="container-fluid">
+        {{ form_start(form, {
+            'action': path('govwiki_admin_map_new',
+                { environment: environment })
+        }) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-success">Create</button>
+        <a class="btn btn-default" href="{{ path('govwiki_admin_main_remove',
+            { environment: environment }) }}">Back</a>
+        {{ form_end(form) }}
+    </div>
+{% endblock body %}

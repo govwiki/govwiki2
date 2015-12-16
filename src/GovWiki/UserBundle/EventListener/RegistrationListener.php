@@ -40,13 +40,16 @@ class RegistrationListener implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param UserEvent $event A UserEvent instance.
+     *
+     * @return void
+     */
     public function registrationInitialize(UserEvent $event)
     {
         $referer = $event->getRequest()->server->get('HTTP_REFERER');
-        if (! preg_match('/register/', $referer)) {
-            //$key = sprintf('_security.%s.target_path', $this->tokenStorage->getToken()->getProviderKey());
-            $key = sprintf('_security.%s.target_path', 'main');
-            $this->session->set($key, $referer);
+        if (strpos($referer, 'register') !== false) {
+            $this->session->set('_security.main.target_path', $referer);
         }
     }
 }

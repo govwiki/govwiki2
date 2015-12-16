@@ -1,0 +1,16 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% block title %}{{ parent() }} - New environment.{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h3>New environment</h3>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-primary" type="submit">Add new</button>
+        <a class="btn btn-danger" href="{{ path('govwiki_admin_main_home') }}">
+            Cancel
+        </a>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

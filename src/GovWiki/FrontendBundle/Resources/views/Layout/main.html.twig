@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <title>CPC Civic Profiles</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
+
+        <link href="https://bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+
+        {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/*' filter='scss' %}
+            <link rel="stylesheet" href="{{ asset_url }}">
+        {% endstylesheets %}
+
+    </head>
+
+    <body>
+
+        <div class="container">
+
+            <header>
+                {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
+            </header>
+
+            <main>
+                {% block main %}{% endblock %}
+            </main>
+
+            <footer>
+                {{ include('GovWikiFrontendBundle:Partial:footer.html.twig') }}
+            </footer>
+
+        </div>
+
+        <div id="modal-window" class="modal fade">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Login</h4>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <form id="ajax-login-form" action="/login_check" method="post">
+                            <input type="hidden" name="_csrf_token" value="qpkx1M6O5lzDwG4Eisz4fMM9A8oweUFEIXRPstJa6VA" />
+
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input class="form-control" type="text" id="username" name="_username" value="" required="required" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input class="form-control" type="password" id="password" name="_password" required="required" />
+                            </div>
+
+                            <div class="checkbox">
+                                <label for="remember_me">
+                                    <input class="" type="checkbox" id="remember_me" name="_remember_me" value="on" /> Remember me
+                                </label>
+                            </div>
+
+                            <input class="btn btn-default" type="submit" id="_submit" name="_submit" value="Log in" />
+                            <a href="/register/" class="btn btn-default pull-right">Sign up</a>
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {#<script src="http://maps.google.com/maps/api/js?sensor=false"></script>#}
+        {#<script src="http://www.google.com/jsapi"></script>#}
+        {#<script src="/legacy/static/vendors.min.js"></script>#}
+        {#<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>#}
+        {#<script src="/legacy/js/vendor/markerwithlabel_packed.js"></script>#}
+        {#<script>google.load("visualization", "1", {packages: ["corechart"]});</script>#}
+        {#<script src="/legacy/static/bundle.js"></script>#}
+        <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+        {% block javascripts %}
+            {# Govwiki namespace #}
+            <script> window.gw = {}; </script>
+        {% endblock %}
+
+    </body>
+</html>

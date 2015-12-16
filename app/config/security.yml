@@ -3,24 +3,26 @@ security:
         fos_userbundle:
             id: fos_user.user_provider.username
 
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_MANAGER]
+        ROLE_MANAGER: [ROLE_USER]
+        ROLE_USER:
+
     firewalls:
-        # disables authentication for assets and the profiler, adapt it according to your needs
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
         main:
-            pattern: ^/
             access_denied_handler: govwiki.user_bundle.redirection.access_denied
             form_login:
                 provider: fos_userbundle
-                csrf_provider: form.csrf_provider
-                use_referer: true
-
+                check_path: fos_user_security_check
+                login_path: fos_user_security_login
             logout:
+                path: fos_user_security_logout
                 success_handler: govwiki.user_bundle.redirection.logout
-
-            anonymous:    true
+            anonymous: true
 
     encoders:
         FOS\UserBundle\Model\UserInterface: bcrypt
@@ -29,4 +31,4 @@ security:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin, role: ROLE_ADMIN }
+        - { path: ^/admin, roles: [ ROLE_ADMIN, ROLE_MANAGER ] }

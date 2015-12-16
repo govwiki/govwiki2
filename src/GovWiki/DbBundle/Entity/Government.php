@@ -26,7 +26,7 @@ class Government
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"government", "elected_official"})
+     * @Groups({"government", "government_list", "elected_official", "map"})
      */
     private $id;
 
@@ -60,7 +60,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "government_list"})
      */
     private $name;
 
@@ -68,7 +68,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="slug", type="string", length=255, nullable=true)
-     * @Groups({"government", "elected_official"})
+     * @Groups({"government", "government_list", "elected_official", "map"})
      */
     private $slug;
 
@@ -84,7 +84,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "government_list"})
      */
     private $type;
 
@@ -92,7 +92,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="alt_type", type="string", length=20, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "government_list"})
      */
     private $altType;
 
@@ -100,7 +100,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="alt_type_slug", type="string", length=20, nullable=true)
-     * @Groups({"government", "elected_official"})
+     * @Groups({"government", "elected_official", "map"})
      */
     private $altTypeSlug;
 
@@ -212,7 +212,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="latitude", type="float", precision=10, scale=0, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "map"})
      */
     private $latitude;
 
@@ -220,7 +220,7 @@ class Government
      * @var float
      *
      * @ORM\Column(name="longitude", type="float", precision=10, scale=0, nullable=true)
-     * @Groups({"government"})
+     * @Groups({"government", "map"})
      */
     private $longitude;
 
@@ -951,6 +951,14 @@ class Government
      * @Groups({"government"})
      */
     private $financialStatements;
+
+    /**
+     * @var Map
+     *
+     * @ORM\ManyToOne(targetEntity="Environment", inversedBy="governments")
+     * @ORM\JoinColumn(name="environment_id")
+     */
+    private $environment;
 
     /**
      * @return array
@@ -3681,5 +3689,25 @@ class Government
     public function getEnrollmentRank()
     {
         return $this->enrollmentRank;
+    }
+
+    /**
+     * @param Environment $environment A Environment instance.
+     *
+     * @return Environment
+     */
+    public function setEnvironment(Environment $environment)
+    {
+        $this->environment = $environment;
+
+        return $this;
+    }
+
+    /**
+     * @return Environment
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
     }
 }

@@ -1,0 +1,3 @@
+user:
+    resource: "@GovWikiUserBundle/Controller/SecurityController.php"
+    type: annotation

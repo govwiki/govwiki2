@@ -15,6 +15,35 @@ use GovWiki\DbBundle\Entity\Government;
 class GovernmentRepository extends EntityRepository
 {
     /**
+     * @param string  $environment Environment name.
+     * @param integer $id          Government id.
+     * @param string  $name        Government name.
+     *
+     * @return Query
+     */
+    public function getListQuery($environment, $id = null, $name = null)
+    {
+        $qb = $this
+            ->createQueryBuilder('Government')
+            ->leftJoin('Government.environment', 'Environment');
+
+        $expr = $qb->expr();
+
+        $qb->where($expr->eq('Environment.name', $expr->literal($environment)));
+
+        if (null !== $id) {
+            $qb->andWhere($expr->eq('Government.id', $id));
+        }
+        if (null !== $name) {
+            $qb->andWhere($expr->eq(
+                'Government.name',
+                $expr->literal($name)
+            ));
+        }
+
+        return $qb->getQuery();
+    }
+    /**
      * @param string $altTypeSlug Government slugged alt type.
      *
      * @return integer
@@ -183,32 +212,44 @@ class GovernmentRepository extends EntityRepository
      * Find government by slug and altTypeSlug.
      * Append maxRanks and financialStatements.
      *
-     * @param  string $altTypeSlug
-     * @param  string $slug
+     * @param string $environment Environment name.
+     * @param string $altTypeSlug Slugged government alt type.
+     * @param string $slug        Slugged government name.
      *
      * @return Government
      */
-    public function findGovernment($altTypeSlug, $slug)
+    public function findGovernment($environment, $altTypeSlug, $slug)
     {
         $qb = $this->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
         $data = $qb
-            ->addSelect('FinData, CaptionCategory, MaxRank, ElectedOfficial, Fund')
+            ->addSelect(
+                'FinData, CaptionCategory, MaxRank, ElectedOfficial',
+                'Fund'
+            )
             ->leftJoin('Government.finData', 'FinData')
             ->leftJoin('FinData.captionCategory', 'CaptionCategory')
             ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
             ->leftJoin('FinData.fund', 'Fund')
+            ->leftJoin('Government.environment', 'Environment')
             ->join(
                 'GovWikiDbBundle:MaxRank',
                 'MaxRank',
                 Join::WITH,
-                $qb->expr()->eq('MaxRank.altType', 'Government.altType')
+                $expr->eq('MaxRank.altType', 'Government.altType')
             )
             ->where(
-                $qb->expr()->andX(
-                    $qb->expr()
-                        ->eq('Government.altTypeSlug', $qb->expr()->literal($altTypeSlug)),
-                    $qb->expr()
-                        ->eq('Government.slug', $qb->expr()->literal($slug))
+                $expr->andX(
+                    $expr->eq(
+                        'Government.altTypeSlug',
+                        $qb->expr()->literal($altTypeSlug)
+                    ),
+                    $expr->eq(
+                        'Government.slug',
+                        $qb->expr()->literal($slug)
+                    ),
+                    $expr->eq('Environment.name', $expr->literal($environment))
                 )
             )
             ->getQuery()
@@ -420,6 +461,26 @@ class GovernmentRepository extends EntityRepository
         return $qb
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * @param string $map Map name.
+     *
+     * @return array
+     */
+    public function exportGovernments($map)
+    {
+        $qb = $this->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select(
+                'partial Government.{id,latitude,longitude,slug,altTypeSlug}'
+            )
+            ->leftJoin('Government.map', 'Map')
+            ->where($expr->eq('Map.name', $expr->literal($map)))
+            ->getQuery()
+            ->getArrayResult();
     }
 
     /**

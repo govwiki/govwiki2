@@ -1,1 +1,6 @@
 services:
+    govwiki.frontend_bundle.twig_extension:
+        class: GovWiki\FrontendBundle\Twig\Extension
+        arguments: [ @templating ]
+        tags:
+            - { name: twig.extension }

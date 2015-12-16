@@ -1,5 +1,5 @@
 {% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
-{% block title %}Create government{% endblock %}
+{% block title %}{{ parent() }} - Create government{% endblock %}
 {% block body %}
     <div class="container-fluid">
         {{ form_start(form) }}
@@ -12,7 +12,6 @@
                 <div class="col-md-3">
                     {{ form_row(form.name) }}
                     {{ form_row(form.slug) }}
-                    {{ form_row(form.stateId) }}
                     {{ form_row(form.specialDistrictFunctionCode) }}
                     {{ form_row(form.type) }}
                     {{ form_row(form.altType) }}

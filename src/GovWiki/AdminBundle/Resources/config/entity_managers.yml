@@ -1,0 +1,47 @@
+services:
+    #
+    # Parent for all admin entity managers.
+    #
+    govwiki_admin.entity_manager.abstract:
+        class: GovWiki\AdminBundle\Manager\AbstractAdminEntityManager
+        arguments: [@doctrine.orm.default_entity_manager]
+        #
+        # Set current environment name from admin environment manager.
+        #
+        configurator: [@govwiki_admin.manager.environment, configure]
+        abstract: true
+
+    #
+    # Government admin entity manager.
+    #
+    govwiki_admin.entity_manager.government:
+        class: GovWiki\AdminBundle\Manager\Entity\AdminGovernmentManager
+        parent: govwiki_admin.entity_manager.abstract
+
+    #
+    # ElectedOfficial admin entity manager.
+    #
+    govwiki_admin.entity_manager.elected_official:
+        class: GovWiki\AdminBundle\Manager\Entity\AdminElectedOfficialManager
+        parent: govwiki_admin.entity_manager.abstract
+
+    #
+    # Legislation admin entity manager.
+    #
+    govwiki_admin.entity_manager.legislation:
+        class: GovWiki\AdminBundle\Manager\Entity\AdminLegislationManager
+        parent: govwiki_admin.entity_manager.abstract
+
+    #
+    # CreareRequest admin entity manager.
+    #
+    govwiki_admin.entity_manager.create_request:
+        class: GovWiki\AdminBundle\Manager\Entity\AdminCreateRequestManager
+        parent: govwiki_admin.entity_manager.abstract
+
+    #
+    # EditRequest admin entity manager.
+    #
+    govwiki_admin.entity_manager.edit_request:
+        class: GovWiki\AdminBundle\Manager\Entity\AdminEditRequestManager
+        parent: govwiki_admin.entity_manager.abstract

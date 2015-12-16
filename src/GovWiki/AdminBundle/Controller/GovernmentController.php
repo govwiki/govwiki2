@@ -2,69 +2,103 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\DbBundle\GovWikiDbServices;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Form\GovernmentType;
 
 /**
  * GovernmentController
+ *
+ * @Configuration\Route("/government")
  */
-class GovernmentController extends Controller
+class GovernmentController extends AbstractGovWikiAdminController
 {
     /**
-     * @Route("/", methods="GET")
-     * @Template()
+     * Show list of governments for current environment.
      *
-     * @param Request $request
-     * @return Response
+     * @Configuration\Route("/", methods="GET")
+     * @Configuration\Template()
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return array
      */
     public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $qb = $em->createQueryBuilder()->select('g')->from('GovWikiDbBundle:Government', 'g');
-
+        $id = null;
+        $name = null;
         if ($filter = $request->query->get('filter')) {
             if (!empty($filter['id'])) {
-                $qb->andWhere('g.id = :id')->setParameter('id', $filter['id']);
+                $id = (int) $filter['id'];
             }
             if (!empty($filter['name'])) {
-                $qb->andWhere('g.name LIKE :name')->setParameter('name', '%'.$filter['name'].'%');
+                $name = $filter['name'];
             }
         }
 
-        $governments = $this->get('knp_paginator')->paginate(
-            $qb->getQuery(),
+        $governments = $this->paginate(
+            $this->getManager()
+                ->getListQuery($id, $name),
             $request->query->getInt('page', 1),
             50
         );
 
-        return ['governments' => $governments];
+        return [ 'governments' => $governments ];
     }
 
     /**
-     * @Route("/create", methods="GET|POST")
-     * @Template()
+     * Create new government in current environment.
      *
-     * @param Request    $request
-     * @return Response
+     * @Configuration\Route("/create")
+     * @Configuration\Template()
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return array
      */
     public function createAction(Request $request)
     {
-        $government = new Government;
+        $manager = $this->getManager();
+        $government = $manager->create();
 
         $form = $this->createForm(new GovernmentType(), $government);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $manager->update($government);
+            $this->addFlash(
+                'admin_success',
+                'Government '. $government->getName() .' successfully created'
+            );
 
-            $em->persist($government);
-            $em->flush();
-            $this->addFlash('info', 'Created');
+            return $this->redirectToRoute('govwiki_admin_government_index');
+        }
+
+        return [ 'form' => $form->createView() ];
+    }
+
+    /**
+     * @Configuration\Route("/{id}/edit", requirements={"id": "\d+"})
+     * @Configuration\Template()
+     *
+     * @param Government $government A Government instance.
+     * @param Request    $request    A Request instance.
+     *
+     * @return array
+     */
+    public function editAction(Government $government, Request $request) {
+        $form = $this->createForm(new GovernmentType(true), $government);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $this->getManager()->update($government);
+
+            $this->addFlash('admin_success', 'Government '.
+                $government->getName() .' saved');
 
             return $this->redirectToRoute('govwiki_admin_government_index');
         }
@@ -73,25 +107,60 @@ class GovernmentController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", methods="GET|POST", requirements={"id": "\d+"})
-     * @Template()
+     * @Configuration\Route("/import")
+     * @Configuration\Template()
      *
-     * @param Government $government
-     * @param Request    $request
-     * @return Response
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
+     *
+     * @return array
      */
-    public function editAction(Government $government, Request $request)
+    public function importAction(Request $request, $environment)
     {
-        $form = $this->createForm(new GovernmentType(), $government);
-        $form->handleRequest($request);
+        $manager = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
+        $data = [
+            'file' => null,
+            'type' => 0,
+        ];
 
-        if ($form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-            $this->addFlash('info', 'Saved');
-
-            return $this->redirectToRoute('govwiki_admin_government_index');
+        /*
+         * Build type choices;
+         */
+        $choices = $manager->getSupportedExtension();
+        foreach ($choices as &$row) {
+            $row = "{$row['name']} ({$row['extension']})";
         }
 
-        return ['form' => $form->createView()];
+        /*
+         * Build form.
+         */
+        $form = $this->createFormBuilder($data)
+            ->add('file', 'file')
+            ->add('type', 'choice', [ 'choices' => $choices ])
+            ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $file */
+            $file = $form->getData()['file'];
+            $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
+                ->import(
+                    $file->getPath() .'/'. $file->getFilename(),
+                    $manager->getTransformer($form->getData()['type'])
+                );
+        }
+
+        return [
+            'form' => $form->createView(),
+            'environment' => $environment,
+        ];
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminGovernmentManager
+     */
+    private function getManager()
+    {
+        return $this->get(GovWikiAdminServices::GOVERNMENT_MANAGER);
     }
 }

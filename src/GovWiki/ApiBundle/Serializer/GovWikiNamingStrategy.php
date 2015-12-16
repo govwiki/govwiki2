@@ -16,6 +16,7 @@ class GovWikiNamingStrategy implements PropertyNamingStrategyInterface
      */
     public function translateName(PropertyMetadata $property)
     {
-        return strtolower(preg_replace('/([A-Z]|[0-9]+)/', '_\\0', $property->name));
+        return $property->name;
+        //return strtolower(preg_replace('/([A-Z]|[0-9]+)/', '_\\0', $property->name));
     }
 }

@@ -1,0 +1,68 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% set map = environment.map %}
+
+{% block title %}{{ parent() }} - {{ environment.name }}{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h3>{{ environment.name|capitalize }} environment</h3>
+        <div>
+            <div>
+                <b>Status:</b>&nbsp;
+                {%- if environment.enabled -%}
+                    <a href="{{- path('govwiki_admin_main_disable',
+                        { environment: environment.name }) -}}"
+                       class="text-success">Enabled</a>
+                {%- else -%}
+                    <a href="{{- path('govwiki_admin_main_enable',
+                    { environment: environment.name }) -}}"
+                       class="text-danger">Disabled</a>
+                {%- endif -%}
+            </div>
+            <div>
+                <b>Map:</b>&nbsp;
+                {%- if map.isCreated -%}
+                    <span class="text-success">Created</span>&nbsp;
+                    <b>VizUrl:</b> {{ map.vizUrl }}
+                {%- else -%}
+                    <span class="text-danger">Not created</span>
+                {% endif %}
+            </div>
+            <div>
+                <b>Formats:</b>&nbsp;
+                {%- if environment.format -%}
+                    <span class="text-success">Exists</span>
+                {%- else -%}
+                    <span class="text-danger">Not exists</span>
+                {%- endif -%}
+            </div>
+        </div>
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div>
+            <div class="btn-group pull-left">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a class="btn btn-danger" href="{{ path('govwiki_admin_main_remove',
+                {environment: environment.name}) }}">
+                    Delete
+                </a>
+            </div>
+            <div class="btn-group pull-right">
+                <a class="btn btn-primary" href="{{ path('govwiki_admin_map_edit',
+                { environment: environment.name }) }}">
+                    Edit map
+                </a>
+                <a class="btn btn-primary" href="{{ path('govwiki_admin_format_list',
+                { environment: environment.name }) }}">
+                    Edit formats
+                </a>
+                <a class="btn btn-default" href="{{ path('govwiki_admin_main_update') }}">
+                    Update CartoDB
+                </a>
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

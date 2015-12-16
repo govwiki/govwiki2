@@ -1,5 +1,5 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
-{% block title %}Governments{% endblock %}
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% block title %}{{ parent() }} - governments{% endblock %}
 {% block body %}
     <div class="container-fluid">
         <div class="index-page-head">
@@ -12,11 +12,13 @@
                         <form action="" class="form-inline">
                             <input name="filter[id]" type="text" class="form-control" placeholder="Id"{% if app.request.query.get('filter') %} value="{{app.request.query.get('filter').id}}"{% endif %}>
                             <input name="filter[name]" type="text" class="form-control" placeholder="Name"{% if app.request.query.get('filter') %} value="{{app.request.query.get('filter').name}}"{% endif %}>
-                            <input type="submit" class="form-control" value="Filter">
+                            <button type="submit" class="btn btn-primary">Filter</button>
                         </form>
                     </div>
-                    <div class="col-md-1">
-                        <a class="btn btn-primary pull-right" href="{{ path('govwiki_admin_government_create') }}">Create</a>
+                    <div class="btn-group">
+                        <a class="btn btn-primary" href="{{-
+                            path('govwiki_admin_government_create')
+                        -}}">Create</a>
                     </div>
                 </div>
             </div>
@@ -24,11 +26,11 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <td>{{ knp_pagination_sortable(governments, 'Id',        'g.id') }}</td>
-                    <td>{{ knp_pagination_sortable(governments, 'Name',      'g.name') }}</td>
-                    <td>{{ knp_pagination_sortable(governments, 'Slug',      'g.slug') }}</td>
-                    <td>{{ knp_pagination_sortable(governments, 'Type',      'g.type') }}</td>
-                    <td>{{ knp_pagination_sortable(governments, 'Alt. type', 'g.altType') }}</td>
+                    <td>{{ knp_pagination_sortable(governments, 'Id',        'Government.id') }}</td>
+                    <td>{{ knp_pagination_sortable(governments, 'Name',      'Government.name') }}</td>
+                    <td>{{ knp_pagination_sortable(governments, 'Slug',      'Government.slug') }}</td>
+                    <td>{{ knp_pagination_sortable(governments, 'Type',      'Government.type') }}</td>
+                    <td>{{ knp_pagination_sortable(governments, 'Alt. type', 'Government.altType') }}</td>
                     <td>Actions</td>
                 </tr>
             </thead>
@@ -40,8 +42,10 @@
                         <td>{{ government.slug }}</td>
                         <td>{{ government.type }}</td>
                         <td>{{ government.altType }}</td>
-                        <td><a href="{{ path('govwiki_admin_government_edit', {'id': government.id}) }}" class="btn btn-default">
-                            <span class="glyphicon glyphicon-pencil"></span> Edit
+                        <td><a href="{{- path('govwiki_admin_government_edit',
+                            { id: government.id }) -}}" class="btn btn-default">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                Edit
                         </a></td>
                     </tr>
                 {% endfor %}

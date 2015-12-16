@@ -1,18 +1,19 @@
-gov_wiki_api:
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+    prefix:   /
+
+govwiki_api:
     resource: "@GovWikiApiBundle/Resources/config/routing.yml"
     prefix:   /api
 
-gov_wiki_admin:
-    resource: "@GovWikiAdminBundle/Resources/config/routing.yml"
-    prefix:   /admin
-
-fos_user:
-    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
-
-gov_wiki_user:
+govwiki_user:
     resource: "@GovWikiUserBundle/Resources/config/routing.yml"
     prefix:   /
 
-gov_wiki_frontend:
+govwiki_admin:
+    resource: "@GovWikiAdminBundle/Resources/config/routing.yml"
+    prefix:   /admin
+
+govwiki_frontend:
     resource: "@GovWikiFrontendBundle/Resources/config/routing.yml"
-    prefix:   /
+    prefix: /

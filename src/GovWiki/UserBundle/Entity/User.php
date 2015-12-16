@@ -2,8 +2,13 @@
 
 namespace GovWiki\UserBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use GovWiki\DbBundle\Entity\CreateRequest;
+use GovWiki\DbBundle\Entity\EditRequest;
+use GovWiki\DbBundle\Entity\Environment;
 use JMS\Serializer\Annotation\Groups;
 
 /**
@@ -26,14 +31,35 @@ class User extends BaseUser
     protected $username;
 
     /**
-     * @ORM\OneToMany(targetEntity="GovWiki\DbBundle\Entity\CreateRequest", mappedBy="user")
+     * @var Collection
+     *
+     * @ORM\OneToMany(
+     *  targetEntity="GovWiki\DbBundle\Entity\CreateRequest",
+     *  mappedBy="user"
+     * )
      */
     private $createRequests;
 
     /**
-     * @ORM\OneToMany(targetEntity="GovWiki\DbBundle\Entity\EditRequest", mappedBy="user")
+     * @var Collection
+     *
+     * @ORM\OneToMany(
+     *  targetEntity="GovWiki\DbBundle\Entity\EditRequest",
+     *  mappedBy="user"
+     * )
      */
     private $editRequests;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\ManyToMany(
+     *  targetEntity="GovWiki\DbBundle\Entity\Environment",
+     *  inversedBy="users"
+     * )
+     * @ORM\JoinTable(name="cross_users_environments")
+     */
+    private $environments;
 
     /**
      * Constructor
@@ -42,17 +68,18 @@ class User extends BaseUser
     {
         parent::__construct();
 
-        $this->createRequests = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->editRequests   = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->createRequests = new ArrayCollection();
+        $this->editRequests   = new ArrayCollection();
     }
 
     /**
      * Add createRequests
      *
-     * @param \GovWiki\DbBundle\Entity\CreateRequest $createRequests
+     * @param CreateRequest $createRequests A CreateRequest instance.
+     *
      * @return User
      */
-    public function addCreateRequest(\GovWiki\DbBundle\Entity\CreateRequest $createRequests)
+    public function addCreateRequest(CreateRequest $createRequests)
     {
         $this->createRequests[] = $createRequests;
 
@@ -62,17 +89,21 @@ class User extends BaseUser
     /**
      * Remove createRequests
      *
-     * @param \GovWiki\DbBundle\Entity\CreateRequest $createRequests
+     * @param CreateRequest $createRequests A CreateRequest instance.
+     *
+     * @return User
      */
-    public function removeCreateRequest(\GovWiki\DbBundle\Entity\CreateRequest $createRequests)
+    public function removeCreateRequest(CreateRequest $createRequests)
     {
         $this->createRequests->removeElement($createRequests);
+
+        return $this;
     }
 
     /**
      * Get createRequests
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getCreateRequests()
     {
@@ -82,10 +113,11 @@ class User extends BaseUser
     /**
      * Add editRequests
      *
-     * @param \GovWiki\DbBundle\Entity\EditRequest $editRequests
+     * @param EditRequest $editRequests A EditRequest instance.
+     *
      * @return User
      */
-    public function addEditRequest(\GovWiki\DbBundle\Entity\EditRequest $editRequests)
+    public function addEditRequest(EditRequest $editRequests)
     {
         $this->editRequests[] = $editRequests;
 
@@ -95,20 +127,62 @@ class User extends BaseUser
     /**
      * Remove editRequests
      *
-     * @param \GovWiki\DbBundle\Entity\EditRequest $editRequests
+     * @param EditRequest $editRequests A EditRequest instance.
+     *
+     * @return User
      */
-    public function removeEditRequest(\GovWiki\DbBundle\Entity\EditRequest $editRequests)
+    public function removeEditRequest(EditRequest $editRequests)
     {
         $this->editRequests->removeElement($editRequests);
+
+        return $this;
     }
 
     /**
      * Get editRequests
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getEditRequests()
     {
         return $this->editRequests;
+    }
+
+    /**
+     * Add environment
+     *
+     * @param Environment $environment A Environment instance.
+     *
+     * @return User
+     */
+    public function addEnvironment(Environment $environment)
+    {
+        $this->environments[] = $environment;
+
+        return $this;
+    }
+
+    /**
+     * Remove environment
+     *
+     * @param Environment $environment A Environment instance.
+     *
+     * @return User
+     */
+    public function removeEnvironment(Environment $environment)
+    {
+        $this->environments->removeElement($environment);
+
+        return $this;
+    }
+
+    /**
+     * Get environment
+     *
+     * @return Collection
+     */
+    public function getEnvironments()
+    {
+        return $this->environments;
     }
 }

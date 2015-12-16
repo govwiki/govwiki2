@@ -3,19 +3,25 @@
 namespace GovWiki\UserBundle\Controller;
 
 use FOS\UserBundle\Controller\SecurityController as BaseController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 /**
- * SecurityController
+ * Class SecurityController
+ * @package GovWiki\UserBundle\Controller
  */
 class SecurityController extends BaseController
 {
     /**
-     * @param Request $request
+     * @Route("/login", name="login")
+     *
+     * @param Request $request A Request instance.
+     *
      * @return Response|JsonResponse
      */
     public function loginAction(Request $request)
@@ -70,8 +76,9 @@ class SecurityController extends BaseController
     }
 
     /**
-     * @param array $data
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param array $data Template parameters.
+     *
+     * @return Response
      */
     protected function renderLogin(array $data)
     {
@@ -80,5 +87,13 @@ class SecurityController extends BaseController
         } else {
             return $this->render('FOSUserBundle:Security:login.html.twig', $data);
         }
+    }
+
+    /**
+     * @Route("/login_check", name="login_check")
+     * @return void
+     */
+    protected function loginCheckAction()
+    {
     }
 }

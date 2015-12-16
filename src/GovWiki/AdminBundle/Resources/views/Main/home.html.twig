@@ -1,4 +1,43 @@
 {% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
-{% block title %}GovWiki Admin{% endblock %}
+
+{% block title %}{{ parent() }} - Environments{% endblock %}
+
 {% block body %}
+    <div class="container-fluid">
+        <h3>Environments</h3>
+        {{ knp_pagination_render(environments) }}
+        <table class="table table-responsive">
+            <tr>
+                <th>Name</th>
+                <th>Domain</th>
+                <th>Actions</th>
+            </tr>
+            {%- for environment in environments -%}
+                <tr>
+                    <td>
+                        <a href="{{ path('govwiki_admin_main_show',
+                            { environment: environment.name}) }}">
+                            {{ environment.name }}
+                        </a>
+                    </td>
+                    <td>{{ environment.domain }}</td>
+                    <td>
+                        {% if is_granted('ROLE_ADMIN') %}
+                        <a class="btn btn-danger"
+                           href="{{ path('govwiki_admin_main_remove',
+                           { environment: environment.name }) }}">
+                            Delete
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {%- endfor -%}
+        </table>
+        {{ knp_pagination_render(environments) }}
+        {% if is_granted('ROLE_ADMIN') %}
+            <a class="btn btn-primary" href="{{ path('govwiki_admin_main_new') }}">
+                Add environment
+            </a>
+        {% endif %}
+    </div>
 {% endblock %}

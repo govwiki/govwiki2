@@ -1,0 +1,5 @@
+services:
+    govwiki_admin.transformer.geo_json:
+        class: GovWiki\AdminBundle\Transformer\GeoJsonTransformer
+        tags:
+            - { name: transformer, alias: 'geo_json' }

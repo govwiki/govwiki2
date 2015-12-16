@@ -11,7 +11,9 @@ use JMS\Serializer\Annotation\Groups;
  * Legislation
  *
  * @ORM\Table(name="legislations")
- * @ORM\Entity
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\LegislationRepository"
+ * )
  * @ExclusionPolicy("none")
  */
 class Legislation

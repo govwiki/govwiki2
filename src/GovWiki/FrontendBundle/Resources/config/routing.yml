@@ -1,7 +1,11 @@
-editrequest:
-    resource: "@GovWikiFrontendBundle/Controller/EditRequestController.php"
+
+elected:
+    resource: "@GovWikiFrontendBundle/Controller/ElectedController.php"
     type:     annotation
-    prefix:   /editrequest
+
+government:
+    resource: "@GovWikiFrontendBundle/Controller/GovernmentController.php"
+    type:     annotation
 
 main:
     resource: "@GovWikiFrontendBundle/Controller/MainController.php"

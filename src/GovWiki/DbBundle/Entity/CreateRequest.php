@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation\Timestampable;
+use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\Annotation\Groups;
 
 /**
@@ -74,6 +75,14 @@ class CreateRequest
     private $user;
 
     /**
+     * @var Environment
+     *
+     * @ORM\ManyToOne(targetEntity="Environment")
+     * @ORM\JoinColumn(name="environment_id")
+     */
+    private $environment;
+
+    /**
      * Get id
      *
      * @return integer
@@ -87,6 +96,7 @@ class CreateRequest
      * Set entityName
      *
      * @param string $entityName
+     *
      * @return CreateRequest
      */
     public function setEntityName($entityName)
@@ -110,6 +120,7 @@ class CreateRequest
      * Set fields
      *
      * @param array $fields
+     *
      * @return CreateRequest
      */
     public function setFields($fields)
@@ -133,6 +144,7 @@ class CreateRequest
      * Set comment
      *
      * @param string $comment
+     *
      * @return CreateRequest
      */
     public function setComment($comment)
@@ -156,6 +168,7 @@ class CreateRequest
      * Set status
      *
      * @param string $status
+     *
      * @return CreateRequest
      */
     public function setStatus($status)
@@ -178,7 +191,8 @@ class CreateRequest
     /**
      * Set created
      *
-     * @param \DateTime $created
+     * @param \DateTime $created A \DateTime instance.
+     *
      * @return CreateRequest
      */
     public function setCreated($created)
@@ -201,10 +215,10 @@ class CreateRequest
     /**
      * Set user
      *
-     * @param \GovWiki\UserBundle\Entity\User $user
+     * @param User $user A User instance.
      * @return CreateRequest
      */
-    public function setUser(\GovWiki\UserBundle\Entity\User $user = null)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
 
@@ -214,10 +228,33 @@ class CreateRequest
     /**
      * Get user
      *
-     * @return \GovWiki\UserBundle\Entity\User
+     * @return User
      */
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Set environment
+     *
+     * @param Environment $environment A Environment instance.
+     * @return CreateRequest
+     */
+    public function setEnvironment(Environment $environment = null)
+    {
+        $this->environment = $environment;
+
+        return $this;
+    }
+
+    /**
+     * Get environment
+     *
+     * @return Environment
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
     }
 }

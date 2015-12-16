@@ -1,9 +1,28 @@
 services:
-    govwiki_api.cors.listener:
+    govwiki_api.listener.cors:
         class: GovWiki\ApiBundle\Listener\CorsListener
         tags:
-            - { name: kernel.event_listener, event: kernel.request,  method: onKernelRequest,  priority: 100}
-            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: -100}
+            -
+                name: kernel.event_listener
+                event: kernel.request
+                method: onKernelRequest
+                priority: 100
+            -
+                name: kernel.event_listener
+                event: kernel.response
+                method: onKernelResponse
+                priority: -100
+
+    govwiki_api.environment_manager.configurator:
+        class: GovWiki\ApiBundle\Manager\EnvironmentManagerConfigurator
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @router
+
+    govwiki_api.manager.environment:
+        class: GovWiki\ApiBundle\Manager\EnvironmentManager
+        arguments: [@doctrine.orm.default_entity_manager]
+        configurator: [@govwiki_api.environment_manager.configurator, configure]
 
     govwiki_api.serializer.serialization_visitor:
         class: GovWiki\ApiBundle\Serializer\ArraySerializationVisitor

@@ -2,10 +2,10 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
+use GovWiki\ApiBundle\GovWikiApiServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * MainController
@@ -13,63 +13,24 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class MainController extends Controller
 {
     /**
-     * @Route("/")
-     * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
+     * @Route("/", name="map")
+     * @Template("GovWikiFrontendBundle:Home:home.html.twig")
      *
      * @return array
      */
     public function mapAction()
     {
-        return $this->renderMainTemplate();
-    }
 
-    /**
-     * @Route("/{altTypeSlug}/{slug}")
-     * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
-     *
-     * @return array
-     */
-    public function governmentAction()
-    {
-        return $this->renderMainTemplate();
-    }
+        $environmentManager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
 
-    /**
-     * @Route("/rank_order")
-     * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
-     *
-     * @return array
-     */
-    public function rankOrderAction()
-    {
-        return $this->renderMainTemplate();
-    }
+        $environment = $environmentManager->getEnvironment();
 
-    /**
-     * @Route("/{govAltTypeSlug}/{govSlug}/{eoSlug}")
-     * @Template("GovWikiFrontendBundle:Main:legacy.html.php")
-     *
-     * @return array
-     */
-    public function electedOfficialAction()
-    {
-        return $this->renderMainTemplate();
-    }
+        $map = $environmentManager->getMap();
+        $map = json_encode($map, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-    /**
-     * @return array
-     */
-    private function renderMainTemplate()
-    {
-        /** @var UserInterface $user */
-        $user = $this->getUser();
-        $username = '';
-        if (null !== $user) {
-            $username = $user->getUsername();
-        }
         return [
-            'authorized' => (null !== $user) ? 1 : 0,
-            'username' => $username,
+            'environment' => $environment,
+            'map' => $map,
         ];
     }
 }

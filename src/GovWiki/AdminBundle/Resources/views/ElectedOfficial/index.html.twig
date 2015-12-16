@@ -1,5 +1,5 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
-{% block title %}Elected officials{% endblock %}
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% block title %}{{ parent() }} - Elected officials{% endblock %}
 {% block body %}
     <div class="container-fluid">
         <div class="index-page-head">
@@ -13,11 +13,18 @@
                             <input name="filter[id]" type="text" class="form-control" placeholder="Id"{% if app.request.query.get('filter') %} value="{{app.request.query.get('filter').id}}"{% endif %}>
                             <input name="filter[fullName]" type="text" class="form-control" placeholder="Name"{% if app.request.query.get('filter') %} value="{{app.request.query.get('filter').fullName}}"{% endif %}>
                             <input name="filter[governmentName]" type="text" class="form-control" placeholder="Government name"{% if app.request.query.get('filter') %} value="{{app.request.query.get('filter').governmentName}}"{% endif %}>
-                            <input type="submit" class="form-control" value="Filter">
+                            <button type="submit" class="btn btn-default" value="Filter">
+                                Filter
+                            </button>
                         </form>
                     </div>
                     <div class="col-md-1">
-                        <a class="btn btn-primary pull-right" href="{{ path('govwiki_admin_electedofficial_create') }}">Create</a>
+                        <a class="btn btn-primary pull-right" href="{{-
+                            path(
+                                'govwiki_admin_electedofficial_create'
+                            )
+                        -}}
+                            ">Create</a>
                     </div>
                 </div>
             </div>
@@ -25,10 +32,34 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <td>{{ knp_pagination_sortable(electedOfficials, 'Id',         'eo.id') }}</td>
-                    <td>{{ knp_pagination_sortable(electedOfficials, 'Name',       'eo.fullName') }}</td>
-                    <td>{{ knp_pagination_sortable(electedOfficials, 'Government', 'g.name') }}</td>
-                    <td>{{ knp_pagination_sortable(electedOfficials, 'Title',      'eo.title') }}</td>
+                    <td>
+                        {{ knp_pagination_sortable(
+                            electedOfficials,
+                            'Id',
+                            'eo.id')
+                        }}
+                    </td>
+                    <td>
+                        {{ knp_pagination_sortable(
+                            electedOfficials,
+                            'Name',
+                            'eo.fullName')
+                        }}
+                    </td>
+                    <td>
+                        {{ knp_pagination_sortable(
+                            electedOfficials,
+                            'Government',
+                            'Government.name')
+                        }}
+                    </td>
+                    <td>
+                        {{ knp_pagination_sortable(
+                            electedOfficials,
+                            'Title',
+                            'eo.title')
+                        }}
+                    </td>
                     <td>Actions</td>
                 </tr>
             </thead>
@@ -39,7 +70,14 @@
                         <td>{{ electedOfficial.fullName }}</td>
                         <td>{% if electedOfficial.government %}{{ electedOfficial.government.name }}{% endif %}</td>
                         <td>{{ electedOfficial.title }}</td>
-                        <td><a href="{{ path('govwiki_admin_electedofficial_edit', {'id': electedOfficial.id}) }}" class="btn btn-default">
+                        <td><a href="{{-
+                            path(
+                                'govwiki_admin_electedofficial_edit',
+                                {
+                                    id: electedOfficial.id
+                                }
+                            )
+                            -}}" class="btn btn-default">
                             <span class="glyphicon glyphicon-pencil"></span> Edit
                         </a></td>
                     </tr>

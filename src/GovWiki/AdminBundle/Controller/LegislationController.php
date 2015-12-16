@@ -2,85 +2,101 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\AdminBundle\GovWikiAdminServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\DbBundle\Entity\Legislation;
 use GovWiki\DbBundle\Form\LegislationType;
 
 /**
  * LegislationController
+ *
+ * @Configuration\Route("/legislation")
  */
 class LegislationController extends Controller
 {
     /**
-     * @Route("/", methods="GET")
-     * @Template()
+     * @Configuration\Route("/", methods="GET")
+     * @Configuration\Template()
      *
-     * @param Request $request
-     * @return Response
+     * @param Request $request A Request instance.
+     *
+     * @return array
      */
     public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
         $legislations = $this->get('knp_paginator')->paginate(
-            $em->createQuery('SELECT l FROM GovWikiDbBundle:Legislation l'),
+            $this->getManager()->getListQuery(),
             $request->query->getInt('page', 1),
             50
         );
 
-        return ['legislations' => $legislations];
+        return [ 'legislations' => $legislations ];
     }
 
     /**
-     * @Route("/create", methods="GET|POST")
-     * @Template()
+     * @Configuration\Route("/create")
+     * @Configuration\Template()
      *
-     * @param Request    $request
-     * @return Response
+     * @param Request $request A Request instance.
+     *
+     * @return array
      */
     public function createAction(Request $request)
     {
-        $legislation = new Legislation;
+        $manager = $this->getManager();
+        /** @var Legislation $legislation */
+        $legislation = $manager->create();
 
-        $form = $this->createForm(new LegislationType(), $legislation);
+        $form = $this->createForm(
+            new LegislationType($this->getManager()->getEnvironment()),
+            $legislation
+        );
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-
-            $em->persist($legislation);
-            $em->flush();
-            $this->addFlash('info', 'Created');
+            $manager->update($legislation);
+            $this->addFlash('admin_success', 'New legislation created');
 
             return $this->redirectToRoute('govwiki_admin_legislation_index');
         }
 
-        return ['form' => $form->createView()];
+        return [ 'form' => $form->createView() ];
     }
 
     /**
-     * @Route("/{id}/edit", methods="GET|POST", requirements={"id": "\d+"})
-     * @Template()
+     * @Configuration\Route("/{id}/edit", requirements={"id": "\d+"})
+     * @Configuration\Template()
      *
-     * @param Legislation $legislation
-     * @param Request    $request
-     * @return Response
+     * @param Request     $request     A Request instance.
+     * @param Legislation $legislation A Legislation instance.
+     *
+     * @return array
      */
-    public function editAction(Legislation $legislation, Request $request)
+    public function editAction(Request $request, Legislation $legislation)
     {
-        $form = $this->createForm(new LegislationType(), $legislation);
+        $form = $this->createForm(
+            new LegislationType($this->getManager()->getEnvironment()),
+            $legislation
+        );
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-            $this->addFlash('info', 'Saved');
+            $this->getManager()->update($legislation);
+            $this->addFlash('admin_success', 'Legislation updated');
 
             return $this->redirectToRoute('govwiki_admin_legislation_index');
         }
 
-        return ['form' => $form->createView()];
+        return [ 'form' => $form->createView() ];
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminLegislationManager
+     */
+    public function getManager()
+    {
+        return $this->get(GovWikiAdminServices::LEGISLATION_MANAGER);
     }
 }

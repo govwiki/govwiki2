@@ -2,7 +2,7 @@
 
 {% import _self as macro %}
 
-{% block title %}Show create request{% endblock %}
+{% block title %}{{ parent() }} - Show create request{% endblock %}
 {% block body %}
     <div class="container">
         {% if errors %}

@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Contribution;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\ElectedOfficialVote;
@@ -13,51 +14,44 @@ use GovWiki\DbBundle\Entity\Endorsement;
 use GovWiki\DbBundle\Entity\IssueCategory;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\Response;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use GovWiki\DbBundle\Entity\CreateRequest;
 
 /**
  * CreateRequestController
+ *
+ * @Configuration\Route("/create-request")
  */
 class CreateRequestController extends Controller
 {
     /**
-     * @Route("/")
-     * @Template
+     * @Configuration\Route("/")
+     * @Configuration\Template
      *
-     * @param Request $request
-     * @return Response
+     * @param Request $request A Request instance.
+     *
+     * @return array
      */
     public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $createRequestsQuery = $em->createQuery(
-            'SELECT cr FROM GovWikiDbBundle:CreateRequest cr
-            LEFT JOIN cr.user u
-            WHERE cr.status != :status
-            ORDER BY cr.created DESC'
-        )->setParameter('status', 'discarded');
-
         $createRequests = $this->get('knp_paginator')->paginate(
-            $createRequestsQuery,
+            $this->getManager()->getListQuery(),
             $request->query->getInt('page', 1),
             50
         );
 
-        return ['createRequests' => $createRequests];
+        return [ 'createRequests' => $createRequests ];
     }
 
     /**
-     * @Route("/{id}")
-     * @Template
+     * @Configuration\Route("/{id}")
+     * @Configuration\Template
      *
-     * @param CreateRequest $createRequest
-     * @return Response
+     * @param CreateRequest $createRequest A CreateRequest instance.
+     *
+     * @return array
      */
     public function showAction(CreateRequest $createRequest)
     {
@@ -83,7 +77,7 @@ class CreateRequestController extends Controller
     }
 
     /**
-     * @Route("/{id}/apply")
+     * @Configuration\Route("/{id}/apply")
      *
      * @param Request       $request       A Request instance.
      * @param CreateRequest $createRequest A CreateRequest instance.
@@ -194,7 +188,7 @@ class CreateRequestController extends Controller
     }
 
     /**
-     * @Route("/{id}/discard")
+     * @Configuration\Route("/{id}/discard")
      *
      * @param CreateRequest $createRequest
      * @return JsonResponse
@@ -209,7 +203,7 @@ class CreateRequestController extends Controller
     }
 
     /**
-     * @Route("/{id}/remove")
+     * @Configuration\Route("/{id}/remove")
      *
      * @param CreateRequest $createRequest A CreateRequest instance.
      *
@@ -432,5 +426,13 @@ class CreateRequestController extends Controller
         $em->persist($newEntity);
 
         return $newEntity;
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminCreateRequestManager
+     */
+    public function getManager()
+    {
+        return $this->get(GovWikiAdminServices::CREATE_REQUEST_MANAGER);
     }
 }

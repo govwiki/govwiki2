@@ -4,12 +4,15 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation\Timestampable;
+use GovWiki\UserBundle\Entity\User;
 
 /**
  * EditRequest
  *
  * @ORM\Table(name="edit_requests")
- * @ORM\Entity
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\EditRequestRepository"
+ * )
  */
 class EditRequest
 {
@@ -76,6 +79,14 @@ class EditRequest
     private $user;
 
     /**
+     * @var Environment
+     *
+     * @ORM\ManyToOne(targetEntity="Environment")
+     * @ORM\JoinColumn(name="environment_id")
+     */
+    private $environment;
+
+    /**
      * Get id
      *
      * @return integer
@@ -89,6 +100,7 @@ class EditRequest
      * Set entityName
      *
      * @param string $entityName
+     *
      * @return EditRequest
      */
     public function setEntityName($entityName)
@@ -112,6 +124,7 @@ class EditRequest
      * Set entityId
      *
      * @param integer $entityId
+     *
      * @return EditRequest
      */
     public function setEntityId($entityId)
@@ -135,6 +148,7 @@ class EditRequest
      * Set changes
      *
      * @param array $changes
+     *
      * @return EditRequest
      */
     public function setChanges($changes)
@@ -158,6 +172,7 @@ class EditRequest
      * Set comment
      *
      * @param string $comment
+     *
      * @return EditRequest
      */
     public function setComment($comment)
@@ -181,6 +196,7 @@ class EditRequest
      * Set status
      *
      * @param string $status
+     *
      * @return EditRequest
      */
     public function setStatus($status)
@@ -203,7 +219,8 @@ class EditRequest
     /**
      * Set created
      *
-     * @param \DateTime $created
+     * @param \DateTime $created A \DateTime instance.
+     *
      * @return EditRequest
      */
     public function setCreated($created)
@@ -226,10 +243,11 @@ class EditRequest
     /**
      * Set user
      *
-     * @param \GovWiki\UserBundle\Entity\User $user
+     * @param User $user A User instance.
+     *
      * @return EditRequest
      */
-    public function setUser(\GovWiki\UserBundle\Entity\User $user = null)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
 
@@ -239,10 +257,33 @@ class EditRequest
     /**
      * Get user
      *
-     * @return \GovWiki\UserBundle\Entity\User
+     * @return User
      */
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Set environment
+     *
+     * @param Environment $environment A Environment instance.
+     * @return CreateRequest
+     */
+    public function setEnvironment(Environment $environment = null)
+    {
+        $this->environment = $environment;
+
+        return $this;
+    }
+
+    /**
+     * Get environment
+     *
+     * @return Environment
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
     }
 }

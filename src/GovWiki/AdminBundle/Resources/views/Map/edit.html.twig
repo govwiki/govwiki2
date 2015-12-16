@@ -1,0 +1,23 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% block title %}Edit map {{ environment }}{% endblock title %}
+
+{% block body %}
+    <div>
+        <div>
+            <label class="form-control" for="viz-url">Visualization url</label>
+            <input class="form-control" id="viz-url" readonly value="{{ vizUrl }}">
+        </div>
+    </div>
+    <div class="container-fluid">
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-success">Update</button>
+        <a class="btn btn-default" href="{{ path('govwiki_admin_main_show',
+            {environment: environment}) }}">Back</a>
+        {#<a class="btn btn-primary{%- if not canExport %} disabled{%- endif -%}" href="{{ path('map_export', {name: name}) }}">
+            Export to CartoDB
+        </a>#}
+        {{ form_end(form) }}
+    </div>
+{% endblock body %}

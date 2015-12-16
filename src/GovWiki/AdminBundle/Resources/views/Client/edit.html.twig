@@ -1,0 +1,13 @@
+{% extends '@GovWikiAdmin/Layout/main.html.twig' %}
+
+{% block title %}Edit oAuth clients {{ name }}{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-success">Update</button>
+        <a class="btn btn-default" href="{{ path('client_list') }}">Back</a>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

@@ -34,7 +34,7 @@ class AccessDeniedHandler implements AccessDeniedHandlerInterface
      */
     public function handle(Request $request, AccessDeniedException $accessDeniedException)
     {
-        if (strstr($request->getPathInfo(), 'admin') !== false) {
+        if (strpos($request->getPathInfo(), 'admin') !== false) {
             $this->session->getFlashBag()->add('login', 'Only for admins');
             $request->getSession()->set('_security.main.target_path', '/admin/');
         }

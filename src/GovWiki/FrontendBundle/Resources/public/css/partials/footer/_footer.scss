@@ -1,0 +1,44 @@
+footer {
+   min-height: 80px;
+   position: relative;
+   padding-top: 10px;
+   background-color: $main-background;
+   -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+   -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+   box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+   font-size: 11px;
+   color: #eee;
+   padding: 15px;
+
+   .copyright {
+
+
+
+      p {
+         margin-bottom: 0;
+      }
+
+   }
+
+   a {
+      color: #eee;
+
+      &:hover {
+         color: #eee;
+      }
+
+   }
+
+   .site-links {
+
+      a {
+         padding: 0 5px;
+      }
+
+   }
+
+   .social {
+      list-style-type: none;
+   }
+
+}

@@ -1,6 +1,7 @@
 <?php
 
 namespace GovWiki\AdminBundle\Twig;
+use GovWiki\DbBundle\Entity\Environment;
 
 /**
  * Class TwigExtensions
@@ -24,13 +25,13 @@ class TwigExtensions extends \Twig_Extension
         return [
             new \Twig_SimpleFilter('roles_beautify', [
                 $this,
-                'rolesBeautify'
+                'rolesBeautify',
             ]),
 
             new \Twig_SimpleFilter('name_beautify', [
                 $this,
                 'nameBeautify',
-            ])
+            ]),
         ];
     }
 
@@ -62,6 +63,5 @@ class TwigExtensions extends \Twig_Extension
          * Split name by uppercase letters.
          */
         return ucfirst(preg_replace('/([A-Z])/', ' $1', $name));
-
     }
 }

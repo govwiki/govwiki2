@@ -1,0 +1,6 @@
+services:
+    carto_db.api:
+        class: CartoDbBundle\Service\CartoDbApi
+        arguments:
+            - '' # Set by configuration parameter api_key
+            - '' # Set by configuration parameter account_name

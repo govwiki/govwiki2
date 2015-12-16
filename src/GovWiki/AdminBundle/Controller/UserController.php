@@ -5,9 +5,7 @@ namespace GovWiki\AdminBundle\Controller;
 use Doctrine\ORM\EntityRepository;
 use GovWiki\AdminBundle\Form\UserForm;
 use GovWiki\UserBundle\Entity\User;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,8 +21,9 @@ class UserController extends Controller
     /**
      * Show list of users.
      *
-     * @Route(path="/", methods={"GET"})
-     * @Template
+     * @Configuration\Route(path="/", methods={"GET"})
+     * @Configuration\Template
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param Request $request A Request instance.
      *
@@ -45,11 +44,15 @@ class UserController extends Controller
     }
 
     /**
-     * @Route(path="{id}/show", requirements={"id": "\d+"})
-     * @Template
+     * @Configuration\Route(path="{id}/show", requirements={"id": "\d+"})
+     * @Configuration\Template
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param User $user User to show.
-     * @ParamConverter(name="user", class="GovWiki\UserBundle\Entity\User")
+     * @Configuration\ParamConverter(
+     *  name="user",
+     *  class="GovWiki\UserBundle\Entity\User"
+     * )
      *
      * @return void
      */
@@ -58,11 +61,11 @@ class UserController extends Controller
     }
 
     /**
-     * @Route(path="{id}/enable")
+     * @Configuration\Route(path="{id}/enable")
      *
      * @param Request $request A Request instance.
      * @param User    $user    User to enable\disable.
-     * @ParamConverter(name="user", class="GovWiki\UserBundle\Entity\User")
+     * @Configuration\ParamConverter(name="user", class="GovWiki\UserBundle\Entity\User")
      *
      * @return RedirectResponse
      */
@@ -79,12 +82,15 @@ class UserController extends Controller
     }
 
     /**
-     * @Route(path="/{id}/edit")
-     * @Template(template="GovWikiAdminBundle:User:manage.html.twig")
+     * @Configuration\Route(path="/{id}/edit")
+     * @Configuration\Template(
+     *  template="GovWikiAdminBundle:User:manage.html.twig"
+     * )
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param Request $request A Request instance.
      * @param User    $user    Update user.
-     * @ParamConverter(name="user", class="GovWiki\UserBundle\Entity\User")
+     * @Configuration\ParamConverter(name="user", class="GovWiki\UserBundle\Entity\User")
      *
      * @return array
      */
@@ -105,8 +111,11 @@ class UserController extends Controller
     }
 
     /**
-     * @Route(path="/new")
-     * @Template(template="GovWikiAdminBundle:User:manage.html.twig")
+     * @Configuration\Route(path="/new")
+     * @Configuration\Template(
+     *  template="GovWikiAdminBundle:User:manage.html.twig"
+     * )
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param Request $request A Request instance.
      *

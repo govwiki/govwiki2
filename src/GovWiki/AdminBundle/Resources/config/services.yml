@@ -1,5 +1,17 @@
 services:
     govwiki_admin.twig.extension:
-      class: GovWiki\AdminBundle\Twig\TwigExtensions
-      tags:
-        - { name: twig.extension }
+        class: GovWiki\AdminBundle\Twig\TwigExtensions
+        tags:
+            - { name: twig.extension }
+
+    govwiki_admin.manager.transformer:
+        class: GovWiki\AdminBundle\Transformer\Service\TransformerManager
+        arguments: [@service_container]
+
+    govwiki_admin.manager.environment:
+        class: GovWiki\AdminBundle\Manager\AdminEnvironmentManager
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @security.token_storage
+            - @session
+        configurator: [@govwiki_api.environment_manager.configurator, configure]

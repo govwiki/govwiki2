@@ -1,5 +1,5 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
-{% block title %}Edit requests{% endblock %}
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% block title %}{{ parent() }} - Edit requests{% endblock %}
 {% block body %}
     <div class="container-fluid">
         <div class="index-page-head">
@@ -34,10 +34,22 @@
                         <td>{{ editRequest.entityId }}</td>
                         <td>
                             <div class="btn-group">
-                                <a href="{{path('govwiki_admin_editrequest_show', {'id': editRequest.id})}}" class="btn btn-default">
+                                <a href="{{-
+                                    path(
+                                        'govwiki_admin_editrequest_show',
+                                        {
+                                            id: editRequest.id
+                                        }
+                                    )-}}" class="btn btn-default">
                                     <span class="glyphicon glyphicon-search"></span> Show
                                 </a>
-                                <span class="btn btn-danger remove-action" data-link="{{path('govwiki_admin_editrequest_remove', {'id': editRequest.id})}}">
+                                <span class="btn btn-danger remove-action" data-link="{{-
+                                    path(
+                                        'govwiki_admin_editrequest_remove',
+                                        {
+                                            id: editRequest.id
+                                        }
+                                    )-}}">
                                     <span class="glyphicon glyphicon-remove"></span> Remove
                                 </span>
                             </div>

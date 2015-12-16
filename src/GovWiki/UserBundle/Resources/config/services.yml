@@ -1,15 +1,15 @@
 services:
-  govwiki.user_bundle.listener.registration:
-    class: GovWiki\UserBundle\EventListener\RegistrationListener
-    arguments:
-      - @session
-      - @security.token_storage
-    tags:
-      - { name: kernel.event_subscriber }
+    govwiki.user_bundle.listener.registration:
+        class: GovWiki\UserBundle\EventListener\RegistrationListener
+        arguments:
+            - @session
+            - @security.token_storage
+        tags:
+            - { name: kernel.event_subscriber }
 
-  govwiki.user_bundle.redirection.logout:
-      class: GovWiki\UserBundle\Security\LogoutSuccessHandler
+    govwiki.user_bundle.redirection.logout:
+        class: GovWiki\UserBundle\Security\LogoutSuccessHandler
 
-  govwiki.user_bundle.redirection.access_denied:
-      class: GovWiki\UserBundle\Security\AccessDeniedHandler
-      arguments: [@session]
+    govwiki.user_bundle.redirection.access_denied:
+        class: GovWiki\UserBundle\Security\AccessDeniedHandler
+        arguments: [@session]

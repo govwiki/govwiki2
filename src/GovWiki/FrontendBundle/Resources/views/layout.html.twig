@@ -1,0 +1,18 @@
+{% extends "::base.html.twig"%}
+
+{% block body %}
+    <header id="header" class="container">
+        {{ header|raw }}
+    </header>
+
+    {% block center %}
+        <div class="container">
+            {{ render_body(map, body)|raw }}
+        </div>
+    {% endblock center %}
+
+    <footer class="container">
+        {{ footer|raw }}
+
+    </footer>
+{% endblock body %}

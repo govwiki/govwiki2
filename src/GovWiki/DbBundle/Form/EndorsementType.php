@@ -4,16 +4,16 @@ namespace GovWiki\DbBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * EndorsementType
+ * Class EndorsementType
+ * @package GovWiki\DbBundle\Form
  */
 class EndorsementType extends AbstractType
 {
     /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
+     * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -21,22 +21,23 @@ class EndorsementType extends AbstractType
             ->add('nameOfEndorser')
             ->add('endorserType')
             ->add('electionYear')
-            ->add('issueCategory')
-        ;
+            ->add('issueCategory', 'entity', [
+                'class' => 'GovWiki\DbBundle\Entity\IssueCategory',
+            ]);
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'GovWiki\DbBundle\Entity\Endorsement'
-        ));
+        $resolver->setDefaults([
+            'data_class' => 'GovWiki\DbBundle\Entity\Endorsement',
+        ]);
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
