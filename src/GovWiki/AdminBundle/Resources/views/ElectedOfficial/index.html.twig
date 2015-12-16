@@ -1,5 +1,5 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
-{% block title %}Elected officials{% endblock %}
+{% block title %}{{ parent() }} - Elected officials{% endblock %}
 {% block body %}
     <div class="container-fluid">
         <div class="index-page-head">
@@ -21,8 +21,7 @@
                     <div class="col-md-1">
                         <a class="btn btn-primary pull-right" href="{{-
                             path(
-                                'govwiki_admin_electedofficial_create',
-                                { environment: environment }
+                                'govwiki_admin_electedofficial_create'
                             )
                         -}}
                             ">Create</a>
@@ -75,8 +74,7 @@
                             path(
                                 'govwiki_admin_electedofficial_edit',
                                 {
-                                    id: electedOfficial.id,
-                                    environment: environment
+                                    id: electedOfficial.id
                                 }
                             )
                             -}}" class="btn btn-default">

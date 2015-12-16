@@ -1,9 +1,8 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
-{% block title %}{{ parent() }} - {{ environment|capitalize }} governments{% endblock %}
+{% block title %}{{ parent() }} - governments{% endblock %}
 {% block body %}
     <div class="container-fluid">
         <div class="index-page-head">
-            <h3 class="text-center">{{ environment|capitalize }} environment</h3>
             <div class="navigation">
                 <div class="row">
                     <div class="col-md-5">
@@ -16,14 +15,9 @@
                             <button type="submit" class="btn btn-primary">Filter</button>
                         </form>
                     </div>
-                    <div class="col-md-1 pull-right">
-                        <a class="btn btn-default" href="{{-
-                            path('govwiki_admin_government_export',
-                                { environment: environment })
-                        -}}">Export</a>
                         <a class="btn btn-primary" href="{{-
-                            path('govwiki_admin_government_create',
-                            { environment: environment }) -}}">Create</a>
+                            path('govwiki_admin_government_create')
+                        -}}">Create</a>
                     </div>
                 </div>
             </div>
@@ -48,11 +42,9 @@
                         <td>{{ government.type }}</td>
                         <td>{{ government.altType }}</td>
                         <td><a href="{{- path('govwiki_admin_government_edit',
-                            {
-                                id: government.id,
-                                environment: environment
-                            }) -}}" class="btn btn-default">
-                            <span class="glyphicon glyphicon-pencil"></span> Edit
+                            { id: government.id }) -}}" class="btn btn-default">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                Edit
                         </a></td>
                     </tr>
                 {% endfor %}

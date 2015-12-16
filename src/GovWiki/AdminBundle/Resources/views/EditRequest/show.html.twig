@@ -1,13 +1,12 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
-{% block title %}Show edit request{% endblock %}
+{% block title %}{{ parent() }} - Show edit request{% endblock %}
 {% block body %}
     <div class="container">
         {% if errors %}
             <div class="col-md-2">
                 <a href="{{-
                     path(
-                        'govwiki_admin_editrequest_index',
-                        { environment: environment }
+                        'govwiki_admin_editrequest_index'
                     )
                 -}}" class="btn btn-default">
                     <span class="glyphicon glyphicon-chevron-left"></span>
@@ -53,16 +52,14 @@
                                 path(
                                     'govwiki_admin_editrequest_apply',
                                     {
-                                        id: editRequest.id,
-                                        environment: environment
+                                        id: editRequest.id
                                     }
                                 )-}}" style="width:50%;" class="btn btn-success ajax-choice{% if editRequest.status != 'pending' %} disabled{% endif %}">Apply</span>
                             <span data-link="{{-
                                 path(
                                     'govwiki_admin_editrequest_discard',
                                     {
-                                        id: editRequest.id,
-                                        environment: environment
+                                        id: editRequest.id
                                     }
                                 )-}}" style="width:50%;" class="btn btn-danger ajax-choice{% if editRequest.status != 'pending' %} disabled{% endif %}">Discard</span>
                         </div>

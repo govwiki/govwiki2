@@ -32,11 +32,6 @@ class TwigExtensions extends \Twig_Extension
                 $this,
                 'nameBeautify',
             ]),
-
-            new \Twig_SimpleFilter('env_name', [
-                $this,
-                'environmentName'
-            ]),
         ];
     }
 
@@ -68,18 +63,5 @@ class TwigExtensions extends \Twig_Extension
          * Split name by uppercase letters.
          */
         return ucfirst(preg_replace('/([A-Z])/', ' $1', $name));
-    }
-
-    /**
-     * @param Environment|string $environment A Environment instance or name.
-     *
-     * @return string
-     */
-    public function environmentName($environment)
-    {
-        if ($environment instanceof Environment) {
-            return $environment->getName();
-        }
-        return $environment;
     }
 }

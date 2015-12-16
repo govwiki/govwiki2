@@ -110,20 +110,18 @@ class MainController extends AbstractGovWikiAdminController
      * @Configuration\Route("/{environment}")
      * @Configuration\Template()
      *
-     * @param Request $request A Request instance.
+     * @param Request $request     A Request instance.
+     * @param string  $environment Environment name.
      *
      * @return array
      */
-    public function showAction(
-        Request $request
-    ) {
-        $environment = $this->adminEnvironmentManager()->getEntity();
+    public function showAction(Request $request, $environment)
+    {
+        $manager = $this->adminEnvironmentManager();
 
-        if (null === $environment) {
-            throw $this->createNotFoundException(
-                "Environment with name {$environment->getName()} not found"
-            );
-        }
+        $manager->changeEnvironment($environment);
+        /** @var Environment $environment */
+        $environment = $manager->getEntity();
 
         $form = $this->createForm(new EnvironmentType(), $environment);
         $form->handleRequest($request);

@@ -1,5 +1,5 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
-{% block title %}Edit requests{% endblock %}
+{% block title %}{{ parent() }} - Edit requests{% endblock %}
 {% block body %}
     <div class="container-fluid">
         <div class="index-page-head">
@@ -38,8 +38,7 @@
                                     path(
                                         'govwiki_admin_editrequest_show',
                                         {
-                                            id: editRequest.id,
-                                            environment: environment
+                                            id: editRequest.id
                                         }
                                     )-}}" class="btn btn-default">
                                     <span class="glyphicon glyphicon-search"></span> Show
@@ -48,8 +47,7 @@
                                     path(
                                         'govwiki_admin_editrequest_remove',
                                         {
-                                            id: editRequest.id,
-                                            environment: environment
+                                            id: editRequest.id
                                         }
                                     )-}}">
                                     <span class="glyphicon glyphicon-remove"></span> Remove

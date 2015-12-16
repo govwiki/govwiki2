@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Class AbstractGovWikiApiController
  * @package GovWiki\ApiBundle\Controller
  */
-class AbstractGovWikiApiController extends Controller
+abstract class AbstractGovWikiApiController extends Controller
 {
     /**
      * @param string $message Error message.

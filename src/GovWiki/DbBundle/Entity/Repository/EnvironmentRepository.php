@@ -36,30 +36,31 @@ class EnvironmentRepository extends EntityRepository
     }
 
     /**
-     * @param integer $user        User id.
      * @param string  $environment Environment name.
+     * @param integer $user        User id.
      *
      * @return Environment|null
      */
-    public function getByName($user, $environment)
+    public function getByName($environment, $user = null)
     {
         $qb = $this->createQueryBuilder('Environment');
         $expr = $qb->expr();
 
         try {
-            return $qb
+            $qb
                 ->addSelect('Map')
                 ->leftJoin('Environment.map', 'Map')
                 ->leftJoin('Environment.users', 'User')
-                ->where(
-                    $expr->andX(
-                        $expr->eq(
-                            'Environment.name',
-                            $expr->literal($environment)
-                        ),
-                        $expr->eq('User.id', $user)
-                    )
-                )
+                ->where($expr->eq(
+                    'Environment.name',
+                    $expr->literal($environment)
+                ));
+
+            if (null !== $user) {
+                $qb->andWhere($expr->eq('User.id', $user));
+            }
+
+            return $qb
                 ->getQuery()
                 ->getOneOrNullResult();
         } catch (NonUniqueResultException $e) {
@@ -68,26 +69,27 @@ class EnvironmentRepository extends EntityRepository
     }
 
     /**
-     * @param integer $user User id.
      * @param string  $name Environment name.
+     * @param integer $user User id.
      *
      * @return boolean|\Doctrine\Common\Proxy\Proxy|null|object
      */
-    public function getReferenceByName($user, $name)
+    public function getReferenceByName($name, $user = null)
     {
         $qb = $this->createQueryBuilder('Environment');
         $expr = $qb->expr();
 
         try {
-            $id = $qb
+            $qb
                 ->select('Environment.id')
                 ->leftJoin('Environment.users', 'User')
-                ->where(
-                    $expr->andX(
-                        $expr->eq('Environment.name', $expr->literal($name)),
-                        $expr->eq('User.id', $user)
-                    )
-                )
+                ->where($expr->eq('Environment.name', $expr->literal($name)));
+
+            if (null !== $user) {
+                $qb->andWhere($expr->eq('User.id', $user));
+            }
+
+            $id = $qb
                 ->getQuery()
                 ->getSingleScalarResult();
         } catch (ORMException $e) {

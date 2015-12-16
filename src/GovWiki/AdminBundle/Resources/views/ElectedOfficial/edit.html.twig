@@ -1,5 +1,5 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
-{% block title %}Edit elected official{% endblock %}
+{% block title %}{{ parent() }} - Edit elected official{% endblock %}
 {% block body %}
     <div class="container-fluid">
         {{ form_start(form) }}
@@ -35,8 +35,7 @@
                         'govwiki_admin_electedofficial_edit',
                         {
                             id: electedOfficial.id,
-                            tab: 'votes',
-                            environment: environment,
+                            tab: 'votes'
                         }
                     ) -}}">
                         <a href="#eo-votes" data-toggle="pill">Votes</a>
@@ -46,8 +45,7 @@
                             'govwiki_admin_electedofficial_edit',
                             {
                                 id: electedOfficial.id,
-                                tab: 'contributions',
-                                environment: environment,
+                                tab: 'contributions'
                             }
                         ) -}}">
                         <a href="#eo-contributions" data-toggle="pill">Contributions</a>
@@ -57,8 +55,7 @@
                     'govwiki_admin_electedofficial_edit',
                     {
                         id: electedOfficial.id,
-                        tab: 'endorsements',
-                        environment: environment,
+                        tab: 'endorsements'
                     }
                     ) -}}">
                         <a href="#eo-endorsements" data-toggle="pill">Endorsements</a>
@@ -68,8 +65,7 @@
                     'govwiki_admin_electedofficial_edit',
                     {
                         id: electedOfficial.id,
-                        tab: 'public-statements',
-                        environment: environment,
+                        tab: 'public-statements'
                     }
                     ) -}}">
                         <a href="#eo-public-statements" data-toggle="pill">Public Statements</a>
@@ -85,8 +81,7 @@
                             path(
                                 'govwiki_admin_electedofficialvote_create',
                                 {
-                                    id: electedOfficial.id,
-                                    environment: environment
+                                    id: electedOfficial.id
                                 }
                         )
                         -}}" class="ajax-create btn btn-primary pull-right btn-beside-pills">

@@ -1,13 +1,12 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
-{% block title %}Legislations{% endblock %}
+{% block title %}{{ parent() }} - Legislations{% endblock %}
 {% block body %}
     <div class="container-fluid">
         <div class="index-page-head">
             <div class="navigation">
                 {{ knp_pagination_render(legislations) }}
                 <a class="btn btn-primary pull-right" href="{{-
-                    path('govwiki_admin_legislation_create',
-                    { environment: environment })
+                    path('govwiki_admin_legislation_create')
                 -}}" style="margin-bottom:20px;">Create</a>
             </div>
         </div>
@@ -44,8 +43,7 @@
                             path(
                                 'govwiki_admin_legislation_edit',
                                 {
-                                    id: legislation.id,
-                                    environment: environment,
+                                    id: legislation.id
                                 }
                             ) -}}" class="btn btn-default">
                             <span class="glyphicon glyphicon-pencil"></span> Edit

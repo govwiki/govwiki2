@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\AdminBundle\GovWikiAdminServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,7 +12,7 @@ use GovWiki\DbBundle\Entity\EditRequest;
 /**
  * EditRequestController
  *
- * @Configuration\Route("/{environment}/editrequest")
+ * @Configuration\Route("/edit-request")
  */
 class EditRequestController extends Controller
 {
@@ -19,24 +20,19 @@ class EditRequestController extends Controller
      * @Configuration\Route("/")
      * @Configuration\Template
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
      *
      * @return array
      */
-    public function indexAction(Request $request, $environment)
+    public function indexAction(Request $request)
     {
         $editRequests = $this->get('knp_paginator')->paginate(
-            $this->getDoctrine()->getRepository('GovWikiDbBundle:EditRequest')
-                ->getListQuery($environment),
+            $this->getManager()->getListQuery(),
             $request->query->getInt('page', 1),
             50
         );
 
-        return [
-            'editRequests' => $editRequests,
-            'environment' => $environment,
-        ];
+        return [ 'editRequests' => $editRequests ];
     }
 
     /**
@@ -44,11 +40,10 @@ class EditRequestController extends Controller
      * @Configuration\Template
      *
      * @param EditRequest $editRequest A EditRequest instance.
-     * @param string      $environment Environment name.
      *
      * @return array
      */
-    public function showAction(EditRequest $editRequest, $environment)
+    public function showAction(EditRequest $editRequest)
     {
         $em = $this->getDoctrine()->getManager();
         $errors = [];
@@ -84,7 +79,6 @@ class EditRequestController extends Controller
             'governmentName' => $governmentName,
             'changes'        => $changes,
             'errors'         => $errors,
-            'environment'    => $environment,
         ];
     }
 
@@ -157,5 +151,13 @@ class EditRequestController extends Controller
         $em->flush();
 
         return new JsonResponse(['status' => 'ok']);
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminEditRequestManager
+     */
+    public function getManager()
+    {
+        return $this->get(GovWikiAdminServices::EDIT_REQUEST_MANAGER);
     }
 }

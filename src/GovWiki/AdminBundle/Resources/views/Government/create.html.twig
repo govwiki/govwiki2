@@ -1,5 +1,5 @@
 {% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
-{% block title %}Create government{% endblock %}
+{% block title %}{{ parent() }} - Create government{% endblock %}
 {% block body %}
     <div class="container-fluid">
         {{ form_start(form) }}

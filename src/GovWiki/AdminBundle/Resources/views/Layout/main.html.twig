@@ -19,9 +19,16 @@
                     {% endblock enviroment_menu %}
                 </ul>
                 <ul class="nav navbar-nav pull-right">
-                    <li>
-                        <a href="{{ path('fos_user_security_logout') }}">Logout</a>
-                    </li>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li>
+                            <a href="
+                                {{-
+                                    path('fos_user_security_logout')
+                                -}}">
+                                Logout
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
         </div>
     </div>

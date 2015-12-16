@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\AdminBundle\GovWikiAdminServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +12,7 @@ use GovWiki\DbBundle\Form\ElectedOfficialType;
 /**
  * ElectedOfficialController
  *
- * @Configuration\Route("/{environment}/electedofficial")
+ * @Configuration\Route("/electedofficial")
  */
 class ElectedOfficialController extends AbstractGovWikiAdminController
 {
@@ -21,12 +22,11 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
      * @Configuration\Route("/", methods="GET")
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
      *
      * @return array
      */
-    public function indexAction(Request $request, $environment)
+    public function indexAction(Request $request)
     {
         $id = null;
         $fullName = null;
@@ -44,31 +44,26 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
         }
 
         $electedOfficials = $this->paginate(
-            $this->getDoctrine()
-                ->getRepository('GovWikiDbBundle:ElectedOfficial')
-                ->getListQuery($environment, $id, $fullName, $government),
+            $this->getManager()->getListQuery($id, $fullName, $government),
             $request->query->getInt('page', 1),
             50
         );
 
-        return [
-            'electedOfficials' => $electedOfficials,
-            'environment' => $environment,
-        ];
+        return [ 'electedOfficials' => $electedOfficials ];
     }
 
     /**
      * @Configuration\Route("/create")
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
      *
      * @return array
      */
-    public function createAction(Request $request, $environment)
+    public function createAction(Request $request)
     {
-        $electedOfficial = new ElectedOfficial;
+        /** @var ElectedOfficial $electedOfficial */
+        $electedOfficial = $this->getManager()->create();
 
         $form = $this->createForm(new ElectedOfficialType(), $electedOfficial);
         $form->handleRequest($request);
@@ -80,27 +75,27 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
             $em->flush();
             $this->addFlash('admin_success', 'New elected official created');
 
-            return $this->redirectToRoute('govwiki_admin_electedofficial_index');
+            return $this->redirectToRoute(
+                'govwiki_admin_electedofficial_index'
+            );
         }
 
-        return [
-            'form' => $form->createView(),
-            'environment' => $environment,
-        ];
+        return [ 'form' => $form->createView() ];
     }
 
     /**
-     * @Configuration\Route("/{id}/edit", methods="GET|POST", requirements={"id": "\d+"})
+     * @Configuration\Route("/{id}/edit", requirements={"id": "\d+"})
      * @Configuration\Template()
      *
-     * @param string          $environment     Environment name.
-     * @param ElectedOfficial $electedOfficial A ElectedOfficial instance.
      * @param Request         $request         A Request instance.
+     * @param ElectedOfficial $electedOfficial A ElectedOfficial instance.
      *
      * @return array
      */
-    public function editAction($environment, ElectedOfficial $electedOfficial, Request $request)
-    {
+    public function editAction(
+        Request $request,
+        ElectedOfficial $electedOfficial
+    ) {
         $form = $this->createForm(new ElectedOfficialType(), $electedOfficial);
         $form->handleRequest($request);
 
@@ -108,13 +103,22 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
             $this->getDoctrine()->getManager()->flush();
             $this->addFlash('info', 'Elected official updated');
 
-            return $this->redirectToRoute('govwiki_admin_electedofficial_index');
+            return $this->redirectToRoute(
+                'govwiki_admin_electedofficial_index'
+            );
         }
 
         return [
             'form' => $form->createView(),
             'electedOfficial' => $electedOfficial,
-            'environment' => $environment,
         ];
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminElectedOfficialManager
+     */
+    private function getManager()
+    {
+        return $this->get(GovWikiAdminServices::ELECTED_OFFICIAL_MANAGER);
     }
 }

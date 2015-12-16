@@ -3,9 +3,7 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
-use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\GovWikiDbServices;
-use GovWiki\DbBundle\Importer\GovernmentImporter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +13,7 @@ use GovWiki\DbBundle\Form\GovernmentType;
 /**
  * GovernmentController
  *
- * @Configuration\Route("/{environment}/government")
+ * @Configuration\Route("/government")
  */
 class GovernmentController extends AbstractGovWikiAdminController
 {
@@ -25,12 +23,11 @@ class GovernmentController extends AbstractGovWikiAdminController
      * @Configuration\Route("/", methods="GET")
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
      *
      * @return array
      */
-    public function indexAction(Request $request, $environment)
+    public function indexAction(Request $request)
     {
         $id = null;
         $name = null;
@@ -44,17 +41,13 @@ class GovernmentController extends AbstractGovWikiAdminController
         }
 
         $governments = $this->paginate(
-            $this->getDoctrine()
-                ->getRepository('GovWikiDbBundle:Government')
-                ->getListQuery($environment, $id, $name),
+            $this->getManager()
+                ->getListQuery($id, $name),
             $request->query->getInt('page', 1),
             50
         );
 
-        return [
-            'governments' => $governments,
-            'environment' => $environment,
-        ];
+        return [ 'governments' => $governments ];
     }
 
     /**
@@ -63,28 +56,20 @@ class GovernmentController extends AbstractGovWikiAdminController
      * @Configuration\Route("/create")
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
      *
      * @return array
      */
-    public function createAction(Request $request, $environment)
+    public function createAction(Request $request)
     {
-        $government = new Government();
-
-        $government->setEnvironment(
-            $this->getDoctrine()->getRepository('GovWikiDbBundle:Environment')
-                ->getReferenceByName($environment)
-        );
+        $manager = $this->getManager();
+        $government = $manager->create();
 
         $form = $this->createForm(new GovernmentType(), $government);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-
-            $em->persist($government);
-            $em->flush();
+            $manager->update($government);
             $this->addFlash(
                 'admin_success',
                 'Government '. $government->getName() .' successfully created'
@@ -93,18 +78,15 @@ class GovernmentController extends AbstractGovWikiAdminController
             return $this->redirectToRoute('govwiki_admin_government_index');
         }
 
-        return [
-            'form' => $form->createView(),
-            'environment' => $environment,
-        ];
+        return [ 'form' => $form->createView() ];
     }
 
     /**
      * @Configuration\Route("/{id}/edit", requirements={"id": "\d+"})
      * @Configuration\Template()
      *
-     * @param Government $government  A Government instance.
-     * @param Request    $request     A Request instance.
+     * @param Government $government A Government instance.
+     * @param Request    $request    A Request instance.
      *
      * @return array
      */
@@ -113,7 +95,8 @@ class GovernmentController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $this->getManager()->update($government);
+
             $this->addFlash('admin_success', 'Government '.
                 $government->getName() .' saved');
 
@@ -121,15 +104,6 @@ class GovernmentController extends AbstractGovWikiAdminController
         }
 
         return ['form' => $form->createView()];
-    }
-
-    /**
-     * @Configuration\Route("/export")
-     * @Configuration\Template()
-     */
-    public function exportAction()
-    {
-
     }
 
     /**
@@ -162,9 +136,9 @@ class GovernmentController extends AbstractGovWikiAdminController
          */
         $form = $this->createFormBuilder($data)
             ->add('file', 'file')
-            ->add('type', 'choice', [
-                'choices' => $choices
-            ])->getForm();
+            ->add('type', 'choice', [ 'choices' => $choices ])
+            ->getForm();
+
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile $file */
@@ -180,5 +154,13 @@ class GovernmentController extends AbstractGovWikiAdminController
             'form' => $form->createView(),
             'environment' => $environment,
         ];
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminGovernmentManager
+     */
+    private function getManager()
+    {
+        return $this->get(GovWikiAdminServices::GOVERNMENT_MANAGER);
     }
 }

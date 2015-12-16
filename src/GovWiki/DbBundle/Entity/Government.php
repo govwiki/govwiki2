@@ -3700,7 +3700,7 @@ class Government
     {
         $this->environment = $environment;
 
-        return $this->environment;
+        return $this;
     }
 
     /**

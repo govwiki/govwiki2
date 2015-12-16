@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Contribution;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\ElectedOfficialVote;
@@ -14,7 +15,6 @@ use GovWiki\DbBundle\Entity\IssueCategory;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use GovWiki\DbBundle\Entity\CreateRequest;
@@ -22,7 +22,7 @@ use GovWiki\DbBundle\Entity\CreateRequest;
 /**
  * CreateRequestController
  *
- * @Configuration\Route("/{environment}/createrequest")
+ * @Configuration\Route("/create-request")
  */
 class CreateRequestController extends Controller
 {
@@ -30,32 +30,28 @@ class CreateRequestController extends Controller
      * @Configuration\Route("/")
      * @Configuration\Template
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
      *
      * @return array
      */
-    public function indexAction(Request $request, $environment)
+    public function indexAction(Request $request)
     {
         $createRequests = $this->get('knp_paginator')->paginate(
-            $this->getDoctrine()->getRepository('GovWikiDbBundle:CreateRequest')
-                ->getListQuery($environment),
+            $this->getManager()->getListQuery(),
             $request->query->getInt('page', 1),
             50
         );
 
-        return [
-            'createRequests' => $createRequests,
-            'environment' => $environment,
-        ];
+        return [ 'createRequests' => $createRequests ];
     }
 
     /**
      * @Configuration\Route("/{id}")
      * @Configuration\Template
      *
-     * @param CreateRequest $createRequest
-     * @return Response
+     * @param CreateRequest $createRequest A CreateRequest instance.
+     *
+     * @return array
      */
     public function showAction(CreateRequest $createRequest)
     {
@@ -430,5 +426,13 @@ class CreateRequestController extends Controller
         $em->persist($newEntity);
 
         return $newEntity;
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminCreateRequestManager
+     */
+    public function getManager()
+    {
+        return $this->get(GovWikiAdminServices::CREATE_REQUEST_MANAGER);
     }
 }

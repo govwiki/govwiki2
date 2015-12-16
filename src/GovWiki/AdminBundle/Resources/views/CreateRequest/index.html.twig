@@ -1,5 +1,5 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
-{% block title %}Create requests{% endblock %}
+{% block title %}{{ parent() }} - Create requests{% endblock %}
 {% block body %}
     <div class="container-fluid">
         <div class="index-page-head">
@@ -36,8 +36,7 @@
                                     path(
                                         'govwiki_admin_createrequest_show',
                                         {
-                                            id: createRequest.id,
-                                            environment: environment
+                                            id: createRequest.id
                                         }
                                     )
                                 -}}" class="btn btn-default">
@@ -47,8 +46,7 @@
                                     path(
                                         'govwiki_admin_createrequest_remove',
                                         {
-                                            id: createRequest.id,
-                                            environment: environment
+                                            id: createRequest.id
                                         }
                                     ) -}}">
                                     <span class="glyphicon glyphicon-remove"></span> Remove

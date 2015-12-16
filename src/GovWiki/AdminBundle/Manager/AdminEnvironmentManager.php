@@ -4,16 +4,22 @@ namespace GovWiki\AdminBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\ApiBundle\Manager\EnvironmentManagerAwareInterface;
+use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\UserBundle\Entity\User;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
+use \Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class AdminEnvironmentManager
+ * Act same as {@see EnvironmentManager} but use only in admin part of
+ * application.
+ *
  * @package GovWiki\AdminBundle\Manager
  */
 class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
 {
+    const ENVIRONMENT_PARAMETER = 'environment';
+
     /**
      * @var EntityManagerInterface
      */
@@ -30,13 +36,30 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     private $user;
 
     /**
+     * @var Session
+     */
+    private $session;
+
+    /**
      * @param EntityManagerInterface $em      A EntityManagerInterface instance.
      * @param TokenStorageInterface  $storage A TokenStorageInterface instance.
+     * @param Session                $session A Session instance.
+     *
+     * @throws AccessDeniedException Try to use AdminEnvironmentManager as
+     * anonymous user.
      */
     public function __construct(
         EntityManagerInterface $em,
-        TokenStorageInterface $storage
+        TokenStorageInterface $storage,
+        Session $session
     ) {
+        /*
+         * Get environment name from session. If session not contain environment
+         * use configurator to set environment name.
+         */
+        $this->environment = $session->get(self::ENVIRONMENT_PARAMETER, null);
+
+        $this->session = $session;
         $this->em = $em;
 
         $token = $storage->getToken();
@@ -49,11 +72,37 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * @param string $environment Environment name.
+     *
+     * @return AdminEnvironmentManager
+     */
+    public function changeEnvironment($environment)
+    {
+        $this->session->set(self::ENVIRONMENT_PARAMETER, $environment);
+        $this->environment = $environment;
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setEnvironment($environment)
     {
-        $this->environment = $environment;
+        /*
+         * Session not contains environment name, get from configurator service.
+         */
+        if (null === $this->environment) {
+            $this->changeEnvironment($environment);
+        }
+    }
+
+    /**
+     * @return AdminEnvironmentManager
+     */
+    public function clearEnvironment()
+    {
+        $this->changeEnvironment(null);
 
         return $this;
     }
@@ -68,21 +117,67 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
 
     /**
      * @return \GovWiki\DbBundle\Entity\Environment|null
+     *
+     * @throws AccessDeniedException User don't allow to manage current
+     * environment.
      */
     public function getEntity()
     {
-        return $this->em->getRepository('GovWikiDbBundle:Environment')
-            ->getByName($this->user->getId(), $this->environment);
+        if ($this->user->hasRole('ROLE_ADMIN')) {
+            /*
+             * Admin allow to manage all environment.
+             */
+            return $this->em->getRepository('GovWikiDbBundle:Environment')
+                ->getByName($this->environment);
+        } elseif ($this->user->hasRole('ROLE_MANAGER')) {
+            /*
+             * Manager allow manage only some part of environments.
+             */
+            return $this->em->getRepository('GovWikiDbBundle:Environment')
+                ->getByName($this->environment, $this->user->getId());
+        }
+
+        throw new AccessDeniedException();
     }
 
     /**
-     * @return boolean|\Doctrine\Common\Proxy\Proxy|null
+     * @param string $environment Environment name.
+     *
+     * @return AdminEnvironmentManager
+     *
+     * @throws AccessDeniedException User don't allow to manage current
+     * environment.
+     */
+    public function removeEnvironment($environment)
+    {
+        $this->environment = $environment;
+        $entity = $this->getReference();
+
+        $this->em->remove($entity);
+        $this->em->flush();
+
+        return $this;
+    }
+
+    /**
+     * @return Environment
+     *
+     * @throws AccessDeniedException User don't allow to manage current
+     * environment.
      */
     public function getReference()
     {
-        return $this->em
-            ->getRepository('GovWikiDbBundle:Environment')
-            ->getReferenceByName($this->environment);
+        if ($this->user->hasRole('ROLE_ADMIN')) {
+            return $this->em
+                ->getRepository('GovWikiDbBundle:Environment')
+                ->getReferenceByName($this->environment);
+        } elseif ($this->user->hasRole('ROLE_MANAGER')) {
+            return $this->em
+                ->getRepository('GovWikiDbBundle:Environment')
+                ->getReferenceByName($this->environment, $this->user->getId());
+        }
+
+        throw new AccessDeniedException();
     }
 
     /**
@@ -113,8 +208,14 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
         return $this;
     }
 
-    public function remove()
+    /**
+     * @param AdminEntityManagerAwareInterface $entityManager A
+     *                                                        AdminEntityManagerAwareInterface
+     *                                                        instance.
+     */
+    public function configure(AdminEntityManagerAwareInterface $entityManager)
     {
-
+        $entityManager->setEnvironment($this->environment);
+        $entityManager->setEnvironmentId($this->getReference()->getId());
     }
 }
