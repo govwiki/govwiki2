@@ -2,106 +2,110 @@
 
 {% block main %}
 
-    <div class="row">
-        <div class="col-md-6 col-lg-5">
+    <section class="map">
 
-            {# Typeahead Search #}
-            <div class="typeahead_wrap">
+        <div class="row">
+            <div class="col-md-6 col-lg-5">
 
-                <input id="myinput" type="text" placeholder="Loading the list of governments"
-                       class="text-uppercase typeahead form-control">
+                {# Typeahead Search #}
+                <div class="typeahead_wrap">
 
-                <p class="text-center text-nowrap hidden-xs hidden-sm">
-                    Type part of the agency's name
-                    <img src="/legacy/img/FullSizeRender.gif" style="width:40px">
-                    or click it on the map
-                    <img src="/legacy/img/FullSizeRender1.gif" style="width:40px">
-                </p>
+                    <input id="myinput" type="text" placeholder="Loading the list of governments"
+                           class="text-uppercase typeahead form-control">
 
-            </div>
+                    <p class="text-center text-nowrap hidden-xs hidden-sm">
+                        Type part of the agency's name
+                        <img src="/legacy/img/FullSizeRender.gif" style="width:40px">
+                        or click it on the map
+                        <img src="/legacy/img/FullSizeRender1.gif" style="width:40px">
+                    </p>
 
-        </div>
-    </div>
-
-    <div class="row">
-
-        <div class="col-sm-12 col-md-6 col-lg-5">
-
-            {# Map #}
-            <div id="map_wrap">
-                <ul id='menu'>
-
-                    <li class="legend-header">
-                        <span>Select type(s):</span>
-                    </li>
-
-                    <li id="cities" class="legend-item cities selected">
-                        <span class="glyphicon glyphicon-ok"></span>
-                        <i class="red-circle marker-circle"></i>
-                        <a href="javascript:void(0)">Cities</a>
-                    </li>
-
-                    <li id="counties" class="legend-item counties selected">
-                        <span class="glyphicon glyphicon-ok"></span>
-                        <i class="grey-line"></i>
-                        <a href="javascript:void(0)">Counties</a>
-                    </li>
-
-                    <li id="school" class="legend-item school selected">
-                        <span class="glyphicon glyphicon-ok"></span>
-                        <i class="blue-circle marker-circle"></i>
-                        <a href="javascript:void(0)">School Districts</a>
-                    </li>
-
-                    <li id="special" class="legend-item special selected">
-                        <span class="glyphicon glyphicon-ok"></span>
-                        <i class="purple-circle marker-circle"></i>
-                        <a href="javascript:void(0)">Special Districts</a>
-                    </li>
-
-                </ul>
-
-                <div id="map"></div>
-            </div>
-
-        </div>
-
-        {# Intro text #}
-        <div class="col-sm-12 col-md-6 col-lg-7">
-
-            <div class="intro-text">
-
-                <div class="title">
-                    <h3>Welcome to California Policy Center’s Civic Performance Profiles</h3>
                 </div>
 
-                <div class="content">
-                    <p>
-                        Is your local government giving you value for money? Use CPC’s Civic Performance Profiles to see how your city, county, school district or special district stacks up.
-                    </p>
-                    <p>
-                        Among the surprising facts we learned while compiling this database:
-                    </p>
-                    <ul>
-                        <li>
-                            <a href="County/Los_Angeles">Los Angeles County</a> has unfunded retiree health liabilities of $26.7 billion.
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-sm-12 col-md-6 col-lg-5">
+
+                {# Map #}
+                <div id="map_wrap">
+                    <ul id='menu'>
+
+                        <li class="legend-header">
+                            <span>Select type(s):</span>
                         </li>
-                        <li>
-                            Median full time public employee salary and benefits in <a href="/City/San_Jose">San Jose</a> exceeds $157,000.
+
+                        <li id="cities" class="legend-item cities selected">
+                            <span class="glyphicon glyphicon-ok"></span>
+                            <i class="red-circle marker-circle"></i>
+                            <a href="javascript:void(0)">Cities</a>
                         </li>
-                        <li>
-                            The Superintendent of <a href="/School_District/New_Haven_Unified_School_District">New Haven Unified School District</a> in Alameda County received almost $650,000 in salary and benefits while the district’s Academic Performance Index is below the state median.
+
+                        <li id="counties" class="legend-item counties selected">
+                            <span class="glyphicon glyphicon-ok"></span>
+                            <i class="grey-line"></i>
+                            <a href="javascript:void(0)">Counties</a>
                         </li>
+
+                        <li id="school" class="legend-item school selected">
+                            <span class="glyphicon glyphicon-ok"></span>
+                            <i class="blue-circle marker-circle"></i>
+                            <a href="javascript:void(0)">School Districts</a>
+                        </li>
+
+                        <li id="special" class="legend-item special selected">
+                            <span class="glyphicon glyphicon-ok"></span>
+                            <i class="purple-circle marker-circle"></i>
+                            <a href="javascript:void(0)">Special Districts</a>
+                        </li>
+
                     </ul>
-                    <p>
-                        To learn more about a California local government that affects you, please select it from the map or by typing its name.
-                    </p>
+
+                    <div id="map"></div>
                 </div>
+
+            </div>
+
+            {# Intro text #}
+            <div class="col-sm-12 col-md-6 col-lg-7">
+
+                <div class="intro-text">
+
+                    <div class="title">
+                        <h3>Welcome to California Policy Center’s Civic Performance Profiles</h3>
+                    </div>
+
+                    <div class="content">
+                        <p>
+                            Is your local government giving you value for money? Use CPC’s Civic Performance Profiles to see how your city, county, school district or special district stacks up.
+                        </p>
+                        <p>
+                            Among the surprising facts we learned while compiling this database:
+                        </p>
+                        <ul>
+                            <li>
+                                <a href="County/Los_Angeles">Los Angeles County</a> has unfunded retiree health liabilities of $26.7 billion.
+                            </li>
+                            <li>
+                                Median full time public employee salary and benefits in <a href="/City/San_Jose">San Jose</a> exceeds $157,000.
+                            </li>
+                            <li>
+                                The Superintendent of <a href="/School_District/New_Haven_Unified_School_District">New Haven Unified School District</a> in Alameda County received almost $650,000 in salary and benefits while the district’s Academic Performance Index is below the state median.
+                            </li>
+                        </ul>
+                        <p>
+                            To learn more about a California local government that affects you, please select it from the map or by typing its name.
+                        </p>
+                    </div>
+                </div>
+
             </div>
 
         </div>
 
-    </div>
+    </section>
 
 {% endblock %}
 
