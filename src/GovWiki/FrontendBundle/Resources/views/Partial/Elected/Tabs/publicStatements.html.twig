@@ -1,0 +1,60 @@
+{#<div role="tabpanel" class="tab-pane" id="Statements">#}
+{#<table class="table table-hover" data-entity-type="Statements">#}
+    {#<tr>#}
+        {#<th>Date</th>#}
+        {#<th>Summary</th>#}
+        {#<th>URL</th>#}
+        {#<th>Category</th>#}
+    {#</tr>#}
+
+    {#{&#123;&#35;if public_statements}}#}
+
+    {#{&#123;&#35;public_statements}}#}
+    {#<tr data-id="{{id}}">#}
+        {#{&#123;&#35;this}}#}
+        {#<td data-date="{{date}}">#}
+            {#<a href="javascript:void(0);" data-type="date" data-pk="1"#}
+               {#data-placeholder="Please edit" data-title="Please edit"#}
+               {#class="editable editable-pre-wrapped editable-click" data-original-title=""  data-format="mm/dd/yyyy"#}
+               {#title="">{{date}}<span class="glyphicon glyphicon-pencil edit"></span></a>#}
+        {#</td>#}
+        {#<td data-contributor-name="{{summary}}">#}
+            {#<a href="javascript:void(0);" data-type="textarea" data-pk="1"#}
+               {#data-placeholder="Please edit" data-title="Please edit"#}
+               {#class="editable editable-pre-wrapped editable-click" data-original-title=""#}
+               {#title="">{{summary}}</a>#}
+            {#<span class="glyphicon glyphicon-pencil edit"></span>#}
+        {#</td>#}
+        {#<td data-url="{{url}}">#}
+            {#<a href="javascript:void(0);" data-type="text" data-pk="1"#}
+               {#data-placeholder="Please edit" data-title="Please edit"#}
+               {#class="editable editable-pre-wrapped editable-click" data-original-title=""#}
+               {#title="">{{url}}</a>#}
+            {#<span class="glyphicon glyphicon-pencil edit"></span>#}
+        {#</td>#}
+        {#<td data-issue-category="{{issue_category.name}}">#}
+            {#<a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{{../../category_select}}"#}
+               {#data-placeholder="Please edit" data-title="Please edit"#}
+               {#class="editable editable-pre-wrapped editable-click" data-original-title=""#}
+               {#title="">{{issue_category.name}}</a>#}
+            {#<span class="glyphicon glyphicon-pencil edit"></span>#}
+        {#</td>#}
+        {#{{/this}}#}
+    {#</tr>#}
+    {#{{/public_statements}}#}
+
+    {#{{else}}#}
+    {#<!--<tr>#}
+        {#<td colspan="7" align="center">#}
+            {#<p style="font-size:18px;">No information at this time. Please check back later.</p>#}
+        {#</td>#}
+    {#</tr>-->#}
+    {#{{/if}}#}
+    {#<tr>#}
+        {#<td colspan="7" class="add">#}
+            {#Add new Statement#}
+            {#<span class="glyphicon glyphicon-plus"></span>#}
+        {#</td>#}
+    {#</tr>#}
+
+{#</table>#}
