@@ -11,16 +11,16 @@
             <div class="navigation">
                 {{ knp_pagination_render(fields) }}
                 <div class="pull-right">
-                    <button class="btn btn-default new_group" data-url="{{-
-                        path('govwiki_admin_format_tab')
+                    <a class="btn btn-default new_group" href="{{-
+                        path('govwiki_admin_tab_list')
                     -}}">
-                        New tab
-                    </button>
-                    <button class="btn btn-default new_group" data-url="{{-
-                        path('govwiki_admin_format_category')
+                        Tabs
+                    </a>
+                    <a class="btn btn-default new_group" href="{{-
+                    path('govwiki_admin_category_list')
                     -}}">
-                        New category
-                    </button>
+                        Categories
+                    </a>
                     &nbsp;
                     <a class="btn btn-primary" href="{{-
                         path('govwiki_admin_format_new')
@@ -58,42 +58,4 @@
         {{ knp_pagination_render(fields) }}
 
     </div>
-
-    {#
-        Modal window for creation new categories and tabs.
-    #}
-    {% embed '@GovWikiAdmin/Format/Partial/modal.html.twig' with { id: 'modal' } %}
-        {% block title %}{% endblock title %}
-        {% block body %}
-            {{ form_start(form) }}
-            {{ form_widget(form) }}
-            <div class="btn-group">
-                <button type="submit" class="btn btn-primary">Create</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-            </div>
-            {{ form_end(form) }}
-        {% endblock body %}
-    {% endembed %}
-
 {% endblock body %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script type="application/javascript">
-        $(function(){
-            var $modal = $('#modal');
-            var $form = $modal.find('form');
-
-            /*
-                Set button callback.
-             */
-            $('.new_group').click(function() {
-                var $this = $(this);
-
-                $form.attr('action', $this.attr('data-url'));
-                $modal.modal();
-                $modal.find('.modal-title').text($this.text());
-            });
-        });
-    </script>
-{% endblock javascripts %}

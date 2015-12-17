@@ -5,9 +5,9 @@ namespace GovWiki\DbBundle\Entity\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * TabRepository
+ * CategoryRepository
  */
-class TabRepository extends EntityRepository
+class CategoryRepository extends EntityRepository
 {
     /**
      * @param string $environment Environment name.
@@ -16,15 +16,15 @@ class TabRepository extends EntityRepository
      */
     public function getListQuery($environment)
     {
-        $qb = $this->createQueryBuilder('Tab');
+        $qb = $this->createQueryBuilder('Category');
         $expr = $qb->expr();
 
         return $qb
-            ->select('Tab.id, Tab.name, Tab.orderNumber')
-            ->join('Tab.environment', 'Environment')
+            ->select('Category.id, Category.name, Category.orderNumber')
+            ->join('Category.environment', 'Environment')
             ->where($expr->eq('Environment.name', $expr->literal($environment)))
-            ->orderBy($expr->asc('Tab.orderNumber'))
-            ->addOrderBy($expr->asc('Tab.name'))
+            ->orderBy($expr->asc('Category.orderNumber'))
+            ->addOrderBy($expr->asc('Category.name'))
             ->getQuery();
     }
 
@@ -35,15 +35,15 @@ class TabRepository extends EntityRepository
      */
     public function getNames($environment)
     {
-        $qb = $this->createQueryBuilder('Tab');
+        $qb = $this->createQueryBuilder('Category');
         $expr = $qb->expr();
 
         $buf = $qb
-            ->select('Tab.name, Tab.id')
-            ->join('Tab.environment', 'Environment')
+            ->select('Category.name, Category.id')
+            ->join('Category.environment', 'Environment')
             ->where($expr->eq('Environment.name', $expr->literal($environment)))
-            ->orderBy($expr->asc('Tab.orderNumber'))
-            ->addOrderBy($expr->asc('Tab.name'))
+            ->orderBy($expr->asc('Category.orderNumber'))
+            ->addOrderBy($expr->asc('Category.name'))
             ->getQuery()
             ->getResult();
 
@@ -65,20 +65,20 @@ class TabRepository extends EntityRepository
      */
     public function getPreviousOrderNumber($environment, $orderNumber)
     {
-        $qb = $this->createQueryBuilder('Tab');
+        $qb = $this->createQueryBuilder('Category');
         $expr = $qb->expr();
 
         try {
             $result = $qb
-                ->select('Tab.orderNumber')
-                ->join('Tab.environment', 'Environment')
+                ->select('Category.orderNumber')
+                ->join('Category.environment', 'Environment')
                 ->where(
                     $expr->andX(
                         $expr->eq('Environment.name', $expr->literal($environment)),
-                        $expr->lt('Tab.orderNumber', $orderNumber)
+                        $expr->lt('Category.orderNumber', $orderNumber)
                     )
                 )
-                ->orderBy($expr->desc('Tab.orderNumber'))
+                ->orderBy($expr->desc('Category.orderNumber'))
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getSingleScalarResult();
@@ -101,20 +101,20 @@ class TabRepository extends EntityRepository
      */
     public function getNextOrderNumber($environment, $orderNumber)
     {
-        $qb = $this->createQueryBuilder('Tab');
+        $qb = $this->createQueryBuilder('Category');
         $expr = $qb->expr();
 
         try {
             $result = $qb
-                ->select('Tab.orderNumber')
-                ->join('Tab.environment', 'Environment')
+                ->select('Category.orderNumber')
+                ->join('Category.environment', 'Environment')
                 ->where(
                     $expr->andX(
                         $expr->eq('Environment.name', $expr->literal($environment)),
-                        $expr->gt('Tab.orderNumber', $orderNumber)
+                        $expr->gt('Category.orderNumber', $orderNumber)
                     )
                 )
-                ->orderBy($expr->asc('Tab.orderNumber'))
+                ->orderBy($expr->asc('Category.orderNumber'))
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getSingleScalarResult();

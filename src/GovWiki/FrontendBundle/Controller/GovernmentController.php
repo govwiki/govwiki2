@@ -25,6 +25,4 @@ class GovernmentController extends Controller
         return $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
             ->getGovernment($altTypeSlug, $slug);
     }
-
-
 }

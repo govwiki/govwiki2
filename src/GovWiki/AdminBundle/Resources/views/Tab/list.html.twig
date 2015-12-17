@@ -1,0 +1,56 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block title %}{{ parent() }} - tabs{% endblock title %}
+
+{% block body %}
+    <div class="container-fluid">
+        {#
+            Navigation.
+        #}
+        <div class="index-page-head">
+            <div class="navigation">
+                {{ knp_pagination_render(tabs) }}
+                <div class="pull-right">
+                    <a class="btn btn-primary" href="{{-
+                    path('govwiki_admin_tab_new')
+                    -}}">Add new</a>
+                </div>
+            </div>
+        </div>
+
+        {#
+            List of tabs.
+        #}
+        <table class="table table-responsive">
+            <tr>
+                <th>Name</th>
+                <th>Order number</th>
+                <th>Actions</th>
+            </tr>
+            {% for tab in tabs %}
+                <tr>
+                    <td>{{ tab.name }}</td>
+                    <td style="vertical-align: middle">
+                        {{ tab.orderNumber }}&nbsp
+                        {% if not loop.first %}
+                            <a href="{{ path('govwiki_admin_tab_up', { id: tab.id }) }}">
+                                <i class="glyphicon glyphicon-arrow-up text-success"></i>
+                            </a>
+                        {% endif %}
+                        {% if not loop.last  %}
+                            <a href="{{ path('govwiki_admin_tab_down', { id: tab.id }) }}">
+                                <i class="glyphicon glyphicon-arrow-down text-danger"></i>
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a class="btn btn-default" href="{{ path('govwiki_admin_tab_edit', { id: tab.id }) }}">Edit</a>
+                        <a class="btn btn-danger" href="{{ path('govwiki_admin_tab_remove', { id: tab.id }) }}">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        {{ knp_pagination_render(tabs) }}
+
+    </div>
+{% endblock body %}

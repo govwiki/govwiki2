@@ -18,4 +18,6 @@ abstract class GovWikiAdminServices
     const CREATE_REQUEST_MANAGER = 'govwiki_admin.entity_manager.create_request';
     const EDIT_REQUEST_MANAGER = 'govwiki_admin.entity_manager.edit_request';
     const FORMAT_MANAGER = 'govwiki_admin.entity_manager.format';
+    const TAB_MANAGER = 'govwiki_admin.entity_manager.tab';
+    const CATEGORY_MANAGER = 'govwiki_admin.entity_manager.category';
 }

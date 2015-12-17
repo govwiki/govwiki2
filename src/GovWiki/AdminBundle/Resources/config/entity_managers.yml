@@ -52,3 +52,17 @@ services:
     govwiki_admin.entity_manager.format:
         class: GovWiki\AdminBundle\Manager\Entity\AdminFormatManager
         parent: govwiki_admin.entity_manager.abstract
+
+    #
+    # Tab admin entity manager.
+    #
+    govwiki_admin.entity_manager.tab:
+        class: GovWiki\AdminBundle\Manager\Entity\AdminTabManager
+        parent: govwiki_admin.entity_manager.abstract
+
+    #
+    # Category admin entity manager.
+    #
+    govwiki_admin.entity_manager.category:
+        class: GovWiki\AdminBundle\Manager\Entity\AdminCategoryManager
+        parent: govwiki_admin.entity_manager.abstract

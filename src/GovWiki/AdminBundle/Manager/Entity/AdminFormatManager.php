@@ -41,26 +41,4 @@ class AdminFormatManager extends AbstractAdminEntityManager
         $format = parent::create();
         return $format->setEnvironment($this->getEnvironmentReference());
     }
-
-    /**
-     * @return Tab
-     */
-    public function createTab()
-    {
-        $tab = new Tab();
-        $tab->setEnvironment($this->getEnvironmentReference());
-
-        return $tab;
-    }
-
-    /**
-     * @return Category
-     */
-    public function createCategory()
-    {
-        $category = new Category();
-        $category->setEnvironment($this->getEnvironmentReference());
-
-        return $category;
-    }
 }

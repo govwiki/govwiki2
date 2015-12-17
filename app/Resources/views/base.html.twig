@@ -4,12 +4,12 @@
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}
-            {#<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">#}
+           {# <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
             <link href="{{ asset('legacy/css/bootstrap.min.css') }}" rel="stylesheet">
-            <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+            <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">#}
         {% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-        <style>
+        {#<style>
             /*
                 By some reasons bootstrap datepicker arrow icons is broken
                 this part of css fix it.
@@ -29,15 +29,15 @@
 
             .icon-arrow-left:before { content: "\e091"; }
             .icon-arrow-right:before { content: "\e092"; }
-        </style>
+        </style>#}
     </head>
     <body>
         {% block header %}{% endblock %}
         {% block body %}{% endblock %}
         {% block modal %}{% endblock %}
         {% block javascripts %}
-            <script src="{{ asset('legacy/js_files/jquery.min.js') }}"></script>
-            <script src="{{ asset('legacy/js/vendor/bootstrap.min.js') }}"></script>
+           {# <script src="{{ asset('legacy/js_files/jquery.min.js') }}"></script>
+            <script src="{{ asset('legacy/js/vendor/bootstrap.min.js') }}"></script>#}
          {#   <script src="{{ asset('legacy/js/plugins.js') }}"></script>
             <script src="{{ asset('legacy/js/vendor/bootstrap-table/bootstrap-table.min.js') }}"></script>
             <script src="{{ asset('legacy/js/vendor/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js') }}"></script>

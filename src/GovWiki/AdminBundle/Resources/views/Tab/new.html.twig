@@ -1,0 +1,17 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block title %}{{ parent() }} - new tab{% endblock title %}
+
+{% block body %}
+    <div class="container-fluid">
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-success">Create</button>
+        <a class="btn btn-default" href="{{-
+            path(
+                'govwiki_admin_tab_list'
+            )
+        -}}">Back</a>
+        {{ form_end(form) }}
+    </div>
+{% endblock body %}

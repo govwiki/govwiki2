@@ -102,62 +102,6 @@ class FormatController extends Controller
     }
 
     /**
-     * @Configuration\Route("/tab", methods={"POST"})
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function tabAction(Request $request)
-    {
-        $tab = $this->getManager()->createTab();
-
-        $form = $this->createForm(new AbstractGroupType(), $tab);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-
-            $em->persist($tab);
-            $em->flush();
-        }
-
-        if ($request->isXmlHttpRequest()) {
-            return new JsonResponse();
-        }
-
-        return $this->redirectToRoute('govwiki_admin_format_list');
-    }
-
-    /**
-     * @Configuration\Route("/category", methods={"POST"})
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function categoryAction(Request $request)
-    {
-        $category = $this->getManager()->createCategory();
-
-        $form = $this->createForm(new AbstractGroupType(), $category);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-
-            $em->persist($category);
-            $em->flush();
-        }
-
-        if ($request->isXmlHttpRequest()) {
-            return new JsonResponse();
-        }
-
-        return $this->redirectToRoute('govwiki_admin_format_list');
-    }
-
-    /**
      * @param FormInterface $form A FormInterface instance.
      *
      * @return void

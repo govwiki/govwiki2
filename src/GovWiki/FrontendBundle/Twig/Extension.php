@@ -44,8 +44,8 @@ class Extension extends \Twig_Extension
     }
 
     /**
-     * @param Government $government
-     * @param Format     $format
+     * @param Government $government A Government instance.
+     * @param array      $format     Format.
      *
      * @return string
      */
