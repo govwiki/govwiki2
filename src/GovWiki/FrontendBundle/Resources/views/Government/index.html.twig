@@ -2,6 +2,8 @@
 
 {% block main %}
 
+    {% dump tabs %}
+
     <section class="governmentController">
 
         {# Government name & wikipedia links #}
@@ -49,13 +51,13 @@
                 <ul class="nav nav-pills">
 
                     {# Render TABS #}
-                    {% for category in categories %}
+                    {% for tab in tabs %}
                         <li class="{{ loop.first ? 'active' : '' }}">
                             {# TODO: Hardcoded, for new db, must be replaced #}
-                            <a href="#{{ category | replace(' ', '_') | replace('+', 'a') }}"
-                               aria-controls="{{ category | replace(' ', '_') | replace('+', 'a') }}"
-                               role="tab" data-toggle="tab" data-tabname="{{category}}">
-                                {{category}}
+                            <a href="#{{ tab | replace(' ', '_') | replace('+', 'a') }}"
+                               aria-controls="{{ tab | replace(' ', '_') | replace('+', 'a') }}"
+                               role="tab" data-toggle="tab" data-tabname="{{tab }}">
+                                {{tab}}
                             </a>
                         </li>
                     {% endfor %}
@@ -64,17 +66,17 @@
 
                 <div class="tab-content">
 
-                    {% for category in categories %}
+                    {% for tab in tabs %}
                         {# TODO: Hardcoded, for new db, must be replaced #}
                         <div class="tab-pane {{ loop.first ? 'active' : '' }}"
-                             id="{{ category | replace(' ', '_') | replace('+', 'a') }}">
+                             id="{{ tab  | replace(' ', '_') | replace('+', 'a') }}">
 
-                            <h4>{{ category }}</h4>
+                            <h4>{{ tab  }}</h4>
 
                             {# Statistics #}
                             {% for format in formats %}
 
-                                {% if format.category == category %}
+                                {% if format.tab_name == tab %}
 
                                     {% set value = government|format_field(format) %}
                                     {% if value is defined %}

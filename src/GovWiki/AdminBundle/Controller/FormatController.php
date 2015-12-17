@@ -138,15 +138,15 @@ class FormatController extends Controller
      */
     public function categoryAction(Request $request)
     {
-        $tab = $this->getManager()->createCategory();
+        $category = $this->getManager()->createCategory();
 
-        $form = $this->createForm(new AbstractGroupType(), $tab);
+        $form = $this->createForm(new AbstractGroupType(), $category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
-            $em->persist($tab);
+            $em->persist($category);
             $em->flush();
         }
 
