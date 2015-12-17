@@ -45,12 +45,14 @@ class Extension extends \Twig_Extension
 
     /**
      * @param array      $government A Government instance.
+     * @param string     $key        Extract from government by key
      * @param array      $format     Format.
      *
      * @return string
      */
-    public function formatGovernmentField(array $government, array $format)
+    public function formatGovernmentField(array $government, $key, array $format)
     {
-        return $government[$format];
+        dump($key);
+        return $government[$key];
     }
 }

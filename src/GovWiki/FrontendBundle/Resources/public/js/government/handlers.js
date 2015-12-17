@@ -45,7 +45,7 @@ $(function() {
                 return g[1].toUpperCase();
             });
             return $.ajax({
-                url: '/api/government' + window.location.pathname + '/get_ranks',
+                url: '/api/v1/government' + window.location.pathname + '/get_ranks',
                 dataType: 'json',
                 data: {
                     page: currentPage,
@@ -102,7 +102,7 @@ $(function() {
                 return g[1].toUpperCase();
             });
             $.ajax({
-                url: '/api/government' + window.location.pathname + '/get_ranks',
+                url: '/api/v1/government' + window.location.pathname + '/get_ranks',
                 dataType: 'json',
                 data: {
                     field_name: fieldNameInCamelCase
@@ -119,13 +119,12 @@ $(function() {
             var currentScrollTop;
             currentScrollTop = popoverContent.scrollTop();
             if (previousScrollTop < currentScrollTop && currentScrollTop > 0.5 * popoverContent[0].scrollHeight) {
-                console.log('asdasd');
                 previousScrollTop = currentScrollTop;
                 if (loading === false) {
                     loading = true;
                     preloader.show();
                     return $.ajax({
-                        url: '/api/government' + window.location.pathname + '/get_ranks',
+                        url: '/api/v1/government' + window.location.pathname + '/get_ranks',
                         dataType: 'json',
                         data: {
                             page: ++currentPage,

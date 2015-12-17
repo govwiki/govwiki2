@@ -68,42 +68,40 @@
                 {# Tab content #}
                 <div class="tab-content">
 
-                    {% for tab in tabs %}
+                    {% for tabName, fields in formats %}
                         {# TODO: Hardcoded, for new db, must be replaced #}
                         <div class="tab-pane {{ loop.first ? 'active' : '' }}"
-                             id="{{ tab | replace(' ', '_') | replace('+', 'a') }}">
+                             id="{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
 
-                            <h4>{{ tab }}</h4>
+                            <h4>{{ tabName }}</h4>
 
 
                             {# Statistics #}
                             <div class="statistics">
-
+{% dump formats %}
                                 <table>
-                                    <tbody>{% dump formats %}
+                                    <tbody>
 
-                                        {# Apply mask(filter) via format field #}
-                                        {% for key, format in formats %}
-                                            {% if key == tab %}
+                                        {% for fieldName, format in fields %}
 
-                                                {% set value = government | format_field(format) %}
-                                                {% if value is defined %}
-                                                    <tr>
-                                                        {# Field name #}
-                                                        <td>{{ format.description }}</td>
-                                                        {# Field value #}
-                                                        <td>
-                                                            {{ value }}
-                                                            <a class='rank'
-                                                               data-field='median_salary_per_full_time_emp_rank'
-                                                               title='Median Salary for Full Time Employees ranks'>
-                                                                (... of ...)
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                {% endif %}
-
+                                            {# Apply mask(filter) via format field #}
+                                            {% set value = government | format_field(fieldName, format) %}
+                                            {% if value is defined %}
+                                                <tr>
+                                                    {# Field name #}
+                                                    <td>{{ format.description }}</td>
+                                                    {# Field value #}
+                                                    <td>
+                                                        {{ value }}
+                                                        <a class='rank'
+                                                           data-field='median_salary_per_full_time_emp_rank'
+                                                           title='Median Salary for Full Time Employees ranks'>
+                                                            (... of ...)
+                                                        </a>
+                                                    </td>
+                                                </tr>
                                             {% endif %}
+
                                         {% endfor %}
 
                                     </tbody>

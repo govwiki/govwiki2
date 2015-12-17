@@ -1,5 +1,5 @@
 
-{% if tab == 'Overview + Elected Officials' %}
+{% if tabName == 'Overview + Elected Officials' %}
 
     {% for elected in government.electedOfficials %}
 
@@ -19,7 +19,7 @@
                     {{elected.telephoneNumber}}<br />
                 {% endif %}
 
-                {{elected.termexpires}}
+                {{elected.termExpires}}
 
             </span>
 
