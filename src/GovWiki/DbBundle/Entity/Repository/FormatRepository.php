@@ -45,7 +45,7 @@ class FormatRepository extends EntityRepository
     {
         $result = $this->getListQuery($environment)
             ->getArrayResult();
-        return $this->groupBy($result, [ 'tab_name', 'category_name' ]);
+        return $this->groupBy($result, [ 'tab_name' ]);
     }
 
     /**
