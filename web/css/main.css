@@ -18,7 +18,8 @@ body > header {
     margin-top: 10px;
     margin-bottom: 10px; }
   body > header .navigation {
-    list-style-type: none; }
+    list-style-type: none;
+    padding-right: 0; }
     body > header .navigation li {
       display: inline-block;
       background-color: #0b4d70;
@@ -162,7 +163,8 @@ body > header {
     margin-top: 10px;
     margin-bottom: 10px; }
   body > header .navigation {
-    list-style-type: none; }
+    list-style-type: none;
+    padding-right: 0; }
     body > header .navigation li {
       display: inline-block;
       background-color: #0b4d70;
@@ -326,7 +328,8 @@ body > header {
     margin-top: 10px;
     margin-bottom: 10px; }
   body > header .navigation {
-    list-style-type: none; }
+    list-style-type: none;
+    padding-right: 0; }
     body > header .navigation li {
       display: inline-block;
       background-color: #0b4d70;
@@ -470,7 +473,8 @@ body > header {
     margin-top: 10px;
     margin-bottom: 10px; }
   body > header .navigation {
-    list-style-type: none; }
+    list-style-type: none;
+    padding-right: 0; }
     body > header .navigation li {
       display: inline-block;
       background-color: #0b4d70;
@@ -597,6 +601,7 @@ div.cartodb-tooltip-content-wrapper p {
   z-index: 1000; }
 
 .mapController {
+  margin-bottom: 20px;
   /* ========================= */
   /* ======= TYPEAHEAD ======= */
   /* ========================= */

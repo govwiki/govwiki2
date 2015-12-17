@@ -2,7 +2,7 @@
 
 {% block main %}
 
-    {% dump government %}
+    {% dump tabs %}
 
     <section class="governmentController">
 
@@ -49,7 +49,7 @@
             <div class="col-md-12">
 
                 <ul class="nav nav-pills">
-
+{% dump tabs %}
                     {# Render TABS #}
                     {% for tab in tabs %}
                         <li class="{{ loop.first ? 'active' : '' }}">
