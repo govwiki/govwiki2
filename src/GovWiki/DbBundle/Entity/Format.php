@@ -30,14 +30,6 @@ class Format
      * @ORM\Column()
      * @Groups({"government"})
      */
-    private $category;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column()
-     * @Groups({"government"})
-     */
     private $field;
 
     /**
@@ -99,31 +91,27 @@ class Format
     private $environment;
 
     /**
+     * @var Tab
+     *
+     * @ORM\ManyToOne(targetEntity="Tab")
+     * @ORM\JoinColumn(name="tab_id")
+     */
+    private $tab;
+
+    /**
+     * @var Category
+     *
+     * @ORM\ManyToOne(targetEntity="Category")
+     * @ORM\JoinColumn(name="category_id")
+     */
+    private $category;
+
+    /**
      * @return integer
      */
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCategory()
-    {
-        return $this->category;
-    }
-
-    /**
-     * @param string $category Category name.
-     *
-     * @return Format
-     */
-    public function setCategory($category)
-    {
-        $this->category = $category;
-
-        return $this;
     }
 
     /**
@@ -283,6 +271,46 @@ class Format
     public function setEnvironment(Environment $environment)
     {
         $this->environment = $environment;
+
+        return $this;
+    }
+
+    /**
+     * @return Tab
+     */
+    public function getTab()
+    {
+        return $this->tab;
+    }
+
+    /**
+     * @param Tab $tab A Tab instance.
+     *
+     * @return Format
+     */
+    public function setTab(Tab $tab)
+    {
+        $this->tab = $tab;
+
+        return $this;
+    }
+
+    /**
+     * @return Category
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param Category $category A Category instance.
+     *
+     * @return Format
+     */
+    public function setCategory(Category $category = null)
+    {
+        $this->category = $category;
 
         return $this;
     }

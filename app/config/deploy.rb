@@ -111,7 +111,8 @@ end
 # Dependencies
 after  "deploy:setup",       "govwiki:setup:upload_parameters"
 before "deploy:update_code", "govwiki:backup:remote"
-after  "deploy:update_code", "govwiki:update_code:rewrite_params"
+before "symfony:composer:install", "govwiki:update_code:rewrite_params"
+#after  "deploy:update_code", "govwiki:update_code:rewrite_params"
 after  "deploy",             "deploy:cleanup"
 
 # Logging
