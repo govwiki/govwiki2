@@ -11,18 +11,27 @@ use GovWiki\DbBundle\Entity\Format;
 class FormatRepository extends EntityRepository
 {
     /**
-     * @param string $environment Environment name.
+     * @param string  $environment Environment name.
+     * @param boolean $full        Flag.
      *
      * @return \Doctrine\ORM\Query
      */
-    public function getListQuery($environment)
+    public function getListQuery($environment, $full = false)
     {
         $qb = $this->createQueryBuilder('Format');
         $expr = $qb->expr();
 
+        if ($full) {
+            $qb->select(
+                'Format.helpText, Format.dataOrFormula, Format.description',
+                'Format.mask, Format.field, Format.ranked'
+            );
+        } else {
+            $qb->select('Format.id, Format.field, Format.description');
+        }
+
         return $qb
-            ->select(
-                'Format.id, Format.field, Format.description',
+            ->addSelect(
                 'Tab.name AS tab_name, Category.name AS category_name'
             )
             ->leftJoin('Format.environment', 'Environment')
@@ -43,9 +52,10 @@ class FormatRepository extends EntityRepository
      */
     public function get($environment)
     {
-        $result = $this->getListQuery($environment)
+        $result = $this->getListQuery($environment, true)
             ->getArrayResult();
-        return $this->groupBy($result, [ 'tab_name' ]);
+
+        return $this->groupBy($result, [ 'tab_name', 'field' ]);
     }
 
     /**
@@ -87,6 +97,9 @@ class FormatRepository extends EntityRepository
             $array = $tmp;
         }
 
+        if (count($array) === 1) {
+            return $array[0];
+        }
         return $array;
     }
 
