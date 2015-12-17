@@ -1,0 +1,42 @@
+
+<div class="tabpanel" data-id="{{ category }}">
+
+    {% if category == 'Overview + Elected Officials' %}
+
+        {% for elected in government.electedOfficials %}
+
+            <div class="f-names">
+
+                <span class="f-nam f-nam-margin">
+
+                    {{elected.title}}
+                    <br>
+                    <a href="/{{government.altTypeSlug}}/{{government.slug}}/{{elected.slug}}" class="elected_link">{{elected.fullName}}</a><br>
+
+                    {% if elected.emailAddress %}
+                        <a href="mailto:{{elected.emailAddress}}">{{elected.emailAddress}}</a><br />
+                    {% endif %}
+
+                    {% if elected.telephoneNumber %}
+                        {{elected.telephoneNumber}}<br />
+                    {% endif %}
+
+                    {{elected.termexpires}}
+
+                </span>
+
+                {% if elected.photoUrl %}
+                    <a href="/{{government.altTypeSlug}}/{{government.slug}}/{{elected.slug}}" class="elected_link">
+                        <span class="f-val">
+                            <img src="{{elected.photoUrl}}" class="portrait"/>
+                        </span>
+                    </a>
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+</div>
