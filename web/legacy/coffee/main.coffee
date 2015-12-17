@@ -905,12 +905,11 @@ showCreateRequests = (person, createRequests) ->
         $("\##{name} tr:last-child").before(template(data))
 
 
-$('#dataContainer').popover({
-    placement: 'bottom'
-    selector: '.rank'
-    animation: true
-    template: '<div class="popover" role="tooltip">
-                    <div class="arrow"></div>
+$('.statistics').popover({
+    placement: 'bottom',
+    selector: '.rank',
+    animation: true,
+    template: '<div class="popover" role="tooltip"><div class="arrow"></div>
                     <div class="popover-title-custom">
                         <h3 class="popover-title"></h3>
                     </div>

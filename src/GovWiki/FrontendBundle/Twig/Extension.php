@@ -44,18 +44,13 @@ class Extension extends \Twig_Extension
     }
 
     /**
-     * @param Government $government A Government instance.
+     * @param array      $government A Government instance.
      * @param array      $format     Format.
      *
      * @return string
      */
-    public function formatGovernmentField(Government $government, array $format)
+    public function formatGovernmentField(array $government, array $format)
     {
-        return call_user_func(
-            [
-                $government,
-                'get'. ucfirst($format['field']),
-            ]
-        );
+        return $government[$format];
     }
 }

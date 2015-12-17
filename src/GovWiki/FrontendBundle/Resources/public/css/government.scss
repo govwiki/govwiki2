@@ -5,6 +5,30 @@
 
 @import "main";
 
+// Temp section (start)
+
+
+.f-nam {
+   min-width: 540px;
+   display: inline-block;
+   color: #666;
+   text-align: left;
+   margin-right: 5px;
+   border-bottom: 1px dotted #ddd;
+   vertical-align: top;
+   font-size: 1.3em;
+}
+.f-val {
+   font-size: 1.3em;
+   min-width: 160px;
+   display: inline-block;
+   color: #000;
+   text-align: right;
+   margin-left: 5px;
+}
+
+// Temp section (end)
+
 .governmentController {
 
    nav a {
@@ -20,27 +44,43 @@
 
    }
 
-   .f-nam {
-      min-width: 540px;
-      display: inline-block;
-      color: #666;
-      text-align: left;
-      margin-right: 5px;
-      border-bottom: 1px dotted #ddd;
-      vertical-align: top;
+   section {
+
+      @import "partials/rank-popover/rank-popover";
+
+      nav {
+         margin-bottom: 30px;
+      }
+
+      .statistics {
+
+         tr {
+
+            td {
+               border-bottom: 1px dotted #ddd;
+               font-size: 1.3em;
+
+               &:nth-child(1) {
+                  padding-right: 30px;
+                  color: #666;
+               }
+
+               &:nth-child(2) {
+                  padding-left: 30px;
+                  color: #000;
+               }
+            }
+
+         }
+
+      }
+
+      .portrait {
+         width: 121px;
+         float: right;
+      }
+
    }
 
-   .f-val {
-      min-width: 160px;
-      display: inline-block;
-      color: #000;
-      text-align: right;
-      margin-left: 5px;
-   }
-
-   .portrait {
-      width: 121px;
-      float: right;
-   }
 
 }

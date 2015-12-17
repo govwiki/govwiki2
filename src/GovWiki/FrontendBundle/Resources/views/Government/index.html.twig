@@ -44,55 +44,72 @@
             </div>
         </header>
 
-        {# Tabs #}
         <section class="row">
             <div class="col-md-12">
+{% dump government %}
+                {# Tabs conrol #}
+                <nav>
+                    <ul class="nav nav-pills">
 
-                <ul class="nav nav-pills">
-{% dump tabs %}
-                    {# Render TABS #}
-                    {% for tab in tabs %}
-                        <li class="{{ loop.first ? 'active' : '' }}">
-                            {# TODO: Hardcoded, for new db, must be replaced #}
-                            <a href="#{{ tab | replace(' ', '_') | replace('+', 'a') }}"
-                               aria-controls="{{ tab | replace(' ', '_') | replace('+', 'a') }}"
-                               role="tab" data-toggle="tab" data-tabname="{{tab }}">
-                                {{tab}}
-                            </a>
-                        </li>
-                    {% endfor %}
+                        {% for tab in tabs %}
+                            <li class="{{ loop.first ? 'active' : '' }}">
+                                {# TODO: Hardcoded, for new db, must be replaced #}
+                                <a href="#{{ tab | replace(' ', '_') | replace('+', 'a') }}"
+                                   aria-controls="{{ tab | replace(' ', '_') | replace('+', 'a') }}"
+                                   role="tab" data-toggle="tab" data-tabname="{{ tab }}">
+                                    {{ tab }}
+                                </a>
+                            </li>
+                        {% endfor %}
 
-                </ul>
+                    </ul>
+                </nav>
 
+                {# Tab content #}
                 <div class="tab-content">
 
                     {% for tab in tabs %}
                         {# TODO: Hardcoded, for new db, must be replaced #}
                         <div class="tab-pane {{ loop.first ? 'active' : '' }}"
-                             id="{{ tab  | replace(' ', '_') | replace('+', 'a') }}">
+                             id="{{ tab | replace(' ', '_') | replace('+', 'a') }}">
 
-                            <h4>{{ tab  }}</h4>
+                            <h4>{{ tab }}</h4>
+
 
                             {# Statistics #}
-                            {% for format in formats %}
+                            <div class="statistics">
 
-                                {% if format.tab_name == tab %}
+                                <table>
+                                    <tbody>{% dump formats %}
 
-                                    {% set value = government|format_field(format) %}
-                                    {% if value is defined %}
-                                        <div>
-                                            <span class="f-nam">{{ format.description }}</span>
-                                            <span class="f-val">
-                                                <a target="_blank" href="#">
-                                                    {{ value }}
-                                                </a>
-                                            </span>
-                                        </div>
-                                    {% endif %}
+                                        {# Apply mask(filter) via format field #}
+                                        {% for key, format in formats %}
+                                            {% if key == tab %}
 
-                                {% endif %}
+                                                {% set value = government | format_field(format) %}
+                                                {% if value is defined %}
+                                                    <tr>
+                                                        {# Field name #}
+                                                        <td>{{ format.description }}</td>
+                                                        {# Field value #}
+                                                        <td>
+                                                            {{ value }}
+                                                            <a class='rank'
+                                                               data-field='median_salary_per_full_time_emp_rank'
+                                                               title='Median Salary for Full Time Employees ranks'>
+                                                                (... of ...)
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
 
-                            {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+
+                            </div>
 
                             {# Overview + Elected Officials #}
                             {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
@@ -148,5 +165,12 @@
 {% block javascripts %}
 
     {{parent()}}
+
+
+    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/script.js'
+                    '@GovWikiFrontendBundle/Resources/public/js/government/handlers.js'
+                    output='js/main.js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 
 {% endblock %}

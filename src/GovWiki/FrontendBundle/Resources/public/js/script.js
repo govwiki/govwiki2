@@ -9,6 +9,6 @@ $('body').on('submit', '#ajax-login-form', function(event) {
             $form.parent().prepend('<div class="alert alert-warning">' + data.error + '</div>');
         } else {
             location.reload();
-        };
+        }
     });
 });

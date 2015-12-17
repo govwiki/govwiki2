@@ -83,6 +83,7 @@
         {% block javascripts %}
             {# Govwiki namespace #}
             <script> window.gw = {}; </script>
+            <script> window.gw.authorized = "{{ app.user }}"; </script>
         {% endblock %}
 
     </body>

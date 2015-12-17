@@ -1,70 +1,75 @@
-{#<div role="tabpanel" class="tab-pane active" id="Votes">#}
+<div role="tabpanel" class="tab-pane active" id="Votes">
 
-    {#<table class="table table-hover" data-entity-type="Legislation">#}
-        {#<tr>#}
-            {#<th class="legislation-column-date">Date</th>#}
-            {#<th>Title of Measure</th>#}
-            {#<th>Summary of Measure</th>#}
-            {#<th class="legislation-column-vote">How official Voted</th>#}
-            {#<th>Sponsored by this official?</th>#}
-            {#<th>Category</th>#}
-            {#<th></th>#}
-        {#</tr>#}
-        {#{&#123;&#35;if votes}}#}
-        {#{&#123;&#35;votes}}#}
-        {#<tr data-id="{{legislation.id}}">#}
-            {#{&#123;&#35;this}}#}
-            {#<td data-date-considered="{{legislation.date-considered}}">#}
-                {#<a href="javascript:void(0);" data-type="date" data-pk="1"  data-format="mm/dd/yyyy"#}
-                   {#data-placeholder="Please edit" data-title="Please edit"#}
-                   {#class="editable editable-pre-wrapped editable-click" data-original-title=""#}
-                   {#title="">{{legislation.date_considered}}</a>#}
-                {#<span class="glyphicon glyphicon-pencil edit"></span>#}
-            {#</td>#}
-            {#<td data-name="{{legislation.name}}">#}
-                {#<a href="javascript:void(0);" data-type="textarea" data-pk="1"#}
-                   {#data-placeholder="Please edit" data-title="Please edit"#}
-                   {#class="editable editable-pre-wrapped editable-click" data-original-title=""#}
-                   {#title="">{{legislation.name}}</a>#}
-                {#<span class="glyphicon glyphicon-pencil edit"></span>#}
-            {#</td>#}
-            {#<td data-summary="{{legislation.summary}}">#}
-                {#<a href="javascript:void(0);" data-type="textarea" data-pk="1"#}
-                   {#data-placeholder="Please edit" data-title="Please edit"#}
-                   {#class="editable editable-pre-wrapped editable-click" data-original-title=""#}
-                   {#title="">{{legislation.summary}}</a>#}
-                {#<span class="glyphicon glyphicon-pencil edit"></span>#}
-            {#</td>#}
-            {#<td data-vote="{{vote}}">#}
-                {#<a href="javascript:void(0);" data-type="select" data-source="{'Yes': 'Yes', 'No': 'No', 'Abstain': 'Abstain', 'Absence': 'Absence', 'Not in Office': 'Not in Office'}" data-pk="1"#}
-                   {#data-placeholder="Please edit" data-title="Please edit"#}
-                   {#class="editable editable-pre-wrapped editable-click" data-original-title=""#}
-                   {#title="">{{vote}}</a>#}
-                {#<span data-id="{{id}}" class="glyphicon glyphicon-pencil edit"></span>#}
-            {#</td>#}
-            {#<td data-did-elected-official-propose-this="{&#123;&#35;if did_elected_official_propose_this}}Yes{{else}}No{{/if}}" align="center" >#}
-                {#<a href="javascript:void(0);" data-type="select" data-source="{'0': 'No', '1': 'Yes'}" data-pk="1" data-placeholder="Please edit" data-title="Please edit" class="editable editable-pre-wrapped editable-click" data-original-title="" title="">{&#123;&#35;if did_elected_official_propose_this}}Yes{{else}}No{{/if}}</a>#}
-                {#<span data-id="{{id}}" class="glyphicon glyphicon-pencil edit"></span>#}
-            {#</td>#}
-            {#<td data-issue-category="{{legislation.issue_category.name}}" data-no-editable>{{legislation.issue_category.name}}</td>#}
-            {#<td data-no-editable><span class="disqus-comment-count vote" id="{{../../id}}_v{{id}}" data-legislation-name="{{legislation.name}}" data-disqus-identifier="{{../../id}}_v{{id}}">0</span></td>#}
-            {#{{/this}}#}
-        {#</tr>#}
-        {#{{/votes}}#}
+    <table class="table table-hover" data-entity-type="vote.legislation">
+        <tr>
+            <th class="vote.legislation-column-date">Date</th>
+            <th>Title of Measure</th>
+            <th>Summary of Measure</th>
+            <th class="vote.legislation-column-vote">How official Voted</th>
+            <th>Sponsored by this official?</th>
+            <th>Category</th>
+            <th></th>
+        </tr>
 
-        {#{{else}}#}
-        {#<!--<tr>#}
-            {#<td colspan="7" align="center">#}
-                {#<p style="font-size:18px;">No information at this time. Please check back later.</p>#}
-            {#</td>#}
-        {#</tr>-->#}
-        {#{{/if}}#}
-        {#<tr>#}
-            {#<td colspan="7" class="add">#}
-                {#Add new Vote#}
-                {#<span class="glyphicon glyphicon-plus"></span>#}
-            {#</td>#}
-        {#</tr>#}
-    {#</table>#}
+        {% if (elected.votes is defined) and (elected.votes is not empty) %}
 
-{#</div>#}
+            {% for vote in elected.votes %}
+
+                <tr data-id="{{vote.legislation.id}}">
+                    <td data-date-considered="{{vote.legislation.dateConsidered | date("m/d/Y") }}">
+                        <a href="javascript:void(0);" data-type="date" data-pk="1"  data-format="mm/dd/yyyy"
+                           data-placeholder="Please edit" data-title="Please edit"
+                           class="editable editable-pre-wrapped editable-click" data-original-title=""
+                           title="">{{vote.legislation.dateConsidered | date("m/d/Y") }}</a>
+                        <span class="glyphicon glyphicon-pencil edit"></span>
+                    </td>
+                    <td data-name="{{vote.legislation.name}}">
+                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                           data-placeholder="Please edit" data-title="Please edit"
+                           class="editable editable-pre-wrapped editable-click" data-original-title=""
+                           title="">{{vote.legislation.name}}</a>
+                        <span class="glyphicon glyphicon-pencil edit"></span>
+                    </td>
+                    <td data-summary="{{vote.legislation.summary}}">
+                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                           data-placeholder="Please edit" data-title="Please edit"
+                           class="editable editable-pre-wrapped editable-click" data-original-title=""
+                           title="">{{vote.legislation.summary}}</a>
+                        <span class="glyphicon glyphicon-pencil edit"></span>
+                    </td>
+                    <td data-vote="{{vote.vote}}">
+                        <a href="javascript:void(0);" data-type="select" data-source="{'Yes': 'Yes', 'No': 'No', 'Abstain': 'Abstain', 'Absence': 'Absence', 'Not in Office': 'Not in Office'}" data-pk="1"
+                           data-placeholder="Please edit" data-title="Please edit"
+                           class="editable editable-pre-wrapped editable-click" data-original-title=""
+                           title="">{{vote.vote}}</a>
+                        <span data-id="{{vote.id}}" class="glyphicon glyphicon-pencil edit"></span>
+                    </td>
+                    <td data-did-elected-official-propose-this="{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}" align="center" >
+                        <a href="javascript:void(0);" data-type="select" data-source="{'0': 'No', '1': 'Yes'}" data-pk="1" data-placeholder="Please edit" data-title="Please edit" class="editable editable-pre-wrapped editable-click" data-original-title="" title="">{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}</a>
+                        <span data-id="{{vote.id}}" class="glyphicon glyphicon-pencil edit"></span>
+                    </td>
+                    <td data-issue-category="{{vote.legislation.issueCategory.name}}" data-no-editable>{{vote.legislation.issueCategory.name}}</td>
+                    <td data-no-editable><span class="disqus-comment-count vote" id="{{elected.id}}_v{{vote.id}}" data-vote.legislation-name="{{vote.legislation.name}}" data-disqus-identifier="{{elected.id}}_v{{vote.id}}">0</span></td>
+                </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <tr>
+                <td colspan="7" align="center">
+                    <p style="font-size:18px;">No information at this time. Please check back later.</p>
+                </td>
+            </tr>
+        {% endif %}
+
+        <tr>
+            <td colspan="7" class="add">
+                Add new Vote
+                <span class="glyphicon glyphicon-plus"></span>
+            </td>
+        </tr>
+
+    </table>
+
+</div>

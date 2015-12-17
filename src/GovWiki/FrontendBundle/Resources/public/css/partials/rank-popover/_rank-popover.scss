@@ -1,0 +1,56 @@
+
+/* ==================================== */
+/* ======= Rank Popover Window ======== */
+/* ==================================== */
+
+
+.popover-title {
+   padding: 0;
+   border-bottom: none;
+   border-radius: 0;
+}
+.popover-btn {
+   width: 48%;
+   display: inline-block;
+   text-align: right;
+}
+.popover-btn a {
+   background-color: #fff;
+   border: 1px solid #074d71;
+   color: #074d71;
+   border-radius: 3px;
+   padding: 5px 10px;
+}
+.popover-btn a:hover {
+   background-color: #074d71;
+   color: #fff;
+   text-decoration: none;
+}
+.popover {
+   width: 280px;
+}
+.popover-title-custom {
+   margin: 0;
+   padding: 8px 14px;
+   font-size: 13px;
+   background-color: #f7f7f7;
+   border-bottom: 1px solid #ebebeb;
+   border-radius: 2px 2px 0 0;
+}
+.popover-content {
+   overflow-y: scroll;
+   height: 300px;
+}
+.popover-content table th {
+   cursor: pointer;
+}
+.popover-content table th:first-child {
+   width: 80%;
+}
+.popover-content table th:last-child {
+   width: 19%;
+}
+.popover-content table th,
+.popover-content table td {
+   font-size: 80%;
+}
