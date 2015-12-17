@@ -99,7 +99,7 @@ abstract class AbstractAdminEntityManager implements
      */
     protected function beforeUpdate($entity)
     {
-        // Override in childes.
+        return $entity;
     }
 
     /**

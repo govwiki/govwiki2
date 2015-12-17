@@ -17,4 +17,5 @@ abstract class GovWikiAdminServices
     const LEGISLATION_MANAGER = 'govwiki_admin.entity_manager.legislation';
     const CREATE_REQUEST_MANAGER = 'govwiki_admin.entity_manager.create_request';
     const EDIT_REQUEST_MANAGER = 'govwiki_admin.entity_manager.edit_request';
+    const FORMAT_MANAGER = 'govwiki_admin.entity_manager.format';
 }

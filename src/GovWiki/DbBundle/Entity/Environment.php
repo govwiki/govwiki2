@@ -112,6 +112,16 @@ class Environment
     private $users;
 
     /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(
+     *  targetEntity="AbstractGroup",
+     *  mappedBy="environment"
+     * )
+     */
+    private $groups;
+
+    /**
      *
      */
     public function __construct()
@@ -325,7 +335,7 @@ class Environment
      *
      * @param Government $government A Government instance.
      *
-     * @return Government
+     * @return Environment
      */
     public function addGovernment(Government $government)
     {
@@ -339,7 +349,7 @@ class Environment
      *
      * @param Government $government A Government instance.
      *
-     * @return Government
+     * @return Environment
      */
     public function removeGovernment(Government $government)
     {
@@ -359,11 +369,11 @@ class Environment
     }
 
     /**
-     * Add users
+     * Add user
      *
      * @param User $user A User instance.
      *
-     * @return User
+     * @return Environment
      */
     public function addUser(User $user)
     {
@@ -373,11 +383,11 @@ class Environment
     }
 
     /**
-     * Remove users
+     * Remove user
      *
      * @param User $user A User instance.
      *
-     * @return User
+     * @return Environment
      */
     public function removeUser(User $user)
     {
@@ -387,12 +397,50 @@ class Environment
     }
 
     /**
-     * Get users
+     * Get user
      *
      * @return Collection
      */
     public function getUsers()
     {
         return $this->users;
+    }
+
+    /**
+     * Add group
+     *
+     * @param AbstractGroup $group A AbstractGroup instance.
+     *
+     * @return Environment
+     */
+    public function addGroup(AbstractGroup $group)
+    {
+        $this->groups[] = $group;
+
+        return $this;
+    }
+
+    /**
+     * Remove group
+     *
+     * @param AbstractGroup $group A AbstractGroup instance.
+     *
+     * @return Environment
+     */
+    public function removeGroup(AbstractGroup $group)
+    {
+        $this->groups->removeElement($group);
+
+        return $this;
+    }
+
+    /**
+     * Get groups
+     *
+     * @return Collection
+     */
+    public function getGroups()
+    {
+        return $this->groups;
     }
 }

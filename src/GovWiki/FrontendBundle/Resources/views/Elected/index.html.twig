@@ -1,9 +1,87 @@
 {% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
 
+{% set elected = electedOfficial %}
+
+{# Main #}
 {% block main %}
-    <div class="row">
-        <div class="col-md-12">
-            <h4>Text</h4>
+
+    {# Must be unique #}
+    <section class="electedController">
+
+        <div class="row person-info-header">
+            <div class="col-md-10 col-md-push-1">
+                <h5>ELECTED OFFICIALS - PROFILE</h5>
+            </div>
         </div>
-    </div>
+
+        <div class="row person-info-content">
+            <div class="col-xs-7 col-sm-7 col-md-7 col-md-push-1 col-lg-7 col-lg-push-1" style="font-size:16px;">
+                <p>Title: {{elected.title}}</p>
+                <p>Name: {{elected.fullName}} &nbsp;&nbsp;
+                    <span class="disqus-comment-count vote" id="{{elected.id}}" data-disqus-identifier="{{elected.id}}">0</span>
+                <p>Term expiries: {{elected.termExpires}}</p>
+                {% if elected.bioUrl %}
+                    <p><a target="_blank" href="{{elected.bioUrl}}">Biographical Highlights</a></p>
+                {% endif %}
+                <p>Email: <a href="mailto:{{elected.emailAddress}}">{{elected.emailAddress}}</a></p>
+            </div>
+
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <img src="{{elected.photoUrl}}" class="person-photo"/>
+            </div>
+        </div>
+
+        <div class="row person-info-tabs">
+            <div class="col-md-10 col-md-push-1">
+
+                <!-- Nav tabs -->
+                <ul class="nav nav-pills" role="tablist">
+                    <li role="presentation" class="active"><a href="#Votes" aria-controls="Votes" role="tab" data-toggle="tab">Votes</a></li>
+                    <li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>
+                    <li role="presentation"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
+                    <li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
+
+                    {# Votes #}
+                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:votes.html.twig') }}
+
+                    {# Contributions #}
+                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:contributions.html.twig') }}
+
+                    {# Endorsements #}
+                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:endorsements.html.twig') }}
+
+                    {# Public Statements #}
+                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}
+
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+{% endblock %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{parent()}}
+
+    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/elected.scss' filter='scss' %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}
+
+
+{# Javascripts #}
+{% block javascripts %}
+
+    {{parent()}}
+
 {% endblock %}

@@ -14,7 +14,7 @@ class MainController extends Controller
 {
     /**
      * @Route("/", name="map")
-     * @Template("GovWikiFrontendBundle:Home:home.html.twig")
+     * @Template("GovWikiFrontendBundle:Main:map.html.twig")
      *
      * @return array
      */

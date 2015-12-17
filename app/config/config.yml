@@ -116,5 +116,5 @@ ivory_ck_editor: ~
 
 # CartoDbBundle Configuration
 carto_db:
-    api_key: 'af368fb412a624bc8c2e3dfa847544fd4c2d6849'
-    account_name: 'dam-robert'
+    api_key: %carto_db.api_key%
+    account_name: %carto_db.account%

@@ -1,9 +1,24 @@
 
-/* ========================= */
-/* ========== MAP ========== */
-/* ========================= */
+/* ==================================== */
+/* ====== Government Controller ======= */
+/* ==================================== */
 
-.government {
+@import "main";
+
+.governmentController {
+
+   nav a {
+      display: inline-block;
+      margin-top: 10px;
+   }
+
+   header {
+
+      h3 {
+         color: $main-text;
+      }
+
+   }
 
    .f-nam {
       min-width: 540px;

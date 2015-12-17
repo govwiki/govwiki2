@@ -34,7 +34,7 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
     }
 
     /**
-     * @return \GovWiki\DbBundle\Entity\Environment
+     * @return \GovWiki\DbBundle\Entity\Government
      */
     public function create()
     {

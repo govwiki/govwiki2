@@ -2,7 +2,9 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Format;
+use GovWiki\DbBundle\Form\AbstractGroupType;
 use GovWiki\DbBundle\Form\FormatType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class FormatController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/{environment}/format")
+ * @Configuration\Route("/format")
  */
 class FormatController extends Controller
 {
@@ -22,23 +24,23 @@ class FormatController extends Controller
      * @Configuration\Route("/")
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment environment.
+     * @param Request $request A Request instance.
      *
      * @return array
      */
-    public function listAction(Request $request, $environment)
+    public function listAction(Request $request)
     {
         $fields = $this->get('knp_paginator')->paginate(
-            $this->getDoctrine()->getRepository('GovWikiDbBundle:Format')
-                ->getListQuery($environment),
+            $this->getManager()->getListQuery(),
             $request->query->getInt('page', 1),
             25
         );
 
+        $form = $this->createForm(new AbstractGroupType());
+
         return [
-            'environment' => $environment,
             'fields' => $fields,
+            'form' => $form->createView(),
         ];
     }
 
@@ -46,62 +48,47 @@ class FormatController extends Controller
      * @Configuration\Route("/{id}/edit")
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
-     * @param Format  $format      A Format instance.
+     * @param Request $request A Request instance.
+     * @param Format  $format  A Format instance.
      *
      * @return array
      */
-    public function editAction(Request $request, $environment, Format $format)
+    public function editAction(Request $request, Format $format)
     {
         $form = $this->createForm(new FormatType(), $format);
         $form->handleRequest($request);
         $this->processForm($form);
 
-        return [
-            'form' => $form->createView(),
-            'environment' => $environment,
-        ];
+        return [ 'form' => $form->createView() ];
     }
 
     /**
      * @Configuration\Route("/new")
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
      *
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function newAction(Request $request, $environment)
+    public function newAction(Request $request)
     {
-        $format = new Format();
-        $format->setEnvironment(
-            $this->getDoctrine()->getRepository('GovWikiDbBundle:Environment')
-                ->getReferenceByName($environment)
-        );
+        $format = $this->getManager()->create();
 
         $form = $this->createForm(new FormatType(), $format);
         $form->handleRequest($request);
         $this->processForm($form);
 
-        return [
-            'form' => $form->createView(),
-            'environment' => $environment,
-        ];
-        //return $this->redirectToRoute('');
+        return [ 'form' => $form->createView() ];
     }
 
     /**
      * @Configuration\Route("/{id}/delete")
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
-     * @param Format  $format      A Format instance.
+     * @param Format $format A Format instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function removeAction($environment, Format $format)
+    public function removeAction(Format $format)
     {
         $em = $this->getDoctrine()->getManager();
         $em->remove($format);
@@ -109,10 +96,65 @@ class FormatController extends Controller
 
         return new JsonResponse([
             'redirect' => $this->generateUrl(
-                'govwiki_admin_editrequest_index',
-                [ 'environment' => $environment ]
-            )
+                'govwiki_admin_editrequest_index'
+            ),
         ]);
+    }
+
+    /**
+     * @Configuration\Route("/tab", methods={"POST"})
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function tabAction(Request $request)
+    {
+        $tab = $this->getManager()->createTab();
+
+        $form = $this->createForm(new AbstractGroupType(), $tab);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            $em->persist($tab);
+            $em->flush();
+        }
+
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse();
+        }
+
+        return $this->redirectToRoute('govwiki_admin_format_list');
+    }
+
+    /**
+     * @Configuration\Route("/category", methods={"POST"})
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function categoryAction(Request $request)
+    {
+        $category = $this->getManager()->createCategory();
+
+        $form = $this->createForm(new AbstractGroupType(), $category);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            $em->persist($category);
+            $em->flush();
+        }
+
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse();
+        }
+
+        return $this->redirectToRoute('govwiki_admin_format_list');
     }
 
     /**
@@ -123,12 +165,21 @@ class FormatController extends Controller
     private function processForm(FormInterface $form)
     {
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($form->getData());
-            $em->flush();
+            $this->getManager()->update($form->getData());
         }
     }
 
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminFormatManager
+     */
+    private function getManager()
+    {
+        return $this->get(GovWikiAdminServices::FORMAT_MANAGER);
+    }
+
+    /**
+     * Delete after migration.
+     */
     private function updateFieldsInFormats() {
 
         $em = $this->getDoctrine()->getManager();

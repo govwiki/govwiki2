@@ -1,510 +1,87 @@
 
 
-.f-nam {
-  min-width: 540px;
-  display: inline-block;
-  color: #666;
-  text-align: left;
-  margin-right: 5px;
-  border-bottom: 1px dotted #ddd;
-  vertical-align: top; }
-
-.f-val {
-  min-width: 160px;
-  display: inline-block;
-  color: #000;
-  text-align: right;
-  margin-left: 5px; }
-
-.portrait {
-  width: 121px;
-  float: right; }
-
+/* =================================== */
+/* ======== Elected Controller ======= */
+/* =================================== */
+/* ============================= */
+/* ======== Main layout ======== */
+/* ============================= */
 /* ========================= */
 /* ========= HEADER ======== */
 /* ========================= */
-header {
+body > header {
   background-color: #0b4d70;
   -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
   -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
   box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49); }
-
-header .logo {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 15px; }
-
-header .navigation {
-  list-style-type: none; }
-
-header .navigation li {
-  display: inline-block;
-  background-color: #0b4d70;
-  margin-right: 10px;
-  margin-top: 10px; }
-
-header .navigation li a {
-  display: inline-block;
-  line-height: 5em;
-  text-decoration: none;
-  color: #b2dbfb;
-  padding: 0 10px;
-  outline: none; }
-
-header .navigation li a:hover {
-  text-decoration: none;
-  color: #b2dbfb;
-  background-color: #3b708c; }
-
-@media (max-width: 991px) {
-  header .navigation {
-    text-align: left;
-    list-style-type: none;
-    padding: 0;
-    margin: 0; }
-
-  header .navigation li {
-    margin: 0;
-    display: block;
-    border-top: 1px solid #3E5E77; }
-
-  header .navigation li a {
-    width: 100%; } }
-header .hamburger {
-  margin-top: 22px; }
-
-@media (max-width: 991px) {
-  header .hamburger.navbar-toggle {
-    display: block !important; } }
-header .hamburger .icon-bar {
-  background-color: white; }
-
-@media (max-width: 991px) {
-  header {
-    /* since 3.1.0 */ }
-
-  header .navbar-header {
-    float: none; }
-
-  header .navbar-toggle {
-    display: block; }
-
-  header .navbar-collapse {
-    border-top: 1px solid transparent;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1); }
-
-  header .navbar-collapse.collapse {
-    display: none !important; }
-
-  header .navbar-nav {
-    float: none !important;
-    margin: 7.5px -15px; }
-
-  header .navbar-nav > li {
-    float: none; }
-
-  header .navbar-nav > li > a {
-    padding-top: 10px;
-    padding-bottom: 10px; }
-
-  header .navbar-text {
-    float: none;
-    margin: 15px 0; }
-
-  header .navbar-collapse.collapse.in {
-    display: block !important; }
-
-  header .collapsing {
-    overflow: hidden !important; } }
-/* ========================= */
-/* ======= TYPEAHEAD ======= */
-/* ========================= */
-.typeahead_wrap {
-  margin-top: 40px;
-  margin-bottom: 10px; }
-
-.typeahead_wrap .twitter-typeahead {
-  display: block !important; }
-
-.typeahead_wrap .typeahead {
-  display: block;
-  background-color: #fff;
-  padding-left: 10px !important; }
-
-.tt-menu {
-  width: 100%;
-  background-color: #fff;
-  border-top: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  cursor: default;
-  z-index: 200 !important; }
-
-.tt-suggestion {
-  padding: 8px 12px;
-  font-size: 24px;
-  line-height: 30px;
-  text-align: left; }
-
-.tt-suggestion:hover, .tt-cursor {
-  color: #fff;
-  background-color: #0097cf;
-  cursor: pointer; }
-
-.tt-suggestion p {
-  margin: 0; }
-
-.sugg-box {
-  position: relative;
-  border-bottom: 0 solid #eee;
-  overflow: hidden; }
-
-.sugg-state {
-  top: 0;
-  left: 0;
-  margin-right: 20px;
-  float: left;
-  z-index: 0;
-  font-size: 18px;
-  color: #337ab7;
-  font-weight: bold; }
-
-.sugg-name {
-  font-size: 20px;
-  display: inline;
-  text-transform: uppercase; }
-
-.sugg-type {
-  font-size: 70%;
-  color: #337ab7;
-  float: right;
-  top: 36px;
-  right: 0;
-  line-height: 100%; }
-
-footer {
-  min-height: 80px;
-  position: relative;
-  padding-top: 10px;
-  background-color: #0b4d70;
-  -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
-  -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
-  box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
-  font-size: 11px;
-  color: #eee;
-  padding: 15px; }
-
-footer .copyright p {
-  margin-bottom: 0; }
-
-footer a {
-  color: #eee; }
-
-footer a:hover {
-  color: #eee; }
-
-footer .site-links a {
-  padding: 0 5px; }
-
-footer .social {
-  list-style-type: none; }
-
-html, body, #map {
-  height: 100%;
-  padding: 0;
-  margin: 0; }
-
-body {
-  background-color: #d1d1d1; }
-
-body > .container {
-  padding: 0; }
-
-main {
-  background-color: white;
-  padding: 0 15px;
-  /* ========================= */
-  /* ========== MAP ========== */
-  /* ========================= */ }
-
-main #map_wrap {
-  position: relative;
-  width: 100%;
-  height: 500px;
-  overflow: hidden; }
-
-main #map_wrap #map {
-  width: 100%;
-  height: 100%; }
-
-main #map_wrap #menu {
-  position: absolute;
-  list-style-type: none;
-  width: 130px;
-  background: #ffffff;
-  font-size: 11px;
-  z-index: 10;
-  right: 10px;
-  padding: 0;
-  box-shadow: 0 0 5px gray;
-  /*map legend circles*/ }
-
-main #map_wrap #menu .legend-header {
-  position: relative;
-  padding: 8px 8px 8px 19px;
-  background-color: #f5f5f5; }
-
-main #map_wrap #menu .legend-item {
-  position: relative;
-  padding: 8px 8px 8px 19px;
-  background-color: #f5f5f5;
-  cursor: pointer; }
-
-main #map_wrap #menu .legend-item:first-child {
-  background-color: #dddddd; }
-
-main #map_wrap #menu .legend-item:hover {
-  color: #3c763d;
-  border-color: #d6e9c6;
-  background-color: #dff0d8; }
-
-main #map_wrap #menu .legend-item.selected {
-  color: #3c763d;
-  border-color: #d6e9c6;
-  background-color: #dff0d8; }
-
-main #map_wrap #menu .legend-item a {
-  color: gray;
-  text-decoration: none;
-  outline: none; }
-
-main #map_wrap #menu .marker-circle {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-left: 4px;
-  margin-right: 4px;
-  vertical-align: text-top;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border-radius: 50%; }
-
-main #map_wrap #menu .marker-circle.red-circle {
-  background: #f00; }
-
-main #map_wrap #menu .marker-circle.blue-circle {
-  background: #add8e6; }
-
-main #map_wrap #menu .marker-circle.purple-circle {
-  background: #800080; }
-
-main #map_wrap #menu .grey-line {
-  width: 12px;
-  height: 2px;
-  background: #808080;
-  display: inline-block;
-  margin: 0 4px;
-  vertical-align: middle; }
-
-main #map_wrap #menu .glyphicon.glyphicon-ok {
-  display: none;
-  position: absolute;
-  left: 8px;
-  top: 12px; }
-
-main #map_wrap #menu .selected .glyphicon {
-  display: inline; }
-
-@media (max-width: 767px) {
-  main #map_wrap #menu {
-    position: relative;
-    width: auto;
-    right: 0;
-    box-shadow: none; }
-
-  main #map_wrap #menu .legend-header {
-    display: inline-block; }
-
-  main #map_wrap #menu .legend-item {
-    display: inline-block;
-    padding-left: 25px;
-    padding-right: 10px;
-    margin-top: 3px; }
-
-  main #map_wrap #menu .glyphicon.glyphicon-ok {
-    left: 10px; } }
-main .typeahead_wrap {
-  margin-top: 40px;
-  margin-bottom: 10px; }
-
-main .intro-text .title h3 {
-  text-align: center;
-  color: #074d71; }
-
-main .intro-text .content {
-  font-size: 16px; }
-
-/* ========================= */
-/* ======== CartoDB ======== */
-/* ========================= */
-div.cartodb-tooltip {
-  min-width: inherit;
-  margin-top: 10px;
-  margin-left: 10px; }
-
-div.cartodb-tooltip-content-wrapper {
-  background-color: rgba(0, 0, 0, 0.9); }
-
-div.cartodb-tooltip-content-wrapper p {
-  color: white; }
-
-.leaflet-tile-pane .leaflet-layer:last-child {
-  z-index: 1000; }
-
-/*# sourceMappingURL=main.css.map */
-
-/* ========================= */
-/* ========= HEADER ======== */
-/* ========================= */
-header {
-  background-color: #0b4d70;
-  -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
-  -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
-  box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49); }
-  header .logo {
+  body > header .logo {
     margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: 15px; }
-  header .navigation {
-    list-style-type: none; }
-    header .navigation li {
+    margin-bottom: 10px; }
+  body > header .navigation {
+    list-style-type: none;
+    padding-right: 0; }
+    body > header .navigation li {
       display: inline-block;
       background-color: #0b4d70;
       margin-right: 10px;
       margin-top: 10px; }
-      header .navigation li a {
+      body > header .navigation li a {
         display: inline-block;
         line-height: 5em;
         text-decoration: none;
         color: #b2dbfb;
         padding: 0 10px;
         outline: none; }
-        header .navigation li a:hover {
+        body > header .navigation li a:hover {
           text-decoration: none;
           color: #b2dbfb;
           background-color: #3b708c; }
   @media (max-width: 991px) {
-    header .navigation {
+    body > header .navigation {
       text-align: left;
       list-style-type: none;
       padding: 0;
       margin: 0; }
-      header .navigation li {
+      body > header .navigation li {
         margin: 0;
         display: block;
         border-top: 1px solid #3E5E77; }
-        header .navigation li a {
+        body > header .navigation li a {
           width: 100%; } }
-  header .hamburger {
+  body > header .hamburger {
     margin-top: 22px; }
     @media (max-width: 991px) {
-      header .hamburger.navbar-toggle {
+      body > header .hamburger.navbar-toggle {
         display: block !important; } }
-    header .hamburger .icon-bar {
+    body > header .hamburger .icon-bar {
       background-color: white; }
   @media (max-width: 991px) {
-    header {
+    body > header {
       /* since 3.1.0 */ }
-      header .navbar-header {
+      body > header .navbar-header {
         float: none; }
-      header .navbar-toggle {
+      body > header .navbar-toggle {
         display: block; }
-      header .navbar-collapse {
+      body > header .navbar-collapse {
         border-top: 1px solid transparent;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1); }
-      header .navbar-collapse.collapse {
+      body > header .navbar-collapse.collapse {
         display: none !important; }
-      header .navbar-nav {
+      body > header .navbar-nav {
         float: none !important;
         margin: 7.5px -15px; }
-      header .navbar-nav > li {
+      body > header .navbar-nav > li {
         float: none; }
-      header .navbar-nav > li > a {
+      body > header .navbar-nav > li > a {
         padding-top: 10px;
         padding-bottom: 10px; }
-      header .navbar-text {
+      body > header .navbar-text {
         float: none;
         margin: 15px 0; }
-      header .navbar-collapse.collapse.in {
+      body > header .navbar-collapse.collapse.in {
         display: block !important; }
-      header .collapsing {
+      body > header .collapsing {
         overflow: hidden !important; } }
-
-/* ========================= */
-/* ======= TYPEAHEAD ======= */
-/* ========================= */
-.typeahead_wrap {
-  margin-top: 40px;
-  margin-bottom: 10px; }
-  .typeahead_wrap .twitter-typeahead {
-    display: block !important; }
-  .typeahead_wrap .typeahead {
-    display: block;
-    background-color: #fff;
-    padding-left: 10px !important; }
-
-.tt-menu {
-  width: 100%;
-  background-color: #fff;
-  border-top: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  cursor: default;
-  z-index: 200 !important; }
-
-.tt-suggestion {
-  padding: 8px 12px;
-  font-size: 24px;
-  line-height: 30px;
-  text-align: left; }
-
-.tt-suggestion:hover, .tt-cursor {
-  color: #fff;
-  background-color: #0097cf;
-  cursor: pointer; }
-
-.tt-suggestion p {
-  margin: 0; }
-
-.sugg-box {
-  position: relative;
-  border-bottom: 0 solid #eee;
-  overflow: hidden; }
-
-.sugg-state {
-  top: 0;
-  left: 0;
-  margin-right: 20px;
-  float: left;
-  z-index: 0;
-  font-size: 18px;
-  color: #337ab7;
-  font-weight: bold; }
-
-.sugg-name {
-  font-size: 20px;
-  display: inline;
-  text-transform: uppercase; }
-
-.sugg-type {
-  font-size: 70%;
-  color: #337ab7;
-  float: right;
-  top: 36px;
-  right: 0;
-  line-height: 100%; }
 
 footer {
   min-height: 80px;
@@ -535,110 +112,21 @@ html, body, #map {
 
 body {
   background-color: #d1d1d1; }
-  body > .container {
-    padding: 0; }
 
 main {
   background-color: white;
-  padding: 0 15px;
-  /* ========================= */
-  /* ========== MAP ========== */
-  /* ========================= */ }
-  main #map_wrap {
-    position: relative;
-    width: 100%;
-    height: 500px;
-    overflow: hidden; }
-    main #map_wrap #map {
-      width: 100%;
-      height: 100%; }
-    main #map_wrap #menu {
-      position: absolute;
-      list-style-type: none;
-      width: 130px;
-      background: #ffffff;
-      font-size: 11px;
-      z-index: 10;
-      right: 10px;
-      padding: 0;
-      box-shadow: 0 0 5px gray;
-      /*map legend circles*/ }
-      main #map_wrap #menu .legend-header {
-        position: relative;
-        padding: 8px 8px 8px 19px;
-        background-color: #f5f5f5; }
-      main #map_wrap #menu .legend-item {
-        position: relative;
-        padding: 8px 8px 8px 19px;
-        background-color: #f5f5f5;
-        cursor: pointer; }
-        main #map_wrap #menu .legend-item:first-child {
-          background-color: #dddddd; }
-        main #map_wrap #menu .legend-item:hover {
-          color: #3c763d;
-          border-color: #d6e9c6;
-          background-color: #dff0d8; }
-        main #map_wrap #menu .legend-item.selected {
-          color: #3c763d;
-          border-color: #d6e9c6;
-          background-color: #dff0d8; }
-        main #map_wrap #menu .legend-item a {
-          color: gray;
-          text-decoration: none;
-          outline: none; }
-      main #map_wrap #menu .marker-circle {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        margin-left: 4px;
-        margin-right: 4px;
-        vertical-align: text-top;
-        -webkit-border-radius: 50%;
-        -moz-border-radius: 50%;
-        border-radius: 50%; }
-        main #map_wrap #menu .marker-circle.red-circle {
-          background: #f00; }
-        main #map_wrap #menu .marker-circle.blue-circle {
-          background: #add8e6; }
-        main #map_wrap #menu .marker-circle.purple-circle {
-          background: #800080; }
-      main #map_wrap #menu .grey-line {
-        width: 12px;
-        height: 2px;
-        background: #808080;
-        display: inline-block;
-        margin: 0 4px;
-        vertical-align: middle; }
-      main #map_wrap #menu .glyphicon.glyphicon-ok {
-        display: none;
-        position: absolute;
-        left: 8px;
-        top: 12px; }
-      main #map_wrap #menu .selected .glyphicon {
-        display: inline; }
-    @media (max-width: 767px) {
-      main #map_wrap #menu {
-        position: relative;
-        width: auto;
-        right: 0;
-        box-shadow: none; }
-        main #map_wrap #menu .legend-header {
-          display: inline-block; }
-        main #map_wrap #menu .legend-item {
-          display: inline-block;
-          padding-left: 25px;
-          padding-right: 10px;
-          margin-top: 3px; }
-        main #map_wrap #menu .glyphicon.glyphicon-ok {
-          left: 10px; } }
-  main .typeahead_wrap {
-    margin-top: 40px;
-    margin-bottom: 10px; }
-  main .intro-text .title h3 {
-    text-align: center;
-    color: #074d71; }
-  main .intro-text .content {
-    font-size: 16px; }
+  padding: 0 15px; }
+
+/* ===================================================== */
+/* ======== Customize bootstrap & global styles ======== */
+/* ===================================================== */
+a {
+  color: #074d71; }
+
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  background-color: #0b4d70; }
 
 /* ========================= */
 /* ======== CartoDB ======== */
@@ -656,3 +144,612 @@ div.cartodb-tooltip-content-wrapper p {
 
 .leaflet-tile-pane .leaflet-layer:last-child {
   z-index: 1000; }
+
+/* ==================================== */
+/* ====== Government Controller ======= */
+/* ==================================== */
+/* ============================= */
+/* ======== Main layout ======== */
+/* ============================= */
+/* ========================= */
+/* ========= HEADER ======== */
+/* ========================= */
+body > header {
+  background-color: #0b4d70;
+  -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49); }
+  body > header .logo {
+    margin-top: 10px;
+    margin-bottom: 10px; }
+  body > header .navigation {
+    list-style-type: none;
+    padding-right: 0; }
+    body > header .navigation li {
+      display: inline-block;
+      background-color: #0b4d70;
+      margin-right: 10px;
+      margin-top: 10px; }
+      body > header .navigation li a {
+        display: inline-block;
+        line-height: 5em;
+        text-decoration: none;
+        color: #b2dbfb;
+        padding: 0 10px;
+        outline: none; }
+        body > header .navigation li a:hover {
+          text-decoration: none;
+          color: #b2dbfb;
+          background-color: #3b708c; }
+  @media (max-width: 991px) {
+    body > header .navigation {
+      text-align: left;
+      list-style-type: none;
+      padding: 0;
+      margin: 0; }
+      body > header .navigation li {
+        margin: 0;
+        display: block;
+        border-top: 1px solid #3E5E77; }
+        body > header .navigation li a {
+          width: 100%; } }
+  body > header .hamburger {
+    margin-top: 22px; }
+    @media (max-width: 991px) {
+      body > header .hamburger.navbar-toggle {
+        display: block !important; } }
+    body > header .hamburger .icon-bar {
+      background-color: white; }
+  @media (max-width: 991px) {
+    body > header {
+      /* since 3.1.0 */ }
+      body > header .navbar-header {
+        float: none; }
+      body > header .navbar-toggle {
+        display: block; }
+      body > header .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+      body > header .navbar-collapse.collapse {
+        display: none !important; }
+      body > header .navbar-nav {
+        float: none !important;
+        margin: 7.5px -15px; }
+      body > header .navbar-nav > li {
+        float: none; }
+      body > header .navbar-nav > li > a {
+        padding-top: 10px;
+        padding-bottom: 10px; }
+      body > header .navbar-text {
+        float: none;
+        margin: 15px 0; }
+      body > header .navbar-collapse.collapse.in {
+        display: block !important; }
+      body > header .collapsing {
+        overflow: hidden !important; } }
+
+footer {
+  min-height: 80px;
+  position: relative;
+  padding-top: 10px;
+  background-color: #0b4d70;
+  -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  font-size: 11px;
+  color: #eee;
+  padding: 15px; }
+  footer .copyright p {
+    margin-bottom: 0; }
+  footer a {
+    color: #eee; }
+    footer a:hover {
+      color: #eee; }
+  footer .site-links a {
+    padding: 0 5px; }
+  footer .social {
+    list-style-type: none; }
+
+html, body, #map {
+  height: 100%;
+  padding: 0;
+  margin: 0; }
+
+body {
+  background-color: #d1d1d1; }
+
+main {
+  background-color: white;
+  padding: 0 15px; }
+
+/* ===================================================== */
+/* ======== Customize bootstrap & global styles ======== */
+/* ===================================================== */
+a {
+  color: #074d71; }
+
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  background-color: #0b4d70; }
+
+/* ========================= */
+/* ======== CartoDB ======== */
+/* ========================= */
+div.cartodb-tooltip {
+  min-width: inherit;
+  margin-top: 10px;
+  margin-left: 10px; }
+
+div.cartodb-tooltip-content-wrapper {
+  background-color: rgba(0, 0, 0, 0.9); }
+
+div.cartodb-tooltip-content-wrapper p {
+  color: white; }
+
+.leaflet-tile-pane .leaflet-layer:last-child {
+  z-index: 1000; }
+
+.governmentController nav a {
+  display: inline-block;
+  margin-top: 10px; }
+.governmentController header h3 {
+  color: #074d71; }
+.governmentController .f-nam {
+  min-width: 540px;
+  display: inline-block;
+  color: #666;
+  text-align: left;
+  margin-right: 5px;
+  border-bottom: 1px dotted #ddd;
+  vertical-align: top; }
+.governmentController .f-val {
+  min-width: 160px;
+  display: inline-block;
+  color: #000;
+  text-align: right;
+  margin-left: 5px; }
+.governmentController .portrait {
+  width: 121px;
+  float: right; }
+
+/* ============================= */
+/* ======== Main layout ======== */
+/* ============================= */
+/* ========================= */
+/* ========= HEADER ======== */
+/* ========================= */
+body > header {
+  background-color: #0b4d70;
+  -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49); }
+  body > header .logo {
+    margin-top: 10px;
+    margin-bottom: 10px; }
+  body > header .navigation {
+    list-style-type: none;
+    padding-right: 0; }
+    body > header .navigation li {
+      display: inline-block;
+      background-color: #0b4d70;
+      margin-right: 10px;
+      margin-top: 10px; }
+      body > header .navigation li a {
+        display: inline-block;
+        line-height: 5em;
+        text-decoration: none;
+        color: #b2dbfb;
+        padding: 0 10px;
+        outline: none; }
+        body > header .navigation li a:hover {
+          text-decoration: none;
+          color: #b2dbfb;
+          background-color: #3b708c; }
+  @media (max-width: 991px) {
+    body > header .navigation {
+      text-align: left;
+      list-style-type: none;
+      padding: 0;
+      margin: 0; }
+      body > header .navigation li {
+        margin: 0;
+        display: block;
+        border-top: 1px solid #3E5E77; }
+        body > header .navigation li a {
+          width: 100%; } }
+  body > header .hamburger {
+    margin-top: 22px; }
+    @media (max-width: 991px) {
+      body > header .hamburger.navbar-toggle {
+        display: block !important; } }
+    body > header .hamburger .icon-bar {
+      background-color: white; }
+  @media (max-width: 991px) {
+    body > header {
+      /* since 3.1.0 */ }
+      body > header .navbar-header {
+        float: none; }
+      body > header .navbar-toggle {
+        display: block; }
+      body > header .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+      body > header .navbar-collapse.collapse {
+        display: none !important; }
+      body > header .navbar-nav {
+        float: none !important;
+        margin: 7.5px -15px; }
+      body > header .navbar-nav > li {
+        float: none; }
+      body > header .navbar-nav > li > a {
+        padding-top: 10px;
+        padding-bottom: 10px; }
+      body > header .navbar-text {
+        float: none;
+        margin: 15px 0; }
+      body > header .navbar-collapse.collapse.in {
+        display: block !important; }
+      body > header .collapsing {
+        overflow: hidden !important; } }
+
+footer {
+  min-height: 80px;
+  position: relative;
+  padding-top: 10px;
+  background-color: #0b4d70;
+  -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  font-size: 11px;
+  color: #eee;
+  padding: 15px; }
+  footer .copyright p {
+    margin-bottom: 0; }
+  footer a {
+    color: #eee; }
+    footer a:hover {
+      color: #eee; }
+  footer .site-links a {
+    padding: 0 5px; }
+  footer .social {
+    list-style-type: none; }
+
+html, body, #map {
+  height: 100%;
+  padding: 0;
+  margin: 0; }
+
+body {
+  background-color: #d1d1d1; }
+
+main {
+  background-color: white;
+  padding: 0 15px; }
+
+/* ===================================================== */
+/* ======== Customize bootstrap & global styles ======== */
+/* ===================================================== */
+a {
+  color: #074d71; }
+
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  background-color: #0b4d70; }
+
+/* ========================= */
+/* ======== CartoDB ======== */
+/* ========================= */
+div.cartodb-tooltip {
+  min-width: inherit;
+  margin-top: 10px;
+  margin-left: 10px; }
+
+div.cartodb-tooltip-content-wrapper {
+  background-color: rgba(0, 0, 0, 0.9); }
+
+div.cartodb-tooltip-content-wrapper p {
+  color: white; }
+
+.leaflet-tile-pane .leaflet-layer:last-child {
+  z-index: 1000; }
+
+/* ============================= */
+/* ====== Map Controller ======= */
+/* ============================= */
+/* ============================= */
+/* ======== Main layout ======== */
+/* ============================= */
+/* ========================= */
+/* ========= HEADER ======== */
+/* ========================= */
+body > header {
+  background-color: #0b4d70;
+  -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49); }
+  body > header .logo {
+    margin-top: 10px;
+    margin-bottom: 10px; }
+  body > header .navigation {
+    list-style-type: none;
+    padding-right: 0; }
+    body > header .navigation li {
+      display: inline-block;
+      background-color: #0b4d70;
+      margin-right: 10px;
+      margin-top: 10px; }
+      body > header .navigation li a {
+        display: inline-block;
+        line-height: 5em;
+        text-decoration: none;
+        color: #b2dbfb;
+        padding: 0 10px;
+        outline: none; }
+        body > header .navigation li a:hover {
+          text-decoration: none;
+          color: #b2dbfb;
+          background-color: #3b708c; }
+  @media (max-width: 991px) {
+    body > header .navigation {
+      text-align: left;
+      list-style-type: none;
+      padding: 0;
+      margin: 0; }
+      body > header .navigation li {
+        margin: 0;
+        display: block;
+        border-top: 1px solid #3E5E77; }
+        body > header .navigation li a {
+          width: 100%; } }
+  body > header .hamburger {
+    margin-top: 22px; }
+    @media (max-width: 991px) {
+      body > header .hamburger.navbar-toggle {
+        display: block !important; } }
+    body > header .hamburger .icon-bar {
+      background-color: white; }
+  @media (max-width: 991px) {
+    body > header {
+      /* since 3.1.0 */ }
+      body > header .navbar-header {
+        float: none; }
+      body > header .navbar-toggle {
+        display: block; }
+      body > header .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+      body > header .navbar-collapse.collapse {
+        display: none !important; }
+      body > header .navbar-nav {
+        float: none !important;
+        margin: 7.5px -15px; }
+      body > header .navbar-nav > li {
+        float: none; }
+      body > header .navbar-nav > li > a {
+        padding-top: 10px;
+        padding-bottom: 10px; }
+      body > header .navbar-text {
+        float: none;
+        margin: 15px 0; }
+      body > header .navbar-collapse.collapse.in {
+        display: block !important; }
+      body > header .collapsing {
+        overflow: hidden !important; } }
+
+footer {
+  min-height: 80px;
+  position: relative;
+  padding-top: 10px;
+  background-color: #0b4d70;
+  -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  font-size: 11px;
+  color: #eee;
+  padding: 15px; }
+  footer .copyright p {
+    margin-bottom: 0; }
+  footer a {
+    color: #eee; }
+    footer a:hover {
+      color: #eee; }
+  footer .site-links a {
+    padding: 0 5px; }
+  footer .social {
+    list-style-type: none; }
+
+html, body, #map {
+  height: 100%;
+  padding: 0;
+  margin: 0; }
+
+body {
+  background-color: #d1d1d1; }
+
+main {
+  background-color: white;
+  padding: 0 15px; }
+
+/* ===================================================== */
+/* ======== Customize bootstrap & global styles ======== */
+/* ===================================================== */
+a {
+  color: #074d71; }
+
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  background-color: #0b4d70; }
+
+/* ========================= */
+/* ======== CartoDB ======== */
+/* ========================= */
+div.cartodb-tooltip {
+  min-width: inherit;
+  margin-top: 10px;
+  margin-left: 10px; }
+
+div.cartodb-tooltip-content-wrapper {
+  background-color: rgba(0, 0, 0, 0.9); }
+
+div.cartodb-tooltip-content-wrapper p {
+  color: white; }
+
+.leaflet-tile-pane .leaflet-layer:last-child {
+  z-index: 1000; }
+
+.mapController {
+  margin-bottom: 20px;
+  /* ========================= */
+  /* ======= TYPEAHEAD ======= */
+  /* ========================= */
+  /* ========================= */
+  /* ========== MAP ========== */
+  /* ========================= */ }
+  .mapController .typeahead_wrap {
+    margin-top: 40px;
+    margin-bottom: 10px; }
+    .mapController .typeahead_wrap .twitter-typeahead {
+      display: block !important; }
+    .mapController .typeahead_wrap .typeahead {
+      display: block;
+      background-color: #fff;
+      padding-left: 10px !important; }
+  .mapController .tt-menu {
+    width: 100%;
+    background-color: #fff;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    cursor: default;
+    z-index: 200 !important; }
+  .mapController .tt-suggestion {
+    padding: 8px 12px;
+    font-size: 24px;
+    line-height: 30px;
+    text-align: left; }
+  .mapController .tt-suggestion:hover, .mapController .tt-cursor {
+    color: #fff;
+    background-color: #0097cf;
+    cursor: pointer; }
+  .mapController .tt-suggestion p {
+    margin: 0; }
+  .mapController .sugg-box {
+    position: relative;
+    border-bottom: 0 solid #eee;
+    overflow: hidden; }
+  .mapController .sugg-state {
+    top: 0;
+    left: 0;
+    margin-right: 20px;
+    float: left;
+    z-index: 0;
+    font-size: 18px;
+    color: #337ab7;
+    font-weight: bold; }
+  .mapController .sugg-name {
+    font-size: 20px;
+    display: inline;
+    text-transform: uppercase; }
+  .mapController .sugg-type {
+    font-size: 70%;
+    color: #337ab7;
+    float: right;
+    top: 36px;
+    right: 0;
+    line-height: 100%; }
+  .mapController #map_wrap {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden; }
+    .mapController #map_wrap #map {
+      width: 100%;
+      height: 100%; }
+    .mapController #map_wrap #menu {
+      position: absolute;
+      list-style-type: none;
+      width: 130px;
+      background: #ffffff;
+      font-size: 11px;
+      z-index: 10;
+      right: 10px;
+      padding: 0;
+      box-shadow: 0 0 5px gray;
+      /*map legend circles*/ }
+      .mapController #map_wrap #menu .legend-header {
+        position: relative;
+        padding: 8px 8px 8px 19px;
+        background-color: #f5f5f5; }
+      .mapController #map_wrap #menu .legend-item {
+        position: relative;
+        padding: 8px 8px 8px 19px;
+        background-color: #f5f5f5;
+        cursor: pointer; }
+        .mapController #map_wrap #menu .legend-item:first-child {
+          background-color: #dddddd; }
+        .mapController #map_wrap #menu .legend-item:hover {
+          color: #3c763d;
+          border-color: #d6e9c6;
+          background-color: #dff0d8; }
+        .mapController #map_wrap #menu .legend-item.selected {
+          color: #3c763d;
+          border-color: #d6e9c6;
+          background-color: #dff0d8; }
+        .mapController #map_wrap #menu .legend-item a {
+          color: gray;
+          text-decoration: none;
+          outline: none; }
+      .mapController #map_wrap #menu .marker-circle {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin-left: 4px;
+        margin-right: 4px;
+        vertical-align: text-top;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%; }
+        .mapController #map_wrap #menu .marker-circle.red-circle {
+          background: #f00; }
+        .mapController #map_wrap #menu .marker-circle.blue-circle {
+          background: #add8e6; }
+        .mapController #map_wrap #menu .marker-circle.purple-circle {
+          background: #800080; }
+      .mapController #map_wrap #menu .grey-line {
+        width: 12px;
+        height: 2px;
+        background: #808080;
+        display: inline-block;
+        margin: 0 4px;
+        vertical-align: middle; }
+      .mapController #map_wrap #menu .glyphicon.glyphicon-ok {
+        display: none;
+        position: absolute;
+        left: 8px;
+        top: 12px; }
+      .mapController #map_wrap #menu .selected .glyphicon {
+        display: inline; }
+    @media (max-width: 767px) {
+      .mapController #map_wrap #menu {
+        position: relative;
+        width: auto;
+        right: 0;
+        box-shadow: none; }
+        .mapController #map_wrap #menu .legend-header {
+          display: inline-block; }
+        .mapController #map_wrap #menu .legend-item {
+          display: inline-block;
+          padding-left: 25px;
+          padding-right: 10px;
+          margin-top: 3px; }
+        .mapController #map_wrap #menu .glyphicon.glyphicon-ok {
+          left: 10px; } }
+  .mapController .intro-text .title h3 {
+    text-align: center;
+    color: #074d71; }
+  .mapController .intro-text .content {
+    font-size: 16px; }

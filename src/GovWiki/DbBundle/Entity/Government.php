@@ -3672,6 +3672,7 @@ class Government
      * Set enrollmentRank
      *
      * @param integer $enrollmentRank
+     *
      * @return Government
      */
     public function setEnrollmentRank($enrollmentRank)
@@ -3694,7 +3695,7 @@ class Government
     /**
      * @param Environment $environment A Environment instance.
      *
-     * @return Environment
+     * @return Government
      */
     public function setEnvironment(Environment $environment)
     {

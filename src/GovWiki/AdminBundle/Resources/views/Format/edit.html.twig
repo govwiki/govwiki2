@@ -1,6 +1,6 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
 
-{% block title %}{{ parent() }} - {{ environment|capitalize }} edit format{% endblock title %}
+{% block title %}{{ parent() }} - edit format{% endblock title %}
 
 {% block body %}
     <div class="container-fluid">
@@ -9,8 +9,7 @@
         <button class="btn btn-success">Update</button>
         <a class="btn btn-default" href="{{-
             path(
-                'govwiki_admin_format_list',
-                { environment: environment }
+                'govwiki_admin_format_list'
             )
         -}}">Back</a>
         {{ form_end(form) }}

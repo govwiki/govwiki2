@@ -22,11 +22,17 @@ class FormatRepository extends EntityRepository
 
         return $qb
             ->select(
-                'Format.id, Format.category, Format.field',
-                'Format.description'
+                'Format.id, Format.field, Format.description',
+                'Tab.name AS tab_name, Category.name AS category_name'
             )
             ->leftJoin('Format.environment', 'Environment')
+            ->leftJoin('Format.category', 'Category')
+            ->leftJoin('Format.tab', 'Tab')
             ->where($expr->eq('Environment.name', $expr->literal($environment)))
+            ->orderBy($expr->asc('Tab.orderNumber'))
+            ->addOrderBy($expr->asc('Tab.name'))
+            ->addOrderBy($expr->asc('Category.orderNumber'))
+            ->addOrderBy($expr->asc('Category.name'))
             ->getQuery();
     }
 

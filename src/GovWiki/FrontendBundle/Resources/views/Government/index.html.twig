@@ -2,16 +2,11 @@
 
 {% block main %}
 
-    <section class="government">
+    <section class="governmentController">
 
         {# Government name & wikipedia links #}
-        <header class="row">
-
-            <aside class="col-md-8">
-                <h3 class="title">{{government.name}}</h3>
-            </aside>
-
-            <nav class="col-md-4">
+        <nav class="row">
+            <div class="col-md-12 text-right">
 
                 {% if government.wikipediaPageName %}
                     <a target="_blank" href="{{government.wikipediaPageName}}">
@@ -34,8 +29,17 @@
                     </a>
                 {% endif %}
 
-            </nav>
+            </div>
 
+        </nav>
+
+        {# Header #}
+        <header class="row">
+            <div class="col-md-12">
+
+                <h3>{{government.name}}</h3>
+
+            </div>
         </header>
 
         {# Tabs #}
@@ -43,12 +47,15 @@
             <div class="col-md-12">
 
                 <ul class="nav nav-pills">
-
+{% dump tabs %}
                     {# Render TABS #}
-                    {% for category in categories %}
-                        <li>
-                            <a href="#{{category}}" aria-controls="home" role="tab" data-toggle="tab" data-tabname="{{category}}">
-                                {{category}}
+                    {% for tab in tabs %}
+                        <li class="{{ loop.first ? 'active' : '' }}">
+                            {# TODO: Hardcoded, for new db, must be replaced #}
+                            <a href="#{{ tab | replace(' ', '_') | replace('+', 'a') }}"
+                               aria-controls="{{ tab | replace(' ', '_') | replace('+', 'a') }}"
+                               role="tab" data-toggle="tab" data-tabname="{{tab }}">
+                                {{tab}}
                             </a>
                         </li>
                     {% endfor %}
@@ -57,45 +64,50 @@
 
                 <div class="tab-content">
 
-                    {% for category in categories %}
+                    {% for tab in tabs %}
+                        {# TODO: Hardcoded, for new db, must be replaced #}
+                        <div class="tab-pane {{ loop.first ? 'active' : '' }}"
+                             id="{{ tab  | replace(' ', '_') | replace('+', 'a') }}">
 
-                        <h4>{{ category }}</h4>
+                            <h4>{{ tab  }}</h4>
 
-                        {# Statistics #}
-                        {% for format in formats %}
+                            {# Statistics #}
+                            {% for format in formats %}
 
-                            {% if format.category == category %}
+                                {% if format.tab_name == tab %}
 
-                                {% set value = government|format_field(format) %}
-                                {% if value is defined %}
-                                    <div>
-                                        <span class="f-nam">{{ format.description }}</span>
-                                        <span class="f-val">
-                                            <a target="_blank" href="#">
-                                                {{ value }}
-                                            </a>
-                                        </span>
-                                    </div>
+                                    {% set value = government|format_field(format) %}
+                                    {% if value is defined %}
+                                        <div>
+                                            <span class="f-nam">{{ format.description }}</span>
+                                            <span class="f-val">
+                                                <a target="_blank" href="#">
+                                                    {{ value }}
+                                                </a>
+                                            </span>
+                                        </div>
+                                    {% endif %}
+
                                 {% endif %}
 
-                            {% endif %}
+                            {% endfor %}
 
-                        {% endfor %}
+                            {# Overview + Elected Officials #}
+                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
 
-                        {# Overview + Elected Officials #}
-                        {{ include('GovWikiFrontendBundle/Partial/Government/Tabs/overviewElected.html.twig') }}
+                            {# Employee Compensation #}
+                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
 
-                        {# Employee Compensation #}
-                        {{ include('GovWikiFrontendBundle:Partial:Government:Tabs:employeeCompensation.html.twig') }}
+                            {# Quality of Services #}
+                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
 
-                        {# Quality of Services #}
-                        {{ include('GovWikiFrontendBundle:Partial:Government:Tabs:qualityServices.html.twig') }}
+                            {# Financial Health #}
+                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
 
-                        {# Financial Health #}
-                        {{ include('GovWikiFrontendBundle:Partial:Government:Tabs:financialHealth.html.twig') }}
+                            {# Financial Statements #}
+                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig') }}
 
-                        {# Financial Statements #}
-                        {{ include('GovWikiFrontendBundle:Partial:Government:Tabs:financialStatements.html.twig') }}
+                        </div>
 
                     {% endfor %}
 
@@ -114,5 +126,25 @@
         </section>
 
     </section>
+
+{% endblock %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{parent()}}
+
+    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/government.scss' filter='scss' %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}
+
+
+{# Javascripts #}
+{% block javascripts %}
+
+    {{parent()}}
 
 {% endblock %}
