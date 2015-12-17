@@ -52,7 +52,6 @@ class Extension extends \Twig_Extension
      */
     public function formatGovernmentField(array $government, $key, array $format)
     {
-        dump($key);
         return $government[$key];
     }
 }
