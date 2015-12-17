@@ -17,7 +17,7 @@ class Version20151217170848 extends AbstractMigration
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE max_ranks ADD alt_type VARCHAR(20) DEFAULT NULL');
+//        $this->addSql('ALTER TABLE max_ranks ADD alt_type VARCHAR(20) DEFAULT NULL');
     }
 
     /**
@@ -27,6 +27,6 @@ class Version20151217170848 extends AbstractMigration
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE max_ranks DROP alt_type');
+//        $this->addSql('ALTER TABLE max_ranks DROP alt_type');
     }
 }
