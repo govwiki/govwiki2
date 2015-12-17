@@ -253,50 +253,64 @@ class GovernmentRepository extends EntityRepository
                 )
             )
             ->getQuery()
-            ->getResult();
+            ->getArrayResult();
 
-        /** @var Government $government */
         $government = $data[0];
 
         $financialStatementsGroups = [];
-        $finData = $government->getFinData()->toArray();
-        /** @var FinData $finDataItem */
+        $finData = $government['finData'];
         foreach ($finData as $finDataItem) {
-            $financialStatementsGroups[$finDataItem->getCaption()][] = $finDataItem;
+            $financialStatementsGroups[$finDataItem['caption']][] = $finDataItem;
         }
         $i = 0;
         $financialStatements = [];
         foreach ($financialStatementsGroups as $caption => $finData) {
             foreach ($finData as $finDataItem) {
                 $financialStatements[$i]['caption'] = $caption;
-                $financialStatements[$i]['category_name'] = $finDataItem->getCaptionCategory()->getName();
-                $financialStatements[$i]['display_order'] = $finDataItem->getDisplayOrder();
+                $financialStatements[$i]['category_name'] = $finDataItem['captionCategory']['name'];
+                $financialStatements[$i]['display_order'] = $finDataItem['displayOrder'];
                 if (empty($financialStatements[$i]['genfund'])) {
-                    if (empty($finDataItem->getFund())) {
-                        $financialStatements[$i]['genfund'] = $finDataItem->getDollarAmount();
-                    } elseif ($finDataItem->getFund()->getName() == 'General Fund') {
-                        $financialStatements[$i]['genfund'] = $finDataItem->getDollarAmount();
+                    if (empty($finDataItem['fund'])) {
+                        $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
+                    } elseif ($finDataItem['fund']['name'] === 'General Fund') {
+                        $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
                     }
                 }
                 if (empty($financialStatements[$i]['otherfunds'])) {
-                    if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Other') {
-                        $financialStatements[$i]['otherfunds'] = $finDataItem->getDollarAmount();
+                    if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Other') {
+                        $financialStatements[$i]['otherfunds'] = $finDataItem['dollarAmount'];
                     }
                 }
                 if (empty($financialStatements[$i]['totalfunds'])) {
-                    if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Total') {
-                        $financialStatements[$i]['totalfunds'] = $finDataItem->getDollarAmount();
+                    if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Total') {
+                        $financialStatements[$i]['totalfunds'] = $finDataItem['dollarAmount'];
                     }
                 }
             }
             $i++;
         }
 
+        unset($government['finData']);
+
         /*
          * Combine data.
          */
-        $government->setMaxRanks($data[1]);
-        $government->setFinancialStatements($financialStatements);
+
+        /*
+         * Prepare ranks.
+         */
+        $ranks = [];
+        unset($data[1]['id'], $data[1]['altType']);
+
+        foreach ($data[1] as $key => $maxValue) {
+            if (null !== $maxValue) {
+                $fieldName = str_replace('Max', '', $key);
+                $ranks[$fieldName] = [$government[$fieldName], $maxValue];
+            }
+        }
+
+        $government['ranks'] = $ranks;
+        $government['financialStatements'] = $financialStatements;
 
         return $government;
 
