@@ -24,7 +24,12 @@ class ElectedController extends Controller
 //        dump($this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
 //            ->getElectedOfficial($altTypeSlug, $slug, $electedSlug));
 
-        return $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-                ->getElectedOfficial($altTypeSlug, $slug, $electedSlug);
+        $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+            ->getElectedOfficial($altTypeSlug, $slug, $electedSlug);
+
+        return array_merge($data, [
+            'altTypeSlug' => $altTypeSlug,
+            'slug' => $slug,
+        ]);
     }
 }
