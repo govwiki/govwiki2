@@ -1,0 +1,27 @@
+
+/* ============================= */
+/* ====== Map Controller ======= */
+/* ============================= */
+
+@import "main";
+
+.mapController {
+
+   @import "partials/typeahead/typeahead";
+
+   @import "partials/map/map";
+
+   .intro-text {
+
+      .title h3{
+         text-align: center;
+         color: $main-text;
+      }
+
+      .content {
+         font-size: 16px;
+      }
+
+   }
+
+}

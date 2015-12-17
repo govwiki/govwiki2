@@ -1,9 +1,37 @@
 {% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
 
+{# Main #}
 {% block main %}
-    <div class="row">
-        <div class="col-md-12">
-            <h4>Text</h4>
+
+    {# Must be unique #}
+    <section class="electedController">
+
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Text</h4>
+            </div>
         </div>
-    </div>
+
+    </section>
+
+{% endblock %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{parent()}}
+
+    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/elected.scss' filter='scss' %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}
+
+
+{# Javascripts #}
+{% block javascripts %}
+
+    {{parent()}}
+
 {% endblock %}

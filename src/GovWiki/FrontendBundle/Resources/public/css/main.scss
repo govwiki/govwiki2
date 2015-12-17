@@ -1,7 +1,10 @@
 
+/* ============================= */
+/* ======== Main layout ======== */
+/* ============================= */
+
 @import "variables";
 @import "partials/head/head";
-@import "partials/typeahead/typeahead";
 @import "partials/footer/footer";
 
 html, body, #map {
@@ -12,37 +15,27 @@ html, body, #map {
 
 body {
    background-color: $body-background;
-
-   & > .container {
-      padding: 0;
-   }
 }
 
 
 main {
-
    background-color: white;
    padding: 0 15px;
+}
 
-   @import "partials/map/map";
 
-   .typeahead_wrap{
-      margin-top: 40px;
-      margin-bottom: 10px;
-   }
+/* ===================================================== */
+/* ======== Customize bootstrap & global styles ======== */
+/* ===================================================== */
 
-   .intro-text {
-      .title h3{
-         text-align: center;
-         color: $main-text;
-      }
+a {
+   color: $main-text;
+}
 
-      .content {
-         font-size: 16px;
-      }
-      
-   }
-
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+   background-color: $main-background;
 }
 
 /* ========================= */
