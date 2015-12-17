@@ -26,31 +26,23 @@
 
         <ul class="navigation navbar-collapse collapse" id="bs-navigation-collapse">
 
-            {# Show User name (Athorized) #}
             {% if app.user %}
-
+                {# Show User name (Athorized) #}
                 <li>
                     <a href="javascript:void(0)">
                         Logged in as {{ app.user.username }}
                     </a>
                 </li>
 
-            {% endif %}
-
-            {# Logout button #}
-            {% if app.user %}
-
+                {# Logout button #}
                 <li>
                     <a href="{{path('fos_user_security_logout')}}">
                         Sign Out
                     </a>
                 </li>
 
-            {% endif %}
-
-            {# Login button#}
-            {% if not app.user %}
-
+            {% else %}
+                {# Login button#}
                 <li>
                     <a href="#" data-toggle="modal" data-target="#modal-window">
                         Login / Sign Up
