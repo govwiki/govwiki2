@@ -53,6 +53,14 @@ abstract class AbstractGroup
     private $environment;
 
     /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    /**
      * @return integer
      */
     public function getId()

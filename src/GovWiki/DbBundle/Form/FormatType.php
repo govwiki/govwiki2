@@ -21,7 +21,14 @@ class FormatType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('category')
+            ->add('tab', 'entity', [
+                'class' => 'GovWiki\DbBundle\Entity\Tab',
+            ])
+            ->add('category', 'entity', [
+                'class' => 'GovWiki\DbBundle\Entity\Category',
+                'empty_data' => null,
+                'required' => false,
+            ])
             ->add('field')
             ->add('description')
             ->add('helpText', 'textarea', [ 'required' => false ])

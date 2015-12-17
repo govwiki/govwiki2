@@ -114,9 +114,9 @@ class Environment
     /**
      * @var Collection
      *
-     * @ORM\ManyToMany(
+     * @ORM\OneToMany(
      *  targetEntity="AbstractGroup",
-     *  mappedBy="environments"
+     *  mappedBy="environment"
      * )
      */
     private $groups;
