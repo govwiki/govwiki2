@@ -23,22 +23,67 @@ class Extension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('format_field', [
+            new \Twig_SimpleFilter('applay_mask', [
                 $this,
-                'formatGovernmentField',
+                'formatGovernmentValue',
             ]),
         ];
     }
 
+    public function getTests()
+    {
+        return [
+            new \Twig_SimpleTest('viewed', [
+                $this,
+                'isViewed'
+            ]),
+        ];
+    }
+
+
     /**
      * @param array  $government A Government instance.
-     * @param string $key        Extract from government by key.
+     * @param string $field      Field name.
      * @param array  $format     Format.
      *
      * @return string
      */
-    public function formatGovernmentField(array $government, $key, array $format)
+    public function formatGovernmentValue(array $government, $field, array $format)
     {
-        return $government[$key];
+        $value = $government[$field];
+        if (strlen($format['mask']) > 0) {
+            $mask = $format['mask'];
+
+            $prefix = '';
+            $postfix = '';
+            $decimal = 1;
+
+            if ('$' === $mask[0]) {
+                $prefix = '$';
+            } elseif (strpos($mask, '%') !== false) {
+                $postfix = '%';
+
+                $decimalStr = $mask;
+                if (strpos($mask, '.') !== false) {
+                    $decimalStr = explode('.', $mask)[1];
+                }
+                $decimal = strlen($decimalStr) - 1;
+            }
+
+            $value = $prefix . number_format($value, $decimal) . $postfix;
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param array $format     Field format.
+     * @param array $government Government data.
+     *
+     * @return boolean
+     */
+    public function isViewed(array $format, array $government)
+    {
+        return in_array($government['altType'], $format['showIn'], true);
     }
 }

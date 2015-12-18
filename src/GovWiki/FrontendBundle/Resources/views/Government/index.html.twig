@@ -84,12 +84,16 @@
 
                                         {% for fieldName, format in fields %}
 
-                                            {# Apply mask(filter) via format field #}
-                                            {% set value = attribute(government, fieldName) %}
-                                            {% if value %}
+                                            {% if format is viewed(government) %}
+                                                {% set value = government|applay_mask(fieldName, format) %}
                                                 <tr>
                                                     {# Field name #}
-                                                    <td>{{ format.description }}</td>
+                                                    <td>
+                                                        {{ format.description }}
+                                                        {% if format.helpText %}
+                                                            <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}" title="{{ format.helpText }}">
+                                                        {% endif %}
+                                                    </td>
                                                     {# Field value #}
                                                     <td>
                                                         {{ value }}
