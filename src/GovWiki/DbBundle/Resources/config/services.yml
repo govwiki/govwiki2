@@ -17,3 +17,8 @@ services:
         arguments: [@govwiki_api.manager.environment]
         tags:
             - { name: form.type, alias: alt_type }
+
+    govwiki_db.form.type.color:
+        class: GovWiki\DbBundle\Form\Type\ColorType
+        tags:
+            - { name: form.type, alias: color }

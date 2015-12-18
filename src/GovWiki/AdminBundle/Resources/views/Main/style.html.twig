@@ -10,3 +10,15 @@
         {{ form_end(form) }}
     </div>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="application/javascript">
+        $(function() {
+            $('.color-picker').colorpicker({
+                format: 'hex',
+                align: 'left'
+            });
+        })
+    </script>
+{% endblock javascripts %}

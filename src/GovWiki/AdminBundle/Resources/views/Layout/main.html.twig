@@ -3,7 +3,7 @@
 {% block stylesheets %}
     {{ parent() }}
     <link href="https://bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">
-    {% stylesheets '@GovWikiAdminBundle/Resources/public/css/*' %}
+    {% stylesheets 'bundles/govwikiadmin/css/*' filter='cssrewrite' %}
         <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
@@ -56,6 +56,12 @@
     {{ parent() }}
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    {% javascripts '@GovWikiAdminBundle/Resources/public/js/bootstrap-colorpicker.min.js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+
     {#{% javascripts '@HeltheTurbolinksBundle/Resources/public/js/turbolinks.js' %}#}
         {#<script type="text/javascript" src="{{ asset_url }}"></script>#}
     {#{% endjavascripts %}#}

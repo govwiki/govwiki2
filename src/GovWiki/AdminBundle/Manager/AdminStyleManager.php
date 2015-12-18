@@ -268,8 +268,12 @@ class AdminStyleManager
     private function buildMods(FormBuilderInterface $form, array $mods, $prefix)
     {
         foreach ($mods as $parameter => $currentVale) {
-            $name = "{$prefix}-mods_{$parameter}";
-            $form->add($name, null, [
+             $name = "{$prefix}-mods_{$parameter}";
+            $type = null;
+            if (strpos($name, 'color') !== false) {
+                $type = 'color';
+            }
+            $form->add($name, $type, [
                 'label' => $this->generateLabel($prefix, $parameter),
             ]);
             $this->currentData[$name] = $currentVale;
@@ -385,7 +389,7 @@ class AdminStyleManager
      *
      * @return void
      */
-    public function buildElement(
+    private function buildElement(
         FormBuilderInterface $builder,
         array $style,
         $prefix
@@ -395,10 +399,10 @@ class AdminStyleManager
         /*
          * Render element modifications.
          */
-        if (array_key_exists('elemMods', $style)) {
+        if (array_key_exists('mods', $style)) {
             $this->buildMods(
                 $builder,
-                $style['elemMods'],
+                $style['mods'],
                 $prefix
             );
         }
@@ -415,10 +419,5 @@ class AdminStyleManager
             ]);
             $this->currentData[$name] = $style['content'];
         }
-    }
-
-    public function setNewValue(array &$style, $name, $value)
-    {
-
     }
 }
