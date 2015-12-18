@@ -31,7 +31,7 @@
             </div>
             <div>
                 <b>Formats:</b>&nbsp;
-                {%- if environment.format -%}
+                {%- if environment.formats -%}
                     <span class="text-success">Exists</span>
                 {%- else -%}
                     <span class="text-danger">Not exists</span>
@@ -50,6 +50,9 @@
                 </a>
             </div>
             <div class="btn-group pull-right">
+                <a class="btn btn-primary" href="{{ path('govwiki_admin_main_style') }}">
+                    Edit styles
+                </a>
                 <a class="btn btn-primary" href="{{ path('govwiki_admin_map_edit',
                 { environment: environment.name }) }}">
                     Edit map

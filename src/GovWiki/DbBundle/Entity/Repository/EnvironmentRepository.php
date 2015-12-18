@@ -69,12 +69,12 @@ class EnvironmentRepository extends EntityRepository
     }
 
     /**
-     * @param string  $name Environment name.
-     * @param integer $user User id.
+     * @param string  $environment Environment name.
+     * @param integer $user        User id.
      *
      * @return boolean|\Doctrine\Common\Proxy\Proxy|null|object
      */
-    public function getReferenceByName($name, $user = null)
+    public function getReferenceByName($environment, $user = null)
     {
         $qb = $this->createQueryBuilder('Environment');
         $expr = $qb->expr();
@@ -83,7 +83,7 @@ class EnvironmentRepository extends EntityRepository
             $qb
                 ->select('Environment.id')
                 ->leftJoin('Environment.users', 'User')
-                ->where($expr->eq('Environment.name', $expr->literal($name)));
+                ->where($expr->eq('Environment.name', $expr->literal($environment)));
 
             if (null !== $user) {
                 $qb->andWhere($expr->eq('User.id', $user));
@@ -123,6 +123,29 @@ class EnvironmentRepository extends EntityRepository
                 ))
                 ->getQuery()
                 ->getSingleScalarResult();
+        } catch (ORMException $e) {
+            return null;
+        }
+    }
+
+    /**
+     * @param string $environment A Environment name.
+     *
+     * @return array|null
+     */
+    public function getStyle($environment)
+    {
+        $qb = $this->createQueryBuilder('Environment');
+        $expr = $qb->expr();
+
+        try {
+            return $qb
+                ->select('Environment.style')
+                ->where(
+                    $expr->eq('Environment.name', $expr->literal($environment))
+                )
+                ->getQuery()
+                ->getSingleResult()['style'];
         } catch (ORMException $e) {
             return null;
         }

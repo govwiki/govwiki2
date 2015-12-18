@@ -15,3 +15,9 @@ services:
             - @security.token_storage
             - @session
         configurator: [@govwiki_api.environment_manager.configurator, configure]
+
+    govwiki_admin.manager.style:
+        class: GovWiki\AdminBundle\Manager\AdminStyleManager
+        arguments:
+            - @form.factory
+            - @govwiki_admin.manager.environment

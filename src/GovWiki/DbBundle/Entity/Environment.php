@@ -44,11 +44,63 @@ class Environment
     private $domain;
 
     /**
+     * Use bem like syntax.
+     * [
+     *  {
+     *      block: 'header',
+     *      mods: { color: ... },
+     *      content: [
+     *          {
+     *              elem: 'logo',
+     *              attrs: { src: ... }
+     *          },
+     *          {
+     *              block: 'menu',
+     *              content: [
+     *                  {
+     *                      elem: 'link',
+     *                      elemMods: {
+     *                          color: ...,
+     *                          hover_color: ...,
+     *                          bg_color: ...,
+     *                          bg_hover_color: ...
+     *                      }
+     *                  }
+     *              ]
+     *          }
+     *      ]
+     *  },
+     *
+     *  {
+     *      block: 'footer',
+     *      mods: { color: ... },
+     *      content: [
+     *          {
+     *              block: 'copyright',
+     *              content: ...
+     *              mods: { color: ... }
+     *          },
+     *          {
+     *              block: 'social',
+     *              content: [
+     *                  {
+     *                      elem: 'link',
+     *                      tag: 'a',
+     *                      url: ...
+     *                      content: ...
+     *                  },
+     *                  ...
+     *              ]
+     *          }
+     *      ]
+     *  },
+     * ]
+     *
      * @var string
      *
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="json_array")
      */
-    private $header;
+    private $style;
 
     /**
      * @var string
@@ -56,13 +108,6 @@ class Environment
      * @ORM\Column(type="text")
      */
     private $greetingText;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="text")
-     */
-    private $footer;
 
     /**
      * @var boolean
@@ -189,26 +234,6 @@ class Environment
     /**
      * @return string
      */
-    public function getHeader()
-    {
-        return $this->header;
-    }
-
-    /**
-     * @param string $header
-     *
-     * @return Environment
-     */
-    public function setHeader($header)
-    {
-        $this->header = $header;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getGreetingText()
     {
         return $this->greetingText;
@@ -227,21 +252,21 @@ class Environment
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getFooter()
+    public function getStyle()
     {
-        return $this->footer;
+        return $this->style;
     }
 
     /**
-     * @param mixed $footer
+     * @param string $style
      *
      * @return Environment
      */
-    public function setFooter($footer)
+    public function setStyle($style)
     {
-        $this->footer = $footer;
+        $this->style = $style;
 
         return $this;
     }
@@ -299,7 +324,7 @@ class Environment
     /**
      * @return Format
      */
-    public function getFormat()
+    public function getFormats()
     {
         return $this->formats;
     }
@@ -309,7 +334,7 @@ class Environment
      *
      * @return Environment
      */
-    public function addFormat(Format $format)
+    public function addFormats(Format $format)
     {
         $format->setEnvironment($this);
         $this->formats[] = $format;

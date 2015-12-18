@@ -2,10 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller\V1;
 
-use Doctrine\ORM\EntityManagerInterface;
-use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,14 +24,6 @@ class GovernmentController extends AbstractGovWikiApiController
      */
     public function showAction($altTypeSlug, $slug)
     {
-//        /** @var EntityManagerInterface $em */
-//        $em = $this->getDoctrine()->getManager();
-//
-//        return $this->serializedResponse(
-//            $em->getRepository('GovWikiDbBundle:Government')
-//                ->findGovernment($altTypeSlug, $slug),
-//            [ 'government' ]
-//        );
         return $this->serializedResponse(
             $this->environmentManager()->getGovernment($altTypeSlug, $slug),
             [ 'government' ]
@@ -84,8 +73,6 @@ class GovernmentController extends AbstractGovWikiApiController
      */
     public function getRanksAction(Request $request, $altTypeSlug, $slug)
     {
-        /** @var GovernmentRepository $repository */
-        $repository = $this->getDoctrine()->getRepository("GovWikiDbBundle:Government");
         $fieldName = $request->query->get('field_name', null);
         if (empty($fieldName)) {
             return new JsonResponse([ 'message' => 'Provide field_name query parameter.' ], 400);
@@ -105,7 +92,7 @@ class GovernmentController extends AbstractGovWikiApiController
         }
         if (! $found) {
             return new JsonResponse([
-                'message' => 'Unknown field name, provide in camel case like in Government entity.'
+                'message' => 'Unknown field name, provide in camel case like in Government entity.',
             ], 400);
         }
 
@@ -117,7 +104,7 @@ class GovernmentController extends AbstractGovWikiApiController
                 'limit' => $request->query->getInt('limit', 25),
                 'page' => $request->query->getInt('page', 0),
                 'order' => $request->query->get('order', null),
-                'name_order' => $request->query->get('name_order', null)
+                'name_order' => $request->query->get('name_order', null),
             ]
         );
 

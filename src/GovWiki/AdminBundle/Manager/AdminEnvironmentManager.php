@@ -125,6 +125,24 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * @return array|null
+     */
+    public function getStyle()
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Environment')
+            ->getStyle($this->environment);
+    }
+
+    public function setStyle(array $style)
+    {
+        $environment = $this->getReference();
+        $environment->setStyle($style);
+
+        $this->em->persist($environment);
+        $this->em->flush();
+    }
+
+    /**
      * @return \GovWiki\DbBundle\Entity\Environment|null
      *
      * @throws AccessDeniedException User don't allow to manage current

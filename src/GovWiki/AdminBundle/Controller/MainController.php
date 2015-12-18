@@ -5,7 +5,6 @@ namespace GovWiki\AdminBundle\Controller;
 use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
-use GovWiki\ApiBundle\Exception\GovWikiApiEnvironmentNotFoundException;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Form\EnvironmentType;
 use GovWiki\DbBundle\GovWikiDbServices;
@@ -117,6 +116,26 @@ class MainController extends AbstractGovWikiAdminController
     }
 
     /**
+     * @Configuration\Route("/style")
+     * @Configuration\Template()
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return array
+     */
+    public function styleAction(Request $request)
+    {
+        $manager = $this->get(GovWikiAdminServices::ADMIN_STYLE_MANAGER);
+
+        $form = $manager->createForm();
+
+        $form->handleRequest($request);
+        $manager->processForm($form);
+
+        return [ 'form' => $form->createView() ];
+    }
+
+    /**
      * @Configuration\Route("/{environment}/delete")
      *
      * @param AdminEnvironmentManager $environment A AdminEnvironmentManager
@@ -170,47 +189,38 @@ class MainController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{environment}/enable")
+     * @Configuration\Route("/enable")
      *
-     * @param Request                 $request     A Request instance.
-     * @param AdminEnvironmentManager $environment A AdminEnvironmentManager
-     *                                             instance.
+     * @param Request $request A Request instance.
      *
      * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function enableAction(
-        Request $request,
-        AdminEnvironmentManager $environment
-    ) {
-        $environment->enable();
+    public function enableAction(Request $request)
+    {
+        $this->adminEnvironmentManager()->enable();
 
         if ($request->isXmlHttpRequest()) {
             return new JsonResponse();
         }
 
-        return $this->redirectToRoute('govwiki_admin_main_show', [
-            'environment' => $environment,
-        ]);
+        return $this->redirectToRoute('govwiki_admin_main_show');
     }
 
     /**
-     * @Configuration\Route("/{environment}/disable")
+     * @Configuration\Route("/disable")
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
      *
      * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function disableAction(Request $request, $environment)
+    public function disableAction(Request $request)
     {
-        $this->toggle($environment, false);
+        $this->adminEnvironmentManager()->disable();
 
         if ($request->isXmlHttpRequest()) {
             return new JsonResponse();
         }
 
-        return $this->redirectToRoute('govwiki_admin_main_show', [
-            'environment' => $environment,
-        ]);
+        return $this->redirectToRoute('govwiki_admin_main_show');
     }
 }
