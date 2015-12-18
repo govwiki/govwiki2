@@ -1,0 +1,50 @@
+
+<!-- Contributions Modal -->
+<div class="modal fade" id="addContributions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Contribution">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Add new Contributions</h4>
+            </div>
+            <div class="modal-body">
+                <form name="addContributions">
+                    <div class="input-group">
+                        <span class="input-group-addon">Election Year: </span>
+                        <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Name of contributor: </span>
+                        <input type="text" class="form-control" placeholder="Please enter Name of contributor" data-contributor-name>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Ind. Exp. Desc.: </span>
+                        <input type="text" class="form-control" placeholder="Please enter Ind. Exp. Desc." data-independent-expenditure-desc>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Amount: </span>
+                        <input type="text" class="form-control" placeholder="Please enter Amount" data-contribution-amount>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Contributor Type? </span>
+                        <select class="form-control" name="contributorType" data-contributor-type>
+                            <option value=""></option>
+                            <option value="Candidate Committee">Candidate Committee</option>
+                            <option value="Corporate">Corporate</option>
+                            <option value="Individual">Individual</option>
+                            <option value="Political Party">Political Party</option>
+                            <option value="Political Action Committee">Political Action Committee</option>
+                            <option value="Self">Self</option>
+                            <option value="Union">Union</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="window.addItem(event)">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
