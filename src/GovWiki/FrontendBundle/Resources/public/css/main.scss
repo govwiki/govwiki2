@@ -33,6 +33,26 @@ a {
    color: $main-text;
 }
 
+i.icon {
+   background: url("/img/bg.gif");
+   width: 21px;
+   height: 9px;
+   display: inline-block;
+
+   &.icon__bottom {
+      height: 4px;
+      margin-bottom: 4px;
+      background: url("/img/desc.gif");
+   }
+
+   &.icon__top {
+      height: 4px;
+      margin-bottom: 4px;
+      background: url("/img/asc.gif");
+   }
+
+}
+
 .nav-pills > li.active > a,
 .nav-pills > li.active > a:hover,
 .nav-pills > li.active > a:focus {
