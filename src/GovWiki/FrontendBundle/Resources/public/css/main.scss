@@ -59,6 +59,13 @@ i.icon {
    background-color: $main-background;
 }
 
+/*
+  Set z-index for date picker.
+*/
+.datepicker-dropdown {
+  z-index: 10000 !important;
+}
+
 /* ========================= */
 /* ======== CartoDB ======== */
 /* ========================= */

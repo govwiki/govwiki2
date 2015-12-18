@@ -177,7 +177,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             return [
                 'electedOfficial' => $electedOfficial,
                 'createRequests' => $createRequests,
-                'issuesCategory' => $this->em
+                'categories' => $this->em
                     ->getRepository('GovWikiDbBundle:IssueCategory')
                     ->findAll(),
             ];

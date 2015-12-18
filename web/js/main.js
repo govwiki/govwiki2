@@ -13,215 +13,332 @@ $('body').on('submit', '#ajax-login-form', function(event) {
     });
 });
 
+/**
+ * Typeahead search
+ */
+
 $(function() {
 
+    var substringMatcher = function(strs) {
+        return function findMatches(q, cb) {
+            var matches, substringRegex;
 
-    var Handlers = {};
+            // an array that will be populated with substring matches
+            matches = [];
 
-    var authorized = window.gw.authorized;
+            // regex used to determine if a string contains the substring `q`
+            substrRegex = new RegExp(q, 'i');
 
-    $('[data-toggle="tooltip"]').tooltip();
+            // iterate through the pool of strings and for any string that
+            // contains the substring `q`, add it to the `matches` array
+            $.each(strs, function(i, str) {
+                if (substrRegex.test(str.gov_name)) {
+                    matches.push(str);
+                }
+            });
 
-    var $editable = $('.editable');
-    $editable.editable({stylesheets: false,type: 'textarea', showbuttons: 'bottom', display: true, emptytext: ' '});
-    $editable.off('click');
-
-    $('table').on('click', '.glyphicon-pencil', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.currentTarget.dataset.noEditable !== undefined) return;
-        if (!authorized){
-            $('#modal-window').modal('show'); // Open login modal window
-            window.sessionStorage.setItem('tableType', $(e.target).closest('.tab-pane')[0].id);
-            window.sessionStorage.setItem('dataId', $(e.currentTarget).closest('tr').attr('data-id'));
-            window.sessionStorage.setItem('field', Number(($(e.currentTarget).closest('td'))[0].cellIndex) + 1);
-        } else {
-            $(e.currentTarget).closest('td').find('.editable').editable('toggle');
-        }
-
-    });
-
-    // Refresh Disqus thread
-    function refresh_disqus (newIdentifier, newUrl, newTitle) {
-
-        DISQUS.reset({
-            reload: true,
-            config: function(){
-                this.page.identifier = newIdentifier;
-                this.page.url = newUrl;
-                this.page.title = newTitle;
-            }
-        });
-
-    }
-
-    // Click on disqus icon
-    $('.vote').on('click', function() {
-
-        var $element = $(this);
-
-        var id = $element.attr('id');
-
-        var name = $element.attr('data-legislation-name');
-
-        $('#myModalLabel').text(name + ' (In development)');
-        $('#conversation').modal('show');
-
-        refresh_disqus(id, 'http://govwiki.us' + '/' + id, name);
-    });
-
-    // Save event from xEditable, after click on check icon
-    $('a').on('save', function(e, params) {
-
-        var entityType = $(this).closest('table').attr('data-entity-type');
-        var id = $(this).closest('tr').attr('data-id');
-        var field = Object.keys($(this).closest('td')[0].dataset)[0];
-
-        if (field === 'vote' || field === 'didElectedOfficialProposeThis') {
-
-            /*
-             Current field owned by ElectedOfficialVote
-             */
-            entityType = 'ElectedOfficialVote';
-            id = $(e.currentTarget).parent().find('span')[0].dataset.id;
-        }
-        sendObject = {
-            editRequest: {
-                entityName: entityType,
-                entityId: id,
-                changes: {}
-            }
+            cb(matches);
         };
+    };
 
-        sendObject.editRequest.changes[field] = params.newValue;
-        sendObject.editRequest = JSON.stringify(sendObject.editRequest);
+    $.get('/legacy/data/h_types_ca_2.json', function (data){
 
-        $.ajax('/editrequest/create', {
-            method: 'POST',
-            data: sendObject,
-            dataType: 'text/json',
-            success: function(response) {
-                console.log(response.responseText);
+        var searchValue = '';
+
+        // Init typeahead
+        var $typeahead = $('.typeahead').typeahead({
+            hint: true,
+            minLength: 1
+        }, {
+            name: 'countries',
+            source: substringMatcher(data.record),
+            templates: {
+                empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
+                suggestion: Handlebars.compile('<div class="sugg-box">'+
+                    '<div class="sugg-state">{{state}}</div>' +
+                    '<div class="sugg-name">{{gov_name}}</div>' +
+                    '<div class="sugg-type">{{gov_type}}</div>' +
+                    '</div>')
             },
-            error: function(error) {
-                if (error.status === 401) {
-                    $('#modal-window').modal('show'); // Open login modal window
-                }
+            updater: function (item) {
+                alert(item);
             }
         });
+
+        // Pressed mouse or enter button
+        $typeahead.bind("typeahead:selected", function(obj, selectedItemData) {
+            $typeahead.typeahead('val', selectedItemData.gov_name);
+            window.location.pathname = [selectedItemData.altTypeSlug, selectedItemData.slug].join('/');
+        });
+
+        // Move cursor via arrows keys
+        $typeahead.bind("typeahead:cursorchange", function(obj) {
+            $typeahead.typeahead('val', searchValue);
+        });
+
+        // Store search value on typing
+        $typeahead.keyup(function(event) {
+            searchValue = $(event.target).val();
+        });
+
     });
 
-    $('table').on('click', '.add', function(e) {
-        var compiledTemplate, currentEntity, insertCategories, tabPane, tableType;
-        tabPane = $(e.target).closest('.tab-pane');
-        tableType = tabPane[0].id;
-        if (!authorized) {
-            $('#modal-window').modal('show'); // Open login modal window
-            window.sessionStorage.setItem('tableType', tableType);
-            return false;
-        }
-        currentEntity = null;
-        console.log(tableType);
-        if (tableType === 'Votes') {
-            currentEntity = 'Legislation';
-            $('#addVotes').modal('toggle');
-        } else if (tableType === 'Contributions') {
-            currentEntity = 'Contribution';
-            $('#addContributions').modal('toggle').find('form')[0].reset();
-        } else if (tableType === 'Endorsements') {
-            currentEntity = 'Endorsement';
-            $('#addEndorsements').modal('toggle').find('form')[0].reset();
-        } else if (tableType === 'Statements') {
-            currentEntity = 'PublicStatement';
-            $('#addStatements').modal('toggle').find('form')[0].reset();
+});
+$(function() {
+
+    /**
+     * window.gw.map = {
+     *  id: Number
+     *  vizURL: String
+     *  centerLatitude: Number
+     *  centerLongitude: Number
+     *  zoom: Number
+     * }
+     */
+
+    window.gw.map = JSON.parse(window.gw.map);
+
+    cartodb.createVis('map', 'https://dam-robert.cartodb.com/api/v2/viz/935d0bdc-9d7a-11e5-a98e-0e787de82d45/viz.json', {
+            scrollwheel: true,
+            shareable: false,
+            title: false,
+            description: false,
+            search: false,
+            tiles_loader: true,
+            center_lat: 37.3,
+            center_lon: -119.3,
+            zoom: 5
+        })
+        .done(function(vis, layers) {
+
+            var map = vis.getNativeMap();
+            // map.setZoom(3);
+            // map.panTo([50.5, 30.5]);
+
+            // layer 0 is the base layer, layer 1 is cartodb layer
+            var layer = layers[1];
+
+            var countyLayer = layer.getSubLayer(0),
+                cityLayer = layer.getSubLayer(1),
+                schoolLayer = layer.getSubLayer(2),
+                specialLayer = layer.getSubLayer(3);
+
+            var sublayers = [];
+            sublayers.push(countyLayer);
+            sublayers.push(cityLayer);
+            sublayers.push(schoolLayer);
+            sublayers.push(specialLayer);
+
+            countyLayer.set({ 'interactivity': ['cartodb_id', 'slug', 'geometry'] }); // alias to template
+            cityLayer.set({ 'interactivity': ['cartodb_id', 'slug'] }); // alias to template
+            schoolLayer.set({ 'interactivity': ['cartodb_id', 'slug'] }); // alias to template
+            specialLayer.set({ 'interactivity': ['cartodb_id', 'slug'] }); // alias to template
+
+            /**
+             * Passing data and render layers
+             */
+            //var prom = countyLayer.setSQL('SELECT  *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.environment + '_county');
+            //cityLayer.setSQL("SELECT * FROM " + window.gw.environment + " WHERE ");
+            //schoolLayer.setSQL("SELECT * FROM school_district_ca");
+            //specialLayer.setSQL("SELECT * FROM special_discrict_ca");
+
+            var prom = countyLayer.setSQL('SELECT  *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM county_ca');
+            cityLayer.setSQL("SELECT * FROM city_ca");
+            schoolLayer.setSQL("SELECT * FROM school_district_ca");
+            specialLayer.setSQL("SELECT * FROM special_discrict_ca");
+
+            var $objectsPane = $('.leaflet-objects-pane');
+            var $tilePane = $('.leaflet-tile-pane');
+
+            $objectsPane.appendTo($tilePane);
+            $objectsPane.css({"z-index":"100"});
 
             /*
-             Set get url callback.
+             * Tooltip vindow
+             * Tooltip work with 3.11-13 version, 3.15 is buggy
              */
-            $('.url-input').on('keyup', function() {
-                var match_url;
-                match_url = /\b(https?):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#\/%=~_|!:,.;]*)?/i;
-                if (match_url.test($(this).val())) {
-                    return $.ajax('/api/url/extract', {
-                        method: 'GET',
-                        data: {
-                            url: $(this).val().match(match_url)[0]
-                        },
-                        success: function(response) {
-                            var urlContent;
-                            console.log(response);
-                            urlContent = $('#url-statement');
-                            urlContent.find('.url-content-title').text('');
-                            urlContent.find('.url-content-body').text('');
-                            urlContent.find('.url-content-img').attr('src', '');
-                            urlContent.find('.url-content-title').text(response.data.title);
-                            if (response.type === 'html') {
-                                urlContent.find('.url-content-img').hide();
-                                urlContent.find('.url-content-body').text(response.data.body);
-                            }
-                            if (response.type === 'youtube') {
-                                urlContent.find('.url-content-img').attr('src', response.data.preview);
-                            }
-                            if (response.type === 'image') {
-                                urlContent.find('.url-content-img').attr('src', response.data.preview);
-                            }
-                            return urlContent.slideDown();
-                        },
-                        error: function(error) {
-                            var urlContent;
-                            console.log(error);
-                            urlContent = $('#url-statement');
-                            urlContent.find('.url-content-title').text('');
-                            urlContent.find('.url-content-body').text('');
-                            urlContent.find('.url-content-img').attr('src', '');
-                            urlContent.find('.url-content-body').text(error.responseText);
-                            return urlContent.slideDown();
+
+            cdb.geo.ui.Tooltip.prototype.getLayerIndex = function () {
+                return this.options.layer._position;
+            };
+
+            var countyTooltip = new cdb.geo.ui.Tooltip({
+                layer: countyLayer,
+                template: '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"><p>{{slug}}</p></div></div>',
+                width: 200,
+                position: 'bottom|right'
+            });
+
+            var cityTooltip = new cdb.geo.ui.Tooltip({
+                layer: cityLayer,
+                template: '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"><p>{{slug}}</p></div></div>',
+                width: 200,
+                position: 'bottom|right'
+            });
+//
+            var schoolTooltip = new cdb.geo.ui.Tooltip({
+                layer: schoolLayer,
+                template: '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"><p>{{slug}}</p></div></div>',
+                width: 200,
+                position: 'bottom|right'
+            });
+
+            var specialTooltip = new cdb.geo.ui.Tooltip({
+                layer: specialLayer,
+                template: '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"><p>{{slug}}</p></div></div>',
+                width: 200,
+                position: 'bottom|right'
+            });
+
+            var tooltips = [countyTooltip, cityTooltip, schoolTooltip, specialTooltip];
+
+            tooltips.forEach(function (tooltip) {
+                $('#map_wrap').append(tooltip.render().el);
+            });
+
+            var hovers = [];
+
+            /**
+             * Set handlers on sublayers
+             */
+            sublayers.forEach(function(layer) {
+
+                layer.setInteraction(true);
+
+                layer.bind('mouseover', function(e, latlon, pxPos, data, layerIndex) {
+
+                    // TODO: Must be deleted, when data will be replaced, now it's hardcoded
+                    data.slug = data.slug.replace(/_/g, ' ');
+
+                    hovers[layerIndex] = 1;
+
+                    if(_.any(hovers)) {
+
+                        $('.cartodb-map-wrapper').css('cursor', 'pointer');
+
+                        if (layerIndex == countyLayer._position) {
+                            drawAppropriatePolygon(data);
+                        } else {
+                            removeAllHoverShapes();
                         }
-                    });
+
+                        // Open current tooltip, close another
+                        tooltips.forEach(function(tooltip){
+                            if (tooltip.getLayerIndex() == layerIndex) {
+                                tooltip.enable();
+                            } else {
+                                tooltip.disable();
+                            }
+                        })
+
+                    }
+
+                });
+
+                layer.bind('mouseout', function(layerIndex) {
+                    hovers[layerIndex] = 0;
+                    if(!_.any(hovers)) {
+                        $('.cartodb-map-wrapper').css('cursor', 'auto');
+
+                        removeAllHoverShapes();
+
+                        // Close all tooltips, if cursor outside of layers
+                        tooltips.forEach(function(tooltip){
+                            if (tooltip.getLayerIndex() == layerIndex) {
+                                tooltip.disable();
+                            }
+                        })
+
+                    }
+                });
+
+                layer.on('featureClick', function (event, latlng, pos, data, layerIndex) {
+
+
+
+                    /**
+                     * TODO: hardcoded, must be replaced on multi envirenment
+                     * @type {string}
+                     */
+                    var altTypeSlug = '';
+                    switch (layerIndex) {
+                        case 0:
+                            altTypeSlug = 'County';
+                            break;
+
+                        case 1:
+                            altTypeSlug = 'City';
+                            break;
+
+                        case 2:
+                            altTypeSlug = 'School_District';
+                            break;
+
+                        case 3:
+                            altTypeSlug = 'Special_District';
+                            break;
+                    }
+
+                    var governmentSlug = data.slug.replace(/ /g, '_');
+
+                    window.location.pathname = altTypeSlug + '/' + governmentSlug;
+                });
+
+            });
+
+            // Toggle layers
+            $('.legend-item').click(function() {
+                $(this).toggleClass('selected');
+                LayerActions[$(this).attr('id')]();
+            });
+
+            var LayerActions = {
+                counties: function(){
+                    countyLayer.toggle();
+                    return true;
+                },
+                cities: function(){
+                    cityLayer.toggle();
+                    return true;
+                },
+                school: function(){
+                    schoolLayer.toggle();
+                    return true;
+                },
+                special: function(){
+                    specialLayer.toggle();
+                    return true;
                 }
-            });
-        }
-        insertCategories = function(select) {
-            var endObj, key, option, results;
-            endObj = {};
-            categories.forEach(function(item) {
-                return endObj[item.id] = item.name;
-            });
-            select.setAttribute('name', 'issueCategory');
-            option = document.createElement('option');
-            option.setAttribute('value', '');
-            option.textContent = '';
-            select.innerHTML += option.outerHTML;
-            results = [];
-            for (key in endObj) {
-                option = document.createElement('option');
-                option.setAttribute('value', key);
-                option.textContent = endObj[key];
-                results.push(select.innerHTML += option.outerHTML);
+            };
+
+            // Polygon variables and functions
+            var polygon = {};
+            // What should our polygon hover style look like?
+            var polygon_style = {
+                color: "#808080",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: .45,
+                fillColor: "#00FF00",
+                clickable: false
+            };
+
+            function drawAppropriatePolygon(data){
+                removeAllHoverShapes();
+                polygon = new L.GeoJSON(JSON.parse(data.geometry), {
+                    style: polygon_style
+                });
+                map.addLayer(polygon);
+                polygon.cartodb_id = data.cartodb_id;
             }
-            return results;
-        };
-        if (tabPane.hasClass('loaded')) {
-            return false;
-        }
-        tabPane[0].classList.add('loaded');
-        if (currentEntity === 'Endorsement') {
+            function removeAllHoverShapes(){
+                map.removeLayer(polygon);
+                polygon.cartodb_id = null;
+            }
 
-        } else if (currentEntity === 'Contribution') {
-
-        } else if (currentEntity === 'Legislation') {
-            insertCategories($('#addVotes select')[0]);
-            $('#addVotes').find('[data-provide="datepicker"]').on('changeDate', function() {
-                return $(this).datepicker('hide');
-            });
-            compiledTemplate = Handlebars.compile($('#legislation-vote').html());
-            return $('#electedVotes').html(compiledTemplate(electedOfficials));
-        } else if (currentEntity === 'PublicStatement') {
-            insertCategories($('#addStatements select')[0]);
-            return $('#addStatements').find('[data-provide="datepicker"]').on('changeDate', function() {
-                return $(this).datepicker('hide');
-            });
-        }
-    });
+        })
+        .error(function(err) {
+            console.log(err);
+        });
 
 });
