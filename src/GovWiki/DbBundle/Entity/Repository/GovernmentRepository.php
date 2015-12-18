@@ -43,89 +43,90 @@ class GovernmentRepository extends EntityRepository
 
         return $qb->getQuery();
     }
-    /**
-     * @param string $altTypeSlug Government slugged alt type.
-     *
-     * @return integer
-     */
-    public function countGovernments($altTypeSlug)
-    {
-        $qb = $this->createQueryBuilder('Government');
-        return $qb
-            ->select($qb->expr()->count('Government.id'))
-            ->where(
-                $qb->expr()->eq(
-                    'Government.altTypeSlug',
-                    $qb->expr()->literal($altTypeSlug)
-                )
-            )
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
+//    /**
+//     * @param string $altTypeSlug Government slugged alt type.
+//     *
+//     * @return integer
+//     */
+//    public function countGovernments($altTypeSlug)
+//    {
+//        $qb = $this->createQueryBuilder('Government');
+//        return $qb
+//            ->select($qb->expr()->count('Government.id'))
+//            ->where(
+//                $qb->expr()->eq(
+//                    'Government.altTypeSlug',
+//                    $qb->expr()->literal($altTypeSlug)
+//                )
+//            )
+//            ->getQuery()
+//            ->getSingleScalarResult();
+//    }
+
+//    /**
+//     * @param string  $altTypeSlug Government slugged alt type.
+//     * @param integer $page        Page to show.
+//     * @param integer $limit       Max entities per page.
+//     * @param array   $orderFields Assoc array, fields name as key and
+//     *                             sort direction ('desc' or 'asc' (default))
+//     *                             as value.
+//     *
+//     * @return string[]
+//     */
+//    public function getGovernments($altTypeSlug, $page, $limit, array $orderFields = [])
+//    {
+//        $qb = $this->createQueryBuilder('Government');
+//        $qb
+//            ->select('Government.name, Government.altTypeSlug, Government.slug')
+//            ->where(
+//                $qb->expr()->eq(
+//                    'Government.altTypeSlug',
+//                    $qb->expr()->literal($altTypeSlug)
+//                )
+//            )
+//            ->setFirstResult($page * $limit)
+//            ->setMaxResults($limit);
+//
+//        /*
+//        * Get all class property with 'Rank' postfix.
+//        */
+//        foreach ($this->getClassMetadata()->columnNames as $key => $value) {
+//            if (false !== strpos($key, 'Rank')) {
+//                $qb->addSelect("Government.$key");
+//            }
+//        }
+//
+//        if ($orderFields) {
+//            foreach ($orderFields as $fieldName => $direction) {
+//                $fieldName .= 'Rank';
+//                if ('desc' === $direction) {
+//                    $qb->addOrderBy($qb->expr()->desc('Government.'. $fieldName));
+//                } else {
+//                    $qb->addOrderBy($qb->expr()->asc('Government.'. $fieldName));
+//                }
+//            }
+//        }
+//
+//        $data = $qb
+//            ->getQuery()
+//            ->getArrayResult();
+//
+//        /*
+//         * Remove empty fields.
+//         */
+//        foreach ($data as &$row) {
+//            foreach ($row as $key => $field) {
+//                if (empty($field)) {
+//                    unset($row[$key]);
+//                }
+//            }
+//        }
+//
+//        return $data;
+//    }
 
     /**
-     * @param string  $altTypeSlug Government slugged alt type.
-     * @param integer $page        Page to show.
-     * @param integer $limit       Max entities per page.
-     * @param array   $orderFields Assoc array, fields name as key and
-     *                             sort direction ('desc' or 'asc' (default))
-     *                             as value.
-     *
-     * @return string[]
-     */
-    public function getGovernments($altTypeSlug, $page, $limit, array $orderFields = [])
-    {
-        $qb = $this->createQueryBuilder('Government');
-        $qb
-            ->select('Government.name, Government.altTypeSlug, Government.slug')
-            ->where(
-                $qb->expr()->eq(
-                    'Government.altTypeSlug',
-                    $qb->expr()->literal($altTypeSlug)
-                )
-            )
-            ->setFirstResult($page * $limit)
-            ->setMaxResults($limit);
-
-        /*
-        * Get all class property with 'Rank' postfix.
-        */
-        foreach ($this->getClassMetadata()->columnNames as $key => $value) {
-            if (false !== strpos($key, 'Rank')) {
-                $qb->addSelect("Government.$key");
-            }
-        }
-
-        if ($orderFields) {
-            foreach ($orderFields as $fieldName => $direction) {
-                $fieldName .= 'Rank';
-                if ('desc' === $direction) {
-                    $qb->addOrderBy($qb->expr()->desc('Government.'. $fieldName));
-                } else {
-                    $qb->addOrderBy($qb->expr()->asc('Government.'. $fieldName));
-                }
-            }
-        }
-
-        $data = $qb
-            ->getQuery()
-            ->getArrayResult();
-
-        /*
-         * Remove empty fields.
-         */
-        foreach ($data as &$row) {
-            foreach ($row as $key => $field) {
-                if (empty($field)) {
-                    unset($row[$key]);
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /**
+     * @param string  $environment    Environment name.
      * @param string  $altTypeSlug    Slugged alt type.
      * @param string  $governmentSlug Slugged government name.
      * @param string  $rankFieldName  One of government rank field name.
@@ -138,7 +139,7 @@ class GovernmentRepository extends EntityRepository
      *
      * @return array
      */
-    public function getGovernmentRank($altTypeSlug, $governmentSlug, $rankFieldName, $limit, $page = 0, $order = null, $nameOrder = null)
+    public function getGovernmentRank($environment, $altTypeSlug, $governmentSlug, $rankFieldName, $limit, $page = 0, $order = null, $nameOrder = null)
     {
         /*
          * Remove rank postfix from field name, in order to get
@@ -147,14 +148,20 @@ class GovernmentRepository extends EntityRepository
         $amountFieldName = str_replace('Rank', '', $rankFieldName);
 
         $qb = $this->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
         $qb
             ->select(
                 "Government.slug as name, Government.$rankFieldName AS value, Government.$amountFieldName as amount"
             )
+            ->leftJoin('Government.environment', 'Environment')
             ->where(
-                $qb->expr()->eq(
-                    'Government.altTypeSlug',
-                    $qb->expr()->literal($altTypeSlug)
+                $expr->andX(
+                    $expr->eq(
+                        'Government.altTypeSlug',
+                        $expr->literal($altTypeSlug)
+                    ),
+                    $expr->eq('Environment.name', $expr->literal($environment))
                 )
             );
 
@@ -166,12 +173,25 @@ class GovernmentRepository extends EntityRepository
              * Get rank for given government.
              */
             $qb2 = $this->createQueryBuilder('Government');
+            $expr2 = $qb2->expr();
+
             $rank = $qb2
                 ->select('Government.'. $rankFieldName)
+                ->leftJoin('Government.environment', 'Environment')
                 ->where(
-                    $qb2->expr()->andX(
-                        $qb2->expr()->eq('Government.altTypeSlug', $qb2->expr()->literal($altTypeSlug)),
-                        $qb2->expr()->eq('Government.slug', $qb2->expr()->literal($governmentSlug))
+                    $expr2->andX(
+                        $expr2->eq(
+                            'Government.altTypeSlug',
+                            $expr2->literal($altTypeSlug)
+                        ),
+                        $expr2->eq(
+                            'Government.slug',
+                            $expr2->literal($governmentSlug)
+                        ),
+                        $expr2->eq(
+                            'Environment.name',
+                            $expr2->literal($environment)
+                        )
                     )
                 )
                 ->orderBy($qb2->expr()->asc('Government.'. $rankFieldName))
@@ -180,25 +200,25 @@ class GovernmentRepository extends EntityRepository
 
 
             $qb->andWhere(
-                $qb->expr()->gte('Government.'. $rankFieldName, $rank)
+                $expr->gte('Government.'. $rankFieldName, $rank)
             );
             if (empty($nameOrder)) {
-                $qb->orderBy($qb->expr()->asc('Government.' . $rankFieldName));
+                $qb->orderBy($expr->asc('Government.' . $rankFieldName));
             }
 
         /*
          * Get sorted information from offset computed on given page and limit.
          */
         } elseif ('desc' === $order) {
-            $qb->orderBy($qb->expr()->desc('Government.'. $rankFieldName));
+            $qb->orderBy($expr->desc('Government.'. $rankFieldName));
         } elseif ('asc' === $order) {
-            $qb->orderBy($qb->expr()->asc('Government.'. $rankFieldName));
+            $qb->orderBy($expr->asc('Government.'. $rankFieldName));
         }
 
         if ('desc' === $nameOrder) {
-            $qb->AddOrderBy($qb->expr()->desc('Government.slug'));
+            $qb->AddOrderBy($expr->desc('Government.slug'));
         } elseif ('asc' === $nameOrder) {
-            $qb->AddOrderBy($qb->expr()->asc('Government.slug'));
+            $qb->AddOrderBy($expr->asc('Government.slug'));
         }
 
         return $qb

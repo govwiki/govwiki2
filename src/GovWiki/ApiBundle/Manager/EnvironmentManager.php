@@ -112,6 +112,40 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     /**
      * @param string $altTypeSlug Slugged government alt type.
      * @param string $slug        Slugged government name.
+     * @param array  $parameters  Array of parameters:
+     *                            <ul>
+     *                              <li>field_name (required)</li>
+     *                              <li>limit (required)</li>
+     *                              <li>page</li>
+     *                              <li>order</li>
+     *                              <li>name_order</li>
+     *                            </ul>.
+     * @return array
+     */
+    public function getGovernmentRank($altTypeSlug, $slug, array $parameters)
+    {
+        $rankFieldName = $parameters['field_name'];
+        $limit = $parameters['limit'];
+        $page = $parameters['page'];
+        $order = $parameters['order'];
+        $nameOrder = $parameters['name_order'];
+
+        return $this->em->getRepository('GovWikiDbBundle:Government')
+            ->getGovernmentRank(
+                $this->environment,
+                $altTypeSlug,
+                $slug,
+                $rankFieldName,
+                $limit,
+                $page,
+                $order,
+                $nameOrder
+            );
+    }
+
+    /**
+     * @param string $altTypeSlug Slugged government alt type.
+     * @param string $slug        Slugged government name.
      * @param string $eoSlug      Slugged elected official full name.
      *
      * @return array

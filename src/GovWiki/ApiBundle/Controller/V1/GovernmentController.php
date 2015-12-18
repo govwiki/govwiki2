@@ -104,17 +104,21 @@ class GovernmentController extends AbstractGovWikiApiController
             }
         }
         if (! $found) {
-            return new JsonResponse([ 'message'  => 'Unknown field name, provide in camel case like in Government entity.'], 400);
+            return new JsonResponse([
+                'message' => 'Unknown field name, provide in camel case like in Government entity.'
+            ], 400);
         }
 
-        $data = $repository->getGovernmentRank(
+        $data = $this->environmentManager()->getGovernmentRank(
             $altTypeSlug,
             $slug,
-            $fieldName,
-            $request->query->getInt('limit', 25),
-            $request->query->get('page', 0),
-            $request->query->get('order', null),
-            $request->query->get('name_order', null)
+            [
+                'field_name' => $fieldName,
+                'limit' => $request->query->getInt('limit', 25),
+                'page' => $request->query->getInt('page', 0),
+                'order' => $request->query->get('order', null),
+                'name_order' => $request->query->get('name_order', null)
+            ]
         );
 
         /*
