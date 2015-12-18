@@ -2,6 +2,8 @@
 
 {% block main %}
 
+    {% dump formats %}
+
     <section class="governmentController">
 
         {# Government name & wikipedia links #}
@@ -44,6 +46,7 @@
 
         <section class="row">
             <div class="col-md-12">
+
                 {# Tabs conrol #}
                 <nav>
                     <ul class="nav nav-pills">
@@ -75,25 +78,32 @@
 
                             {# Statistics #}
                             <div class="statistics">
-                                <table>
+
+                                <table class="statistics-table">
                                     <tbody>
 
                                         {% for fieldName, format in fields %}
 
                                             {# Apply mask(filter) via format field #}
-                                            {% set value = government | format_field(fieldName, format) %}
-                                            {% if value is defined %}
+                                            {% set value = attribute(government, fieldName) %}
+                                            {% if value %}
                                                 <tr>
                                                     {# Field name #}
                                                     <td>{{ format.description }}</td>
                                                     {# Field value #}
                                                     <td>
                                                         {{ value }}
-                                                        <a class='rank'
-                                                           data-field='median_salary_per_full_time_emp_rank'
-                                                           title='Median Salary for Full Time Employees ranks'>
-                                                            (... of ...)
-                                                        </a>
+
+                                                        {% set rankName = "#{fieldName}Rank" %}
+                                                        {% if (government.ranks[rankName] is defined) %}
+                                                            <a class='rank'
+                                                               data-field='{{ rankName }}'
+                                                               data-mask='{{ format.mask }}'
+                                                               title='{{ format.description }} ranks'>
+                                                                ( {{ government.ranks[rankName][0] }} of {{ government.ranks[rankName][1] }} )
+                                                            </a>
+                                                        {% endif %}
+
                                                     </td>
                                                 </tr>
                                             {% endif %}
@@ -160,10 +170,13 @@
 
     {{parent()}}
 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+    <script src="/js/vendor/handlebars.runtime.js"></script>
 
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/script.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/government/handlers.js'
-                    output='js/government.js' %}
+                    '@GovWikiFrontendBundle/Resources/public/js/government/rank-popover.js'
+                    '@GovWikiFrontendBundle/Resources/public/js/government/index.js'
+                    output='js/main.js' %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 

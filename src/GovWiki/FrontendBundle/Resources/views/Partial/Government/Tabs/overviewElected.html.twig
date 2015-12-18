@@ -3,35 +3,50 @@
 
     {% for elected in government.electedOfficials %}
 
-        <div class="f-names">
+        <div class="person">
 
-            <span class="f-nam f-nam-margin">
+            <div class="person-info">
 
-                {{elected.title}}
+                <p>
+                    Title: {{elected.title}}
+                </p>
 
-                <a href="/{{government.altTypeSlug}}/{{government.slug}}/{{elected.slug}}" class="elected_link">{{elected.fullName}}</a><br>
+                <p>
+                    <a href="/{{government.altTypeSlug}}/{{government.slug}}/{{elected.slug}}" class="elected_link">Name {{elected.fullName}}</a>
+                </p>
 
-                {% if elected.emailAddress %}
-                    <a href="mailto:{{elected.emailAddress}}">{{elected.emailAddress}}</a><br />
+                <p>
+                    {% if elected.emailAddress %}
+                        <a href="mailto:{{elected.emailAddress}}">Email: {{elected.emailAddress}}</a>
+                    {% endif %}
+                </p>
+
+                <p>
+                    {% if elected.telephoneNumber %}
+                        Phone: {{elected.telephoneNumber}}
+                    {% endif %}
+                </p>
+
+                <p>
+                    Term Expires: {{elected.termExpires}}
+                </p>
+
+            </div>
+
+            <div class="person-photo">
+
+                {% if elected.photoUrl %}
+                    <a href="/{{government.altTypeSlug}}/{{government.slug}}/{{elected.slug}}">
+                        <span class="f-val">
+                            <img src="{{elected.photoUrl}}"/>
+                        </span>
+                    </a>
                 {% endif %}
 
-                {% if elected.telephoneNumber %}
-                    {{elected.telephoneNumber}}<br />
-                {% endif %}
-
-                {{elected.termExpires}}
-
-            </span>
-
-            {% if elected.photoUrl %}
-                <a href="/{{government.altTypeSlug}}/{{government.slug}}/{{elected.slug}}" class="elected_link">
-                    <span class="f-val">
-                        <img src="{{elected.photoUrl}}" class="portrait"/>
-                    </span>
-                </a>
-            {% endif %}
+            </div>
 
         </div>
+
 
     {% endfor %}
 

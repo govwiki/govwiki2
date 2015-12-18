@@ -833,45 +833,14 @@
 </script>
 
 <script id="rankPopover" type="text/x-handlebars-template">
-    <table class="table table-condensed table-hover">
-        <thead>
-            <tr>
-                <th data-sort-type="name_order" class="sortable"><nobr>{{alt_type}}<i class="icon"></i></nobr></th>
-                <th data-sort-type="order" class="sortable"><nobr>Rank<i class="icon"></i></nobr></th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#data}}
-                <tr>
-                    <td>{{name}}</td>
-                    <td>
-                        {{#if value}}
-                            {{value}}
-                        {{else}}
-                            No data
-                        {{/if}}
-                    </td>
-                    <td>
-                        {{amount}}
-                    </td>
-                </tr>
-            {{/data}}
-        </tbody>
-    </table>
-    <div class="loader"></div>
+<table class="table table-condensed table-hover"> <thead> <tr> <th data-sort-type="name_order" class="sortable"><nobr>{{alt_type}}<i class="icon"></i></nobr></th> <th data-sort-type="order" class="sortable"><nobr>Rank<i class="icon"></i></nobr></th> <th>Amount</th> </tr> </thead> <tbody> {{#data}} <tr> <td>{{name}}</td> <td> {{#if value}} {{value}} {{else}} No data {{/if}}</td> <td> {{amount}}</td> </tr> {{/data}}
+    </tbody>
+</table>
+<div class="loader"></div>
 </script>
 
 <script id="additionalRows" type="text/x-handlebars-template">
-    {{#data}}
-    <tr>
-        <td>{{name}}</td>
-        <td>
-            {{#if value}}
-                {{value}}
-            {{else}}
-                No data
-            {{/if}}
+    {{#data}} <tr> <td>{{name}}</td> <td> {{#if value}} {{value}} {{else}} No data {{/if}}
         </td>
         <td>
             {{amount}}
