@@ -1,0 +1,44 @@
+<!-- Votes Modal -->
+<div class="modal fade" id="addVotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Legislation">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Add new Votes</h4>
+            </div>
+            <div class="modal-body">
+                <form name="addVotes">
+                    <div class="input-group">
+                        <span class="input-group-addon">Category: </span>
+                        <select class="form-control" data-issue-category></select>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Date: </span>
+                        <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered data-provide="datepicker">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Title of Measure: </span>
+                        <input type="text" class="form-control" placeholder="Please enter Title of Measure" data-name>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Summary of Measure: </span>
+                        <textarea class="form-control" placeholder="Please enter Summary of Measure" data-summary></textarea>
+                    </div>
+                    <div id="electedVotes"></div>
+                    <!--<div class="input-group">
+                        <span class="input-group-addon">How official Voted: </span>
+                        <input type="text" class="form-control" placeholder="Please enter How official Voted" data-vote>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Sponsored by this official? </span>
+                        <input type="text" class="form-control" data-did-elected-official-propose-this placeholder="Sponsored by this official?">
+                    </div>-->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="window.addItem(event)">Add</button>
+            </div>
+        </div>
+    </div>
+</div>

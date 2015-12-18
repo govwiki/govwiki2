@@ -7,5 +7,40 @@
 
 
 .electedController {
+   margin-top: 40px;
+
+   .add {
+      color: #0b4d70;
+      text-align: center;
+      cursor: pointer;
+   }
+   .add:hover {
+      background-color: #0b4d70;
+      color: #fff;
+   }
+   .edit {
+      color: #d3d3d3;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 12px;
+   }
+   .editable {
+      text-decoration: none !important;
+      color: #000 !important;
+      border-bottom: none !important;
+   }
+
+   .vote {
+      cursor: pointer;
+      display: inline-block;
+      text-align: center;
+      font-size: 13px;
+      width: 30px;
+      height: 30px;
+      background-image: url("/img/comment.svg");
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      padding: 2px;
+   }
 
 }
