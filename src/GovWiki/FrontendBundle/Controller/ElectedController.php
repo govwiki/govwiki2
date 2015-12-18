@@ -3,6 +3,7 @@
 namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -27,9 +28,14 @@ class ElectedController extends Controller
         $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
             ->getElectedOfficial($altTypeSlug, $slug, $electedSlug);
 
+        $context = new SerializationContext();
+        $context->setGroups(['elected_official']);
+        $electedOfficialJSON = $this->get('jms_serializer')->serialize($data['electedOfficial'], 'json', $context);
+
         return array_merge($data, [
             'altTypeSlug' => $altTypeSlug,
             'slug' => $slug,
+            'electedOfficialJSON' => $electedOfficialJSON,
         ]);
     }
 }

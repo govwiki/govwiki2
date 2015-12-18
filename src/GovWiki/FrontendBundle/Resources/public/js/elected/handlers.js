@@ -166,26 +166,6 @@ $(function() {
                 }
             });
         }
-        insertCategories = function(select) {
-            var endObj, key, option, results;
-            endObj = {};
-            categories.forEach(function(item) {
-                return endObj[item.id] = item.name;
-            });
-            select.setAttribute('name', 'issueCategory');
-            option = document.createElement('option');
-            option.setAttribute('value', '');
-            option.textContent = '';
-            select.innerHTML += option.outerHTML;
-            results = [];
-            for (key in endObj) {
-                option = document.createElement('option');
-                option.setAttribute('value', key);
-                option.textContent = endObj[key];
-                results.push(select.innerHTML += option.outerHTML);
-            }
-            return results;
-        };
         if (tabPane.hasClass('loaded')) {
             return false;
         }
@@ -195,18 +175,206 @@ $(function() {
         } else if (currentEntity === 'Contribution') {
 
         } else if (currentEntity === 'Legislation') {
-            insertCategories($('#addVotes select')[0]);
             $('#addVotes').find('[data-provide="datepicker"]').on('changeDate', function() {
                 return $(this).datepicker('hide');
             });
             compiledTemplate = Handlebars.compile($('#legislation-vote').html());
-            return $('#electedVotes').html(compiledTemplate(electedOfficials));
+            return $('#electedVotes').html(compiledTemplate(JSON.parse(window.gw.electedOfficial)));
         } else if (currentEntity === 'PublicStatement') {
-            insertCategories($('#addStatements select')[0]);
             return $('#addStatements').find('[data-provide="datepicker"]').on('changeDate', function() {
                 return $(this).datepicker('hide');
             });
         }
     });
+
+    window.addItem = function(e) {
+        var add, associations, childs, data, entityType, i, key, len, modal, modalType, newRecord, obj, ref, ref1, ref2, rowTemplate, select, selectName, selectedText, selectedValue, sendObject, value;
+        newRecord = {};
+        modal = $(e.target).closest('.modal');
+        modalType = modal[0].id;
+        entityType = modal[0].dataset.entityType;
+        console.log(entityType);
+
+        var person = JSON.parse(window.gw.electedOfficial);
+
+        /*
+         Get value from input fields.
+         */
+        modal.find('input[type="text"]').each(function(index, element) {
+            var fieldName;
+            fieldName = Object.keys(element.dataset)[0];
+            return newRecord[fieldName] = element.value;
+        });
+
+        /*
+         Get value from texarea's.
+         */
+        modal.find('textarea').each(function(index, element) {
+            var fieldName;
+            fieldName = Object.keys(element.dataset)[0];
+            return newRecord[fieldName] = element.value;
+        });
+        associations = {};
+        if (modalType !== 'addVotes') {
+            associations["electedOfficial"] = person.id;
+        } else {
+            associations["government"] = person.government.id;
+        }
+        childs = [];
+        if (modalType === 'addVotes') {
+
+            /*
+             Add information about votes.
+             */
+            modal.find('#electedVotes').find('tr[data-elected]').each(function(idx, element) {
+                var childEntityName, data, fields;
+                element = $(element);
+                data = Object.create(null, {});
+                element.find('select').each(function(index, element) {
+                    var fieldName;
+                    if (element.value) {
+                        fieldName = Object.keys(element.dataset)[0];
+                        return data[fieldName] = element.value;
+                    }
+                });
+
+                /*
+                 Add only if all fields is set.
+                 */
+                if (Object.keys(data).length === 2) {
+                    fields = Object.create(null, {});
+                    fields['fields'] = data;
+                    fields['associations'] = Object.create(null, {});
+                    fields['associations'][element.attr('data-entity-type')] = element.attr('data-elected');
+                    childEntityName = element.parent().parent().attr('data-entity-type');
+                    return childs.push({
+                        entityName: childEntityName,
+                        fields: fields
+                    });
+                }
+            });
+            select = modal.find('select')[0];
+            selectName = select.name;
+            selectedValue = select.options[select.selectedIndex].value;
+            if (selectedValue === '') {
+                window.alert('Please select category.');
+                select.focus();
+                return false;
+            }
+            selectedText = $(select).find(':selected').text();
+            associations[selectName] = selectedValue;
+        } else if (modalType === 'addContributions') {
+            select = modal.find('select')[0];
+            selectName = select.name;
+            selectedValue = select.options[select.selectedIndex].value;
+            if (selectedValue === '') {
+                window.alert('Please select type.');
+                select.focus();
+                return false;
+            }
+            selectedText = $(select).find(':selected').text();
+            newRecord[selectName] = selectedValue;
+        } else if (modalType === 'addEndorsements') {
+            select = modal.find('select')[0];
+            selectName = select.name;
+            selectedValue = select.options[select.selectedIndex].value;
+            if (selectedValue === '') {
+                window.alert('Please select type.');
+                select.focus();
+                return false;
+            }
+            selectedText = $(select).find(':selected').text();
+            newRecord[selectName] = selectedValue;
+        } else if (modalType === 'addStatements') {
+            select = modal.find('select')[0];
+            selectName = select.name;
+            selectedValue = select.options[select.selectedIndex].value;
+            if (selectedValue === '') {
+                window.alert('Please select category.');
+                select.focus();
+                return false;
+            }
+            selectedText = $(select).find(':selected').text();
+            associations[selectName] = selectedValue;
+        }
+        sendObject = {
+            createRequest: {
+                entityName: entityType,
+                fields: {
+                    fields: newRecord,
+                    associations: associations,
+                    childs: childs
+                }
+            }
+        };
+
+        /*
+         Append new entity to table.
+         */
+        rowTemplate = Handlebars.compile($("#row-" + modalType).html());
+        data = Object.create(null, {});
+        ref = sendObject.createRequest.fields.fields;
+        for (key in ref) {
+            value = ref[key];
+            data[key] = value;
+        }
+        data['user'] = window.username;
+        console.log(person);
+        if (modalType === 'addVotes') {
+
+            /*
+             Check if user specified how current elected official voted.
+             */
+            add = false;
+            ref1 = sendObject.createRequest.fields.childs;
+            for (i = 0, len = ref1.length; i < len; i++) {
+                obj = ref1[i];
+                if (Number(obj.fields.associations.electedOfficial) === Number(person.id)) {
+                    add = true;
+                    ref2 = obj.fields.fields;
+                    for (key in ref2) {
+                        value = ref2[key];
+                        data[key] = value;
+                    }
+                    break;
+                }
+            }
+            if (add) {
+                data['category'] = selectedText;
+                $('#Votes tr:last-child').before(rowTemplate(data));
+            }
+        } else if (modalType === 'addContributions') {
+
+            /*
+             Format contribution amount.
+             */
+            data.contributorType = selectedText;
+            data.contributionAmount = numeral(data.contributionAmount).format('0,000');
+            $('#Contributions tr:last-child').before(rowTemplate(data));
+        } else if (modalType === 'addEndorsements') {
+            data.endorserType = selectedText;
+            $('#Endorsements tr:last-child').before(rowTemplate(data));
+        } else if (modalType === 'addStatements') {
+            data['category'] = selectedText;
+            $('#Statements tr:last-child').before(rowTemplate(data));
+        }
+
+        /*
+         Send create request to api.
+         */
+        console.log(sendObject);
+        $.ajax({
+            url: '/api/v1/createrequest/create',
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: sendObject,
+            success: function(data) {
+                return console.log(data);
+            }
+        });
+        return modal.modal('hide');
+    };
 
 });
