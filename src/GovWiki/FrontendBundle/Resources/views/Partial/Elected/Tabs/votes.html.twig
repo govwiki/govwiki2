@@ -1,6 +1,5 @@
 
 {% import _self as fun %}
-{% dump categories %}
 <div role="tabpanel" class="tab-pane active" id="Votes">
 
     <table class="table table-hover" data-entity-type="Legislation">
@@ -13,7 +12,6 @@
             <th>Category</th>
             <th></th>
         </tr>
-
             {% if (elected.votes is defined) and (elected.votes is not empty) %}
                 {{ fun.renderVotes(elected.votes, elected) }}
             {% else %}
@@ -42,7 +40,6 @@
 {% macro renderVotes(votes, elected) %}
 
     {% for vote in votes %}
-
         <tr data-id="{{vote.legislation.id}}">
             <td data-date-considered="{{vote.legislation.dateConsidered | date("m/d/Y") }}">
                 <a href="javascript:void(0);" data-type="date" data-pk="1"  data-format="mm/dd/yyyy"
@@ -79,7 +76,6 @@
             <td data-issue-category="{{vote.legislation.issueCategory.name}}" data-no-editable>{{vote.legislation.issueCategory.name}}</td>
             <td data-no-editable><span class="disqus-comment-count vote" id="{{elected.id}}_v{{vote.id}}" data-vote.legislation-name="{{vote.legislation.name}}" data-disqus-identifier="{{elected.id}}_v{{vote.id}}">0</span></td>
         </tr>
-
     {% endfor %}
 
 {% endmacro %}
@@ -87,38 +83,39 @@
 {% macro renderNewVotes(votes, categories) %}
 
     {% for vote in votes %}
+        {% if vote.entityName == 'Legislation' %}
+            {% dump vote %}
+            <tr data-id="{{ vote.id }}" style="background: rgba(80, 0, 0, 0.1)">
+                <td data-date-considered="{{ vote.fields.fields.dateConsidered }}">
+                    {{ vote.fields.fields.dateConsidered }}
+                </td>
+                <td data-name="{{ vote.fields.fields.name }}" data-no-editable>
+                    {{ vote.fields.fields.name }}
+                </td>
+                <td data-summary="{{ vote.fields.fields.summary }}" data-no-editable>
+                    {{ vote.fields.fields.summary }}
+                </td>
+                <td data-vote="" data-no-editable>
 
-        <tr data-id="{{ vote.id }}" style="background: rgba(80, 0, 0, 0.1)">
-            <td data-date-considered="{{ vote.fields.fields.dateConsidered }}">
-                {{ vote.fields.fields.dateConsidered }}
-            </td>
-            <td data-name="{{ vote.fields.fields.name }}" data-no-editable>
-                {{ vote.fields.fields.name }}
-            </td>
-            <td data-summary="{{ vote.fields.fields.summary }}" data-no-editable>
-                {{ vote.fields.fields.summary }}
-            </td>
-            <td data-vote="" data-no-editable>
+                </td>
+                <td align="center" data-did-elected-official-propose-this="" data-no-editable>
 
-            </td>
-            <td align="center" data-did-elected-official-propose-this="" data-no-editable>
+                </td>
 
-            </td>
+                {% set categoryName = '' %}
+                {% for category in categories %}
+                {% dump category %}
+                    {% if category.id == vote.fields.associations.issueCategory %}
+                        {% set categoryName = category.name %}
+                    {% endif %}
+                {% endfor %}
 
-            {% set categoryName = '' %}
-            {% for category in categories %}
-            {% dump category %}
-                {% if category.id == vote.fields.fields.category %}
-                    {% set categoryName = category.name %}
-                {% endif %}
-            {% endfor %}
-
-            <td data-issue-category="{{ categoryName }}" data-no-editable>
-                {{ categoryName }}
-            </td>
-            <td data-no-editable>{{ app.user.username }}</td>
-        </tr>
-
+                <td data-issue-category="{{ categoryName }}" data-no-editable>
+                    {{ categoryName }}
+                </td>
+                <td data-no-editable>{{ app.user.username }}</td>
+            </tr>
+        {% endif %}
     {% endfor %}
 
 {% endmacro %}

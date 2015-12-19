@@ -320,7 +320,7 @@ $(function() {
             value = ref[key];
             data[key] = value;
         }
-        data['user'] = window.username;
+        data['username'] = window.gw.username;
         console.log(person);
         if (modalType === 'addVotes') {
 
