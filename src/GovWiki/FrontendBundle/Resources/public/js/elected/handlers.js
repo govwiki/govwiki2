@@ -178,8 +178,8 @@ $(function() {
             $('#addVotes').find('[data-provide="datepicker"]').on('changeDate', function() {
                 return $(this).datepicker('hide');
             });
-            compiledTemplate = Handlebars.compile($('#legislation-vote').html());
-            return $('#electedVotes').html(compiledTemplate(JSON.parse(window.gw.electedOfficial)));
+            //compiledTemplate = Handlebars.compile($('#legislation-vote').html());
+            //return $('#electedVotes').html(compiledTemplate(JSON.parse(window.gw.electedOfficial)));
         } else if (currentEntity === 'PublicStatement') {
             return $('#addStatements').find('[data-provide="datepicker"]').on('changeDate', function() {
                 return $(this).datepicker('hide');

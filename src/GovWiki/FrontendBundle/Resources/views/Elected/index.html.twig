@@ -81,45 +81,6 @@
 
 
     {% verbatim %}
-    <script id="legislation-vote" type="text/x-handlebars-template">
-        <table class="table table-hover" style="margin-top: 20px" data-entity-type="ElectedOfficialVote">
-            <tr>
-                <th>Elected official</th>
-                <th>How Voted</th>
-                <th>Sponsored by?</th>
-            </tr>
-            {{#electedOfficials}}
-            {{#this}}
-            <tr data-elected="{{id}}" data-entity-type="electedOfficial">
-                <td>{{fullName}}</td>
-                <td>
-                    <div class="input-group">
-                        <!-- <input type="text" class="form-control" placeholder="Please enter Vote" data-vote>-->
-                        <select class="form-control" placeholder="Please enter Vote" data-vote>
-                            <option value=""></option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                            <option value="Abstain">Abstain</option>
-                            <option value="Absence">Absence</option>
-                            <option value="Not in Office">Not in Office</option>
-                        </select>
-                    </div>
-                </td>
-                <td>
-                    <div class="input-group">
-                        <select class="form-control" data-did-elected-official-propose-this>
-                            <option value="0" selected="selected">No</option>
-                            <option value="1">Yes</option>
-                        </select>
-                        <!--<input type="" class="form-control" placeholder="Please enter sponsored by?" data-did-elected-official-propose-this>-->
-                    </div>
-                </td>
-            </tr>
-            {{/this}}
-            {{/electedOfficials}}
-        </table>
-    </script>
-
     <script id="row-addVotes" type="text//x-handlebars-template">
     <tr data-id style="background: rgba(80, 0, 0, 0.1)">
         <td data-date-considered="{{dateConsidered}}">
@@ -138,7 +99,7 @@
             {{#if did_elected_official_propose_this}}Yes{{else}}No{{/if}}
         </td>
         <td data-issue-category="{{category}}" data-no-editable>{{category}}</td>
-        <td data-no-editable>{{user}}</td>
+        <td data-no-editable>{{username}}</td>
     </tr>
 </script>
 
@@ -159,7 +120,7 @@
         <td data-contributor-type="{{contributorType}}" data-no-editable=>
             {{contributorType}}
         </td>
-        <td data-no-editable>{{user}}</td>
+        <td data-no-editable>{{username}}</td>
     </tr>
 </script>
 
@@ -174,7 +135,7 @@
         <td data-endorser-type="{{endorserType}}" data-no-editable>
             {{endorserType}}
         </td>
-        <td data-no-editable>{{user}}</td>
+        <td data-no-editable>{{username}}</td>
     </tr>
 </script>
 
@@ -192,47 +153,8 @@
         <td data-url="{{category}}" data-no-editable="">
             {{category}}
         </td>
-        <td data-no-editable>{{user}}</td>
+        <td data-no-editable>{{username}}</td>
     </tr>
-</script>
-
-<script id="legislation-vote" type="text/x-handlebars-template">
-    <table class="table table-hover" style="margin-top: 20px" data-entity-type="ElectedOfficialVote">
-        <tr>
-            <th>Elected official</th>
-            <th>How Voted</th>
-            <th>Sponsored by?</th>
-        </tr>
-        {{#electedOfficials}}
-        {{#this}}
-            <tr data-elected="{{id}}" data-entity-type="electedOfficial">
-                <td>{{fullName}}</td>
-                <td>
-                    <div class="input-group">
-                       <!-- <input type="text" class="form-control" placeholder="Please enter Vote" data-vote>-->
-                        <select class="form-control" placeholder="Please enter Vote" data-vote>
-                            <option value=""></option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                            <option value="Abstain">Abstain</option>
-                            <option value="Absence">Absence</option>
-                            <option value="Not in Office">Not in Office</option>
-                        </select>
-                    </div>
-                </td>
-                <td>
-                    <div class="input-group">
-                        <select class="form-control" data-did-elected-official-propose-this>
-                            <option value="0" selected="selected">No</option>
-                            <option value="1">Yes</option>
-                        </select>
-                        <!--<input type="" class="form-control" placeholder="Please enter sponsored by?" data-did-elected-official-propose-this>-->
-                    </div>
-                </td>
-            </tr>
-        {{/this}}
-        {{/electedOfficials}}
-    </table>
 </script>
 
     {% endverbatim %}
