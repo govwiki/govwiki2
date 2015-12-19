@@ -77,7 +77,11 @@
             {# Govwiki namespace #}
             <script> window.gw = {}; </script>
             <script> window.gw.authorized = "{{ app.user }}"; </script>
-            <script> window.gw.username = "{{ app.user.username }}"; </script>
+            {% set username = '' %}
+            {% if app.user %}
+                {% set username = app.user.username %}
+            {% endif %}
+            <script> window.gw.username = "{{ username }}"; </script>
         {% endblock %}
 
     </body>

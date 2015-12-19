@@ -2,6 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller\V1;
 
+use GovWiki\ApiBundle\GovWikiApiServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -9,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use GovWiki\DbBundle\Entity\CreateRequest;
 
 /**
  * CreateRequestController
@@ -27,7 +27,7 @@ class CreateRequestController extends Controller
     public function newAction(Request $request)
     {
         if (!$request->isXmlHttpRequest()) {
-            $data        = $request->request->get('createRequest');
+            $data = $request->request->get('createRequest');
 
             $knownFields = $data['knownFields'];
             $knownFields = empty($knownFields) ? [] : $knownFields;
@@ -105,7 +105,10 @@ class CreateRequestController extends Controller
                     return new JsonResponse(['errors' => $errors], 400);
                 }
 
-                $createRequest = new CreateRequest();
+                $createRequest = $this
+                    ->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+                    ->createCreateRequest();
+
                 $createRequest->setEntityName($data['entityName'])
                               ->setFields($data['fields'])
                               ->setUser($this->getUser());

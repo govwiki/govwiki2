@@ -127,7 +127,7 @@ $(function() {
                 var match_url;
                 match_url = /\b(https?):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#\/%=~_|!:,.;]*)?/i;
                 if (match_url.test($(this).val())) {
-                    return $.ajax('/api/url/extract', {
+                    return $.ajax('/api/v1/url/extract', {
                         method: 'GET',
                         data: {
                             url: $(this).val().match(match_url)[0]
@@ -360,7 +360,7 @@ $(function() {
         }
 
         /*
-         Send create request to api.
+            Send create request to api.
          */
         console.log(sendObject);
         $.ajax({
