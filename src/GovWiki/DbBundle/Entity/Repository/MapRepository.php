@@ -51,7 +51,7 @@ class MapRepository extends EntityRepository
      *
      * @return array|null
      */
-    public function getWithGovernments($name)
+    public function get($name)
     {
         $qb = $this->createQueryBuilder('Map');
         $expr = $qb->expr();

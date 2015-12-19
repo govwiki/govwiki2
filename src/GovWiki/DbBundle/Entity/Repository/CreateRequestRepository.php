@@ -28,6 +28,7 @@ class CreateRequestRepository extends EntityRepository
                 $expr->neq('CreateRequest.status', $expr->literal('discarded')),
                 $expr->eq('Environment.name', $expr->literal($environment))
             ))
+            ->orderBy($expr->desc('CreateRequest.created'))
             ->getQuery();
     }
 

@@ -4,6 +4,9 @@ namespace GovWiki\ApiBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use GovWiki\DbBundle\Entity\CreateRequest;
+use GovWiki\DbBundle\Entity\EditRequest;
+use GovWiki\DbBundle\Entity\ElectedOfficial;
 
 /**
  * Class EnvironmentManager
@@ -87,7 +90,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     public function getMap()
     {
         return $this->em->getRepository('GovWikiDbBundle:Map')
-            ->getWithGovernments($this->environment);
+            ->get($this->environment);
     }
 
     /**
@@ -168,6 +171,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
         $dataCount = count($data);
         if ($dataCount > 0) {
+            /** @var ElectedOfficial $electedOfficial */
             $electedOfficial = $data[0];
             $createRequests = [];
             for ($i = 1; $i < $dataCount; $i++) {
@@ -180,9 +184,40 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                 'categories' => $this->em
                     ->getRepository('GovWikiDbBundle:IssueCategory')
                     ->findAll(),
+                'electedOfficials' => $this->em
+                    ->getRepository('GovWikiDbBundle:Government')
+                    ->governmentElectedOfficial($electedOfficial->getId()),
             ];
         }
 
         return null;
+    }
+
+    /**
+     * Create new create request and sets it environment.
+     *
+     * @return CreateRequest
+     */
+    public function createCreateRequest() // Sorry :-)
+    {
+        $createRequest = new CreateRequest();
+        return $createRequest->setEnvironment(
+            $this->em->getRepository('GovWikiDbBundle:Environment')
+                ->getReferenceByName($this->environment)
+        );
+    }
+
+    /**
+     * Create new edit request and sets it environment.
+     *
+     * @return EditRequest
+     */
+    public function createEditRequest()
+    {
+        $editRequest = new EditRequest();
+        return $editRequest->setEnvironment(
+            $this->em->getRepository('GovWikiDbBundle:Environment')
+                ->getReferenceByName($this->environment)
+        );
     }
 }

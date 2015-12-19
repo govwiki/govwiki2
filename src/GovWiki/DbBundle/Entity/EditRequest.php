@@ -268,7 +268,8 @@ class EditRequest
      * Set environment
      *
      * @param Environment $environment A Environment instance.
-     * @return CreateRequest
+     *
+     * @return EditRequest
      */
     public function setEnvironment(Environment $environment = null)
     {

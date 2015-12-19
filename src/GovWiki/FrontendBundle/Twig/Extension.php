@@ -30,6 +30,9 @@ class Extension extends \Twig_Extension
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getTests()
     {
         return [
@@ -52,6 +55,9 @@ class Extension extends \Twig_Extension
     {
         $value = $government[$field];
         if (strlen($format['mask']) > 0) {
+            /*
+             * Current value has mask.
+             */
             $mask = $format['mask'];
 
             $prefix = '';
@@ -60,9 +66,21 @@ class Extension extends \Twig_Extension
 
             if ('$' === $mask[0]) {
                 $prefix = '$';
+
+                /*
+                 * Compute number of decimal point.
+                 */
+                $decimalStr = $mask;
+                if (strpos($mask, ',') !== false) {
+                    $decimalStr = explode(',', $mask)[1];
+                }
+                $decimal = strlen($decimalStr) - 1;
             } elseif (strpos($mask, '%') !== false) {
                 $postfix = '%';
 
+                /*
+                 * Compute number of decimal point.
+                 */
                 $decimalStr = $mask;
                 if (strpos($mask, '.') !== false) {
                     $decimalStr = explode('.', $mask)[1];
