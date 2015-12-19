@@ -11,7 +11,7 @@ create-request:
     resource: "@GovWikiApiBundle/Controller/V1/CreateRequestController.php"
     type:     annotation
 
-create-request:
+edit-request:
     resource: "@GovWikiApiBundle/Controller/V1/EditRequestController.php"
     type:     annotation
 

@@ -86,11 +86,10 @@ class EditRequestController extends Controller
      * @Configuration\Route("/{id}/apply")
      *
      * @param EditRequest $editRequest A EditRequest instance.
-     * @param string      $environment Environment name.
      *
      * @return JsonResponse
      */
-    public function applyAction(EditRequest $editRequest, $environment)
+    public function applyAction(EditRequest $editRequest)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -108,10 +107,7 @@ class EditRequestController extends Controller
         $em->flush();
 
         return new JsonResponse([
-            'redirect' => $this->generateUrl(
-                'govwiki_admin_editrequest_index',
-                [ 'environment' => $environment ]
-            )
+            'redirect' => $this->generateUrl('govwiki_admin_editrequest_index'),
         ]);
     }
 
@@ -119,21 +115,17 @@ class EditRequestController extends Controller
      * @Configuration\Route("/{id}/discard")
      *
      * @param EditRequest $editRequest A EditRequest instance.
-     * @param string      $environment Environment name.
      *
      * @return JsonResponse
      */
-    public function discardAction(EditRequest $editRequest, $environment)
+    public function discardAction(EditRequest $editRequest)
     {
         $em = $this->getDoctrine()->getManager();
         $editRequest->setStatus('discarded');
         $em->flush();
 
         return new JsonResponse([
-            'redirect' => $this->generateUrl(
-                'govwiki_admin_editrequest_index',
-                [ 'environment' => $environment ]
-            )
+            'redirect' => $this->generateUrl('govwiki_admin_editrequest_index'),
         ]);
     }
 

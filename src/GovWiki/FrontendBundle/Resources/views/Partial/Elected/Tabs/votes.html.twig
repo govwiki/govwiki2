@@ -1,6 +1,6 @@
 <div role="tabpanel" class="tab-pane active" id="Votes">
 
-    <table class="table table-hover" data-entity-type="vote.legislation">
+    <table class="table table-hover" data-entity-type="Legislation">
         <tr>
             <th class="vote.legislation-column-date">Date</th>
             <th>Title of Measure</th>
@@ -48,6 +48,7 @@
                         <a href="javascript:void(0);" data-type="select" data-source="{'0': 'No', '1': 'Yes'}" data-pk="1" data-placeholder="Please edit" data-title="Please edit" class="editable editable-pre-wrapped editable-click" data-original-title="" title="">{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}</a>
                         <span data-id="{{vote.id}}" class="glyphicon glyphicon-pencil edit"></span>
                     </td>
+                    {% dump vote.legislation %}
                     <td data-issue-category="{{vote.legislation.issueCategory.name}}" data-no-editable>{{vote.legislation.issueCategory.name}}</td>
                     <td data-no-editable><span class="disqus-comment-count vote" id="{{elected.id}}_v{{vote.id}}" data-vote.legislation-name="{{vote.legislation.name}}" data-disqus-identifier="{{elected.id}}_v{{vote.id}}">0</span></td>
                 </tr>

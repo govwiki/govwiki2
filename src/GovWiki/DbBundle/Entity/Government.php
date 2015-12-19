@@ -961,6 +961,356 @@ class Government
     private $environment;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="sq_miles", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $sqMiles;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="number_of_employees", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $numberOfEmployees;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="unemployment_rate", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $unemploymentRate;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="annual_salary_mayor", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $annualSalaryMayor;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mayor_name", type="string", length=255, nullable=true)
+     */
+    private $mayorName;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="years_mayor_in_office", type="integer", nullable=true)
+     */
+    private $yearsMayorInOffice;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="current_assets", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $currentAssets;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="current_liabilities", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $currentLiabilities;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="long_term_debt", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $longTermDebt;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="total_assets", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $totalAssets;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="total_net_position", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $totalNetPosition;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="total_unrestricted_net_position", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $totalUnrestrictedNetPosition;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="general_revenues", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $generalRevenues;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="change_in_net_assets", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $changeInNetAssets;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="general_fund_revenues", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $generalFundRevenues;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="governmental_fund_expenditures", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $governmentalFundExpenditures;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="general_fund_surplus", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $generalFundSurplus;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="net_change_in_general_fund_balance", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $netChangeInGeneralFundBalance;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="general_fund_balance", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $generalFundBalance;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="debt_service_expenditures_all_funds", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $debtServiceExpendituresAllFunds;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="intergovernmental_funds_gf", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $intergovernmentalFundsGf;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="government_funds_overall_balance", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $governmentFundsOverallBalance;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="net_change_in_fund_balance_over_general_fund_revenue", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $netChangeInFundBalanceOverGeneralFundRevenue;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="net_change_in_fund_balance_over_general_fund_revenue_rank", type="integer", nullable=true)
+     */
+    private $netChangeInFundBalanceOverGeneralFundRevenueRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="general_fund_balance_over_general_fund_expenditures", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $generalFundBalanceOverGeneralFundExpenditures;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="general_fund_balance_over_general_fund_expenditures_rank", type="integer", nullable=true)
+     */
+    private $generalFundBalanceOverGeneralFundExpendituresRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="current_assets_per_capita", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $currentAssetsPerCapita;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="current_assets_per_capita_rank", type="integer", nullable=true)
+     */
+    private $currentAssetsPerCapitaRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="current_assets_over_current_liabilities", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $currentAssetsOverCurrentLiabilities;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="current_assets_over_current_liabilities_rank", type="integer", nullable=true)
+     */
+    private $currentAssetsOverCurrentLiabilitiesRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="long_term_debt_over_capita", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $longTermDebtOverCapita;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="long_term_debt_over_capita_rank", type="integer", nullable=true)
+     */
+    private $longTermDebtOverCapitaRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="general_revenues_over_long_term_debt", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $generalRevenuesOverLongTermDebt;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="general_revenues_over_long_term_debt_rank", type="integer", nullable=true)
+     */
+    private $generalRevenuesOverLongTermDebtRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="debt_service_expenditures_over_general_fund_revenues", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $debtServiceExpendituresOverGeneralFundRevenues;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="debt_service_expenditures_over_general_fund_revenues_rank", type="integer", nullable=true)
+     */
+    private $debtServiceExpendituresOverGeneralFundRevenuesRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="general_fund_surplus_over_revenues", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $generalFundSurplusOverRevenues;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="general_fund_surplus_over_revenues_rank", type="integer", nullable=true)
+     */
+    private $generalFundSurplusOverRevenuesRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="change_in_net_assets_over_general_fund_revenues", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $changeInNetAssetsOverGeneralFundRevenues;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="change_in_net_assets_over_general_fund_revenues_rank", type="integer", nullable=true)
+     */
+    private $changeInNetAssetsOverGeneralFundRevenuesRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="government_funds_overall_balance_per_capita", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $governmentFundsOverallBalancePerCapita;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="government_funds_overall_balance_per_capita_rank", type="integer", nullable=true)
+     */
+    private $governmentFundsOverallBalancePerCapitaRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="overall_governmental_fund_balance_over_long_term_liabs", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $overallGovernmentalFundBalanceOverLongTermLiabs;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="overall_governmental_fund_balance_over_long_term_liabs_rank", type="integer", nullable=true)
+     */
+    private $overallGovernmentalFundBalanceOverLongTermLiabsRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="intergovermental_revenues_over_general_fund_revenues", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $intergovermentalRevenuesOverGeneralFundRevenues;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="intergovermental_revenues_over_general_fund_revenues_rank", type="integer", nullable=true)
+     */
+    private $intergovermentalRevenuesOverGeneralFundRevenuesRank;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="total_unrestricted_net_position_over_total_assets", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $totalUnrestrictedNetPositionOverTotalAssets;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="total_unrestricted_net_position_over_total_assets_rank", type="integer", nullable=true)
+     */
+    private $totalUnrestrictedNetPositionOverTotalAssetsRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="overall_weighted_index_rank", type="integer", nullable=true)
+     */
+    private $overallWeightedIndexRank;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="legend_overall_ranking", type="string", length=10, nullable=true)
+     */
+    private $legendOverallRanking;
+
+    /**
      * @return array
      * @VirtualProperty()
      */
@@ -1163,6 +1513,7 @@ class Government
      * Set name
      *
      * @param string $name
+     *
      * @return Government
      */
     public function setName($name)
@@ -3710,5 +4061,1155 @@ class Government
     public function getEnvironment()
     {
         return $this->environment;
+    }
+
+    /**
+     * Set sqMiles
+     *
+     * @param float $sqMiles
+     * @return Government
+     */
+    public function setSqMiles($sqMiles)
+    {
+        $this->sqMiles = $sqMiles;
+
+        return $this;
+    }
+
+    /**
+     * Get sqMiles
+     *
+     * @return float 
+     */
+    public function getSqMiles()
+    {
+        return $this->sqMiles;
+    }
+
+    /**
+     * Set numberOfEmployees
+     *
+     * @param float $numberOfEmployees
+     * @return Government
+     */
+    public function setNumberOfEmployees($numberOfEmployees)
+    {
+        $this->numberOfEmployees = $numberOfEmployees;
+
+        return $this;
+    }
+
+    /**
+     * Get numberOfEmployees
+     *
+     * @return float 
+     */
+    public function getNumberOfEmployees()
+    {
+        return $this->numberOfEmployees;
+    }
+
+    /**
+     * Set unemploymentRate
+     *
+     * @param float $unemploymentRate
+     * @return Government
+     */
+    public function setUnemploymentRate($unemploymentRate)
+    {
+        $this->unemploymentRate = $unemploymentRate;
+
+        return $this;
+    }
+
+    /**
+     * Get unemploymentRate
+     *
+     * @return float 
+     */
+    public function getUnemploymentRate()
+    {
+        return $this->unemploymentRate;
+    }
+
+    /**
+     * Set annualSalaryMayor
+     *
+     * @param float $annualSalaryMayor
+     * @return Government
+     */
+    public function setAnnualSalaryMayor($annualSalaryMayor)
+    {
+        $this->annualSalaryMayor = $annualSalaryMayor;
+
+        return $this;
+    }
+
+    /**
+     * Get annualSalaryMayor
+     *
+     * @return float 
+     */
+    public function getAnnualSalaryMayor()
+    {
+        return $this->annualSalaryMayor;
+    }
+
+    /**
+     * Set mayorName
+     *
+     * @param string $mayorName
+     * @return Government
+     */
+    public function setMayorName($mayorName)
+    {
+        $this->mayorName = $mayorName;
+
+        return $this;
+    }
+
+    /**
+     * Get mayorName
+     *
+     * @return string 
+     */
+    public function getMayorName()
+    {
+        return $this->mayorName;
+    }
+
+    /**
+     * Set yearsMayorInOffice
+     *
+     * @param integer $yearsMayorInOffice
+     * @return Government
+     */
+    public function setYearsMayorInOffice($yearsMayorInOffice)
+    {
+        $this->yearsMayorInOffice = $yearsMayorInOffice;
+
+        return $this;
+    }
+
+    /**
+     * Get yearsMayorInOffice
+     *
+     * @return integer 
+     */
+    public function getYearsMayorInOffice()
+    {
+        return $this->yearsMayorInOffice;
+    }
+
+    /**
+     * Set currentAssets
+     *
+     * @param float $currentAssets
+     * @return Government
+     */
+    public function setCurrentAssets($currentAssets)
+    {
+        $this->currentAssets = $currentAssets;
+
+        return $this;
+    }
+
+    /**
+     * Get currentAssets
+     *
+     * @return float 
+     */
+    public function getCurrentAssets()
+    {
+        return $this->currentAssets;
+    }
+
+    /**
+     * Set currentLiabilities
+     *
+     * @param float $currentLiabilities
+     * @return Government
+     */
+    public function setCurrentLiabilities($currentLiabilities)
+    {
+        $this->currentLiabilities = $currentLiabilities;
+
+        return $this;
+    }
+
+    /**
+     * Get currentLiabilities
+     *
+     * @return float 
+     */
+    public function getCurrentLiabilities()
+    {
+        return $this->currentLiabilities;
+    }
+
+    /**
+     * Set longTermDebt
+     *
+     * @param float $longTermDebt
+     * @return Government
+     */
+    public function setLongTermDebt($longTermDebt)
+    {
+        $this->longTermDebt = $longTermDebt;
+
+        return $this;
+    }
+
+    /**
+     * Get longTermDebt
+     *
+     * @return float 
+     */
+    public function getLongTermDebt()
+    {
+        return $this->longTermDebt;
+    }
+
+    /**
+     * Set totalAssets
+     *
+     * @param float $totalAssets
+     * @return Government
+     */
+    public function setTotalAssets($totalAssets)
+    {
+        $this->totalAssets = $totalAssets;
+
+        return $this;
+    }
+
+    /**
+     * Get totalAssets
+     *
+     * @return float 
+     */
+    public function getTotalAssets()
+    {
+        return $this->totalAssets;
+    }
+
+    /**
+     * Set totalNetPosition
+     *
+     * @param float $totalNetPosition
+     * @return Government
+     */
+    public function setTotalNetPosition($totalNetPosition)
+    {
+        $this->totalNetPosition = $totalNetPosition;
+
+        return $this;
+    }
+
+    /**
+     * Get totalNetPosition
+     *
+     * @return float 
+     */
+    public function getTotalNetPosition()
+    {
+        return $this->totalNetPosition;
+    }
+
+    /**
+     * Set totalUnrestrictedNetPosition
+     *
+     * @param float $totalUnrestrictedNetPosition
+     * @return Government
+     */
+    public function setTotalUnrestrictedNetPosition($totalUnrestrictedNetPosition)
+    {
+        $this->totalUnrestrictedNetPosition = $totalUnrestrictedNetPosition;
+
+        return $this;
+    }
+
+    /**
+     * Get totalUnrestrictedNetPosition
+     *
+     * @return float 
+     */
+    public function getTotalUnrestrictedNetPosition()
+    {
+        return $this->totalUnrestrictedNetPosition;
+    }
+
+    /**
+     * Set generalRevenues
+     *
+     * @param float $generalRevenues
+     * @return Government
+     */
+    public function setGeneralRevenues($generalRevenues)
+    {
+        $this->generalRevenues = $generalRevenues;
+
+        return $this;
+    }
+
+    /**
+     * Get generalRevenues
+     *
+     * @return float 
+     */
+    public function getGeneralRevenues()
+    {
+        return $this->generalRevenues;
+    }
+
+    /**
+     * Set changeInNetAssets
+     *
+     * @param float $changeInNetAssets
+     * @return Government
+     */
+    public function setChangeInNetAssets($changeInNetAssets)
+    {
+        $this->changeInNetAssets = $changeInNetAssets;
+
+        return $this;
+    }
+
+    /**
+     * Get changeInNetAssets
+     *
+     * @return float 
+     */
+    public function getChangeInNetAssets()
+    {
+        return $this->changeInNetAssets;
+    }
+
+    /**
+     * Set generalFundRevenues
+     *
+     * @param float $generalFundRevenues
+     * @return Government
+     */
+    public function setGeneralFundRevenues($generalFundRevenues)
+    {
+        $this->generalFundRevenues = $generalFundRevenues;
+
+        return $this;
+    }
+
+    /**
+     * Get generalFundRevenues
+     *
+     * @return float 
+     */
+    public function getGeneralFundRevenues()
+    {
+        return $this->generalFundRevenues;
+    }
+
+    /**
+     * Set governmentalFundExpenditures
+     *
+     * @param float $governmentalFundExpenditures
+     * @return Government
+     */
+    public function setGovernmentalFundExpenditures($governmentalFundExpenditures)
+    {
+        $this->governmentalFundExpenditures = $governmentalFundExpenditures;
+
+        return $this;
+    }
+
+    /**
+     * Get governmentalFundExpenditures
+     *
+     * @return float 
+     */
+    public function getGovernmentalFundExpenditures()
+    {
+        return $this->governmentalFundExpenditures;
+    }
+
+    /**
+     * Set generalFundSurplus
+     *
+     * @param float $generalFundSurplus
+     * @return Government
+     */
+    public function setGeneralFundSurplus($generalFundSurplus)
+    {
+        $this->generalFundSurplus = $generalFundSurplus;
+
+        return $this;
+    }
+
+    /**
+     * Get generalFundSurplus
+     *
+     * @return float 
+     */
+    public function getGeneralFundSurplus()
+    {
+        return $this->generalFundSurplus;
+    }
+
+    /**
+     * Set netChangeInGeneralFundBalance
+     *
+     * @param float $netChangeInGeneralFundBalance
+     * @return Government
+     */
+    public function setNetChangeInGeneralFundBalance($netChangeInGeneralFundBalance)
+    {
+        $this->netChangeInGeneralFundBalance = $netChangeInGeneralFundBalance;
+
+        return $this;
+    }
+
+    /**
+     * Get netChangeInGeneralFundBalance
+     *
+     * @return float 
+     */
+    public function getNetChangeInGeneralFundBalance()
+    {
+        return $this->netChangeInGeneralFundBalance;
+    }
+
+    /**
+     * Set generalFundBalance
+     *
+     * @param float $generalFundBalance
+     * @return Government
+     */
+    public function setGeneralFundBalance($generalFundBalance)
+    {
+        $this->generalFundBalance = $generalFundBalance;
+
+        return $this;
+    }
+
+    /**
+     * Get generalFundBalance
+     *
+     * @return float 
+     */
+    public function getGeneralFundBalance()
+    {
+        return $this->generalFundBalance;
+    }
+
+    /**
+     * Set debtServiceExpendituresAllFunds
+     *
+     * @param float $debtServiceExpendituresAllFunds
+     * @return Government
+     */
+    public function setDebtServiceExpendituresAllFunds($debtServiceExpendituresAllFunds)
+    {
+        $this->debtServiceExpendituresAllFunds = $debtServiceExpendituresAllFunds;
+
+        return $this;
+    }
+
+    /**
+     * Get debtServiceExpendituresAllFunds
+     *
+     * @return float 
+     */
+    public function getDebtServiceExpendituresAllFunds()
+    {
+        return $this->debtServiceExpendituresAllFunds;
+    }
+
+    /**
+     * Set intergovernmentalFundsGf
+     *
+     * @param float $intergovernmentalFundsGf
+     * @return Government
+     */
+    public function setIntergovernmentalFundsGf($intergovernmentalFundsGf)
+    {
+        $this->intergovernmentalFundsGf = $intergovernmentalFundsGf;
+
+        return $this;
+    }
+
+    /**
+     * Get intergovernmentalFundsGf
+     *
+     * @return float 
+     */
+    public function getIntergovernmentalFundsGf()
+    {
+        return $this->intergovernmentalFundsGf;
+    }
+
+    /**
+     * Set governmentFundsOverallBalance
+     *
+     * @param float $governmentFundsOverallBalance
+     * @return Government
+     */
+    public function setGovernmentFundsOverallBalance($governmentFundsOverallBalance)
+    {
+        $this->governmentFundsOverallBalance = $governmentFundsOverallBalance;
+
+        return $this;
+    }
+
+    /**
+     * Get governmentFundsOverallBalance
+     *
+     * @return float 
+     */
+    public function getGovernmentFundsOverallBalance()
+    {
+        return $this->governmentFundsOverallBalance;
+    }
+
+    /**
+     * Set netChangeInFundBalanceOverGeneralFundRevenue
+     *
+     * @param float $netChangeInFundBalanceOverGeneralFundRevenue
+     * @return Government
+     */
+    public function setNetChangeInFundBalanceOverGeneralFundRevenue($netChangeInFundBalanceOverGeneralFundRevenue)
+    {
+        $this->netChangeInFundBalanceOverGeneralFundRevenue = $netChangeInFundBalanceOverGeneralFundRevenue;
+
+        return $this;
+    }
+
+    /**
+     * Get netChangeInFundBalanceOverGeneralFundRevenue
+     *
+     * @return float 
+     */
+    public function getNetChangeInFundBalanceOverGeneralFundRevenue()
+    {
+        return $this->netChangeInFundBalanceOverGeneralFundRevenue;
+    }
+
+    /**
+     * Set netChangeInFundBalanceOverGeneralFundRevenueRank
+     *
+     * @param integer $netChangeInFundBalanceOverGeneralFundRevenueRank
+     * @return Government
+     */
+    public function setNetChangeInFundBalanceOverGeneralFundRevenueRank($netChangeInFundBalanceOverGeneralFundRevenueRank)
+    {
+        $this->netChangeInFundBalanceOverGeneralFundRevenueRank = $netChangeInFundBalanceOverGeneralFundRevenueRank;
+
+        return $this;
+    }
+
+    /**
+     * Get netChangeInFundBalanceOverGeneralFundRevenueRank
+     *
+     * @return integer 
+     */
+    public function getNetChangeInFundBalanceOverGeneralFundRevenueRank()
+    {
+        return $this->netChangeInFundBalanceOverGeneralFundRevenueRank;
+    }
+
+    /**
+     * Set generalFundBalanceOverGeneralFundExpenditures
+     *
+     * @param float $generalFundBalanceOverGeneralFundExpenditures
+     * @return Government
+     */
+    public function setGeneralFundBalanceOverGeneralFundExpenditures($generalFundBalanceOverGeneralFundExpenditures)
+    {
+        $this->generalFundBalanceOverGeneralFundExpenditures = $generalFundBalanceOverGeneralFundExpenditures;
+
+        return $this;
+    }
+
+    /**
+     * Get generalFundBalanceOverGeneralFundExpenditures
+     *
+     * @return float 
+     */
+    public function getGeneralFundBalanceOverGeneralFundExpenditures()
+    {
+        return $this->generalFundBalanceOverGeneralFundExpenditures;
+    }
+
+    /**
+     * Set generalFundBalanceOverGeneralFundExpendituresRank
+     *
+     * @param integer $generalFundBalanceOverGeneralFundExpendituresRank
+     * @return Government
+     */
+    public function setGeneralFundBalanceOverGeneralFundExpendituresRank($generalFundBalanceOverGeneralFundExpendituresRank)
+    {
+        $this->generalFundBalanceOverGeneralFundExpendituresRank = $generalFundBalanceOverGeneralFundExpendituresRank;
+
+        return $this;
+    }
+
+    /**
+     * Get generalFundBalanceOverGeneralFundExpendituresRank
+     *
+     * @return integer 
+     */
+    public function getGeneralFundBalanceOverGeneralFundExpendituresRank()
+    {
+        return $this->generalFundBalanceOverGeneralFundExpendituresRank;
+    }
+
+    /**
+     * Set currentAssetsPerCapita
+     *
+     * @param float $currentAssetsPerCapita
+     * @return Government
+     */
+    public function setCurrentAssetsPerCapita($currentAssetsPerCapita)
+    {
+        $this->currentAssetsPerCapita = $currentAssetsPerCapita;
+
+        return $this;
+    }
+
+    /**
+     * Get currentAssetsPerCapita
+     *
+     * @return float 
+     */
+    public function getCurrentAssetsPerCapita()
+    {
+        return $this->currentAssetsPerCapita;
+    }
+
+    /**
+     * Set currentAssetsPerCapitaRank
+     *
+     * @param integer $currentAssetsPerCapitaRank
+     * @return Government
+     */
+    public function setCurrentAssetsPerCapitaRank($currentAssetsPerCapitaRank)
+    {
+        $this->currentAssetsPerCapitaRank = $currentAssetsPerCapitaRank;
+
+        return $this;
+    }
+
+    /**
+     * Get currentAssetsPerCapitaRank
+     *
+     * @return integer 
+     */
+    public function getCurrentAssetsPerCapitaRank()
+    {
+        return $this->currentAssetsPerCapitaRank;
+    }
+
+    /**
+     * Set currentAssetsOverCurrentLiabilities
+     *
+     * @param float $currentAssetsOverCurrentLiabilities
+     * @return Government
+     */
+    public function setCurrentAssetsOverCurrentLiabilities($currentAssetsOverCurrentLiabilities)
+    {
+        $this->currentAssetsOverCurrentLiabilities = $currentAssetsOverCurrentLiabilities;
+
+        return $this;
+    }
+
+    /**
+     * Get currentAssetsOverCurrentLiabilities
+     *
+     * @return float 
+     */
+    public function getCurrentAssetsOverCurrentLiabilities()
+    {
+        return $this->currentAssetsOverCurrentLiabilities;
+    }
+
+    /**
+     * Set currentAssetsOverCurrentLiabilitiesRank
+     *
+     * @param integer $currentAssetsOverCurrentLiabilitiesRank
+     * @return Government
+     */
+    public function setCurrentAssetsOverCurrentLiabilitiesRank($currentAssetsOverCurrentLiabilitiesRank)
+    {
+        $this->currentAssetsOverCurrentLiabilitiesRank = $currentAssetsOverCurrentLiabilitiesRank;
+
+        return $this;
+    }
+
+    /**
+     * Get currentAssetsOverCurrentLiabilitiesRank
+     *
+     * @return integer 
+     */
+    public function getCurrentAssetsOverCurrentLiabilitiesRank()
+    {
+        return $this->currentAssetsOverCurrentLiabilitiesRank;
+    }
+
+    /**
+     * Set longTermDebtOverCapita
+     *
+     * @param float $longTermDebtOverCapita
+     * @return Government
+     */
+    public function setLongTermDebtOverCapita($longTermDebtOverCapita)
+    {
+        $this->longTermDebtOverCapita = $longTermDebtOverCapita;
+
+        return $this;
+    }
+
+    /**
+     * Get longTermDebtOverCapita
+     *
+     * @return float 
+     */
+    public function getLongTermDebtOverCapita()
+    {
+        return $this->longTermDebtOverCapita;
+    }
+
+    /**
+     * Set longTermDebtOverCapitaRank
+     *
+     * @param integer $longTermDebtOverCapitaRank
+     * @return Government
+     */
+    public function setLongTermDebtOverCapitaRank($longTermDebtOverCapitaRank)
+    {
+        $this->longTermDebtOverCapitaRank = $longTermDebtOverCapitaRank;
+
+        return $this;
+    }
+
+    /**
+     * Get longTermDebtOverCapitaRank
+     *
+     * @return integer 
+     */
+    public function getLongTermDebtOverCapitaRank()
+    {
+        return $this->longTermDebtOverCapitaRank;
+    }
+
+    /**
+     * Set generalRevenuesOverLongTermDebt
+     *
+     * @param float $generalRevenuesOverLongTermDebt
+     * @return Government
+     */
+    public function setGeneralRevenuesOverLongTermDebt($generalRevenuesOverLongTermDebt)
+    {
+        $this->generalRevenuesOverLongTermDebt = $generalRevenuesOverLongTermDebt;
+
+        return $this;
+    }
+
+    /**
+     * Get generalRevenuesOverLongTermDebt
+     *
+     * @return float 
+     */
+    public function getGeneralRevenuesOverLongTermDebt()
+    {
+        return $this->generalRevenuesOverLongTermDebt;
+    }
+
+    /**
+     * Set generalRevenuesOverLongTermDebtRank
+     *
+     * @param integer $generalRevenuesOverLongTermDebtRank
+     * @return Government
+     */
+    public function setGeneralRevenuesOverLongTermDebtRank($generalRevenuesOverLongTermDebtRank)
+    {
+        $this->generalRevenuesOverLongTermDebtRank = $generalRevenuesOverLongTermDebtRank;
+
+        return $this;
+    }
+
+    /**
+     * Get generalRevenuesOverLongTermDebtRank
+     *
+     * @return integer 
+     */
+    public function getGeneralRevenuesOverLongTermDebtRank()
+    {
+        return $this->generalRevenuesOverLongTermDebtRank;
+    }
+
+    /**
+     * Set debtServiceExpendituresOverGeneralFundRevenues
+     *
+     * @param float $debtServiceExpendituresOverGeneralFundRevenues
+     * @return Government
+     */
+    public function setDebtServiceExpendituresOverGeneralFundRevenues($debtServiceExpendituresOverGeneralFundRevenues)
+    {
+        $this->debtServiceExpendituresOverGeneralFundRevenues = $debtServiceExpendituresOverGeneralFundRevenues;
+
+        return $this;
+    }
+
+    /**
+     * Get debtServiceExpendituresOverGeneralFundRevenues
+     *
+     * @return float 
+     */
+    public function getDebtServiceExpendituresOverGeneralFundRevenues()
+    {
+        return $this->debtServiceExpendituresOverGeneralFundRevenues;
+    }
+
+    /**
+     * Set debtServiceExpendituresOverGeneralFundRevenuesRank
+     *
+     * @param integer $debtServiceExpendituresOverGeneralFundRevenuesRank
+     * @return Government
+     */
+    public function setDebtServiceExpendituresOverGeneralFundRevenuesRank($debtServiceExpendituresOverGeneralFundRevenuesRank)
+    {
+        $this->debtServiceExpendituresOverGeneralFundRevenuesRank = $debtServiceExpendituresOverGeneralFundRevenuesRank;
+
+        return $this;
+    }
+
+    /**
+     * Get debtServiceExpendituresOverGeneralFundRevenuesRank
+     *
+     * @return integer 
+     */
+    public function getDebtServiceExpendituresOverGeneralFundRevenuesRank()
+    {
+        return $this->debtServiceExpendituresOverGeneralFundRevenuesRank;
+    }
+
+    /**
+     * Set generalFundSurplusOverRevenues
+     *
+     * @param float $generalFundSurplusOverRevenues
+     * @return Government
+     */
+    public function setGeneralFundSurplusOverRevenues($generalFundSurplusOverRevenues)
+    {
+        $this->generalFundSurplusOverRevenues = $generalFundSurplusOverRevenues;
+
+        return $this;
+    }
+
+    /**
+     * Get generalFundSurplusOverRevenues
+     *
+     * @return float 
+     */
+    public function getGeneralFundSurplusOverRevenues()
+    {
+        return $this->generalFundSurplusOverRevenues;
+    }
+
+    /**
+     * Set generalFundSurplusOverRevenuesRank
+     *
+     * @param integer $generalFundSurplusOverRevenuesRank
+     * @return Government
+     */
+    public function setGeneralFundSurplusOverRevenuesRank($generalFundSurplusOverRevenuesRank)
+    {
+        $this->generalFundSurplusOverRevenuesRank = $generalFundSurplusOverRevenuesRank;
+
+        return $this;
+    }
+
+    /**
+     * Get generalFundSurplusOverRevenuesRank
+     *
+     * @return integer 
+     */
+    public function getGeneralFundSurplusOverRevenuesRank()
+    {
+        return $this->generalFundSurplusOverRevenuesRank;
+    }
+
+    /**
+     * Set changeInNetAssetsOverGeneralFundRevenues
+     *
+     * @param float $changeInNetAssetsOverGeneralFundRevenues
+     * @return Government
+     */
+    public function setChangeInNetAssetsOverGeneralFundRevenues($changeInNetAssetsOverGeneralFundRevenues)
+    {
+        $this->changeInNetAssetsOverGeneralFundRevenues = $changeInNetAssetsOverGeneralFundRevenues;
+
+        return $this;
+    }
+
+    /**
+     * Get changeInNetAssetsOverGeneralFundRevenues
+     *
+     * @return float 
+     */
+    public function getChangeInNetAssetsOverGeneralFundRevenues()
+    {
+        return $this->changeInNetAssetsOverGeneralFundRevenues;
+    }
+
+    /**
+     * Set changeInNetAssetsOverGeneralFundRevenuesRank
+     *
+     * @param integer $changeInNetAssetsOverGeneralFundRevenuesRank
+     * @return Government
+     */
+    public function setChangeInNetAssetsOverGeneralFundRevenuesRank($changeInNetAssetsOverGeneralFundRevenuesRank)
+    {
+        $this->changeInNetAssetsOverGeneralFundRevenuesRank = $changeInNetAssetsOverGeneralFundRevenuesRank;
+
+        return $this;
+    }
+
+    /**
+     * Get changeInNetAssetsOverGeneralFundRevenuesRank
+     *
+     * @return integer 
+     */
+    public function getChangeInNetAssetsOverGeneralFundRevenuesRank()
+    {
+        return $this->changeInNetAssetsOverGeneralFundRevenuesRank;
+    }
+
+    /**
+     * Set governmentFundsOverallBalancePerCapita
+     *
+     * @param float $governmentFundsOverallBalancePerCapita
+     * @return Government
+     */
+    public function setGovernmentFundsOverallBalancePerCapita($governmentFundsOverallBalancePerCapita)
+    {
+        $this->governmentFundsOverallBalancePerCapita = $governmentFundsOverallBalancePerCapita;
+
+        return $this;
+    }
+
+    /**
+     * Get governmentFundsOverallBalancePerCapita
+     *
+     * @return float 
+     */
+    public function getGovernmentFundsOverallBalancePerCapita()
+    {
+        return $this->governmentFundsOverallBalancePerCapita;
+    }
+
+    /**
+     * Set governmentFundsOverallBalancePerCapitaRank
+     *
+     * @param integer $governmentFundsOverallBalancePerCapitaRank
+     * @return Government
+     */
+    public function setGovernmentFundsOverallBalancePerCapitaRank($governmentFundsOverallBalancePerCapitaRank)
+    {
+        $this->governmentFundsOverallBalancePerCapitaRank = $governmentFundsOverallBalancePerCapitaRank;
+
+        return $this;
+    }
+
+    /**
+     * Get governmentFundsOverallBalancePerCapitaRank
+     *
+     * @return integer 
+     */
+    public function getGovernmentFundsOverallBalancePerCapitaRank()
+    {
+        return $this->governmentFundsOverallBalancePerCapitaRank;
+    }
+
+    /**
+     * Set overallGovernmentalFundBalanceOverLongTermLiabs
+     *
+     * @param float $overallGovernmentalFundBalanceOverLongTermLiabs
+     * @return Government
+     */
+    public function setOverallGovernmentalFundBalanceOverLongTermLiabs($overallGovernmentalFundBalanceOverLongTermLiabs)
+    {
+        $this->overallGovernmentalFundBalanceOverLongTermLiabs = $overallGovernmentalFundBalanceOverLongTermLiabs;
+
+        return $this;
+    }
+
+    /**
+     * Get overallGovernmentalFundBalanceOverLongTermLiabs
+     *
+     * @return float 
+     */
+    public function getOverallGovernmentalFundBalanceOverLongTermLiabs()
+    {
+        return $this->overallGovernmentalFundBalanceOverLongTermLiabs;
+    }
+
+    /**
+     * Set overallGovernmentalFundBalanceOverLongTermLiabsRank
+     *
+     * @param integer $overallGovernmentalFundBalanceOverLongTermLiabsRank
+     * @return Government
+     */
+    public function setOverallGovernmentalFundBalanceOverLongTermLiabsRank($overallGovernmentalFundBalanceOverLongTermLiabsRank)
+    {
+        $this->overallGovernmentalFundBalanceOverLongTermLiabsRank = $overallGovernmentalFundBalanceOverLongTermLiabsRank;
+
+        return $this;
+    }
+
+    /**
+     * Get overallGovernmentalFundBalanceOverLongTermLiabsRank
+     *
+     * @return integer 
+     */
+    public function getOverallGovernmentalFundBalanceOverLongTermLiabsRank()
+    {
+        return $this->overallGovernmentalFundBalanceOverLongTermLiabsRank;
+    }
+
+    /**
+     * Set intergovermentalRevenuesOverGeneralFundRevenues
+     *
+     * @param float $intergovermentalRevenuesOverGeneralFundRevenues
+     * @return Government
+     */
+    public function setIntergovermentalRevenuesOverGeneralFundRevenues($intergovermentalRevenuesOverGeneralFundRevenues)
+    {
+        $this->intergovermentalRevenuesOverGeneralFundRevenues = $intergovermentalRevenuesOverGeneralFundRevenues;
+
+        return $this;
+    }
+
+    /**
+     * Get intergovermentalRevenuesOverGeneralFundRevenues
+     *
+     * @return float 
+     */
+    public function getIntergovermentalRevenuesOverGeneralFundRevenues()
+    {
+        return $this->intergovermentalRevenuesOverGeneralFundRevenues;
+    }
+
+    /**
+     * Set intergovermentalRevenuesOverGeneralFundRevenuesRank
+     *
+     * @param integer $intergovermentalRevenuesOverGeneralFundRevenuesRank
+     * @return Government
+     */
+    public function setIntergovermentalRevenuesOverGeneralFundRevenuesRank($intergovermentalRevenuesOverGeneralFundRevenuesRank)
+    {
+        $this->intergovermentalRevenuesOverGeneralFundRevenuesRank = $intergovermentalRevenuesOverGeneralFundRevenuesRank;
+
+        return $this;
+    }
+
+    /**
+     * Get intergovermentalRevenuesOverGeneralFundRevenuesRank
+     *
+     * @return integer 
+     */
+    public function getIntergovermentalRevenuesOverGeneralFundRevenuesRank()
+    {
+        return $this->intergovermentalRevenuesOverGeneralFundRevenuesRank;
+    }
+
+    /**
+     * Set totalUnrestrictedNetPositionOverTotalAssets
+     *
+     * @param float $totalUnrestrictedNetPositionOverTotalAssets
+     * @return Government
+     */
+    public function setTotalUnrestrictedNetPositionOverTotalAssets($totalUnrestrictedNetPositionOverTotalAssets)
+    {
+        $this->totalUnrestrictedNetPositionOverTotalAssets = $totalUnrestrictedNetPositionOverTotalAssets;
+
+        return $this;
+    }
+
+    /**
+     * Get totalUnrestrictedNetPositionOverTotalAssets
+     *
+     * @return float 
+     */
+    public function getTotalUnrestrictedNetPositionOverTotalAssets()
+    {
+        return $this->totalUnrestrictedNetPositionOverTotalAssets;
+    }
+
+    /**
+     * Set totalUnrestrictedNetPositionOverTotalAssetsRank
+     *
+     * @param integer $totalUnrestrictedNetPositionOverTotalAssetsRank
+     * @return Government
+     */
+    public function setTotalUnrestrictedNetPositionOverTotalAssetsRank($totalUnrestrictedNetPositionOverTotalAssetsRank)
+    {
+        $this->totalUnrestrictedNetPositionOverTotalAssetsRank = $totalUnrestrictedNetPositionOverTotalAssetsRank;
+
+        return $this;
+    }
+
+    /**
+     * Get totalUnrestrictedNetPositionOverTotalAssetsRank
+     *
+     * @return integer 
+     */
+    public function getTotalUnrestrictedNetPositionOverTotalAssetsRank()
+    {
+        return $this->totalUnrestrictedNetPositionOverTotalAssetsRank;
+    }
+
+    /**
+     * Set overallWeightedIndexRank
+     *
+     * @param integer $overallWeightedIndexRank
+     * @return Government
+     */
+    public function setOverallWeightedIndexRank($overallWeightedIndexRank)
+    {
+        $this->overallWeightedIndexRank = $overallWeightedIndexRank;
+
+        return $this;
+    }
+
+    /**
+     * Get overallWeightedIndexRank
+     *
+     * @return integer 
+     */
+    public function getOverallWeightedIndexRank()
+    {
+        return $this->overallWeightedIndexRank;
+    }
+
+    /**
+     * Set legendOverallRanking
+     *
+     * @param string $legendOverallRanking
+     * @return Government
+     */
+    public function setLegendOverallRanking($legendOverallRanking)
+    {
+        $this->legendOverallRanking = $legendOverallRanking;
+
+        return $this;
+    }
+
+    /**
+     * Get legendOverallRanking
+     *
+     * @return string 
+     */
+    public function getLegendOverallRanking()
+    {
+        return $this->legendOverallRanking;
     }
 }

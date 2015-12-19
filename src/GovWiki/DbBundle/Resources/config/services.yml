@@ -6,10 +6,11 @@ services:
 
     govwiki_db.importer.abstract:
         class: GovWiki\DbBundle\Importer\AbstractImporter
-        arguments: [@doctrine.orm.default_entity_manager]
+        abstract: true
 
     govwiki_db.importer.government:
         class: GovWiki\DbBundle\Importer\GovernmentImporter
+        arguments: [@govwiki_admin.entity_manager.government]
         parent: govwiki_db.importer.abstract
 
     govwiki_db.form.type.alt_type:

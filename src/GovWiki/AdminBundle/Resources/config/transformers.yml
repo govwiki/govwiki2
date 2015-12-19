@@ -3,3 +3,8 @@ services:
         class: GovWiki\AdminBundle\Transformer\GeoJsonTransformer
         tags:
             - { name: transformer, alias: 'geo_json' }
+
+    govwiki_admin.transformer.csv:
+        class: GovWiki\AdminBundle\Transformer\CsvTransformer
+        tags:
+            - { name: transformer, alias: 'csv' }
