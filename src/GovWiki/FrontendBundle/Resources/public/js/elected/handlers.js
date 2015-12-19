@@ -81,7 +81,7 @@ $(function() {
         sendObject.editRequest.changes[field] = params.newValue;
         sendObject.editRequest = JSON.stringify(sendObject.editRequest);
 
-        $.ajax('/editrequest/create', {
+        $.ajax('/api/v1/edit-request/create', {
             method: 'POST',
             data: sendObject,
             dataType: 'text/json',
@@ -364,7 +364,7 @@ $(function() {
          */
         console.log(sendObject);
         $.ajax({
-            url: '/api/v1/createrequest/create',
+            url: '/api/v1/create-request/create',
             method: 'POST',
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"

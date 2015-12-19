@@ -1,11 +1,10 @@
 <?php
 
-namespace GovWiki\FrontendBundle\Controller;
+namespace GovWiki\ApiBundle\Controller\V1;
 
+use GovWiki\ApiBundle\GovWikiApiServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,26 +12,13 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use GovWiki\DbBundle\Entity\EditRequest;
 
 /**
- * EditRequestController
+ * Class EditRequestController
+ * @package GovWiki\ApiBundle\Controller\V1
+ *
+ * @Route("/edit-request")
  */
 class EditRequestController extends Controller
 {
-    /**
-     * @Route("new")
-     *
-     * Just checking access rights
-     *
-     * @return Response
-     */
-    public function newAction()
-    {
-        if ($this->getUser() and $this->getUser()->hasRole('ROLE_USER')) {
-            return new Response(null, 200);
-        } else {
-            return new Response(null, 401);
-        }
-    }
-
     /**
      * @Route("create")
      *
@@ -63,7 +49,9 @@ class EditRequestController extends Controller
 
                 $em = $this->getDoctrine()->getManager();
 
-                $editRequest = new EditRequest;
+                $editRequest = $this
+                    ->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+                    ->createEditRequest();
                 $editRequest->setUser($this->getUser())
                             ->setEntityName($data['entityName'])
                             ->setEntityId($data['entityId'])

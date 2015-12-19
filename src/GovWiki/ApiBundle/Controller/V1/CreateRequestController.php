@@ -12,7 +12,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * CreateRequestController
+ * Class CreateRequestController
+ * @package GovWiki\ApiBundle\Controller\V1
+ *
+ * @Route("/create-request")
  */
 class CreateRequestController extends Controller
 {
