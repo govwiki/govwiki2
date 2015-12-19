@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class RankOrderController
  * @package GovWiki\ApiBundle\Controller
+ *
+ * @Route("/rank-order")
  */
 class RankOrderController extends Controller
 {

@@ -7,10 +7,13 @@ elected-official:
     type:     annotation
     prefix:   elected-official
 
-createrequest:
+create-request:
     resource: "@GovWikiApiBundle/Controller/V1/CreateRequestController.php"
     type:     annotation
-    prefix:   createrequest
+
+edit-request:
+    resource: "@GovWikiApiBundle/Controller/V1/EditRequestController.php"
+    type:     annotation
 
 user:
     resource: "@GovWikiApiBundle/Controller/V1/UserController.php"
@@ -19,12 +22,11 @@ user:
 url:
     resource: "@GovWikiApiBundle/Controller/V1/UrlController.php"
     type:     annotation
-    prefix:   url
 
-rank_order:
-    resource: "@GovWikiApiBundle/Controller/V1/RankOrderController.php"
-    type:     annotation
-    prefix:   rank_order
+#rank_order:
+#    resource: "@GovWikiApiBundle/Controller/V1/RankOrderController.php"
+#    type:     annotation
+#    prefix:   rank_order
 
 map:
     resource: "@GovWikiApiBundle/Controller/V1/MapController.php"

@@ -81,7 +81,9 @@ $(function() {
         sendObject.editRequest.changes[field] = params.newValue;
         sendObject.editRequest = JSON.stringify(sendObject.editRequest);
 
-        $.ajax('/editrequest/create', {
+        console.log(sendObject);
+
+        $.ajax('/api/v1/edit-request/create', {
             method: 'POST',
             data: sendObject,
             dataType: 'text/json',
@@ -178,8 +180,8 @@ $(function() {
             $('#addVotes').find('[data-provide="datepicker"]').on('changeDate', function() {
                 return $(this).datepicker('hide');
             });
-            compiledTemplate = Handlebars.compile($('#legislation-vote').html());
-            return $('#electedVotes').html(compiledTemplate(JSON.parse(window.gw.electedOfficial)));
+            //compiledTemplate = Handlebars.compile($('#legislation-vote').html());
+            //return $('#electedVotes').html(compiledTemplate(JSON.parse(window.gw.electedOfficial)));
         } else if (currentEntity === 'PublicStatement') {
             return $('#addStatements').find('[data-provide="datepicker"]').on('changeDate', function() {
                 return $(this).datepicker('hide');
@@ -318,7 +320,7 @@ $(function() {
             value = ref[key];
             data[key] = value;
         }
-        data['user'] = window.username;
+        data['username'] = window.gw.username;
         console.log(person);
         if (modalType === 'addVotes') {
 
@@ -364,7 +366,7 @@ $(function() {
          */
         console.log(sendObject);
         $.ajax({
-            url: '/api/v1/createrequest/create',
+            url: '/api/v1/create-request/create',
             method: 'POST',
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"

@@ -3,7 +3,6 @@
 namespace GovWiki\ApiBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
@@ -162,7 +161,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      * @param string $slug        Slugged government name.
      * @param string $eoSlug      Slugged elected official full name.
      *
-     * @return array
+     * @return array|null
      */
     public function getElectedOfficial($altTypeSlug, $slug, $eoSlug)
     {
@@ -171,7 +170,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
         $dataCount = count($data);
         if ($dataCount > 0) {
-            /** @var ElectedOfficial $electedOfficial */
             $electedOfficial = $data[0];
             $createRequests = [];
             for ($i = 1; $i < $dataCount; $i++) {
@@ -186,7 +184,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                     ->findAll(),
                 'electedOfficials' => $this->em
                     ->getRepository('GovWikiDbBundle:Government')
-                    ->governmentElectedOfficial($electedOfficial->getId()),
+                    ->governmentElectedOfficial($electedOfficial['id']),
             ];
         }
 

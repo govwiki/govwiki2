@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Class UrlController
  * @package GovWiki\ApiBundle\Controller
+ *
+ * @Route("/url")
  */
 class UrlController extends Controller
 {

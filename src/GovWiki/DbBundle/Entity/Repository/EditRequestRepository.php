@@ -28,6 +28,7 @@ class EditRequestRepository extends EntityRepository
                 $expr->neq('EditRequest.status', $expr->literal('discarded')),
                 $expr->eq('Environment.name', $expr->literal($environment))
             ))
+            ->orderBy($expr->desc('EditRequest.created'))
             ->getQuery();
     }
 }

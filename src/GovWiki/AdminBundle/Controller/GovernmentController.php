@@ -110,12 +110,11 @@ class GovernmentController extends AbstractGovWikiAdminController
      * @Configuration\Route("/import")
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
      *
      * @return array
      */
-    public function importAction(Request $request, $environment)
+    public function importAction(Request $request)
     {
         $manager = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
         $data = [
@@ -152,7 +151,6 @@ class GovernmentController extends AbstractGovWikiAdminController
 
         return [
             'form' => $form->createView(),
-            'environment' => $environment,
         ];
     }
 

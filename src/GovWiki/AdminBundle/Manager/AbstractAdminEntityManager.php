@@ -3,6 +3,7 @@
 namespace GovWiki\AdminBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use GovWiki\DbBundle\Entity\Environment;
 
 /**
@@ -95,6 +96,14 @@ abstract class AbstractAdminEntityManager implements
     }
 
     /**
+     * @return void
+     */
+    public function flush()
+    {
+        $this->em->flush();
+    }
+
+    /**
      * @return object
      */
     protected function beforeUpdate($entity)
@@ -136,5 +145,38 @@ abstract class AbstractAdminEntityManager implements
             'GovWiki\DbBundle\Entity\Environment',
             $this->environmentId
         );
+    }
+
+    /**
+     * @param array $columns Array of columns name for fetching data from
+     *                       repository.
+     *
+     * @return array
+     */
+    public function getAll(array $columns)
+    {
+        /** @var EntityRepository $repository */
+        $repository = $this->getRepository();
+
+        $alias = substr(
+            $this->getEntityClassName(),
+            strrpos($this->getEntityClassName(), '\\') + 1
+        );
+
+        foreach ($columns as &$column) {
+            $column = "$alias.$column";
+        }
+
+        $qb = $repository->createQueryBuilder($alias)
+            ->select(implode(',', $columns));
+        $expr = $qb->expr();
+
+        return $qb
+            ->join($alias.'.environment', 'Environment')
+            ->where(
+                $expr->eq('Environment.name', $expr->literal($this->environment))
+            )
+            ->getQuery()
+            ->getArrayResult();
     }
 }

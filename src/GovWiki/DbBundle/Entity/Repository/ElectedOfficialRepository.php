@@ -60,7 +60,6 @@ class ElectedOfficialRepository extends EntityRepository
      * <ul>
      *  <li>ElectedOfficial entity with all related contributions, endorsements
      * and etc</li>
-     *  <li>Array of available IssueCategories</li>
      *  <li>Array of made CreateRequest for current elected official</li>
      * </ul>
      *
@@ -78,7 +77,8 @@ class ElectedOfficialRepository extends EntityRepository
         return $qb
             ->addSelect(
                 'Contribution, Endorsement, PublicStatement, Vote',
-                'Legislation, Government, CreateRequest'
+                'Legislation, CreateRequest, IssueCategory',
+                'partial Government.{id}'
             )
             ->leftJoin('ElectedOfficial.contributions', 'Contribution')
             ->leftJoin('ElectedOfficial.endorsements', 'Endorsement')
@@ -86,6 +86,7 @@ class ElectedOfficialRepository extends EntityRepository
             ->leftJoin('ElectedOfficial.votes', 'Vote')
             ->leftJoin('ElectedOfficial.government', 'Government')
             ->leftJoin('Vote.legislation', 'Legislation')
+            ->leftJoin('Legislation.issueCategory', 'IssueCategory')
             /*
              * Join made but not applied create requests.
              */
@@ -115,7 +116,7 @@ class ElectedOfficialRepository extends EntityRepository
                 )
             )
             ->getQuery()
-            ->getResult();
+            ->getArrayResult();
     }
 
     /**

@@ -71,6 +71,10 @@ class MainController extends AbstractGovWikiAdminController
 
         if ($form->isValid() && $form->isSubmitted()) {
             $em = $this->getDoctrine()->getManager();
+            $environment->setStyle(
+                $this->get(GovWikiAdminServices::ADMIN_STYLE_MANAGER)
+                    ->getDefaultStyles()
+            );
             $em->persist($environment);
             $em->flush();
 
@@ -85,7 +89,10 @@ class MainController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{environment}/show")
+     * @Configuration\Route(
+     *  "/show/{environment}",
+     *  defaults={ "environment": "" }
+     * )
      * @Configuration\Template()
      *
      * @param Request $request     A Request instance.
@@ -93,11 +100,13 @@ class MainController extends AbstractGovWikiAdminController
      *
      * @return array
      */
-    public function showAction(Request $request, $environment)
+    public function showAction(Request $request, $environment = '')
     {
         $manager = $this->adminEnvironmentManager();
 
-        $manager->changeEnvironment($environment);
+        if ('' !== $environment) {
+            $manager->changeEnvironment($environment);
+        }
         /** @var Environment $environment */
         $environment = $manager->getEntity();
 
@@ -138,21 +147,13 @@ class MainController extends AbstractGovWikiAdminController
     /**
      * @Configuration\Route("/{environment}/delete")
      *
-     * @param AdminEnvironmentManager $environment A AdminEnvironmentManager
-     *                                             instance.
+     * @param string $environment Environment name.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function removeAction(AdminEnvironmentManager $environment)
+    public function removeAction($environment)
     {
-        $environmentObj = $environment->getReference();
-
-        if (is_object($environmentObj)) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($environmentObj);
-            $em->flush();
-        }
-
+        $this->adminEnvironmentManager()->removeEnvironment($environment);
         return $this->redirectToRoute('govwiki_admin_main_home');
     }
 

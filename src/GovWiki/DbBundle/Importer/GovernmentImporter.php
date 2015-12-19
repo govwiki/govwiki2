@@ -15,16 +15,6 @@ use GovWiki\DbBundle\Exception\InvalidFieldNameException;
 class GovernmentImporter extends AbstractImporter
 {
     /**
-     * Entity name supported by this importer.
-     *
-     * @return string
-     */
-    protected function getEntityName()
-    {
-        return 'GovWiki\DbBundle\Entity\Government';
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function import(
@@ -33,7 +23,9 @@ class GovernmentImporter extends AbstractImporter
     ) {
         $data = $transformer->transform($filePath);
         foreach ($data as $row) {
-            $government = new Government();
+            /** @var Government $government */
+            $government = $this->manager->create();
+
             foreach ($row as $filed => $value) {
                 $method = 'set'. ucfirst($filed);
                 if (method_exists($government, $method)) {
@@ -42,19 +34,19 @@ class GovernmentImporter extends AbstractImporter
                             $government,
                             $method,
                         ],
-                        [ $value ]
+                        $value
                     );
                 } else {
                     throw new InvalidFieldNameException(
                         $filed,
-                        $this->getEntityName()
+                        'government'
                     );
                 }
             }
 
-            $this->persist($government);
+            $this->manager->update($government, false);
         }
-        $this->flush();
+        $this->manager->flush();
     }
 
     /**
@@ -65,18 +57,7 @@ class GovernmentImporter extends AbstractImporter
         array $columns,
         FileTransformerInterface $transformer
     ) {
-        /** @var GovernmentRepository $repository */
-        $repository = $this->getRepository();
-        $qb = $repository->createQueryBuilder('Government');
-
-        if (count($columns) > 0) {
-            $qb->select($this->prepareSelect($columns));
-        }
-
-        $data = $qb
-            ->getQuery()
-            ->getArrayResult();
-
+        $data = $this->manager->getAll($columns);
         $transformer->reverseTransform($filePath, $data);
     }
 }
