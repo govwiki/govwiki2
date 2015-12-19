@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class CreateRequestController extends Controller
 {
     /**
-     * @Route("new")
+     * @Route("/new")
      * @Security("is_granted('ROLE_USER')")
      *
      * @param Request $request A Request instance.
@@ -90,7 +90,7 @@ class CreateRequestController extends Controller
     }
 
     /**
-     * @Route("create")
+     * @Route("/create")
      *
      * @param Request $request A Request instance.
      *

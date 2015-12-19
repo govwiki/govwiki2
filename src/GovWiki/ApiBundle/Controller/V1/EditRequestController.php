@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use GovWiki\DbBundle\Entity\EditRequest;
 
 /**
  * Class EditRequestController
@@ -20,7 +19,7 @@ use GovWiki\DbBundle\Entity\EditRequest;
 class EditRequestController extends Controller
 {
     /**
-     * @Route("create")
+     * @Route("/create")
      *
      * @param Request $request
      * @return Response
