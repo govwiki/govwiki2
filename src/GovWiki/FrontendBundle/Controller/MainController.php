@@ -20,7 +20,6 @@ class MainController extends Controller
      */
     public function mapAction()
     {
-
         $environmentManager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
 
         $environment = $environmentManager->getEnvironment();

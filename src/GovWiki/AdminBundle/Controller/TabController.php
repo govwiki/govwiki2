@@ -18,6 +18,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 class TabController extends AbstractGovWikiAdminController
 {
     /**
+     * List available tabs.
+     *
      * @Configuration\Route("/")
      * @Configuration\Template()
      *
@@ -37,7 +39,9 @@ class TabController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{id}/remove")
+     * Remove given tab.
+     *
+     * @Configuration\Route("/{id}/remove", requirements={"id": "\d+"})
      * @param Tab $tab A Tab instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -53,7 +57,9 @@ class TabController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{id}/up")
+     * Move given tab up.
+     *
+     * @Configuration\Route("/{id}/up", requirements={"id": "\d+"})
      *
      * @param Tab $tab A Tab instance.
      *
@@ -67,7 +73,9 @@ class TabController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{id}/down")
+     * Move given tab down.
+     *
+     * @Configuration\Route("/{id}/down", requirements={"id": "\d+"})
      *
      * @param Tab $tab A Tab instance.
      *
@@ -81,6 +89,8 @@ class TabController extends AbstractGovWikiAdminController
     }
 
     /**
+     * Create new tab.
+     *
      * @Configuration\Route("/new")
      * @Configuration\Template
      *
@@ -99,7 +109,9 @@ class TabController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{id}/edit")
+     * Edit given tab.
+     *
+     * @Configuration\Route("/{id}/edit", requirements={"id": "\d+"})
      * @Configuration\Template
      *
      * @param Request $request A Request instance.
@@ -117,6 +129,8 @@ class TabController extends AbstractGovWikiAdminController
     }
 
     /**
+     * Process tab form.
+     *
      * @param Request       $request A Request instance.
      * @param FormInterface $form    A Form instance.
      *

@@ -29,7 +29,7 @@ abstract class AbstractAdminEntityManager implements
     private $environmentId;
 
     /**
-     * @param Environment $environment A Environment instance.
+     * @param EntityManagerInterface $em A EntityManagerInterface instance.
      */
     public function __construct(EntityManagerInterface $em) {
         $this->em = $em;

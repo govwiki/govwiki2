@@ -3,8 +3,7 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
@@ -12,26 +11,35 @@ use GovWiki\DbBundle\Entity\PublicStatement;
 use GovWiki\DbBundle\Form\PublicStatementType;
 
 /**
- * PublicStatementController all actions use xmlHttpRequest, and partials as default template
+ * PublicStatementController all actions use xmlHttpRequest, and partials as
+ * default template.
+ *
+ * @package GovWiki\AdminBundle\Controller
  */
 class PublicStatementController extends Controller
 {
     /**
-     * @Route("/electedofficial/{id}/publicstatement/create", methods="GET|POST")
-     * @Template("GovWikiAdminBundle:ElectedOfficial:_public_statement_modal_form.html.twig")
+     * @Configuration\Route(
+     *  "/elected-official/{id}/public-statement/create",
+     *  requirements={"id": "\d+"}
+     * )
+     * @Configuration\Template("GovWikiAdminBundle:ElectedOfficial:_public_statement_modal_form.html.twig")
      *
-     * @param Request         $request
-     * @param ElectedOfficial $electedOfficial
-     * @return Response|JsonResponse
+     * @param Request         $request         A Request instance.
+     * @param ElectedOfficial $electedOfficial A ElectedOfficial instance.
+     *
+     * @return array|JsonResponse
      */
-    public function createAction(Request $request, ElectedOfficial $electedOfficial)
-    {
-        $publicStatement = new PublicStatement;
+    public function createAction(
+        Request $request,
+        ElectedOfficial $electedOfficial
+    ) {
+        $publicStatement = new PublicStatement();
 
         $form = $this->createForm(new PublicStatementType(), $publicStatement);
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
             $publicStatement->setElectedOfficial($electedOfficial);
@@ -43,20 +51,29 @@ class PublicStatementController extends Controller
 
         return [
             'form'   => $form->createView(),
-            'action' => $this->generateUrl('govwiki_admin_publicstatement_create', ['id' => $electedOfficial->getId()]),
+            'action' => $this->generateUrl(
+                'govwiki_admin_publicstatement_create',
+                ['id' => $electedOfficial->getId()]
+            ),
         ];
     }
 
     /**
-     * @Route("/publicstatement/{id}/edit", methods="GET|POST", requirements={"id": "\d+"})
-     * @Template("GovWikiAdminBundle:ElectedOfficial:_public_statement_modal_form.html.twig")
+     * @Configuration\Route(
+     *  "/public-statement/{id}/edit",
+     *  requirements={"id": "\d+"}
+     * )
+     * @Configuration\Template("GovWikiAdminBundle:ElectedOfficial:_public_statement_modal_form.html.twig")
      *
-     * @param PublicStatement $publicStatement
-     * @param Request         $request
-     * @return Response|JsonResponse
+     * @param Request         $request         A Request instance.
+     * @param PublicStatement $publicStatement A PublicStatement instance.
+     *
+*@return array|JsonResponse
      */
-    public function editAction(PublicStatement $publicStatement, Request $request)
-    {
+    public function editAction(
+        Request $request,
+        PublicStatement $publicStatement
+    ) {
         $form = $this->createForm(new PublicStatementType(), $publicStatement);
         $form->handleRequest($request);
 
@@ -73,9 +90,10 @@ class PublicStatementController extends Controller
     }
 
     /**
-     * @Route("/publicstatement/{id}/remove")
+     * @Configuration\Route("/public-statement/{id}/remove")
      *
-     * @param PublicStatement $publicStatement
+     * @param PublicStatement $publicStatement A PublicStatement instance.
+     *
      * @return JsonResponse
      */
     public function removeAction(PublicStatement $publicStatement)

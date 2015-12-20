@@ -6,7 +6,7 @@ use GovWiki\AdminBundle\Exception\FileTransformerException;
 
 /**
  * Transform data from file to array and back.
- * Tag service with tag 'transformer'.
+ * Tag symfony service with 'transformer'.
  *
  * @package GovWiki\Library\Transformer
  */

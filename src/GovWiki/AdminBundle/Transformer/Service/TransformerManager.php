@@ -2,19 +2,16 @@
 
 namespace GovWiki\AdminBundle\Transformer\Service;
 
-use GovWiki\AdminBundle\Exception\ExtensionNotFoundException;
-use GovWiki\AdminBundle\Exception\FileTransformerException;
 use GovWiki\AdminBundle\Transformer\FileTransformerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Mange all transformers.
+ * Access point to all registered transformers.
  *
  * @package GovWiki\AdminBundle\Service
  */
 class TransformerManager
 {
-
     /**
      * @var ContainerInterface
      */
@@ -34,6 +31,8 @@ class TransformerManager
     }
 
     /**
+     * Add new transformer to collection. Called from CompilerPass.
+     *
      * @param string $id    Transformer service id.
      * @param string $alias Alias for transformer.
      * @param string $class Transformer class name.
@@ -49,31 +48,10 @@ class TransformerManager
     }
 
     /**
-     * @param string $filePath Path to transformed file.
-     * @param string $alias    Transformer alias, if not set try guess by file
-     *                         extension,
-     *                         {@see FileTransformerInterface::getSupportedExtension}.
-     *
-     * @return array
-     *
-     * @throws FileTransformerException Some error occurred while
-     *                                  transformation.
-     */
-    public function transform($filePath, $alias = null)
-    {
-        if (null === $alias) {
-            return $this->getTransformer($this->fileToAlias($filePath))
-                ->transform($filePath);
-        } else {
-            return $this->getTransformer($alias)->transform($filePath);
-        }
-    }
-
-    /**
      * @return array Each element is assoc array with two keys:
      *               <ul>
-     *                  <li>extension</li>
-     *                  <li>name</li>
+     *                  <li>File extension</li>
+     *                  <li>Name</li>
      *               </ul>
      */
     public function getSupportedExtension()
@@ -99,31 +77,5 @@ class TransformerManager
     public function getTransformer($alias)
     {
         return $this->container->get($this->transformers[$alias]['id']);
-    }
-
-    /**
-     * @param string $filePath Path to transformed file.
-     *
-     * @return string
-     *
-     * @throws ExtensionNotFoundException Cant resolve file extension.
-     */
-    private function fileToAlias($filePath)
-    {
-        $supported = [];
-        $extension = strtolower(substr($filePath, strripos($filePath, '.')));
-        foreach ($this->transformers as $alias => $transformer) {
-            /** @var FileTransformerInterface $transformerClass */
-            $transformerClass = $transformer['class'];
-            if (array_key_exists(
-                $extension,
-                $transformerClass::supportedExtensions()
-            )) {
-                return $alias;
-            }
-            array_merge($supported, $transformerClass::supportedExtensions());
-        }
-
-        throw new ExtensionNotFoundException($extension, $supported);
     }
 }

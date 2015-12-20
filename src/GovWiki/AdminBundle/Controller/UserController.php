@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class UserController
  * @package GovWiki\AdminBundle\Controller
+ *
+ * @Configuration\Route("/user")
  */
 class UserController extends Controller
 {
@@ -21,7 +23,7 @@ class UserController extends Controller
     /**
      * Show list of users.
      *
-     * @Configuration\Route(path="/", methods={"GET"})
+     * @Configuration\Route("/", methods={"GET"})
      * @Configuration\Template
      * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
@@ -44,7 +46,9 @@ class UserController extends Controller
     }
 
     /**
-     * @Configuration\Route(path="{id}/show", requirements={"id": "\d+"})
+     * Show selected user.
+     *
+     * @Configuration\Route("/{id}/show", requirements={"id": "\d+"})
      * @Configuration\Template
      * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
@@ -61,7 +65,9 @@ class UserController extends Controller
     }
 
     /**
-     * @Configuration\Route(path="{id}/enable")
+     * Toggle given user enable.
+     *
+     * @Configuration\Route("{id}/enable", requirements={"id": "\d+"})
      *
      * @param Request $request A Request instance.
      * @param User    $user    User to enable\disable.
@@ -82,10 +88,10 @@ class UserController extends Controller
     }
 
     /**
-     * @Configuration\Route(path="/{id}/edit")
-     * @Configuration\Template(
-     *  template="GovWikiAdminBundle:User:manage.html.twig"
-     * )
+     * Edit given user.
+     *
+     * @Configuration\Route(path="/{id}/edit", requirements={"id": "\d+"})
+     * @Configuration\Template("GovWikiAdminBundle:User:manage.html.twig")
      * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param Request $request A Request instance.
@@ -111,10 +117,10 @@ class UserController extends Controller
     }
 
     /**
+     * Create new user.
+     *
      * @Configuration\Route(path="/new")
-     * @Configuration\Template(
-     *  template="GovWikiAdminBundle:User:manage.html.twig"
-     * )
+     * @Configuration\Template("GovWikiAdminBundle:User:manage.html.twig")
      * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param Request $request A Request instance.

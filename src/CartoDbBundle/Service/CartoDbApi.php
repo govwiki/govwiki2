@@ -32,10 +32,10 @@ class CartoDbApi
     }
 
     /**
-     * Send file with data to CartoDB.
+     * Send geo json file to CartoDB.
      *
      * @param string  $filePath     Path to GeoJson data file.
-     * @param boolean $createNewMap If set create new 'Unnamed map'.
+     * @param boolean $createNewMap If set create new visualization = map.
      *
      * @return string Item queue id.
      *
@@ -68,7 +68,7 @@ class CartoDbApi
      *
      * @return array
      *
-     * @throws CartoDBRequestFailException Fail request.
+     * @throws CartoDBRequestFailException Request fail.
      */
     public function checkImportProcess($itemQueueId)
     {
@@ -116,7 +116,7 @@ class CartoDbApi
     }
 
     /**
-     * Wrapper under curl for making request to api.
+     * Wrapper under curl for making request to CartoDB api.
      *
      * @param string $uri        Relative to CartoDB api end point.
      * @param string $method     Http method.
@@ -128,6 +128,9 @@ class CartoDbApi
     {
         $method = strtoupper($method);
 
+        /*
+         * Add api key as query parameters.
+         */
         if (strpos($uri, '?') === false) {
             $uri .= "?api_key={$this->apiKey}";
         } else {
@@ -138,9 +141,11 @@ class CartoDbApi
 
         curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
 
-        if ('GET' !== $method) {
-            curl_setopt($handler, CURLOPT_POST, true);
-        }
+//        TODO maybe delete this part of code.
+//        if ('GET' !== $method) {
+//            curl_setopt($handler, CURLOPT_POST, true);
+//        }
+        curl_setopt($handler, CURLOPT_CUSTOMREQUEST, $method);
         if (count($parameters) > 0) {
             curl_setopt($handler, CURLOPT_POSTFIELDS, $parameters);
         }

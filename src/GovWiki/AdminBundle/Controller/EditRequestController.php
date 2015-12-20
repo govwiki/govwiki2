@@ -3,18 +3,18 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use GovWiki\DbBundle\Entity\EditRequest;
 
 /**
- * EditRequestController
+ * Class EditRequestController
+ * @package GovWiki\AdminBundle\Controller
  *
  * @Configuration\Route("/edit-request")
  */
-class EditRequestController extends Controller
+class EditRequestController extends AbstractGovWikiAdminController
 {
     /**
      * @Configuration\Route("/")
@@ -26,7 +26,7 @@ class EditRequestController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $editRequests = $this->get('knp_paginator')->paginate(
+        $editRequests = $this->paginate(
             $this->getManager()->getListQuery(),
             $request->query->getInt('page', 1),
             50
@@ -48,11 +48,16 @@ class EditRequestController extends Controller
         $em = $this->getDoctrine()->getManager();
         $errors = [];
 
+        $entityName = $editRequest->getEntityName();
+
         try {
-            $targetEntity = $em->getRepository("GovWikiDbBundle:{$editRequest->getEntityName()}")->find($editRequest->getEntityId());
+            $targetEntity = $em
+                ->getRepository("GovWikiDbBundle:{$entityName}")
+                ->find($editRequest->getEntityId());
         } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
             $targetEntity = null;
-            $errors[]     = "Can't find entity with name '{$editRequest->getEntityName()}', due to bad entry or internal system error";
+            $errors[]     = "Can't find entity with name '{$entityName}', due ".
+                'to bad entry or internal system error';
         }
 
         $governmentName = '';
@@ -60,7 +65,9 @@ class EditRequestController extends Controller
             if (method_exists($targetEntity, 'getGovernment')) {
                 $governmentName = $targetEntity->getGovernment()->getName();
             } elseif (method_exists($targetEntity, 'getElectedOfficial')) {
-                $governmentName = $targetEntity->getElectedOfficial()->getGovernment()->getName();
+                $governmentName = $targetEntity->getElectedOfficial()
+                    ->getGovernment()
+                    ->getName();
             }
         }
 
@@ -93,7 +100,9 @@ class EditRequestController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $targetEntity = $em->getRepository("GovWikiDbBundle:{$editRequest->getEntityName()}")->find($editRequest->getEntityId());
+        $targetEntity = $em
+            ->getRepository("GovWikiDbBundle:{$editRequest->getEntityName()}")
+            ->find($editRequest->getEntityId());
 
         foreach ($editRequest->getChanges() as $field => $newValue) {
             if (method_exists($targetEntity, 'get'.ucfirst($field))) {

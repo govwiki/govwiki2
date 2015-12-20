@@ -11,7 +11,8 @@ use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Form\GovernmentType;
 
 /**
- * GovernmentController
+ * Class GovernmentController
+ * @package GovWiki\AdminBundle\Controller
  *
  * @Configuration\Route("/government")
  */
@@ -82,15 +83,19 @@ class GovernmentController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{id}/edit", requirements={"id": "\d+"})
+     * @Configuration\Route(
+     *  "/{id}/edit",
+     *  requirements={"id": "\d+"}
+     * )
      * @Configuration\Template()
      *
-     * @param Government $government A Government instance.
      * @param Request    $request    A Request instance.
+     * @param Government $government A Government instance.
      *
      * @return array
      */
-    public function editAction(Government $government, Request $request) {
+    public function editAction(Request $request, Government $government)
+    {
         $form = $this->createForm(new GovernmentType(true), $government);
         $form->handleRequest($request);
 

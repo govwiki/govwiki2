@@ -1,4 +1,7 @@
 services:
+    #
+    # Wrapper under curl for easy access to CartoDB api.
+    #
     carto_db.api:
         class: CartoDbBundle\Service\CartoDbApi
         arguments:

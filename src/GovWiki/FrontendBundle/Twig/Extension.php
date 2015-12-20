@@ -2,7 +2,6 @@
 
 namespace GovWiki\FrontendBundle\Twig;
 
-
 /**
  * Class Extension
  * @package GovWiki\FrontendBundle\Twig
@@ -38,7 +37,7 @@ class Extension extends \Twig_Extension
         return [
             new \Twig_SimpleTest('viewed', [
                 $this,
-                'isViewed'
+                'isViewed',
             ]),
         ];
     }

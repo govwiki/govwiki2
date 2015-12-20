@@ -4,7 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\AdminBundle\Manager\AdminStyleManager;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Form\EnvironmentType;
 use GovWiki\DbBundle\GovWikiDbServices;
@@ -72,8 +72,7 @@ class MainController extends AbstractGovWikiAdminController
         if ($form->isValid() && $form->isSubmitted()) {
             $em = $this->getDoctrine()->getManager();
             $environment->setStyle(
-                $this->get(GovWikiAdminServices::ADMIN_STYLE_MANAGER)
-                    ->getDefaultStyles()
+                AdminStyleManager::getDefaultStyles()
             );
             $em->persist($environment);
             $em->flush();

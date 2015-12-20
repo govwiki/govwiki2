@@ -98,7 +98,9 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @return
+     * Get map data for current environment.
+     *
+     * @return \GovWiki\DbBundle\Entity\Map|null
      */
     public function getMap()
     {
@@ -133,6 +135,11 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
             ->getStyle($this->environment);
     }
 
+    /**
+     * @param array $style Styles.
+     *
+     * @return void
+     */
     public function setStyle(array $style)
     {
         $environment = $this->getReference();
@@ -143,6 +150,8 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * Return environment entity.
+     *
      * @return \GovWiki\DbBundle\Entity\Environment|null
      *
      * @throws AccessDeniedException User don't allow to manage current
@@ -187,6 +196,8 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * Get proxy environment entity.
+     *
      * @return Environment
      *
      * @throws AccessDeniedException User don't allow to manage current

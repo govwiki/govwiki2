@@ -13,18 +13,18 @@ use GovWiki\DbBundle\Entity\ElectedOfficialVote;
 use GovWiki\DbBundle\Entity\Endorsement;
 use GovWiki\DbBundle\Entity\IssueCategory;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use GovWiki\DbBundle\Entity\CreateRequest;
 
 /**
- * CreateRequestController
+ * Class CreateRequestController
+ * @package GovWiki\AdminBundle\Controller
  *
  * @Configuration\Route("/create-request")
  */
-class CreateRequestController extends Controller
+class CreateRequestController extends AbstractGovWikiAdminController
 {
     /**
      * @Configuration\Route("/")
@@ -36,7 +36,7 @@ class CreateRequestController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $createRequests = $this->get('knp_paginator')->paginate(
+        $createRequests = $this->paginate(
             $this->getManager()->getListQuery(),
             $request->query->getInt('page', 1),
             50
@@ -58,14 +58,21 @@ class CreateRequestController extends Controller
         $em = $this->getDoctrine()->getManager();
         $errors = [];
 
+        $entityName = $createRequest->getEntityName();
+
         try {
-            $targetClassMetadata = $em->getClassMetadata("GovWikiDbBundle:{$createRequest->getEntityName()}");
+            $targetClassMetadata = $em
+                ->getClassMetadata(
+                    "GovWikiDbBundle:{$entityName}"
+                );
         } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
             $targetClassMetadata = null;
-            $errors[] = "Can't find entity with name '{$createRequest->getEntityName()}', due to bad entry or internal system error";
+            $errors[] = "Can't find entity with name '{$entityName}', due ".
+                'to bad entry or internal system error';
         }
 
-        $data = $this->buildData($createRequest->getFields(), $targetClassMetadata);
+        $data = $this
+            ->buildData($createRequest->getFields(), $targetClassMetadata);
 
         return [
             'createRequest' => $createRequest,
@@ -130,7 +137,8 @@ class CreateRequestController extends Controller
 
             if (count($ids) > 0) {
                 /** @var ElectedOfficialRepository $repository */
-                $repository = $this->getDoctrine()->getRepository('GovWikiDbBundle:ElectedOfficial');
+                $repository = $this->getDoctrine()
+                    ->getRepository('GovWikiDbBundle:ElectedOfficial');
 
                 $data = $repository->getDataForEmailByIds($ids);
 
@@ -184,13 +192,17 @@ class CreateRequestController extends Controller
 
         $em->flush();
 
-        return new JsonResponse(['redirect' => $this->generateUrl('govwiki_admin_createrequest_index')]);
+        return new JsonResponse([
+            'redirect' => $this
+                ->generateUrl('govwiki_admin_createrequest_index'),
+        ]);
     }
 
     /**
      * @Configuration\Route("/{id}/discard")
      *
-     * @param CreateRequest $createRequest
+     * @param CreateRequest $createRequest A CreateRequest instance.
+     *
      * @return JsonResponse
      */
     public function discardAction(CreateRequest $createRequest)
@@ -199,7 +211,10 @@ class CreateRequestController extends Controller
         $createRequest->setStatus('discarded');
         $em->flush();
 
-        return new JsonResponse(['redirect' => $this->generateUrl('govwiki_admin_createrequest_index')]);
+        return new JsonResponse([
+            'redirect' => $this
+                ->generateUrl('govwiki_admin_createrequest_index'),
+        ]);
     }
 
     /**
@@ -325,9 +340,11 @@ class CreateRequestController extends Controller
                         $tmp = $associationRepository->findAll();
                         foreach ($tmp as $entity) {
                             if (method_exists($associationEntity, '__toString')) {
-                                $associationCache[$association][$entity->getId()] = (string) $entity;
+                                $associationCache[$association][$entity->getId()] =
+                                    (string) $entity;
                             } else {
-                                $associationCache[$association][$entity->getId()] = 'Can\'t display name';
+                                $associationCache[$association][$entity->getId()] =
+                                    'Can\'t display name';
                             }
                         }
                     }
@@ -346,14 +363,24 @@ class CreateRequestController extends Controller
         if (!empty($data['childs'])) {
             foreach ($data['childs'] as $child) {
                 try {
-                    $childClassMetadata = $em->getClassMetadata("GovWikiDbBundle:{$child['entityName']}");
+                    $childClassMetadata = $em
+                        ->getClassMetadata(
+                            "GovWikiDbBundle:{$child['entityName']}"
+                        );
                 } catch (MappingException $e) {
                     $childClassMetadata = null;
-                    $errors[] = "Can't find entity with name '{$child['entityName']}', due to bad entry or internal system error";
+                    $errors[] = 'Can\'t find entity with name' .
+                        "{$child['entityName']}', due to bad entry or " .
+                        'internal system error';
                 }
 
-                if (empty($errors)) {
-                    $result['childs'][] = $this->buildData($child['fields'], $childClassMetadata) + ['dataType' => $child['entityName']];
+                if (count($errors) <= 0) {
+                    $result['childs'][] = $this
+                            ->buildData(
+                                $child['fields'],
+                                $childClassMetadata
+                            ) +
+                        ['dataType' => $child['entityName']];
                 }
             }
         }
@@ -364,12 +391,16 @@ class CreateRequestController extends Controller
     /**
      * @param string                 $entityName Persisted entity name.
      * @param array                  $data       Persisted data.
-     * @param EntityManagerInterface $em         A EntityManagerInterface instance.
+     * @param EntityManagerInterface $em         A EntityManagerInterface
+     *                                           instance.
      *
      * @return object
      */
-    private function persistData($entityName, array $data, EntityManagerInterface $em)
-    {
+    private function persistData(
+        $entityName,
+        array $data,
+        EntityManagerInterface $em
+    ) {
         /** @var ClassMetadata $targetClassMetadata */
         $targetClassMetadata = $em->getClassMetadata("GovWikiDbBundle:$entityName");
         $newEntity = $targetClassMetadata->newInstance();
@@ -380,7 +411,8 @@ class CreateRequestController extends Controller
                 $setter = 'set'.ucfirst($field);
 
                 if (method_exists($newEntity, $setter)) {
-                    if ($targetClassMetadata->getFieldMapping($field)['type'] == 'date') {
+                    if ($targetClassMetadata->getFieldMapping($field)['type'] ===
+                        'date') {
                         $newEntity->$setter(new \Datetime($value));
                     } else {
                         $newEntity->$setter($value);
@@ -392,10 +424,10 @@ class CreateRequestController extends Controller
         if (!empty($data['associations'])) {
             foreach ($data['associations'] as $association => $id) {
                 $correctAssociation = true;
-//                $associationName    = '';
                 try {
                     /** @var ObjectRepository $associationRepository */
-                    $associationRepository = $em->getRepository("GovWikiDbBundle:{$association}");
+                    $associationRepository = $em
+                        ->getRepository("GovWikiDbBundle:{$association}");
                 } catch (MappingException $e) {
                     $associationRepository = null;
                     $correctAssociation = false;
@@ -416,7 +448,11 @@ class CreateRequestController extends Controller
                 $adder = 'add'.$child['entityName'];
 
                 if (method_exists($newEntity, $adder)) {
-                    $child = $this->persistData($child['entityName'], $child['fields'], $em);
+                    $child = $this->persistData(
+                        $child['entityName'],
+                        $child['fields'],
+                        $em
+                    );
                     $em->persist($child);
                     $newEntity->$adder($child);
                 }

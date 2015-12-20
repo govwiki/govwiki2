@@ -26,7 +26,7 @@ class CartoDbExtension extends Extension
         $loader->load('services.yml');
 
         /*
-         * Get carto db access parameters from configuration and pass to api
+         * Get CartoDB access parameters from configuration and pass to api
          * service.
          */
         $cartoDbApi = $container

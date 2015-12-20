@@ -94,7 +94,11 @@ class MapController extends AbstractGovWikiAdminController
      * Set up map parameters and import county or municipals GeoJson file to
      * CartoDB server.
      *
-     * @Configuration\Route("/{environment}/new", methods={"POST"})
+     * @Configuration\Route(
+     *  "/{environment}/new",
+     *  methods={"POST"},
+     *  requirements={"environment": "\w+"}
+     * )
      * @Configuration\Template()
      *
      * @param Request            $request     A Request instance.
