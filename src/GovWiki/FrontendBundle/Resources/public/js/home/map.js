@@ -71,6 +71,13 @@ $(function() {
             });
 
             /**
+             * Show map, legend, hide loader
+             */
+            $('#map').css({"opacity": 1});
+            $('#menu').css({"opacity": 1});
+            $('.loader').hide();
+
+            /**
              * Initialization County Layer
              *
              * Tooltip window
@@ -174,7 +181,7 @@ $(function() {
             var tooltips = [countyTooltip, cityTooltip, schoolTooltip, specialTooltip];
 
             tooltips.forEach(function (tooltip) {
-                if (tooltip !== undefined || tooltip !== null){
+                if (tooltip != null){
                     $('#map_wrap').append(tooltip.render().el);
                 }
             });
@@ -221,11 +228,17 @@ $(function() {
                          * Open current tooltip, close another
                          */
                         tooltips.forEach(function(tooltip){
-                            if (tooltip.getLayerIndex() == layerIndex) {
-                                tooltip.enable();
-                            } else {
-                                tooltip.disable();
+
+                            if (tooltip != null) {
+
+                                if (tooltip.getLayerIndex() == layerIndex) {
+                                    tooltip.enable();
+                                } else {
+                                    tooltip.disable();
+                                }
+
                             }
+
                         })
 
                     }
@@ -253,9 +266,15 @@ $(function() {
                          *  Close all tooltips, if cursor outside of layers
                          */
                         tooltips.forEach(function(tooltip){
-                            if (tooltip.getLayerIndex() == layerIndex) {
-                                tooltip.disable();
+
+                            if (tooltip != null) {
+
+                                if (tooltip.getLayerIndex() == layerIndex) {
+                                    tooltip.disable();
+                                }
+
                             }
+
                         })
 
                     }
