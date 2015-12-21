@@ -42,7 +42,6 @@ class Extension extends \Twig_Extension
         ];
     }
 
-
     /**
      * @param array  $government A Government instance.
      * @param string $field      Field name.

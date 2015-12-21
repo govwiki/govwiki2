@@ -177,25 +177,6 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @param string $environment Environment name.
-     *
-     * @return AdminEnvironmentManager
-     *
-     * @throws AccessDeniedException User don't allow to manage current
-     * environment.
-     */
-    public function removeEnvironment($environment)
-    {
-        $this->environment = $environment;
-        $entity = $this->getReference();
-
-        $this->em->remove($entity);
-        $this->em->flush();
-
-        return $this;
-    }
-
-    /**
      * Get proxy environment entity.
      *
      * @return Environment
@@ -216,6 +197,25 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
         }
 
         throw new AccessDeniedException();
+    }
+
+    /**
+     * @param string $environment Environment name.
+     *
+     * @return AdminEnvironmentManager
+     *
+     * @throws AccessDeniedException User don't allow to manage current
+     * environment.
+     */
+    public function removeEnvironment($environment)
+    {
+        $this->environment = $environment;
+        $entity = $this->getReference();
+
+        $this->em->remove($entity);
+        $this->em->flush();
+
+        return $this;
     }
 
     /**
@@ -247,9 +247,23 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * @param boolean $plain Flag, if set return plain array without grouping by
+     *                       tab names and fields.
+     *
+     * @return array
+     */
+    public function getFormats($plain = false)
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Format')
+            ->get($this->environment, $plain);
+    }
+
+    /**
      * @param AdminEntityManagerAwareInterface $entityManager A
      *                                                        AdminEntityManagerAwareInterface
      *                                                        instance.
+     *
+     * @return void
      */
     public function configure(AdminEntityManagerAwareInterface $entityManager)
     {

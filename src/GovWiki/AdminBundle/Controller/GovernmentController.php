@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\DbBundle\Entity\Government;
-use GovWiki\DbBundle\Form\GovernmentType;
 
 /**
  * Class GovernmentController
@@ -66,7 +65,7 @@ class GovernmentController extends AbstractGovWikiAdminController
         $manager = $this->getManager();
         $government = $manager->create();
 
-        $form = $this->createForm(new GovernmentType(), $government);
+        $form = $this->createForm('government', $government);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -79,7 +78,12 @@ class GovernmentController extends AbstractGovWikiAdminController
             return $this->redirectToRoute('govwiki_admin_government_index');
         }
 
-        return [ 'form' => $form->createView() ];
+        return [
+            'form' => $form->createView(),
+            'formats' => $this
+                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
+                ->getFormats(),
+        ];
     }
 
     /**
@@ -96,7 +100,7 @@ class GovernmentController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, Government $government)
     {
-        $form = $this->createForm(new GovernmentType(true), $government);
+        $form = $this->createForm('government', $government);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -108,7 +112,12 @@ class GovernmentController extends AbstractGovWikiAdminController
             return $this->redirectToRoute('govwiki_admin_government_index');
         }
 
-        return ['form' => $form->createView()];
+        return [
+            'form' => $form->createView(),
+            'formats' => $this
+                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
+                ->getFormats(),
+        ];
     }
 
     /**
