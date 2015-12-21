@@ -11,9 +11,27 @@ $(function() {
      */
 
     window.gw.map = JSON.parse(window.gw.map);
-    window.gw.environment = window.gw.environment.toLowerCase();
-    window.gw.environment = window.gw.environment.replace(/ /g, '_');
 
+    /**
+     * Handle possible errors
+     */
+    if (window.gw.map == null) {
+        $('.loader').hide();
+        var $mapProcessing = $('.mapOnProcessing');
+        $mapProcessing.find('h5').eq(0).text('Something went wrong, please contact with us (contact@californiapolicycenter.org) ');
+        $mapProcessing.css({"opacity":1});
+        return false;
+
+    // Perhaps map was uploaded recently, show wait message for user
+    } else if (window.gw.map.vizUrl == null) {
+        $('.loader').hide();
+        $('.mapOnProcessing').css({"opacity":1});
+        return false;
+    }
+
+    /**
+     * Initialize Carto DB
+     */
     cartodb.createVis('map', window.gw.map.vizUrl, {
             scrollwheel: true,
             shareable: false,

@@ -34,7 +34,7 @@ a {
 }
 
 i.icon {
-   background: url("/img/bg.gif");
+   background: url("img/bg.gif");
    width: 21px;
    height: 9px;
    display: inline-block;
@@ -42,13 +42,13 @@ i.icon {
    &.icon__bottom {
       height: 4px;
       margin-bottom: 4px;
-      background: url("/img/desc.gif");
+      background: url("img/desc.gif");
    }
 
    &.icon__top {
       height: 4px;
       margin-bottom: 4px;
-      background: url("/img/asc.gif");
+      background: url("img/asc.gif");
    }
 
 }

@@ -26,7 +26,7 @@ $(function() {
         };
     };
 
-    $.get('/legacy/data/h_types_ca_2.json', function (data){
+    $.get('/data/search.json', function (data){
 
         var searchValue = '';
 

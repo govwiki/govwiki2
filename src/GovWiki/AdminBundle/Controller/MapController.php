@@ -111,7 +111,7 @@ class MapController extends AbstractGovWikiAdminController
     {
         if ($environment instanceof Environment) {
             $environmentObj = $environment;
-            $environment = $environment->getName();
+            $environment = $environment->getSlug();
         } else {
             $environmentObj = $this->getDoctrine()
                 ->getRepository('GovWikiDbBundle:Environment')
