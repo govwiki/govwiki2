@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
-use GovWiki\DbBundle\Entity\FinData;
 use GovWiki\DbBundle\Entity\Government;
 
 /**
@@ -35,9 +34,9 @@ class GovernmentRepository extends EntityRepository
             $qb->andWhere($expr->eq('Government.id', $id));
         }
         if (null !== $name) {
-            $qb->andWhere($expr->eq(
+            $qb->andWhere($expr->like(
                 'Government.name',
-                $expr->literal($name)
+                $expr->literal('%'.$name.'%')
             ));
         }
 

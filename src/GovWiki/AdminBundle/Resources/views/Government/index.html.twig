@@ -5,20 +5,28 @@
         <div class="index-page-head">
             <div class="navigation">
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         {{ knp_pagination_render(governments) }}
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <form action="" class="form-inline">
                             <input name="filter[id]" type="text" class="form-control" placeholder="Id"{% if app.request.query.get('filter') %} value="{{app.request.query.get('filter').id}}"{% endif %}>
                             <input name="filter[name]" type="text" class="form-control" placeholder="Name"{% if app.request.query.get('filter') %} value="{{app.request.query.get('filter').name}}"{% endif %}>
                             <button type="submit" class="btn btn-primary">Filter</button>
                         </form>
                     </div>
-                    <div class="btn-group">
-                        <a class="btn btn-primary" href="{{-
-                            path('govwiki_admin_government_create')
-                        -}}">Create</a>
+                    <div class="col-md-3">
+                        <div class="btn-group pull-right">
+                            <a class="btn btn-default" href="{{-
+                                path('govwiki_admin_government_export')
+                            -}}">Export</a>
+                            <a class="btn btn-default" href="{{-
+                                path('govwiki_admin_government_import')
+                            -}}">Import</a>
+                            <a class="btn btn-primary" href="{{-
+                                path('govwiki_admin_government_create')
+                            -}}">Create</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -42,11 +50,18 @@
                         <td>{{ government.slug }}</td>
                         <td>{{ government.type }}</td>
                         <td>{{ government.altType }}</td>
-                        <td><a href="{{- path('govwiki_admin_government_edit',
-                            { id: government.id }) -}}" class="btn btn-default">
+                        <td>
+                            <a href="{{- path('govwiki_admin_government_edit',
+                                { id: government.id }) -}}" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                    Edit
+                            </a>
+                            <a href="{{- path('govwiki_admin_government_remove',
+                            { id: government.id }) -}}" class="btn btn-danger">
                                 <span class="glyphicon glyphicon-pencil"></span>
-                                Edit
-                        </a></td>
+                                Remove
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

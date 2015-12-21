@@ -2,10 +2,8 @@
 
 namespace GovWiki\DbBundle\Importer;
 
-use GovWiki\AdminBundle\Exception\FileTransformerException;
 use GovWiki\AdminBundle\Transformer\FileTransformerInterface;
 use GovWiki\DbBundle\Entity\Government;
-use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\Exception\InvalidFieldNameException;
 
 /**
@@ -54,8 +52,8 @@ class GovernmentImporter extends AbstractImporter
      */
     public function export(
         $filePath,
-        array $columns,
-        FileTransformerInterface $transformer
+        FileTransformerInterface $transformer,
+        array $columns = null
     ) {
         $data = $this->manager->getAll($columns);
         $transformer->reverseTransform($filePath, $data);

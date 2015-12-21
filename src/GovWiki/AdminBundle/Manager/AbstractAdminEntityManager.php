@@ -85,13 +85,10 @@ abstract class AbstractAdminEntityManager implements
             throw new \InvalidArgumentException();
         }
 
-        $entity = $this->beforeUpdate($entity);
-
         $this->em->persist($entity);
         if ($andFlush) {
             $this->em->flush();
         }
-        $this->afterUpdate($entity);
 
         return $this;
     }
@@ -102,25 +99,6 @@ abstract class AbstractAdminEntityManager implements
     public function flush()
     {
         $this->em->flush();
-    }
-
-    /**
-     * @param object $entity Updated entity.
-     *
-     * @return mixed
-     */
-    protected function beforeUpdate($entity)
-    {
-        return $entity;
-    }
-
-    /**
-     * @param object $entity Updated entity.
-     *
-     * @return mixed
-     */
-    protected function afterUpdate($entity)
-    {
     }
 
     /**
@@ -136,6 +114,16 @@ abstract class AbstractAdminEntityManager implements
     protected function getRepository()
     {
         return $this->em->getRepository($this->getEntityClassName());
+    }
+
+    /**
+     * @param integer $id Entity id.
+     *
+     * @return object
+     */
+    public function getReference($id)
+    {
+        return $this->em->getReference($this->getEntityClassName(), $id);
     }
 
     /**
@@ -165,7 +153,7 @@ abstract class AbstractAdminEntityManager implements
      *
      * @return array
      */
-    public function getAll(array $columns)
+    public function getAll(array $columns = null)
     {
         /** @var EntityRepository $repository */
         $repository = $this->getRepository();
@@ -175,12 +163,15 @@ abstract class AbstractAdminEntityManager implements
             strrpos($this->getEntityClassName(), '\\') + 1
         );
 
-        foreach ($columns as &$column) {
-            $column = "$alias.$column";
+
+        $qb = $repository->createQueryBuilder($alias);
+        if (count($columns) > 0) {
+            foreach ($columns as &$column) {
+                $column = "$alias.$column";
+            }
+            $qb->select(implode(',', $columns));
         }
 
-        $qb = $repository->createQueryBuilder($alias)
-            ->select(implode(',', $columns));
         $expr = $qb->expr();
 
         return $qb

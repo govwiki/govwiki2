@@ -160,12 +160,11 @@ class CartoDbApi
 
         curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
 
-//        TODO maybe delete this part of code.
         if ('GET' !== $method) {
             curl_setopt($handler, CURLOPT_POST, true);
+            curl_setopt($handler, CURLOPT_CUSTOMREQUEST, $method);
         }
 
-//        curl_setopt($handler, CURLOPT_CUSTOMREQUEST, $method);
         if (count($parameters) > 0) {
             curl_setopt($handler, CURLOPT_POSTFIELDS, $parameters);
         }

@@ -4,7 +4,6 @@ namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
-use GovWiki\DbBundle\Entity\ElectedOfficial;
 
 /**
  * ElectedOfficialRepository
@@ -39,13 +38,13 @@ class ElectedOfficialRepository extends EntityRepository
         }
         if (null !== $fullName) {
             $qb->andWhere(
-                $expr->like('eo.fullName', $expr->literal($fullName))
+                $expr->like('eo.fullName', $expr->literal('%'.$fullName.'%'))
             );
         }
         if (null !== $government) {
-            $qb->andWhere($expr->eq(
+            $qb->andWhere($expr->like(
                 'Government.name',
-                $expr->literal($government)
+                $expr->literal('%'.$government.'%')
             ));
         }
 
