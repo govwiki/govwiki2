@@ -192,7 +192,8 @@
     <script id="dsq-embed-scr" src="//cpc-civicprofiles.disqus.com/embed.js"></script>
     <script id="dsq-count-scr" src="//cpc-civicprofiles.disqus.com/count.js"></script>
 
-    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/script.js'
+    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
+                    '@GovWikiFrontendBundle/Resources/public/js/script.js'
                     '@GovWikiFrontendBundle/Resources/public/js/elected/handlers.js'
                     output='js/elected.js' %}
         <script src="{{ asset_url }}"></script>
