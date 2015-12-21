@@ -10,8 +10,8 @@
                 {# Typeahead Search #}
                 <div class="typeahead_wrap">
 
-                    <input id="myinput" type="text" placeholder="Loading the list of governments"
-                           class="text-uppercase typeahead form-control">
+                    <input id="search" type="text" placeholder="Loading the list of governments"
+                           class="text-uppercase typeahead form-control" disabled>
 
                     <p class="text-center text-nowrap hidden-xs hidden-sm">
                         Type part of the agency's name
@@ -31,6 +31,9 @@
 
                 {# Map #}
                 <div id="map_wrap">
+
+                    <div class="loader"></div>
+
                     <ul id='menu'>
 
                         <li class="legend-header">

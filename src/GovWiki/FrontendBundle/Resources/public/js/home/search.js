@@ -67,6 +67,9 @@ $(function() {
             searchValue = $(event.target).val();
         });
 
+        $typeahead.attr('placeholder', 'GOVERNMENT NAME');
+        $typeahead.attr('disabled', false);
+
     });
 
 });
