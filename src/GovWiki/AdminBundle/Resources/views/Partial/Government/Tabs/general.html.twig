@@ -3,7 +3,9 @@
     <div class="col-md-4">
         <h4>Main information</h4>
         {{ form_row(form.name) }}
-        {{ form_row(form.environment) }}
+        {% if form['environment'] is defined %}
+            {{ form_row(form.environment) }}
+        {% endif %}
     </div>
     <div class="col-md-4">
         <h4>Types</h4>

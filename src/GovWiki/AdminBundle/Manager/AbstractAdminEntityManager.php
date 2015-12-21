@@ -91,6 +91,7 @@ abstract class AbstractAdminEntityManager implements
         if ($andFlush) {
             $this->em->flush();
         }
+        $this->afterUpdate($entity);
 
         return $this;
     }
@@ -104,11 +105,22 @@ abstract class AbstractAdminEntityManager implements
     }
 
     /**
-     * @return object
+     * @param object $entity Updated entity.
+     *
+     * @return mixed
      */
     protected function beforeUpdate($entity)
     {
         return $entity;
+    }
+
+    /**
+     * @param object $entity Updated entity.
+     *
+     * @return mixed
+     */
+    protected function afterUpdate($entity)
+    {
     }
 
     /**

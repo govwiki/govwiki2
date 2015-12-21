@@ -102,15 +102,27 @@ class CartoDbApi
     }
 
     /**
+     * @param string $sql Sql statement.
+     *
+     * @return array
+     */
+    public function sqlRequest($sql)
+    {
+        $sql = preg_replace('|\s{2,}|', ' ', $sql);
+        return $this->makeRequest('/v2/sql', 'GET', [
+            'q' => $sql,
+            'curl' => [ CURLOPT_POST => true ]
+        ]);
+    }
+
+    /**
      * @param string $name Dataset name.
      *
      * @return CartoDbApi
      */
     public function dropDataset($name)
     {
-        $this->makeRequest("/v2/sql", 'GET', [
-            'q' => "DROP TABLE {$name}",
-        ]);
+        $this->sqlRequest("DROP TABLE {$name}");
 
         return $this;
     }
@@ -128,6 +140,12 @@ class CartoDbApi
     {
         $method = strtoupper($method);
 
+        $curlOptions = [];
+        if (array_key_exists('curl', $parameters)) {
+            $curlOptions = $parameters['curl'];
+            unset($parameters['curl']);
+        }
+
         /*
          * Add api key as query parameters.
          */
@@ -138,14 +156,16 @@ class CartoDbApi
         }
 
         $handler = curl_init("{$this->endpoint}${uri}");
+        curl_setopt_array($handler, $curlOptions);
 
         curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
 
 //        TODO maybe delete this part of code.
-//        if ('GET' !== $method) {
-//            curl_setopt($handler, CURLOPT_POST, true);
-//        }
-        curl_setopt($handler, CURLOPT_CUSTOMREQUEST, $method);
+        if ('GET' !== $method) {
+            curl_setopt($handler, CURLOPT_POST, true);
+        }
+
+//        curl_setopt($handler, CURLOPT_CUSTOMREQUEST, $method);
         if (count($parameters) > 0) {
             curl_setopt($handler, CURLOPT_POSTFIELDS, $parameters);
         }

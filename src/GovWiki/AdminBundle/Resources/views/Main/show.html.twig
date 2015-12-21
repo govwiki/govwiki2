@@ -50,18 +50,20 @@
                 </a>
             </div>
             <div class="btn-group pull-right">
-                <a class="btn btn-primary" href="{{ path('govwiki_admin_main_style') }}">
+                <a class="btn btn-primary" href="{{-
+                    path('govwiki_admin_main_style') -}}">
                     Edit styles
                 </a>
-                <a class="btn btn-primary" href="{{ path('govwiki_admin_map_edit',
-                { environment: environment.name }) }}">
+                <a class="btn btn-primary" href="{{-
+                    path('govwiki_admin_map_edit') -}}">
                     Edit map
                 </a>
-                <a class="btn btn-primary" href="{{ path('govwiki_admin_format_list',
-                { environment: environment.name }) }}">
+                <a class="btn btn-primary" href="{{-
+                    path('govwiki_admin_format_list') -}}">
                     Edit formats
                 </a>
-                <a class="btn btn-default" href="{{ path('govwiki_admin_main_update') }}">
+                <a class="btn btn-default" href="{{-
+                    path('govwiki_admin_main_update') -}}">
                     Update CartoDB
                 </a>
             </div>
