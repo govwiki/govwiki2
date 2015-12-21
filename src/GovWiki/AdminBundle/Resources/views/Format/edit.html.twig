@@ -3,15 +3,41 @@
 {% block title %}{{ parent() }} - edit format{% endblock title %}
 
 {% block body %}
-    <div class="container-fluid">
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn btn-success">Update</button>
-        <a class="btn btn-default" href="{{-
-            path(
-                'govwiki_admin_format_list'
-            )
-        -}}">Back</a>
-        {{ form_end(form) }}
+
+    <div class="container">
+
+        {# Panel #}
+        <div class="panel panel-success">
+
+            {# Header #}
+            <div class="panel-heading">
+                <h3 class="panel-title">Edit format field</h3>
+            </div>
+
+            {# Body #}
+            <div class="panel-body">
+
+                {# Navigation controls #}
+                <div class="row">
+                    <div class="col-md-12">
+
+                        {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <button class="btn btn-success">Update</button>
+                        <a class="btn btn-default" href="{{-
+                            path(
+                                'govwiki_admin_format_list'
+                            )
+                        -}}">Back</a>
+                        {{ form_end(form) }}
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
 {% endblock body %}

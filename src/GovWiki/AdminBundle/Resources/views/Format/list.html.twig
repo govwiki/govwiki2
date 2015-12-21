@@ -3,59 +3,86 @@
 {% block title %}{{ parent() }} - formats{% endblock title %}
 
 {% block body %}
-    <div class="container-fluid">
-        {#
-            Navigation.
-        #}
-        <div class="index-page-head">
-            <div class="navigation">
-                {{ knp_pagination_render(fields) }}
-                <div class="pull-right">
-                    <a class="btn btn-default new_group" href="{{-
-                        path('govwiki_admin_tab_list')
-                    -}}">
-                        Tabs
-                    </a>
-                    <a class="btn btn-default new_group" href="{{-
-                    path('govwiki_admin_category_list')
-                    -}}">
-                        Categories
-                    </a>
-                    &nbsp;
-                    <a class="btn btn-primary" href="{{-
-                        path('govwiki_admin_format_new')
-                    -}}">Add new</a>
+
+    <div class="container">
+
+        {# Panel #}
+        <div class="panel panel-primary">
+
+            {# Header #}
+            <div class="panel-heading">
+                <h3 class="panel-title">Environment info</h3>
+            </div>
+
+            {# Body #}
+            <div class="panel-body">
+
+                {# Navigation controls #}
+                <div class="row">
+                    <div class="col-md-12">
+
+                        {# Navigation #}
+                        <div class="index-page-head">
+                            <div class="navigation">
+                                {{ knp_pagination_render(fields) }}
+                                <div class="pull-right">
+                                    <a class="btn btn-default new_group" href="{{-
+                                        path('govwiki_admin_tab_list')
+                                    -}}">
+                                        Tabs
+                                    </a>
+                                    <a class="btn btn-default new_group" href="{{-
+                                    path('govwiki_admin_category_list')
+                                    -}}">
+                                        Categories
+                                    </a>
+                                    &nbsp;
+                                    <a class="btn btn-primary" href="{{-
+                                        path('govwiki_admin_format_new')
+                                    -}}">Add new</a>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+
+                        {# List of formats #}
+                        <table class="table table-responsive">
+                            <tr>
+                                <th>Tab</th>
+                                <th>Category</th>
+                                <th>Field</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                            {% for field in fields %}
+                                <tr>
+                                    <td>{{ field.tab_name }}</td>
+                                    <td>{{ field.category_name }}</td>
+                                    <td>
+                                        <a href="{{ path('govwiki_admin_format_edit', { id: field.id }) }}">
+                                            {{ field.field }}</a>
+                                    </td>
+                                    <td>{{ field.description|raw }}</td>
+                                    <td>
+                                        <a class="btn btn-danger" href="{{ path('govwiki_admin_format_remove', { id: field.id }) }}">Delete</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                        {{ knp_pagination_render(fields) }}
+
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        {#
-            List of formats.
-        #}
-        <table class="table table-responsive">
-            <tr>
-                <th>Tab</th>
-                <th>Category</th>
-                <th>Field</th>
-                <th>Description</th>
-                <th>Actions</th>
-            </tr>
-            {% for field in fields %}
-                <tr>
-                    <td>{{ field.tab_name }}</td>
-                    <td>{{ field.category_name }}</td>
-                    <td>
-                        <a href="{{ path('govwiki_admin_format_edit', { id: field.id }) }}">
-                            {{ field.field }}</a>
-                    </td>
-                    <td>{{ field.description|raw }}</td>
-                    <td>
-                        <a class="btn btn-danger" href="{{ path('govwiki_admin_format_remove', { id: field.id }) }}">Delete</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-        {{ knp_pagination_render(fields) }}
-
     </div>
+
 {% endblock body %}
