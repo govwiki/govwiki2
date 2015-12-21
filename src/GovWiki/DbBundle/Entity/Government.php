@@ -48,7 +48,7 @@ class Government
      * @ORM\OneToMany(
      *  targetEntity="ElectedOfficial",
      *  mappedBy="government",
-     *
+     *  cascade={"remove"}
      * )
      * @MaxDepth(2)
      * @Groups({"government"})
@@ -56,12 +56,20 @@ class Government
     private $electedOfficials;
 
     /**
-     * @ORM\OneToMany(targetEntity="Legislation", mappedBy="government")
+     * @ORM\OneToMany(
+     *  targetEntity="Legislation",
+     *  mappedBy="government",
+     *  cascade={"remove"}
+     * )
      */
     private $legislations;
 
     /**
-     * @ORM\OneToMany(targetEntity="FinData", mappedBy="government")
+     * @ORM\OneToMany(
+     *  targetEntity="FinData",
+     *  mappedBy="government",
+     *  cascade={"remove"}
+     * )
      * @Groups({"government"})
      */
     private $finData;
