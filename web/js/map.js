@@ -6304,6 +6304,11 @@ $(function() {
     window.gw.map = JSON.parse(window.gw.map);
     window.gw.slug = window.gw.map.environment.slug;
 
+    /*
+        Change!!!!
+     */
+    window.gw.map.vizUrl = 'https://shemindmitry.cartodb.com/api/v2/viz/baa76230-a803-11e5-85a6-0ecd1babdde5/viz.json';
+
     /**
      * Handle possible errors
      */
@@ -6409,7 +6414,7 @@ $(function() {
             function initCityLayer() {
                 cityLayer = subLayers[1];
                 cityLayer.set({ 'interactivity': ['cartodb_id', 'slug'] }); // alias to template
-                cityLayer.setSQL("SELECT * FROM " + window.gw.environment + '_city');
+                cityLayer.setSQL("SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'City'");
 
                 cityTooltip = new cdb.geo.ui.Tooltip({
                     layer: cityLayer,
@@ -6428,7 +6433,7 @@ $(function() {
             function initSchoolLayer() {
                 schoolLayer = subLayers[2];
                 schoolLayer.set({ 'interactivity': ['cartodb_id', 'slug'] }); // alias to template
-                schoolLayer.setSQL("SELECT * FROM " + window.gw.environment + '_school');
+                schoolLayer.setSQL("SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'School_District'");
 
                 schoolTooltip = new cdb.geo.ui.Tooltip({
                     layer: schoolLayer,
@@ -6447,7 +6452,7 @@ $(function() {
             function initSpecialLayer() {
                 specialLayer = subLayers[3];
                 specialLayer.set({ 'interactivity': ['cartodb_id', 'slug'] }); // alias to template
-                specialLayer.setSQL("SELECT * FROM " + window.gw.environment + '_special');
+                specialLayer.setSQL("SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'Special_District'");
 
                 specialTooltip = new cdb.geo.ui.Tooltip({
                     layer: specialLayer,
@@ -6693,6 +6698,7 @@ $(function() {
         var $mapProcessing = $('.mapOnProcessing');
         $mapProcessing.find('h5').eq(0).text('Something went wrong, please contact with us (contact@californiapolicycenter.org) ');
         $mapProcessing.css({"opacity":1});
+        $mapProcessing.show();
         return false;
     }
 
@@ -6702,7 +6708,9 @@ $(function() {
      */
     function mapOnProcessingError() {
         $('.loader').hide();
-        $('.mapOnProcessing').css({"opacity":1});
+        var $mapProcessing = $('.mapOnProcessing');
+        $mapProcessing.css({"opacity":1});
+        $mapProcessing.show();
         return false;
     }
 });
