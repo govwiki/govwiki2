@@ -2,10 +2,12 @@
 
 namespace GovWiki\ApiBundle\Manager;
 
+use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class EnvironmentManager
@@ -19,16 +21,23 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     private $em;
 
     /**
+     * @var CartoDbApi
+     */
+    private $api;
+
+    /**
      * @var string
      */
     private $environment;
 
     /**
-     * @param EntityManagerInterface $em A EntityManagerInterface instance.
+     * @param EntityManagerInterface $em  A EntityManagerInterface instance.
+     * @param CartoDbApi             $api A CartoDbApi instance.
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, CartoDbApi $api)
     {
         $this->em = $em;
+        $this->api = $api;
     }
 
     /**
@@ -85,11 +94,35 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
     /**
      * @return array|null
+     *
+     * @throws NotFoundHttpException Import process failed.
      */
     public function getMap()
     {
-        return $this->em->getRepository('GovWikiDbBundle:Map')
+        $map = $this->em->getRepository('GovWikiDbBundle:Map')
             ->get($this->environment);
+
+        if (null !== $map->getItemQueueId()) {
+            /*
+             * Check map import status.
+             */
+            $result = $this->api
+                ->checkImportProcess($map->getItemQueueId());
+
+            if (true === $result['success']) {
+                if ('complete' === $result['state']) {
+                    $map->setCreated(true);
+                    $map->setVizUrl($this->api->getVizUrl($result));
+                    $map->setItemQueueId(null);
+
+                    $this->em->persist($map);
+                    $this->em->flush();
+
+                } elseif ('failed' === $result['state']) {
+                    throw new NotFoundHttpException('Map not imported.');
+                }
+            }
+        }
     }
 
     /**

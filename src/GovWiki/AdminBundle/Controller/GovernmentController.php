@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\DbBundle\Entity\Government;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Class GovernmentController
@@ -152,7 +154,7 @@ class GovernmentController extends AbstractGovWikiAdminController
         $manager = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
         $data = [
             'file' => null,
-            'type' => 0,
+            'type' => 'geo_json',
         ];
 
         /*
@@ -198,7 +200,7 @@ class GovernmentController extends AbstractGovWikiAdminController
     public function exportAction(Request $request)
     {
         $manager = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
-        $data = [ 'type' => 0 ];
+        $data = [ 'type' => 'geo_json' ];
 
         /*
          * Build type choices;
@@ -217,16 +219,30 @@ class GovernmentController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $selectedType = $form->getData()['type'];
+            $filename = 'government.'. $manager
+                ->getSupportedExtension()[$selectedType]['extension'];
+
             $manager = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
-            $filePath = $this->getParameter('kernel.logs_dir') . '/tmp.json';
+            $filePath = $this->getParameter('kernel.logs_dir') . '/' . $filename;
 
             $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
                 ->export(
-                    $this->getParameter('kernel.logs_dir'),
-                    $manager->getTransformer('geo_json')
+                    $filePath,
+                    $manager->getTransformer($selectedType)
                 );
 
-            return new BinaryFileResponse($filePath);
+
+            //$response = new BinaryFileResponse($filePath);
+            $response = new Response(file_get_contents($filePath));
+            $response->headers->set('Cache-Control', 'public');
+            $response->headers->set('Content-Type', 'text/json');
+            $response->headers->set(
+                'Content-Disposition',
+                "attachment; filename={$filename}"
+            );
+            unlink($filePath);
+            return $response;
         }
 
         return [ 'form' => $form->createView() ];

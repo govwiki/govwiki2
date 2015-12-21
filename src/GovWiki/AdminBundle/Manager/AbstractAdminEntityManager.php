@@ -111,9 +111,13 @@ abstract class AbstractAdminEntityManager implements
     /**
      * @return \Doctrine\ORM\EntityRepository
      */
-    protected function getRepository()
+    protected function getRepository($entityName = null)
     {
-        return $this->em->getRepository($this->getEntityClassName());
+        if (null === $entityName) {
+            $entityName = $this->getEntityClassName();
+        }
+
+        return $this->em->getRepository($entityName);
     }
 
     /**
@@ -163,7 +167,6 @@ abstract class AbstractAdminEntityManager implements
             strrpos($this->getEntityClassName(), '\\') + 1
         );
 
-
         $qb = $repository->createQueryBuilder($alias);
         if (count($columns) > 0) {
             foreach ($columns as &$column) {
@@ -175,6 +178,7 @@ abstract class AbstractAdminEntityManager implements
         $expr = $qb->expr();
 
         return $qb
+            ->addSelect('Environment.id AS environment')
             ->join($alias.'.environment', 'Environment')
             ->where(
                 $expr->eq('Environment.name', $expr->literal($this->environment))

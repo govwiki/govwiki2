@@ -6,6 +6,7 @@ use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\AdminBundle\Manager\AbstractAdminEntityManager;
 use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Entity\Repository\FormatRepository;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 
 /**
@@ -58,5 +59,31 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
         /** @var Government $government */
         $government = parent::create();
         return $government->setEnvironment($this->getEnvironmentReference());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAll(array $columns = null)
+    {
+        if (null === $columns) {
+            $columns = [
+                'name',
+                'type',
+                'altType',
+                'latitude',
+                'longitude',
+            ];
+
+            /** @var FormatRepository $repository */
+            $repository = $this->getRepository('GovWikiDbBundle:Format');
+            $format = $repository->get($this->environment, true);
+
+            foreach ($format as $row) {
+                $columns[] = $row['field'];
+            }
+        }
+
+        return parent::getAll($columns);
     }
 }
