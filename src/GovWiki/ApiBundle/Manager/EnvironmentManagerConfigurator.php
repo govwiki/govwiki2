@@ -32,10 +32,14 @@ class EnvironmentManagerConfigurator
     ) {
         $host = $router->getContext()->getHost();
 
-        $this->environment = $em->getRepository('GovWikiDbBundle:Environment')
-            ->getNameByDomain($host);
-        if (null === $this->environment) {
-            throw new GovWikiApiEnvironmentNotFoundException($host);
+        if ('localhost' === $host) {
+            $this->environment = 'localhost';
+        } else {
+            $this->environment = $em->getRepository('GovWikiDbBundle:Environment')
+                ->getNameByDomain($host);
+            if (null === $this->environment) {
+                throw new GovWikiApiEnvironmentNotFoundException($host);
+            }
         }
     }
 
