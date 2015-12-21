@@ -6,7 +6,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use GovWiki\UserBundle\Entity\User;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Environment
@@ -33,6 +35,7 @@ class Environment
      * @var string
      *
      * @ORM\Column(unique=true)
+     * @Assert\Regex(pattern="|^[\w\s]+$|")
      */
     private $name;
 
@@ -40,61 +43,21 @@ class Environment
      * @var string
      *
      * @ORM\Column()
+     *
+     * @Groups({"map"})
+     */
+    private $slug;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column()
+     * @Assert\NotBlank()
      */
     private $domain;
 
     /**
      * Use bem like syntax.
-     * [
-     *  {
-     *      block: 'header',
-     *      mods: { color: ... },
-     *      content: [
-     *          {
-     *              elem: 'logo',
-     *              attrs: { src: ... }
-     *          },
-     *          {
-     *              block: 'menu',
-     *              content: [
-     *                  {
-     *                      elem: 'link',
-     *                      elemMods: {
-     *                          color: ...,
-     *                          hover_color: ...,
-     *                          bg_color: ...,
-     *                          bg_hover_color: ...
-     *                      }
-     *                  }
-     *              ]
-     *          }
-     *      ]
-     *  },
-     *
-     *  {
-     *      block: 'footer',
-     *      mods: { color: ... },
-     *      content: [
-     *          {
-     *              block: 'copyright',
-     *              content: ...
-     *              mods: { color: ... }
-     *          },
-     *          {
-     *              block: 'social',
-     *              content: [
-     *                  {
-     *                      elem: 'link',
-     *                      tag: 'a',
-     *                      url: ...
-     *                      content: ...
-     *                  },
-     *                  ...
-     *              ]
-     *          }
-     *      ]
-     *  },
-     * ]
      *
      * @var string
      *
@@ -106,6 +69,7 @@ class Environment
      * @var string
      *
      * @ORM\Column(type="text")
+     * @Assert\NotBlank()
      */
     private $greetingText;
 
@@ -131,7 +95,11 @@ class Environment
     /**
      * @var Collection
      *
-     * @ORM\OneToMany(targetEntity="Government", mappedBy="environment")
+     * @ORM\OneToMany(
+     *  targetEntity="Government",
+     *  mappedBy="environment",
+     *  cascade={"remove"}
+     * )
      */
     private $governments;
 
@@ -161,7 +129,8 @@ class Environment
      *
      * @ORM\OneToMany(
      *  targetEntity="AbstractGroup",
-     *  mappedBy="environment"
+     *  mappedBy="environment",
+     *  cascade={"remove"}
      * )
      */
     private $groups;
@@ -206,9 +175,20 @@ class Environment
      */
     public function setName($name)
     {
-        $this->name = $name;
+        $this->name = trim($name);
+        $this->slug = self::slugify($this->name);
 
         return $this;
+    }
+
+    /**
+     * @param string $str String to slugiffy.
+     *
+     * @return string
+     */
+    public static function slugify($str)
+    {
+        return preg_replace('|[^\w\d]|', '_', strtolower($str));
     }
 
     /**
@@ -467,5 +447,13 @@ class Environment
     public function getGroups()
     {
         return $this->groups;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlug()
+    {
+        return $this->slug;
     }
 }

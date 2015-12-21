@@ -1,22 +1,40 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
 
 {% block title %}{{ parent() }} - edit map{% endblock title %}
 
 {% block body %}
-    <div>
-        <div>
-            <label class="form-control" for="viz-url">Visualization url</label>
-            <input class="form-control" id="viz-url" readonly value="{{ vizUrl }}">
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Map edit</h3>
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="form-group">
+                            <label class="control-label" for="viz-url">Visualization url</label>
+                            <input class="form-control" id="viz-url" type="text" readonly value="{{ vizUrl }}">
+                        </div>
+
+                        {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <button class="btn btn-success">Update</button>
+                        <a class="btn btn-default" href="{{ path('govwiki_admin_main_show') }}">Back</a>
+                        {#<a class="btn btn-primary{%- if not canExport %} disabled{%- endif -%}" href="{{ path('map_export', {name: name}) }}">
+                            Export to CartoDB
+                        </a>#}
+                        {{ form_end(form) }}
+
+                    </div>
+                </div>
+
+            </div>
         </div>
+
     </div>
-    <div class="container-fluid">
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn btn-success">Update</button>
-        <a class="btn btn-default" href="{{ path('govwiki_admin_main_show') }}">Back</a>
-        {#<a class="btn btn-primary{%- if not canExport %} disabled{%- endif -%}" href="{{ path('map_export', {name: name}) }}">
-            Export to CartoDB
-        </a>#}
-        {{ form_end(form) }}
-    </div>
+
 {% endblock body %}

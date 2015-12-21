@@ -5,13 +5,15 @@ namespace GovWiki\AdminBundle\Controller;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\GovWikiDbServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\DbBundle\Entity\Government;
-use GovWiki\DbBundle\Form\GovernmentType;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * GovernmentController
+ * Class GovernmentController
+ * @package GovWiki\AdminBundle\Controller
  *
  * @Configuration\Route("/government")
  */
@@ -65,7 +67,7 @@ class GovernmentController extends AbstractGovWikiAdminController
         $manager = $this->getManager();
         $government = $manager->create();
 
-        $form = $this->createForm(new GovernmentType(), $government);
+        $form = $this->createForm('government', $government);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -78,20 +80,29 @@ class GovernmentController extends AbstractGovWikiAdminController
             return $this->redirectToRoute('govwiki_admin_government_index');
         }
 
-        return [ 'form' => $form->createView() ];
+        return [
+            'form' => $form->createView(),
+            'formats' => $this
+                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
+                ->getFormats(),
+        ];
     }
 
     /**
-     * @Configuration\Route("/{id}/edit", requirements={"id": "\d+"})
+     * @Configuration\Route(
+     *  "/{id}/edit",
+     *  requirements={"id": "\d+"}
+     * )
      * @Configuration\Template()
      *
-     * @param Government $government A Government instance.
      * @param Request    $request    A Request instance.
+     * @param Government $government A Government instance.
      *
      * @return array
      */
-    public function editAction(Government $government, Request $request) {
-        $form = $this->createForm(new GovernmentType(true), $government);
+    public function editAction(Request $request, Government $government)
+    {
+        $form = $this->createForm('government', $government);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -103,7 +114,30 @@ class GovernmentController extends AbstractGovWikiAdminController
             return $this->redirectToRoute('govwiki_admin_government_index');
         }
 
-        return ['form' => $form->createView()];
+        return [
+            'form' => $form->createView(),
+            'formats' => $this
+                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
+                ->getFormats(),
+        ];
+    }
+
+    /**
+     * @Configuration\Route("/{id}/remove")
+     *
+     * @param integer $id Government entity id.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function removeAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $em->remove($this->getManager()->getReference($id));
+        $em->flush();
+
+        $this->addFlash('admin_success', 'Government removed');
+        return $this->redirectToRoute('govwiki_admin_government_index');
     }
 
     /**
@@ -119,7 +153,7 @@ class GovernmentController extends AbstractGovWikiAdminController
         $manager = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
         $data = [
             'file' => null,
-            'type' => 0,
+            'type' => 'geo_json',
         ];
 
         /*
@@ -152,6 +186,65 @@ class GovernmentController extends AbstractGovWikiAdminController
         return [
             'form' => $form->createView(),
         ];
+    }
+
+    /**
+     * @Configuration\Route("/export")
+     * @Configuration\Template()
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return array|BinaryFileResponse
+     */
+    public function exportAction(Request $request)
+    {
+        $manager = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
+        $data = [ 'type' => 'geo_json' ];
+
+        /*
+         * Build type choices;
+         */
+        $choices = $manager->getSupportedExtension();
+        foreach ($choices as &$row) {
+            $row = "{$row['name']} ({$row['extension']})";
+        }
+
+        /*
+         * Build form.
+         */
+        $form = $this->createFormBuilder($data)
+            ->add('type', 'choice', [ 'choices' => $choices ])
+            ->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $selectedType = $form->getData()['type'];
+            $filename = 'government.'. $manager
+                ->getSupportedExtension()[$selectedType]['extension'];
+
+            $manager = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
+            $filePath = $this->getParameter('kernel.logs_dir') . '/' . $filename;
+
+            $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
+                ->export(
+                    $filePath,
+                    $manager->getTransformer($selectedType)
+                );
+
+
+            //$response = new BinaryFileResponse($filePath);
+            $response = new Response(file_get_contents($filePath));
+            $response->headers->set('Cache-Control', 'public');
+            $response->headers->set('Content-Type', 'text/json');
+            $response->headers->set(
+                'Content-Disposition',
+                "attachment; filename={$filename}"
+            );
+            unlink($filePath);
+            return $response;
+        }
+
+        return [ 'form' => $form->createView() ];
     }
 
     /**

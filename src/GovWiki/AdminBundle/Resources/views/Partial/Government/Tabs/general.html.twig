@@ -1,0 +1,20 @@
+<div role="tabpanel" class="tab-pane active" id="General">
+    <h3 class="text-center">General</h3>
+    <div class="col-md-4">
+        <h4>Main information</h4>
+        {{ form_row(form.name) }}
+        {% if form['environment'] is defined %}
+            {{ form_row(form.environment) }}
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        <h4>Types</h4>
+        {{ form_row(form.type) }}
+        {{ form_row(form.altType) }}
+    </div>
+    <div class="col-md-4">
+        <h4>Coordinates</h4>
+        {{ form_row(form.latitude) }}
+        {{ form_row(form.longitude) }}
+    </div>
+</div>

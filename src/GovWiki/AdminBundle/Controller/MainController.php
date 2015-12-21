@@ -4,7 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\AdminBundle\Manager\AdminStyleManager;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Form\EnvironmentType;
 use GovWiki\DbBundle\GovWikiDbServices;
@@ -72,8 +72,7 @@ class MainController extends AbstractGovWikiAdminController
         if ($form->isValid() && $form->isSubmitted()) {
             $em = $this->getDoctrine()->getManager();
             $environment->setStyle(
-                $this->get(GovWikiAdminServices::ADMIN_STYLE_MANAGER)
-                    ->getDefaultStyles()
+                AdminStyleManager::getDefaultStyles()
             );
             $em->persist($environment);
             $em->flush();
@@ -107,20 +106,21 @@ class MainController extends AbstractGovWikiAdminController
         if ('' !== $environment) {
             $manager->changeEnvironment($environment);
         }
-        /** @var Environment $environment */
-        $environment = $manager->getEntity();
+        /** @var Environment $entity */
+        $entity = $manager->getEntity();
 
-        $form = $this->createForm(new EnvironmentType(), $environment);
+        $form = $this->createForm(new EnvironmentType(), $entity);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($environment);
+            $em->persist($entity);
+            $manager->changeEnvironment($entity->getSlug());
             $em->flush();
         }
 
         return [
             'form' => $form->createView(),
-            'environment' => $environment,
+            'environment' => $entity,
         ];
     }
 

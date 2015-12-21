@@ -12,6 +12,9 @@ abstract class GovWikiAdminServices
     const ADMIN_ENVIRONMENT_MANAGER = 'govwiki_admin.manager.environment';
     const ADMIN_STYLE_MANAGER = 'govwiki_admin.manager.style';
 
+    /*
+     * Entity namangers.
+     */
     const GOVERNMENT_MANAGER = 'govwiki_admin.entity_manager.government';
     const ELECTED_OFFICIAL_MANAGER =
         'govwiki_admin.entity_manager.elected_official';

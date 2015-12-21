@@ -21,7 +21,9 @@ services:
 
     govwiki_api.manager.environment:
         class: GovWiki\ApiBundle\Manager\EnvironmentManager
-        arguments: [@doctrine.orm.default_entity_manager]
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @carto_db.api
         configurator: [@govwiki_api.environment_manager.configurator, configure]
 
     govwiki_api.serializer.serialization_visitor:

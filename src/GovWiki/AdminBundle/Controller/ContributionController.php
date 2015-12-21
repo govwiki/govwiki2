@@ -2,9 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
@@ -12,21 +10,30 @@ use GovWiki\DbBundle\Entity\Contribution;
 use GovWiki\DbBundle\Form\ContributionType;
 
 /**
- * ContributionController all actions use xmlHttpRequest, and partials as default template
+ * ContributionController all actions use xmlHttpRequest, and partials as
+ * default template.
+ *
+ * @package GovWiki\AdminBundle\Controller
  */
-class ContributionController extends Controller
+class ContributionController extends AbstractGovWikiAdminController
 {
     /**
-     * @Route("/electedofficial/{id}/contribution/create", methods="GET|POST")
-     * @Template("GovWikiAdminBundle:ElectedOfficial:_contribution_modal_form.html.twig")
+     * @Configuration\Route(
+     *  "/elected-official/{id}/contribution/create",
+     *  requirements={"id": "\d+"}
+     * )
+     * @Configuration\Template("GovWikiAdminBundle:ElectedOfficial:_contribution_modal_form.html.twig")
      *
-     * @param Request         $request
-     * @param ElectedOfficial $electedOfficial
-     * @return Response|JsonResponse
+     * @param Request         $request         A Request instance.
+     * @param ElectedOfficial $electedOfficial A ElectedOfficial instance.
+     *
+     * @return array|JsonResponse
      */
-    public function createAction(Request $request, ElectedOfficial $electedOfficial)
-    {
-        $contribution = new Contribution;
+    public function createAction(
+        Request $request,
+        ElectedOfficial $electedOfficial
+    ) {
+        $contribution = new Contribution();
 
         $form = $this->createForm(new ContributionType(), $contribution);
         $form->handleRequest($request);
@@ -43,19 +50,26 @@ class ContributionController extends Controller
 
         return [
             'form'   => $form->createView(),
-            'action' => $this->generateUrl('govwiki_admin_contribution_create', ['id' => $electedOfficial->getId()]),
+            'action' => $this->generateUrl(
+                'govwiki_admin_contribution_create',
+                ['id' => $electedOfficial->getId()]
+            ),
         ];
     }
 
     /**
-     * @Route("/contribution/{id}/edit", methods="GET|POST", requirements={"id": "\d+"})
-     * @Template("GovWikiAdminBundle:ElectedOfficial:_contribution_modal_form.html.twig")
+     * @Configuration\Route(
+     *  "/contribution/{id}/edit",
+     *  requirements={"id": "\d+"}
+     * )
+     * @Configuration\Template("GovWikiAdminBundle:ElectedOfficial:_contribution_modal_form.html.twig")
      *
-     * @param Contribution $contribution
-     * @param Request      $request
-     * @return Response|JsonResponse
+     * @param Request      $request      A Request instance.
+     * @param Contribution $contribution A Contribution instance.
+     *
+     * @return array|JsonResponse
      */
-    public function editAction(Contribution $contribution, Request $request)
+    public function editAction(Request $request, Contribution $contribution)
     {
         $form = $this->createForm(new ContributionType(), $contribution);
         $form->handleRequest($request);
@@ -68,14 +82,18 @@ class ContributionController extends Controller
 
         return [
             'form' => $form->createView(),
-            'action' => $this->generateUrl('govwiki_admin_contribution_edit', ['id' => $contribution->getId()]),
+            'action' => $this->generateUrl(
+                'govwiki_admin_contribution_edit',
+                ['id' => $contribution->getId()]
+            ),
         ];
     }
 
     /**
-     * @Route("/contribution/{id}/remove")
+     * @Configuration\Route("/contribution/{id}/remove")
      *
-     * @param Contribution $contribution
+     * @param Contribution $contribution A Contribution instance.
+     *
      * @return JsonResponse
      */
     public function removeAction(Contribution $contribution)

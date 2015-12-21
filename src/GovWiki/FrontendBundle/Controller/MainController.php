@@ -3,6 +3,7 @@
 namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -20,13 +21,15 @@ class MainController extends Controller
      */
     public function mapAction()
     {
-
         $environmentManager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
 
         $environment = $environmentManager->getEnvironment();
 
         $map = $environmentManager->getMap();
-        $map = json_encode($map, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        $context = new SerializationContext();
+        $context->setGroups([ 'map' ]);
+        $map = $this->get('jms_serializer')->serialize($map, 'json', $context);
 
         return [
             'environment' => $environment,

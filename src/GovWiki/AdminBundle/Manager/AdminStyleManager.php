@@ -7,7 +7,8 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 
 /**
- * Class AdminStyleManager
+ * Mange styles of environments.
+ *
  * @package GovWiki\AdminBundle\Utils
  */
 class AdminStyleManager
@@ -41,7 +42,7 @@ class AdminStyleManager
     }
 
     /**
-     * Create new style form.
+     * Create new style manage form.
      *
      * @return \Symfony\Component\Form\Form
      */
@@ -49,7 +50,7 @@ class AdminStyleManager
     {
         $styles = $this->manager->getStyle();
         if (count($styles) <= 0) {
-            $styles = $this->getDefaultStyles();
+            $styles = self::getDefaultStyles();
         }
 
         return $this->buildForm($styles)->setData($this->currentData);
@@ -70,7 +71,7 @@ class AdminStyleManager
 
         $styles = $this->manager->getStyle();
         if (count($styles) <= 0) {
-            $styles = $this->getDefaultStyles();
+            $styles = self::getDefaultStyles();
         }
 
         $data = $form->getData();
@@ -89,6 +90,8 @@ class AdminStyleManager
     }
 
     /**
+     * Generate path to set style options.
+     *
      * @param array $styles   Array of styles.
      * @param array $elements Path elements.
      *
@@ -149,14 +152,15 @@ class AdminStyleManager
 
             }
         }
+        return '';
     }
 
     /**
-     * Defaul styles.
+     * Default styles.
      *
      * @return array
      */
-    public function getDefaultStyles()
+    public static function getDefaultStyles()
     {
         return [
             [

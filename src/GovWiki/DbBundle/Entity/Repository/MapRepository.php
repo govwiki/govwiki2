@@ -38,7 +38,7 @@ class MapRepository extends EntityRepository
         try {
             return $qb
                 ->join('Map.environment', 'Environment')
-                ->where($expr->eq('Environment.name', $expr->literal($environment)))
+                ->where($expr->eq('Environment.slug', $expr->literal($environment)))
                 ->getQuery()
                 ->getOneOrNullResult();
         } catch (NonUniqueResultException $e) {
@@ -49,26 +49,17 @@ class MapRepository extends EntityRepository
     /**
      * @param string $name Environment name.
      *
-     * @return array|null
+     * @return Map|null
      */
     public function get($name)
     {
         $qb = $this->createQueryBuilder('Map');
         $expr = $qb->expr();
 
-        $map = $qb
-            ->select(
-                'partial Map.{id, vizUrl, centerLatitude, centerLongitude, zoom}'
-            )
+        return $qb
             ->leftJoin('Map.environment', 'Environment')
-            ->where($expr->eq('Environment.name', $expr->literal($name)))
+            ->where($expr->eq('Environment.slug', $expr->literal($name)))
             ->getQuery()
-            ->getArrayResult();
-
-        if (count($map) > 0) {
-            return $map[0];
-        }
-
-        return null;
+            ->getSingleResult();
     }
 }

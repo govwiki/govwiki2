@@ -60,7 +60,7 @@ class LegislationType extends AbstractType
                         ->select('partial Government.{id,name}')
                         ->leftJoin('Government.environment', 'Environment')
                         ->where($expr->eq(
-                            'Environment.name',
+                            'Environment.slug',
                             $expr->literal($environment)
                         ));
                 },

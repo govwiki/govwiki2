@@ -3,7 +3,6 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use GovWiki\DbBundle\Entity\ElectedOfficial;
 
 /**
  * EditRequestRepository
@@ -26,7 +25,7 @@ class EditRequestRepository extends EntityRepository
             ->leftJoin('EditRequest.environment', 'Environment')
             ->where($expr->andX(
                 $expr->neq('EditRequest.status', $expr->literal('discarded')),
-                $expr->eq('Environment.name', $expr->literal($environment))
+                $expr->eq('Environment.slug', $expr->literal($environment))
             ))
             ->orderBy($expr->desc('EditRequest.created'))
             ->getQuery();

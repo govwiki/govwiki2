@@ -94,7 +94,11 @@ class MapController extends AbstractGovWikiAdminController
      * Set up map parameters and import county or municipals GeoJson file to
      * CartoDB server.
      *
-     * @Configuration\Route("/{environment}/new", methods={"POST"})
+     * @Configuration\Route(
+     *  "/{environment}/new",
+     *  methods={"POST"},
+     *  requirements={"environment": "\w+"}
+     * )
      * @Configuration\Template()
      *
      * @param Request            $request     A Request instance.
@@ -107,7 +111,7 @@ class MapController extends AbstractGovWikiAdminController
     {
         if ($environment instanceof Environment) {
             $environmentObj = $environment;
-            $environment = $environment->getName();
+            $environment = $environment->getSlug();
         } else {
             $environmentObj = $this->getDoctrine()
                 ->getRepository('GovWikiDbBundle:Environment')
@@ -143,9 +147,10 @@ class MapController extends AbstractGovWikiAdminController
             $em->persist($map);
             $em->flush();
 
-            return $this->redirectToRoute('govwiki_admin_map_edit', [
-                'environment' => $environment,
-            ]);
+
+            $this->adminEnvironmentManager()
+                ->changeEnvironment(Environment::slugify($environment));
+            return $this->redirectToRoute('govwiki_admin_map_edit');
         }
 
         return [

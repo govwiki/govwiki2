@@ -1,7 +1,6 @@
 main:
     resource: "@GovWikiAdminBundle/Controller/MainController.php"
     type:     annotation
-    prefix:   /
 
 government:
     resource: "@GovWikiAdminBundle/Controller/GovernmentController.php"
@@ -18,22 +17,18 @@ legislation:
 electedofficialvote:
     resource: "@GovWikiAdminBundle/Controller/ElectedOfficialVoteController.php"
     type:     annotation
-    prefix:   /
 
 contribution:
     resource: "@GovWikiAdminBundle/Controller/ContributionController.php"
     type:     annotation
-    prefix:   /
 
 endorsement:
     resource: "@GovWikiAdminBundle/Controller/EndorsementController.php"
     type:     annotation
-    prefix:   /
 
 publicstatement:
     resource: "@GovWikiAdminBundle/Controller/PublicStatementController.php"
     type:     annotation
-    prefix:   /
 
 createrequest:
     resource: "@GovWikiAdminBundle/Controller/CreateRequestController.php"
@@ -46,7 +41,6 @@ editrequest:
 user:
     resource: "@GovWikiAdminBundle/Controller/UserController.php"
     type:     annotation
-    prefix:   /user
 
 map:
     resource: "@GovWikiAdminBundle/Controller/MapController.php"

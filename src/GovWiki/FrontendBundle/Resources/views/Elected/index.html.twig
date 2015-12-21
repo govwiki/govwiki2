@@ -184,13 +184,13 @@
         window.gw.electedOfficial = '{{ electedOfficialJSON | raw }}';
     </script>
 
-    <script src="/js/vendor/handlebars.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
     <script id="dsq-embed-scr" src="//cpc-civicprofiles.disqus.com/embed.js"></script>
     <script id="dsq-count-scr" src="//cpc-civicprofiles.disqus.com/count.js"></script>
 
-    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/script.js'
+    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
+                    '@GovWikiFrontendBundle/Resources/public/js/script.js'
                     '@GovWikiFrontendBundle/Resources/public/js/elected/handlers.js'
                     output='js/elected.js' %}
         <script src="{{ asset_url }}"></script>

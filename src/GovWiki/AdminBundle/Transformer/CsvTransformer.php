@@ -2,8 +2,6 @@
 
 namespace GovWiki\AdminBundle\Transformer;
 
-use GovWiki\AdminBundle\Exception\InvalidGeoJsonException;
-
 /**
  * Convert CSV file to plain array of data.
  * {@link https://www.ietf.org/rfc/rfc4180.txt}

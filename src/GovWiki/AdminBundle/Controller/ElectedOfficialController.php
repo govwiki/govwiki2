@@ -5,14 +5,14 @@ namespace GovWiki\AdminBundle\Controller;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Form\ElectedOfficialType;
 
 /**
- * ElectedOfficialController
+ * Class ElectedOfficialController
+ * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/electedofficial")
+ * @Configuration\Route("/elected-official")
  */
 class ElectedOfficialController extends AbstractGovWikiAdminController
 {

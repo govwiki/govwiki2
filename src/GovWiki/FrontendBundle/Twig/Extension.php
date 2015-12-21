@@ -2,6 +2,7 @@
 
 namespace GovWiki\FrontendBundle\Twig;
 
+use GovWiki\ApiBundle\Manager\EnvironmentManager;
 
 /**
  * Class Extension
@@ -9,6 +10,19 @@ namespace GovWiki\FrontendBundle\Twig;
  */
 class Extension extends \Twig_Extension
 {
+    /**
+     * @var EnvironmentManager
+     */
+    private $manager;
+
+    /**
+     * @param EnvironmentManager $manager A EnvironmentManager instance.
+     */
+    public function __construct(EnvironmentManager $manager)
+    {
+        $this->manager = $manager;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -33,16 +47,28 @@ class Extension extends \Twig_Extension
     /**
      * {@inheritdoc}
      */
+    public function getGlobals()
+    {
+        return [
+            'styles' => $this->manager->getStyle(),
+            'environment' => $this->manager->getEnvironment(),
+            'environment_slug' => $this->manager->getSlug(),
+        ];
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
     public function getTests()
     {
         return [
             new \Twig_SimpleTest('viewed', [
                 $this,
-                'isViewed'
+                'isViewed',
             ]),
         ];
     }
-
 
     /**
      * @param array  $government A Government instance.

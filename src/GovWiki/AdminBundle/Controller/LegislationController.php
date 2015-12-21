@@ -10,14 +10,15 @@ use GovWiki\DbBundle\Entity\Legislation;
 use GovWiki\DbBundle\Form\LegislationType;
 
 /**
- * LegislationController
+ * Class LegislationController
+ * @package GovWiki\AdminBundle\Controller
  *
  * @Configuration\Route("/legislation")
  */
 class LegislationController extends Controller
 {
     /**
-     * @Configuration\Route("/", methods="GET")
+     * @Configuration\Route("/")
      * @Configuration\Template()
      *
      * @param Request $request A Request instance.
@@ -66,7 +67,10 @@ class LegislationController extends Controller
     }
 
     /**
-     * @Configuration\Route("/{id}/edit", requirements={"id": "\d+"})
+     * @Configuration\Route(
+     *  "/{id}/edit",
+     *  requirements={"id": "\d+"}
+     * )
      * @Configuration\Template()
      *
      * @param Request     $request     A Request instance.

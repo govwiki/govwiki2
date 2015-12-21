@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
-use GovWiki\DbBundle\Entity\FinData;
 use GovWiki\DbBundle\Entity\Government;
 
 /**
@@ -29,15 +28,15 @@ class GovernmentRepository extends EntityRepository
 
         $expr = $qb->expr();
 
-        $qb->where($expr->eq('Environment.name', $expr->literal($environment)));
+        $qb->where($expr->eq('Environment.slug', $expr->literal($environment)));
 
         if (null !== $id) {
             $qb->andWhere($expr->eq('Government.id', $id));
         }
         if (null !== $name) {
-            $qb->andWhere($expr->eq(
+            $qb->andWhere($expr->like(
                 'Government.name',
-                $expr->literal($name)
+                $expr->literal('%'.$name.'%')
             ));
         }
 
@@ -161,7 +160,7 @@ class GovernmentRepository extends EntityRepository
                         'Government.altTypeSlug',
                         $expr->literal($altTypeSlug)
                     ),
-                    $expr->eq('Environment.name', $expr->literal($environment))
+                    $expr->eq('Environment.slug', $expr->literal($environment))
                 )
             );
 
@@ -189,7 +188,7 @@ class GovernmentRepository extends EntityRepository
                             $expr2->literal($governmentSlug)
                         ),
                         $expr2->eq(
-                            'Environment.name',
+                            'Environment.slug',
                             $expr2->literal($environment)
                         )
                     )
@@ -269,7 +268,7 @@ class GovernmentRepository extends EntityRepository
                         'Government.slug',
                         $qb->expr()->literal($slug)
                     ),
-                    $expr->eq('Environment.name', $expr->literal($environment))
+                    $expr->eq('Environment.slug', $expr->literal($environment))
                 )
             )
             ->getQuery()

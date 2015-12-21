@@ -1,0 +1,28 @@
+<div role="tabpanel" class="tab-pane" id="Fields">
+    <h3>Fields</h3>
+    <div class="panel-group" id="fields-accordions">
+        {#
+            Iterate over tabs.
+        #}
+        {% for tab, fields in formats %}
+            {% set panel_id = 'tab_fields_' ~ loop.index %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#fields-accordions" href="#{{ panel_id }}">{{ tab }}</a>
+                    </h4>
+                </div>
+                <div id="{{ panel_id }}" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        {#
+                            Iterate over fields in tab.
+                        #}
+                        {% for name in fields|keys %}
+                            {{ form_row(form[name]) }}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

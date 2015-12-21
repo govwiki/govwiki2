@@ -160,7 +160,7 @@
 
     {{parent()}}
 
-    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/government.scss' filter='scss' %}
+    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/government.scss' filter='scss, cssrewrite' %}
         <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 
@@ -173,9 +173,9 @@
     {{parent()}}
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
-    <script src="/js/vendor/handlebars.runtime.js"></script>
 
-    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/script.js'
+    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.runtime.js'
+                    '@GovWikiFrontendBundle/Resources/public/js/script.js'
                     '@GovWikiFrontendBundle/Resources/public/js/government/rank-popover.js'
                     '@GovWikiFrontendBundle/Resources/public/js/government/index.js'
                     output='js/governemnt.js' %}

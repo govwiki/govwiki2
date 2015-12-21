@@ -11,7 +11,7 @@
 <nav class="navbar navbar-default navbar-branded">
     <div class="container-fluid">
         <div class="navbar-header" style="width: 100%;">
-            <a class="navbar-brand" href="{{ path('govwiki_admin_main_home') }}"><img src="{{ asset('legacy/img/logo_cpc_v2_244x60.png') }}"></a>
+            <a class="navbar-brand" href="{{ path('govwiki_admin_main_home') }}"><img src="{{ asset('img/logo_ca.png') }}"></a>
                 <ul class="nav navbar-nav">
                     {% block enviroment_menu %}
                         <li{% if app.request.attributes.get('_route') == 'govwiki_admin_user_index' %} class="active"{% endif %}>

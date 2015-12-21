@@ -29,7 +29,7 @@ abstract class AbstractAdminEntityManager implements
     private $environmentId;
 
     /**
-     * @param Environment $environment A Environment instance.
+     * @param EntityManagerInterface $em A EntityManagerInterface instance.
      */
     public function __construct(EntityManagerInterface $em) {
         $this->em = $em;
@@ -85,8 +85,6 @@ abstract class AbstractAdminEntityManager implements
             throw new \InvalidArgumentException();
         }
 
-        $entity = $this->beforeUpdate($entity);
-
         $this->em->persist($entity);
         if ($andFlush) {
             $this->em->flush();
@@ -104,14 +102,6 @@ abstract class AbstractAdminEntityManager implements
     }
 
     /**
-     * @return object
-     */
-    protected function beforeUpdate($entity)
-    {
-        return $entity;
-    }
-
-    /**
      * Return entity class name managed by current manager.
      *
      * @return string
@@ -121,9 +111,23 @@ abstract class AbstractAdminEntityManager implements
     /**
      * @return \Doctrine\ORM\EntityRepository
      */
-    protected function getRepository()
+    protected function getRepository($entityName = null)
     {
-        return $this->em->getRepository($this->getEntityClassName());
+        if (null === $entityName) {
+            $entityName = $this->getEntityClassName();
+        }
+
+        return $this->em->getRepository($entityName);
+    }
+
+    /**
+     * @param integer $id Entity id.
+     *
+     * @return object
+     */
+    public function getReference($id)
+    {
+        return $this->em->getReference($this->getEntityClassName(), $id);
     }
 
     /**
@@ -153,7 +157,7 @@ abstract class AbstractAdminEntityManager implements
      *
      * @return array
      */
-    public function getAll(array $columns)
+    public function getAll(array $columns = null)
     {
         /** @var EntityRepository $repository */
         $repository = $this->getRepository();
@@ -163,18 +167,21 @@ abstract class AbstractAdminEntityManager implements
             strrpos($this->getEntityClassName(), '\\') + 1
         );
 
-        foreach ($columns as &$column) {
-            $column = "$alias.$column";
+        $qb = $repository->createQueryBuilder($alias);
+        if (count($columns) > 0) {
+            foreach ($columns as &$column) {
+                $column = "$alias.$column";
+            }
+            $qb->select(implode(',', $columns));
         }
 
-        $qb = $repository->createQueryBuilder($alias)
-            ->select(implode(',', $columns));
         $expr = $qb->expr();
 
         return $qb
+            ->addSelect('Environment.id AS environment')
             ->join($alias.'.environment', 'Environment')
             ->where(
-                $expr->eq('Environment.name', $expr->literal($this->environment))
+                $expr->eq('Environment.slug', $expr->literal($this->environment))
             )
             ->getQuery()
             ->getArrayResult();

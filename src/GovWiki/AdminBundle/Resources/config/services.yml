@@ -21,3 +21,9 @@ services:
         arguments:
             - @form.factory
             - @govwiki_admin.manager.environment
+
+    govwiki_admin.listener.government_sync:
+        class: GovWiki\AdminBundle\Listener\SyncGovernmentWithCartoDb
+        arguments: [@carto_db.api]
+        tags:
+            - { name: doctrine.event_subscriber }

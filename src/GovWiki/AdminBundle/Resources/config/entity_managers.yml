@@ -16,7 +16,10 @@ services:
     #
     govwiki_admin.entity_manager.government:
         class: GovWiki\AdminBundle\Manager\Entity\AdminGovernmentManager
-        parent: govwiki_admin.entity_manager.abstract
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @carto_db.api
+        configurator: [@govwiki_admin.manager.environment, configure]
 
     #
     # ElectedOfficial admin entity manager.

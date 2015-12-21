@@ -45,7 +45,10 @@ class FormatController extends Controller
     }
 
     /**
-     * @Configuration\Route("/{id}/edit")
+     * @Configuration\Route(
+     *  "/{id}/edit",
+     *  requirements={"id": "\d+"}
+     * )
      * @Configuration\Template()
      *
      * @param Request $request A Request instance.
@@ -82,7 +85,10 @@ class FormatController extends Controller
     }
 
     /**
-     * @Configuration\Route("/{id}/delete")
+     * @Configuration\Route(
+     *  "/{id}/delete",
+     *  requirements={"id": "\d+"}
+     * )
      *
      * @param Format $format A Format instance.
      *

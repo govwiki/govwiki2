@@ -98,15 +98,6 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @return
-     */
-    public function getMap()
-    {
-        return $this->em->getRepository('GovWikiDbBundle:Map')
-            ->getByEnvironment($this->environment);
-    }
-
-    /**
      * @return AdminEnvironmentManager
      */
     public function clearEnvironment()
@@ -125,6 +116,17 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+    * Get map data for current environment.
+    *
+    * @return \GovWiki\DbBundle\Entity\Map|null
+    */
+    public function getMap()
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Map')
+            ->getByEnvironment($this->environment);
+    }
+
+    /**
      * @return array|null
      */
     public function getStyle()
@@ -133,6 +135,11 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
             ->getStyle($this->environment);
     }
 
+    /**
+     * @param array $style Styles.
+     *
+     * @return void
+     */
     public function setStyle(array $style)
     {
         $environment = $this->getReference();
@@ -143,6 +150,8 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * Return environment entity.
+     *
      * @return \GovWiki\DbBundle\Entity\Environment|null
      *
      * @throws AccessDeniedException User don't allow to manage current
@@ -168,25 +177,8 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @param string $environment Environment name.
+     * Get proxy environment entity.
      *
-     * @return AdminEnvironmentManager
-     *
-     * @throws AccessDeniedException User don't allow to manage current
-     * environment.
-     */
-    public function removeEnvironment($environment)
-    {
-        $this->environment = $environment;
-        $entity = $this->getReference();
-
-        $this->em->remove($entity);
-        $this->em->flush();
-
-        return $this;
-    }
-
-    /**
      * @return Environment
      *
      * @throws AccessDeniedException User don't allow to manage current
@@ -205,6 +197,25 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
         }
 
         throw new AccessDeniedException();
+    }
+
+    /**
+     * @param string $environment Environment name.
+     *
+     * @return AdminEnvironmentManager
+     *
+     * @throws AccessDeniedException User don't allow to manage current
+     * environment.
+     */
+    public function removeEnvironment($environment)
+    {
+        $this->environment = $environment;
+        $entity = $this->getReference();
+
+        $this->em->remove($entity);
+        $this->em->flush();
+
+        return $this;
     }
 
     /**
@@ -236,9 +247,23 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * @param boolean $plain Flag, if set return plain array without grouping by
+     *                       tab names and fields.
+     *
+     * @return array
+     */
+    public function getFormats($plain = false)
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Format')
+            ->get($this->environment, $plain);
+    }
+
+    /**
      * @param AdminEntityManagerAwareInterface $entityManager A
      *                                                        AdminEntityManagerAwareInterface
      *                                                        instance.
+     *
+     * @return void
      */
     public function configure(AdminEntityManagerAwareInterface $entityManager)
     {

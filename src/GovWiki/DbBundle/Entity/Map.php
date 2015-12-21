@@ -3,7 +3,6 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -23,6 +22,8 @@ class Map
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @Groups({"map"})
      */
     private $id;
 
@@ -39,7 +40,8 @@ class Map
      * @var string
      *
      * @ORM\Column(nullable=true)
-     * @Asset\Url()
+     *
+     * @Groups({"map"})
      */
     private $vizUrl;
 
@@ -48,6 +50,8 @@ class Map
      *
      * @ORM\Column(type="float")
      * @Asset\Type(type="float")
+     *
+     * @Groups({"map"})
      */
     private $centerLatitude;
 
@@ -56,6 +60,8 @@ class Map
      *
      * @ORM\Column(type="float")
      * @Asset\Type(type="float")
+     *
+     * @Groups({"map"})
      */
     private $centerLongitude;
 
@@ -64,6 +70,8 @@ class Map
      *
      * @ORM\Column(type="integer")
      * @Asset\Type(type="integer")
+     *
+     * @Groups({"map"})
      */
     private $zoom;
 
@@ -71,6 +79,8 @@ class Map
      * @var boolean
      *
      * @ORM\Column(type="boolean")
+     *
+     * @Groups({"map"})
      */
     private $created = false;
 
@@ -78,6 +88,8 @@ class Map
      * @var Environment
      *
      * @ORM\OneToOne(targetEntity="Environment", mappedBy="map")
+     *
+     * @Groups({"map"})
      */
     private $environment;
 
@@ -89,15 +101,6 @@ class Map
      * @Asset\File()
      */
     private $countyFile;
-
-    /**
-     * Need to create process.
-     *
-     * @var UploadedFile
-     *
-     * @Asset\File()
-     */
-    private $governmentsFile;
 
     /**
      *
@@ -252,26 +255,6 @@ class Map
     public function setCountyFile(UploadedFile $countyFile = null)
     {
         $this->countyFile = $countyFile;
-
-        return $this;
-    }
-
-    /**
-     * @return UploadedFile
-     */
-    public function getGovernmentsFile()
-    {
-        return $this->governmentsFile;
-    }
-
-    /**
-     * @param UploadedFile $governmentsFile A UploadedFile instance.
-     *
-     * @return Map
-     */
-    public function setGovernmentsFile(UploadedFile $governmentsFile = null)
-    {
-        $this->governmentsFile = $governmentsFile;
 
         return $this;
     }

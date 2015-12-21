@@ -56,7 +56,7 @@ abstract class AbstractImporter
      */
     abstract public function export(
         $filePath,
-        array $columns,
-        FileTransformerInterface $transformer
+        FileTransformerInterface $transformer,
+        array $columns = null
     );
 }
