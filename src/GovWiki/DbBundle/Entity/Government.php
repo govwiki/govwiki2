@@ -45,7 +45,11 @@ class Government
     private $stateId;
 
     /**
-     * @ORM\OneToMany(targetEntity="ElectedOfficial", mappedBy="government")
+     * @ORM\OneToMany(
+     *  targetEntity="ElectedOfficial",
+     *  mappedBy="government",
+     *
+     * )
      * @MaxDepth(2)
      * @Groups({"government"})
      */

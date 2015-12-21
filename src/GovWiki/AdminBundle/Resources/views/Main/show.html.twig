@@ -64,7 +64,7 @@
                             </div>
                             <div>
                                 <b>Map:</b>&nbsp;
-                                {%- if map.isCreated -%}
+                                {%- if map and map.isCreated -%}
                                     <span class="text-success">Created</span>&nbsp;
                                     <b>VizUrl:</b> {{ map.vizUrl }}
                                 {%- else -%}
