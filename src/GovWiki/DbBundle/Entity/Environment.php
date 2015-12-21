@@ -95,7 +95,11 @@ class Environment
     /**
      * @var Collection
      *
-     * @ORM\OneToMany(targetEntity="Government", mappedBy="environment")
+     * @ORM\OneToMany(
+     *  targetEntity="Government",
+     *  mappedBy="environment",
+     *  cascade={"remove"}
+     * )
      */
     private $governments;
 
@@ -125,7 +129,8 @@ class Environment
      *
      * @ORM\OneToMany(
      *  targetEntity="AbstractGroup",
-     *  mappedBy="environment"
+     *  mappedBy="environment",
+     *  cascade={"remove"}
      * )
      */
     private $groups;

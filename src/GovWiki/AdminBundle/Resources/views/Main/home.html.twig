@@ -5,16 +5,20 @@
 {% block body %}
     <div class="container-fluid">
         {% if is_granted('ROLE_ADMIN') %}
-            <div id="delete-alert" class="alert alert-danger fade">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                Delete environment with all governments?
-                <div class="btn-group">
-                    <a id="delete-confirm" class="btn btn-danger">
-                        Yes
-                    </a>
-                    <button class="btn btn-success" data-dismiss="alert">
-                        No
-                    </button>
+            <div id="modal-delete" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
+                        <div class="modal-body">Delete environment with all governments?</div>
+                        <div class="modal-footer">
+                            <div class="pull-right">
+                                <a id="delete-confirm" class="btn btn-danger">
+                                    Delete
+                                </a>
+                                <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         {% endif %}
@@ -57,15 +61,15 @@
     </div>
 {% endblock %}
 
-{% block javascript %}
+{% block javascripts %}
     {{ parent() }}
     <script>
         $(function(){
             $('.delete').click(function(){
                 console.log('asdas');
-                $('#delete-confirm').attr('href', ($this).attr('data-url'));
-                $('#delete-alert').alert('show');
+                $('#delete-confirm').attr('href', $(this).attr('data-url'));
+                $('#modal-delete').modal('show');
             });
         });
     </script>
-{% endblock javascript %}
+{% endblock javascripts %}
