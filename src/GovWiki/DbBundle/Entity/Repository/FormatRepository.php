@@ -36,7 +36,7 @@ class FormatRepository extends EntityRepository
             ->leftJoin('Format.environment', 'Environment')
             ->leftJoin('Format.category', 'Category')
             ->leftJoin('Format.tab', 'Tab')
-            ->where($expr->eq('Environment.name', $expr->literal($environment)))
+            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
             ->orderBy($expr->asc('Tab.orderNumber'))
             ->addOrderBy($expr->asc('Tab.name'))
             ->addOrderBy($expr->asc('Category.orderNumber'))

@@ -23,7 +23,7 @@ class LegislationRepository extends EntityRepository
         return $qb
             ->leftJoin('Legislation.government', 'Government')
             ->leftJoin('Government.environment', 'Environment')
-            ->where($expr->eq('Environment.name', $expr->literal($environment)))
+            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
             ->getQuery();
     }
 }

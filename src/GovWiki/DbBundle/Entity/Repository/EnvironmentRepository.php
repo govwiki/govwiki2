@@ -2,12 +2,10 @@
 
 namespace GovWiki\DbBundle\Entity\Repository;
 
-use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\ORMException;
 use GovWiki\DbBundle\Entity\Environment;
-use GovWiki\UserBundle\Entity\User;
 
 /**
  * EnvironmentRepository
@@ -30,8 +28,8 @@ class EnvironmentRepository extends EntityRepository
         }
 
         return $qb
-            ->select('partial Environment.{id,name,domain,enabled}')
-            ->orderBy('Environment.name')
+            ->select('partial Environment.{id,name,domain,enabled,slug}')
+            ->orderBy('Environment.slug')
             ->getQuery();
     }
 
@@ -52,7 +50,7 @@ class EnvironmentRepository extends EntityRepository
                 ->leftJoin('Environment.map', 'Map')
                 ->leftJoin('Environment.users', 'User')
                 ->where($expr->eq(
-                    'Environment.name',
+                    'Environment.slug',
                     $expr->literal($environment)
                 ));
 
@@ -83,7 +81,7 @@ class EnvironmentRepository extends EntityRepository
             $qb
                 ->select('Environment.id')
                 ->leftJoin('Environment.users', 'User')
-                ->where($expr->eq('Environment.name', $expr->literal($environment)));
+                ->where($expr->eq('Environment.slug', $expr->literal($environment)));
 
             if (null !== $user) {
                 $qb->andWhere($expr->eq('User.id', $user));
@@ -113,7 +111,7 @@ class EnvironmentRepository extends EntityRepository
 
         try {
             return $qb
-                ->select('Environment.name')
+                ->select('Environment.slug')
                 ->where($expr->andX(
                     $expr->eq(
                         'Environment.domain',
@@ -142,7 +140,7 @@ class EnvironmentRepository extends EntityRepository
             return $qb
                 ->select('Environment.style')
                 ->where(
-                    $expr->eq('Environment.name', $expr->literal($environment))
+                    $expr->eq('Environment.slug', $expr->literal($environment))
                 )
                 ->getQuery()
                 ->getSingleResult()['style'];

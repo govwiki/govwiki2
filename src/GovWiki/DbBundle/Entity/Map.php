@@ -3,9 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Asset;
 
@@ -89,15 +87,6 @@ class Map
      * @Asset\File()
      */
     private $countyFile;
-
-    /**
-     * Need to create process.
-     *
-     * @var UploadedFile
-     *
-     * @Asset\File()
-     */
-    private $governmentsFile;
 
     /**
      *
@@ -252,26 +241,6 @@ class Map
     public function setCountyFile(UploadedFile $countyFile = null)
     {
         $this->countyFile = $countyFile;
-
-        return $this;
-    }
-
-    /**
-     * @return UploadedFile
-     */
-    public function getGovernmentsFile()
-    {
-        return $this->governmentsFile;
-    }
-
-    /**
-     * @param UploadedFile $governmentsFile A UploadedFile instance.
-     *
-     * @return Map
-     */
-    public function setGovernmentsFile(UploadedFile $governmentsFile = null)
-    {
-        $this->governmentsFile = $governmentsFile;
 
         return $this;
     }

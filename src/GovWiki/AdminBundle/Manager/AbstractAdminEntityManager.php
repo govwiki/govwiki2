@@ -181,7 +181,7 @@ abstract class AbstractAdminEntityManager implements
             ->addSelect('Environment.id AS environment')
             ->join($alias.'.environment', 'Environment')
             ->where(
-                $expr->eq('Environment.name', $expr->literal($this->environment))
+                $expr->eq('Environment.slug', $expr->literal($this->environment))
             )
             ->getQuery()
             ->getArrayResult();

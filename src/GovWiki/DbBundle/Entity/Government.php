@@ -8,15 +8,21 @@ use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Government
  *
  * @ORM\Table(name="governments",uniqueConstraints={
- *     @ORM\UniqueConstraint(name="alt_type_slug_name_slug", columns={"alt_type_slug", "slug"})
+ *     @ORM\UniqueConstraint(
+ *      name="alt_type_slug_name_slug",
+ *      columns={"alt_type_slug", "slug"}
+ *     )
  * })
  * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\GovernmentRepository")
  * @ExclusionPolicy("none")
+ *
+ * @UniqueEntity("name")
  */
 class Government
 {
@@ -1519,7 +1525,7 @@ class Government
     public function setName($name)
     {
         $this->name = $name;
-        $this->slug = str_replace([' ', '-'], '_', str_replace(['County Of ', 'City Of '], '', ucwords(strtolower($name))));
+        $this->slug = str_replace([' ', '-'], '_', ucwords(strtolower($name)));
 
         return $this;
     }

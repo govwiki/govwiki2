@@ -147,9 +147,7 @@ class MapController extends AbstractGovWikiAdminController
             $em->persist($map);
             $em->flush();
 
-            return $this->redirectToRoute('govwiki_admin_map_edit', [
-                'environment' => $environment,
-            ]);
+            return $this->redirectToRoute('govwiki_admin_map_edit');
         }
 
         return [

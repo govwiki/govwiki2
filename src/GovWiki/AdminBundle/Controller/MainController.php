@@ -106,20 +106,21 @@ class MainController extends AbstractGovWikiAdminController
         if ('' !== $environment) {
             $manager->changeEnvironment($environment);
         }
-        /** @var Environment $environment */
-        $environment = $manager->getEntity();
+        /** @var Environment $entity */
+        $entity = $manager->getEntity();
 
-        $form = $this->createForm(new EnvironmentType(), $environment);
+        $form = $this->createForm(new EnvironmentType(), $entity);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($environment);
+            $em->persist($entity);
+            $manager->changeEnvironment($entity->getName());
             $em->flush();
         }
 
         return [
             'form' => $form->createView(),
-            'environment' => $environment,
+            'environment' => $entity,
         ];
     }
 

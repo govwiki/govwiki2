@@ -73,7 +73,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         $tmp = $qb
             ->leftJoin('Government.environment', 'Environment')
             ->where($expr->eq(
-                'Environment.name',
+                'Environment.slug',
                 $expr->literal($this->environment)
             ))
             ->groupBy('Government.altType')

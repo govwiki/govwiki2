@@ -38,7 +38,7 @@ class MapRepository extends EntityRepository
         try {
             return $qb
                 ->join('Map.environment', 'Environment')
-                ->where($expr->eq('Environment.name', $expr->literal($environment)))
+                ->where($expr->eq('Environment.slug', $expr->literal($environment)))
                 ->getQuery()
                 ->getOneOrNullResult();
         } catch (NonUniqueResultException $e) {
@@ -58,8 +58,8 @@ class MapRepository extends EntityRepository
 
         return $qb
             ->leftJoin('Map.environment', 'Environment')
-            ->where($expr->eq('Environment.name', $expr->literal($name)))
+            ->where($expr->eq('Environment.slug', $expr->literal($name)))
             ->getQuery()
-            ->getResult();
+            ->getSingleResult();
     }
 }

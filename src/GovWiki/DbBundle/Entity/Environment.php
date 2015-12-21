@@ -41,60 +41,17 @@ class Environment
      *
      * @ORM\Column()
      */
+    private $slug;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column()
+     */
     private $domain;
 
     /**
      * Use bem like syntax.
-     * [
-     *  {
-     *      block: 'header',
-     *      mods: { color: ... },
-     *      content: [
-     *          {
-     *              elem: 'logo',
-     *              attrs: { src: ... }
-     *          },
-     *          {
-     *              block: 'menu',
-     *              content: [
-     *                  {
-     *                      elem: 'link',
-     *                      elemMods: {
-     *                          color: ...,
-     *                          hover_color: ...,
-     *                          bg_color: ...,
-     *                          bg_hover_color: ...
-     *                      }
-     *                  }
-     *              ]
-     *          }
-     *      ]
-     *  },
-     *
-     *  {
-     *      block: 'footer',
-     *      mods: { color: ... },
-     *      content: [
-     *          {
-     *              block: 'copyright',
-     *              content: ...
-     *              mods: { color: ... }
-     *          },
-     *          {
-     *              block: 'social',
-     *              content: [
-     *                  {
-     *                      elem: 'link',
-     *                      tag: 'a',
-     *                      url: ...
-     *                      content: ...
-     *                  },
-     *                  ...
-     *              ]
-     *          }
-     *      ]
-     *  },
-     * ]
      *
      * @var string
      *
@@ -207,6 +164,7 @@ class Environment
     public function setName($name)
     {
         $this->name = $name;
+        $this->slug = str_replace(' ', '_', ucwords(strtolower($name)));
 
         return $this;
     }
@@ -467,5 +425,13 @@ class Environment
     public function getGroups()
     {
         return $this->groups;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlug()
+    {
+        return $this->slug;
     }
 }

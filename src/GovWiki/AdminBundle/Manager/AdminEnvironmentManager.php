@@ -98,17 +98,6 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * Get map data for current environment.
-     *
-     * @return \GovWiki\DbBundle\Entity\Map|null
-     */
-    public function getMap()
-    {
-        return $this->em->getRepository('GovWikiDbBundle:Map')
-            ->getByEnvironment($this->environment);
-    }
-
-    /**
      * @return AdminEnvironmentManager
      */
     public function clearEnvironment()
@@ -124,6 +113,17 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     public function getEnvironment()
     {
         return $this->environment;
+    }
+
+    /**
+    * Get map data for current environment.
+    *
+    * @return \GovWiki\DbBundle\Entity\Map|null
+    */
+    public function getMap()
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Map')
+            ->getByEnvironment($this->environment);
     }
 
     /**

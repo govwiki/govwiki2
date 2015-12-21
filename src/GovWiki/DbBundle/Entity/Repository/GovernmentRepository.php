@@ -28,7 +28,7 @@ class GovernmentRepository extends EntityRepository
 
         $expr = $qb->expr();
 
-        $qb->where($expr->eq('Environment.name', $expr->literal($environment)));
+        $qb->where($expr->eq('Environment.slug', $expr->literal($environment)));
 
         if (null !== $id) {
             $qb->andWhere($expr->eq('Government.id', $id));
@@ -160,7 +160,7 @@ class GovernmentRepository extends EntityRepository
                         'Government.altTypeSlug',
                         $expr->literal($altTypeSlug)
                     ),
-                    $expr->eq('Environment.name', $expr->literal($environment))
+                    $expr->eq('Environment.slug', $expr->literal($environment))
                 )
             );
 
@@ -188,7 +188,7 @@ class GovernmentRepository extends EntityRepository
                             $expr2->literal($governmentSlug)
                         ),
                         $expr2->eq(
-                            'Environment.name',
+                            'Environment.slug',
                             $expr2->literal($environment)
                         )
                     )
@@ -268,7 +268,7 @@ class GovernmentRepository extends EntityRepository
                         'Government.slug',
                         $qb->expr()->literal($slug)
                     ),
-                    $expr->eq('Environment.name', $expr->literal($environment))
+                    $expr->eq('Environment.slug', $expr->literal($environment))
                 )
             )
             ->getQuery()

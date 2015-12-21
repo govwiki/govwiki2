@@ -22,7 +22,7 @@ class CategoryRepository extends EntityRepository
         return $qb
             ->select('Category.id, Category.name, Category.orderNumber')
             ->join('Category.environment', 'Environment')
-            ->where($expr->eq('Environment.name', $expr->literal($environment)))
+            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
             ->orderBy($expr->asc('Category.orderNumber'))
             ->addOrderBy($expr->asc('Category.name'))
             ->getQuery();
@@ -41,7 +41,7 @@ class CategoryRepository extends EntityRepository
         $buf = $qb
             ->select('Category.name, Category.id')
             ->join('Category.environment', 'Environment')
-            ->where($expr->eq('Environment.name', $expr->literal($environment)))
+            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
             ->orderBy($expr->asc('Category.orderNumber'))
             ->addOrderBy($expr->asc('Category.name'))
             ->getQuery()
@@ -74,7 +74,7 @@ class CategoryRepository extends EntityRepository
                 ->join('Category.environment', 'Environment')
                 ->where(
                     $expr->andX(
-                        $expr->eq('Environment.name', $expr->literal($environment)),
+                        $expr->eq('Environment.slug', $expr->literal($environment)),
                         $expr->lt('Category.orderNumber', $orderNumber)
                     )
                 )
@@ -110,7 +110,7 @@ class CategoryRepository extends EntityRepository
                 ->join('Category.environment', 'Environment')
                 ->where(
                     $expr->andX(
-                        $expr->eq('Environment.name', $expr->literal($environment)),
+                        $expr->eq('Environment.slug', $expr->literal($environment)),
                         $expr->gt('Category.orderNumber', $orderNumber)
                     )
                 )

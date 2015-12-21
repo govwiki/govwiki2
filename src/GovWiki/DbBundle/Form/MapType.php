@@ -35,9 +35,7 @@ class MapType extends AbstractType
             ->add('centerLongitude', 'number')
             ->add('zoom', 'integer');
         if ($this->isNew) {
-            $builder
-                ->add('countyFile', 'file')
-                ->add('governmentsFile', 'file', ['required' => false]);
+            $builder->add('countyFile', 'file');
         }
     }
 

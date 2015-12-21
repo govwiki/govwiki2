@@ -12,17 +12,17 @@
                 <b>Status:</b>&nbsp;
                 {%- if environment.enabled -%}
                     <a href="{{- path('govwiki_admin_main_disable',
-                        { environment: environment.name }) -}}"
+                        { environment: environment.slug }) -}}"
                        class="text-success">Enabled</a>
                 {%- else -%}
                     <a href="{{- path('govwiki_admin_main_enable',
-                    { environment: environment.name }) -}}"
+                    { environment: environment.slug }) -}}"
                        class="text-danger">Disabled</a>
                 {%- endif -%}
             </div>
             <div>
                 <b>Map:</b>&nbsp;
-                {%- if map.isCreated -%}
+                {%- if map and map.isCreated -%}
                     <span class="text-success">Created</span>&nbsp;
                     <b>VizUrl:</b> {{ map.vizUrl }}
                 {%- else -%}
@@ -44,9 +44,13 @@
         <div>
             <div class="btn-group pull-left">
                 <button type="submit" class="btn btn-primary">Update</button>
-                <a class="btn btn-danger" href="{{ path('govwiki_admin_main_remove',
-                {environment: environment.name}) }}">
+                <a class="btn btn-danger" href="{{- path('govwiki_admin_main_remove',
+                    {environment: environment.slug}) -}}">
                     Delete
+                </a>
+                <a class="btn btn-default" href="{{-
+                    path('govwiki_admin_main_home') -}}">
+                    Back
                 </a>
             </div>
             <div class="btn-group pull-right">

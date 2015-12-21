@@ -26,7 +26,7 @@ class CreateRequestRepository extends EntityRepository
             ->leftJoin('CreateRequest.environment', 'Environment')
             ->where($expr->andX(
                 $expr->neq('CreateRequest.status', $expr->literal('discarded')),
-                $expr->eq('Environment.name', $expr->literal($environment))
+                $expr->eq('Environment.slug', $expr->literal($environment))
             ))
             ->orderBy($expr->desc('CreateRequest.created'))
             ->getQuery();
