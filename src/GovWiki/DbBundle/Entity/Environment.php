@@ -6,7 +6,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use GovWiki\UserBundle\Entity\User;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Environment
@@ -33,6 +35,7 @@ class Environment
      * @var string
      *
      * @ORM\Column(unique=true)
+     * @Assert\Regex(pattern="|^[\w\s]+$|")
      */
     private $name;
 
@@ -40,6 +43,8 @@ class Environment
      * @var string
      *
      * @ORM\Column()
+     *
+     * @Groups({"map"})
      */
     private $slug;
 
@@ -47,6 +52,7 @@ class Environment
      * @var string
      *
      * @ORM\Column()
+     * @Assert\NotBlank()
      */
     private $domain;
 
@@ -63,6 +69,7 @@ class Environment
      * @var string
      *
      * @ORM\Column(type="text")
+     * @Assert\NotBlank()
      */
     private $greetingText;
 
@@ -163,10 +170,20 @@ class Environment
      */
     public function setName($name)
     {
-        $this->name = $name;
-        $this->slug = str_replace(' ', '_', ucwords(strtolower($name)));
+        $this->name = trim($name);
+        $this->slug = self::slugify($this->name);
 
         return $this;
+    }
+
+    /**
+     * @param string $str String to slugiffy.
+     *
+     * @return string
+     */
+    public static function slugify($str)
+    {
+        return preg_replace('|[^\w\d]|', '_', strtolower($str));
     }
 
     /**

@@ -51,6 +51,8 @@ class Extension extends \Twig_Extension
     {
         return [
             'styles' => $this->manager->getStyle(),
+            'environment' => $this->manager->getEnvironment(),
+            'environment_slug' => $this->manager->getSlug(),
         ];
     }
 

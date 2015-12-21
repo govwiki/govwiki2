@@ -7,6 +7,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
+use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Map;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -59,6 +61,14 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * @return string
+     */
+    public function getSlug()
+    {
+        return Environment::slugify($this->environment);
+    }
+
+    /**
      * Get used alt types by government in current environment.
      *
      * @return array|null
@@ -93,7 +103,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @return array|null
+     * @return Map|null
      *
      * @throws NotFoundHttpException Import process failed.
      */
@@ -123,6 +133,8 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                 }
             }
         }
+
+        return $map;
     }
 
     /**

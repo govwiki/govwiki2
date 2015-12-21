@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Asset;
 
@@ -21,6 +22,8 @@ class Map
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @Groups({"map"})
      */
     private $id;
 
@@ -37,7 +40,8 @@ class Map
      * @var string
      *
      * @ORM\Column(nullable=true)
-     * @Asset\Url()
+     *
+     * @Groups({"map"})
      */
     private $vizUrl;
 
@@ -46,6 +50,8 @@ class Map
      *
      * @ORM\Column(type="float")
      * @Asset\Type(type="float")
+     *
+     * @Groups({"map"})
      */
     private $centerLatitude;
 
@@ -54,6 +60,8 @@ class Map
      *
      * @ORM\Column(type="float")
      * @Asset\Type(type="float")
+     *
+     * @Groups({"map"})
      */
     private $centerLongitude;
 
@@ -62,6 +70,8 @@ class Map
      *
      * @ORM\Column(type="integer")
      * @Asset\Type(type="integer")
+     *
+     * @Groups({"map"})
      */
     private $zoom;
 
@@ -69,6 +79,8 @@ class Map
      * @var boolean
      *
      * @ORM\Column(type="boolean")
+     *
+     * @Groups({"map"})
      */
     private $created = false;
 
@@ -76,6 +88,8 @@ class Map
      * @var Environment
      *
      * @ORM\OneToOne(targetEntity="Environment", mappedBy="map")
+     *
+     * @Groups({"map"})
      */
     private $environment;
 

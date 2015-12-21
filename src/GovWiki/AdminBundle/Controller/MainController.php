@@ -114,7 +114,7 @@ class MainController extends AbstractGovWikiAdminController
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
-            $manager->changeEnvironment($entity->getName());
+            $manager->changeEnvironment($entity->getSlug());
             $em->flush();
         }
 

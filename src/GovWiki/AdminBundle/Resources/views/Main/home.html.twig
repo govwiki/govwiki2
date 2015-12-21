@@ -4,6 +4,21 @@
 
 {% block body %}
     <div class="container-fluid">
+        {% if is_granted('ROLE_ADMIN') %}
+            <div id="delete-alert" class="alert alert-danger fade">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                Delete environment with all governments?
+                <div class="btn-group">
+                    <a id="delete-confirm" class="btn btn-danger">
+                        Yes
+                    </a>
+                    <button class="btn btn-success" data-dismiss="alert">
+                        No
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+
         <h3>Environments</h3>
         {{ knp_pagination_render(environments) }}
         <table class="table table-responsive">
@@ -23,11 +38,11 @@
                     <td>{{ environment.domain }}</td>
                     <td>
                         {% if is_granted('ROLE_ADMIN') %}
-                        <a class="btn btn-danger"
-                           href="{{ path('govwiki_admin_main_remove',
-                           { environment: environment.slug }) }}">
-                            Delete
-                        </a>
+                            <button class="btn btn-danger delete" data-url="{{-
+                                path('govwiki_admin_main_remove',
+                                { environment: environment.slug }) -}}">
+                                Delete
+                            </button>
                         {% endif %}
                     </td>
                 </tr>
@@ -41,3 +56,16 @@
         {% endif %}
     </div>
 {% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script>
+        $(function(){
+            $('.delete').click(function(){
+                console.log('asdas');
+                $('#delete-confirm').attr('href', ($this).attr('data-url'));
+                $('#delete-alert').alert('show');
+            });
+        });
+    </script>
+{% endblock javascript %}

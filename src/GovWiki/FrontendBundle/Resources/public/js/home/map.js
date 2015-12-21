@@ -7,10 +7,14 @@ $(function() {
      *  centerLatitude: Number
      *  centerLongitude: Number
      *  zoom: Number
+     *  environment: {
+     *      slug: String
+     *  }
      * }
      */
 
     window.gw.map = JSON.parse(window.gw.map);
+    window.gw.slug = window.gw.map.environment.slug;
 
     /**
      * Handle possible errors
@@ -104,7 +108,7 @@ $(function() {
             function initCountyLayer() {
                 countyLayer = subLayers[0];
                 countyLayer.set({ 'interactivity': ['cartodb_id', 'slug', 'geometry'] }); // alias to template
-                countyLayer.setSQL('SELECT  *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.environment + '_county');
+                countyLayer.setSQL('SELECT  *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.slug + '_county');
 
                 countyTooltip = new cdb.geo.ui.Tooltip({
                     layer: countyLayer,

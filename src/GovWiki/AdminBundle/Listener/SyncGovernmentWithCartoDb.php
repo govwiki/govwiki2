@@ -52,7 +52,7 @@ class SyncGovernmentWithCartoDb implements EventSubscriber
             /*
              * Send update sql request to carto db api.
              */
-            $environment = $entity->getEnvironment()->getName();
+            $environment = $entity->getEnvironment()->getSlug();
             $this->api->sqlRequest("
                 UPDATE $environment
                 SET
@@ -75,7 +75,7 @@ class SyncGovernmentWithCartoDb implements EventSubscriber
         $entity = $event->getObject();
 
         if ($entity instanceof Government) {
-            $environment = $entity->getEnvironment()->getName();
+            $environment = $entity->getEnvironment()->getSlug();
             /*
              * Send insert sql request to carto db api.
              */
@@ -101,7 +101,7 @@ class SyncGovernmentWithCartoDb implements EventSubscriber
         $entity = $event->getObject();
 
         if ($entity instanceof Government) {
-            $environment = $entity->getEnvironment()->getName();
+            $environment = $entity->getEnvironment()->getSlug();
             /*
              * Send delete sql request to carto db api.
              */
