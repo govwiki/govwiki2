@@ -13,12 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * Government
  *
- * @ORM\Table(name="governments",uniqueConstraints={
- *     @ORM\UniqueConstraint(
- *      name="alt_type_slug_name_slug",
- *      columns={"alt_type_slug", "slug"}
- *     )
- * })
+ * @ORM\Table(name="governments")
  * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\GovernmentRepository")
  * @ExclusionPolicy("none")
  *

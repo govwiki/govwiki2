@@ -66,12 +66,13 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
      */
     public function getAll(array $columns = null, $offset = 0, $limit = null)
     {
-        $columns = array_merge($columns, [ 'latitude', 'longitude' ]);
         if (null === $columns) {
             $columns = [
                 'name',
                 'type',
                 'altType',
+                'latitude',
+                'longitude',
             ];
 
             /** @var FormatRepository $repository */
@@ -82,6 +83,16 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
                 $columns[] = $row['field'];
             }
         }
+
+        $columns = array_merge($columns, [
+            'name',
+            'slug',
+            'type',
+            'altType',
+            'altTypeSlug',
+            'latitude',
+            'longitude'
+        ]);
 
         return parent::getAll($columns, $offset, $limit);
     }
