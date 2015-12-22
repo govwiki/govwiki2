@@ -267,8 +267,8 @@ class GovernmentController extends AbstractGovWikiAdminController
                     $filePath,
                     $manager->getTransformer($selectedType),
                     $columns,
-                    $form->getData()['limit'],
-                    $form->getData()['offset']
+                    $form->getData()['offset'],
+                    $form->getData()['limit']
                 );
 
 
