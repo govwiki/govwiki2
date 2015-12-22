@@ -34,6 +34,7 @@ class MainController extends Controller
         return [
             'environment' => $environment,
             'map' => $map,
+
         ];
     }
 }

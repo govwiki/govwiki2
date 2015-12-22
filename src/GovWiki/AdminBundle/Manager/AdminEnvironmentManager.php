@@ -224,6 +224,16 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
         $this->environment = $environment;
         $entity = $this->getReference();
 
+        $qb = $this->em->createQueryBuilder();
+        $expr = $qb->expr();
+
+        $qb
+            ->delete()
+            ->from('GovWikiDbBundle:Government', 'Government')
+            ->where($expr->eq('Government.environment', $entity->getId()))
+            ->getQuery()
+            ->execute();
+
         $this->em->remove($entity);
         $this->em->flush();
 
