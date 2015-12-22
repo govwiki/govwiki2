@@ -4,6 +4,29 @@
 @import "partials/head/head";
 
 
+/* Temporary styles (start) */
+
+.index-page-head {
+   margin-bottom: 16px;
+}
+
+.index-page-head ul.pagination {
+   margin: 0;
+}
+
+.btn-beside-pills {
+   margin-top: -40px;
+   margin-bottom: 10px;
+   height: 40px;
+   padding: 9px 12px;
+}
+
+.label-like {
+   font-weight: 700;
+}
+
+/* Temporary styles (end) */
+
 
 /* ===================================================== */
 /* ======== Customize bootstrap & global styles ======== */
@@ -11,7 +34,7 @@
 
 @import "partials/dropdown-menu/dropdown-menu";
 
-
-.dropdown-menu>.active>a, .dropdown-menu>.active>a:hover, .dropdown-menu>.active>a:focus {
-   background-color: #4E86B3;
+// Center th cells
+.table.text-center th {
+   text-align: center;
 }

@@ -2,7 +2,9 @@
 
 namespace GovWiki\FrontendBundle\Twig;
 
+use GovWiki\AdminBundle\Manager\AdminStyleManager;
 use GovWiki\ApiBundle\Manager\EnvironmentManager;
+use JMS\Serializer\Serializer;
 
 /**
  * Class Extension
@@ -16,11 +18,17 @@ class Extension extends \Twig_Extension
     private $manager;
 
     /**
+     * @var Serializer
+     */
+    private $serializer;
+
+    /**
      * @param EnvironmentManager $manager A EnvironmentManager instance.
      */
-    public function __construct(EnvironmentManager $manager)
+    public function __construct(EnvironmentManager $manager, Serializer $serializer)
     {
         $this->manager = $manager;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -36,6 +44,7 @@ class Extension extends \Twig_Extension
      */
     public function getFilters()
     {
+
         return [
             new \Twig_SimpleFilter('applay_mask', [
                 $this,
@@ -49,8 +58,14 @@ class Extension extends \Twig_Extension
      */
     public function getGlobals()
     {
+
+        $styles = $this->manager->getStyle();
+//        $styles = $this->serializer->serialize($styles, 'json');
+
+        $styles = AdminStyleManager::getDefaultStyles();
+        $styles = json_encode($styles);
         return [
-            'styles' => $this->manager->getStyle(),
+            'styles' => $styles,
             'environment' => $this->manager->getEnvironment(),
             'environment_slug' => $this->manager->getSlug(),
         ];

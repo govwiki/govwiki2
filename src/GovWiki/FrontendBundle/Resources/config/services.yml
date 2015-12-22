@@ -1,6 +1,6 @@
 services:
     govwiki.frontend_bundle.twig_extension:
         class: GovWiki\FrontendBundle\Twig\Extension
-        arguments: [@govwiki_api.manager.environment]
+        arguments: [@govwiki_api.manager.environment, @jms_serializer]
         tags:
             - { name: twig.extension }

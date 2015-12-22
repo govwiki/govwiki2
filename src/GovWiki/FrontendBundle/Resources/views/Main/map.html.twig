@@ -29,15 +29,19 @@
 
             <div class="col-sm-12 col-md-6 col-lg-5">
 
-                {# Map #}
+                {# Map wrapper #}
                 <div id="map_wrap">
 
+                    {# Preloader #}
                     <div class="loader"></div>
+
+                    {# Notification message#}
                     <div class="mapOnProcessing">
                         <h5>Please wait, map recently created</h5>
                         <h5>Please refresh page later</h5>
                     </div>
 
+                    {# Legend #}
                     <ul id='menu'>
 
                         <li class="legend-header">
@@ -70,7 +74,9 @@
 
                     </ul>
 
+                    {# Map #}
                     <div id="map"></div>
+
                 </div>
 
             </div>
@@ -138,6 +144,7 @@
 
     <script> window.gw.map = '{{ map | raw }}'; </script>
     <script> window.gw.environment = '{{ environment }}' </script>
+    <script> window.gw.styles = '{{ styles | raw }}' </script>
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
                     '@GovWikiFrontendBundle/Resources/public/js/vendor/typeahead.js'
                     '@GovWikiFrontendBundle/Resources/public/js/script.js'

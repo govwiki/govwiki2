@@ -169,7 +169,10 @@ class AdminStyleManager
                 [
                     [
                         'block' => 'header',
-                        'mods' => [ 'color' => '#0B4D70' ],
+                        'mods' => [
+                            ['backgroundColor' => '#0B4D70'],
+                            ['color' => '#0B4D70']
+                        ],
                         'content' => [
                             [
                                 'elem' => 'logo',
@@ -181,10 +184,10 @@ class AdminStyleManager
                                     [
                                         'elem' => 'link',
                                         'mods' => [
-                                            'color' => '#A8D2F2',
-                                            'hover_color' => '#A8D2F2',
-                                            'bg_color' => 'transparent',
-                                            'bg_hover_color' => '#6C9BB9',
+                                            ['color' => '#A8D2F2'],
+                                            ['color' => '#FFFFFF', 'pseudo' => 'hover'],
+                                            ['backgroundColor' => '#A8D2F2'],
+                                            ['backgroundColor' => '#FFFFFF', 'pseudo' => 'hover'],
                                         ],
                                     ],
                                 ],

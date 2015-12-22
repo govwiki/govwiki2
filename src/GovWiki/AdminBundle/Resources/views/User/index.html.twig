@@ -3,6 +3,7 @@
 {% extends 'GovWikiAdminBundle:Layout:main.html.twig' %}
 
 {% block title %}Users{% endblock %}
+
 {% block body %}
 
     <div class="row">
@@ -19,7 +20,7 @@
                 {# Body #}
                 <div class="panel-body">
 
-
+                    {# Pagination #}
                     <div class="index-page-head">
                         <div class="navigation">
                             <div class="row">
@@ -29,14 +30,15 @@
                             </div>
                         </div>
                     </div>
+
                     <table class="table table-bordered text-center">
                         <thead>
                             <tr>
-                                <td>{{ knp_pagination_sortable(users, 'Id',         'User.id') }}</td>
-                                <td>{{ knp_pagination_sortable(users, 'Username',   'User.username') }}</td>
-                                <td>Locked</td>
-                                <td>{{ knp_pagination_sortable(users, 'Last login', 'User.lastLogin') }}</td>
-                                <td>Actions</td>
+                                <th>{{ knp_pagination_sortable(users, 'Id',         'User.id') }}</th>
+                                <th>{{ knp_pagination_sortable(users, 'Username',   'User.username') }}</th>
+                                <th>Locked</th>
+                                <th>{{ knp_pagination_sortable(users, 'Last login', 'User.lastLogin') }}</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,6 +71,8 @@
                         {% endfor %}
                         </tbody>
                     </table>
+
+                    {# Pagination #}
                     <div class="navigation">
                         {{ knp_pagination_render(users) }}
                     </div>
