@@ -19,3 +19,24 @@
         <a class="pull-right btn btn-danger" href="{{ path('govwiki_admin_wizard_cancel') }}">Cancel</a>
     {{ form_end(form) }}
 {% endblock content %}
+
+
+{% block stylesheets %}
+
+    {{ parent() }}
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css"/>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="application/javascript">
+        $(function() {
+            $('.color-picker').colorpicker({
+                format: 'hex',
+                align: 'left'
+            });
+        })
+    </script>
+{% endblock javascripts %}

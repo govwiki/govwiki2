@@ -12,7 +12,7 @@
 
                 {# Header #}
                 <div class="panel-heading">
-                    <h3 class="panel-title">User info</h3>
+                    <h3 class="panel-title">Governments</h3>
                 </div>
 
                 {# Body #}
@@ -22,24 +22,34 @@
                     <div class="row">
 
                         {# Pagination #}
-                        <div class="col-xs-12 col-sm-12 col-md-4 text-center">
+                        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center">
                             {{ knp_pagination_render(governments) }}
                         </div>
 
                         {# Filter #}
-                        <div class="col-xs-12 col-sm-8 col-md-5 text-center text-left-sm">
-                            <form class="form-inline controls">
-                                <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id"
-                                       value="{{ app.request.query.get('filter') ? app.request.query.get('filter').id}}">
+                        <div class="col-xs-8 col-sm-9 col-md-5 col-lg-5 text-center text-left-sm">
 
-                                <input name="filter[name]" type="text" class="form-control input-sm" placeholder="Name"
-                                       value="{{app.request.query.get('filter') ? app.request.query.get('filter').name}}">
-                                <button type="submit" class="btn btn-sm btn-primary">Filter</button>
-                            </form>
+                            <div class="row">
+                                <div class="col-xs-10">
+
+                                    <form class="form-inline controls">
+                                        <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id"
+                                               value="{{ app.request.query.get('filter') ? app.request.query.get('filter').id}}">
+
+                                        <input name="filter[name]" type="text" class="form-control input-sm" placeholder="Name"
+                                               value="{{app.request.query.get('filter') ? app.request.query.get('filter').name}}">
+                                    </form>
+                                </div>
+
+                                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
+                                    <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
+                                </div>
+                            </div>
+
                         </div>
 
                         {# Controls #}
-                        <div class="col-sm-4 col-md-3 text-center">
+                        <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3 text-center text-right-sm">
                             <div class="btn-group controls">
                                 <a class="btn btn-sm btn-default" href="{{-
                                     path('govwiki_admin_government_export')
@@ -60,7 +70,7 @@
 
                             <div class="table-responsive">
 
-                                <table class="table table-bordered text-center">
+                                <table class="table table-bordered table-hover text-center">
                                     <thead>
                                         <tr>
                                             <th>{{ knp_pagination_sortable(governments, 'Id',        'Government.id') }}</th>
@@ -68,7 +78,7 @@
                                             <th>{{ knp_pagination_sortable(governments, 'Slug',      'Government.slug') }}</th>
                                             <th>{{ knp_pagination_sortable(governments, 'Type',      'Government.type') }}</th>
                                             <th>{{ knp_pagination_sortable(governments, 'Alt. type', 'Government.altType') }}</th>
-                                            <th>Actions</th>
+                                            <th class="actions">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -80,16 +90,17 @@
                                                 <td>{{ government.type }}</td>
                                                 <td>{{ government.altType }}</td>
                                                 <td>
-                                                    <a href="{{- path('govwiki_admin_government_edit',
-                                                        { id: government.id }) -}}" class="btn btn-sm btn-default">
-                                                            <span class="glyphicon glyphicon-pencil"></span>
-                                                            Edit
-                                                    </a>
-                                                    <a href="{{- path('govwiki_admin_government_remove',
-                                                    { id: government.id }) -}}" class="btn btn-sm btn-danger">
-                                                        <span class="glyphicon glyphicon-pencil"></span>
-                                                        Remove
-                                                    </a>
+                                                    <div class="btn-group">
+                                                        <a href="{{- path('govwiki_admin_government_edit',
+                                                            { id: government.id }) -}}" class="btn btn-sm btn-default">
+                                                                <span class="glyphicon glyphicon-pencil"></span>
+                                                                Edit
+                                                        </a>
+                                                        <a href="{{- path('govwiki_admin_government_remove',
+                                                        { id: government.id }) -}}" class="btn btn-sm btn-danger">
+                                                            <span class="glyphicon glyphicon-remove"></span> Remove
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         {% endfor %}

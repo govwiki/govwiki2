@@ -61,7 +61,37 @@
 
 @import "partials/dropdown-menu/dropdown-menu";
 
+.table {
+   .actions {
+      min-width: 170px;
+   }
+}
+
 // Center th cells
-.table.text-center th {
+.table.text-center th, td {
    text-align: center;
+}
+
+.table > thead > tr {
+
+   & > th {
+      vertical-align: middle;
+   }
+
+   & > td {
+      vertical-align: middle;
+   }
+
+}
+
+.table > tbody > tr {
+
+   & > th {
+      vertical-align: middle;
+   }
+
+   & > td {
+      vertical-align: middle;
+   }
+
 }

@@ -10,7 +10,7 @@
 
                 {# Header #}
                 <div class="panel-heading">
-                    <h3 class="panel-title">User info</h3>
+                    <h3 class="panel-title">Elected Official info</h3>
                 </div>
 
                 {# Body #}
@@ -20,91 +20,123 @@
                     <div class="row">
 
                         {# Pagination #}
-                        <div class="col-xs-12 col-sm-12 col-md-4 text-center">
+                        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center">
                             {{ knp_pagination_render(electedOfficials) }}
                         </div>
 
                         {# Filter #}
-                        <div class="col-xs-12 col-sm-12 col-md-5 text-center">
-                            <form action="" class="form-inline">
-                                <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id"
-                                       value="{{ app.request.query.get('filter') ? app.request.query.get('filter').id }}">
+                        <div class="col-xs-8 col-sm-9 col-md-6 col-lg-6 text-center text-left-sm">
 
-                                <input name="filter[fullName]" type="text" class="form-control input-sm" placeholder="Name"
-                                       value="{{ app.request.query.get('filter') ? app.request.query.get('filter').fullName}}">
+                            <div class="row">
+                                <div class="col-xs-10">
+                                    <form action="" class="form-inline controls">
+                                        <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id"
+                                               value="{{ app.request.query.get('filter') ? app.request.query.get('filter').id }}">
 
-                                <input name="filter[governmentName]" type="text" class="form-control input-sm" placeholder="Government name"
-                                       value="{{ app.request.query.get('filter') ? app.request.query.get('filter').governmentName}}">
+                                        <input name="filter[fullName]" type="text" class="form-control input-sm" placeholder="Name"
+                                               value="{{ app.request.query.get('filter') ? app.request.query.get('filter').fullName}}">
 
-                                <button type="submit" class="btn btn-default" value="Filter"> Filter </button>
-                            </form>
+                                        <input name="filter[governmentName]" type="text" class="form-control input-sm" placeholder="Government name"
+                                               value="{{ app.request.query.get('filter') ? app.request.query.get('filter').governmentName}}">
+                                    </form>
+                                </div>
+                                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
+                                    <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
+                                </div>
+                            </div>
+
                         </div>
 
                         {# Controls #}
-                        <div class="col-md-3 text-right">
-                            <a class="btn btn-primary" href="{{- path('govwiki_admin_electedofficial_create') -}}">
+                        <div class="col-xs-4 col-sm-3 col-md-2 col-lg-2 text-center text-right-sm">
+                            <a class="btn btn-sm btn-primary controls" href="{{- path('govwiki_admin_electedofficial_create') -}}">
                                 Create
                             </a>
                         </div>
                     </div>
 
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <td>
-                                    {{ knp_pagination_sortable(
-                                        electedOfficials,
-                                        'Id',
-                                        'eo.id')
-                                    }}
-                                </td>
-                                <td>
-                                    {{ knp_pagination_sortable(
-                                        electedOfficials,
-                                        'Name',
-                                        'eo.fullName')
-                                    }}
-                                </td>
-                                <td>
-                                    {{ knp_pagination_sortable(
-                                        electedOfficials,
-                                        'Government',
-                                        'Government.name')
-                                    }}
-                                </td>
-                                <td>
-                                    {{ knp_pagination_sortable(
-                                        electedOfficials,
-                                        'Title',
-                                        'eo.title')
-                                    }}
-                                </td>
-                                <td>Actions</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for electedOfficial in electedOfficials %}
-                                <tr>
-                                    <td>{{ electedOfficial.id }}</td>
-                                    <td>{{ electedOfficial.fullName }}</td>
-                                    <td>{% if electedOfficial.government %}{{ electedOfficial.government.name }}{% endif %}</td>
-                                    <td>{{ electedOfficial.title }}</td>
-                                    <td><a href="{{-
-                                        path(
-                                            'govwiki_admin_electedofficial_edit',
-                                            {
-                                                id: electedOfficial.id
-                                            }
-                                        )
-                                        -}}" class="btn btn-default">
-                                        <span class="glyphicon glyphicon-pencil"></span> Edit
-                                    </a></td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <div class="navigation">
-                        {{ knp_pagination_render(electedOfficials) }}
+                    {# Table #}
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="table-responsive">
+
+                                <table class="table table-bordered table-hover text-center">
+
+                                    {# THEAD #}
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                {{ knp_pagination_sortable(
+                                                    electedOfficials,
+                                                    'Id',
+                                                    'eo.id')
+                                                }}
+                                            </th>
+                                            <th>
+                                                {{ knp_pagination_sortable(
+                                                    electedOfficials,
+                                                    'Name',
+                                                    'eo.fullName')
+                                                }}
+                                            </th>
+                                            <th>
+                                                {{ knp_pagination_sortable(
+                                                    electedOfficials,
+                                                    'Government',
+                                                    'Government.name')
+                                                }}
+                                            </th>
+                                            <th>
+                                                {{ knp_pagination_sortable(
+                                                    electedOfficials,
+                                                    'Title',
+                                                    'eo.title')
+                                                }}
+                                            </th>
+                                            <td class="actions">Actions</td>
+                                        </tr>
+                                    </thead>
+
+                                    {# TBODY #}
+                                    <tbody>
+                                        {% for electedOfficial in electedOfficials %}
+                                            <tr>
+                                                <td>{{ electedOfficial.id }}</td>
+                                                <td>{{ electedOfficial.fullName }}</td>
+                                                <td>{{ electedOfficial.government ? electedOfficial.government.name }}</td>
+                                                <td>{{ electedOfficial.title }}</td>
+                                                <td>
+                                                    <a href="{{- path('govwiki_admin_electedofficial_edit', {id: electedOfficial.id}) -}}"
+                                                       class="btn btn-sm btn-default">
+                                                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
                     </div>
+
+                    {# Pagination #}
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+
+                            <div class="navigation">
+                                {{ knp_pagination_render(electedOfficials) }}
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
     </div>
+
 {% endblock %}

@@ -9,7 +9,7 @@
 
             {# Header #}
             <div class="panel-heading">
-                <h3 class="panel-title">Environment info</h3>
+                <h3 class="panel-title">Create requests</h3>
             </div>
 
             {# Body #}
@@ -28,8 +28,18 @@
                                 </div>
                             </div>
                         </div>
-                        <table class="table table-bordered text-center">
-                            <thead>
+
+                    </div>
+                </div>
+
+                {# Table #}
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="table-responsive">
+
+                            <table class="table table-bordered table-hover text-center">
+                                <thead>
                                 <tr>
                                     <td>{{ knp_pagination_sortable(createRequests, 'Id',        'cr.id') }}</td>
                                     <td>{{ knp_pagination_sortable(createRequests, 'Created',   'cr.created') }}</td>
@@ -38,8 +48,8 @@
                                     <td>{{ knp_pagination_sortable(createRequests, 'Data Type', 'cr.entityName') }}</td>
                                     <td>Actions</td>
                                 </tr>
-                            </thead>
-                            <tbody>
+                                </thead>
+                                <tbody>
                                 {% for createRequest in createRequests %}
                                     <tr>
                                         <td>{{ createRequest.id }}</td>
@@ -50,30 +60,39 @@
                                         <td>
                                             <div class="btn-group">
                                                 <a href="{{-
-                                                    path(
-                                                        'govwiki_admin_createrequest_show',
-                                                        {
-                                                            id: createRequest.id
-                                                        }
-                                                    )
-                                                -}}" class="btn btn-default">
+                                                path(
+                                                'govwiki_admin_createrequest_show',
+                                                {
+                                                    id: createRequest.id
+                                                }
+                                                )
+                                                -}}" class="btn btn-sm btn-default">
                                                     <span class="glyphicon glyphicon-search"></span> Show
                                                 </a>
-                                                <span class="btn btn-danger remove-action" data-link="{{-
-                                                    path(
-                                                        'govwiki_admin_createrequest_remove',
-                                                        {
-                                                            id: createRequest.id
-                                                        }
-                                                    ) -}}">
+                                                <span class="btn btn-sm btn-danger remove-action" data-link="{{-
+                                                path(
+                                                'govwiki_admin_createrequest_remove',
+                                                {
+                                                    id: createRequest.id
+                                                }
+                                                ) -}}">
                                                     <span class="glyphicon glyphicon-remove"></span> Remove
                                                 </span>
                                             </div>
                                         </td>
                                     </tr>
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 text-center">
+
                         <div class="navigation">
                             {{ knp_pagination_render(createRequests) }}
                         </div>

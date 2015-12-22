@@ -1,59 +1,104 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
 {% block title %}{{ parent() }} - Legislations{% endblock %}
+
 {% block body %}
-    <div class="container-fluid">
-        <div class="index-page-head">
-            <div class="navigation">
-                {{ knp_pagination_render(legislations) }}
-                <a class="btn btn-primary pull-right" href="{{-
-                    path('govwiki_admin_legislation_create')
-                -}}" style="margin-bottom:20px;">Create</a>
+
+    <div class="row">
+        <div class="col-md-12">
+
+            {# Panel #}
+            <div class="panel panel-primary">
+
+                {# Header #}
+                <div class="panel-heading">
+                    <h3 class="panel-title">Elected Official info</h3>
+                </div>
+
+                {# Body #}
+                <div class="panel-body">
+
+                    {# Navigation #}
+                    <div class="row">
+
+                        {# Pagination #}
+                        <div class="col-xs-12 col-sm-12 col-md-4 text-center">
+                            {{ knp_pagination_render(legislations) }}
+                        </div>
+
+                        {# Controls #}
+                        <div class="col-sm-4 col-md-3 pull-right text-right">
+                            <a class="btn btn-sm btn-primary controls" href="{{- path('govwiki_admin_legislation_create') -}}">
+                                Create
+                            </a>
+                        </div>
+                    </div>
+
+                    {# Table #}
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="table-responsive">
+
+                                <table class="table table-bordered table-hover text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ knp_pagination_sortable(legislations, 'Id',                         'l.id') }}</th>
+                                            <th>{{ knp_pagination_sortable(legislations, 'Government assigned number', 'l.govAssignedNumber') }}</th>
+                                            <th>{{ knp_pagination_sortable(legislations, 'Date considered',            'l.dateConsidered') }}</th>
+                                            <th>{{ knp_pagination_sortable(legislations, 'Name',                       'l.name') }}</th>
+                                            <th>Summary</th>
+                                            <th>Evaluator approved position</th>
+                                            <th>Weighting</th>
+                                            <th>Notes</th>
+                                            <th>Issue category</th>
+                                            <th>Government</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for legislation in legislations %}
+                                            <tr>
+                                                <td>{{ legislation.id }}</td>
+                                                <td>{{ legislation.govAssignedNumber }}</td>
+                                                <td>{{ legislation.dateConsidered|date('m/d/Y') }}</td>
+                                                <td>{{ legislation.name }}</td>
+                                                <td>{{ legislation.summary }}</td>
+                                                <td>{{ legislation.evaluatorApprovedPosition }}</td>
+                                                <td>{{ legislation.weighting }}</td>
+                                                <td>{{ legislation.notes }}</td>
+                                                <td>{% if legislation.issueCategory %}{{ legislation.issueCategory.name }}{% endif %}</td>
+                                                <td>{% if legislation.government %}{{ legislation.government.name }}{% endif %}</td>
+                                                <td>
+                                                    <a href="{{- path('govwiki_admin_legislation_edit', { id: legislation.id }) -}}"
+                                                       class="btn btn-sm btn-default">
+                                                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+
+                            <div class="navigation">
+                                {{ knp_pagination_render(legislations) }}
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </div>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <td>{{ knp_pagination_sortable(legislations, 'Id',                         'l.id') }}</td>
-                    <td>{{ knp_pagination_sortable(legislations, 'Government assigned number', 'l.govAssignedNumber') }}</td>
-                    <td>{{ knp_pagination_sortable(legislations, 'Date considered',            'l.dateConsidered') }}</td>
-                    <td>{{ knp_pagination_sortable(legislations, 'Name',                       'l.name') }}</td>
-                    <td>Summary</td>
-                    <td>Evaluator approved position</td>
-                    <td>Weighting</td>
-                    <td>Notes</td>
-                    <td>Issue category</td>
-                    <td>Government</td>
-                    <td>Actions</td>
-                </tr>
-            </thead>
-            <tbody>
-                {% for legislation in legislations %}
-                    <tr>
-                        <td>{{ legislation.id }}</td>
-                        <td>{{ legislation.govAssignedNumber }}</td>
-                        <td>{{ legislation.dateConsidered|date('m/d/Y') }}</td>
-                        <td>{{ legislation.name }}</td>
-                        <td>{{ legislation.summary }}</td>
-                        <td>{{ legislation.evaluatorApprovedPosition }}</td>
-                        <td>{{ legislation.weighting }}</td>
-                        <td>{{ legislation.notes }}</td>
-                        <td>{% if legislation.issueCategory %}{{ legislation.issueCategory.name }}{% endif %}</td>
-                        <td>{% if legislation.government %}{{ legislation.government.name }}{% endif %}</td>
-                        <td><a href="{{-
-                            path(
-                                'govwiki_admin_legislation_edit',
-                                {
-                                    id: legislation.id
-                                }
-                            ) -}}" class="btn btn-default">
-                            <span class="glyphicon glyphicon-pencil"></span> Edit
-                        </a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="navigation">
-            {{ knp_pagination_render(legislations) }}
+
         </div>
     </div>
+
 {% endblock %}
