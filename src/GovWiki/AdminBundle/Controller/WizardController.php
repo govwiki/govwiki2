@@ -281,8 +281,13 @@ class WizardController extends AbstractGovWikiAdminController
      */
     private function getEnvironmentEntity()
     {
-        return unserialize($this->get('session')
-            ->get(self::ENVIRONMENT_PARAMETER, null));
+        $environment = $this->get('session')
+            ->get(self::ENVIRONMENT_PARAMETER, null);
+
+        if (null === $environment) {
+            return null;
+        }
+        return unserialize($environment);
     }
 
     /**
