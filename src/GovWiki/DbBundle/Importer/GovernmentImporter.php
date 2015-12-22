@@ -49,8 +49,8 @@ class GovernmentImporter extends AbstractImporter
         $filePath,
         FileTransformerInterface $transformer,
         array $columns = null,
-        $limit = 0,
-        $offset = null
+        $offset = 0,
+        $limit = null
     ) {
         $data = $this->manager->getAll($columns, $offset, $limit);
         $transformer->reverseTransform($filePath, $data);
