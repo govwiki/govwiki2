@@ -13,11 +13,12 @@
 
     {{ form_start(form) }}
     {{ form_widget(form) }}
-    <div class="btn-group pull-left">
-        <button class="btn btn-primary" type="submit">Next</button>
-    </div>
-    <a class="pull-right btn btn-danger" href="{{ path('govwiki_admin_wizard_cancel') }}">
+
+    <a class="pull-left btn btn-danger" href="{{ path('govwiki_admin_wizard_cancel') }}">
         Cancel
     </a>
+    <div class="pull-right btn-group">
+        <button class="btn btn-primary" type="submit">Next</button>
+    </div>
     {{ form_end(form) }}
 {% endblock content %}
