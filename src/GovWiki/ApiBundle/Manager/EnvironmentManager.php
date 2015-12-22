@@ -138,6 +138,22 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * @return string
+     */
+    public function getGreetingText()
+    {
+        $qb = $this->em->getRepository('GovWikiDbBundle:Environment')
+            ->createQueryBuilder('Environment');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select('Environment.greetingText')
+            ->where($expr->eq('Environment.slug', $expr->literal($this->environment)))
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * @param string $altTypeSlug Slugged government alt type.
      * @param string $slug        Slugged government name.
      *

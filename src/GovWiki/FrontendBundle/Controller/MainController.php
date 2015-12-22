@@ -34,7 +34,7 @@ class MainController extends Controller
         return [
             'environment' => $environment,
             'map' => $map,
-
+            'greetingText' => $environmentManager->getGreetingText(),
         ];
     }
 }
