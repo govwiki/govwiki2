@@ -1,0 +1,17 @@
+
+@import "variables";
+
+@import "partials/head/head";
+
+
+
+/* ===================================================== */
+/* ======== Customize bootstrap & global styles ======== */
+/* ===================================================== */
+
+@import "partials/dropdown-menu/dropdown-menu";
+
+
+.dropdown-menu>.active>a, .dropdown-menu>.active>a:hover, .dropdown-menu>.active>a:focus {
+   background-color: #4E86B3;
+}

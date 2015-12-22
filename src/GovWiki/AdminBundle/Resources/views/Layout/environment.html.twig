@@ -1,10 +1,6 @@
 {% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
 {% block enviroment_menu %}
-    <li>
-        <a href="{{ path('govwiki_admin_main_home') }}">
-            Environments
-        </a>
-    </li>
+
     <li{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} class="active"{% endif %}>
         <a href="{{- path('govwiki_admin_government_index') -}}">
             Governments
@@ -20,11 +16,34 @@
             Legislation
         </a>
     </li>
-    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_createrequest_index' %} class="active"{% endif %}>
+
+    {# Requests menu #}
+    {# Visibility: sm or more #}
+    <li class="dropdown hidden-xs hidden-sm">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Requests<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+
+            <li{% if app.request.attributes.get('_route') == 'govwiki_admin_createrequest_index' %} class="active"{% endif %}>
+                <a href="{{- path('govwiki_admin_createrequest_index') -}}">Create Requests</a>
+            </li>
+
+            <li{% if app.request.attributes.get('_route') == 'govwiki_admin_editrequest_index' %} class="active"{% endif %}>
+                <a href="{{- path('govwiki_admin_editrequest_index') -}}">Edit Requests</a>
+            </li>
+
+        </ul>
+    </li>
+
+    {# Visibility: sm or less #}
+    <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_createrequest_index' ? 'active' }} visible-xs visible-sm">
         <a href="{{- path('govwiki_admin_createrequest_index') -}}">Create Requests</a>
     </li>
-    <li{% if app.request.attributes.get('_route') == 'govwiki_admin_editrequest_index' %} class="active"{% endif %}>
+
+    {# Visibility: sm or less #}
+    <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_editrequest_index' ? 'active' }} visible-xs visible-sm">
         <a href="{{- path('govwiki_admin_editrequest_index') -}}">Edit Requests</a>
     </li>
+
     {{ parent() }}
+
 {% endblock enviroment_menu %}

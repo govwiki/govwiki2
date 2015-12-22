@@ -3,47 +3,35 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}
-           {# <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-            <link href="{{ asset('legacy/css/bootstrap.min.css') }}" rel="stylesheet">
-            <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">#}
-        {% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-        {#<style>
-            /*
-                By some reasons bootstrap datepicker arrow icons is broken
-                this part of css fix it.
-            */
-            .icon-arrow-left,
-            .icon-arrow-right {
-                position: relative;
-                top: 1px;
-                display: inline-block;
-                font-family: 'Glyphicons Halflings';
-                font-style: normal;
-                font-weight: normal;
-                line-height: 1;
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-            }
 
-            .icon-arrow-left:before { content: "\e091"; }
-            .icon-arrow-right:before { content: "\e092"; }
-        </style>#}
+        {# TODO: Need to show environment favicon#}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+        {# Stylesheets #}
+        {% block stylesheets %}{% endblock %}
     </head>
     <body>
-        {% block header %}{% endblock %}
-        {% block body %}{% endblock %}
+
+        {# Header #}
+        <header class="container">
+            {% block header %}{% endblock %}
+        </header>
+
+        {# Main content #}
+        <main class="container">
+            {% block body %}{% endblock %}
+        </main>
+
+        {# Footer #}
+        <footer class="container">
+            {% block footer %}{% endblock %}
+        </footer>
+
+        {# Modal windows#}
         {% block modal %}{% endblock %}
-        {% block javascripts %}
-           {# <script src="{{ asset('legacy/js_files/jquery.min.js') }}"></script>
-            <script src="{{ asset('legacy/js/vendor/bootstrap.min.js') }}"></script>#}
-         {#   <script src="{{ asset('legacy/js/plugins.js') }}"></script>
-            <script src="{{ asset('legacy/js/vendor/bootstrap-table/bootstrap-table.min.js') }}"></script>
-            <script src="{{ asset('legacy/js/vendor/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js') }}"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-            <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>#}
-        {% endblock %}
+
+        {# Javascripts #}
+        {% block javascripts %}{% endblock %}
+
     </body>
 </html>

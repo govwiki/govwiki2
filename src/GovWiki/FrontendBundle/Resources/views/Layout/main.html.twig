@@ -18,18 +18,22 @@
 
     <body>
 
+        {# Header #}
         <header class="container">
             {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
         </header>
 
+        {# Main content #}
         <main class="container">
             {% block main %}{% endblock %}
         </main>
 
+        {# Footer #}
         <footer class="container">
             {{ include('GovWikiFrontendBundle:Partial:footer.html.twig') }}
         </footer>
 
+        {# Login modal window #}
         <div id="modal-window" class="modal fade">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

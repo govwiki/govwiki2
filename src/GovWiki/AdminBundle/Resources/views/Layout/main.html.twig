@@ -1,59 +1,124 @@
 {% extends "::base.html.twig" %}
+
 {% block title %}GovWiki Admin{% endblock title %}
-{% block stylesheets %}
-    {{ parent() }}
-    <link href="https://bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">
-    {% stylesheets 'bundles/govwikiadmin/css/*' filter='cssrewrite' %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
-    {% endstylesheets %}
-{% endblock %}
+
 {% block header %}
-<nav class="navbar navbar-default navbar-branded">
-    <div class="container-fluid">
-        <div class="navbar-header" style="width: 100%;">
-            <a class="navbar-brand" href="{{ path('govwiki_admin_main_home') }}"><img src="{{ asset('img/logo_ca.png') }}"></a>
-                <ul class="nav navbar-nav">
-                    {% block enviroment_menu %}
-                        <li{% if app.request.attributes.get('_route') == 'govwiki_admin_user_index' %} class="active"{% endif %}>
-                            <a href="{{ path('govwiki_admin_user_index') }}">Users</a>
-                        </li>
-                    {% endblock enviroment_menu %}
-                </ul>
-                <ul class="nav navbar-nav pull-right">
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <li>
-                            <a href="
-                                {{-
-                                    path('fos_user_security_logout')
-                                -}}">
-                                Logout
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
+
+    <div class="row header">
+
+        {# Logo #}
+        <div class="col-xs-6 col-sm-6 col-md-3">
+
+            <a href="http://californiapolicycenter.org/">
+                <img src="{{ asset('img/logo_ca.png') }}" alt="California Policy Center" class="logo">
+            </a>
+
         </div>
+
+        {# Menu button (hamburger) for mobile devices #}
+        <div class="col-xs-6 col-sm-6 visible-xs visible-sm">
+
+            <button type="button" class="hamburger navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-navigation-collapse" aria-expanded="false">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+        </div>
+
+        {# Navigation #}
+        <nav class="col-xs-12 col-sm-12 col-md-9 text-right">
+
+            <ul class="navigation navbar-collapse collapse" id="bs-navigation-collapse">
+
+                {# Environment menu #}
+                {% block enviroment_menu %}{% endblock enviroment_menu %}
+
+                {# System menu #}
+                <li class="dropdown hidden-xs hidden-sm">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">System<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+
+                        <li>
+                            <a href="{{ path('govwiki_admin_main_home') }}"> Environments </a>
+                        </li>
+
+                        <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_user_index' ? 'active' }}">
+                            <a href="{{ path('govwiki_admin_user_index') }}"> Users </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                {# Visibility: sm or less #}
+                <li class="visible-xs visible-sm">
+                    <a href="{{ path('govwiki_admin_main_home') }}"> Environments </a>
+                </li>
+
+                {# Visibility: sm or less #}
+                <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_user_index' ? 'active' }} visible-xs visible-sm">
+                    <a href="{{ path('govwiki_admin_user_index') }}"> Users </a>
+                </li>
+
+                {# Logout icon #}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li>
+                        <a href="{{- path('fos_user_security_logout') -}}">
+                            <span class="glyphicon glyphicon-log-out"></span>
+                        </a>
+                    </li>
+                {% endif %}
+
+            </ul>
+
+        </nav>
+
     </div>
-</nav>
-<div class="container">
+
+    {# Flash message #}
     {% for flashMessage in app.session.flashbag.get('info') %}
-        <div class="alert alert-info alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            {{ flashMessage }}
+        <div class="container">
+            <div class="alert alert-info alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ flashMessage }}
+            </div>
         </div>
     {% endfor %}
-</div>
+
 {% endblock %}
+
+
+{# Modal #}
 {% block modal %}
-<div id="modal-window" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">Loading...</div>
+    <div id="modal-window" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">Loading...</div>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{ parent() }}
+
+    <link href="https://bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">
+
+    {% stylesheets 'bundles/govwikiadmin/css/main.scss' filter='scss, cssrewrite' %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+
+{% endblock %}
+
+
+{# Javascripts #}
 {% block javascripts %}
     {{ parent() }}
+
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
