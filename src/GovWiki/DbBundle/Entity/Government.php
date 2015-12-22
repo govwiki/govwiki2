@@ -101,6 +101,14 @@ class Government
     /**
      * @var string
      *
+     * @ORM\Column(name="pavement_condition_index_rank", type="integer", nullable=true)
+     * @Groups({"government"})
+     */
+    private $pavementConditionIndexRank;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="type", type="string", length=255, nullable=true)
      * @Groups({"government", "government_list"})
      */
@@ -4097,7 +4105,7 @@ class Government
     /**
      * Get sqMiles
      *
-     * @return float 
+     * @return float
      */
     public function getSqMiles()
     {
@@ -4120,7 +4128,7 @@ class Government
     /**
      * Get numberOfEmployees
      *
-     * @return float 
+     * @return float
      */
     public function getNumberOfEmployees()
     {
@@ -4143,7 +4151,7 @@ class Government
     /**
      * Get unemploymentRate
      *
-     * @return float 
+     * @return float
      */
     public function getUnemploymentRate()
     {
@@ -4166,7 +4174,7 @@ class Government
     /**
      * Get annualSalaryMayor
      *
-     * @return float 
+     * @return float
      */
     public function getAnnualSalaryMayor()
     {
@@ -4189,7 +4197,7 @@ class Government
     /**
      * Get mayorName
      *
-     * @return string 
+     * @return string
      */
     public function getMayorName()
     {
@@ -4212,7 +4220,7 @@ class Government
     /**
      * Get yearsMayorInOffice
      *
-     * @return integer 
+     * @return integer
      */
     public function getYearsMayorInOffice()
     {
@@ -4235,7 +4243,7 @@ class Government
     /**
      * Get currentAssets
      *
-     * @return float 
+     * @return float
      */
     public function getCurrentAssets()
     {
@@ -4258,7 +4266,7 @@ class Government
     /**
      * Get currentLiabilities
      *
-     * @return float 
+     * @return float
      */
     public function getCurrentLiabilities()
     {
@@ -4281,7 +4289,7 @@ class Government
     /**
      * Get longTermDebt
      *
-     * @return float 
+     * @return float
      */
     public function getLongTermDebt()
     {
@@ -4304,7 +4312,7 @@ class Government
     /**
      * Get totalAssets
      *
-     * @return float 
+     * @return float
      */
     public function getTotalAssets()
     {
@@ -4327,7 +4335,7 @@ class Government
     /**
      * Get totalNetPosition
      *
-     * @return float 
+     * @return float
      */
     public function getTotalNetPosition()
     {
@@ -4350,7 +4358,7 @@ class Government
     /**
      * Get totalUnrestrictedNetPosition
      *
-     * @return float 
+     * @return float
      */
     public function getTotalUnrestrictedNetPosition()
     {
@@ -4373,7 +4381,7 @@ class Government
     /**
      * Get generalRevenues
      *
-     * @return float 
+     * @return float
      */
     public function getGeneralRevenues()
     {
@@ -4396,7 +4404,7 @@ class Government
     /**
      * Get changeInNetAssets
      *
-     * @return float 
+     * @return float
      */
     public function getChangeInNetAssets()
     {
@@ -4419,7 +4427,7 @@ class Government
     /**
      * Get generalFundRevenues
      *
-     * @return float 
+     * @return float
      */
     public function getGeneralFundRevenues()
     {
@@ -4442,7 +4450,7 @@ class Government
     /**
      * Get governmentalFundExpenditures
      *
-     * @return float 
+     * @return float
      */
     public function getGovernmentalFundExpenditures()
     {
@@ -4465,7 +4473,7 @@ class Government
     /**
      * Get generalFundSurplus
      *
-     * @return float 
+     * @return float
      */
     public function getGeneralFundSurplus()
     {
@@ -4488,7 +4496,7 @@ class Government
     /**
      * Get netChangeInGeneralFundBalance
      *
-     * @return float 
+     * @return float
      */
     public function getNetChangeInGeneralFundBalance()
     {
@@ -4511,7 +4519,7 @@ class Government
     /**
      * Get generalFundBalance
      *
-     * @return float 
+     * @return float
      */
     public function getGeneralFundBalance()
     {
@@ -4534,7 +4542,7 @@ class Government
     /**
      * Get debtServiceExpendituresAllFunds
      *
-     * @return float 
+     * @return float
      */
     public function getDebtServiceExpendituresAllFunds()
     {
@@ -4557,7 +4565,7 @@ class Government
     /**
      * Get intergovernmentalFundsGf
      *
-     * @return float 
+     * @return float
      */
     public function getIntergovernmentalFundsGf()
     {
@@ -4580,7 +4588,7 @@ class Government
     /**
      * Get governmentFundsOverallBalance
      *
-     * @return float 
+     * @return float
      */
     public function getGovernmentFundsOverallBalance()
     {
@@ -4603,7 +4611,7 @@ class Government
     /**
      * Get netChangeInFundBalanceOverGeneralFundRevenue
      *
-     * @return float 
+     * @return float
      */
     public function getNetChangeInFundBalanceOverGeneralFundRevenue()
     {
@@ -4626,7 +4634,7 @@ class Government
     /**
      * Get netChangeInFundBalanceOverGeneralFundRevenueRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getNetChangeInFundBalanceOverGeneralFundRevenueRank()
     {
@@ -4649,7 +4657,7 @@ class Government
     /**
      * Get generalFundBalanceOverGeneralFundExpenditures
      *
-     * @return float 
+     * @return float
      */
     public function getGeneralFundBalanceOverGeneralFundExpenditures()
     {
@@ -4672,7 +4680,7 @@ class Government
     /**
      * Get generalFundBalanceOverGeneralFundExpendituresRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getGeneralFundBalanceOverGeneralFundExpendituresRank()
     {
@@ -4695,7 +4703,7 @@ class Government
     /**
      * Get currentAssetsPerCapita
      *
-     * @return float 
+     * @return float
      */
     public function getCurrentAssetsPerCapita()
     {
@@ -4718,7 +4726,7 @@ class Government
     /**
      * Get currentAssetsPerCapitaRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getCurrentAssetsPerCapitaRank()
     {
@@ -4741,7 +4749,7 @@ class Government
     /**
      * Get currentAssetsOverCurrentLiabilities
      *
-     * @return float 
+     * @return float
      */
     public function getCurrentAssetsOverCurrentLiabilities()
     {
@@ -4764,7 +4772,7 @@ class Government
     /**
      * Get currentAssetsOverCurrentLiabilitiesRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getCurrentAssetsOverCurrentLiabilitiesRank()
     {
@@ -4787,7 +4795,7 @@ class Government
     /**
      * Get longTermDebtOverCapita
      *
-     * @return float 
+     * @return float
      */
     public function getLongTermDebtOverCapita()
     {
@@ -4810,7 +4818,7 @@ class Government
     /**
      * Get longTermDebtOverCapitaRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getLongTermDebtOverCapitaRank()
     {
@@ -4833,7 +4841,7 @@ class Government
     /**
      * Get generalRevenuesOverLongTermDebt
      *
-     * @return float 
+     * @return float
      */
     public function getGeneralRevenuesOverLongTermDebt()
     {
@@ -4856,7 +4864,7 @@ class Government
     /**
      * Get generalRevenuesOverLongTermDebtRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getGeneralRevenuesOverLongTermDebtRank()
     {
@@ -4879,7 +4887,7 @@ class Government
     /**
      * Get debtServiceExpendituresOverGeneralFundRevenues
      *
-     * @return float 
+     * @return float
      */
     public function getDebtServiceExpendituresOverGeneralFundRevenues()
     {
@@ -4902,7 +4910,7 @@ class Government
     /**
      * Get debtServiceExpendituresOverGeneralFundRevenuesRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getDebtServiceExpendituresOverGeneralFundRevenuesRank()
     {
@@ -4925,7 +4933,7 @@ class Government
     /**
      * Get generalFundSurplusOverRevenues
      *
-     * @return float 
+     * @return float
      */
     public function getGeneralFundSurplusOverRevenues()
     {
@@ -4948,7 +4956,7 @@ class Government
     /**
      * Get generalFundSurplusOverRevenuesRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getGeneralFundSurplusOverRevenuesRank()
     {
@@ -4971,7 +4979,7 @@ class Government
     /**
      * Get changeInNetAssetsOverGeneralFundRevenues
      *
-     * @return float 
+     * @return float
      */
     public function getChangeInNetAssetsOverGeneralFundRevenues()
     {
@@ -4994,7 +5002,7 @@ class Government
     /**
      * Get changeInNetAssetsOverGeneralFundRevenuesRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getChangeInNetAssetsOverGeneralFundRevenuesRank()
     {
@@ -5017,7 +5025,7 @@ class Government
     /**
      * Get governmentFundsOverallBalancePerCapita
      *
-     * @return float 
+     * @return float
      */
     public function getGovernmentFundsOverallBalancePerCapita()
     {
@@ -5040,7 +5048,7 @@ class Government
     /**
      * Get governmentFundsOverallBalancePerCapitaRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getGovernmentFundsOverallBalancePerCapitaRank()
     {
@@ -5063,7 +5071,7 @@ class Government
     /**
      * Get overallGovernmentalFundBalanceOverLongTermLiabs
      *
-     * @return float 
+     * @return float
      */
     public function getOverallGovernmentalFundBalanceOverLongTermLiabs()
     {
@@ -5086,7 +5094,7 @@ class Government
     /**
      * Get overallGovernmentalFundBalanceOverLongTermLiabsRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getOverallGovernmentalFundBalanceOverLongTermLiabsRank()
     {
@@ -5109,7 +5117,7 @@ class Government
     /**
      * Get intergovermentalRevenuesOverGeneralFundRevenues
      *
-     * @return float 
+     * @return float
      */
     public function getIntergovermentalRevenuesOverGeneralFundRevenues()
     {
@@ -5132,7 +5140,7 @@ class Government
     /**
      * Get intergovermentalRevenuesOverGeneralFundRevenuesRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getIntergovermentalRevenuesOverGeneralFundRevenuesRank()
     {
@@ -5155,7 +5163,7 @@ class Government
     /**
      * Get totalUnrestrictedNetPositionOverTotalAssets
      *
-     * @return float 
+     * @return float
      */
     public function getTotalUnrestrictedNetPositionOverTotalAssets()
     {
@@ -5178,7 +5186,7 @@ class Government
     /**
      * Get totalUnrestrictedNetPositionOverTotalAssetsRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getTotalUnrestrictedNetPositionOverTotalAssetsRank()
     {
@@ -5201,7 +5209,7 @@ class Government
     /**
      * Get overallWeightedIndexRank
      *
-     * @return integer 
+     * @return integer
      */
     public function getOverallWeightedIndexRank()
     {
@@ -5224,10 +5232,26 @@ class Government
     /**
      * Get legendOverallRanking
      *
-     * @return string 
+     * @return string
      */
     public function getLegendOverallRanking()
     {
         return $this->legendOverallRanking;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPavementConditionIndexRank()
+    {
+        return $this->pavementConditionIndexRank;
+    }
+
+    /**
+     * @param string $pavementConditionIndexRank
+     */
+    public function setPavementConditionIndexRank($pavementConditionIndexRank)
+    {
+        $this->pavementConditionIndexRank = $pavementConditionIndexRank;
     }
 }

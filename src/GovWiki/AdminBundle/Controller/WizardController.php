@@ -183,6 +183,10 @@ class WizardController extends AbstractGovWikiAdminController
         $itemQueueId = $this->getEnvironmentEntity()->getMap()
             ->getItemQueueId();
 
+        if (null === $itemQueueId) {
+            return $this->nextStep();
+        }
+
         return [
             'itemQueueId' => $itemQueueId,
             'url' => $this->generateUrl('govwiki_admin_wizard_complete'),
@@ -234,6 +238,7 @@ class WizardController extends AbstractGovWikiAdminController
             $environment = $this->getEnvironmentEntity();
             $environment->setStyle($style);
             $this->storeEnvironmentEntity($environment);
+
             return $this->nextStep();
         }
 

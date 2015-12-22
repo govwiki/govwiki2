@@ -36,7 +36,7 @@ class CsvTransformer implements FileTransformerInterface
          * Assume that first row contain column names according to rfc4180.2.3
          */
         $line = $this->lineFromFileGenerator($filePath);
-        $header = explode(',', $line->current());
+        $header = explode(';', $line->current());
         $line->next();
 
         /*
@@ -46,7 +46,7 @@ class CsvTransformer implements FileTransformerInterface
         for ($current = $line->current(); $current !== null;
              $current = $line->current()
         ) {
-            $result[] = array_combine($header, explode(',', $current));
+            $result[] = array_combine($header, explode(';', $current));
             $line->next();
         }
 
@@ -65,10 +65,10 @@ class CsvTransformer implements FileTransformerInterface
         /*
          * From header line and put into result.
          */
-        $lines = [ implode(',', array_keys($data[0])) ];
+        $lines = [ implode(';', array_keys($data[0])) . "\n" ];
 
         foreach ($data as $row) {
-            $lines[] = implode(',', array_values($row));
+            $lines[] = implode(';', array_values($row)) . "\n";
         }
 
         file_put_contents($filePath, $lines);

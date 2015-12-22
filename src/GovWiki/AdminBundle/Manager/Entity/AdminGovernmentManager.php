@@ -64,15 +64,14 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
     /**
      * {@inheritdoc}
      */
-    public function getAll(array $columns = null)
+    public function getAll(array $columns = null, $offset = 0, $limit = null)
     {
+        $columns = array_merge($columns, [ 'latitude', 'longitude' ]);
         if (null === $columns) {
             $columns = [
                 'name',
                 'type',
                 'altType',
-                'latitude',
-                'longitude',
             ];
 
             /** @var FormatRepository $repository */
@@ -84,6 +83,6 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
             }
         }
 
-        return parent::getAll($columns);
+        return parent::getAll($columns, $offset, $limit);
     }
 }

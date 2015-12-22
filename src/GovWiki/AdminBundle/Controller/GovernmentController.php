@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\GovWikiDbServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
@@ -183,6 +184,29 @@ class GovernmentController extends AbstractGovWikiAdminController
                     $file->getPath() .'/'. $file->getFilename(),
                     $manager->getTransformer($form->getData()['type'])
                 );
+
+            /*
+             * Send to CartoDB;
+             */
+            $environmentManager = $this->adminEnvironmentManager();
+
+            $environment = $environmentManager->getEnvironment();
+            $filePath = $this->getParameter('kernel.logs_dir').'/'.
+                $environment.'.json';
+
+            $transformerManager = $this
+                ->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
+
+            $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
+                ->export(
+                    $filePath,
+                    $transformerManager->getTransformer('geo_json'),
+                    [ 'id', 'altTypeSlug', 'slug', 'latitude', 'longitude' ]
+                );
+
+            $this->get(CartoDbServices::CARTO_DB_API)
+                ->dropDataset($environment)
+                ->importDataset($filePath);
         }
 
         return [
@@ -201,7 +225,7 @@ class GovernmentController extends AbstractGovWikiAdminController
     public function exportAction(Request $request)
     {
         $manager = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
-        $data = [ 'type' => 'geo_json' ];
+        $data = [ 'type' => 'geo_json', 'offset' => 0, 'limit' => 500 ];
 
         /*
          * Build type choices;
@@ -216,6 +240,8 @@ class GovernmentController extends AbstractGovWikiAdminController
          */
         $form = $this->createFormBuilder($data)
             ->add('type', 'choice', [ 'choices' => $choices ])
+            ->add('offset', 'integer')
+            ->add('limit', 'integer')
             ->getForm();
         $form->handleRequest($request);
 
@@ -227,17 +253,28 @@ class GovernmentController extends AbstractGovWikiAdminController
             $manager = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
             $filePath = $this->getParameter('kernel.logs_dir') . '/' . $filename;
 
+            $formats = $this->adminEnvironmentManager()->getFormats(true);
+            $columns = [];
+            foreach ($formats as $format) {
+                $columns[] = $format['field'];
+                if ($format['ranked']) {
+                    $columns[] = $format['field']. 'Rank';
+                }
+            }
+
             $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
                 ->export(
                     $filePath,
-                    $manager->getTransformer($selectedType)
+                    $manager->getTransformer($selectedType),
+                    $columns,
+                    $form->getData()['limit'],
+                    $form->getData()['offset']
                 );
 
 
             //$response = new BinaryFileResponse($filePath);
             $response = new Response(file_get_contents($filePath));
             $response->headers->set('Cache-Control', 'public');
-            $response->headers->set('Content-Type', 'text/json');
             $response->headers->set(
                 'Content-Disposition',
                 "attachment; filename={$filename}"

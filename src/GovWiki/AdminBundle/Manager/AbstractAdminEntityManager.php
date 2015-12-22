@@ -143,7 +143,7 @@ abstract class AbstractAdminEntityManager implements
     /**
      * @return Environment
      */
-    protected function getEnvironmentReference()
+    public function getEnvironmentReference()
     {
         return $this->em->getReference(
             'GovWiki\DbBundle\Entity\Environment',
@@ -157,7 +157,7 @@ abstract class AbstractAdminEntityManager implements
      *
      * @return array
      */
-    public function getAll(array $columns = null)
+    public function getAll(array $columns = null, $offset = 0, $limit = null)
     {
         /** @var EntityRepository $repository */
         $repository = $this->getRepository();
@@ -177,12 +177,16 @@ abstract class AbstractAdminEntityManager implements
 
         $expr = $qb->expr();
 
+        if (null !== $limit) {
+            $qb->setMaxResults($limit);
+        }
+
         return $qb
-            ->addSelect('Environment.id AS environment')
             ->join($alias.'.environment', 'Environment')
             ->where(
                 $expr->eq('Environment.slug', $expr->literal($this->environment))
             )
+            ->setFirstResult($offset)
             ->getQuery()
             ->getArrayResult();
     }

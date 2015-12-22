@@ -2,9 +2,9 @@
 
 namespace GovWiki\DbBundle\Importer;
 
+use Doctrine\DBAL\Connection;
 use GovWiki\AdminBundle\Exception\FileTransformerException;
 use GovWiki\AdminBundle\Manager\AbstractAdminEntityManager;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\AdminBundle\Transformer\FileTransformerInterface;
 use GovWiki\DbBundle\Exception\InvalidFieldNameException;
 
@@ -15,17 +15,23 @@ use GovWiki\DbBundle\Exception\InvalidFieldNameException;
 abstract class AbstractImporter
 {
     /**
-     * @var AdminEnvironmentManager
+     * @var AbstractAdminEntityManager
      */
     protected $manager;
+
+    /**
+     * @var \Doctrine\DBAL\Connection
+     */
+    protected $con;
 
     /**
      * @param AbstractAdminEntityManager $manager A AbstractAdminEntityManager
      *                                            instance.
      */
-    public function __construct(AbstractAdminEntityManager $manager)
+    public function __construct(Connection $con, AbstractAdminEntityManager $manager)
     {
         $this->manager = $manager;
+        $this->con = $con;
     }
 
     /**
@@ -57,6 +63,8 @@ abstract class AbstractImporter
     abstract public function export(
         $filePath,
         FileTransformerInterface $transformer,
-        array $columns = null
+        array $columns = null,
+        $limit,
+        $offset
     );
 }

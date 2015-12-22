@@ -3,8 +3,6 @@
 namespace GovWiki\DbBundle\Importer;
 
 use GovWiki\AdminBundle\Transformer\FileTransformerInterface;
-use GovWiki\DbBundle\Entity\Government;
-use GovWiki\DbBundle\Exception\InvalidFieldNameException;
 
 /**
  * Class GovernmentImporter
@@ -20,31 +18,28 @@ class GovernmentImporter extends AbstractImporter
         FileTransformerInterface $transformer
     ) {
         $data = $transformer->transform($filePath);
-        foreach ($data as $row) {
-            /** @var Government $government */
-            $government = $this->manager->create();
+        $id = $this->manager->getEnvironmentReference()->getId();
 
-            foreach ($row as $filed => $value) {
-                $method = 'set'. ucfirst($filed);
-                if (method_exists($government, $method)) {
-                    call_user_func(
-                        [
-                            $government,
-                            $method,
-                        ],
-                        $value
-                    );
-                } else {
-                    throw new InvalidFieldNameException(
-                        $filed,
-                        'government'
-                    );
-                }
+        $insertStmts = [];
+        $columns = [ 'environment_id' ];
+        foreach (array_keys($data[0]) as $field) {
+            $str = strtolower(preg_replace('|([A-Z])|', '_$1', $field));
+            $str = preg_replace('|(\d+)|', '_$1', $str);
+            $columns[] = $str;
+        }
+
+        foreach ($data as $row) {
+            foreach ($row as &$value) {
+                $value = (empty($value)) ? 'null' : '"'. $value .'"';
             }
 
-            $this->manager->update($government, false);
+            $insertStmts[] = '(' . $id . ', '. implode(',', $row). ')';
         }
-        $this->manager->flush();
+
+        $this->con->exec('
+            insert into governments ('. implode(',', $columns) .') values
+            '. implode(',', $insertStmts) .'
+        ');
     }
 
     /**
@@ -53,9 +48,11 @@ class GovernmentImporter extends AbstractImporter
     public function export(
         $filePath,
         FileTransformerInterface $transformer,
-        array $columns = null
+        array $columns = null,
+        $limit = 0,
+        $offset = null
     ) {
-        $data = $this->manager->getAll($columns);
+        $data = $this->manager->getAll($columns, $offset, $limit);
         $transformer->reverseTransform($filePath, $data);
     }
 }

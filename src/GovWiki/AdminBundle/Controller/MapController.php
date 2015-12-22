@@ -10,6 +10,7 @@ use GovWiki\DbBundle\Form\MapType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class MapController
@@ -20,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 class MapController extends AbstractGovWikiAdminController
 {
     /**
-     * @Configuration\Route("/")
+     * @Configuration\Route("/edit")
      * @Configuration\Template()
      *
      * @param Request $request A Request instance.
@@ -35,9 +36,7 @@ class MapController extends AbstractGovWikiAdminController
         /** @var Map $map */
         $map = $manager->getMap();
         if (null === $map) {
-            return $this->forward('GovWikiAdminBundle:Map:new', [
-                'environment' => $manager->getEnvironment(),
-            ]);
+            throw new NotFoundHttpException();
         }
 
         $form = $this->createForm(new MapType(), $map);

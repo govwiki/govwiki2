@@ -142,8 +142,8 @@ class MainController extends AbstractGovWikiAdminController
         $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
             ->export(
                 $filePath,
-                [ 'id', 'altTypeSlug', 'slug', 'latitude', 'longitude' ],
-                $transformerManager->getTransformer('geo_json')
+                $transformerManager->getTransformer('geo_json'),
+                [ 'id', 'altTypeSlug', 'slug', 'latitude', 'longitude' ]
             );
 
         $this->get(CartoDbServices::CARTO_DB_API)

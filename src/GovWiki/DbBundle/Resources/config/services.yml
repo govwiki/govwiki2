@@ -6,6 +6,7 @@ services:
 
     govwiki_db.importer.abstract:
         class: GovWiki\DbBundle\Importer\AbstractImporter
+        arguments: [@database_connection]
         abstract: true
 
     govwiki_db.importer.government:
