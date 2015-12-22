@@ -16,7 +16,10 @@ $(function() {
     window.gw.map = JSON.parse(window.gw.map);
     window.gw.slug = window.gw.map.environment.slug;
 
-    window.gw.map.username = 'joffemd';
+    /*
+        Change!!!!
+     */
+    window.gw.map.vizUrl = 'https://shemindmitry.cartodb.com/api/v2/viz/baa76230-a803-11e5-85a6-0ecd1babdde5/viz.json';
 
     /**
      * Handle possible errors
@@ -88,11 +91,6 @@ $(function() {
 
             });
 
-            // TODO: Hardcoded, must be replaced
-            initCityLayer();
-            initSchoolLayer();
-            initSpecialLayer();
-
             /**
              * Show map, legend, hide loader
              */
@@ -126,14 +124,9 @@ $(function() {
              * Tooltip work with 3.11-13 version, 3.15 is buggy
              */
             function initCityLayer() {
-
-                cityLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'City'",
-                    cartocss: "#layer { marker-fill: red; }", // TODO: Hardcoded
-                    interactivity: 'cartodb_id, slug'
-                });
-
-                subLayers.push(cityLayer);
+                cityLayer = subLayers[1];
+                cityLayer.set({ 'interactivity': ['cartodb_id', 'slug'] }); // alias to template
+                cityLayer.setSQL("SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'City'");
 
                 cityTooltip = new cdb.geo.ui.Tooltip({
                     layer: cityLayer,
@@ -150,14 +143,9 @@ $(function() {
              * Tooltip work with 3.11-13 version, 3.15 is buggy
              */
             function initSchoolLayer() {
-
-                schoolLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'School_District'",
-                    cartocss: "#layer { marker-fill: blue; }", // TODO: Hardcoded
-                    interactivity: 'cartodb_id, slug'
-                });
-
-                subLayers.push(schoolLayer);
+                schoolLayer = subLayers[2];
+                schoolLayer.set({ 'interactivity': ['cartodb_id', 'slug'] }); // alias to template
+                schoolLayer.setSQL("SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'School_District'");
 
                 schoolTooltip = new cdb.geo.ui.Tooltip({
                     layer: schoolLayer,
@@ -174,14 +162,9 @@ $(function() {
              * Tooltip work with 3.11-13 version, 3.15 is buggy
              */
             function initSpecialLayer() {
-
-                specialLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'Special_District'",
-                    cartocss: "#layer { marker-fill: purple; }", // TODO: Hardcoded
-                    interactivity: 'cartodb_id, slug'
-                });
-
-                subLayers.push(specialLayer);
+                specialLayer = subLayers[3];
+                specialLayer.set({ 'interactivity': ['cartodb_id', 'slug'] }); // alias to template
+                specialLayer.setSQL("SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'Special_District'");
 
                 specialTooltip = new cdb.geo.ui.Tooltip({
                     layer: specialLayer,
