@@ -6200,11 +6200,15 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
 var styles = JSON.parse(window.gw.styles);
 
 styles.forEach(function(style) {
-
     parseStyles(style);
-
 });
 
+/**
+ * Parse and applying styles
+ * Based on BemJSON object
+ *
+ * @param {BemJSON} element
+ */
 function parseStyles(element) {
 
     var block = element.block || element.elem;
@@ -6250,6 +6254,9 @@ function parseStyles(element) {
 
     }
 
+    /**
+     * Recursion
+     */
     if (content instanceof Array) {
 
         for (var i = 0; i < content.length; i++) {
@@ -6396,11 +6403,6 @@ $(function() {
 
     window.gw.map = JSON.parse(window.gw.map);
     window.gw.slug = window.gw.map.environment.slug;
-
-    /*
-        Change!!!!
-     */
-    window.gw.map.vizUrl = 'https://shemindmitry.cartodb.com/api/v2/viz/baa76230-a803-11e5-85a6-0ecd1babdde5/viz.json';
 
     /**
      * Handle possible errors

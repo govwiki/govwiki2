@@ -89,8 +89,9 @@ swiftmailer:
 
 # KnpPaginatorBundle Configuration
 knp_paginator:
+    page_range: 3
     template:
-        pagination: KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig
+        pagination: GovWikiFrontendBundle:Pagination:pagination.html.twig
 
 # StofDoctrineExtension Configuration
 stof_doctrine_extensions:

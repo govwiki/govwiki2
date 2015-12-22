@@ -2,11 +2,15 @@
 var styles = JSON.parse(window.gw.styles);
 
 styles.forEach(function(style) {
-
     parseStyles(style);
-
 });
 
+/**
+ * Parse and applying styles
+ * Based on BemJSON object
+ *
+ * @param {BemJSON} element
+ */
 function parseStyles(element) {
 
     var block = element.block || element.elem;
@@ -52,6 +56,9 @@ function parseStyles(element) {
 
     }
 
+    /**
+     * Recursion
+     */
     if (content instanceof Array) {
 
         for (var i = 0; i < content.length; i++) {

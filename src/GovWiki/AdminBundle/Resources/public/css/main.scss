@@ -1,5 +1,6 @@
 
 @import "variables";
+@import "textHelper";
 
 @import "partials/head/head";
 
@@ -24,6 +25,32 @@
 .label-like {
    font-weight: 700;
 }
+
+@mixin mobile-controls() {
+
+   @media (max-width: $screen-sm-max) {
+      .controls {
+         margin-top: 0;
+         margin-bottom: 15px;
+
+         &.btn-group {
+            margin-top: 0;
+            margin-bottom: 15px;
+         }
+      }
+   }
+
+}
+
+.controls {
+   margin: 23px auto;
+
+   &.btn-group {
+      margin-top: 23px;
+   }
+}
+
+@include mobile-controls();
 
 /* Temporary styles (end) */
 

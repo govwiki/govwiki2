@@ -16,11 +16,6 @@ $(function() {
     window.gw.map = JSON.parse(window.gw.map);
     window.gw.slug = window.gw.map.environment.slug;
 
-    /*
-        Change!!!!
-     */
-    window.gw.map.vizUrl = 'https://shemindmitry.cartodb.com/api/v2/viz/baa76230-a803-11e5-85a6-0ecd1babdde5/viz.json';
-
     /**
      * Handle possible errors
      */

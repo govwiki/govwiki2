@@ -49,7 +49,9 @@ class GovernmentController extends AbstractGovWikiAdminController
             50
         );
 
-        return [ 'governments' => $governments ];
+        return [
+            'governments' => $governments
+        ];
     }
 
     /**
