@@ -4,7 +4,6 @@ namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
-use GovWiki\AdminBundle\Manager\AdminStyleManager;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Form\EnvironmentType;
 use GovWiki\DbBundle\GovWikiDbServices;
@@ -49,42 +48,6 @@ class MainController extends AbstractGovWikiAdminController
             self::ENVIRONMENTS_LIMIT
         );
         return [ 'environments' => $environments ];
-    }
-
-    /**
-     * Create new environment. Show and process environment form. After success
-     * processing of form redirect to map creation.
-     *
-     * @Configuration\Route("/new")
-     * @Configuration\Template()
-     * @Configuration\Security("is_granted('ROLE_ADMIN')")
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function newAction(Request $request)
-    {
-        $environment = new Environment();
-        $form = $this->createForm(new EnvironmentType(), $environment);
-        $form->handleRequest($request);
-
-        if ($form->isValid() && $form->isSubmitted()) {
-            $em = $this->getDoctrine()->getManager();
-            $environment->setStyle(
-                AdminStyleManager::getDefaultStyles()
-            );
-            $em->persist($environment);
-            $em->flush();
-
-            /*
-             * Forward to map controller in order to create new map.
-             */
-            return $this->forward('GovWikiAdminBundle:Map:new', [
-                'environment' => $environment,
-            ]);
-        }
-        return [ 'form' => $form->createView() ];
     }
 
     /**
@@ -139,7 +102,10 @@ class MainController extends AbstractGovWikiAdminController
         $form = $manager->createForm();
 
         $form->handleRequest($request);
-        $manager->processForm($form);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $styles = $manager->processForm($form);
+            $this->adminEnvironmentManager()->setStyle($styles);
+        }
 
         return [ 'form' => $form->createView() ];
     }

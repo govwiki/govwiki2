@@ -2,8 +2,10 @@
 
 namespace GovWiki\ApiBundle\Controller\V1;
 
+use CartoDbBundle\CartoDbServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class MapController
@@ -38,5 +40,18 @@ class MapController extends AbstractGovWikiApiController
         }
 
         return $this->successResponse($map);
+    }
+
+    /**
+     * @Configuration\Route("/check", methods={"GET"})
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return JsonResponse
+     */
+    public function checkAction(Request $request)
+    {
+        return new JsonResponse($this->get(CartoDbServices::CARTO_DB_API)
+            ->checkImportProcess($request->query->get('item_queue_id')));
     }
 }

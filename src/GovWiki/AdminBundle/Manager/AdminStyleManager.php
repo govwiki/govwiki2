@@ -5,6 +5,7 @@ namespace GovWiki\AdminBundle\Manager;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Mange styles of environments.
@@ -24,21 +25,30 @@ class AdminStyleManager
     private $manager;
 
     /**
+     * @var string
+     */
+    private $uploadDirectory;
+
+    /**
      * @var array
      */
     private $currentData = [];
 
     /**
-     * @param FormFactoryInterface    $factory A FormFactoryInterface instance.
-     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
-     *                                         instance.
+     * @param FormFactoryInterface    $factory         A FormFactoryInterface
+     *                                                 instance.
+     * @param AdminEnvironmentManager $manager         A AdminEnvironmentManager
+     *                                                 instance.
+     * @param string                  $uploadDirectory Upload directory.
      */
     public function __construct(
         FormFactoryInterface $factory,
-        AdminEnvironmentManager $manager
+        AdminEnvironmentManager $manager,
+        $uploadDirectory
     ) {
         $this->factory = $factory;
         $this->manager = $manager;
+        $this->uploadDirectory = $uploadDirectory;
     }
 
     /**
@@ -48,7 +58,7 @@ class AdminStyleManager
      */
     public function createForm()
     {
-        $styles = $this->manager->getStyle();
+        $styles = [];// $this->manager->getStyle();
         if (count($styles) <= 0) {
             $styles = self::getDefaultStyles();
         }
@@ -61,14 +71,10 @@ class AdminStyleManager
      *
      * @param FormInterface $form A FormInterface instance.
      *
-     * @return void
+     * @return array
      */
     public function processForm(FormInterface $form)
     {
-        if (!$form->isSubmitted() || !$form->isValid()) {
-            return;
-        }
-
         $styles = $this->manager->getStyle();
         if (count($styles) <= 0) {
             $styles = self::getDefaultStyles();
@@ -83,10 +89,26 @@ class AdminStyleManager
         foreach ($data as $field => $value) {
             $elements = explode('-', $field);
             $path = $this->generatePath($styles, $elements);
+
+            if ($value instanceof UploadedFile) {
+                /*
+                 * Move uploaded file to upload directory.
+                 */
+                $filename = $this->manager->getSlug() .'.'.
+                    $value->getClientOriginalExtension();
+
+                $value->move(
+                    $this->uploadDirectory,
+                    $filename
+                );
+
+                $value = '/img/'. $filename;
+            }
+
             eval('$styles'.$path.' = \''. $value.'\';');
         }
 
-        $this->manager->setStyle($styles);
+        return $styles;
     }
 
     /**
@@ -147,7 +169,19 @@ class AdminStyleManager
                     if (null === $nextName) {
                         return "[$idx]['{$nextType}']";
                     }
-                    return "[$idx]['{$nextType}']['$nextName']";
+
+                    /*
+                     * Get mod name and index.
+                     */
+                    $components = explode('_', $nextName);
+                    $index = $components[1];
+                    $name = $components[0];
+                    if (count($components) === 3) {
+                        $index = $components[2];
+                        $name = $components[1];
+                    }
+
+                    return "[$idx]['{$nextType}'][{$index}]['$name']";
                 }
 
             }
@@ -171,12 +205,12 @@ class AdminStyleManager
                         'block' => 'header',
                         'mods' => [
                             ['backgroundColor' => '#0B4D70'],
-                            ['color' => '#0B4D70']
+                            ['color' => '#0B4D70'],
                         ],
                         'content' => [
                             [
                                 'elem' => 'logo',
-                                'attrs' => [ 'src' => 'http://placehold.it/244x60' ],
+                                'attrs' => [ ['src' => 'http://placehold.it/244x60'] ],
                             ],
                             [
                                 'block' => 'menu',
@@ -185,9 +219,15 @@ class AdminStyleManager
                                         'elem' => 'link',
                                         'mods' => [
                                             ['color' => '#A8D2F2'],
-                                            ['color' => '#FFFFFF', 'pseudo' => 'hover'],
+                                            [
+                                                'color' => '#FFFFFF',
+                                                'pseudo' => 'hover',
+                                            ],
                                             ['backgroundColor' => '#A8D2F2'],
-                                            ['backgroundColor' => '#FFFFFF', 'pseudo' => 'hover'],
+                                            [
+                                                'backgroundColor' => '#FFFFFF',
+                                                'pseudo' => 'hover',
+                                            ],
                                         ],
                                     ],
                                 ],
@@ -196,7 +236,7 @@ class AdminStyleManager
                     ],
                     [
                         'block' => 'footer',
-                        'mods' => [ 'color' => '#0B4D70' ],
+                        'mods' => [ ['color' => '#0B4D70'] ],
                         'content' => [
                             [
                                 'block' => 'copyright',
@@ -265,25 +305,38 @@ class AdminStyleManager
     /**
      * Build form field for modifications.
      *
-     * @param FormBuilderInterface $form   A FormBuilderInterface instance.
-     * @param array                $mods   Array of modifications.
-     * @param string               $prefix Current processing block or element
-     *                                     name.
+     * @param FormBuilderInterface $builder A FormBuilderInterface instance.
+     * @param array                $mods    Array of modifications.
+     * @param string               $prefix  Current processing block or element
+     *                                      name.
      *
      * @return void
      */
-    private function buildMods(FormBuilderInterface $form, array $mods, $prefix)
+    private function buildMods(FormBuilderInterface $builder, array $mods, $prefix)
     {
-        foreach ($mods as $parameter => $currentVale) {
-             $name = "{$prefix}-mods_{$parameter}";
+        foreach ($mods as $index => $mod) {
+            /*
+             * Assume what first element of array is css attribute.
+             */
+            $attrName = array_keys($mod)[0];
+            $pseudo = '';
+            if (array_key_exists('pseudo', $mod)) {
+                $pseudo = $mod['pseudo'] . '_';
+            }
+
+            $name = "{$prefix}-mods_{$pseudo}{$attrName}_{$index}";
             $type = null;
-            if (strpos($name, 'color') !== false) {
+            if (stripos($name, 'color') !== false) {
                 $type = 'color';
             }
-            $form->add($name, $type, [
-                'label' => $this->generateLabel($prefix, $parameter),
+            $builder->add($name, $type, [
+                'label' => $this->generateLabel($prefix, $pseudo.$attrName),
             ]);
-            $this->currentData[$name] = $currentVale;
+
+            /*
+             * Store current value.
+             */
+            $this->currentData[$name] = $mod[$attrName];
         }
     }
 
@@ -412,6 +465,35 @@ class AdminStyleManager
                 $style['mods'],
                 $prefix
             );
+        }
+
+        /*
+         * Render element attributes.
+         */
+        if (array_key_exists('attrs', $style)) {
+            foreach ($style['attrs'] as $index => $attr) {
+                /*
+                 * Assume what first element of array is tag attribute.
+                 */
+                $attrName = array_keys($attr)[0];
+
+                $name = "{$prefix}-attrs_{$attrName}_{$index}";
+                $type = null;
+                if (strpos($name, 'src') !== false) {
+                    $type = 'file';
+                }
+                $builder->add($name, $type, [
+                    'label' => $this->generateLabel($prefix, $attrName),
+                    'required' => false,
+                ]);
+
+                /*
+                 * Store current value.
+                 */
+                if ('file' !== $type) {
+                    $this->currentData[$name] = $attr[$attrName];
+                }
+            }
         }
 
         /*

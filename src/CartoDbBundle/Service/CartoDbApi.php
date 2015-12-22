@@ -74,7 +74,7 @@ class CartoDbApi
     {
         $response = $this->makeRequest("/v1/imports/{$itemQueueId}");
 
-        if (array_key_exists('success', $response)) {
+        if ($response && array_key_exists('success', $response)) {
             return $response;
         }
 

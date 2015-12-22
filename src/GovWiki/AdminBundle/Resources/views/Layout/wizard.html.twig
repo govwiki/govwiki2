@@ -1,0 +1,39 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% block title %}{{ parent() }} - {{ block('panel_title') }}{% endblock title %}
+
+{% block body %}
+    <div class="container">
+
+        {# Panel #}
+        <div class="panel panel-success">
+
+            {# Header #}
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    {%- block panel_title -%}
+                    {%- endblock panel_title -%}
+                </h3>
+            </div>
+
+            {# Body #}
+            <div class="panel-body">
+
+                {# Breadcrumb #}
+                {% if block('breadcrumb') %}
+                    <ol class="breadcrumb">
+                        {% block breadcrumb %}
+                        {% endblock breadcrumb %}
+                    </ol>
+                {% endif %}
+
+
+                {% block content %}
+                {% endblock content %}
+
+            </div>
+
+        </div>
+
+    </div>
+{% endblock body %}

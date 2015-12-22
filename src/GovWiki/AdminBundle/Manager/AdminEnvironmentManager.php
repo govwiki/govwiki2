@@ -72,12 +72,16 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @param string $environment Environment name.
+     * @param string|Environment $environment A Environment instance or slug.
      *
      * @return AdminEnvironmentManager
      */
     public function changeEnvironment($environment)
     {
+        if ($environment instanceof Environment) {
+            $environment = $environment->getSlug();
+        }
+
         $this->session->set(self::ENVIRONMENT_PARAMETER, $environment);
         $this->environment = $environment;
 
@@ -113,6 +117,14 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     public function getEnvironment()
     {
         return $this->environment;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlug()
+    {
+        return Environment::slugify($this->environment);
     }
 
     /**

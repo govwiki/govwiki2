@@ -1,0 +1,36 @@
+{% extends "GovWikiAdminBundle:Layout:wizard.html.twig" %}
+
+{% block panel_title %}
+    Importing map
+{% endblock panel_title %}
+
+{% block breadcrumb %}
+    <li><a href="{{ path('step1') }}">Setup environment</a></li>
+    <li><a href="{{ path('step2') }}">Setup map</a></li>
+    <li class="active">Importing map</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <p class="text-center">Map importing ...</p>
+{% endblock content %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(function(){
+            /*
+                Check map importing process.
+             */
+            var check = setInterval(function() {
+                $.ajax({
+                    url: '/api/v1/map/check?item_queue_id={{ itemQueueId }}'
+                }).done(function(data) {
+                    if (data && (data.success === true) && (data.state === 'complete')) {
+                        clearInterval(check);
+                        window.location = '{{ url }}';
+                    }
+                });
+            }, 2000);
+        });
+    </script>
+{% endblock javascripts %}

@@ -86,7 +86,7 @@ class Environment
      * @ORM\OneToOne(
      *  targetEntity="Map",
      *  inversedBy="environment",
-     *  cascade={"remove"}
+     *  cascade={"persist", "remove"}
      *)
      * @ORM\JoinColumn(name="map_id")
      */

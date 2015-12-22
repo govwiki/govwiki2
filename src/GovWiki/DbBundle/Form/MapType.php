@@ -30,8 +30,10 @@ class MapType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        if (! $this->isNew) {
+            $builder->add('vizUrl', 'url');
+        }
         $builder
-            ->add('vizUrl', 'url')
             ->add('centerLatitude', 'number')
             ->add('centerLongitude', 'number')
             ->add('zoom', 'integer');

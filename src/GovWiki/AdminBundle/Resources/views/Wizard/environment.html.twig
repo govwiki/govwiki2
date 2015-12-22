@@ -1,0 +1,23 @@
+{% extends "GovWikiAdminBundle:Layout:wizard.html.twig" %}
+
+{% block panel_title %}
+    Environment
+{% endblock panel_title %}
+
+{% block breadcrumb %}
+    <li class="active">New environment</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <h3>New environment</h3>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <div class="btn-group pull-left">
+        <button class="btn btn-primary" type="submit">Next</button>
+    </div>
+    <a class="pull-right btn btn-danger" href="{{ path('govwiki_admin_wizard_cancel') }}">
+        Cancel
+    </a>
+    {{ form_end(form) }}
+{% endblock content %}

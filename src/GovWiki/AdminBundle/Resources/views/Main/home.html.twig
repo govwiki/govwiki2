@@ -60,7 +60,7 @@
                             {{ knp_pagination_render(environments) }}
 
                             {% if is_granted('ROLE_ADMIN') %}
-                                <a class="btn btn-primary" href="{{ path('govwiki_admin_main_new') }}">
+                                <a class="btn btn-primary" href="{{ path('govwiki_admin_wizard_start') }}">
                                     Add environment
                                 </a>
                             {% endif %}

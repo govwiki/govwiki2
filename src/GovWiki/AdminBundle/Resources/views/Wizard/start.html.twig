@@ -1,0 +1,14 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% block panel_title %}
+    Question
+{% endblock panel_title %}
+
+{% block body %}
+    It seems like the last wizard not finished yet.
+    Сontinue it?
+    <form method="post">
+        <button name="continue" class="btn btn-primary" type="submit">Continue</button>
+        <button name="new" class="btn btn-primary" type="submit">Start new</button>
+    </form>
+{% endblock body %}
