@@ -114,8 +114,3 @@ jms_serializer:
 
 # IvoryCkEditorBundle Configuration
 ivory_ck_editor: ~
-
-# CartoDbBundle Configuration
-carto_db:
-    api_key: %carto_db.api_key%
-    account_name: %carto_db.account%

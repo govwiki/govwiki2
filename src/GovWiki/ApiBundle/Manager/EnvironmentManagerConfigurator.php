@@ -3,7 +3,6 @@
 namespace GovWiki\ApiBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
-use GovWiki\ApiBundle\Exception\GovWikiApiEnvironmentNotFoundException;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -21,10 +20,6 @@ class EnvironmentManagerConfigurator
     /**
      * @param EntityManagerInterface $em     A EntityManagerInterface instance.
      * @param RouterInterface        $router A RouterInterface instance.
-     *
-     * @throws GovWikiApiEnvironmentNotFoundException Can't find environment
-     *                                                name for current domain
-     *                                                name.
      */
     public function __construct(
         EntityManagerInterface $em,
@@ -37,9 +32,6 @@ class EnvironmentManagerConfigurator
         } else {
             $this->environment = $em->getRepository('GovWikiDbBundle:Environment')
                 ->getNameByDomain($host);
-            if (null === $this->environment) {
-                throw new GovWikiApiEnvironmentNotFoundException($host);
-            }
         }
     }
 
