@@ -72,8 +72,6 @@ class CartoDbApi
                 ],
             ]);
 
-        unlink($newFilePath);
-
 //        $filePath = realpath($filePath);
 //
 //        $response = $this
