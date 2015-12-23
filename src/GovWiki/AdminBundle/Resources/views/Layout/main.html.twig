@@ -113,7 +113,7 @@
     {% endstylesheets %}
 
 {% endblock %}
-
+w
 
 {# Javascripts #}
 {% block javascripts %}
@@ -121,8 +121,9 @@
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-
-    {% javascripts '@GovWikiAdminBundle/Resources/public/js/bootstrap-colorpicker.min.js' %}
+    
+    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/script.js'
+                    '@GovWikiAdminBundle/Resources/public/js/bootstrap-colorpicker.min.js' %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
