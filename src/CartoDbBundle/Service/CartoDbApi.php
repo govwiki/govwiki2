@@ -74,7 +74,7 @@ class CartoDbApi
                 ],
             ], $query);
 
-        unlink($newFilePath);
+//        unlink($newFilePath);
 
         if (array_key_exists('success', $response)
             && $response['success'] === true) {
