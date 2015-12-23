@@ -39,8 +39,8 @@ $(function() {
             description: false,
             search: false,
             tiles_loader: true,
-            center_lat: 37.3,
-            center_lon: -119.3,
+            center_lat: window.gw.map.centerLatitude,
+            center_lon: window.gw.map.centerLongitude,
             zoom: window.gw.map.zoom
         })
         .done(function(vis, layers) {
