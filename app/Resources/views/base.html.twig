@@ -27,11 +27,24 @@
             {% block footer %}{% endblock %}
         </footer>
 
+        {# Overflow all page and show loader (disabled via script.js) #}
+        <div class="loader_wrap">
+            <div class="loader"></div>
+        </div>
+
         {# Modal windows#}
         {% block modal %}{% endblock %}
 
         {# Javascripts #}
-        {% block javascripts %}{% endblock %}
+        {% block javascripts %}
+
+            <script> window.gw.styles = '{{ styles | raw }}' </script>
+
+            {% javascripts '@GovWikiFrontendBundle/Resources/public/js/script.js' %}
+                <script type="text/javascript" src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+
+        {% endblock %}
 
     </body>
 </html>
