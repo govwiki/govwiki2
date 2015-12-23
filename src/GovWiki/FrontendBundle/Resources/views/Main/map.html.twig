@@ -143,12 +143,12 @@
 
     <script> window.gw.map = '{{ map | raw }}'; </script>
     <script> window.gw.environment = '{{ environment }}' </script>
-    <script> window.gw.styles = '{{ styles | raw }}' </script>
+
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
                     '@GovWikiFrontendBundle/Resources/public/js/vendor/typeahead.js'
                     '@GovWikiFrontendBundle/Resources/public/js/script.js'
                     '@GovWikiFrontendBundle/Resources/public/js/home/search.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/home/map.js' output='js/map.js' %}
+                    output='js/map.js' %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
