@@ -29,14 +29,14 @@
             {% if app.user %}
                 {# Show User name (Athorized) #}
                 <li>
-                    <a href="javascript:void(0)">
+                    <a href="javascript:void(0)" class="link">
                         Logged in as {{ app.user.username }}
                     </a>
                 </li>
 
                 {# Logout button #}
                 <li>
-                    <a href="{{path('fos_user_security_logout')}}">
+                    <a href="{{path('fos_user_security_logout')}}" class="link">
                         Sign Out
                     </a>
                 </li>
@@ -54,7 +54,7 @@
             {# Return to map #}
             {% if app.request.attributes.get('_route') != "map" %}
                 <li>
-                    <a href="/">
+                    <a href="/" class="link">
                         Return to Map
                     </a>
                 </li>
@@ -66,7 +66,7 @@
                     <a href="{{ path('government', {
                         altTypeSlug: altTypeSlug,
                         slug: slug
-                    }) }}">
+                    }) }}" class="link">
                         Return to {{ slug|replace('_', ' ') }}
                     </a>
                 </li>

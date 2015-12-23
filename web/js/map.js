@@ -6199,11 +6199,16 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
 
 var styles = JSON.parse(window.gw.styles);
 
-//styles.forEach(function(style) {
-//    parseStyles(style);
-//});
+styles.forEach(function(style) {
+    parseStyles(style);
+});
 
-//$('.loader_wrap').css({"opacity":0}).hide();
+$loaderWrap = $('.loader_wrap');
+$loaderWrap.css({"opacity":0});
+window.setTimeout(function() {
+    $loaderWrap.css({"visibility":"hidden"});
+}, 1000);
+
 
 /**
  * Parse and applying styles
@@ -6211,63 +6216,67 @@ var styles = JSON.parse(window.gw.styles);
  *
  * @param {BemJSON} element
  */
-//function parseStyles(element) {
-//
-//    var block = element.block || element.elem;
-//    var $element = $('.' + block);
-//    var content = element.content;
-//    var mods = element.mods;
-//
-//    /**
-//     * Apply styles or hover on current $element
-//     */
-//    if (mods != null) {
-//
-//        modKeys.forEach(function(css) {
-//
-//            /**
-//             * Apply Hover
-//             */
-//            if (css.pseudo && css.preudo == 'hover') {
-//
-//                delete css.pseudo;
-//
-//                var cssStyle = Object.keys(css)[0];
-//                console.log(cssStyle);
-//
-//                $element.hover(function(e) {
-//                    $(this).css(cssStyle, (e.type === "mouseenter") ? : );
-//                });
-//
-//            /**
-//             * Apply styles
-//             */
-//            } else {
-//
-//                var style = {};
-//                style[newKey] = mods[key];
-//                $element.css(style);
-//
-//            }
-//
-//        });
-//
-//    }
-//
-//    /**
-//     * Recursion
-//     */
-//    if (content instanceof Array) {
-//
-//        for (var i = 0; i < content.length; i++) {
-//            parseStyles(content[i]);
-//        }
-//
-//    } else if (typeof content == 'string') {
-//        $element.html(content);
-//    }
-//
-//}
+function parseStyles(element) {
+
+    var block = element.block || element.elem;
+    var $element = $('.' + block);
+    var content = element.content;
+    var mods = element.mods;
+
+    /**
+     * Apply styles or hover on current $element
+     */
+    if (mods != null) {
+
+        mods.forEach(function(css) {
+
+            /**
+             * Apply Hover
+             */
+            if (css.pseudo && css.pseudo == 'hover') {
+
+                delete css.pseudo;
+
+                for (var cssKey in css) {
+                    if (css.hasOwnProperty(cssKey)) {
+
+                        (function (cssKey) {
+                            $element.mouseover(function () {
+                                $(this).css(cssKey, css[cssKey]);
+                            });
+                        })(cssKey);
+
+                    }
+                }
+
+            /**
+             * Apply styles
+             */
+            } else {
+                $element.css(css);
+                $element.mouseout(function () {
+                    $(this).css(css);
+                });
+            }
+
+        });
+
+    }
+
+    /**
+     * Recursion
+     */
+    if (content instanceof Array) {
+
+        for (var i = 0; i < content.length; i++) {
+            parseStyles(content[i]);
+        }
+
+    } else if (typeof content == 'string') {
+        $element.html(content);
+    }
+
+}
 
 // Login action
 $('body').on('submit', '#ajax-login-form', function(event) {

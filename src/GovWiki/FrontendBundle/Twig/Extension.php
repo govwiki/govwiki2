@@ -60,10 +60,10 @@ class Extension extends \Twig_Extension
     {
 
         $styles = $this->manager->getStyle();
-//        $styles = $this->serializer->serialize($styles, 'json');
+        $styles = $this->serializer->serialize($styles, 'json');
 
-        $styles = AdminStyleManager::getDefaultStyles();
-        $styles = json_encode($styles);
+//        $styles = AdminStyleManager::getDefaultStyles();
+//        $styles = json_encode($styles);
         return [
             'styles' => $styles,
             'environment' => $this->manager->getEnvironment(),

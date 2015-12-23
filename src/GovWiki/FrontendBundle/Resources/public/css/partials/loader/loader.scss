@@ -45,6 +45,7 @@
    background-color: lightgrey;
    z-index: 100000;
    transition: opacity 1s ease-out;
+   visibility: visible;
 
    .loader {
       margin-top: 300px;
