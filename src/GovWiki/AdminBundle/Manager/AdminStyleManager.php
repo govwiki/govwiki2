@@ -58,7 +58,7 @@ class AdminStyleManager
      */
     public function createForm()
     {
-        $styles = [];// $this->manager->getStyle();
+        $styles = $this->manager->getStyle();
         if (count($styles) <= 0) {
             $styles = self::getDefaultStyles();
         }
