@@ -1,6 +1,7 @@
 services:
     govwiki_admin.twig.extension:
         class: GovWiki\AdminBundle\Twig\TwigExtensions
+        arguments: [@govwiki_admin.manager.environment]
         tags:
             - { name: twig.extension }
 

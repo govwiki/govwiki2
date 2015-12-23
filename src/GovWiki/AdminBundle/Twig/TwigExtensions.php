@@ -2,6 +2,8 @@
 
 namespace GovWiki\AdminBundle\Twig;
 
+use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+
 /**
  * Class TwigExtensions
  * @package GovWiki\AdminBundle\Twig
@@ -9,12 +11,31 @@ namespace GovWiki\AdminBundle\Twig;
 class TwigExtensions extends \Twig_Extension
 {
     /**
+     * @param AdminEnvironmentManager $manger A AdminEnvironmentManager instance.
+     */
+    public function __construct(AdminEnvironmentManager $manger)
+    {
+        $this->manger = $manger;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getName()
     {
         return 'gov_wiki.admin';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getGlobals()
+    {
+        return [
+            'styles' => json_encode($this->manger->getStyle()),
+        ];
+    }
+
 
     /**
      * {@inheritdoc}

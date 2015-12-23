@@ -38,7 +38,11 @@
         {# Javascripts #}
         {% block javascripts %}
 
-            <script> window.gw.styles = '{{ styles | raw }}' </script>
+            <script>
+                window.gw = {
+                    styles: '{{ styles | raw }}'
+                }
+            </script>
 
             {% javascripts '@GovWikiFrontendBundle/Resources/public/js/script.js' %}
                 <script type="text/javascript" src="{{ asset_url }}"></script>
