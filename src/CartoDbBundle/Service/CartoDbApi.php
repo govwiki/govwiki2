@@ -52,7 +52,7 @@ class CartoDbApi
     {
         $uri = '/v1/imports';
         if ($createNewMap) {
-            $query = [ 'create_vis' => 'true' ];
+            $uri .= '?create_vis=true';
         }
 
         $filename = substr($filePath, strrpos($filePath, '/') + 1);
@@ -71,7 +71,7 @@ class CartoDbApi
                         'Content-Length: ' . strlen($data),
                     ],
                 ],
-            ], $query);
+            ]);
 
 //        unlink($newFilePath);
 
@@ -170,7 +170,11 @@ class CartoDbApi
         /*
          * Add api key as query parameters.
          */
-        $uri .= "?api_key={$this->apiKey}";
+        if (strpos($uri, '?') === false) {
+            $uri .= "?api_key={$this->apiKey}";
+        } else {
+            $uri .= "&api_key={$this->apiKey}";
+        }
         foreach ($query as $param => $value) {
             $uri .= "&{$param}={$value}";
         }
