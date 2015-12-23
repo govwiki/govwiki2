@@ -98,7 +98,7 @@ class CartoDbApi
     {
         $response = $this->makeRequest("/v1/imports/{$itemQueueId}");
 
-        if ($response && array_key_exists('success', $response)) {
+        if ($response && array_key_exists('state', $response)) {
             return $response;
         }
 
@@ -134,7 +134,7 @@ class CartoDbApi
         $sql = preg_replace('|\s{2,}|', ' ', $sql);
         return $this->makeRequest('/v2/sql', 'GET', [
             'q' => $sql,
-            'curl' => [ CURLOPT_POST => 'true' ]
+            'curl' => [ CURLOPT_POST => 'true' ],
         ]);
     }
 

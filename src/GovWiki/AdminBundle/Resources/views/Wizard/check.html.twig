@@ -25,6 +25,7 @@
                 $.ajax({
                     url: '/api/v1/map/check?item_queue_id={{ itemQueueId }}'
                 }).done(function(data) {
+                    console.log(data);
                     if (data && (data.success === true) && (data.state === 'complete')) {
                         clearInterval(check);
                         window.location = '{{ url }}';

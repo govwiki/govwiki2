@@ -85,8 +85,8 @@ if [ `command -v setfacl 2>&1` ] ; then
     setfacl -dR -m u:$APACHEUSER:rwX -m u:`whoami`:rwX app/cache app/logs web/img
     if [ $(getent group phpteam ) ]; then setfacl -R -m g:phpteam:rw ./; fi
 else
-    chmod +a "$APACHEUSER allow delete,write,append,file_inherit,directory_inherit" app/cache app/logs
-    chmod +a "`whoami` allow delete,write,append,file_inherit,directory_inherit" app/cache app/logs
+    chmod +a "$APACHEUSER allow delete,write,append,file_inherit,directory_inherit" app/cache app/logs web/img
+    chmod +a "`whoami` allow delete,write,append,file_inherit,directory_inherit" app/cache app/logs web/img
 fi
 printf "%-120s %s\n" "Set permissions to cache and logs for $APACHEUSER: [${txtgrn}Ok${txtrst}]"
 
