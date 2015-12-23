@@ -54,17 +54,37 @@ class CartoDbApi
         if ($createNewMap) {
             $uri .= '?create_vis=true';
         }
-        $filePath = realpath($filePath);
+        $filename = substr($filePath, strrpos($filePath, '/') + 1);
+        $newFilePath = __DIR__ . '/../../../web/img/'. $filename;
+
+        rename($filePath, $newFilePath);
+
+        $data = json_encode([ 'url' => "http://{$this->host}/img/{$filename}"]);
 
         $response = $this
             ->makeRequest($uri, 'POST', [
-                'file' => "@{$filePath}",
                 'curl' => [
+                    CURLOPT_POSTFIELDS => $data,
                     CURLOPT_HTTPHEADER => [
-                        'Content-Type: multipart/form-data',
+                        'Content-Type: application/json',
+                        'Content-Length: ' . strlen($data),
                     ],
                 ],
             ]);
+
+        unlink($newFilePath);
+
+//        $filePath = realpath($filePath);
+//
+//        $response = $this
+//            ->makeRequest($uri, 'POST', [
+//                'file' => "@{$filePath}",
+//                'curl' => [
+//                    CURLOPT_HTTPHEADER => [
+//                        'Content-Type: multipart/form-data',
+//                    ],
+//                ],
+//            ]);
 
         if (array_key_exists('success', $response)
             && $response['success'] === true) {

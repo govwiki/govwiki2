@@ -158,6 +158,8 @@ class WizardController extends AbstractGovWikiAdminController
             $itemQueueId = $cartoDbApi->importDataset($file, true);
             $map->setCountyFile(null);
 
+            unlink($file);
+
             $map->setItemQueueId($itemQueueId);
             $this->storeEnvironmentEntity($environment);
 
