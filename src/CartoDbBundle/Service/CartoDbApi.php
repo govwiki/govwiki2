@@ -51,9 +51,8 @@ class CartoDbApi
     public function importDataset($filePath, $createNewMap = false)
     {
         $uri = '/v1/imports';
-        $query = [];
         if ($createNewMap) {
-            $query = [ 'create_vis' => true ];
+            $query = [ 'create_vis' => 'true' ];
         }
 
         $filename = substr($filePath, strrpos($filePath, '/') + 1);
@@ -115,8 +114,7 @@ class CartoDbApi
      */
     public function getVizUrl(array $response)
     {
-        if (array_key_exists('visualization_id', $response) &&
-            'complete' === $response['state']) {
+        if (array_key_exists('visualization_id', $response)) {
             $vizId = $response['visualization_id'];
             return "{$this->endpoint}/v2/viz/{$vizId}/viz.json";
         }
