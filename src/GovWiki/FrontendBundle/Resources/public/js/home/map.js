@@ -89,9 +89,14 @@ $(function() {
             });
 
             // TODO: Hardcoded, must be replaced
-            initCityLayer();
-            initSchoolLayer();
-            initSpecialLayer();
+            if (subLayers.length != 1) {
+
+                initCityLayer();
+                initSchoolLayer();
+                initSpecialLayer();
+
+            }
+
 
             /**
              * Show map, legend, hide loader

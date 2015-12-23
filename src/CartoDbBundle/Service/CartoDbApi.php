@@ -54,26 +54,10 @@ class CartoDbApi
         if ($createNewMap) {
             $uri .= '?create_vis=true';
         }
-
-        $filename = substr($filePath, strrpos($filePath, '/') + 1);
-        $newFilePath = __DIR__ . '/../../../web/img/'. $filename;
-
-        rename($filePath, $newFilePath);
-
-        $data = json_encode([ 'url' => "http://{$this->host}/img/{$filename}"]);
+        $filePath = realpath($filePath);
 
         $response = $this
-            ->makeRequest($uri, 'POST', [
-                'curl' => [
-                    CURLOPT_POSTFIELDS => $data,
-                    CURLOPT_HTTPHEADER => [
-                        'Content-Type: application/json',
-                        'Content-Length: ' . strlen($data),
-                    ],
-                ],
-            ]);
-
-//        unlink($newFilePath);
+            ->makeRequest($uri, 'POST', [ 'file' => "@{$filePath}" ]);
 
         if (array_key_exists('success', $response)
             && $response['success'] === true) {
@@ -97,7 +81,7 @@ class CartoDbApi
     {
         $response = $this->makeRequest("/v1/imports/{$itemQueueId}");
 
-        if ($response && array_key_exists('state', $response)) {
+        if (array_key_exists('success', $response)) {
             return $response;
         }
 
@@ -114,7 +98,8 @@ class CartoDbApi
      */
     public function getVizUrl(array $response)
     {
-        if (array_key_exists('visualization_id', $response)) {
+        if (array_key_exists('visualization_id', $response) &&
+            'complete' === $response['state']) {
             $vizId = $response['visualization_id'];
             return "{$this->endpoint}/v2/viz/{$vizId}/viz.json";
         }
@@ -157,11 +142,11 @@ class CartoDbApi
      *
      * @return array
      */
-    private function makeRequest($uri, $method = 'GET', array $parameters = [], array $query = [])
+    private function makeRequest($uri, $method = 'GET', array $parameters = [])
     {
         $method = strtoupper($method);
 
-        $curlOptions = [ ];
+        $curlOptions = [];
         if (array_key_exists('curl', $parameters)) {
             $curlOptions = $parameters['curl'];
             unset($parameters['curl']);
@@ -175,9 +160,6 @@ class CartoDbApi
         } else {
             $uri .= "&api_key={$this->apiKey}";
         }
-        foreach ($query as $param => $value) {
-            $uri .= "&{$param}={$value}";
-        }
 
         $handler = curl_init("{$this->endpoint}${uri}");
         curl_setopt_array($handler, $curlOptions);
@@ -190,7 +172,7 @@ class CartoDbApi
         }
 
         if (count($parameters) > 0) {
-            curl_setopt($handler, CURLOPT_POSTFIELDS, http_build_query($parameters));
+            curl_setopt($handler, CURLOPT_POSTFIELDS, $parameters);
         }
 
         $response = curl_exec($handler);
