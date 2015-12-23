@@ -75,8 +75,8 @@ else
 fi
 
 # set permissions for cache and logs, and group permissions for all files
-rm -rf app/cache/*
-rm -rf app/logs/*
+#rm -rf app/cache/*
+#rm -rf app/logs/*
 
 APACHEUSER=`ps aux | grep -E '[a]pache|[h]ttpd' | grep -v root | head -1 | cut -d\  -f1`
 
