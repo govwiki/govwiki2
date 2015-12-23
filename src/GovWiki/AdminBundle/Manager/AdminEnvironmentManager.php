@@ -31,9 +31,9 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     private $environment;
 
     /**
-     * @var User
+     * @var TokenStorageInterface
      */
-    private $user;
+    private $storage;
 
     /**
      * @var Session
@@ -61,14 +61,7 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
 
         $this->session = $session;
         $this->em = $em;
-
-        $token = $storage->getToken();
-
-        if (null === $token) {
-            throw new AccessDeniedException();
-        }
-
-        $this->user = $token->getUser();
+        $this->storage = $storage;
     }
 
     /**
@@ -171,18 +164,20 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getEntity()
     {
-        if ($this->user->hasRole('ROLE_ADMIN')) {
+        $user = $this->getUser();
+
+        if ($user->hasRole('ROLE_ADMIN')) {
             /*
              * Admin allow to manage all environment.
              */
             return $this->em->getRepository('GovWikiDbBundle:Environment')
                 ->getByName($this->environment);
-        } elseif ($this->user->hasRole('ROLE_MANAGER')) {
+        } elseif ($user->hasRole('ROLE_MANAGER')) {
             /*
              * Manager allow manage only some part of environments.
              */
             return $this->em->getRepository('GovWikiDbBundle:Environment')
-                ->getByName($this->environment, $this->user->getId());
+                ->getByName($this->environment, $user->getId());
         }
 
         throw new AccessDeniedException();
@@ -198,14 +193,16 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getReference()
     {
-        if ($this->user->hasRole('ROLE_ADMIN')) {
+        $user = $this->getUser();
+
+        if ($user->hasRole('ROLE_ADMIN')) {
             return $this->em
                 ->getRepository('GovWikiDbBundle:Environment')
                 ->getReferenceByName($this->environment);
-        } elseif ($this->user->hasRole('ROLE_MANAGER')) {
+        } elseif ($user->hasRole('ROLE_MANAGER')) {
             return $this->em
                 ->getRepository('GovWikiDbBundle:Environment')
-                ->getReferenceByName($this->environment, $this->user->getId());
+                ->getReferenceByName($this->environment, $user->getId());
         }
 
         throw new AccessDeniedException();
@@ -291,5 +288,19 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
     {
         $entityManager->setEnvironment($this->environment);
         $entityManager->setEnvironmentId($this->getReference()->getId());
+    }
+
+    /**
+     * @return User
+     */
+    private function getUser()
+    {
+        $token = $this->storage->getToken();
+
+        if (null === $token) {
+            throw new AccessDeniedException();
+        }
+
+        return $token->getUser();
     }
 }

@@ -67,43 +67,47 @@ $(function() {
             var countyTooltip, cityTooltip, schoolTooltip, specialTooltip;
 
             /**
-             * SubLayers initialization
-             */
-            subLayers.forEach(function (layer, index) {
-
-                switch (index) {
-                    case 0:
-                        initCountyLayer();
-                        break;
-                    case 1:
-                        initCityLayer();
-                        break;
-                    case 2:
-                        initSchoolLayer();
-                        break;
-                    case 3:
-                        initSpecialLayer();
-                        break;
-                }
-
-            });
-
-            // TODO: Hardcoded, must be replaced
-            if (subLayers.length != 1) {
-
-                initCityLayer();
-                initSchoolLayer();
-                initSpecialLayer();
-
-            }
-
-
-            /**
              * Show map, legend, hide loader
              */
             $('#map').css({"opacity": 1});
             $('#menu').css({"opacity": 1});
             $('.loader').hide();
+
+            /**
+             * SubLayers initialization
+             */
+            var sql = new cartodb.SQL({ user: window.gw.map.username });
+            sql.execute("SELECT alttypeslug FROM " + window.gw.slug + " GROUP BY alttypeslug")
+                .done(function(altTypes) {
+
+                    altTypes.rows.forEach(function(altType){
+
+                        switch (altType.alttypeslug) {
+
+                            case 'County':
+                                initCountyLayer();
+                                break;
+
+                            case 'City':
+                                initCityLayer(altType.alttypeslug);
+                                break;
+
+                            case 'School_District':
+                                initSchoolLayer(altType.alttypeslug);
+                                break;
+
+                            case 'Special_District':
+                                initSpecialLayer(altType.alttypeslug);
+                                break;
+
+                        }
+
+                    });
+
+                })
+                .error(function() {
+                    return cartodbError();
+                });
 
             /**
              * Initialization County Layer
@@ -114,7 +118,7 @@ $(function() {
             function initCountyLayer() {
                 countyLayer = subLayers[0];
                 countyLayer.set({ 'interactivity': ['cartodb_id', 'slug', 'geometry'] }); // alias to template
-                countyLayer.setSQL('SELECT  *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.slug + '_county');
+                countyLayer.setSQL('SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.slug + '_county');
 
                 countyTooltip = new cdb.geo.ui.Tooltip({
                     layer: countyLayer,
@@ -130,11 +134,11 @@ $(function() {
              * Tooltip window
              * Tooltip work with 3.11-13 version, 3.15 is buggy
              */
-            function initCityLayer() {
+            function initCityLayer(altType) {
 
                 cityLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'City'",
-                    cartocss: "#layer { marker-fill: red; }", // TODO: Hardcoded
+                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = '" + altType +"'",
+                    cartocss: "#layer { marker-fill: #f00000; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug'
                 });
 
@@ -154,11 +158,11 @@ $(function() {
              * Tooltip window
              * Tooltip work with 3.11-13 version, 3.15 is buggy
              */
-            function initSchoolLayer() {
+            function initSchoolLayer(altType) {
 
                 schoolLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'School_District'",
-                    cartocss: "#layer { marker-fill: blue; }", // TODO: Hardcoded
+                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = '" + altType +"'",
+                    cartocss: "#layer { marker-fill: #add8e6; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug'
                 });
 
@@ -178,11 +182,11 @@ $(function() {
              * Tooltip window
              * Tooltip work with 3.11-13 version, 3.15 is buggy
              */
-            function initSpecialLayer() {
+            function initSpecialLayer(altType) {
 
                 specialLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = 'Special_District'",
-                    cartocss: "#layer { marker-fill: purple; }", // TODO: Hardcoded
+                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = '" + altType +"'",
+                    cartocss: "#layer { marker-fill: #800080; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug'
                 });
 
