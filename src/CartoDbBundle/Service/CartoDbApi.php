@@ -56,7 +56,7 @@ class CartoDbApi
             $query = [ 'create_vis' => true ];
         }
 
-        $filename = substr($filePath, strrpos($filePath, '/'));
+        $filename = substr($filePath, strrpos($filePath, '/') + 1);
         $newFilePath = __DIR__ . '/../../../web/img/'. $filename;
 
         rename($filePath, $newFilePath);
