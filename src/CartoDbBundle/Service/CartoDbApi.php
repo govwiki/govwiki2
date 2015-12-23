@@ -57,7 +57,14 @@ class CartoDbApi
         $filePath = realpath($filePath);
 
         $response = $this
-            ->makeRequest($uri, 'POST', [ 'file' => "@{$filePath}" ]);
+            ->makeRequest($uri, 'POST', [
+                'file' => "@{$filePath}",
+                'curl' => [
+                    CURLOPT_HTTPHEADER => [
+                        'Content-Type: multipart/form-data',
+                    ],
+                ],
+            ]);
 
         if (array_key_exists('success', $response)
             && $response['success'] === true) {
@@ -164,7 +171,10 @@ class CartoDbApi
         $handler = curl_init("{$this->endpoint}${uri}");
         curl_setopt_array($handler, $curlOptions);
 
-        curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt_array($handler, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_VERBOSE => false,
+        ]);
 
         if ('GET' !== $method) {
             curl_setopt($handler, CURLOPT_POST, true);

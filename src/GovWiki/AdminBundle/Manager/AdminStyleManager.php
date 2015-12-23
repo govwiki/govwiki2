@@ -56,11 +56,15 @@ class AdminStyleManager
      *
      * @return \Symfony\Component\Form\Form
      */
-    public function createForm()
+    public function createForm($add = false)
     {
-        $styles = $this->manager->getStyle();
-        if (count($styles) <= 0) {
+        if ($add) {
             $styles = self::getDefaultStyles();
+        } else {
+            $styles = $this->manager->getStyle();
+            if (count($styles) <= 0) {
+                $styles = self::getDefaultStyles();
+            }
         }
 
         return $this->buildForm($styles)->setData($this->currentData);
@@ -236,7 +240,10 @@ class AdminStyleManager
                     ],
                     [
                         'block' => 'footer',
-                        'mods' => [ ['color' => '#0B4D70'] ],
+                        'mods' => [
+                            ['backgroundColor' => '#0B4D70'],
+                            ['color' => '#FFFFFF'],
+                        ],
                         'content' => [
                             [
                                 'block' => 'copyright',

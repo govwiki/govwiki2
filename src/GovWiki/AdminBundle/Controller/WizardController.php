@@ -229,12 +229,13 @@ class WizardController extends AbstractGovWikiAdminController
     public function styleAction(Request $request)
     {
         $manager = $this->get(GovWikiAdminServices::ADMIN_STYLE_MANAGER);
-        $form = $manager->createForm();
+        $environment = $this->getEnvironmentEntity();
+        $form = $manager->createForm(true);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $style = $manager->processForm($form);
-            $environment = $this->getEnvironmentEntity();
+
             $environment->setStyle($style);
             $this->storeEnvironmentEntity($environment);
 
