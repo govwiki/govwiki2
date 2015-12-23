@@ -46,6 +46,8 @@ class ElectedController extends Controller
             $electedOfficialJSON
         );
 
+        dump($data);
+
         return array_merge($data, [
             'altTypeSlug' => $altTypeSlug,
             'slug' => $slug,

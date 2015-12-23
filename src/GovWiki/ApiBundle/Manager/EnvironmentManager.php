@@ -237,6 +237,8 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                 $createRequests[] = $data[$i];
             }
 
+            dump($data);
+
             return [
                 'electedOfficial' => $electedOfficial,
                 'createRequests' => $createRequests,
