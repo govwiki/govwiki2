@@ -47,7 +47,21 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function setEnvironment($environment)
     {
-        $this->environment = $environment;
+        if (('' === $environment) | ('admin' === $environment)) {
+            return $this;
+        }
+
+        $this->environment = $this->em
+            ->getRepository('GovWikiDbBundle:Environment')
+            ->getByName($environment);
+        /*
+         * Check environment.
+         */
+        if (null === $this->environment) {
+            throw new NotFoundHttpException(
+                "Can't find environment with name $environment"
+            );
+        }
 
         return $this;
     }
@@ -236,6 +250,8 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             for ($i = 1; $i < $dataCount; $i++) {
                 $createRequests[] = $data[$i];
             }
+
+            dump($data);
 
             return [
                 'electedOfficial' => $electedOfficial,

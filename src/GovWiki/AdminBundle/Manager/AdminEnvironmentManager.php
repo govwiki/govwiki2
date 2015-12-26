@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  *
  * @package GovWiki\AdminBundle\Manager
  */
-class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
+class AdminEnvironmentManager
 {
     const ENVIRONMENT_PARAMETER = 'environment';
 
@@ -79,19 +79,6 @@ class AdminEnvironmentManager implements EnvironmentManagerAwareInterface
         $this->environment = $environment;
 
         return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setEnvironment($environment)
-    {
-        /*
-         * Session not contains environment name, get from configurator service.
-         */
-        if (null === $this->environment) {
-            $this->changeEnvironment($environment);
-        }
     }
 
     /**

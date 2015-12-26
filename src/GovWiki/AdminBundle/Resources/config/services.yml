@@ -15,7 +15,6 @@ services:
             - @doctrine.orm.default_entity_manager
             - @security.token_storage
             - @session
-        configurator: [@govwiki_api.environment_manager.configurator, configure]
 
     govwiki_admin.manager.style:
         class: GovWiki\AdminBundle\Manager\AdminStyleManager

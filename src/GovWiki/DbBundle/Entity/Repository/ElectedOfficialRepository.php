@@ -77,7 +77,7 @@ class ElectedOfficialRepository extends EntityRepository
             ->addSelect(
                 'Contribution, Endorsement, PublicStatement, Vote',
                 'Legislation, CreateRequest, IssueCategory',
-                'partial Government.{id}'
+                'partial Government.{id, altType, name}'
             )
             ->leftJoin('ElectedOfficial.contributions', 'Contribution')
             ->leftJoin('ElectedOfficial.endorsements', 'Endorsement')

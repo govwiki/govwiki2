@@ -3,6 +3,7 @@
 namespace GovWiki\ApiBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\ApiBundle\Determinator\AbstractEnvironmentDeterminator;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -12,27 +13,19 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class EnvironmentManagerConfigurator
 {
-    /**
-     * @var string
-     */
-    protected $environment;
 
     /**
-     * @param EntityManagerInterface $em     A EntityManagerInterface instance.
-     * @param RouterInterface        $router A RouterInterface instance.
+     * @var AbstractEnvironmentDeterminator
      */
-    public function __construct(
-        EntityManagerInterface $em,
-        RouterInterface $router
-    ) {
-        $host = $router->getContext()->getHost();
+    private $determinator;
 
-        if ('localhost' === $host) {
-            $this->environment = 'localhost';
-        } else {
-            $this->environment = $em->getRepository('GovWikiDbBundle:Environment')
-                ->getNameByDomain($host);
-        }
+    /**
+     * @param AbstractEnvironmentDeterminator $determinator A AbstractEnvironmentDeterminator
+     *                                                      instance.
+     */
+    public function __construct(AbstractEnvironmentDeterminator $determinator)
+    {
+        $this->determinator = $determinator;
     }
 
     /**
@@ -44,6 +37,6 @@ class EnvironmentManagerConfigurator
      */
     public function configure(EnvironmentManagerAwareInterface $manager)
     {
-        $manager->setEnvironment($this->environment);
+        $manager->setEnvironment($this->determinator->getSlug());
     }
 }
