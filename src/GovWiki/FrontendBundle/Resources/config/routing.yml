@@ -1,13 +1,13 @@
 
 elected:
     resource: "@GovWikiFrontendBundle/Controller/ElectedController.php"
-    type:     annotation
+    type:     govwiki
 
 government:
     resource: "@GovWikiFrontendBundle/Controller/GovernmentController.php"
-    type:     annotation
+    type:     govwiki
 
 main:
     resource: "@GovWikiFrontendBundle/Controller/MainController.php"
-    type:     annotation
+    type:     govwiki
     prefix:   /

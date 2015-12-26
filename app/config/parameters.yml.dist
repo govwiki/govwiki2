@@ -24,3 +24,5 @@ parameters:
 
     carto_db.account: ~
     carto_db.api_key: ~
+
+    determinator.name: ~

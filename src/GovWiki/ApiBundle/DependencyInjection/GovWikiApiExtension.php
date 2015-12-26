@@ -24,5 +24,20 @@ class GovWikiApiExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+
+        $alias = $container->getParameter('determinator.name');
+        $determinators = $container
+            ->findTaggedServiceIds('environment.determinator');
+
+        $configurator = $container
+            ->getDefinition('govwiki_api.environment_manager.configurator');
+        foreach ($determinators as $id => $tag) {
+            if ($alias === $tag[0]['alias']) {
+                $configurator->setArguments([
+                    $container->getDefinition($id),
+                ]);
+                break;
+            }
+        }
     }
 }

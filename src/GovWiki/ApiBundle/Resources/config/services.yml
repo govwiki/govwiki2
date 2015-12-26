@@ -16,8 +16,21 @@ services:
     govwiki_api.environment_manager.configurator:
         class: GovWiki\ApiBundle\Manager\EnvironmentManagerConfigurator
         arguments:
+            - '' # set by configuration.
+
+    govwiki_api.environment.determinator.path:
+        class: GovWiki\ApiBundle\Determinator\PathDeterminator
+        arguments: [@router, %debug%]
+        tags:
+            - { name: environment.determinator, alias: path }
+
+    govwiki_api.environment.determinator.host:
+        class: GovWiki\ApiBundle\Determinator\HostDeterminator
+        arguments:
             - @doctrine.orm.default_entity_manager
             - @router
+        tags:
+            - { name: environment.determinator, alias: host }
 
     govwiki_api.manager.environment:
         class: GovWiki\ApiBundle\Manager\EnvironmentManager
@@ -31,6 +44,15 @@ services:
         arguments: [@jms_serializer.naming_strategy]
         tags:
             - { name: jms_serializer.serialization_visitor, format: array }
+
+    govwiki_api.routing.loader.govwiki:
+        class: GovWiki\ApiBundle\Router\GovWikiLoader
+        arguments:
+            - @file_locator
+            - @sensio_framework_extra.routing.loader.annot_class
+            - %determinator.name%
+        tags:
+            - { name: routing.loader }
 
     govwiki_api.serizlizer.deserialization_visitor:
         class: GovWiki\ApiBundle\Serializer\ArrayDeserializationVisitor

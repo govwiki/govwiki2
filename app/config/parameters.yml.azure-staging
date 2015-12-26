@@ -16,3 +16,5 @@ parameters:
 
     carto_db.account: joffemd
     carto_db.api_key: 5ba9906f48ae95a85e27812208ceae89a52e9961
+
+    determinator.name: path

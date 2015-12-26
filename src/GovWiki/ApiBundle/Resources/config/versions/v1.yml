@@ -1,33 +1,33 @@
 government:
     resource: "@GovWikiApiBundle/Controller/V1/GovernmentController.php"
-    type:     annotation
+    type:     govwiki
 
 elected-official:
     resource: "@GovWikiApiBundle/Controller/V1/ElectedOfficialController.php"
-    type:     annotation
+    type:     govwiki
     prefix:   elected-official
 
 create-request:
     resource: "@GovWikiApiBundle/Controller/V1/CreateRequestController.php"
-    type:     annotation
+    type:     govwiki
 
 edit-request:
     resource: "@GovWikiApiBundle/Controller/V1/EditRequestController.php"
-    type:     annotation
+    type:     govwiki
 
 user:
     resource: "@GovWikiApiBundle/Controller/V1/UserController.php"
-    type:     annotation
+    type:     govwiki
 
 url:
     resource: "@GovWikiApiBundle/Controller/V1/UrlController.php"
-    type:     annotation
+    type:     govwiki
 
 #rank_order:
 #    resource: "@GovWikiApiBundle/Controller/V1/RankOrderController.php"
-#    type:     annotation
+#    type:     govwiki
 #    prefix:   rank_order
 
 map:
     resource: "@GovWikiApiBundle/Controller/V1/MapController.php"
-    type:     annotation
+    type:     govwiki
