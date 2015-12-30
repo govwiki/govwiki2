@@ -63,7 +63,7 @@
             {# Return to some government #}
             {% if app.request.attributes.get('_route') == "elected" %}
                 <li>
-                    <a href="{{ path('government', {
+                    <a href="{{ govwiki_path('government', {
                         altTypeSlug: altTypeSlug,
                         slug: slug
                     }) }}" class="link">

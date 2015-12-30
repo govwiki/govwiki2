@@ -14,6 +14,27 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 class MainController extends Controller
 {
     /**
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function indexAction()
+    {
+        $qb = $this->getDoctrine()->getRepository('GovWikiDbBundle:Environment')
+            ->createQueryBuilder('Environment');
+        $expr = $qb->expr();
+
+        $name = $qb
+            ->select('Environment.slug')
+            ->where(
+                $expr->eq('Environment.enabled', 1)
+            )
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $this->redirectToRoute('map', [ 'environment' => $name ]);
+    }
+
+    /**
      * @Route("/", name="map")
      * @Template("GovWikiFrontendBundle:Main:map.html.twig")
      *

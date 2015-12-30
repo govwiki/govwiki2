@@ -36,7 +36,11 @@
             <div class="person-photo">
 
                 {% if elected.photoUrl %}
-                    <a href="/{{government.altTypeSlug}}/{{government.slug}}/{{elected.slug}}">
+                    <a href="{{ govwiki_path('elected', {
+                        'altTypeSlug': government.altTypeSlug,
+                        'slug': government.slug,
+                        'electedSlug': elected.slug
+                    }) }}"
                         <span class="f-val">
                             <img src="{{elected.photoUrl}}"/>
                         </span>

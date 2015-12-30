@@ -5,6 +5,8 @@ namespace GovWiki\FrontendBundle\Twig;
 use GovWiki\AdminBundle\Manager\AdminStyleManager;
 use GovWiki\ApiBundle\Manager\EnvironmentManager;
 use JMS\Serializer\Serializer;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class Extension
@@ -23,12 +25,28 @@ class Extension extends \Twig_Extension
     private $serializer;
 
     /**
+     * @var string
+     */
+    private $determinatorType;
+
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
      * @param EnvironmentManager $manager A EnvironmentManager instance.
      */
-    public function __construct(EnvironmentManager $manager, Serializer $serializer)
-    {
+    public function __construct(
+        EnvironmentManager $manager,
+        Serializer $serializer,
+        $determinatorType,
+        ContainerInterface $container
+    ) {
         $this->manager = $manager;
         $this->serializer = $serializer;
+        $this->determinatorType = $determinatorType;
+        $this->container = $container;
     }
 
     /**
@@ -36,7 +54,7 @@ class Extension extends \Twig_Extension
      */
     public function getName()
     {
-        return 'frontend';
+        return 'gov_wiki.frontend';
     }
 
     /**
@@ -49,6 +67,19 @@ class Extension extends \Twig_Extension
             new \Twig_SimpleFilter('applay_mask', [
                 $this,
                 'formatGovernmentValue',
+            ]),
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFunctions()
+    {
+        return [
+            new \Twig_SimpleFunction('govwiki_path', [
+                $this,
+                'generateGovWikiPath',
             ]),
         ];
     }
@@ -144,5 +175,23 @@ class Extension extends \Twig_Extension
     public function isViewed(array $format, array $government)
     {
         return in_array($government['altType'], $format['showIn'], true);
+    }
+
+    /**
+     * @param       $route
+     * @param array $parameters
+     *
+     * @return string
+     */
+    public function generateGovWikiPath($route, array $parameters = [])
+    {
+        if ('path' === $this->determinatorType) {
+            $parameters = array_merge($parameters, [
+                'environment' => $this->manager->getSlug(),
+            ]);
+        }
+
+        $router = $this->container->get('router');
+        return $router->generate($route, $parameters);
     }
 }

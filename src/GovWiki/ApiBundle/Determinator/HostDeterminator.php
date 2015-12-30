@@ -23,5 +23,8 @@ class HostDeterminator extends AbstractEnvironmentDeterminator
 
         $this->slug = $em->getRepository('GovWikiDbBundle:Environment')
             ->getNameByDomain($host);
+        if (null === $this->slug) {
+            $this->slug = '';
+        }
     }
 }

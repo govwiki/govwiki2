@@ -4,6 +4,8 @@ namespace GovWiki\ApiBundle\Router;
 
 use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Loader\AnnotationClassLoader;
 use Symfony\Component\Routing\Loader\AnnotationFileLoader;
 use Symfony\Component\Routing\Route;
@@ -64,6 +66,11 @@ class GovWikiLoader extends AnnotationFileLoader
                     $route->setRequirement('environment', '\w+');
 //                    $route->setRequirement('environment', '(?(?!admin)\w+)');
                 }
+
+                $route = new Route('/', [
+                    '_controller' => 'GovWikiFrontendBundle:Main:index',
+                ]);
+                $collection->add('main', $route);
             }
         }
 
