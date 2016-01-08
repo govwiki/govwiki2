@@ -6349,7 +6349,7 @@ $(function() {
         // Pressed mouse or enter button
         $typeahead.bind("typeahead:selected", function(obj, selectedItemData) {
             $typeahead.typeahead('val', selectedItemData.gov_name);
-            window.location.pathname = [selectedItemData.altTypeSlug, selectedItemData.slug].join('/');
+            window.location.pathname += [selectedItemData.altTypeSlug, selectedItemData.slug].join('/');
         });
 
         // Move cursor via arrows keys
@@ -6399,6 +6399,17 @@ $(function() {
         return mapOnProcessingError();
     }
 
+
+    /**
+     * Extend CartoDB Tooltip
+     * Get Layer position
+     *
+     * @returns {int} Layer Position
+     */
+    cdb.geo.ui.Tooltip.prototype.getLayerIndex = function () {
+        return this.options.layer._position;
+    };
+
     /**
      * Initialize Carto DB
      */
@@ -6425,7 +6436,7 @@ $(function() {
             var subLayerCount = layer.getSubLayerCount();
             var i = 0, subLayers = [];
 
-            // Collect all sublayers
+            // Collect all subLayers
             for (i; i< subLayerCount; i++) {
                 subLayers.push(layer.getSubLayer(i));
             }
@@ -6433,46 +6444,32 @@ $(function() {
             /**
              * Available layers
              */
-            var countyLayer, cityLayer, schoolLayer, specialLayer;
-            var countyTooltip, cityTooltip, schoolTooltip, specialTooltip;
+            var countySubLayer, citySubLayer, schoolSubLayer, specialSubLayer;
+            var tooltips, countyTooltip, cityTooltip, schoolTooltip, specialTooltip;
 
             /**
-             * Show map, legend, hide loader
-             */
-            $('#map').css({"opacity": 1});
-            $('#menu').css({"opacity": 1});
-            $('.loader').hide();
-
-            /**
-             * SubLayers initialization
+             * Create new SQL request
              */
             var sql = new cartodb.SQL({ user: window.gw.map.username });
+
+            /**
+             * SubLayers & tooltips initialization
+             * Get unique altTypes and render new subLayers by them
+             */
             sql.execute("SELECT alttypeslug FROM " + window.gw.slug + " GROUP BY alttypeslug")
                 .done(function(altTypes) {
 
-                    altTypes.rows.forEach(function(altType){
+                    initSubLayers(altTypes);
 
-                        switch (altType.alttypeslug) {
+                    initLegendHandlers();
 
-                            case 'County':
-                                initCountyLayer();
-                                break;
+                    initTooltips();
 
-                            case 'City':
-                                initCityLayer(altType.alttypeslug);
-                                break;
+                    initSublayerHandlers();
 
-                            case 'School_District':
-                                initSchoolLayer(altType.alttypeslug);
-                                break;
+                    fixCartodbConstrain();
 
-                            case 'Special_District':
-                                initSpecialLayer(altType.alttypeslug);
-                                break;
-
-                        }
-
-                    });
+                    loadFinished();
 
                 })
                 .error(function() {
@@ -6480,18 +6477,51 @@ $(function() {
                 });
 
             /**
-             * Initialization County Layer
+             * Create additional subLayers by altType
+             *
+             * @param altTypes Unique altTypes from MySQL
+             */
+            function initSubLayers(altTypes) {
+
+                altTypes.rows.forEach(function(altType){
+
+                    switch (altType.alttypeslug) {
+
+                        case 'County':
+                            initCountySubLayer();
+                            break;
+
+                        case 'City':
+                            initCitySubLayer(altType.alttypeslug);
+                            break;
+
+                        case 'School_District':
+                            initSchoolSubLayer(altType.alttypeslug);
+                            break;
+
+                        case 'Special_District':
+                            initSpecialSubLayer(altType.alttypeslug);
+                            break;
+
+                    }
+
+                });
+
+            }
+
+            /**
+             * Initialization County SubLayer
              *
              * Tooltip window
              * Tooltip work with 3.11-13 version, 3.15 is buggy
              */
-            function initCountyLayer() {
-                countyLayer = subLayers[0];
-                countyLayer.set({ 'interactivity': ['cartodb_id', 'slug', 'geometry'] }); // alias to template
-                countyLayer.setSQL('SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.slug + '_county');
+            function initCountySubLayer() {
+                countySubLayer = subLayers[0];
+                countySubLayer.set({ 'interactivity': ['cartodb_id', 'slug', 'geometry'] }); // alias to template
+                countySubLayer.setSQL('SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.slug + '_county');
 
                 countyTooltip = new cdb.geo.ui.Tooltip({
-                    layer: countyLayer,
+                    layer: countySubLayer,
                     template: '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"><p>{{slug}}</p></div></div>',
                     width: 200,
                     position: 'bottom|right'
@@ -6499,23 +6529,23 @@ $(function() {
             }
 
             /**
-             * Initialization City Layer
+             * Initialization City SubLayer
              *
              * Tooltip window
              * Tooltip work with 3.11-13 version, 3.15 is buggy
              */
-            function initCityLayer(altType) {
+            function initCitySubLayer(altType) {
 
-                cityLayer = layer.createSubLayer({
+                citySubLayer = layer.createSubLayer({
                     sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = '" + altType +"'",
                     cartocss: "#layer { marker-fill: #f00000; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug'
                 });
 
-                subLayers.push(cityLayer);
+                subLayers.push(citySubLayer);
 
                 cityTooltip = new cdb.geo.ui.Tooltip({
-                    layer: cityLayer,
+                    layer: citySubLayer,
                     template: '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"><p>{{slug}}</p></div></div>',
                     width: 200,
                     position: 'bottom|right'
@@ -6523,23 +6553,23 @@ $(function() {
             }
 
             /**
-             * Initialization School Layer
+             * Initialization School SubLayer
              *
              * Tooltip window
              * Tooltip work with 3.11-13 version, 3.15 is buggy
              */
-            function initSchoolLayer(altType) {
+            function initSchoolSubLayer(altType) {
 
-                schoolLayer = layer.createSubLayer({
+                schoolSubLayer = layer.createSubLayer({
                     sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = '" + altType +"'",
                     cartocss: "#layer { marker-fill: #add8e6; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug'
                 });
 
-                subLayers.push(schoolLayer);
+                subLayers.push(schoolSubLayer);
 
                 schoolTooltip = new cdb.geo.ui.Tooltip({
-                    layer: schoolLayer,
+                    layer: schoolSubLayer,
                     template: '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"><p>{{slug}}</p></div></div>',
                     width: 200,
                     position: 'bottom|right'
@@ -6547,224 +6577,235 @@ $(function() {
             }
 
             /**
-             * Initialization Special Layer
+             * Initialization Special SubLayer
              *
              * Tooltip window
              * Tooltip work with 3.11-13 version, 3.15 is buggy
              */
-            function initSpecialLayer(altType) {
+            function initSpecialSubLayer(altType) {
 
-                specialLayer = layer.createSubLayer({
+                specialSubLayer = layer.createSubLayer({
                     sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = '" + altType +"'",
                     cartocss: "#layer { marker-fill: #800080; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug'
                 });
 
-                subLayers.push(specialLayer);
+                subLayers.push(specialSubLayer);
 
                 specialTooltip = new cdb.geo.ui.Tooltip({
-                    layer: specialLayer,
+                    layer: specialSubLayer,
                     template: '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"><p>{{slug}}</p></div></div>',
                     width: 200,
                     position: 'bottom|right'
                 });
             }
 
-
-            /**
-             * It's necessary, otherwise county hover will not work
-             */
-            var $objectsPane = $('.leaflet-objects-pane');
-            var $tilePane = $('.leaflet-tile-pane');
-
-            $objectsPane.appendTo($tilePane);
-            $objectsPane.css({"z-index":"100"});
-
-
-            /**
-             * Extend CartoDB Tooltip
-             * Get Layer position
-             *
-             * @returns {int} Layer Position
-             */
-            cdb.geo.ui.Tooltip.prototype.getLayerIndex = function () {
-                return this.options.layer._position;
-            };
-
             /**
              * Add tooltips on page
              * @type {*[]}
              */
-            var tooltips = [countyTooltip, cityTooltip, schoolTooltip, specialTooltip];
+            function initTooltips() {
+                tooltips = [countyTooltip, cityTooltip, schoolTooltip, specialTooltip];
 
-            tooltips.forEach(function (tooltip) {
-                if (tooltip != null){
-                    $('#map_wrap').append(tooltip.render().el);
-                }
-            });
+                tooltips.forEach(function (tooltip) {
+                    if (tooltip != null){
+                        $('#map_wrap').append(tooltip.render().el);
+                    }
+                });
+            }
 
-            var hovers = [];
+            /**
+             * Move objectsPane above tilePane
+             * It's necessary, otherwise county hover will not work
+             */
+            function fixCartodbConstrain() {
+
+                var $objectsPane = $('.leaflet-objects-pane');
+                var $tilePane = $('.leaflet-tile-pane');
+
+                $objectsPane.appendTo($tilePane);
+                $objectsPane.css({"z-index":"100"});
+            }
 
             /**
              * Set handlers on SubLayers
              */
-            subLayers.forEach(function(layer) {
+            function initSublayerHandlers() {
 
-                // Allow events on layer
-                layer.setInteraction(true);
+                var hovers = [];
 
-                /**
-                 * Show tooltip on hover
-                 * Or highlight current county
-                 * It depends on the current Layer position
-                 */
-                layer.bind('mouseover', function(e, latlon, pxPos, data, layerIndex) {
+                subLayers.forEach(function(layer) {
 
-                    // TODO: Must be deleted, when data will be replaced, now it's hardcoded
-                    data.slug = data.slug.replace(/_/g, ' ');
-
-                    hovers[layerIndex] = 1;
+                    // Allow events on layer
+                    layer.setInteraction(true);
 
                     /**
-                     * If hover active
+                     * Show tooltip on hover
+                     * Or highlight current county
+                     * It depends on the current Layer position
                      */
-                    if(_.some(hovers)) {
+                    layer.bind('mouseover', function(e, latlon, pxPos, data, layerIndex) {
 
-                        $('.cartodb-map-wrapper').css('cursor', 'pointer');
+                        // TODO: Must be deleted, when data will be replaced, now it's hardcoded
+                        data.slug = data.slug.replace(/_/g, ' ');
+
+                        hovers[layerIndex] = 1;
 
                         /**
-                         * If hover on county layer
+                         * If hover active
                          */
-                        if (layerIndex == countyLayer._position) {
-                            drawAppropriatePolygon(data);
-                        } else {
-                            removeAllHoverShapes();
+                        if(_.some(hovers)) {
+
+                            $('.cartodb-map-wrapper').css('cursor', 'pointer');
+
+                            /**
+                             * If hover on county layer
+                             */
+                            if (layerIndex == countySubLayer._position) {
+                                drawAppropriatePolygon(data);
+                            } else {
+                                removeAllHoverShapes();
+                            }
+
+                            /**
+                             * Open current tooltip, close another
+                             */
+                            tooltips.forEach(function(tooltip){
+
+                                if (tooltip != null) {
+
+                                    if (tooltip.getLayerIndex() == layerIndex) {
+                                        tooltip.enable();
+                                    } else {
+                                        tooltip.disable();
+                                    }
+
+                                }
+
+                            })
+
                         }
 
-                        /**
-                         * Open current tooltip, close another
-                         */
-                        tooltips.forEach(function(tooltip){
-
-                            if (tooltip != null) {
-
-                                if (tooltip.getLayerIndex() == layerIndex) {
-                                    tooltip.enable();
-                                } else {
-                                    tooltip.disable();
-                                }
-
-                            }
-
-                        })
-
-                    }
-
-                });
-
-                /**
-                 * Hide tooltip on hover
-                 * Or remove highlight on current county
-                 * It depends on the current Layer position
-                 */
-                layer.bind('mouseout', function(layerIndex) {
-
-                    hovers[layerIndex] = 0;
+                    });
 
                     /**
-                     * If hover not active
+                     * Hide tooltip on hover
+                     * Or remove highlight on current county
+                     * It depends on the current Layer position
                      */
-                    if(!_.some(hovers)) {
-                        $('.cartodb-map-wrapper').css('cursor', 'auto');
+                    layer.bind('mouseout', function(layerIndex) {
 
-                        removeAllHoverShapes();
+                        hovers[layerIndex] = 0;
 
                         /**
-                         *  Close all tooltips, if cursor outside of layers
+                         * If hover not active
                          */
-                        tooltips.forEach(function(tooltip){
+                        if(!_.some(hovers)) {
+                            $('.cartodb-map-wrapper').css('cursor', 'auto');
 
-                            if (tooltip != null) {
+                            removeAllHoverShapes();
 
-                                if (tooltip.getLayerIndex() == layerIndex) {
-                                    tooltip.disable();
+                            /**
+                             *  Close all tooltips, if cursor outside of layers
+                             */
+                            tooltips.forEach(function(tooltip){
+
+                                if (tooltip != null) {
+
+                                    if (tooltip.getLayerIndex() == layerIndex) {
+                                        tooltip.disable();
+                                    }
+
                                 }
 
-                            }
+                            })
 
-                        })
-
-                    }
-                });
-
-                /**
-                 * Change window location after click on marker or county
-                 */
-                layer.on('featureClick', function (event, latlng, pos, data, layerIndex) {
+                        }
+                    });
 
                     /**
-                     * TODO: hardcoded, must be replaced on multi envirenment
-                     * @type {string}
+                     * Change window location after click on marker or county
                      */
-                    var altTypeSlug = '';
-                    switch (layerIndex) {
-                        case 0:
-                            altTypeSlug = 'County';
-                            break;
+                    layer.on('featureClick', function (event, latlng, pos, data, layerIndex) {
 
-                        case 1:
-                            altTypeSlug = 'City';
-                            break;
+                        /**
+                         * TODO: hardcoded, must be replaced on multi envirenment
+                         * @type {string}
+                         */
+                        var altTypeSlug = '';
+                        switch (layerIndex) {
+                            case 0:
+                                altTypeSlug = 'County';
+                                break;
 
-                        case 2:
-                            altTypeSlug = 'School_District';
-                            break;
+                            case 1:
+                                altTypeSlug = 'City';
+                                break;
 
-                        case 3:
-                            altTypeSlug = 'Special_District';
-                            break;
-                    }
+                            case 2:
+                                altTypeSlug = 'School_District';
+                                break;
 
-                    var governmentSlug = '';
-                    governmentSlug = data.slug.replace(/ /g, '_');
+                            case 3:
+                                altTypeSlug = 'Special_District';
+                                break;
+                        }
 
-                    if (altTypeSlug === '' || governmentSlug === '') {
-                        alert('Please verify your data, altTypeSlug or governmentSlug may can not defined, more info in console.log');
-                        console.log(data);
-                        return false;
-                    }
+                        var governmentSlug = '';
+                        governmentSlug = data.slug.replace(/ /g, '_');
 
-                    window.location.pathname = altTypeSlug + '/' + governmentSlug;
+                        if (altTypeSlug === '' || governmentSlug === '') {
+                            alert('Please verify your data, altTypeSlug or governmentSlug may can not defined, more info in console.log');
+                            console.log(data);
+                            return false;
+                        }
+
+                        window.location.pathname += altTypeSlug + '/' + governmentSlug;
+                    });
+
                 });
 
-            });
+            }
 
             /**
              * Toggle layers
              */
-            $('.legend-item').click(function() {
-                $(this).toggleClass('selected');
-                LayerActions[$(this).attr('id')]();
-            });
+            function initLegendHandlers() {
 
-            var LayerActions = {
-                counties: function(){
-                    countyLayer.toggle();
-                    return true;
-                },
-                cities: function(){
-                    cityLayer.toggle();
-                    return true;
-                },
-                school: function(){
-                    schoolLayer.toggle();
-                    return true;
-                },
-                special: function(){
-                    specialLayer.toggle();
-                    return true;
-                }
-            };
+                $('.legend-item').click(function() {
+                    $(this).toggleClass('selected');
+                    LayerActions[$(this).attr('id')]();
+                });
+
+                var LayerActions = {
+                    counties: function(){
+                        countySubLayer.toggle();
+                        return true;
+                    },
+                    cities: function(){
+                        citySubLayer.toggle();
+                        return true;
+                    },
+                    school: function(){
+                        schoolSubLayer.toggle();
+                        return true;
+                    },
+                    special: function(){
+                        specialSubLayer.toggle();
+                        return true;
+                    }
+                };
+
+            }
+
+            /**
+             * Show map, legend, hide loader
+             */
+            function loadFinished() {
+                $('#map').css({"opacity": 1});
+                $('#menu').css({"opacity": 1});
+                $('.loader').hide();
+            }
 
             // Polygon variables and functions
             var polygon = {};

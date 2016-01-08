@@ -54,7 +54,7 @@ $(function() {
         // Pressed mouse or enter button
         $typeahead.bind("typeahead:selected", function(obj, selectedItemData) {
             $typeahead.typeahead('val', selectedItemData.gov_name);
-            window.location.pathname = [selectedItemData.altTypeSlug, selectedItemData.slug].join('/');
+            window.location.pathname += [selectedItemData.altTypeSlug, selectedItemData.slug].join('/');
         });
 
         // Move cursor via arrows keys

@@ -1,17 +1,37 @@
-{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
 
 {% block title %}{{ parent() }} - style{% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <a class="btn btn-default" href="{{ path('govwiki_admin_main_show') }}">
-            Back
-        </a>
-        {{ form_end(form) }}
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-8 col-md-offset-2">
+
+            {# Panel #}
+            <div class="panel panel-primary">
+
+                {# Header #}
+                <div class="panel-heading">
+                    <h3 class="panel-title">Environment list</h3>
+                </div>
+
+                {# Body #}
+                <div class="panel-body">
+
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <a class="btn btn-default" href="{{ path('govwiki_admin_main_show') }}">
+                        Back
+                    </a>
+                    {{ form_end(form) }}
+                </div>
+
+            </div>
+
+        </div>
     </div>
+
 {% endblock %}
 
 
