@@ -10,6 +10,7 @@ use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Form\EnvironmentType;
 use GovWiki\DbBundle\Form\MapType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\Collection;
 
@@ -158,8 +159,6 @@ class WizardController extends AbstractGovWikiAdminController
             $itemQueueId = $cartoDbApi->importDataset($file, true);
             $map->setCountyFile(null);
 
-            unlink($file);
-
             $map->setItemQueueId($itemQueueId);
             $this->storeEnvironmentEntity($environment);
 
@@ -192,6 +191,19 @@ class WizardController extends AbstractGovWikiAdminController
             'itemQueueId' => $itemQueueId,
             'url' => $this->generateUrl('govwiki_admin_wizard_complete'),
         ];
+    }
+
+    /**
+     * @Configuration\Route("/map/check", methods={"GET"})
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return JsonResponse
+     */
+    public function importAction(Request $request)
+    {
+        return new JsonResponse($this->get(CartoDbServices::CARTO_DB_API)
+            ->checkImportProcess($request->query->get('item_queue_id')));
     }
 
     /**

@@ -23,7 +23,9 @@
              */
             var check = setInterval(function() {
                 $.ajax({
-                    url: '/api/v1/map/check?item_queue_id={{ itemQueueId }}'
+                    url: '{{ govwiki_path('govwiki_admin_wizard_import', {
+                        item_queue_id: itemQueueId
+                    }) }}'
                 }).done(function(data) {
                     console.log(data);
                     if (data && (data.success === true) && (data.state === 'complete')) {
