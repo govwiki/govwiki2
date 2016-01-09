@@ -153,28 +153,19 @@ class WizardController extends AbstractGovWikiAdminController
 
             /** @var CartoDbApi $cartoDbApi */
             $cartoDbApi = $this->get(CartoDbServices::CARTO_DB_API);
-            /*
-             * Upload county dataset to CartoDB.
-             */
+
             $file = $map->getCountyFile();
             $file->move($directory, $filename);
             $file = $directory . $filename;
+
+            /*
+             * Upload county dataset to CartoDB.
+             */
             $itemQueueId = $cartoDbApi->importDataset($file, true);
             $map->setCountyFile(null);
 
             $map->setItemQueueId($itemQueueId);
             $this->storeEnvironmentEntity($environment);
-
-            /*
-             * Add counties to government table.
-             */
-//            $data = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER)
-//                ->getTransformer('GeoJson')
-//                ->transform($file);
-//            foreach ($data as $data) {
-//                $government = new Government();
-//                $government->getName()
-//            }
 
             return $this->nextStep();
         }

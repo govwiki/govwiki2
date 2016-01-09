@@ -169,6 +169,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     {
         $formats = $this->em->getRepository('GovWikiDbBundle:Format')
             ->get($this->environment, true);
+        $formats = [];
 
         /*
          * Get array of fields and array of ranked fields.
@@ -197,17 +198,18 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         $qb = $this->em->getRepository('GovWikiDbBundle:Government')
             ->createQueryBuilder('Government');
 
-        $ranks = $qb
-            ->select($rankedFields)
-            ->getQuery()
-            ->getArrayResult();
-
         $government['ranks'] = [];
+        if (count($rankedFields) > 0) {
+            $ranks = $qb
+                ->select($rankedFields)
+                ->getQuery()
+                ->getArrayResult();
 
-        if (count($ranks) > 0) {
-            $ranks = $ranks[0];
-            foreach ($ranks as $field => $value) {
-                $government['ranks'][$field] = [ $government[$field], $value ];
+            if (count($ranks) > 0) {
+                $ranks = $ranks[0];
+                foreach ($ranks as $field => $value) {
+                    $government['ranks'][$field] = [ $government[$field], $value ];
+                }
             }
         }
         $formats = Functions::groupBy($formats, [ 'tab_name', 'field' ]);

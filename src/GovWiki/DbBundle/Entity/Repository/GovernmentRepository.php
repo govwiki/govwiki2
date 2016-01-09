@@ -241,7 +241,7 @@ class GovernmentRepository extends EntityRepository
     public function findGovernment($environment, $altTypeSlug, $slug, array $fields)
     {
         $fields = array_merge(
-            [ 'id', 'altType', 'altTypeSlug', 'name', 'slug', 'type', 'wikipediaPageName' , 'latestAuditUrl', 'transparentCaliforniaPageName'],
+            [ 'id', 'altType', 'altTypeSlug', 'name', 'slug', 'type', 'wikipediaPageName' , 'latestAuditUrl', 'transparentCaliforniaPageName', 'stateId'],
             $fields
         );
 

@@ -127,14 +127,18 @@ class GeoJsonTransformer implements FileTransformerInterface
          * Except only 'Point' type.
          */
         $isPointGeometry = array_key_exists('geometry', $row) &&
-            array_key_exists('type', $row['geometry']) &&
-            ('Point' === $row['geometry']['type']);
+            array_key_exists('type', $row['geometry']);
         if ($isTypeDefined && $isPointGeometry &&
             array_key_exists('coordinates', $row['geometry'])) {
-            return array_merge($row['properties'], [
-                'longitude' => $row['geometry']['coordinates'][0],
-                'latitude' => $row['geometry']['coordinates'][1],
-            ]);
+
+            if ('Point' === $row['geometry']['type']) {
+                return array_merge($row['properties'], [
+                    'longitude' => $row['geometry']['coordinates'][0],
+                    'latitude'  => $row['geometry']['coordinates'][1],
+                ]);
+            }
+
+            return $row['properties'];
         }
 
         throw new InvalidGeoJsonException($row);
