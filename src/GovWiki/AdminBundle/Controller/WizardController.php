@@ -5,10 +5,13 @@ namespace GovWiki\AdminBundle\Controller;
 use CartoDbBundle\CartoDbServices;
 use CartoDbBundle\Service\CartoDbApi;
 use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Form\EnvironmentType;
 use GovWiki\DbBundle\Form\MapType;
+use GovWiki\DbBundle\GovWikiDbServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -161,6 +164,17 @@ class WizardController extends AbstractGovWikiAdminController
 
             $map->setItemQueueId($itemQueueId);
             $this->storeEnvironmentEntity($environment);
+
+            /*
+             * Add counties to government table.
+             */
+//            $data = $this->get(GovWikiAdminServices::TRANSFORMER_MANAGER)
+//                ->getTransformer('GeoJson')
+//                ->transform($file);
+//            foreach ($data as $data) {
+//                $government = new Government();
+//                $government->getName()
+//            }
 
             return $this->nextStep();
         }
