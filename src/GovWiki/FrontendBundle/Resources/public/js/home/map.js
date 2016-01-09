@@ -264,7 +264,7 @@ $(function() {
 
                 var hovers = [];
 
-                subLayers.forEach(function(layer) {
+                subLayers.forEach(function (layer) {
 
                     // Allow events on layer
                     layer.setInteraction(true);
@@ -274,7 +274,7 @@ $(function() {
                      * Or highlight current county
                      * It depends on the current Layer position
                      */
-                    layer.bind('mouseover', function(e, latlon, pxPos, data, layerIndex) {
+                    layer.bind('mouseover', function (e, latlon, pxPos, data, layerIndex) {
 
                         // TODO: Must be deleted, when data will be replaced, now it's hardcoded
                         data.slug = data.slug.replace(/_/g, ' ');
@@ -284,7 +284,7 @@ $(function() {
                         /**
                          * If hover active
                          */
-                        if(_.some(hovers)) {
+                        if (_.some(hovers)) {
 
                             $('.cartodb-map-wrapper').css('cursor', 'pointer');
 
@@ -300,7 +300,7 @@ $(function() {
                             /**
                              * Open current tooltip, close another
                              */
-                            tooltips.forEach(function(tooltip){
+                            tooltips.forEach(function (tooltip) {
 
                                 if (tooltip != null) {
 
@@ -323,14 +323,14 @@ $(function() {
                      * Or remove highlight on current county
                      * It depends on the current Layer position
                      */
-                    layer.bind('mouseout', function(layerIndex) {
+                    layer.bind('mouseout', function (layerIndex) {
 
                         hovers[layerIndex] = 0;
 
                         /**
                          * If hover not active
                          */
-                        if(!_.some(hovers)) {
+                        if (!_.some(hovers)) {
                             $('.cartodb-map-wrapper').css('cursor', 'auto');
 
                             removeAllHoverShapes();
@@ -338,7 +338,7 @@ $(function() {
                             /**
                              *  Close all tooltips, if cursor outside of layers
                              */
-                            tooltips.forEach(function(tooltip){
+                            tooltips.forEach(function (tooltip) {
 
                                 if (tooltip != null) {
 
@@ -391,6 +391,8 @@ $(function() {
                         }
 
                         window.location.pathname += altTypeSlug + '/' + governmentSlug;
+                    });
+
                 });
 
             }
@@ -461,8 +463,8 @@ $(function() {
             }
 
         })
+        // Not work, cartodb internal error
         .on('error', function() {
-            console.log('yes');
             return cartodbError()
         });
 
