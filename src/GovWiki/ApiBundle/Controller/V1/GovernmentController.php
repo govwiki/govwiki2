@@ -3,9 +3,9 @@
 namespace GovWiki\ApiBundle\Controller\V1;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * GovernmentController
@@ -29,6 +29,27 @@ class GovernmentController extends AbstractGovWikiApiController
             [ 'government' ]
         );
 
+    }
+
+    /**
+     * @Route("/search")
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function searchAction(Request $request)
+    {
+        $search = $request->query->get('search', null);
+        if (null === $search) {
+            return $this->badRequestResponse(
+                'Provide required query parameter \'search\''
+            );
+        }
+
+        return $this->successResponse(
+            $this->environmentManager()->searchGovernment($search)
+        );
     }
 
 //    /**

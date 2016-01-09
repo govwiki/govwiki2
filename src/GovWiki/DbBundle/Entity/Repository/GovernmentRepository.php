@@ -317,6 +317,37 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
+     * Search government with name like given in partOfName parameter.
+     *
+     * @param string $environment Environment name.
+     * @param string $partOfName  Part of government name.
+     *
+     * @return array
+     */
+    public function search($environment, $partOfName)
+    {
+        $qb = $this->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select(
+                'partial Government.{id, name, type, state, slug, altTypeSlug}'
+            )
+            ->leftJoin('Government.environment', 'Environment')
+            ->where(
+                $expr->andX(
+                    $expr->eq('Environment.slug', $expr->literal($environment)),
+                    $expr->like(
+                        'Government.name',
+                        $expr->literal('%'.$partOfName.'%')
+                    )
+                )
+            )
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
      * Get markers for map.
      *
      * @param  array   $altTypes Ignored altTypes.

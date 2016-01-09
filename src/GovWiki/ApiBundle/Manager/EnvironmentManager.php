@@ -9,6 +9,7 @@ use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Map;
+use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\Utils\Functions;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -213,6 +214,18 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             'formats' => $formats,
             'tabs' => array_keys($formats),
         ];
+    }
+
+    /**
+     * @param string $partOfName Part of government name.
+     *
+     * @return array
+     */
+    public function searchGovernment($partOfName)
+    {
+        /** @var GovernmentRepository $repository */
+        $repository = $this->em->getRepository('GovWikiDbBundle:Government');
+        return $repository->search($this->environment, $partOfName);
     }
 
     /**

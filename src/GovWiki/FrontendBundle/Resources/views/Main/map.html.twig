@@ -142,8 +142,11 @@
 
     <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.13/cartodb.js"></script>
 
-    <script> window.gw.map = '{{ map | raw }}'; </script>
-    <script> window.gw.environment = '{{ environment }}' </script>
+    <script>
+        window.gw.map = '{{ map | raw }}';
+        window.gw.environment = '{{ environment }}';
+        window.gw.searchUrl = '{{ govwiki_path('govwiki_api_v1_government_search') }}';
+    </script>
 
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
                     '@GovWikiFrontendBundle/Resources/public/js/vendor/typeahead.js'

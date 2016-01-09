@@ -29,6 +29,19 @@ abstract class AbstractGovWikiApiController extends Controller
     }
 
     /**
+     * @param string $message Error message.
+     *
+     * @return JsonResponse
+     */
+    protected function badRequestResponse($message)
+    {
+        return new JsonResponse([
+            'status' => 'error',
+            'message' => $message
+        ], 400);
+    }
+
+    /**
      * @param array|object|string $data Sending data.
      *
      * @return JsonResponse

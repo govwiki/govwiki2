@@ -20,9 +20,7 @@ services:
 
     govwiki_api.environment.determinator.path:
         class: GovWiki\ApiBundle\Determinator\PathDeterminator
-        arguments:
-            - @router
-            - @request_stack
+        arguments: [ @request_stack ]
         tags:
             - { name: environment.determinator, alias: path }
 
