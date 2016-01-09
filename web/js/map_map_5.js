@@ -355,8 +355,7 @@ $(function() {
                             break;
                     }
 
-                    var governmentSlug = '';
-                    governmentSlug = data.slug.replace(/ /g, '_');
+                    var governmentSlug = data.slug.replace(/ /g, '_');
 
                     if (altTypeSlug === '' || governmentSlug === '') {
                         alert('Please verify your data, altTypeSlug or governmentSlug may can not defined, more info in console.log');
@@ -364,7 +363,7 @@ $(function() {
                         return false;
                     }
 
-                    window.location.pathname = altTypeSlug + '/' + governmentSlug;
+                    window.location.pathname += altTypeSlug + '/' + governmentSlug;
                 });
 
             });

@@ -9,6 +9,7 @@ use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Map;
+use GovWiki\DbBundle\Utils\Functions;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -165,11 +166,47 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getGovernment($altTypeSlug, $slug)
     {
-        $government = $this->em->getRepository('GovWikiDbBundle:Government')
-            ->findGovernment($this->environment, $altTypeSlug, $slug);
-
         $formats = $this->em->getRepository('GovWikiDbBundle:Format')
-            ->get($this->environment);
+            ->get($this->environment, true);
+
+        /*
+         * Get array of fields and array of ranked fields.
+         */
+        $fields = [];
+        $rankedFields = [];
+        foreach ($formats as $format) {
+            $fields[] = $format['field'];
+            if (true === $format['ranked']) {
+                $rankedFieldName = $format['field'] . 'Rank';
+                $fields[] = $rankedFieldName;
+                $rankedFields[] = 'MAX(Government.'. $rankedFieldName .') as '.
+                    $rankedFieldName;
+            }
+        }
+
+        $government = $this->em->getRepository('GovWikiDbBundle:Government')
+            ->findGovernment($this->environment, $altTypeSlug, $slug, $fields);
+
+        /*
+         * Compute max ranks.
+         */
+        $qb = $this->em->getRepository('GovWikiDbBundle:Government')
+            ->createQueryBuilder('Government');
+
+        $ranks = $qb
+            ->select($rankedFields)
+            ->getQuery()
+            ->getArrayResult();
+
+        $government['ranks'] = [];
+
+        if (count($ranks) > 0) {
+            $ranks = $ranks[0];
+            foreach ($ranks as $field => $value) {
+                $government['ranks'][$field] = [ $government[$field], $value ];
+            }
+        }
+        $formats = Functions::groupBy($formats, [ 'tab_name', 'field' ]);
 
         return [
             'government' => $government,

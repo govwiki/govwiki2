@@ -41,6 +41,9 @@ twig:
     strict_variables: "%kernel.debug%"
     form:
         resources: ['bootstrap_3_layout.html.twig']
+    form_themes:
+        - GovWikiDbBundle:Form:theme.html.twig
+
 #    exception_controller:  GovWikiApiBundle:Exception:showException
 
 # Assetic Configuration

@@ -133,19 +133,25 @@ class EnvironmentRepository extends EntityRepository
      */
     public function getStyle($environment)
     {
+        if (null === $environment) {
+            return [];
+        }
+
         $qb = $this->createQueryBuilder('Environment');
         $expr = $qb->expr();
 
         try {
-            return $qb
+            $style = $qb
                 ->select('Environment.style')
                 ->where(
                     $expr->eq('Environment.slug', $expr->literal($environment))
                 )
                 ->getQuery()
                 ->getSingleResult()['style'];
+
+            return $style;
         } catch (ORMException $e) {
-            return null;
+            return [];
         }
     }
 }

@@ -234,17 +234,24 @@ class GovernmentRepository extends EntityRepository
      * @param string $environment Environment name.
      * @param string $altTypeSlug Slugged government alt type.
      * @param string $slug        Slugged government name.
+     * @param array  $fields      Array of government fields.
      *
-     * @return Government
+     * @return array
      */
-    public function findGovernment($environment, $altTypeSlug, $slug)
+    public function findGovernment($environment, $altTypeSlug, $slug, array $fields)
     {
+        $fields = array_merge(
+            [ 'id', 'altType', 'altTypeSlug', 'name', 'slug', 'type' ],
+            $fields
+        );
+
         $qb = $this->createQueryBuilder('Government');
         $expr = $qb->expr();
 
         $data = $qb
-            ->addSelect(
-                'FinData, CaptionCategory, MaxRank, ElectedOfficial',
+            ->select(
+                'partial Government.{'. implode(',', $fields) .'}',
+                'FinData, CaptionCategory, ElectedOfficial',
                 'Fund'
             )
             ->leftJoin('Government.finData', 'FinData')
@@ -252,12 +259,6 @@ class GovernmentRepository extends EntityRepository
             ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
             ->leftJoin('FinData.fund', 'Fund')
             ->leftJoin('Government.environment', 'Environment')
-            ->join(
-                'GovWikiDbBundle:MaxRank',
-                'MaxRank',
-                Join::WITH,
-                $expr->eq('MaxRank.altType', 'Government.altType')
-            )
             ->where(
                 $expr->andX(
                     $expr->eq(
@@ -310,87 +311,9 @@ class GovernmentRepository extends EntityRepository
         }
 
         unset($government['finData']);
-
-        /*
-         * Combine data.
-         */
-
-        /*
-         * Prepare ranks.
-         */
-        $ranks = [];
-        unset($data[1]['id'], $data[1]['altType']);
-
-        foreach ($data[1] as $key => $maxValue) {
-            if (null !== $maxValue) {
-                $fieldName = str_replace('Max', '', $key);
-                $ranks[$fieldName] = [$government[$fieldName], $maxValue];
-            }
-        }
-
-        $government['ranks'] = $ranks;
         $government['financialStatements'] = $financialStatements;
 
         return $government;
-
-//
-//          OLD CODE.
-//
-//        $em = $this->getEntityManager();
-//
-//        /** @var Government $government */
-//        $government = $this->findOneBy(['altTypeSlug' => $altTypeSlug, 'slug' => $slug]);
-//        $maxRanks   = $em->getRepository('GovWikiDbBundle:MaxRank')->findOneBy([
-//            'altType' => $government->getAltType(),
-//        ]);
-//
-//        $serializedGovernment = $serializer->serialize($government, 'json', SerializationContext::create()->enableMaxDepthChecks());
-//        $serializedMaxRanks   = $serializer->serialize($maxRanks, 'json');
-//
-//        $finData = $em->createQuery(
-//            'SELECT fd FROM GovWikiDbBundle:FinData fd
-//            LEFT JOIN fd.government g
-//            LEFT JOIN fd.captionCategory cc
-//            WHERE g = :government
-//            ORDER BY cc.id, fd.displayOrder'
-//        )->setParameter('government', $government)->getResult();
-//        foreach ($finData as $finDataItem) {
-//            $financialStatementsGroups[$finDataItem->getCaption()][] = $finDataItem;
-//        }
-//
-//        $i = 0;
-//        foreach ($financialStatementsGroups as $caption => $finData) {
-//            foreach ($finData as $finDataItem) {
-//                $financialStatements[$i]['caption'] = $caption;
-//                $financialStatements[$i]['category_name'] = $finDataItem->getCaptionCategory()->getName();
-//                $financialStatements[$i]['display_order'] = $finDataItem->getDisplayOrder();
-//                if (empty($financialStatements[$i]['genfund'])) {
-//                    if (empty($finDataItem->getFund())) {
-//                        $financialStatements[$i]['genfund'] = $finDataItem->getDollarAmount();
-//                    } elseif ($finDataItem->getFund()->getName() == 'General Fund') {
-//                        $financialStatements[$i]['genfund'] = $finDataItem->getDollarAmount();
-//                    }
-//                }
-//                if (empty($financialStatements[$i]['otherfunds'])) {
-//                    if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Other') {
-//                        $financialStatements[$i]['otherfunds'] = $finDataItem->getDollarAmount();
-//                    }
-//                }
-//                if (empty($financialStatements[$i]['totalfunds'])) {
-//                    if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Total') {
-//                        $financialStatements[$i]['totalfunds'] = $finDataItem->getDollarAmount();
-//                    }
-//                }
-//            }
-//            $i++;
-//        }
-//
-//        $decoded                         = json_decode($serializedGovernment, true);
-//        $decoded['financial_statements'] = $financialStatements;
-//        $decoded['max_ranks']            = json_decode($serializedMaxRanks, true);
-//        $serializedGovernment            = json_encode($decoded);
-//
-//        return $serializedGovernment;
     }
 
     /**
