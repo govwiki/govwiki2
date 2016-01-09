@@ -6222,6 +6222,7 @@ function parseStyles(element) {
     var $element = $('.' + block);
     var content = element.content;
     var mods = element.mods;
+    var attrs = element.attrs;
 
     /**
      * Apply styles or hover on current $element
@@ -6257,6 +6258,25 @@ function parseStyles(element) {
                 $element.mouseout(function () {
                     $(this).css(css);
                 });
+            }
+
+        });
+
+    }
+
+    /**
+     * Set/Modify attrs on current $element
+     */
+    if (attrs != null) {
+
+        attrs.forEach(function (attrCollection) {
+
+            for (var attrName in attrCollection) {
+                if (attrCollection.hasOwnProperty(attrName)) {
+
+                    $element.attr(attrName, attrCollection[attrName]);
+
+                }
             }
 
         });
@@ -6321,7 +6341,7 @@ $(function() {
         };
     };
 
-    $.get('/data/search.json', function (data){
+    $.get('/data/search/california.json', function (data){
 
         var searchValue = '';
 

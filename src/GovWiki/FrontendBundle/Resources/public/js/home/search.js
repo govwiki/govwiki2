@@ -26,7 +26,7 @@ $(function() {
         };
     };
 
-    $.get('/data/search.json', function (data){
+    $.get('/data/search/california.json', function (data){
 
         var searchValue = '';
 
