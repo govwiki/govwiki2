@@ -187,6 +187,9 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
         $government = $this->em->getRepository('GovWikiDbBundle:Government')
             ->findGovernment($this->environment, $altTypeSlug, $slug, $fields);
+        if (null === $government) {
+            return [];
+        }
 
         /*
          * Compute max ranks.

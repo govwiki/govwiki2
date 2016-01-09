@@ -236,7 +236,7 @@ class GovernmentRepository extends EntityRepository
      * @param string $slug        Slugged government name.
      * @param array  $fields      Array of government fields.
      *
-     * @return array
+     * @return array|null
      */
     public function findGovernment($environment, $altTypeSlug, $slug, array $fields)
     {
@@ -274,6 +274,10 @@ class GovernmentRepository extends EntityRepository
             )
             ->getQuery()
             ->getArrayResult();
+
+        if (count($data) <= 0) {
+            return null;
+        }
 
         $government = $data[0];
 
