@@ -43,6 +43,8 @@ twig:
         resources: ['bootstrap_3_layout.html.twig']
     form_themes:
         - GovWikiDbBundle:Form:theme.html.twig
+    globals:
+        carto_username: %carto_db.account%
 
 #    exception_controller:  GovWikiApiBundle:Exception:showException
 

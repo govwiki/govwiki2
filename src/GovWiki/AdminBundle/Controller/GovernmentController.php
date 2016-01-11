@@ -6,6 +6,7 @@ use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\GovWikiDbServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,11 +71,21 @@ class GovernmentController extends AbstractGovWikiAdminController
         $manager = $this->getManager();
         $government = $manager->create();
 
-        $form = $this->createForm('government', $government);
+        $form = $this->createFormBuilder()
+            ->add('main', 'government')
+            ->add('extension', 'ext_government')
+            ->setData([ 'main' => $government, 'extension' =>[] ])
+            ->getForm();
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $manager->update($government);
+
+            $data = $form->getData()['extension'];
+            $data['government_id'] = $government->getId();
+
+            $this->adminEnvironmentManager()->addToGovernment($data);
+
             $this->addFlash(
                 'admin_success',
                 'Government '. $government->getName() .' successfully created'
@@ -85,9 +96,7 @@ class GovernmentController extends AbstractGovWikiAdminController
 
         return [
             'form' => $form->createView(),
-            'formats' => $this
-                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
-                ->getFormats(),
+            'formats' => $this->adminEnvironmentManager()->getFormats(),
         ];
     }
 
@@ -105,11 +114,20 @@ class GovernmentController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, Government $government)
     {
-        $form = $this->createForm('government', $government);
+        $data = $this->adminEnvironmentManager()
+            ->getGovernment($government->getId());
+
+        $form = $this->createFormBuilder()
+            ->add('main', 'government')
+            ->add('extension', 'ext_government')
+            ->setData([ 'main' => $government, 'extension' => $data ])
+            ->getForm();
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->getManager()->update($government);
+            $this->adminEnvironmentManager()
+                ->updateGovernment($form->getData()['extension']);
 
             $this->addFlash('admin_success', 'Government '.
                 $government->getName() .' saved');
@@ -119,9 +137,7 @@ class GovernmentController extends AbstractGovWikiAdminController
 
         return [
             'form' => $form->createView(),
-            'formats' => $this
-                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
-                ->getFormats(),
+            'formats' => $this->adminEnvironmentManager()->getFormats(),
         ];
     }
 
@@ -137,6 +153,7 @@ class GovernmentController extends AbstractGovWikiAdminController
         $em = $this->getDoctrine()->getManager();
 
         $em->remove($this->getManager()->getReference($id));
+        $this->adminEnvironmentManager()->deleteFromGovernment($id);
         $em->flush();
 
         $this->addFlash('admin_success', 'Government removed');

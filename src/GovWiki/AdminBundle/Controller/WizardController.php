@@ -4,6 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
 use CartoDbBundle\Service\CartoDbApi;
+use Doctrine\DBAL\Connection;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Environment;
@@ -35,10 +36,10 @@ class WizardController extends AbstractGovWikiAdminController
      * @var array
      */
     private static $wizardSteps = [
-        'step1',
-        'step2',
-        'step3',
-        'step4',
+        'step1', // Create new environment.
+        'step2', // Create new map.
+        'step3', // Edit styles.
+//        'step4', // Import data (Not required).
         'end',
     ];
 
@@ -148,26 +149,9 @@ class WizardController extends AbstractGovWikiAdminController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $directory = $this->getParameter('kernel.logs_dir') .'/';
-            $filename = "{$environment->getSlug()}_county.json";
-
-            /** @var CartoDbApi $cartoDbApi */
-            $cartoDbApi = $this->get(CartoDbServices::CARTO_DB_API);
-
-            $file = $map->getCountyFile();
-            $file->move($directory, $filename);
-            $file = $directory . $filename;
-
-            /*
-             * Upload county dataset to CartoDB.
-             */
-            $itemQueueId = $cartoDbApi->importDataset($file, true);
-            $map->setCountyFile(null);
-
-            $map->setItemQueueId($itemQueueId);
             $this->storeEnvironmentEntity($environment);
 
-            return $this->nextStep();
+            return $this->forward('GovWikiAdminBundle:Wizard:create');
         }
 
         return [
@@ -178,23 +162,21 @@ class WizardController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/map/import", name="step3")
      * @Configuration\Template()
      *
-     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @return array[]
      */
-    public function checkAction()
+    public function createAction()
     {
-        $itemQueueId = $this->getEnvironmentEntity()->getMap()
-            ->getItemQueueId();
-
-        if (null === $itemQueueId) {
-            return $this->nextStep();
-        }
+        $tmpDir = $this->getParameter('kernel.root_dir') .
+            '/../web/img/';
+        $newFile = $tmpDir . $this->getEnvironmentEntity()->getSlug() . '.json';
+        copy($tmpDir . 'empty.json', $newFile);
 
         return [
-            'itemQueueId' => $itemQueueId,
-            'url' => $this->generateUrl('govwiki_admin_wizard_complete'),
+            'itemQueueId' => $this->get(CartoDbServices::CARTO_DB_API)
+                ->importDataset($newFile, true),
+            'next' => $this->generateUrl('govwiki_admin_wizard_complete'),
         ];
     }
 
@@ -212,14 +194,13 @@ class WizardController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/map/import/complete")
+     * @Configuration\Route("/map/create/complete")
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function completeAction()
+    public function completeAction(Request $request)
     {
-        $itemQueueId = $this->getEnvironmentEntity()->getMap()
-            ->getItemQueueId();
+        $itemQueueId = $request->query->get('item_queue_id');
 
         $api = $this->get(CartoDbServices::CARTO_DB_API);
         $vizUrl =  $api
@@ -237,8 +218,57 @@ class WizardController extends AbstractGovWikiAdminController
         return $this->nextStep();
     }
 
+//    /**
+//     * @Configuration\Route("/map/import", name="step3")
+//     * @Configuration\Template()
+//     *
+//     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+//     */
+//    public function checkAction()
+//    {
+//        $itemQueueId = $this->getEnvironmentEntity()->getMap()
+//            ->getItemQueueId();
+//
+//        if (null === $itemQueueId) {
+//            return $this->nextStep();
+//        }
+//
+//        return [
+//            'itemQueueId' => $itemQueueId,
+//            'url' => $this->generateUrl('govwiki_admin_wizard_complete'),
+//        ];
+//    }
+//
+//
+//
+//    /**
+//     * @Configuration\Route("/map/import/complete")
+//     *
+//     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+//     */
+//    public function completeAction()
+//    {
+//        $itemQueueId = $this->getEnvironmentEntity()->getMap()
+//            ->getItemQueueId();
+//
+//        $api = $this->get(CartoDbServices::CARTO_DB_API);
+//        $vizUrl =  $api
+//            ->getVizUrl($api->checkImportProcess($itemQueueId));
+//
+//        $environment = $this->getEnvironmentEntity();
+//
+//        $environment->getMap()
+//            ->setItemQueueId(null)
+//            ->setCreated(true)
+//            ->setVizUrl($vizUrl);
+//
+//        $this->storeEnvironmentEntity($environment);
+//
+//        return $this->nextStep();
+//    }
+
     /**
-     * @Configuration\Route("/style", name="step4")
+     * @Configuration\Route("/style", name="step3")
      * @Configuration\Template()
      *
      * @param Request $request A Request instance.
@@ -268,6 +298,31 @@ class WizardController extends AbstractGovWikiAdminController
     }
 
     /**
+     * @Configuration\Route("/style", name="step4")
+     * @Configuration\Template()
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return array
+     */
+    public function dataAction(Request $request)
+    {
+        $form = $this->createFormBuilder()
+            ->add('dataFile', 'file')
+            ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $dataFile = $form->getData()['dataFile'];
+        }
+
+        return [
+            'form' => $form->createView(),
+            'back_url' => $this->prevUrl(),
+        ];
+    }
+
+    /**
      * @Configuration\Route("/complete", name="end")
      *
      * @return array
@@ -284,6 +339,8 @@ class WizardController extends AbstractGovWikiAdminController
 
         $this->setStep(0);
         $this->storeEnvironmentEntity(null);
+        $this->adminEnvironmentManager()
+            ->createGovernmentTable($environment->getSlug());
 
         return $this->redirectToRoute('govwiki_admin_main_show', [
             'environment' => $environment->getSlug(),

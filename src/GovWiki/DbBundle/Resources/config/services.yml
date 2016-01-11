@@ -20,6 +20,7 @@ services:
         tags:
             - { name: form.type, alias: alt_type }
 
+
     govwiki_db.form.type.color:
         class: GovWiki\DbBundle\Form\Type\ColorType
         tags:
@@ -30,3 +31,15 @@ services:
         arguments: [@govwiki_admin.manager.environment]
         tags:
             - { name: form.type, alias: government }
+
+    govwiki_db.form.ext_government:
+        class: GovWiki\DbBundle\Form\ExtGovernmentType
+        arguments: [@govwiki_admin.manager.environment]
+        tags:
+            - { name: form.type, alias: ext_government }
+
+    govwiki_db.form.format:
+        class: GovWiki\DbBundle\Form\FormatType
+        arguments: [@govwiki_admin.manager.environment]
+        tags:
+            - { name: form.type, alias: format }

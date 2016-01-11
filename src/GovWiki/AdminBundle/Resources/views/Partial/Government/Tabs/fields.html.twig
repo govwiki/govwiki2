@@ -18,7 +18,7 @@
                             Iterate over fields in tab.
                         #}
                         {% for name in fields|keys %}
-                            {{ form_row(form[name]) }}
+                            {{ form_row(form['extension'][name]) }}
                         {% endfor %}
                     </div>
                 </div>

@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Asset;
 
 /**
  * Format
@@ -30,15 +31,19 @@ class Format
      * @ORM\Column()
      * @Groups({"government"})
      */
-    private $field;
+    private $name;
 
     /**
      * @var string
      *
      * @ORM\Column()
-     * @Groups({"government"})
      */
-    private $description = '';
+    private $field;
+
+    /**
+     * @var string
+     */
+    public $oldField = null;
 
     /**
      * @var array
@@ -69,18 +74,30 @@ class Format
     /**
      * @var string
      *
-     * @ORM\Column()
+     * @ORM\Column(nullable=true)
      * @Groups({"government"})
      */
-    private $mask = '';
+    private $mask;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="text")
+     * @ORM\Column()
+     * @Groups({"government"})
+     * @Asset\Choice(
+     *  callback="availableTypes",
+     *  message="Type must be 'integer' or 'string'"
+     * )
+     */
+    private $type = 'integer';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", nullable=true)
      * @Groups({"government"})
      */
-    private $helpText = '';
+    private $helpText;
 
     /**
      * @var Environment
@@ -107,11 +124,40 @@ class Format
     private $category;
 
     /**
+     * @return array
+     */
+    public static function availableTypes()
+    {
+        return [ 'string', 'integer' ];
+    }
+
+    /**
      * @return integer
      */
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Format
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        $this->field = strtolower(str_replace([ ' ', '-' ], '_', $name));
+
+        return $this;
     }
 
     /**
@@ -231,6 +277,26 @@ class Format
     public function setMask($mask)
     {
         $this->mask = $mask;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type Must be 'string' or 'integer'.
+     *
+     * @return Format
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
 
         return $this;
     }

@@ -58,9 +58,37 @@ class FormatController extends Controller
      */
     public function editAction(Request $request, Format $format)
     {
-        $form = $this->createForm(new FormatType(), $format);
+        $form = $this->createForm('format', $format);
+
+        $oldFieldName = $format->getField();
+        $oldIsRanked = $format->isRanked();
+
         $form->handleRequest($request);
         $this->processForm($form);
+
+        $manager = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
+        if ($format->isRanked()) {
+            if ($oldIsRanked) {
+                $manager->changeColumnInGovernment(
+                    $oldFieldName .'_rank',
+                    $format->getField() .'_rank',
+                    'integer'
+                );
+            } else {
+                $manager->addColumnToGovernment(
+                    $format->getField() .'_rank',
+                    'integer'
+                );
+            }
+        } elseif ($oldIsRanked) {
+            $manager->deleteColumnFromGovernment($oldFieldName .'_rank');
+        }
+
+        $manager->changeColumnInGovernment(
+            $oldFieldName,
+            $format->getField(),
+            $format->getType()
+        );
 
         return [ 'form' => $form->createView() ];
     }
@@ -77,9 +105,13 @@ class FormatController extends Controller
     {
         $format = $this->getManager()->create();
 
-        $form = $this->createForm(new FormatType(), $format);
+        $form = $this->createForm('format', $format);
         $form->handleRequest($request);
-        $this->processForm($form);
+        if ($this->processForm($form)) {
+            return $this->redirectToRoute('govwiki_admin_format_edit', [
+                'id' => $format->getId(),
+            ]);
+        }
 
         return [ 'form' => $form->createView() ];
     }
@@ -100,23 +132,22 @@ class FormatController extends Controller
         $em->remove($format);
         $em->flush();
 
-        return new JsonResponse([
-            'redirect' => $this->generateUrl(
-                'govwiki_admin_editrequest_index'
-            ),
-        ]);
+        return $this->redirectToRoute('govwiki_admin_format_list');
     }
 
     /**
      * @param FormInterface $form A FormInterface instance.
      *
-     * @return void
+     * @return boolean
      */
     private function processForm(FormInterface $form)
     {
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getManager()->update($form->getData());
+            return true;
         }
+
+        return false;
     }
 
     /**

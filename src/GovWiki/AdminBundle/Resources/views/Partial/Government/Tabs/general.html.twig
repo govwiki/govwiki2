@@ -2,19 +2,21 @@
     <h3 class="text-center">General</h3>
     <div class="col-md-4">
         <h4>Main information</h4>
-        {{ form_row(form.name) }}
+        {{ form_row(form.main.name) }}
+        {{ form_row(form.main.altType) }}
         {% if form['environment'] is defined %}
-            {{ form_row(form.environment) }}
+            {{ form_row(form.main.environment) }}
         {% endif %}
     </div>
     <div class="col-md-4">
-        <h4>Types</h4>
-        {{ form_row(form.type) }}
-        {{ form_row(form.altType) }}
+        <h4>Urls</h4>
+        {{ form_row(form.main.webSite) }}
+        {{ form_row(form.main.wikipediaPageName) }}
+        {{ form_row(form.main.latestAuditUrl) }}
     </div>
     <div class="col-md-4">
-        <h4>Coordinates</h4>
-        {{ form_row(form.latitude) }}
-        {{ form_row(form.longitude) }}
+        <h4>Mayour (for counties or minicipios)</h4>
+        {{ form_row(form.main.mayorName) }}
+        {{ form_row(form.main.yearsMayorInOffice) }}
     </div>
 </div>

@@ -46,11 +46,10 @@ final class Functions
             }
             $tmp[$current] = self::groupBy($tmp[$current], $fields);
             $array = $tmp;
-        }
-
-        if (count($array) === 1) {
+        } elseif (count($array) === 1) {
             return $array[0];
         }
+
         return $array;
     }
 

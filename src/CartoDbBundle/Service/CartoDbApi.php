@@ -111,7 +111,7 @@ class CartoDbApi
             return $response;
         }
 
-        throw new CartoDBRequestFailException($response);
+        return [];
     }
 
     /**

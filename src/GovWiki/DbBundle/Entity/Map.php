@@ -73,7 +73,7 @@ class Map
      *
      * @Groups({"map"})
      */
-    private $zoom;
+    private $zoom = 3;
 
     /**
      * @var boolean

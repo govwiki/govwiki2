@@ -4,6 +4,21 @@
 
 @import "partials/head/head";
 
+.loader {
+  margin: 60px auto;
+  font-size: 4px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 2px solid rgba(200,200,200,0.5);
+  border-right: 2px solid rgba(200,200,200,0.5);
+  border-bottom: 2px solid rgba(200,200,200,0.5);
+  border-left: 2px solid #0b4d70;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load8 0.7s infinite linear;
+  animation: load8 0.7s infinite linear;
+}
 
 /* Temporary styles (start) */
 

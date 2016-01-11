@@ -33,24 +33,26 @@ class GovernmentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $formats = $this->manger->getFormats(true);
-
         /*
          * Add general fields.
          */
         $builder
             ->add('name')
-            ->add('type')
             ->add('altType')
-            ->add('latitude')
-            ->add('longitude');
+//            ->add('censusContact')
+//            ->add('city')
+            ->add('webSite')
+            ->add('wikipediaPageName')
+            ->add('mayorName')
+            ->add('yearsMayorInOffice')
+            ->add('latestAuditUrl');
 
         /** @var Government|null $current */
         $current = $builder->getData();
 
         if ((null !== $current) && ($current->getId() !== null)) {
             /*
-             * Now form use for update government, give user a chance to change
+             * Form use for update government, give user a chance to change
              * government environment. Otherwise create government into current
              * environment.
              */
@@ -58,20 +60,6 @@ class GovernmentType extends AbstractType
                 'class' => 'GovWiki\DbBundle\Entity\Environment',
                 'data' => $this->manger->getReference()->getId(),
             ]);
-        }
-
-        /*
-         * Add fields from formats.
-         */
-        foreach ($formats as $format) {
-            $builder->add($format['field']);
-
-            if ($format['ranked']) {
-                /*
-                 * Add rank field.
-                 */
-                $builder->add($format['field']. 'Rank');
-            }
         }
     }
 

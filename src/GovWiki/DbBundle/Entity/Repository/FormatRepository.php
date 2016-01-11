@@ -23,11 +23,12 @@ class FormatRepository extends EntityRepository
 
         if ($full) {
             $qb->select(
-                'Format.helpText, Format.dataOrFormula, Format.description',
-                'Format.mask, Format.field, Format.ranked, Format.showIn'
+                'Format.helpText, Format.dataOrFormula, Format.name',
+                'Format.mask, Format.field, Format.ranked, Format.showIn',
+                'Format.type'
             );
         } else {
-            $qb->select('Format.id, Format.field, Format.description');
+            $qb->select('Format.id, Format.name');
         }
 
         return $qb

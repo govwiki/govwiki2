@@ -57,7 +57,6 @@
                                 <th>Tab</th>
                                 <th>Category</th>
                                 <th>Field</th>
-                                <th>Description</th>
                                 <th>Actions</th>
                             </tr>
                             {% for field in fields %}
@@ -66,9 +65,8 @@
                                     <td>{{ field.category_name }}</td>
                                     <td>
                                         <a href="{{ path('govwiki_admin_format_edit', { id: field.id }) }}">
-                                            {{ field.field }}</a>
+                                            {{ field.name }}</a>
                                     </td>
-                                    <td>{{ field.description|raw }}</td>
                                     <td>
                                         <a class="btn btn-danger" href="{{ path('govwiki_admin_format_remove', { id: field.id }) }}">Delete</a>
                                     </td>
