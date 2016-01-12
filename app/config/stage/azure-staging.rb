@@ -7,5 +7,5 @@ set :webserver_user, "www-data"
 
 after "deploy:create_symlink" do
     capifony_pretty_print "--> run ./install.sh"
-    run "sh -c 'cd #{latest_release}; ./install.sh'"
+    run "sh -c 'cd #{latest_release}; /bin/bash ./install.sh'"
 end
