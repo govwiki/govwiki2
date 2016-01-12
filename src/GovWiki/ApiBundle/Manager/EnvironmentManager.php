@@ -9,6 +9,8 @@ use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Map;
+use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
+use GovWiki\DbBundle\Utils\Functions;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -165,17 +167,76 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getGovernment($altTypeSlug, $slug)
     {
+        $formats = $this->em->getRepository('GovWikiDbBundle:Format')
+            ->get($this->environment, true);
+
+        /*
+         * Get array of fields and array of ranked fields.
+         */
+        $fields = [];
+        $rankedFields = [];
+        foreach ($formats as $format) {
+            if (in_array(str_replace('_', ' ', $altTypeSlug), $format['showIn'], true)) {
+                $fields[] = $format['field'];
+                if (true === $format['ranked']) {
+                    $rankedFieldName = $format['field'] . '_rank';
+                    $fields[] = $rankedFieldName;
+                    $rankedFields[] =
+                        'MAX(' . $rankedFieldName . ') as ' .
+                        $rankedFieldName;
+                }
+            }
+        }
+
         $government = $this->em->getRepository('GovWikiDbBundle:Government')
             ->findGovernment($this->environment, $altTypeSlug, $slug);
+        if (null === $government) {
+            return [];
+        }
 
-        $formats = $this->em->getRepository('GovWikiDbBundle:Format')
-            ->get($this->environment);
+        $fields = implode(',', $fields);
+        $data = $this->em->getConnection()->fetchAssoc("
+            SELECT {$fields} FROM {$this->environment}
+            WHERE government_id = {$government['id']}
+        ");
+        $government = array_merge($government, $data);
+
+        /*
+         * Compute max ranks.
+         */
+        $government['ranks'] = [];
+        if (count($rankedFields) > 0) {
+            $rankedFields = implode(',', $rankedFields);
+
+            $ranks = $this->em->getConnection()->fetchAssoc("
+                SELECT {$rankedFields} FROM {$this->environment}
+            ");
+
+            if (count($ranks) > 0) {
+                foreach ($ranks as $field => $value) {
+                    $government['ranks'][$field] = [ $government[$field], $value ];
+                }
+            }
+        }
+        $formats = Functions::groupBy($formats, [ 'tab_name', 'field' ]);
 
         return [
             'government' => $government,
             'formats' => $formats,
             'tabs' => array_keys($formats),
         ];
+    }
+
+    /**
+     * @param string $partOfName Part of government name.
+     *
+     * @return array
+     */
+    public function searchGovernment($partOfName)
+    {
+        /** @var GovernmentRepository $repository */
+        $repository = $this->em->getRepository('GovWikiDbBundle:Government');
+        return $repository->search($this->environment, $partOfName);
     }
 
     /**

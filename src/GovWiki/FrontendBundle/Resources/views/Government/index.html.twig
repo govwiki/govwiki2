@@ -4,151 +4,162 @@
 
     <section class="governmentController">
 
-        {# Government name & wikipedia links #}
-        <nav class="row">
-            <div class="col-md-12 text-right">
+        {% if government is defined %}
+            {# Government name & wikipedia links #}
+            <nav class="row">
+                <div class="col-md-12 text-right">
 
-                {% if government.wikipediaPageName %}
-                    <a target="_blank" href="{{government.wikipediaPageName}}">
-                        Open Wikipedia article
-                        <img src="http://www.mailamengg.com/Portals/0/photo1/logo/wikipedia.png" style="width:36px; height:36px">
-                    </a>
-                {% endif %}
+                    {% if government.wikipediaPageName %}
+                        <a target="_blank" href="{{government.wikipediaPageName}}">
+                            Open Wikipedia article
+                            <img src="http://www.mailamengg.com/Portals/0/photo1/logo/wikipedia.png" style="width:36px; height:36px">
+                        </a>
+                    {% endif %}
 
-                {% if government.latestAuditUrl %}
-                    <a target="_blank" href="{{government.latestAuditUrl}}" style="margin-left:20px;">
-                        Latest Audit
-                        <img src="data:image/png;base64,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" style="">
-                    </a>
-                {% endif %}
+                    {% if government.latestAuditUrl %}
+                        <a target="_blank" href="{{government.latestAuditUrl}}" style="margin-left:20px;">
+                            Latest Audit
+                            <img src="data:image/png;base64,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" style="">
+                        </a>
+                    {% endif %}
 
-                {% if government.transparentCaliforniaPageName %}
-                    <a target="_blank" href="{{government.transparentCaliforniaPageName}}" style="margin-left:20px;">
-                        Transparent California
-                        <img src="http://us.cdn2.123rf.com/168nwm/blankstock/blankstock1409/blankstock140900218/31369868-text-edit-sign-icon-letter-t-button-circle-flat-button-with-shadow-modern-ui-website-navigation-vect.jpg" style="width:36px; height:36px">
-                    </a>
-                {% endif %}
+                    {% if government.transparentCaliforniaPageName %}
+                        <a target="_blank" href="{{government.transparentCaliforniaPageName}}" style="margin-left:20px;">
+                            Transparent California
+                            <img src="http://us.cdn2.123rf.com/168nwm/blankstock/blankstock1409/blankstock140900218/31369868-text-edit-sign-icon-letter-t-button-circle-flat-button-with-shadow-modern-ui-website-navigation-vect.jpg" style="width:36px; height:36px">
+                        </a>
+                    {% endif %}
 
-            </div>
+                </div>
 
-        </nav>
+            </nav>
 
-        {# Header #}
-        <header class="row">
-            <div class="col-md-12">
+            {# Header #}
+            <header class="row">
+                <div class="col-md-12">
 
-                <h3>{{government.name}}</h3>
+                    <h3>{{government.name}}</h3>
 
-            </div>
-        </header>
+                </div>
+            </header>
 
-        <section class="row">
-            <div class="col-md-12">
+            <section class="row">
+                <div class="col-md-12">
 
-                {# Tabs conrol #}
-                <nav>
-                    <ul class="nav nav-pills">
+                    {# Tabs control #}
+                    <nav>
+                        <ul class="nav nav-pills">
 
-                        {% for tab in tabs %}
-                            <li class="{{ loop.first ? 'active' : '' }}">
+                            {% for tab in tabs %}
+                                <li class="{{ loop.first ? 'active' : '' }}">
+                                    {# TODO: Hardcoded, for new db, must be replaced #}
+                                    <a href="#{{ tab | replace(' ', '_') | replace('+', 'a') }}"
+                                       aria-controls="{{ tab | replace(' ', '_') | replace('+', 'a') }}"
+                                       role="tab" data-toggle="tab" data-tabname="{{ tab }}">
+                                        {{ tab }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+
+                        </ul>
+                    </nav>
+
+                    {# Tab content #}
+                    <div class="tab-content">
+
+                        {% if (formats is defined) and (formats is not empty) %}
+
+                            {% for tabName, fields in formats %}
+
                                 {# TODO: Hardcoded, for new db, must be replaced #}
-                                <a href="#{{ tab | replace(' ', '_') | replace('+', 'a') }}"
-                                   aria-controls="{{ tab | replace(' ', '_') | replace('+', 'a') }}"
-                                   role="tab" data-toggle="tab" data-tabname="{{ tab }}">
-                                    {{ tab }}
-                                </a>
-                            </li>
-                        {% endfor %}
+                                <div class="tab-pane {{ loop.first ? 'active' : '' }}"
+                                     id="{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
 
-                    </ul>
-                </nav>
+                                    <h4>{{ tabName }}</h4>
 
-                {# Tab content #}
-                <div class="tab-content">
+                                    {# Statistics #}
+                                    <div class="statistics">
 
-                    {% for tabName, fields in formats %}
-                        {# TODO: Hardcoded, for new db, must be replaced #}
-                        <div class="tab-pane {{ loop.first ? 'active' : '' }}"
-                             id="{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
+                                        <table class="statistics-table">
+                                            <tbody>
 
-                            <h4>{{ tabName }}</h4>
+                                                {% for fieldName, format in fields %}
 
+                                                    {% if format is viewed(government) %}
+                                                        {% set value = government|applay_mask(fieldName, format) %}
+                                                        <tr>
+                                                            {# Field name #}
+                                                            <td>
+                                                                {{ format.name }}
+                                                                {% if format.helpText %}
+                                                                    <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}" title="{{ format.helpText }}">
+                                                                {% endif %}
+                                                            </td>
+                                                            {# Field value #}
+                                                            <td>
+                                                                {{ value }}
 
-                            {# Statistics #}
-                            <div class="statistics">
+                                                                {% set rankName = "#{fieldName}_rank" %}
+                                                                {% if (government.ranks[rankName] is defined) %}
+                                                                    <a class='rank'
+                                                                       data-field='{{ rankName }}'
+                                                                       data-mask='{{ format.mask }}'
+                                                                       title='{{ format.description }} ranks'>
+                                                                        ( {{ government.ranks[rankName][0] }} of {{ government.ranks[rankName][1] }} )
+                                                                    </a>
+                                                                {% endif %}
 
-                                <table class="statistics-table">
-                                    <tbody>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
 
-                                        {% for fieldName, format in fields %}
+                                                {% endfor %}
 
-                                            {% if format is viewed(government) %}
-                                                {% set value = government|applay_mask(fieldName, format) %}
-                                                <tr>
-                                                    {# Field name #}
-                                                    <td>
-                                                        {{ format.description }}
-                                                        {% if format.helpText %}
-                                                            <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}" title="{{ format.helpText }}">
-                                                        {% endif %}
-                                                    </td>
-                                                    {# Field value #}
-                                                    <td>
-                                                        {{ value }}
+                                            </tbody>
+                                        </table>
 
-                                                        {% set rankName = "#{fieldName}Rank" %}
-                                                        {% if (government.ranks[rankName] is defined) %}
-                                                            <a class='rank'
-                                                               data-field='{{ rankName }}'
-                                                               data-mask='{{ format.mask }}'
-                                                               title='{{ format.description }} ranks'>
-                                                                ( {{ government.ranks[rankName][0] }} of {{ government.ranks[rankName][1] }} )
-                                                            </a>
-                                                        {% endif %}
+                                    </div>
 
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
+                                    {# Overview + Elected Officials #}
+                                    {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
 
-                                        {% endfor %}
+                                    {# Employee Compensation #}
+                                    {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
 
-                                    </tbody>
-                                </table>
+                                    {# Quality of Services #}
+                                    {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
 
-                            </div>
+                                    {# Financial Health #}
+                                    {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
 
-                            {# Overview + Elected Officials #}
-                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
+                                    {# Financial Statements #}
+                                    {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig') }}
 
-                            {# Employee Compensation #}
-                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
+                                </div>
 
-                            {# Quality of Services #}
-                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
+                            {% endfor %}
 
-                            {# Financial Health #}
-                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
+                        {% else %}
+                            <h3 class="text-center">No data. Please refresh page later</h3>
+                        {% endif %}
 
-                            {# Financial Statements #}
-                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig') }}
-
-                        </div>
-
-                    {% endfor %}
-
-                </div>
-
-                <br>
-                <br>
-
-                <div class="panel panel-danger notice">
-                    <div class="panel-body">
-                        <p class="text-center">If you would like to help us add information to complete this profile, or if you notice any information here that may be incorrect, please contact the Center at <a href="mailto:contact@californiapolicycenter.org">contact@californiapolicycenter.org</a></p>
                     </div>
-                </div>
 
+                </div>
+            </section>
+
+        {% else %}
+            <h3 class="text-center">No data</h3>
+        {% endif %}
+
+        <br>
+        <br>
+
+        <div class="panel panel-danger notice">
+            <div class="panel-body">
+                <p class="text-center">If you would like to help us add information to complete this profile, or if you notice any information here that may be incorrect, please contact the Center at <a href="mailto:contact@californiapolicycenter.org">contact@californiapolicycenter.org</a></p>
             </div>
-        </section>
+        </div>
 
     </section>
 

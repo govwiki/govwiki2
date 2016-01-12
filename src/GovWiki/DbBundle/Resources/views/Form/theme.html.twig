@@ -1,0 +1,8 @@
+{% block color_widget %}
+    {% spaceless %}
+        <div class="input-group color-picker">
+            <span class="input-group-addon"><i></i></span>
+            {{- block('form_widget_simple') -}}
+        </div>
+    {% endspaceless %}
+{% endblock %}

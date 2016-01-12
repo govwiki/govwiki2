@@ -32,7 +32,7 @@ class TwigExtensions extends \Twig_Extension
     public function getGlobals()
     {
         return [
-            'styles' => json_encode($this->manger->getStyle()),
+            'admin_styles' => json_encode($this->manger->getStyle()),
         ];
     }
 

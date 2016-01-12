@@ -26,16 +26,4 @@ class ColorType extends AbstractType
     {
         return 'text';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults([
-            'attr' => [
-                'class' => 'color-picker',
-            ],
-        ]);
-    }
 }

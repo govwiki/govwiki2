@@ -11,7 +11,7 @@ class InvalidGeoJsonException extends FileTransformerException
     /**
      * @param array $geoJsonData Invalid data.
      */
-    public function __construct(array $geoJsonData)
+    public function __construct(array $geoJsonData = [])
     {
         parent::__construct('Invalid geo json in ' . json_encode($geoJsonData));
     }

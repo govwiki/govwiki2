@@ -4,8 +4,10 @@ namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\DbBundle\Form\ExtGovernmentType;
 use GovWiki\DbBundle\GovWikiDbServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,11 +72,39 @@ class GovernmentController extends AbstractGovWikiAdminController
         $manager = $this->getManager();
         $government = $manager->create();
 
-        $form = $this->createForm('government', $government);
+        $form = $this->createFormBuilder()
+            ->add('main', 'government')
+            ->add(
+                'extension',
+                new ExtGovernmentType($this->adminEnvironmentManager())
+            )
+            ->setData([ 'main' => $government, 'extension' =>[] ])
+            ->getForm();
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $manager->update($government);
+
+            /*
+             * Update carto db service.
+             */
+            $this->get(CartoDbServices::CARTO_DB_API)
+                ->sqlRequest("
+                    INSERT INTO {$government->getEnvironment()->getSlug()}
+                        (id, alt_type_slug, slug)
+                    VALUES
+                        (
+                            {$government->getId()},
+                            '{$government->getAltTypeSlug()}',
+                            '{$government->getSlug()}'
+                        )
+                ");
+
+            $data = $form->getData()['extension'];
+            $data['government_id'] = $government->getId();
+
+            $this->adminEnvironmentManager()->addToGovernment($data);
+
             $this->addFlash(
                 'admin_success',
                 'Government '. $government->getName() .' successfully created'
@@ -85,9 +115,7 @@ class GovernmentController extends AbstractGovWikiAdminController
 
         return [
             'form' => $form->createView(),
-            'formats' => $this
-                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
-                ->getFormats(),
+            'formats' => $this->adminEnvironmentManager()->getFormats(),
         ];
     }
 
@@ -105,11 +133,40 @@ class GovernmentController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, Government $government)
     {
-        $form = $this->createForm('government', $government);
+        $data = $this->adminEnvironmentManager()
+            ->getGovernment($government->getId());
+
+        $form = $this->createFormBuilder()
+            ->add('main', 'government')
+            ->add(
+                'extension',
+                new ExtGovernmentType(
+                    $this->adminEnvironmentManager(),
+                    $government->getAltType()
+                )
+            )
+            ->setData([ 'main' => $government, 'extension' => $data ])
+            ->getForm();
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->getManager()->update($government);
+
+            /*
+            * Update carto db service.
+            */
+            $this->get(CartoDbServices::CARTO_DB_API)
+                ->sqlRequest("
+                    UPDATE {$government->getEnvironment()->getSlug()}
+                    SET
+                        alt_type_slug = '{$government->getAltTypeSlug()}',
+                        slug = '{$government->getSlug()}'
+                    WHERE
+                        id = {$government->getId()}
+                ");
+
+            $this->adminEnvironmentManager()
+                ->updateGovernment($form->getData()['extension']);
 
             $this->addFlash('admin_success', 'Government '.
                 $government->getName() .' saved');
@@ -119,9 +176,8 @@ class GovernmentController extends AbstractGovWikiAdminController
 
         return [
             'form' => $form->createView(),
-            'formats' => $this
-                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
-                ->getFormats(),
+            'formats' => $this->adminEnvironmentManager()
+                ->getFormats(false,$government->getAltType()),
         ];
     }
 
@@ -137,7 +193,17 @@ class GovernmentController extends AbstractGovWikiAdminController
         $em = $this->getDoctrine()->getManager();
 
         $em->remove($this->getManager()->getReference($id));
+        $this->adminEnvironmentManager()->deleteFromGovernment($id);
         $em->flush();
+
+        /*
+             * Update carto db service.
+             */
+        $this->get(CartoDbServices::CARTO_DB_API)
+            ->sqlRequest("
+                DELETE FROM {$this->adminEnvironmentManager()->getSlug()}
+                WHERE id = {$id}
+            ");
 
         $this->addFlash('admin_success', 'Government removed');
         return $this->redirectToRoute('govwiki_admin_government_index');

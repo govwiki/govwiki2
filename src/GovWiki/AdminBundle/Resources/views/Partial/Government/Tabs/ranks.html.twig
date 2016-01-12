@@ -22,7 +22,7 @@
                                 Add only rank field.
                             #}
                             {% if fields[name].ranked %}
-                                {{ form_row(form[name ~ 'Rank']) }}
+                                {{ form_row(form['extension'][name ~ '_rank']) }}
                             {% endif %}
                         {% endfor %}
                     </div>

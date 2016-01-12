@@ -120,6 +120,11 @@ class MainController extends AbstractGovWikiAdminController
     public function removeAction($environment)
     {
         $this->adminEnvironmentManager()->removeEnvironment($environment);
+
+        $this->get(CartoDbServices::CARTO_DB_API)->sqlRequest("
+            DROP TABLE {$environment}
+        ");
+
         return $this->redirectToRoute('govwiki_admin_main_home');
     }
 

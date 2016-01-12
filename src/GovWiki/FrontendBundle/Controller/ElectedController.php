@@ -29,6 +29,10 @@ class ElectedController extends Controller
         $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
             ->getElectedOfficial($altTypeSlug, $slug, $electedSlug);
 
+        if (null === $data) {
+            return [];
+        }
+
         $context = new SerializationContext();
         $context->setGroups(['elected_official']);
 

@@ -89,7 +89,6 @@ class Extension extends \Twig_Extension
      */
     public function getGlobals()
     {
-
         $styles = $this->manager->getStyle();
         $styles = json_encode($styles);
 

@@ -48,6 +48,9 @@ class LegislationType extends AbstractType
             ->add('government', 'entity', [
                 'class' => 'GovWiki\DbBundle\Entity\Government',
                 'choice_label' => 'name',
+                'attr' => [
+                    'class' => 'government',
+                ],
                 'query_builder' => function (EntityRepository $repository)
                     use ($environment) {
                     /*

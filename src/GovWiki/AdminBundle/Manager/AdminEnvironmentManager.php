@@ -5,6 +5,8 @@ namespace GovWiki\AdminBundle\Manager;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\ApiBundle\Manager\EnvironmentManagerAwareInterface;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Format;
+use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\UserBundle\Entity\User;
 use \Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -39,6 +41,11 @@ class AdminEnvironmentManager
      * @var Session
      */
     private $session;
+
+    /**
+     * @var array
+     */
+    private $format;
 
     /**
      * @param EntityManagerInterface $em      A EntityManagerInterface instance.
@@ -77,6 +84,7 @@ class AdminEnvironmentManager
 
         $this->session->set(self::ENVIRONMENT_PARAMETER, $environment);
         $this->environment = $environment;
+        $this->format = null;
 
         return $this;
     }
@@ -221,6 +229,8 @@ class AdminEnvironmentManager
         $this->em->remove($entity);
         $this->em->flush();
 
+        $this->deleteGovernmentTable($environment);
+
         return $this;
     }
 
@@ -253,15 +263,34 @@ class AdminEnvironmentManager
     }
 
     /**
-     * @param boolean $plain Flag, if set return plain array without grouping by
-     *                       tab names and fields.
+     * @param boolean $plain   Flag, if set return plain array without grouping
+     *                         by tab names and fields.
+     * @param string  $altType Government alt type, if set return format only
+     *                         for given alt type.
      *
      * @return array
      */
-    public function getFormats($plain = false)
+    public function getFormats($plain = false, $altType = null)
     {
-        return $this->em->getRepository('GovWikiDbBundle:Format')
-            ->get($this->environment, $plain);
+        if (null === $this->format) {
+            $this->format = $this->em->getRepository('GovWikiDbBundle:Format')
+                ->get($this->environment, true);
+        }
+
+        $result = $this->format;
+        if (null !== $altType) {
+            $result = [];
+            foreach ($this->format as $row) {
+                if (in_array($altType, $row['showIn'], true)) {
+                    $result[] = $row;
+                }
+            }
+        }
+
+        if ($plain) {
+            return $result;
+        }
+        return Functions::groupBy($result, [ 'tab_name', 'field' ]);
     }
 
     /**
@@ -275,6 +304,187 @@ class AdminEnvironmentManager
     {
         $entityManager->setEnvironment($this->environment);
         $entityManager->setEnvironmentId($this->getReference()->getId());
+    }
+
+    /**
+     * @param string $name Government table name.
+     *
+     * @return AdminEnvironmentManager
+     */
+    public function createGovernmentTable($name)
+    {
+        $this->em->getConnection()->exec("
+            CREATE TABLE `{$name}` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `government_id` int(11) DEFAULT NULL,
+                CONSTRAINT `fk_{$name}_government` FOREIGN KEY (`government_id`) REFERENCES `governments` (`id`),
+                PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+        ");
+
+        return $this;
+    }
+
+    /**
+     * @param string $name Government table name.
+     *
+     * @return AdminEnvironmentManager
+     */
+    public function deleteGovernmentTable($name)
+    {
+        $this->em->getConnection()->exec("
+            DROP TABLE IF EXISTS `{$name}`
+        ");
+
+        return $this;
+    }
+
+    /**
+     * @param string $name Column name.
+     * @param string $type Column type.
+     *
+     * @return AdminEnvironmentManager
+     *
+     * @throws \InvalidArgumentException Invalid column type.
+     */
+    public function addColumnToGovernment($name, $type)
+    {
+        switch ($type) {
+            case 'string':
+                $type = 'varchar(255)';
+                break;
+
+            case 'integer':
+                $type = 'int';
+                break;
+
+            default:
+                throw new \InvalidArgumentException('Invalid column type');
+        }
+
+        $this->em->getConnection()->exec("
+            ALTER TABLE `{$this->environment}` ADD {$name} {$type} DEFAULT NULL
+        ");
+
+        return $this;
+    }
+
+    /**
+     * @param string $oldName Old column name.
+     * @param string $newName New column name.
+     * @param string $newType New column type.
+     *
+     * @return $this
+     */
+    public function changeColumnInGovernment($oldName, $newName, $newType)
+    {
+        switch ($newType) {
+            case 'string':
+                $newType = 'varchar(255)';
+                break;
+
+            case 'integer':
+                $newType = 'int';
+                break;
+
+            default:
+                throw new \InvalidArgumentException('Invalid column type');
+        }
+
+        $this->em->getConnection()->exec("
+            ALTER TABLE `{$this->environment}` CHANGE {$oldName} {$newName} {$newType} DEFAULT NULL
+        ");
+
+        return $this;
+    }
+
+    /**
+     * @param string $name Column name.
+     *
+     * @return AdminEnvironmentManager
+     */
+    public function deleteColumnFromGovernment($name)
+    {
+        $this->em->getConnection()->exec("
+            ALTER TABLE `{$this->environment}` DROP {$name}
+        ");
+
+        return $this;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return AdminEnvironmentManager
+     */
+    public function addToGovernment(array $data)
+    {
+        $fields = array_keys($data);
+        $values = array_values($data);
+        foreach ($values as &$value) {
+            if (is_string($value)) {
+                $value = "'{$value}'";
+            }
+        }
+
+        $this->em->getConnection()->exec("
+            INSERT INTO `{$this->environment}` (". implode(',', $fields) .')
+            VALUES ('. implode(',', $values) .')
+        ');
+
+        return $this;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return AdminEnvironmentManager
+     */
+    public function updateGovernment(array $data)
+    {
+        $stmt = '';
+        foreach ($data as $field => $value) {
+            if (is_string($value)) {
+                $value = "'{$value}'";
+            }
+
+            $stmt .= "{$field} = {$value},";
+        }
+        $stmt = rtrim($stmt, ',');
+
+        $this->em->getConnection()->exec("
+            UPDATE `{$this->environment}` SET {$stmt}
+        ");
+
+        return $this;
+    }
+
+    /**
+     * @param integer $government_id Government entity id.
+     *
+     * @return AdminEnvironmentManager
+     */
+    public function deleteFromGovernment($government_id)
+    {
+        $this->em->getConnection()->exec("
+            DELETE FROM `{$this->environment}`
+            WHERE government_id = {$government_id}
+        ");
+
+        return $this;
+    }
+
+    /**
+     * @param integer $id Government id.
+     *
+     * @return array
+     */
+    public function getGovernment($id)
+    {
+        return $this->em->getConnection()->fetchAssoc("
+            SELECT t.* FROM `{$this->environment}` t
+            WHERE t.government_id = :id
+        ", [ 'id' => $id ]);
     }
 
     /**

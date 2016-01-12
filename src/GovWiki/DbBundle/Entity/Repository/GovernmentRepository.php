@@ -235,7 +235,7 @@ class GovernmentRepository extends EntityRepository
      * @param string $altTypeSlug Slugged government alt type.
      * @param string $slug        Slugged government name.
      *
-     * @return Government
+     * @return array|null
      */
     public function findGovernment($environment, $altTypeSlug, $slug)
     {
@@ -243,21 +243,14 @@ class GovernmentRepository extends EntityRepository
         $expr = $qb->expr();
 
         $data = $qb
-            ->addSelect(
-                'FinData, CaptionCategory, MaxRank, ElectedOfficial',
-                'Fund'
+            ->select(
+                'Government, FinData, CaptionCategory, ElectedOfficial, Fund'
             )
             ->leftJoin('Government.finData', 'FinData')
             ->leftJoin('FinData.captionCategory', 'CaptionCategory')
             ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
             ->leftJoin('FinData.fund', 'Fund')
             ->leftJoin('Government.environment', 'Environment')
-            ->join(
-                'GovWikiDbBundle:MaxRank',
-                'MaxRank',
-                Join::WITH,
-                $expr->eq('MaxRank.altType', 'Government.altType')
-            )
             ->where(
                 $expr->andX(
                     $expr->eq(
@@ -273,6 +266,10 @@ class GovernmentRepository extends EntityRepository
             )
             ->getQuery()
             ->getArrayResult();
+
+        if (count($data) <= 0) {
+            return null;
+        }
 
         $government = $data[0];
 
@@ -310,87 +307,40 @@ class GovernmentRepository extends EntityRepository
         }
 
         unset($government['finData']);
-
-        /*
-         * Combine data.
-         */
-
-        /*
-         * Prepare ranks.
-         */
-        $ranks = [];
-        unset($data[1]['id'], $data[1]['altType']);
-
-        foreach ($data[1] as $key => $maxValue) {
-            if (null !== $maxValue) {
-                $fieldName = str_replace('Max', '', $key);
-                $ranks[$fieldName] = [$government[$fieldName], $maxValue];
-            }
-        }
-
-        $government['ranks'] = $ranks;
         $government['financialStatements'] = $financialStatements;
 
         return $government;
+    }
 
-//
-//          OLD CODE.
-//
-//        $em = $this->getEntityManager();
-//
-//        /** @var Government $government */
-//        $government = $this->findOneBy(['altTypeSlug' => $altTypeSlug, 'slug' => $slug]);
-//        $maxRanks   = $em->getRepository('GovWikiDbBundle:MaxRank')->findOneBy([
-//            'altType' => $government->getAltType(),
-//        ]);
-//
-//        $serializedGovernment = $serializer->serialize($government, 'json', SerializationContext::create()->enableMaxDepthChecks());
-//        $serializedMaxRanks   = $serializer->serialize($maxRanks, 'json');
-//
-//        $finData = $em->createQuery(
-//            'SELECT fd FROM GovWikiDbBundle:FinData fd
-//            LEFT JOIN fd.government g
-//            LEFT JOIN fd.captionCategory cc
-//            WHERE g = :government
-//            ORDER BY cc.id, fd.displayOrder'
-//        )->setParameter('government', $government)->getResult();
-//        foreach ($finData as $finDataItem) {
-//            $financialStatementsGroups[$finDataItem->getCaption()][] = $finDataItem;
-//        }
-//
-//        $i = 0;
-//        foreach ($financialStatementsGroups as $caption => $finData) {
-//            foreach ($finData as $finDataItem) {
-//                $financialStatements[$i]['caption'] = $caption;
-//                $financialStatements[$i]['category_name'] = $finDataItem->getCaptionCategory()->getName();
-//                $financialStatements[$i]['display_order'] = $finDataItem->getDisplayOrder();
-//                if (empty($financialStatements[$i]['genfund'])) {
-//                    if (empty($finDataItem->getFund())) {
-//                        $financialStatements[$i]['genfund'] = $finDataItem->getDollarAmount();
-//                    } elseif ($finDataItem->getFund()->getName() == 'General Fund') {
-//                        $financialStatements[$i]['genfund'] = $finDataItem->getDollarAmount();
-//                    }
-//                }
-//                if (empty($financialStatements[$i]['otherfunds'])) {
-//                    if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Other') {
-//                        $financialStatements[$i]['otherfunds'] = $finDataItem->getDollarAmount();
-//                    }
-//                }
-//                if (empty($financialStatements[$i]['totalfunds'])) {
-//                    if (!empty($finDataItem->getFund()) and $finDataItem->getFund()->getName() == 'Total') {
-//                        $financialStatements[$i]['totalfunds'] = $finDataItem->getDollarAmount();
-//                    }
-//                }
-//            }
-//            $i++;
-//        }
-//
-//        $decoded                         = json_decode($serializedGovernment, true);
-//        $decoded['financial_statements'] = $financialStatements;
-//        $decoded['max_ranks']            = json_decode($serializedMaxRanks, true);
-//        $serializedGovernment            = json_encode($decoded);
-//
-//        return $serializedGovernment;
+    /**
+     * Search government with name like given in partOfName parameter.
+     *
+     * @param string $environment Environment name.
+     * @param string $partOfName  Part of government name.
+     *
+     * @return array
+     */
+    public function search($environment, $partOfName)
+    {
+        $qb = $this->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select(
+                'partial Government.{id, name, type, state, slug, altTypeSlug}'
+            )
+            ->leftJoin('Government.environment', 'Environment')
+            ->where(
+                $expr->andX(
+                    $expr->eq('Environment.slug', $expr->literal($environment)),
+                    $expr->like(
+                        'Government.name',
+                        $expr->literal('%'.$partOfName.'%')
+                    )
+                )
+            )
+            ->getQuery()
+            ->getArrayResult();
     }
 
     /**

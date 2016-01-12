@@ -302,7 +302,7 @@ class Environment
     }
 
     /**
-     * @return Format
+     * @return Collection
      */
     public function getFormats()
     {

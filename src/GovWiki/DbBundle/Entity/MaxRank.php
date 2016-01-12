@@ -289,6 +289,112 @@ class MaxRank
     private $enrollmentMaxRank;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="net_change_in_fund_balance_over_general_fund_revenue_rank", type="integer", nullable=true)
+     */
+    private $netChangeInFundBalanceOverGeneralFundRevenueMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="general_fund_balance_over_general_fund_expenditures_rank", type="integer", nullable=true)
+     */
+    private $generalFundBalanceOverGeneralFundExpendituresMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="current_assets_per_capita_rank", type="integer", nullable=true)
+     */
+    private $currentAssetsPerCapitaMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="current_assets_over_current_liabilities_rank", type="integer", nullable=true)
+     */
+    private $currentAssetsOverCurrentLiabilitiesMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="long_term_debt_over_capita_rank", type="integer", nullable=true)
+     */
+    private $longTermDebtOverCapitaMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="general_revenues_over_long_term_debt_rank", type="integer", nullable=true)
+     */
+    private $generalRevenuesOverLongTermDebtMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="debt_service_expenditures_over_general_fund_revenues_rank", type="integer", nullable=true)
+     */
+    private $debtServiceExpendituresOverGeneralFundRevenuesMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="general_fund_surplus_over_revenues_rank", type="integer", nullable=true)
+     */
+    private $generalFundSurplusOverRevenuesMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="change_in_net_assets_over_general_fund_revenues_rank", type="integer", nullable=true)
+     */
+    private $changeInNetAssetsOverGeneralFundRevenuesMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="government_funds_overall_balance_per_capita_rank", type="integer", nullable=true)
+     */
+    private $governmentFundsOverallBalancePerCapitaMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="overall_governmental_fund_balance_over_long_term_liabs_rank", type="integer", nullable=true)
+     */
+    private $overallGovernmentalFundBalanceOverLongTermLiabsMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="intergovermental_revenues_over_general_fund_revenues_rank", type="integer", nullable=true)
+     */
+    private $intergovermentalRevenuesOverGeneralFundRevenuesMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="total_unrestricted_net_position_over_total_assets_rank", type="integer", nullable=true)
+     */
+    private $totalUnrestrictedNetPositionOverTotalAssetsMaxRank;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="overall_weighted_index_rank", type="integer", nullable=true)
+     */
+    private $overallWeightedIndexMaxRank;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="pavement_condition_index_rank", type="integer", nullable=true)
+     * @Groups({"government"})
+     */
+    private $pavementConditionIndexRank;
+
+    /**
      * Get id
      *
      * @return integer
@@ -1053,5 +1159,350 @@ class MaxRank
         $this->altType = $altType;
 
         return $this;
+    }
+
+    /**
+     * Set netChangeInFundBalanceOverGeneralFundRevenueMaxRank
+     *
+     * @param integer $netChangeInFundBalanceOverGeneralFundRevenueMaxRank
+     * @return MaxRank
+     */
+    public function setNetChangeInFundBalanceOverGeneralFundRevenueMaxRank($netChangeInFundBalanceOverGeneralFundRevenueMaxRank)
+    {
+        $this->netChangeInFundBalanceOverGeneralFundRevenueMaxRank = $netChangeInFundBalanceOverGeneralFundRevenueMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get netChangeInFundBalanceOverGeneralFundRevenueMaxRank
+     *
+     * @return integer 
+     */
+    public function getNetChangeInFundBalanceOverGeneralFundRevenueMaxRank()
+    {
+        return $this->netChangeInFundBalanceOverGeneralFundRevenueMaxRank;
+    }
+
+    /**
+     * Set generalFundBalanceOverGeneralFundExpendituresMaxRank
+     *
+     * @param integer $generalFundBalanceOverGeneralFundExpendituresMaxRank
+     * @return MaxRank
+     */
+    public function setGeneralFundBalanceOverGeneralFundExpendituresMaxRank($generalFundBalanceOverGeneralFundExpendituresMaxRank)
+    {
+        $this->generalFundBalanceOverGeneralFundExpendituresMaxRank = $generalFundBalanceOverGeneralFundExpendituresMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get generalFundBalanceOverGeneralFundExpendituresMaxRank
+     *
+     * @return integer 
+     */
+    public function getGeneralFundBalanceOverGeneralFundExpendituresMaxRank()
+    {
+        return $this->generalFundBalanceOverGeneralFundExpendituresMaxRank;
+    }
+
+    /**
+     * Set currentAssetsPerCapitaMaxRank
+     *
+     * @param integer $currentAssetsPerCapitaMaxRank
+     * @return MaxRank
+     */
+    public function setCurrentAssetsPerCapitaMaxRank($currentAssetsPerCapitaMaxRank)
+    {
+        $this->currentAssetsPerCapitaMaxRank = $currentAssetsPerCapitaMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get currentAssetsPerCapitaMaxRank
+     *
+     * @return integer 
+     */
+    public function getCurrentAssetsPerCapitaMaxRank()
+    {
+        return $this->currentAssetsPerCapitaMaxRank;
+    }
+
+    /**
+     * Set currentAssetsOverCurrentLiabilitiesMaxRank
+     *
+     * @param integer $currentAssetsOverCurrentLiabilitiesMaxRank
+     * @return MaxRank
+     */
+    public function setCurrentAssetsOverCurrentLiabilitiesMaxRank($currentAssetsOverCurrentLiabilitiesMaxRank)
+    {
+        $this->currentAssetsOverCurrentLiabilitiesMaxRank = $currentAssetsOverCurrentLiabilitiesMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get currentAssetsOverCurrentLiabilitiesMaxRank
+     *
+     * @return integer 
+     */
+    public function getCurrentAssetsOverCurrentLiabilitiesMaxRank()
+    {
+        return $this->currentAssetsOverCurrentLiabilitiesMaxRank;
+    }
+
+    /**
+     * Set longTermDebtOverCapitaMaxRank
+     *
+     * @param integer $longTermDebtOverCapitaMaxRank
+     * @return MaxRank
+     */
+    public function setLongTermDebtOverCapitaMaxRank($longTermDebtOverCapitaMaxRank)
+    {
+        $this->longTermDebtOverCapitaMaxRank = $longTermDebtOverCapitaMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get longTermDebtOverCapitaMaxRank
+     *
+     * @return integer 
+     */
+    public function getLongTermDebtOverCapitaMaxRank()
+    {
+        return $this->longTermDebtOverCapitaMaxRank;
+    }
+
+    /**
+     * Set generalRevenuesOverLongTermDebtMaxRank
+     *
+     * @param integer $generalRevenuesOverLongTermDebtMaxRank
+     * @return MaxRank
+     */
+    public function setGeneralRevenuesOverLongTermDebtMaxRank($generalRevenuesOverLongTermDebtMaxRank)
+    {
+        $this->generalRevenuesOverLongTermDebtMaxRank = $generalRevenuesOverLongTermDebtMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get generalRevenuesOverLongTermDebtMaxRank
+     *
+     * @return integer 
+     */
+    public function getGeneralRevenuesOverLongTermDebtMaxRank()
+    {
+        return $this->generalRevenuesOverLongTermDebtMaxRank;
+    }
+
+    /**
+     * Set debtServiceExpendituresOverGeneralFundRevenuesMaxRank
+     *
+     * @param integer $debtServiceExpendituresOverGeneralFundRevenuesMaxRank
+     * @return MaxRank
+     */
+    public function setDebtServiceExpendituresOverGeneralFundRevenuesMaxRank($debtServiceExpendituresOverGeneralFundRevenuesMaxRank)
+    {
+        $this->debtServiceExpendituresOverGeneralFundRevenuesMaxRank = $debtServiceExpendituresOverGeneralFundRevenuesMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get debtServiceExpendituresOverGeneralFundRevenuesMaxRank
+     *
+     * @return integer 
+     */
+    public function getDebtServiceExpendituresOverGeneralFundRevenuesMaxRank()
+    {
+        return $this->debtServiceExpendituresOverGeneralFundRevenuesMaxRank;
+    }
+
+    /**
+     * Set generalFundSurplusOverRevenuesMaxRank
+     *
+     * @param integer $generalFundSurplusOverRevenuesMaxRank
+     * @return MaxRank
+     */
+    public function setGeneralFundSurplusOverRevenuesMaxRank($generalFundSurplusOverRevenuesMaxRank)
+    {
+        $this->generalFundSurplusOverRevenuesMaxRank = $generalFundSurplusOverRevenuesMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get generalFundSurplusOverRevenuesMaxRank
+     *
+     * @return integer 
+     */
+    public function getGeneralFundSurplusOverRevenuesMaxRank()
+    {
+        return $this->generalFundSurplusOverRevenuesMaxRank;
+    }
+
+    /**
+     * Set changeInNetAssetsOverGeneralFundRevenuesMaxRank
+     *
+     * @param integer $changeInNetAssetsOverGeneralFundRevenuesMaxRank
+     * @return MaxRank
+     */
+    public function setChangeInNetAssetsOverGeneralFundRevenuesMaxRank($changeInNetAssetsOverGeneralFundRevenuesMaxRank)
+    {
+        $this->changeInNetAssetsOverGeneralFundRevenuesMaxRank = $changeInNetAssetsOverGeneralFundRevenuesMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get changeInNetAssetsOverGeneralFundRevenuesMaxRank
+     *
+     * @return integer 
+     */
+    public function getChangeInNetAssetsOverGeneralFundRevenuesMaxRank()
+    {
+        return $this->changeInNetAssetsOverGeneralFundRevenuesMaxRank;
+    }
+
+    /**
+     * Set governmentFundsOverallBalancePerCapitaMaxRank
+     *
+     * @param integer $governmentFundsOverallBalancePerCapitaMaxRank
+     * @return MaxRank
+     */
+    public function setGovernmentFundsOverallBalancePerCapitaMaxRank($governmentFundsOverallBalancePerCapitaMaxRank)
+    {
+        $this->governmentFundsOverallBalancePerCapitaMaxRank = $governmentFundsOverallBalancePerCapitaMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get governmentFundsOverallBalancePerCapitaMaxRank
+     *
+     * @return integer 
+     */
+    public function getGovernmentFundsOverallBalancePerCapitaMaxRank()
+    {
+        return $this->governmentFundsOverallBalancePerCapitaMaxRank;
+    }
+
+    /**
+     * Set overallGovernmentalFundBalanceOverLongTermLiabsMaxRank
+     *
+     * @param integer $overallGovernmentalFundBalanceOverLongTermLiabsMaxRank
+     * @return MaxRank
+     */
+    public function setOverallGovernmentalFundBalanceOverLongTermLiabsMaxRank($overallGovernmentalFundBalanceOverLongTermLiabsMaxRank)
+    {
+        $this->overallGovernmentalFundBalanceOverLongTermLiabsMaxRank = $overallGovernmentalFundBalanceOverLongTermLiabsMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get overallGovernmentalFundBalanceOverLongTermLiabsMaxRank
+     *
+     * @return integer 
+     */
+    public function getOverallGovernmentalFundBalanceOverLongTermLiabsMaxRank()
+    {
+        return $this->overallGovernmentalFundBalanceOverLongTermLiabsMaxRank;
+    }
+
+    /**
+     * Set intergovermentalRevenuesOverGeneralFundRevenuesMaxRank
+     *
+     * @param integer $intergovermentalRevenuesOverGeneralFundRevenuesMaxRank
+     * @return MaxRank
+     */
+    public function setIntergovermentalRevenuesOverGeneralFundRevenuesMaxRank($intergovermentalRevenuesOverGeneralFundRevenuesMaxRank)
+    {
+        $this->intergovermentalRevenuesOverGeneralFundRevenuesMaxRank = $intergovermentalRevenuesOverGeneralFundRevenuesMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get intergovermentalRevenuesOverGeneralFundRevenuesMaxRank
+     *
+     * @return integer 
+     */
+    public function getIntergovermentalRevenuesOverGeneralFundRevenuesMaxRank()
+    {
+        return $this->intergovermentalRevenuesOverGeneralFundRevenuesMaxRank;
+    }
+
+    /**
+     * Set totalUnrestrictedNetPositionOverTotalAssetsMaxRank
+     *
+     * @param integer $totalUnrestrictedNetPositionOverTotalAssetsMaxRank
+     * @return MaxRank
+     */
+    public function setTotalUnrestrictedNetPositionOverTotalAssetsMaxRank($totalUnrestrictedNetPositionOverTotalAssetsMaxRank)
+    {
+        $this->totalUnrestrictedNetPositionOverTotalAssetsMaxRank = $totalUnrestrictedNetPositionOverTotalAssetsMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get totalUnrestrictedNetPositionOverTotalAssetsMaxRank
+     *
+     * @return integer 
+     */
+    public function getTotalUnrestrictedNetPositionOverTotalAssetsMaxRank()
+    {
+        return $this->totalUnrestrictedNetPositionOverTotalAssetsMaxRank;
+    }
+
+    /**
+     * Set overallWeightedIndexMaxRank
+     *
+     * @param integer $overallWeightedIndexMaxRank
+     * @return MaxRank
+     */
+    public function setOverallWeightedIndexMaxRank($overallWeightedIndexMaxRank)
+    {
+        $this->overallWeightedIndexMaxRank = $overallWeightedIndexMaxRank;
+
+        return $this;
+    }
+
+    /**
+     * Get overallWeightedIndexMaxRank
+     *
+     * @return integer 
+     */
+    public function getOverallWeightedIndexMaxRank()
+    {
+        return $this->overallWeightedIndexMaxRank;
+    }
+
+    /**
+     * Set pavementConditionIndexRank
+     *
+     * @param integer $pavementConditionIndexRank
+     * @return MaxRank
+     */
+    public function setPavementConditionIndexRank($pavementConditionIndexRank)
+    {
+        $this->pavementConditionIndexRank = $pavementConditionIndexRank;
+
+        return $this;
+    }
+
+    /**
+     * Get pavementConditionIndexRank
+     *
+     * @return integer 
+     */
+    public function getPavementConditionIndexRank()
+    {
+        return $this->pavementConditionIndexRank;
     }
 }

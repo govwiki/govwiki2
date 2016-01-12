@@ -23,9 +23,15 @@ services:
             - @govwiki_admin.manager.environment
             - %kernel.root_dir%/../web/img
 
-    govwiki_admin.listener.government_sync:
-        class: GovWiki\AdminBundle\Listener\SyncGovernmentWithCartoDb
-        arguments: [@carto_db.api]
+#    govwiki_admin.listener.government_sync:
+#        class: GovWiki\AdminBundle\Listener\SyncGovernmentWithCartoDb
+#        arguments: [@carto_db.api]
+#        tags:
+#            - { name: doctrine.event_subscriber }
+
+    govwiki_admin.listener.government_table_upadte:
+        class: GovWiki\AdminBundle\Listener\UpdateGovernmentTable
+        arguments: [@service_container]
         tags:
             - { name: doctrine.event_subscriber }
 
