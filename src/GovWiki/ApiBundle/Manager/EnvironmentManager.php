@@ -169,7 +169,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     {
         $formats = $this->em->getRepository('GovWikiDbBundle:Format')
             ->get($this->environment, true);
-        $formats = [];
 
         /*
          * Get array of fields and array of ranked fields.
@@ -177,36 +176,43 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         $fields = [];
         $rankedFields = [];
         foreach ($formats as $format) {
-            $fields[] = $format['field'];
-            if (true === $format['ranked']) {
-                $rankedFieldName = $format['field'] . 'Rank';
-                $fields[] = $rankedFieldName;
-                $rankedFields[] = 'MAX(Government.'. $rankedFieldName .') as '.
-                    $rankedFieldName;
+            if (in_array(str_replace('_', ' ', $altTypeSlug), $format['showIn'], true)) {
+                $fields[] = $format['field'];
+                if (true === $format['ranked']) {
+                    $rankedFieldName = $format['field'] . '_rank';
+                    $fields[] = $rankedFieldName;
+                    $rankedFields[] =
+                        'MAX(' . $rankedFieldName . ') as ' .
+                        $rankedFieldName;
+                }
             }
         }
 
         $government = $this->em->getRepository('GovWikiDbBundle:Government')
-            ->findGovernment($this->environment, $altTypeSlug, $slug, $fields);
+            ->findGovernment($this->environment, $altTypeSlug, $slug);
         if (null === $government) {
             return [];
         }
 
+        $fields = implode(',', $fields);
+        $data = $this->em->getConnection()->fetchAssoc("
+            SELECT {$fields} FROM {$this->environment}
+            WHERE government_id = {$government['id']}
+        ");
+        $government = array_merge($government, $data);
+
         /*
          * Compute max ranks.
          */
-        $qb = $this->em->getRepository('GovWikiDbBundle:Government')
-            ->createQueryBuilder('Government');
-
         $government['ranks'] = [];
         if (count($rankedFields) > 0) {
-            $ranks = $qb
-                ->select($rankedFields)
-                ->getQuery()
-                ->getArrayResult();
+            $rankedFields = implode(',', $rankedFields);
+
+            $ranks = $this->em->getConnection()->fetchAssoc("
+                SELECT {$rankedFields} FROM {$this->environment}
+            ");
 
             if (count($ranks) > 0) {
-                $ranks = $ranks[0];
                 foreach ($ranks as $field => $value) {
                     $government['ranks'][$field] = [ $government[$field], $value ];
                 }

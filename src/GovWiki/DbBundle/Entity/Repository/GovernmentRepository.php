@@ -234,25 +234,17 @@ class GovernmentRepository extends EntityRepository
      * @param string $environment Environment name.
      * @param string $altTypeSlug Slugged government alt type.
      * @param string $slug        Slugged government name.
-     * @param array  $fields      Array of government fields.
      *
      * @return array|null
      */
-    public function findGovernment($environment, $altTypeSlug, $slug, array $fields)
+    public function findGovernment($environment, $altTypeSlug, $slug)
     {
-        $fields = array_merge(
-            [ 'id', 'altType', 'altTypeSlug', 'name', 'slug', 'type', 'wikipediaPageName' , 'latestAuditUrl', 'transparentCaliforniaPageName', 'stateId'],
-            $fields
-        );
-
         $qb = $this->createQueryBuilder('Government');
         $expr = $qb->expr();
 
         $data = $qb
             ->select(
-                'partial Government.{'. implode(',', $fields) .'}',
-                'FinData, CaptionCategory, ElectedOfficial',
-                'Fund'
+                'Government, FinData, CaptionCategory, ElectedOfficial, Fund'
             )
             ->leftJoin('Government.finData', 'FinData')
             ->leftJoin('FinData.captionCategory', 'CaptionCategory')

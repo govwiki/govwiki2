@@ -87,7 +87,7 @@
                                                 <tr>
                                                     {# Field name #}
                                                     <td>
-                                                        {{ format.description }}
+                                                        {{ format.name }}
                                                         {% if format.helpText %}
                                                             <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}" title="{{ format.helpText }}">
                                                         {% endif %}
@@ -96,7 +96,7 @@
                                                     <td>
                                                         {{ value }}
 
-                                                        {% set rankName = "#{fieldName}Rank" %}
+                                                        {% set rankName = "#{fieldName}_rank" %}
                                                         {% if (government.ranks[rankName] is defined) %}
                                                             <a class='rank'
                                                                data-field='{{ rankName }}'

@@ -6400,13 +6400,16 @@ $(function() {
      *  environment: {
      *      slug: String
      *  }
+     *  username: String
      * }
      */
 
     window.gw.map = JSON.parse(window.gw.map);
     window.gw.slug = window.gw.map.environment.slug;
 
-    window.gw.map.username = 'joffemd';
+    // Get user name from vizUrl.
+    window.gw.map.username =
+        window.gw.map.vizUrl.replace (/.*\/\/([^\.]*).*/, '$1');
 
     /**
      * Handle possible errors
@@ -6476,7 +6479,7 @@ $(function() {
              * SubLayers & tooltips initialization
              * Get unique altTypes and render new subLayers by them
              */
-            sql.execute("SELECT alttypeslug FROM " + window.gw.slug + " GROUP BY alttypeslug")
+            sql.execute("SELECT alt_type_slug FROM " + window.gw.slug + " GROUP BY alt_type_slug")
                 .done(function(altTypes) {
 
                     initSubLayers(altTypes);
@@ -6505,22 +6508,22 @@ $(function() {
 
                 altTypes.rows.forEach(function(altType){
 
-                    switch (altType.alttypeslug) {
+                    switch (altType.alt_type_slug) {
 
                         case 'County':
                             initCountySubLayer();
                             break;
 
                         case 'City':
-                            initCitySubLayer(altType.alttypeslug);
+                            initCitySubLayer(altType.alt_type_slug);
                             break;
 
                         case 'School_District':
-                            initSchoolSubLayer(altType.alttypeslug);
+                            initSchoolSubLayer(altType.alt_type_slug);
                             break;
 
                         case 'Special_District':
-                            initSpecialSubLayer(altType.alttypeslug);
+                            initSpecialSubLayer(altType.alt_type_slug);
                             break;
 
                     }
@@ -6557,7 +6560,7 @@ $(function() {
             function initCitySubLayer(altType) {
 
                 citySubLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = '" + altType +"'",
+                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
                     cartocss: "#layer { marker-fill: #f00000; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug'
                 });
@@ -6581,7 +6584,7 @@ $(function() {
             function initSchoolSubLayer(altType) {
 
                 schoolSubLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = '" + altType +"'",
+                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
                     cartocss: "#layer { marker-fill: #add8e6; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug'
                 });
@@ -6605,7 +6608,7 @@ $(function() {
             function initSpecialSubLayer(altType) {
 
                 specialSubLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alttypeslug = '" + altType +"'",
+                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
                     cartocss: "#layer { marker-fill: #800080; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug'
                 });
@@ -6654,7 +6657,7 @@ $(function() {
 
                 var hovers = [];
 
-                subLayers.forEach(function(layer) {
+                subLayers.forEach(function (layer) {
 
                     // Allow events on layer
                     layer.setInteraction(true);
@@ -6664,7 +6667,7 @@ $(function() {
                      * Or highlight current county
                      * It depends on the current Layer position
                      */
-                    layer.bind('mouseover', function(e, latlon, pxPos, data, layerIndex) {
+                    layer.bind('mouseover', function (e, latlon, pxPos, data, layerIndex) {
 
                         // TODO: Must be deleted, when data will be replaced, now it's hardcoded
                         data.slug = data.slug.replace(/_/g, ' ');
@@ -6674,7 +6677,7 @@ $(function() {
                         /**
                          * If hover active
                          */
-                        if(_.some(hovers)) {
+                        if (_.some(hovers)) {
 
                             $('.cartodb-map-wrapper').css('cursor', 'pointer');
 
@@ -6690,7 +6693,7 @@ $(function() {
                             /**
                              * Open current tooltip, close another
                              */
-                            tooltips.forEach(function(tooltip){
+                            tooltips.forEach(function (tooltip) {
 
                                 if (tooltip != null) {
 
@@ -6713,14 +6716,14 @@ $(function() {
                      * Or remove highlight on current county
                      * It depends on the current Layer position
                      */
-                    layer.bind('mouseout', function(layerIndex) {
+                    layer.bind('mouseout', function (layerIndex) {
 
                         hovers[layerIndex] = 0;
 
                         /**
                          * If hover not active
                          */
-                        if(!_.some(hovers)) {
+                        if (!_.some(hovers)) {
                             $('.cartodb-map-wrapper').css('cursor', 'auto');
 
                             removeAllHoverShapes();
@@ -6728,7 +6731,7 @@ $(function() {
                             /**
                              *  Close all tooltips, if cursor outside of layers
                              */
-                            tooltips.forEach(function(tooltip){
+                            tooltips.forEach(function (tooltip) {
 
                                 if (tooltip != null) {
 
@@ -6853,8 +6856,8 @@ $(function() {
             }
 
         })
+        // Not work, cartodb internal error
         .on('error', function() {
-            console.log('yes');
             return cartodbError()
         });
 
