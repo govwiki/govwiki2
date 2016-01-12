@@ -66,18 +66,26 @@ class MigrateCommand extends ContainerAwareCommand
         $manager = $this->getContainer()
             ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
 
+        /*
+         * Migrate formats.
+         */
+        $environmentsArray = [];
         foreach ($environments as $environment) {
             $output->writeln("Process environment '{$environment->getName()}'");
 
+            $environmentName = $environment->getSlug();
+
             $formats = $environment->getFormats();
-            $manager->changeEnvironment($environment->getSlug());
-            $manager->createGovernmentTable($environment->getSlug());
+            $manager->changeEnvironment($environmentName);
+            $manager->createGovernmentTable($environmentName);
+
+            $environmentsArray[$environmentName] = [];
 
             /** @var Format $format */
             foreach ($formats as $format) {
                 $name = $format->getField();
                 $name = str_replace('_', ' ', $name);
-                $name = preg_replace('#([A-Z]|[0-9]+)#', ' $1', $name);
+                $name = preg_replace('#(?(?! )([A-Z]|[0-9]+))#', '$1', $name);
 
                 $format->setName($name);
                 $format->setField(str_replace([' ', '-'], '_', strtolower($name)));
@@ -85,13 +93,30 @@ class MigrateCommand extends ContainerAwareCommand
 
                 $em->persist($format);
                 $manager->addColumnToGovernment($format->getField(), 'integer');
+                $environmentsArray[$environmentName][] = $format->getField();
+
                 if ($format->isRanked()) {
                     $manager->addColumnToGovernment($format->getField(). '_rank', 'integer');
+                    $environmentsArray[$environmentName][] = $format->getField().'_rank';
                 }
 
                 dump($format->getField());
                 $em->flush();
             }
+        }
+
+        /*
+         * Migrate governments.
+         */
+        $con = $em->getConnection();
+        foreach ($environmentsArray as $environmentName => $fields) {
+            $fields = implode(',', $fields);
+            $con->exec("
+                INSERT INTO {$environmentName} ({$fields})
+                SELECT {$fields} FROM governments_old g
+                INNER JOIN environments e ON g.environment_id = e.id
+                WHERE e.slug = '{$environmentName}'
+            ");
         }
     }
 }
