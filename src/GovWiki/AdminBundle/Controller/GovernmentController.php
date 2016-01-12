@@ -85,6 +85,21 @@ class GovernmentController extends AbstractGovWikiAdminController
         if ($form->isValid()) {
             $manager->update($government);
 
+            /*
+             * Update carto db service.
+             */
+            $this->get(CartoDbServices::CARTO_DB_API)
+                ->sqlRequest("
+                    INSERT INTO {$government->getEnvironment()->getSlug()}
+                        (id, alt_type_slug, slug)
+                    VALUES
+                        (
+                            {$government->getId()},
+                            '{$government->getAltTypeSlug()}',
+                            '{$government->getSlug()}'
+                        )
+                ");
+
             $data = $form->getData()['extension'];
             $data['government_id'] = $government->getId();
 
@@ -136,6 +151,20 @@ class GovernmentController extends AbstractGovWikiAdminController
 
         if ($form->isValid()) {
             $this->getManager()->update($government);
+
+            /*
+            * Update carto db service.
+            */
+            $this->get(CartoDbServices::CARTO_DB_API)
+                ->sqlRequest("
+                    UPDATE {$government->getEnvironment()->getSlug()}
+                    SET
+                        alt_type_slug = '{$government->getAltTypeSlug()}',
+                        slug = '{$government->getSlug()}'
+                    WHERE
+                        id = {$government->getId()}
+                ");
+
             $this->adminEnvironmentManager()
                 ->updateGovernment($form->getData()['extension']);
 
@@ -166,6 +195,15 @@ class GovernmentController extends AbstractGovWikiAdminController
         $em->remove($this->getManager()->getReference($id));
         $this->adminEnvironmentManager()->deleteFromGovernment($id);
         $em->flush();
+
+        /*
+             * Update carto db service.
+             */
+        $this->get(CartoDbServices::CARTO_DB_API)
+            ->sqlRequest("
+                DELETE FROM {$this->adminEnvironmentManager()->getSlug()}
+                WHERE id = {$id}
+            ");
 
         $this->addFlash('admin_success', 'Government removed');
         return $this->redirectToRoute('govwiki_admin_government_index');

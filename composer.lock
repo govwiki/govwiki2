@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0592e1af24f427be232c78c14c599894",
-    "content-hash": "cafeda9ea2f9ba69ea3809a7c62a101c",
+    "hash": "72300001c680b519dbdb2e138401b864",
+    "content-hash": "ff29fb6e828618b7131818c71936a5c1",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -1031,129 +1031,6 @@
             "time": "2014-11-08 10:51:34"
         },
         {
-            "name": "friendsofsymfony/oauth-server-bundle",
-            "version": "dev-master",
-            "target-dir": "FOS/OAuthServerBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/FriendsOfSymfony/FOSOAuthServerBundle.git",
-                "reference": "0c72d8baf707dce59c59a4daa1549c06e510bbed"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSOAuthServerBundle/zipball/0c72d8baf707dce59c59a4daa1549c06e510bbed",
-                "reference": "0c72d8baf707dce59c59a4daa1549c06e510bbed",
-                "shasum": ""
-            },
-            "require": {
-                "friendsofsymfony/oauth2-php": "~1.1.0",
-                "php": ">=5.3.3",
-                "symfony/framework-bundle": "~2.2",
-                "symfony/security-bundle": "~2.1"
-            },
-            "require-dev": {
-                "doctrine/doctrine-bundle": "~1.0",
-                "doctrine/mongodb-odm": "1.0.*@dev",
-                "doctrine/orm": ">=2.2,<2.5-dev",
-                "symfony/class-loader": "~2.1",
-                "symfony/yaml": "~2.1",
-                "willdurand/propel-typehintable-behavior": "~1.0,>1.0.4"
-            },
-            "suggest": {
-                "doctrine/doctrine-bundle": "*",
-                "doctrine/mongodb-odm-bundle": "*",
-                "propel/propel-bundle": "If you want to use Propel with Symfony2, then you will have to install the PropelBundle",
-                "willdurand/propel-typehintable-behavior": "The Typehintable behavior is useful to add type hints on generated methods, to be compliant with interfaces"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.4-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "FOS\\OAuthServerBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Arnaud Le Blanc",
-                    "email": "arnaud.lb@gmail.com"
-                },
-                {
-                    "name": "FriendsOfSymfony Community",
-                    "homepage": "https://github.com/FriendsOfSymfony/FOSOAuthServerBundle/contributors"
-                }
-            ],
-            "description": "Symfony2 OAuth Server Bundle",
-            "homepage": "http://friendsofsymfony.github.com",
-            "keywords": [
-                "oauth",
-                "oauth2",
-                "server"
-            ],
-            "time": "2015-05-01 22:00:52"
-        },
-        {
-            "name": "friendsofsymfony/oauth2-php",
-            "version": "1.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/FriendsOfSymfony/oauth2-php.git",
-                "reference": "23e76537c4a02e666ab4ba5abe67a69a886a0310"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/oauth2-php/zipball/23e76537c4a02e666ab4ba5abe67a69a886a0310",
-                "reference": "23e76537c4a02e666ab4ba5abe67a69a886a0310",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2",
-                "symfony/http-foundation": "~2.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "OAuth2\\": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Arnaud Le Blanc",
-                    "email": "arnaud.lb@gmail.com"
-                },
-                {
-                    "name": "FriendsOfSymfony Community",
-                    "homepage": "https://github.com/FriendsOfSymfony/oauth2-php/contributors"
-                }
-            ],
-            "description": "OAuth2 library",
-            "homepage": "https://github.com/FriendsOfSymfony/oauth2-php",
-            "keywords": [
-                "oauth",
-                "oauth2"
-            ],
-            "time": "2014-11-03 10:21:20"
-        },
-        {
             "name": "friendsofsymfony/user-bundle",
             "version": "dev-master",
             "source": {
@@ -1163,7 +1040,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/e39b040e272c72f0a090c67d802e1d3b2d0b0313",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/6ccff96434c0ac7fee077d1dce90966341dfd278",
                 "reference": "d5b28c367d393f9d9fbc48c4138b2a74d51c0c83",
                 "shasum": ""
             },
@@ -2366,6 +2243,56 @@
             "time": "2012-12-21 11:40:51"
         },
         {
+            "name": "salsify/json-streaming-parser",
+            "version": "v4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/salsify/jsonstreamingparser.git",
+                "reference": "15cea1f918d253eb58a5ec5a2fb3158b698ad20e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/salsify/jsonstreamingparser/zipball/15cea1f918d253eb58a5ec5a2fb3158b698ad20e",
+                "reference": "15cea1f918d253eb58a5ec5a2fb3158b698ad20e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "JsonStreamingParser": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Maxim Gnatenko",
+                    "email": "mgnatenko@gmail.com"
+                },
+                {
+                    "name": "Rob Gonzalez",
+                    "email": "rob@salsify.com",
+                    "homepage": "http://salsify.com/"
+                }
+            ],
+            "description": "A streaming parser for JSON in PHP.",
+            "homepage": "https://github.com/salsify/jsonstreamingparser",
+            "keywords": [
+                "json",
+                "parser",
+                "streaming"
+            ],
+            "time": "2015-03-07 19:39:22"
+        },
+        {
             "name": "sensio/distribution-bundle",
             "version": "v4.0.0",
             "target-dir": "Sensio/Bundle/DistributionBundle",
@@ -3002,6 +2929,60 @@
     ],
     "packages-dev": [
         {
+            "name": "friendsofsymfony/oauth2-php",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FriendsOfSymfony/oauth2-php.git",
+                "reference": "23e76537c4a02e666ab4ba5abe67a69a886a0310"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/oauth2-php/zipball/23e76537c4a02e666ab4ba5abe67a69a886a0310",
+                "reference": "23e76537c4a02e666ab4ba5abe67a69a886a0310",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "symfony/http-foundation": "~2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "OAuth2\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Arnaud Le Blanc",
+                    "email": "arnaud.lb@gmail.com"
+                },
+                {
+                    "name": "FriendsOfSymfony Community",
+                    "homepage": "https://github.com/FriendsOfSymfony/oauth2-php/contributors"
+                }
+            ],
+            "description": "OAuth2 library",
+            "homepage": "https://github.com/FriendsOfSymfony/oauth2-php",
+            "keywords": [
+                "oauth",
+                "oauth2"
+            ],
+            "time": "2014-11-03 10:21:20"
+        },
+        {
             "name": "sensio/generator-bundle",
             "version": "v2.5.3",
             "target-dir": "Sensio/Bundle/GeneratorBundle",
@@ -3053,8 +3034,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "friendsofsymfony/user-bundle": 20,
-        "friendsofsymfony/oauth-server-bundle": 20
+        "friendsofsymfony/user-bundle": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
