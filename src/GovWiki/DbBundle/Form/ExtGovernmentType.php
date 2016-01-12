@@ -20,12 +20,19 @@ class ExtGovernmentType extends AbstractType
     private $manager;
 
     /**
+     * @var string
+     */
+    private $altType;
+
+    /**
      * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
      *                                         instance.
+     * @param string                  $altType Government alt type.
      */
-    public function __construct(AdminEnvironmentManager $manager)
+    public function __construct(AdminEnvironmentManager $manager, $altType = null)
     {
         $this->manager = $manager;
+        $this->altType = $altType;
     }
 
     /**
@@ -36,12 +43,25 @@ class ExtGovernmentType extends AbstractType
         $formats = $this->manager
             ->getFormats(true);
 
-        foreach ($formats as $format) {
-            $format['type'] = ('string' === $format['type'])? 'text' : $format['type'];
+        if ($this->altType) {
+            foreach ($formats as $format) {
+                if (in_array($this->altType, $format['showIn'], true)) {
+                    $format['type'] = ('string' === $format['type']) ? 'text' : $format['type'];
 
-            $builder->add($format['field'], $format['type']);
-            if ($format['ranked']) {
-                $builder->add($format['field']. '_rank', 'integer');
+                    $builder->add($format['field'], $format['type']);
+                    if ($format['ranked']) {
+                        $builder->add($format['field'] . '_rank', 'integer');
+                    }
+                }
+            }
+        } else {
+            foreach ($formats as $format) {
+                $format['type'] = ('string' === $format['type']) ? 'text' : $format['type'];
+
+                $builder->add($format['field'], $format['type']);
+                if ($format['ranked']) {
+                    $builder->add($format['field'] . '_rank', 'integer');
+                }
             }
         }
     }

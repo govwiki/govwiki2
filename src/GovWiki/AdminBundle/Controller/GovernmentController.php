@@ -4,6 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\DbBundle\Form\ExtGovernmentType;
 use GovWiki\DbBundle\GovWikiDbServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\Form\Form;
@@ -73,7 +74,10 @@ class GovernmentController extends AbstractGovWikiAdminController
 
         $form = $this->createFormBuilder()
             ->add('main', 'government')
-            ->add('extension', 'ext_government')
+            ->add(
+                'extension',
+                new ExtGovernmentType($this->adminEnvironmentManager())
+            )
             ->setData([ 'main' => $government, 'extension' =>[] ])
             ->getForm();
         $form->handleRequest($request);
@@ -119,7 +123,13 @@ class GovernmentController extends AbstractGovWikiAdminController
 
         $form = $this->createFormBuilder()
             ->add('main', 'government')
-            ->add('extension', 'ext_government')
+            ->add(
+                'extension',
+                new ExtGovernmentType(
+                    $this->adminEnvironmentManager(),
+                    $government->getAltType()
+                )
+            )
             ->setData([ 'main' => $government, 'extension' => $data ])
             ->getForm();
         $form->handleRequest($request);
@@ -137,7 +147,8 @@ class GovernmentController extends AbstractGovWikiAdminController
 
         return [
             'form' => $form->createView(),
-            'formats' => $this->adminEnvironmentManager()->getFormats(),
+            'formats' => $this->adminEnvironmentManager()
+                ->getFormats(false,$government->getAltType()),
         ];
     }
 

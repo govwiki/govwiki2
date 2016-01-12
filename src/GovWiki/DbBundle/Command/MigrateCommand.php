@@ -11,21 +11,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use GovWiki\DbBundle\Entity\Government;
-use GovWiki\DbBundle\Entity\ElectedOfficial;
-use GovWiki\DbBundle\Entity\ElectedOfficialVote;
-use GovWiki\DbBundle\Entity\IssueCategory;
-use GovWiki\DbBundle\Entity\Contribution;
-use GovWiki\DbBundle\Entity\Endorsement;
-use GovWiki\DbBundle\Entity\Fund;
-use GovWiki\DbBundle\Entity\CaptionCategory;
-use GovWiki\DbBundle\Entity\FinData;
-use GovWiki\DbBundle\Entity\OpenEnrollmentSchool;
-use GovWiki\DbBundle\Entity\TriggerSchool;
-use GovWiki\DbBundle\Entity\Median;
-use GovWiki\DbBundle\Entity\MaxRank;
-use GovWiki\DbBundle\Entity\Legislation;
-use GovWiki\DbBundle\Entity\PublicStatement;
 
 /**
  * MigrateCommand
@@ -85,7 +70,7 @@ class MigrateCommand extends ContainerAwareCommand
             foreach ($formats as $format) {
                 $name = $format->getField();
                 $name = str_replace('_', ' ', $name);
-                $name = preg_replace('#(?(?! )([A-Z]|[0-9]+))#', '$1', $name);
+                $name = preg_replace('#(?(?! )([A-Z]|[0-9]+))#', ' $1', $name);
 
                 $format->setName($name);
                 $format->setField(str_replace([' ', '-'], '_', strtolower($name)));
@@ -110,6 +95,10 @@ class MigrateCommand extends ContainerAwareCommand
          */
         $con = $em->getConnection();
         foreach ($environmentsArray as $environmentName => $fields) {
+
+            /*
+             * Migrate environment depended data.
+             */
             $fields = implode(',', $fields);
             $con->exec("
                 INSERT INTO {$environmentName} ({$fields})
@@ -117,6 +106,29 @@ class MigrateCommand extends ContainerAwareCommand
                 INNER JOIN environments e ON g.environment_id = e.id
                 WHERE e.slug = '{$environmentName}'
             ");
+
+            /*
+             * Create link between environment depended data and general data.
+             */
+            $ids = $con->fetchAll("
+                SELECT og.id FROM governments_old og
+                INNER JOIN environments e ON og.environment_id = e.id
+                WHERE e.slug = '{$environmentName}'
+            ");
+            $envIds = $con->fetchAll("
+                SELECT id FROM {$environmentName}
+            ");
+            $count = count($ids);
+
+            for ($i = 0; $i < $count; ++$i) {
+                $output->writeln("Process $i record");
+                $con->exec("
+                    UPDATE {$environmentName}
+                    SET
+                        government_id = {$ids[$i]['id']}
+                    WHERE id = ". $envIds[$i]['id']
+                );
+            }
         }
     }
 }

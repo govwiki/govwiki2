@@ -1,0 +1,25 @@
+{% extends "GovWikiAdminBundle:Layout:wizard.html.twig" %}
+
+{% block panel_title %}
+    Importing map
+{% endblock panel_title %}
+
+{% block breadcrumb %}
+    <li><a href="{{ path('step1') }}">Setup environment</a></li>
+    <li><a href="{{ path('step2') }}">Setup map</a></li>
+    <li class="active">Importing map</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <p class="text-center">
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+
+         <a class="pull-left btn btn-danger" href="{{ path('govwiki_admin_wizard_cancel') }}">Cancel</a>
+        <div class="pull-right btn-group">
+            <a class="btn btn-default" href="{{ back_url }}">Back</a>
+            <button class="btn btn-primary" type="submit">Next</button>
+        </div>
+        {{ form_end(form) }}
+    </p>
+{% endblock content %}

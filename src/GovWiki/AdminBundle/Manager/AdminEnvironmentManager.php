@@ -5,6 +5,8 @@ namespace GovWiki\AdminBundle\Manager;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\ApiBundle\Manager\EnvironmentManagerAwareInterface;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Format;
+use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\UserBundle\Entity\User;
 use \Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -39,6 +41,11 @@ class AdminEnvironmentManager
      * @var Session
      */
     private $session;
+
+    /**
+     * @var array
+     */
+    private $format;
 
     /**
      * @param EntityManagerInterface $em      A EntityManagerInterface instance.
@@ -77,6 +84,7 @@ class AdminEnvironmentManager
 
         $this->session->set(self::ENVIRONMENT_PARAMETER, $environment);
         $this->environment = $environment;
+        $this->format = null;
 
         return $this;
     }
@@ -255,15 +263,34 @@ class AdminEnvironmentManager
     }
 
     /**
-     * @param boolean $plain Flag, if set return plain array without grouping by
-     *                       tab names and fields.
+     * @param boolean $plain   Flag, if set return plain array without grouping
+     *                         by tab names and fields.
+     * @param string  $altType Government alt type, if set return format only
+     *                         for given alt type.
      *
      * @return array
      */
-    public function getFormats($plain = false)
+    public function getFormats($plain = false, $altType = null)
     {
-        return $this->em->getRepository('GovWikiDbBundle:Format')
-            ->get($this->environment, $plain);
+        if (null === $this->format) {
+            $this->format = $this->em->getRepository('GovWikiDbBundle:Format')
+                ->get($this->environment, true);
+        }
+
+        $result = $this->format;
+        if (null !== $altType) {
+            $result = [];
+            foreach ($this->format as $row) {
+                if (in_array($altType, $row['showIn'], true)) {
+                    $result[] = $row;
+                }
+            }
+        }
+
+        if ($plain) {
+            return $result;
+        }
+        return Functions::groupBy($result, [ 'tab_name', 'field' ]);
     }
 
     /**

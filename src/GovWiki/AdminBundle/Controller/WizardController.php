@@ -39,7 +39,7 @@ class WizardController extends AbstractGovWikiAdminController
         'step1', // Create new environment.
         'step2', // Create new map.
         'step3', // Edit styles.
-//        'step4', // Import data (Not required).
+        'step4', // Import data (Not required).
         'end',
     ];
 
@@ -298,7 +298,7 @@ class WizardController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/style", name="step4")
+     * @Configuration\Route("/data", name="step4")
      * @Configuration\Template()
      *
      * @param Request $request A Request instance.
