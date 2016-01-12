@@ -84,8 +84,6 @@ class MigrateCommand extends ContainerAwareCommand
                     $manager->addColumnToGovernment($format->getField(). '_rank', 'integer');
                     $environmentsArray[$environmentName][] = $format->getField().'_rank';
                 }
-
-                dump($format->getField());
                 $em->flush();
             }
         }
@@ -95,7 +93,6 @@ class MigrateCommand extends ContainerAwareCommand
          */
         $con = $em->getConnection();
         foreach ($environmentsArray as $environmentName => $fields) {
-
             /*
              * Migrate environment depended data.
              */
