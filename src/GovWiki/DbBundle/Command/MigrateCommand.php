@@ -70,7 +70,8 @@ class MigrateCommand extends ContainerAwareCommand
             foreach ($formats as $format) {
                 $name = $format->getField();
                 $name = str_replace('_', ' ', $name);
-                $name = preg_replace('#(?(?! )([A-Z]|[0-9]+))#', ' $1', $name);
+                $name = preg_replace('#(?(?!\s)([A-Z]|[0-9]+))#', ' $1', $name);
+                $name = preg_replace('#\s{2,}#', ' ', $name);
 
                 $format->setName($name);
                 $format->setField(str_replace([' ', '-'], '_', strtolower($name)));
