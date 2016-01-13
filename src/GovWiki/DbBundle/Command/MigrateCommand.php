@@ -70,7 +70,8 @@ class MigrateCommand extends ContainerAwareCommand
             foreach ($formats as $format) {
                 $name = $format->getField();
                 $name = str_replace('_', ' ', $name);
-                $name = preg_replace('#(?(?! )([A-Z]|[0-9]+))#', ' $1', $name);
+                $name = preg_replace('#(?(?!\s)([A-Z]|[0-9]+))#', ' $1', $name);
+                $name = preg_replace('#\s+#', ' ', $name);
 
                 $format->setName($name);
                 $format->setField(str_replace([' ', '-'], '_', strtolower($name)));
@@ -84,8 +85,6 @@ class MigrateCommand extends ContainerAwareCommand
                     $manager->addColumnToGovernment($format->getField(). '_rank', 'integer');
                     $environmentsArray[$environmentName][] = $format->getField().'_rank';
                 }
-
-                dump($format->getField());
                 $em->flush();
             }
         }
@@ -95,7 +94,6 @@ class MigrateCommand extends ContainerAwareCommand
          */
         $con = $em->getConnection();
         foreach ($environmentsArray as $environmentName => $fields) {
-
             /*
              * Migrate environment depended data.
              */
