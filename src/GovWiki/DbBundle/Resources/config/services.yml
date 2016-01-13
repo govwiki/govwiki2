@@ -11,15 +11,16 @@ services:
 
     govwiki_db.importer.government:
         class: GovWiki\DbBundle\Importer\GovernmentImporter
-        arguments: [@govwiki_admin.entity_manager.government]
+        arguments:
+            - @database_connection
+            - @govwiki_admin.entity_manager.government
         parent: govwiki_db.importer.abstract
 
     govwiki_db.form.type.alt_type:
         class: GovWiki\DbBundle\Form\Type\AltTypeType
-        arguments: [@govwiki_api.manager.environment]
+        arguments: [@govwiki_admin.manager.environment]
         tags:
             - { name: form.type, alias: alt_type }
-
 
     govwiki_db.form.type.color:
         class: GovWiki\DbBundle\Form\Type\ColorType

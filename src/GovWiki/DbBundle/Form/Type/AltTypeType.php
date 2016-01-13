@@ -2,7 +2,7 @@
 
 namespace GovWiki\DbBundle\Form\Type;
 
-use GovWiki\ApiBundle\Manager\EnvironmentManager;
+use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -13,14 +13,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class AltTypeType extends AbstractType
 {
     /**
-     * @var EnvironmentManager
+     * @var AdminEnvironmentManager
      */
     private $manager;
 
     /**
-     * @param EnvironmentManager $manager A EnvironmentManager instance.
+     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager instance.
      */
-    public function __construct(EnvironmentManager $manager)
+    public function __construct(AdminEnvironmentManager $manager)
     {
         $this->manager = $manager;
     }
