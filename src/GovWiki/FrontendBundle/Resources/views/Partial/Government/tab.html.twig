@@ -6,7 +6,7 @@
 <table class="statistics-table">
     <tbody>
         {% for categoryName, fields in categories %}
-            {% dump fields %}
+
             {% if categoryName != '' %}
                 {% set element = fields|first %}
                 <tr><td class="f-nam f-nam__{{- element.category_decoration -}}">{{- categoryName -}}</td><td>&nbsp;</td></tr>
