@@ -75,40 +75,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * Get used alt types by government in current environment.
-     *
-     * @return array|null
-     */
-    public function getUsedAltTypes()
-    {
-        $qb =  $this->em->createQueryBuilder()
-            ->select('Government.altType')
-            ->from('GovWikiDbBundle:Government', 'Government');
-        $expr = $qb->expr();
-
-        $tmp = $qb
-            ->leftJoin('Government.environment', 'Environment')
-            ->where($expr->eq(
-                'Environment.slug',
-                $expr->literal($this->environment)
-            ))
-            ->groupBy('Government.altType')
-            ->orderBy('Government.altType')
-            ->getQuery()
-            ->getArrayResult();
-
-        if (count($tmp) > 0) {
-            $result = [];
-            foreach ($tmp as $row) {
-                $result[$row['altType']] = $row['altType'];
-            }
-
-            return $result;
-        }
-        return [];
-    }
-
-    /**
      * @return Map|null
      *
      * @throws NotFoundHttpException Import process failed.
