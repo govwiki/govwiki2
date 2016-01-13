@@ -141,8 +141,9 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
          */
         $fields = [];
         $rankedFields = [];
+        $altType = str_replace('_', ' ', $altTypeSlug);
         foreach ($formats as $format) {
-            if (in_array(str_replace('_', ' ', $altTypeSlug), $format['showIn'], true)) {
+            if (in_array($altType, $format['showIn'], true)) {
                 $fields[] = $format['field'];
                 if (true === $format['ranked']) {
                     $rankedFieldName = $format['field'] . '_rank';
@@ -184,7 +185,10 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                 }
             }
         }
-        $formats = Functions::groupBy($formats, [ 'tab_name', 'field' ]);
+        $formats = Functions::groupBy(
+            $formats,
+            [ 'tab_name', 'category_name', 'field' ]
+        );
 
         return [
             'government' => $government,

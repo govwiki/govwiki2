@@ -1,0 +1,22 @@
+{#
+
+    Template for one tab page.
+
+#}
+<table class="statistics-table">
+    <tbody>
+        {% for categoryName, fields in categories %}
+            {% dump fields %}
+            {% if categoryName != '' %}
+                {% set element = fields|first %}
+                <tr><td class="f-nam f-nam__{{- element.category_decoration -}}">{{- categoryName -}}</td><td>&nbsp;</td></tr>
+                {{ include('@GovWikiFrontend/Partial/Government/category.html.twig') }}
+            {% endif %}
+            <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+        {% endfor %}
+
+        {% include '@GovWikiFrontend/Partial/Government/category.html.twig' with {
+            fields: categories[""]
+        } %}
+    </tbody>
+</table>

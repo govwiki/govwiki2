@@ -38,15 +38,15 @@ class CategoryController extends AbstractGovWikiAdminController
 
     /**
      * @Configuration\Route("/{id}/remove")
-     * @param Category $tab A Category instance.
+     * @param Category $category A Category instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function removeAction(Category $tab)
+    public function removeAction(Category $category)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $em->remove($tab);
+        $em->remove($category);
         $em->flush();
 
         return $this->redirectToRoute('govwiki_admin_category_list');
@@ -55,13 +55,13 @@ class CategoryController extends AbstractGovWikiAdminController
     /**
      * @Configuration\Route("/{id}/up")
      *
-     * @param Category $tab A Category instance.
+     * @param Category $category A Category instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function upAction(Category $tab)
+    public function upAction(Category $category)
     {
-        $this->getManager()->pullUp($tab);
+        $this->getManager()->pullUp($category);
 
         return $this->redirectToRoute('govwiki_admin_category_list');
     }
@@ -69,13 +69,13 @@ class CategoryController extends AbstractGovWikiAdminController
     /**
      * @Configuration\Route("/{id}/down")
      *
-     * @param Category $tab A Category instance.
+     * @param Category $category A Category instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function downAction(Category $tab)
+    public function downAction(Category $category)
     {
-        $this->getManager()->pullDown($tab);
+        $this->getManager()->pullDown($category);
 
         return $this->redirectToRoute('govwiki_admin_category_list');
     }
@@ -90,8 +90,9 @@ class CategoryController extends AbstractGovWikiAdminController
      */
     public function newAction(Request $request)
     {
-        $tab = $this->getManager()->create();
-        $form = $this->createForm(new AbstractGroupType(), $tab);
+        $category = $this->getManager()->create();
+
+        $form = $this->createForm(new AbstractGroupType(), $category);
 
         $this->processForm($request, $form);
 
@@ -102,14 +103,14 @@ class CategoryController extends AbstractGovWikiAdminController
      * @Configuration\Route("/{id}/edit")
      * @Configuration\Template
      *
-     * @param Request  $request A Request instance.
-     * @param Category $tab     A Category instance.
+     * @param Request  $request  A Request instance.
+     * @param Category $category A Category instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function editAction(Request $request, Category $tab)
+    public function editAction(Request $request, Category $category)
     {
-        $form = $this->createForm(new AbstractGroupType(), $tab);
+        $form = $this->createForm(new AbstractGroupType(), $category);
 
         $this->processForm($request, $form);
 

@@ -33,6 +33,30 @@
       }
 
       .statistics {
+         font-size: 110%;
+
+         .f-nam {
+            min-width: 540px;
+            display: inline-block;
+            color: #666;
+            text-align: left;
+            margin-right: 5px;
+            border-bottom: 1px dotted #ddd;
+            vertical-align: top;
+            font-size: 120%;
+         }
+
+         .f-nam__bold {
+            font-weight: bold;
+         }
+
+         .f-nam__italic {
+            font-style: italic;
+         }
+
+         .f-nam__underline {
+            text-decoration: underline;
+         }
 
          .statistics-table {
             width: 70%;

@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Form;
 
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\ApiBundle\Manager\EnvironmentManager;
+use GovWiki\DbBundle\Entity\Category;
 use GovWiki\DbBundle\Entity\Format;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -23,6 +24,14 @@ class AbstractGroupType extends AbstractType
         $builder
             ->add('name')
             ->add('orderNumber', 'integer');
+        if ($builder->getData() instanceof Category) {
+            $builder->add('decoration', 'choice', [
+               'choices' => array_combine(
+                   Category::availableDecorations(),
+                   Category::availableDecorations()
+               ),
+            ]);
+        }
     }
 
     /**

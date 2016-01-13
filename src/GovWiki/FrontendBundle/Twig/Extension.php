@@ -125,6 +125,15 @@ class Extension extends \Twig_Extension
     public function formatGovernmentValue(array $government, $field, array $format)
     {
         $value = $government[$field];
+
+        if (is_string($value)) {
+            if ('' === $value) {
+                return null;
+            }
+        } elseif ((empty($value) || ($value === 0) || (($value > -0.0001) && ($value < 0.0001)))) {
+            return null;
+        }
+
         if (strlen($format['mask']) > 0) {
             /*
              * Current value has mask.
