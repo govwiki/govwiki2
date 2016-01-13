@@ -155,7 +155,8 @@ class Format
     public function setName($name)
     {
         $this->name = $name;
-        $this->field = strtolower(str_replace([ ' ', '-' ], '_', $name));
+        $this->field = preg_replace('/\W/', '_', $name);
+        $this->field = strtolower($this->field);
 
         return $this;
     }
