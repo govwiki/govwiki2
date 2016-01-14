@@ -5,7 +5,7 @@
     <section class="governmentController">
 
         {% if government is defined %}
-
+            {% dump(government) %}
             {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
 
             {# Government name & wikipedia links #}
@@ -168,9 +168,13 @@
     {{parent()}}
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
-    <script>
-        window.gw.government = '{{ government_json|raw }}'
-    </script>
+    <script src='http://www.google.com/jsapi'></script>
+
+    {% if government is defined %}
+        <script>
+            window.gw.government = '{{ government_json|raw }}'
+        </script>
+    {% endif %}
 
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.runtime.js'
                     '@GovWikiFrontendBundle/Resources/public/js/script.js'
