@@ -17,9 +17,9 @@ $(function() {
 
         data = JSON.parse(window.gw.government);
         smallChartWidth = 340;
+        bigChartWidth = 470;
         employeeCompensation_one();
         employeeCompensation_two();
-        employeeCompensation_three();
         financialHealth_one();
         financialHealth_two();
         financialHealth_three();
@@ -31,12 +31,29 @@ $(function() {
     google.load('visualization', '1.0', {'packages': 'corechart', 'callback': initCharts});
 
     function employeeCompensation_one() {
+        console.log('median_salary_per_full_time_emp: ' + data['median_salary_per_full_time_emp']);
+        console.log('median_benefits_per_ft_emp: ' + data['median_benefits_per_ft_emp']);
+
+        console.log('median_wages_general_public: ' + data['median_wages_general_public']);
+        console.log('median_benefits_general_public: ' + data['median_benefits_general_public']);
+
         var chart, formatter, options, vis_data;
         vis_data = new google.visualization.DataTable();
         vis_data.addColumn('string', 'Median Compensation');
         vis_data.addColumn('number', 'Wages');
         vis_data.addColumn('number', 'Bens.');
-        vis_data.addRows([[toTitleCase(data.name + '\n Employees'), data['median_salary_per_full_time_emp'], data['median_benefits_per_ft_emp']], ['All \n' + toTitleCase(data.name + ' \n Residents'), data['median_wages_general_public'], data['median_benefits_general_public']]]);
+        vis_data.addRows([
+            [
+                toTitleCase(data.name + '\n Employees'),
+                +data['median_salary_per_full_time_emp'],
+                +data['median_benefits_per_ft_emp']
+            ],
+            [
+                'All \n' + toTitleCase(data.name + ' \n Residents'),
+                +data['median_wages_general_public'],
+                +data['median_benefits_general_public']
+            ]
+        ]);
         formatter = new google.visualization.NumberFormat({
             groupingSymbol: ',',
             fractionDigits: '0'
@@ -63,44 +80,13 @@ $(function() {
     }
 
     function employeeCompensation_two() {
-        var chart, formatter, options, vis_data;
-        vis_data = new google.visualization.DataTable();
-        vis_data.addColumn('string', 'Median Pension');
-        vis_data.addColumn('number', 'Wages');
-        vis_data.addRows([['Pension for \n Retiree w/ 30 Years', data['median_pension30_year_retiree']]]);
-        formatter = new google.visualization.NumberFormat({
-            groupingSymbol: ',',
-            fractionDigits: '0'
-        });
-        formatter.format(vis_data, 1);
-        options = {
-            'title': 'Median Total Pension',
-            'titleTextStyle': {
-                'fontSize': 12
-            },
-            'tooltip': {
-                'textStyle': {
-                    'fontSize': 12
-                }
-            },
-            'width': smallChartWidth,
-            'height': 300,
-            'bar': {
-                'groupWidth': '30%'
-            },
-            'isStacked': 'true',
-            'colors': ['#005ce6', '#009933']
-        };
-        chart = new google.visualization.ColumnChart(document.getElementById('median-pension-graph'));
-        chart.draw(vis_data, options);
-    }
+        console.log('median_pension30_year_retiree: ' + data['median_pension30_year_retiree']);
 
-    function employeeCompensation_three() {
         var chart, formatter, options, vis_data;
         vis_data = new google.visualization.DataTable();
         vis_data.addColumn('string', 'Median Pension');
         vis_data.addColumn('number', 'Wages');
-        vis_data.addRows([['Pension for \n Retiree w/ 30 Years', data['median_pension30_year_retiree']]]);
+        vis_data.addRows([['Pension for \n Retiree w/ 30 Years', +data['median_pension30_year_retiree']]]);
         formatter = new google.visualization.NumberFormat({
             groupingSymbol: ',',
             fractionDigits: '0'
@@ -129,11 +115,13 @@ $(function() {
     }
 
     function financialHealth_one() {
+        console.log('public_safety_exp_over_tot_gov_fund_revenue: ' + data['public_safety_exp_over_tot_gov_fund_revenue']);
+
         var chart, options, vis_data;
         vis_data = new google.visualization.DataTable();
         vis_data.addColumn('string', 'Public Safety Expense');
         vis_data.addColumn('number', 'Total');
-        vis_data.addRows([['Public Safety Exp', 1 - data['public_safety_exp_over_tot_gov_fund_revenue']], ['Other', data['public_safety_exp_over_tot_gov_fund_revenue']]]);
+        vis_data.addRows([['Public Safety Exp', 1 - data['public_safety_exp_over_tot_gov_fund_revenue']], ['Other', +data['public_safety_exp_over_tot_gov_fund_revenue']]]);
         options = {
             'title': 'Public safety expense',
             'titleTextStyle': {
@@ -155,16 +143,19 @@ $(function() {
             },
             'pieStartAngle': 45
         };
+
         chart = new google.visualization.PieChart(document.getElementById('public-safety-pie'));
         chart.draw(vis_data, options);
     }
 
     function financialHealth_two() {
+        console.log('total_revenue_per_capita: ' + data['total_revenue_per_capita']);
+
         var chart, options, vis_data;
         vis_data = new google.visualization.DataTable();
         vis_data.addColumn('string', 'Per Capita');
         vis_data.addColumn('number', 'Rev.');
-        vis_data.addRows([['Total Revenue \n Per Capita', data['total_revenue_per_capita']], ['Median Total \n Revenue Per \n Capita For All Cities', 420]]);
+        vis_data.addRows([['Total Revenue \n Per Capita', +data['total_revenue_per_capita']], ['Median Total \n Revenue Per \n Capita For All Cities', 420]]);
         options = {
             'title': 'Total Revenue',
             'titleTextStyle': {
@@ -186,11 +177,13 @@ $(function() {
     }
 
     function financialHealth_three() {
+        console.log('total_expenditures_per_capita: ' + data['total_expenditures_per_capita']);
+
         var chart, options, vis_data;
         vis_data = new google.visualization.DataTable();
         vis_data.addColumn('string', 'Per Capita');
         vis_data.addColumn('number', 'Exp.');
-        vis_data.addRows([['Total Expenditures \n Per Capita', data['total_expenditures_per_capita']], ['Median Total \n Expenditures \n Per Capita \n For All Cities', 420]]);
+        vis_data.addRows([['Total Expenditures \n Per Capita', +data['total_expenditures_per_capita']], ['Median Total \n Expenditures \n Per Capita \n For All Cities', 420]]);
         options = {
             'title': 'Total Expenditures',
             'titleTextStyle': {
@@ -207,26 +200,27 @@ $(function() {
             'colors': ['#005ce6', '#009933'],
             'chartArea.width': '100%'
         };
-        if (graph) {
-            chart = new google.visualization.ColumnChart(document.getElementById('fin-health-expenditures-graph'));
-            chart.draw(vis_data, options);
-        }
+        chart = new google.visualization.ColumnChart(document.getElementById('fin-health-expenditures-graph'));
+        chart.draw(vis_data, options);
     }
 
     function financialStatements_one() {
+        console.log('financial_statements Revenues: ' + data['financialStatements']);
+
         var chart, item, len3, options, p, r, ref1, rows, vis_data;
         vis_data = new google.visualization.DataTable();
         vis_data.addColumn('string', 'Total Gov. Expenditures');
         vis_data.addColumn('number', 'Total');
         rows = [];
-        ref1 = data.financial_statements;
-        for (p = 0, len3 = ref1.length; p < len3; p++) {
-            item = ref1[p];
-            if ((item.category_name === "Revenues") && (item.caption !== "Total Revenues")) {
-                r = [item.caption, parseInt(item.totalfunds)];
+
+        var revenues = data.financialStatements.Revenues;
+        for(var key in revenues){
+            if(revenues.hasOwnProperty(key)) {
+                r = [revenues[key].caption, parseInt(revenues[key].totalfunds)];
                 rows.push(r);
             }
         }
+
         vis_data.addRows(rows);
         options = {
             'title': 'Total Revenues',
@@ -248,26 +242,27 @@ $(function() {
                 height: '75%'
             }
         };
-        if (graph) {
-            chart = new google.visualization.PieChart(document.getElementById('total-revenue-pie'));
-            chart.draw(vis_data, options);
-        }
+        chart = new google.visualization.PieChart(document.getElementById('total-revenue-pie'));
+        chart.draw(vis_data, options);
     }
 
     function financialStatements_two() {
+        console.log('financial_statements Expenditures: ' + data['financialStatements']);
+
         var chart, item, len3, options, p, r, ref1, rows, vis_data;
         vis_data = new google.visualization.DataTable();
         vis_data.addColumn('string', 'Total Gov. Expenditures');
         vis_data.addColumn('number', 'Total');
         rows = [];
-        ref1 = data.financial_statements;
-        for (p = 0, len3 = ref1.length; p < len3; p++) {
-            item = ref1[p];
-            if ((item.category_name === "Expenditures") && (item.caption !== "Total Expenditures")) {
-                r = [item.caption, parseInt(item.totalfunds)];
+
+        var expenditures = data.financialStatements.Expenditures;
+        for(var key in expenditures){
+            if(expenditures.hasOwnProperty(key)) {
+                r = [expenditures[key].caption, parseInt(expenditures[key].totalfunds)];
                 rows.push(r);
             }
         }
+
         vis_data.addRows(rows);
         options = {
             'title': 'Total Expenditures',
@@ -289,11 +284,8 @@ $(function() {
                 height: '75%'
             }
         };
-        if (graph) {
-            chart = new google.visualization.PieChart(document.getElementById('total-expenditures-pie'));
-            chart.draw(vis_data, options);
-        }
-        google.load('visualization', '1.0', {'packages': 'corechart', 'callback': drawChart()});
+        chart = new google.visualization.PieChart(document.getElementById('total-expenditures-pie'));
+        chart.draw(vis_data, options);
     }
 
 
