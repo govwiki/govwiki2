@@ -6751,6 +6751,10 @@ $(function() {
                      */
                     layer.on('featureClick', function (event, latlng, pos, data, layerIndex) {
 
+                        if(layerIndex == 0) {
+                            data.alt_type_slug = 'County';
+                        }
+
                         if (!data.alt_type_slug || !data.slug) {
                             alert('Please verify your data, altTypeSlug or governmentSlug may can not defined, more info in console.log');
                             console.log(data);
