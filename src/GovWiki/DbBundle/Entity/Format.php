@@ -148,7 +148,7 @@ class Format
     }
 
     /**
-     * @param string $name
+     * @param string $name Displayed field name.
      *
      * @return Format
      */
@@ -177,26 +177,6 @@ class Format
     public function setField($field)
     {
         $this->field = $field;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string $description Field label.
-     *
-     * @return Format
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
 
         return $this;
     }

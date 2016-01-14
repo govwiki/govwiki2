@@ -7,6 +7,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Utils\Functions;
 
 /**
  * GovernmentRepository
@@ -264,6 +265,7 @@ class GovernmentRepository extends EntityRepository
                     $expr->eq('Environment.slug', $expr->literal($environment))
                 )
             )
+            ->orderBy($expr->asc('CaptionCategory.id'))
             ->getQuery()
             ->getArrayResult();
 
@@ -307,6 +309,12 @@ class GovernmentRepository extends EntityRepository
         }
 
         unset($government['finData']);
+
+        $financialStatements = Functions::groupBy(
+            $financialStatements,
+            [ 'category_name', 'caption' ]
+        );
+
         $government['financialStatements'] = $financialStatements;
 
         return $government;

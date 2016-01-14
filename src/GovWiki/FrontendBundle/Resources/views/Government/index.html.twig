@@ -5,6 +5,9 @@
     <section class="governmentController">
 
         {% if government is defined %}
+
+            {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
+
             {# Government name & wikipedia links #}
             <nav class="row">
                 <div class="col-md-12 text-right">
@@ -59,7 +62,13 @@
                                         {{ tab }}
                                     </a>
                                 </li>
+
                             {% endfor %}
+
+
+                            {% if showFinStmt %}
+                                <li><a href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">Financial Statements</a></li>
+                            {% endif %}
 
                         </ul>
                     </nav>
@@ -95,12 +104,24 @@
                                     {# Financial Health #}
                                     {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
 
-                                    {# Financial Statements #}
-                                    {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig') }}
-
                                 </div>
 
                             {% endfor %}
+
+                            {# Financial Statements (if exists) #}
+                            {% if showFinStmt %}
+                                <div class="tab-pane" id="Financial_Statements">
+                                    <h4>Financial Statements</h4>
+                                    <br>
+
+                                    {# Statistics #}
+                                    <div class="statistics fin-values-block">
+                                        {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
+                                            'financialStatements': government.financialStatements
+                                        } %}
+                                    </div>
+                                </div>
+                            {% endif %}
 
                         {% else %}
                             <h3 class="text-center">No data. Please refresh page later</h3>

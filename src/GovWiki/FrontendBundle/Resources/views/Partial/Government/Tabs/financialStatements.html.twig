@@ -1,0 +1,49 @@
+{#
+    Financial statements categories.
+#}
+{% for categoryName, fields in financialStatements %}
+    <div>
+        {% set showTotalAndOver = (fields|first).otherfunds is defined %}
+
+        {# Category caption. #}
+        <div class="row">
+
+            <div class="col-md-5"><b>{{ categoryName }}</b></div>
+
+            {% if showTotalAndOver %}
+                <div class="col-md-2 text-right"><b>General Fund</b></div>
+                <div class="col-md-2 text-right"><b>Other Funds</b></div>
+                <div class="col-md-2 text-right"><b>Total Gov. Funds</b></div>
+            {% endif %}
+        </div>
+
+        {# Category fields. #}
+        {% for name, data in fields %}
+            <div class="row">
+                <div class="col-md-5">{{ name }}</div>
+                <div class="col-md-2 text-right">
+                    {%- if not showTotalAndOver or loop.first -%}
+                        $&nbsp;
+                    {%- endif -%}
+                    {{- data.genfund|number_format -}}
+                </div>
+
+                {% if showTotalAndOver %}
+                    <div class="col-md-2 text-right">
+                        {%- if loop.first -%}
+                            $&nbsp;
+                        {%- endif -%}
+                        {{- data.otherfunds|number_format -}}
+                    </div>
+                    <div class="col-md-2 text-right">
+                        {%- if loop.first -%}
+                            $&nbsp;
+                        {%- endif -%}
+                        {{- data.totalfunds|number_format -}}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <br>
+    </div>
+{% endfor %}

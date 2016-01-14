@@ -73,10 +73,18 @@ i.icon {
 }
 
 /*
-  Set z-index for date picker.
+   Set z-index for date picker.
 */
 .datepicker-dropdown {
-  z-index: 10000 !important;
+   z-index: 10000 !important;
+}
+
+/*
+   Remove border from table in financial statement tab at government page.
+*/
+#Financial_Statements .table th,
+#Financial_Statements .table td {
+   border: none;
 }
 
 /* ========================= */

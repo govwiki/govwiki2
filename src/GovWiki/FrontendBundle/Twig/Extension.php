@@ -127,7 +127,7 @@ class Extension extends \Twig_Extension
         $value = $government[$field];
 
         if (is_string($value)) {
-            if ('' === $value) {
+            if ('' === $value || '0' === $value) {
                 return null;
             }
         } elseif ((empty($value) || ($value === 0) || (($value > -0.0001) && ($value < 0.0001)))) {
