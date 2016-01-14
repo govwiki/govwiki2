@@ -6562,7 +6562,7 @@ $(function() {
                 citySubLayer = layer.createSubLayer({
                     sql: "SELECT * FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
                     cartocss: "#layer { marker-fill: #f00000; }", // TODO: Hardcoded
-                    interactivity: 'cartodb_id, slug'
+                    interactivity: 'cartodb_id, slug, alt_type_slug'
                 });
 
                 subLayers.push(citySubLayer);
@@ -6586,7 +6586,7 @@ $(function() {
                 schoolSubLayer = layer.createSubLayer({
                     sql: "SELECT * FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
                     cartocss: "#layer { marker-fill: #add8e6; }", // TODO: Hardcoded
-                    interactivity: 'cartodb_id, slug'
+                    interactivity: 'cartodb_id, slug, alt_type_slug'
                 });
 
                 subLayers.push(schoolSubLayer);
@@ -6610,7 +6610,7 @@ $(function() {
                 specialSubLayer = layer.createSubLayer({
                     sql: "SELECT * FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
                     cartocss: "#layer { marker-fill: #800080; }", // TODO: Hardcoded
-                    interactivity: 'cartodb_id, slug'
+                    interactivity: 'cartodb_id, slug, alt_type_slug'
                 });
 
                 subLayers.push(specialSubLayer);
@@ -6751,39 +6751,18 @@ $(function() {
                      */
                     layer.on('featureClick', function (event, latlng, pos, data, layerIndex) {
 
-                        /**
-                         * TODO: hardcoded, must be replaced on multi envirenment
-                         * @type {string}
-                         */
-                        var altTypeSlug = '';
-                        switch (layerIndex) {
-                            case 0:
-                                altTypeSlug = 'County';
-                                break;
-
-                            case 1:
-                                altTypeSlug = 'City';
-                                break;
-
-                            case 2:
-                                altTypeSlug = 'School_District';
-                                break;
-
-                            case 3:
-                                altTypeSlug = 'Special_District';
-                                break;
-                        }
-
-                        var governmentSlug = '';
-                        governmentSlug = data.slug.replace(/ /g, '_');
-
-                        if (altTypeSlug === '' || governmentSlug === '') {
+                        if (!data.alt_type_slug || !data.slug) {
                             alert('Please verify your data, altTypeSlug or governmentSlug may can not defined, more info in console.log');
                             console.log(data);
                             return false;
                         }
 
-                        window.location.pathname += altTypeSlug + '/' + governmentSlug;
+                        /**
+                         * TODO: Hardcoded, data must be in underscore style
+                         */
+                        data.slug = data.slug.replace(/ /g, '_');
+
+                        window.location.pathname += data.alt_type_slug + '/' + data.slug;
                     });
 
                 });
