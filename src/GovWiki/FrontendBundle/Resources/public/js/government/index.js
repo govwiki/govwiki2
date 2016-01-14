@@ -31,6 +31,17 @@ $(function() {
     google.load('visualization', '1.0', {'packages': 'corechart', 'callback': initCharts});
 
     function employeeCompensation_one() {
+        /*
+            Ahtung! Hardcode detected!
+            todo replace such bad code
+         */
+        if (! data['median_salary_per_full_time_emp']) {
+            data['median_salary_per_full_time_emp'] = data['median_salary_for_full_time_employees'];
+        }
+        if (! data['median_benefits_per_ft_emp']) {
+            data['median_benefits_per_ft_emp'] = data['median_benefits_for_full_time_employees'];
+        }
+
         console.log('median_salary_per_full_time_emp: ' + data['median_salary_per_full_time_emp']);
         console.log('median_benefits_per_ft_emp: ' + data['median_benefits_per_ft_emp']);
 
@@ -80,6 +91,14 @@ $(function() {
     }
 
     function employeeCompensation_two() {
+        /*
+             Ahtung! Hardcode detected!
+             todo replace such bad code
+         */
+        if (! data['median_pension30_year_retiree']) {
+            data['median_pension30_year_retiree'] = data['median_pension_for_retiree_with_30_years_service'];
+        }
+
         console.log('median_pension30_year_retiree: ' + data['median_pension30_year_retiree']);
 
         var chart, formatter, options, vis_data;

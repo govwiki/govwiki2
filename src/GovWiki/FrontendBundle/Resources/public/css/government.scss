@@ -68,10 +68,9 @@
 
                td {
                   border-bottom: 1px dotted #ddd;
+                  white-space: nowrap;
 
                   &:nth-child(1) {
-                     min-width: 60%;
-                     padding-right: 30px;
                      color: #666;
                   }
 
