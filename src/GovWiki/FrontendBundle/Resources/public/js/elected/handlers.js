@@ -1,5 +1,136 @@
-$(function() {
+function sortTable(table, colNum)
+{
+    /*
+     Data rows to sort
+     */
+    var rows = $(table + ' tbody  [data-id]').get();
+    /*
+     Last row which contains "Add new ..."
+     */
+    var lastRow = $(table + ' tbody  tr:last').get();
+    /*
+     Clicked column.
+     */
+    var column = $(table + ' tbody tr:first').children('th').eq(colNum);
+    var makeSort = true;
+    var sortFunction = undefined;
 
+    if (column.hasClass('desc')) {
+        /*
+         Table currently sorted in descending order.
+         Restore row order.
+         */
+        column.removeClass('desc').addClass('origin');
+        column.find('i').removeClass('icon__bottom').removeClass('icon__top');
+        rows = column.data('origin');
+        makeSort = false;
+    } else if (column.hasClass('asc')) {
+        /*
+         Table currently sorted in ascending order.
+         Sort in desc order.
+         */
+        column.removeClass('asc').addClass('desc');
+        column.find('i').removeClass('icon__bottom').addClass('icon__top');
+        sortFunction = function (a, b)
+        {
+            A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
+            B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            if (A < B) {
+                return 1;
+            }
+            if (A > B) {
+                return -1;
+            }
+            return 0;
+        }
+
+    } else if (column.hasClass('origin')) {
+        /*
+         Original table data order.
+         Sort in asc order.
+         */
+        column.removeClass('origin').addClass('asc');
+        column.find('i').addClass('icon__bottom');
+        sortFunction = function (a, b)
+        {
+            A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
+            B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            if (A < B) {
+                return -1;
+            }
+            if (A > B) {
+                return 1;
+            }
+            return 0;
+        }
+    } else {
+        /*
+         Table not ordered yet.
+         Store original data position and sort in asc order.
+         */
+
+        column.addClass('asc');
+        column.data('origin', rows.slice(0));
+        column.find('i').addClass('icon__bottom');
+        sortFunction = function (a, b)
+        {
+            A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
+            B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            if (A < B) {
+                return -1;
+            }
+            if (A > B) {
+                return 1;
+            }
+            return 0;
+        };
+    }
+    if (makeSort) {
+        rows.sort(sortFunction)
+    }
+
+    $.each(
+        rows, function (index, row)
+        {
+            $(table).children('tbody').append(row);
+        }
+    );
+    $(table).children('tbody').append(lastRow)
+}
+
+
+$(function() {
+    /*
+        Sorting.
+     */
+    $('.sort').on('click', function (e)
+    {
+        e.preventDefault();
+        e.stopPropagation();
+        var type = $(this).attr('data-sort-type');
+
+        if ('year' == type) {
+            /*
+             Sort by year.
+             */
+            sortTable('[data-entity-type="Contribution"]', 0);
+        } else if ('name' == type) {
+            /*
+             Sort by name.
+             */
+            sortTable('[data-entity-type="Contribution"]', 1);
+        } else if ('amount' == type) {
+            /*
+             Sort by amount.
+             */
+            sortTable('[data-entity-type="Contribution"]', 3);
+        } else if ('contributor-type' == type) {
+            /*
+             Sort by contributor type.
+             */
+            sortTable('[data-entity-type="Contribution"]', 4);
+        }
+    });
 
     var Handlers = {};
 
@@ -83,7 +214,7 @@ $(function() {
 
         console.log(sendObject);
 
-        $.ajax('/api/v1/edit-request/create', {
+        $.ajax(window.gw.urls.edit_request, {
             method: 'POST',
             data: sendObject,
             dataType: 'text/json',
@@ -129,7 +260,7 @@ $(function() {
                 var match_url;
                 match_url = /\b(https?):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#\/%=~_|!:,.;]*)?/i;
                 if (match_url.test($(this).val())) {
-                    return $.ajax('/api/v1/url/extract', {
+                    return $.ajax(window.gw.urls.check_url, {
                         method: 'GET',
                         data: {
                             url: $(this).val().match(match_url)[0]
@@ -366,7 +497,7 @@ $(function() {
          */
         console.log(sendObject);
         $.ajax({
-            url: '/api/v1/create-request/create',
+            url: window.gw.urls.create_request,
             method: 'POST',
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
@@ -379,4 +510,12 @@ $(function() {
         return modal.modal('hide');
     };
 
+    /*
+     Show modal for previously selected modal window.
+     */
+    var tableType = window.sessionStorage.getItem('tableType');
+    if (tableType) {
+        $('.add', '#' + tableType).click();
+        window.sessionStorage.removeItem('tableType');
+    }
 });

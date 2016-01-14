@@ -4,10 +4,10 @@
 
     <table class="table table-hover" data-entity-type="Legislation">
         <tr>
-            <th class="vote.legislation-column-date">Date</th>
+            <th class="column__date">Date</th>
             <th>Title of Measure</th>
             <th>Summary of Measure</th>
-            <th class="vote.legislation-column-vote">How official Voted</th>
+            <th class="column__vote">How official Voted</th>
             <th>Sponsored by this official?</th>
             <th>Category</th>
             <th></th>
@@ -69,7 +69,7 @@
                    title="">{{vote.vote}}</a>
                 <span data-id="{{vote.id}}" class="glyphicon glyphicon-pencil edit"></span>
             </td>
-            <td data-did-elected-official-propose-this="{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}" align="center" >
+            <td data-did-elected-official-propose-this="{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}" align="center">
                 <a href="javascript:void(0);" data-type="select" data-source="{'0': 'No', '1': 'Yes'}" data-pk="1" data-placeholder="Please edit" data-title="Please edit" class="editable editable-pre-wrapped editable-click" data-original-title="" title="">{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}</a>
                 <span data-id="{{vote.id}}" class="glyphicon glyphicon-pencil edit"></span>
             </td>
@@ -83,7 +83,7 @@
 {% macro renderNewVotes(votes, categories) %}
 
     {% for vote in votes %}
-        {% if vote.entityName == 'Legislation' %}
+        {% if vote.entityName == 'Legislation' and vote.fields.fields.dateConsidered is defined %}
             <tr data-id="{{ vote.id }}" style="background: rgba(80, 0, 0, 0.1)">
                 <td data-date-considered="{{ vote.fields.fields.dateConsidered }}">
                     {{ vote.fields.fields.dateConsidered }}

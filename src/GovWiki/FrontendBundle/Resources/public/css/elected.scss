@@ -9,6 +9,34 @@
 .electedController {
    margin-top: 40px;
 
+   /*
+      Size of tab names.
+   */
+   .nav-pills {
+      a {
+         font-size: 1.4em;
+      }
+   }
+
+   /*
+      Table for votes, contribution and etc.
+   */
+   .table {
+      td,
+      th {
+         vertical-align: middle;
+
+         &.column__vote {
+            text-align: center;
+            width: 115px;
+         }
+
+         &.column__date {
+            width: 127px;
+         }
+      }
+   }
+
    .add {
       color: #0b4d70;
       text-align: center;

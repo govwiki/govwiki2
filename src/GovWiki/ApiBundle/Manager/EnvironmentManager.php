@@ -190,8 +190,18 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             [ 'tab_name', 'category_name', 'field' ]
         );
 
+        /*
+         * Replace single and double quote to html special char.
+         */
+        $governmentJson = str_replace(
+            [ '\'', '\\"' ],
+            [ '&apos;', '&quote;' ],
+            json_encode($government)
+        );
+
         return [
             'government' => $government,
+            'government_json' => $governmentJson,
             'formats' => $formats,
             'tabs' => array_keys($formats),
         ];

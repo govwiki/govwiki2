@@ -168,6 +168,9 @@
     {{parent()}}
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+    <script>
+        window.gw.government = '{{ government_json|raw }}'
+    </script>
 
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.runtime.js'
                     '@GovWikiFrontendBundle/Resources/public/js/script.js'

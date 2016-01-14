@@ -45,7 +45,7 @@
 
                     <div class="modal-body">
 
-                        <form id="ajax-login-form" action="/login_check" method="post">
+                        <form id="ajax-login-form" action="{{ path('fos_user_security_check') }}" method="post">
                             <input type="hidden" name="_csrf_token" value="qpkx1M6O5lzDwG4Eisz4fMM9A8oweUFEIXRPstJa6VA" />
 
                             <div class="form-group">

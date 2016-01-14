@@ -46,6 +46,10 @@ a {
    color: $main-text;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 i.icon {
    background: url("/bundles/govwikifrontend/img/bg.gif");
    width: 21px;

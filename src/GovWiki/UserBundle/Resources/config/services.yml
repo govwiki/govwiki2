@@ -7,6 +7,9 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    govwiki.user_bundle.handler.login:
+        class: GovWiki\UserBundle\Security\LoginSuccessHandler
+
     govwiki.user_bundle.redirection.logout:
         class: GovWiki\UserBundle\Security\LogoutSuccessHandler
 
