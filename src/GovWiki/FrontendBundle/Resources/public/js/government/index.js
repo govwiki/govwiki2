@@ -18,13 +18,13 @@ $(function() {
         data = JSON.parse(window.gw.government);
         smallChartWidth = 340;
         employeeCompensation_one();
-        //employeeCompensation_two();
-        //employeeCompensation_three();
-        //financialHealth_one();
-        //financialHealth_two();
-        //financialHealth_three();
-        //financialStatements_one();
-        //financialStatements_two();
+        employeeCompensation_two();
+        employeeCompensation_three();
+        financialHealth_one();
+        financialHealth_two();
+        financialHealth_three();
+        financialStatements_one();
+        financialStatements_two();
 
     }
 

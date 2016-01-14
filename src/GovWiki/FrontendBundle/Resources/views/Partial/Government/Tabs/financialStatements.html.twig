@@ -3,6 +3,12 @@
 #}
 {% import _self as macro %}
 
+{# Charts #}
+<div>
+    <div class="customGraph" id="total-revenue-pie"></div>
+    <div class="customGraph" id="total-expenditures-pie"></div>
+</div>
+
 {% for categoryName, fields in financialStatements %}
     <div>
         {% set showTotalAndOver = (fields|first).otherfunds is defined %}
