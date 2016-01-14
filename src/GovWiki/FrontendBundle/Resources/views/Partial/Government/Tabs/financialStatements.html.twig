@@ -1,6 +1,8 @@
 {#
     Financial statements categories.
 #}
+{% import _self as macro %}
+
 {% for categoryName, fields in financialStatements %}
     <div>
         {% set showTotalAndOver = (fields|first).otherfunds is defined %}
@@ -23,23 +25,23 @@
                 <div class="col-md-5">{{ name }}</div>
                 <div class="col-md-2 text-right">
                     {%- if not showTotalAndOver or loop.first -%}
-                        $&nbsp;
+                        <div class="pull-left currency-symbol">$&nbsp;</div>
                     {%- endif -%}
-                    {{- data.genfund|number_format -}}
+                    {{- macro.displayValue(data.genfund) -}}
                 </div>
 
                 {% if showTotalAndOver %}
                     <div class="col-md-2 text-right">
                         {%- if loop.first -%}
-                            $&nbsp;
+                            <div class="pull-left currency-symbol">$&nbsp;</div>
                         {%- endif -%}
-                        {{- data.otherfunds|number_format -}}
+                        {{- macro.displayValue(data.otherfunds) -}}
                     </div>
                     <div class="col-md-2 text-right">
                         {%- if loop.first -%}
-                            $&nbsp;
+                            <div class="pull-left currency-symbol">$&nbsp;</div>
                         {%- endif -%}
-                        {{- data.totalfunds|number_format -}}
+                        {{- macro.displayValue(data.totalfunds) -}}
                     </div>
                 {% endif %}
             </div>
@@ -47,3 +49,11 @@
         <br>
     </div>
 {% endfor %}
+
+{% macro displayValue(value) %}
+    {% if value < 0 %}
+        ({{ value|abs|number_format }})
+    {% else %}
+        {{ value |number_format}}
+    {% endif %}
+{% endmacro %}
