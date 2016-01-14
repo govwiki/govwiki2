@@ -29,7 +29,7 @@ final class Functions
              */
             $current = self::getGroupValue($array, $fieldName);
 
-            unset($array[0][$fieldName]);
+            //unset($array[0][$fieldName]);
             $tmp[$current][] = $array[0];
 
             for ($i = 1; $i < $count; ++$i) {
@@ -41,7 +41,7 @@ final class Functions
                 /*
                  * Move element to current group.
                  */
-                unset($array[$i][$fieldName]);
+                //unset($array[$i][$fieldName]);
                 $tmp[$current][] = $array[$i];
             }
             $tmp[$current] = self::groupBy($tmp[$current], $fields);
