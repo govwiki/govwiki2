@@ -5,7 +5,6 @@
     <section class="governmentController">
 
         {% if government is defined %}
-            {% dump(government) %}
             {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
 
             {# Government name & wikipedia links #}
@@ -144,6 +143,7 @@
                 <p class="text-center">If you would like to help us add information to complete this profile, or if you notice any information here that may be incorrect, please contact the Center at <a href="mailto:contact@californiapolicycenter.org">contact@californiapolicycenter.org</a></p>
             </div>
         </div>
+        <br>
 
     </section>
 
