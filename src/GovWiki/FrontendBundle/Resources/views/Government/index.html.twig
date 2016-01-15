@@ -79,19 +79,16 @@
 
                             {% for tabName, categories in formats %}
 
-                                {# TODO: Hardcoded, for new db, must be replaced #}
-                                <div class="tab-pane {{ loop.first ? 'active' : '' }}"
-                                     id="{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
+                                <div class="tab-pane {{ loop.first ? 'active' : '' }}" id="{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
 
                                     <h4>{{ tabName }}</h4>
                                     <br>
+                                    <div class="row">
+                                        {# Statistics #}
+                                        <div class="statistics col-sm-8">
+                                            {{ include('@GovWikiFrontend/Partial/Government/tab.html.twig') }}
+                                        </div>
 
-                                    {# Statistics #}
-                                    <div class="statistics col-sm-8">
-                                        {{ include('@GovWikiFrontend/Partial/Government/tab.html.twig') }}
-                                    </div>
-
-                                    <div class="col-sm-8">
                                         {# Overview + Elected Officials #}
                                         {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
 

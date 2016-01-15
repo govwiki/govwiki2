@@ -3,20 +3,37 @@
     Template for one tab page.
 
 #}
-<table class="statistics-table">
-    <tbody>
-        {% for categoryName, fields in categories %}
+{#<table class="statistics-table">#}
+    {#<tbody>#}
+        {#{% for categoryName, fields in categories %}#}
 
-            {% if categoryName != '' %}
-                {% set element = fields|first %}
-                <tr><td class="f-nam f-nam__{{- element.category_decoration -}}">{{- categoryName -}}</td><td>&nbsp;</td></tr>
-                {{ include('@GovWikiFrontend/Partial/Government/category.html.twig') }}
-            {% endif %}
-            <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-        {% endfor %}
+            {#{% if categoryName != '' %}#}
+                {#{% set element = fields|first %}#}
+                {#<tr><td class="f-nam f-nam__{{- element.category_decoration -}}">{{- categoryName -}}</td><td>&nbsp;</td></tr>#}
+                {#{{ include('@GovWikiFrontend/Partial/Government/category.html.twig') }}#}
+            {#{% endif %}#}
+            {#<tr><td>&nbsp;</td><td>&nbsp;</td></tr>#}
+        {#{% endfor %}#}
 
-        {% include '@GovWikiFrontend/Partial/Government/category.html.twig' with {
-            fields: categories[""]
-        } %}
-    </tbody>
-</table>
+        {#{% include '@GovWikiFrontend/Partial/Government/category.html.twig' with {#}
+            {#fields: categories[""]#}
+        {#} %}#}
+    {#</tbody>#}
+{#</table>#}
+
+<div class="statistics-categories">
+    {% for categoryName, fields in categories %}
+
+        {% if categoryName != '' %}
+            {% set element = fields|first %}
+            <div class="f-nam f-nam__{{- element.category_decoration -}}">{{- categoryName -}}</div>
+            {{ include('@GovWikiFrontend/Partial/Government/category.html.twig') }}
+            <br>
+        {% endif %}
+
+    {% endfor %}
+
+    {% include '@GovWikiFrontend/Partial/Government/category.html.twig' with {
+        fields: categories[""]
+    } %}
+</div>

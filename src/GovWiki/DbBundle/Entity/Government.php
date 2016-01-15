@@ -140,14 +140,6 @@ class Government
     /**
      * @var string
      *
-     * @ORM\Column(name="web_site", type="string", length=255, nullable=true)
-     * @Groups({"government"})
-     */
-    private $webSite;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="county_area_name", type="text", nullable=true)
      * @Groups({"government"})
      */

@@ -1,6 +1,6 @@
-
 {% if tabName == 'Overview + Elected Officials' %}
 
+    <div class="col-sm-8">
     {% for elected in government.electedOfficials %}
 
         <div class="person">
@@ -12,7 +12,11 @@
                 </p>
 
                 <p>
-                    <a href="/{{government.altTypeSlug}}/{{government.slug}}/{{elected.slug}}" class="elected_link">Name {{elected.fullName}}</a>
+                    <a href="{{ govwiki_path('elected', {
+                        'altTypeSlug': government.altTypeSlug,
+                        'slug': government.slug,
+                        'electedSlug': elected.slug
+                    }) }}" class="elected_link">Name {{elected.fullName}}</a>
                 </p>
 
                 <p>
@@ -53,5 +57,6 @@
 
 
     {% endfor %}
+    </div>
 
 {% endif %}

@@ -68,6 +68,11 @@ class Extension extends \Twig_Extension
                 $this,
                 'formatGovernmentValue',
             ]),
+
+            new \Twig_SimpleFilter('display', [
+                $this,
+                'displayValue',
+            ]),
         ];
     }
 
@@ -186,6 +191,20 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @param mixed $value Value.
+     *
+     * @param mixed
+     */
+    public function displayValue($value)
+    {
+        if (is_string($value) && $this->isUrl($value)) {
+            return '<a href="'. $value. '">'.$value.'</a>';
+        }
+
+        return $value;
+    }
+
+    /**
      * @param       $route
      * @param array $parameters
      *
@@ -201,5 +220,18 @@ class Extension extends \Twig_Extension
 
         $router = $this->container->get('router');
         return $router->generate($route, $parameters);
+    }
+
+    /**
+     * @param string $string String to test.
+     *
+     * @return boolean
+     */
+    private function isUrl($string)
+    {
+        return preg_match(
+            '#(?:[Hh][Tt]{2}[Pp][Ss]?://)?((?:[Ww]{3})?\.[a-zA-Z0-9\.]+\.[a-zA-Z]{2,})#',
+            $string
+        );
     }
 }

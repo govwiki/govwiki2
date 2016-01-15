@@ -3,6 +3,7 @@
     Template for one category in tab.
 
 #}
+<table class="statistics-table">
 {% for fieldName, format in fields %}
 
     {% if format is viewed(government) %}
@@ -18,7 +19,7 @@
                 </td>
                 {# Field value #}
                 <td>
-                    {{- value -}}
+                    {{- value|display|raw -}}
                     {% set rankName = "#{fieldName}_rank" %}
                     {%- if (government.ranks[rankName] is defined) -%}
                         <a class='rank'
@@ -35,3 +36,4 @@
     {% endif %}
 
 {% endfor %}
+</table>
