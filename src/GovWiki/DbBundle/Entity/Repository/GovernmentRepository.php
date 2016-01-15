@@ -132,38 +132,46 @@ class GovernmentRepository extends EntityRepository
      * @param string  $rankFieldName  One of government rank field name.
      * @param integer $limit          Max result per page.
      * @param integer $page           Page index, start from 0.
-     * @param string  $order          Sorting order by $rankFieldName 'desc' or 'asc'.
-     *                                If null start from given entity.
-     * @param string  $nameOrder      Sorting order by government name 'desc' or 'asc'.
-     *                                If null start from given entity.
+     * @param string  $order          Sorting order by $rankFieldName 'desc' or
+     *                                'asc'. If null start from given entity.
+     * @param string  $nameOrder      Sorting order by government name 'desc'
+     *                                or 'asc'. If null start from given entity.
      *
      * @return array
      */
-    public function getGovernmentRank($environment, $altTypeSlug, $governmentSlug, $rankFieldName, $limit, $page = 0, $order = null, $nameOrder = null)
-    {
-        /*
-         * Remove rank postfix from field name, in order to get
-         * concrete amount field name.
-         */
-        $amountFieldName = str_replace('Rank', '', $rankFieldName);
+    public function getGovernmentRank(
+        $environment,
+        $altTypeSlug,
+        $governmentSlug,
+        $rankFieldName,
+        $limit,
+        $page = 0,
+        $order = null,
+        $nameOrder = null
+    ) {
+        $fieldName = preg_replace('|_rank$|', '', $rankFieldName);
 
-        $qb = $this->createQueryBuilder('Government');
+        $con = $this->_em->getConnection();
+
+        $qb = $con->createQueryBuilder();
         $expr = $qb->expr();
 
         $qb
             ->select(
-                "Government.slug as name, Government.$rankFieldName AS value, Government.$amountFieldName as amount"
+                "government.slug AS name, extra.{$fieldName} AS value",
+                "extra.{$rankFieldName} AS amount"
             )
-            ->leftJoin('Government.environment', 'Environment')
-            ->where(
-                $expr->andX(
-                    $expr->eq(
-                        'Government.altTypeSlug',
-                        $expr->literal($altTypeSlug)
-                    ),
-                    $expr->eq('Environment.slug', $expr->literal($environment))
-                )
-            );
+            ->from($environment, 'extra')
+            ->innerJoin(
+                'extra',
+                'governments',
+                'government',
+                'extra.government_id = government.id'
+            )
+            ->where($expr->eq(
+                'government.alt_type_slug',
+                $expr->literal($altTypeSlug)
+            ));
 
         /*
          * Get list of rank started from given government.
@@ -172,60 +180,43 @@ class GovernmentRepository extends EntityRepository
             /*
              * Get rank for given government.
              */
-            $qb2 = $this->createQueryBuilder('Government');
-            $expr2 = $qb2->expr();
-
-            $rank = $qb2
-                ->select('Government.'. $rankFieldName)
-                ->leftJoin('Government.environment', 'Environment')
-                ->where(
-                    $expr2->andX(
-                        $expr2->eq(
-                            'Government.altTypeSlug',
-                            $expr2->literal($altTypeSlug)
-                        ),
-                        $expr2->eq(
-                            'Government.slug',
-                            $expr2->literal($governmentSlug)
-                        ),
-                        $expr2->eq(
-                            'Environment.slug',
-                            $expr2->literal($environment)
-                        )
-                    )
+            $qb2 = clone $qb;
+            $qb2
+                ->select("extra.{$rankFieldName}")
+                ->andWhere(
+                    $expr
+                        ->eq('government.slug', $expr->literal($governmentSlug))
                 )
-                ->orderBy($qb2->expr()->asc('Government.'. $rankFieldName))
-                ->getQuery()
-                ->getSingleScalarResult();
-
+                ->orderBy("extra.{$rankFieldName}", 'asc')
+                ->setMaxResults(1);
 
             $qb->andWhere(
-                $expr->gte('Government.'. $rankFieldName, $rank)
+                $expr->gte("extra.{$rankFieldName}", '('. $qb2->getSQL() .')')
             );
-            if (empty($nameOrder)) {
-                $qb->orderBy($expr->asc('Government.' . $rankFieldName));
-            }
 
+            if (empty($nameOrder)) {
+                $qb->orderBy("extra.{$rankFieldName}", 'asc');
+            }
         /*
          * Get sorted information from offset computed on given page and limit.
          */
         } elseif ('desc' === $order) {
-            $qb->orderBy($expr->desc('Government.'. $rankFieldName));
+            $qb->addOrderBy("extra.{$fieldName}", 'desc');
         } elseif ('asc' === $order) {
-            $qb->orderBy($expr->asc('Government.'. $rankFieldName));
+            $qb->addOrderBy("extra.{$fieldName}", 'asc');
         }
 
         if ('desc' === $nameOrder) {
-            $qb->AddOrderBy($expr->desc('Government.slug'));
+            $qb->orderBy('government.slug', 'desc');
         } elseif ('asc' === $nameOrder) {
-            $qb->AddOrderBy($expr->asc('Government.slug'));
+            $qb->orderBy('government.slug', 'asc');
         }
 
-        return $qb
+        $qb
             ->setFirstResult($page * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getArrayResult();
+            ->setMaxResults($limit);
+
+        return $con->fetchAll($qb->getSQL());
     }
 
     /**

@@ -15,7 +15,6 @@ var RankPopover = function(options) {
     this.selector = options.selector || '.rank';
     this.loading = false;
     this.rankFieldName = null;
-    this.rankFieldNameInCamelCase = null;
     this.order = { altType: '', rank: ''};
 
     this.init();
@@ -62,15 +61,11 @@ RankPopover.prototype.init = function init() {
             self.loading = true;
             $preloader.show();
 
-            self.rankFieldNameInCamelCase = rankFieldName.replace(/_([a-z0-9])/g, function(g) {
-                return g[1].toUpperCase();
-            });
-
             $.ajax({
                 url: window.gw.urls.popover,
                 dataType: 'json',
                 data: {
-                    field_name: self.rankFieldNameInCamelCase
+                    field_name: rankFieldName
                 },
                 success: function(data) {
                     self.formatData.call(self, data);
@@ -104,7 +99,7 @@ RankPopover.prototype.scrollHandler = function scrollHandler () {
 
     var previousScrollTop = self.previousScrollTop;
     var currentPage = self.currentPage;
-    var rankFieldNameInCamelCase = self.rankFieldNameInCamelCase;
+    var rankFieldName = self.rankFieldName;
     var order = self.order;
 
     previousScrollTop = 0;
@@ -120,13 +115,13 @@ RankPopover.prototype.scrollHandler = function scrollHandler () {
                 self.loading = true;
                 $preloader.show();
                 $.ajax({
-                    url: '/api/v1/government' + window.location.pathname + '/get_ranks',
+                    url: window.gw.urls.popover,
                     dataType: 'json',
                     data: {
                         page: ++currentPage,
                         order: order.rank,
                         name_order: order.altType,
-                        field_name: rankFieldNameInCamelCase
+                        field_name: rankFieldName
                     },
                     success: function(data) {
                         self.formatData(data);
@@ -198,22 +193,27 @@ RankPopover.prototype.loadNewRows = function loadNewRows (order) {
     self.currentPage = 0;
     self.previousScrollTop = 0;
 
-    $.ajax({
-        url: '/api/v1/government' + window.location.pathname + '/get_ranks',
-        dataType: 'json',
-        data: {
-            page: self.currentPage,
-            order: order.rank,
-            name_order: order.altType,
-            field_name: self.rankFieldNameInCamelCase
-        },
-        success: function(data) {
-            self.formatData.call(self, data);
-            $rankTable.html(Handlebars.templates.rankTableAdditionalRows(data));
-            self.loading = false;
-            self.$preloader.hide();
-        }
-    });
+    console.log(self.rankFieldName);
+
+    (function(self){
+
+        $.ajax({
+            url: window.gw.urls.popover,
+            dataType: 'json',
+            data: {
+                page: self.currentPage,
+                order: order.rank,
+                name_order: order.altType,
+                field_name: self.rankFieldName
+            },
+            success: function(data) {
+                self.formatData.call(self, data);
+                $rankTable.html(Handlebars.templates.rankTableAdditionalRows(data));
+                self.loading = false;
+                self.$preloader.hide();
+            }
+        });
+    })(self);
 
 };
 

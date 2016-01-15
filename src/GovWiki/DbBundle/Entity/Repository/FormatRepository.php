@@ -60,7 +60,7 @@ class FormatRepository extends EntityRepository
         return $qb
             ->select('Format.field')
             ->leftJoin('Format.environment', 'Environment')
-            ->where($expr->eq('Environment.slug', $environment))
+            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
             ->getQuery()
             ->getArrayResult();
     }

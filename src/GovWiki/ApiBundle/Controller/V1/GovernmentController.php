@@ -106,8 +106,9 @@ class GovernmentController extends AbstractGovWikiApiController
 //            ->getFieldNames();
         $fields = $this->environmentManager()->getFields();
         $found = false;
+        $tmp = preg_replace('|_rank$|', '', $fieldName);
         foreach ($fields as $field) {
-            if ($field === $fieldName) {
+            if ($field['field'] === $tmp) {
                 $found = true;
                 break;
             }
