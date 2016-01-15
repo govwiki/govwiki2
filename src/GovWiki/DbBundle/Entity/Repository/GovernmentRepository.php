@@ -158,8 +158,8 @@ class GovernmentRepository extends EntityRepository
 
         $qb
             ->select(
-                "government.slug AS name, extra.{$fieldName} AS value",
-                "extra.{$rankFieldName} AS amount"
+                "government.slug AS name, extra.{$fieldName} AS amount",
+                "extra.{$rankFieldName} AS value"
             )
             ->from($environment, 'extra')
             ->innerJoin(

@@ -40,14 +40,30 @@ RankPopover.prototype.init = function init() {
     });
 
     $governmentController.on('click', function(e) {
+        // Close other popovers
+        if (!$(e.target).closest('.popover')[0]) {
+            $('.rank').not(e.target).popover('destroy');
+        }
+    });
 
-        self.$popover = $(e.target);
-        $popover = self.$popover.hasClass('rank') ? self.$popover : self.$popover.closest('.rank');
+    $statistics.on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        $element = $(e.target);
 
         // Close other popovers
         if (!$(e.target).closest('.popover')[0]) {
             $('.rank').not(e.target).popover('destroy');
         }
+
+        $popover = $element.hasClass('rank') ? $element : $element.closest('.rank');
+
+        if ($popover.length == 0) {
+            return false;
+        }
+
+        self.$popover = $element;
 
         self.$popoverContent = $popover.next().find('.popover-content');
         self.$preloader = self.$popoverContent.find('.loader');
@@ -194,26 +210,22 @@ RankPopover.prototype.loadNewRows = function loadNewRows (order) {
     self.previousScrollTop = 0;
 
     console.log(self.rankFieldName);
-
-    (function(self){
-
-        $.ajax({
-            url: window.gw.urls.popover,
-            dataType: 'json',
-            data: {
-                page: self.currentPage,
-                order: order.rank,
-                name_order: order.altType,
-                field_name: self.rankFieldName
-            },
-            success: function(data) {
-                self.formatData.call(self, data);
-                $rankTable.html(Handlebars.templates.rankTableAdditionalRows(data));
-                self.loading = false;
-                self.$preloader.hide();
-            }
-        });
-    })(self);
+    $.ajax({
+        url: window.gw.urls.popover,
+        dataType: 'json',
+        data: {
+            page: self.currentPage,
+            order: order.rank,
+            name_order: order.altType,
+            field_name: self.rankFieldName
+        },
+        success: function(data) {
+            self.formatData.call(self, data);
+            $rankTable.html(Handlebars.templates.rankTableAdditionalRows(data));
+            self.loading = false;
+            self.$preloader.hide();
+        }
+    });
 
 };
 

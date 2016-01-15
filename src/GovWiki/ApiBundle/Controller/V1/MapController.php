@@ -39,6 +39,4 @@ class MapController extends AbstractGovWikiApiController
 
         return $this->successResponse($map);
     }
-
-
 }

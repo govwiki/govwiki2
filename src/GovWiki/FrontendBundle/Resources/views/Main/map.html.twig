@@ -145,7 +145,8 @@
     <script>
         window.gw.map = '{{ map | raw }}';
         window.gw.environment = '{{ environment }}';
-        window.gw.searchUrl = '{{ govwiki_path('govwiki_api_v1_government_search') }}';
+        window.gw.urls = {};
+        window.gw.urls.search = '{{ govwiki_path('govwiki_api_v1_government_search') }}';
     </script>
 
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
