@@ -47,9 +47,7 @@ class GovernmentController extends AbstractGovWikiApiController
             );
         }
 
-        return $this->successResponse(
-            $this->environmentManager()->searchGovernment($search)
-        );
+        return new JsonResponse($this->environmentManager()->searchGovernment($search));
     }
 
 //    /**

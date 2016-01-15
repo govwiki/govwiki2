@@ -197,12 +197,18 @@ class Extension extends \Twig_Extension
      */
     public function displayValue($value)
     {
-        if (is_string($value) && $this->isUrl($value)) {
-            return '<a href="'. $value. '">'.$value.'</a>';
+        if (is_string($value)) {
+            if ($this->isUrl($value)){
+                return '<a href="' . $value . '">' . $value . '</a>';
+            } elseif (strlen($value) > 25) {
+
+            }
         }
 
         return $value;
     }
+
+    private function fixValueSize($value)
 
     /**
      * @param       $route

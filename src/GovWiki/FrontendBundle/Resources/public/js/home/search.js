@@ -4,10 +4,13 @@
 
 $(function() {
 
-    var findMatches = function findMatches(q, cb) {
-        return $.get({
-            url: window.gw.urls.search +'?search='+ q
-        })
+    var findMatches = function findMatches(query, syncCallback, asyncCallback) {
+        $.ajax({
+            method: 'GET',
+            url: window.gw.urls.search +'?search='+ query
+        }).success(function(data) {
+            return asyncCallback(data);
+        });
     };
 
     var searchValue = '';
@@ -16,7 +19,7 @@ $(function() {
     var $typeahead = $('.typeahead').typeahead({
         hint: true,
         highlight: true,
-        minLength: 1
+        minLength: 3
     }, {
         name: 'countries',
         source: findMatches,
@@ -24,8 +27,8 @@ $(function() {
             empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
             suggestion: Handlebars.compile('<div class="sugg-box">'+
                 '<div class="sugg-state">{{state}}</div>' +
-                '<div class="sugg-name">{{gov_name}}</div>' +
-                '<div class="sugg-type">{{gov_type}}</div>' +
+                '<div class="sugg-name">{{name}}</div>' +
+                '<div class="sugg-type">{{type}}</div>' +
                 '</div>')
         },
         updater: function (item) {
