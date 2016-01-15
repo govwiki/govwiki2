@@ -102,8 +102,9 @@ class GovernmentController extends AbstractGovWikiApiController
         /*
          * Check field name.
          */
-        $fields = $this->getDoctrine()->getManager()->getClassMetadata('GovWikiDbBundle:Government')
-            ->getFieldNames();
+//        $fields = $this->getDoctrine()->getManager()->getClassMetadata('GovWikiDbBundle:Government')
+//            ->getFieldNames();
+        $fields = $this->environmentManager()->getFields();
         $found = false;
         foreach ($fields as $field) {
             if ($field === $fieldName) {

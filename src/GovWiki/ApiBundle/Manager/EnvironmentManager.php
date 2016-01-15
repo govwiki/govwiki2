@@ -126,6 +126,15 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Format')
+            ->getFields($this->environment);
+    }
+
+    /**
      * @param string $altTypeSlug Slugged government alt type.
      * @param string $slug        Slugged government name.
      *

@@ -48,6 +48,24 @@ class FormatRepository extends EntityRepository
     }
 
     /**
+     * @param string $environment Environment name.
+     *
+     * @return array
+     */
+    public function getFields($environment)
+    {
+        $qb = $this->createQueryBuilder('Format');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select('Format.field')
+            ->leftJoin('Format.environment', 'Environment')
+            ->where($expr->eq('Environment.slug', $environment))
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
      * @param string  $environment Environment name.
      * @param boolean $plain       Flag, if set return plain array without
      *                             grouping by tab names and fields.

@@ -67,7 +67,7 @@ RankPopover.prototype.init = function init() {
             });
 
             $.ajax({
-                url: '/api/v1/government' + window.location.pathname + '/get_ranks',
+                url: window.gw.urls.popover,
                 dataType: 'json',
                 data: {
                     field_name: self.rankFieldNameInCamelCase

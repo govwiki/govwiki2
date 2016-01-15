@@ -91,18 +91,19 @@
                                         {{ include('@GovWikiFrontend/Partial/Government/tab.html.twig') }}
                                     </div>
 
-                                    {# Overview + Elected Officials #}
-                                    {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
+                                    <div class="col-sm-8">
+                                        {# Overview + Elected Officials #}
+                                        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
 
-                                    {# Employee Compensation #}
-                                    {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
+                                        {# Employee Compensation #}
+                                        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
 
-                                    {# Quality of Services #}
-                                    {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
+                                        {# Quality of Services #}
+                                        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
 
-                                    {# Financial Health #}
-                                    {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
-
+                                        {# Financial Health #}
+                                        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
+                                    </div>
                                 </div>
 
                             {% endfor %}
@@ -173,6 +174,11 @@
     {% if government is defined %}
         <script>
             window.gw.government = '{{ government_json|raw }}'
+            window.gw.urls = {};
+            window.gw.urls.popover = '{{ govwiki_path('govwiki_api_v1_government_getranks', {
+                'altTypeSlug': government.altTypeSlug,
+                'slug': government.slug,
+            }) }}'
         </script>
     {% endif %}
 
