@@ -175,6 +175,8 @@ class GovernmentRepository extends EntityRepository
                 $expr->literal($altTypeSlug)
             ));
 
+        error_log('Main query builder created.');
+
         /*
          * Get list of rank started from given government.
          */
@@ -182,9 +184,20 @@ class GovernmentRepository extends EntityRepository
             /*
              * Get rank for given government.
              */
-            $qb2 = clone $qb;
+            $qb2 = $con->createQueryBuilder();
             $qb2
                 ->select("extra.{$rankFieldName}")
+                ->from($environment, 'extra')
+                ->innerJoin(
+                    'extra',
+                    'governments',
+                    'government',
+                    'extra.government_id = government.id'
+                )
+                ->where($expr->eq(
+                    'government.alt_type_slug',
+                    $expr->literal($altTypeSlug)
+                ))
                 ->andWhere(
                     $expr
                         ->eq('government.slug', $expr->literal($governmentSlug))
