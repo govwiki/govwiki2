@@ -216,7 +216,7 @@ class GovernmentRepository extends EntityRepository
                 $expr->gte("extra.{$rankFieldName}", '('. $qb2->getSQL() .')')
             );
 
-            if (empty($nameOrder)) {
+            if ((null === $nameOrder) && ('' === $nameOrder)) {
                 $qb->orderBy("extra.{$rankFieldName}", 'asc');
             }
 
