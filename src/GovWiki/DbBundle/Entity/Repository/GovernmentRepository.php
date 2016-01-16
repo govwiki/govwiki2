@@ -256,6 +256,8 @@ class GovernmentRepository extends EntityRepository
             error_log('Sub query added');
         }
 
+        error_log('Before exec query: '. $qb->getSQL());
+
         $qb
             ->setFirstResult($page * $limit)
             ->setMaxResults($limit);
