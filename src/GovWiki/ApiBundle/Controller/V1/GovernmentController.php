@@ -79,8 +79,6 @@ class GovernmentController extends AbstractGovWikiApiController
             );
         }
 
-        error_log('Got field name: '. $fieldName);
-
         /*
          * Check field name.
          */
@@ -99,8 +97,6 @@ class GovernmentController extends AbstractGovWikiApiController
             ], 400);
         }
 
-        error_log('Found ranked field name');
-
         $data = $this->environmentManager()->getGovernmentRank(
             $altTypeSlug,
             $slug,
@@ -112,8 +108,6 @@ class GovernmentController extends AbstractGovWikiApiController
                 'name_order' => $request->query->get('name_order', null),
             ]
         );
-
-        error_log('Found '. count($data). ' elements');
 
         /*
          * Canonize field name and value.

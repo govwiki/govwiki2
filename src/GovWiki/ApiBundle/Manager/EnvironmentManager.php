@@ -249,8 +249,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         $order = $parameters['order'];
         $nameOrder = $parameters['name_order'];
 
-        error_log('Start request');
-
         return $this->em->getRepository('GovWikiDbBundle:Government')
             ->getGovernmentRank(
                 $this->environment,

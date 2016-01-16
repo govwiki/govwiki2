@@ -64,32 +64,35 @@
          .statistics-table {
             width: 100%;
 
-            tr {
+            & > tbody {
 
-               td {
-                  border-bottom: 1px dotted #ddd;
-                  white-space: nowrap;
+               & > tr {
 
-                  &:nth-child(1) {
-                     color: #666;
-                  }
+                  & > td {
+                     border-bottom: 1px dotted #ddd;
+                     white-space: nowrap;
 
-                  &:nth-child(2) {
-                     color: #000;
-                     text-align: right;
-                     border: none;
-                  }
+                     &:nth-child(1) {
+                        color: #666;
+                     }
 
-                  a.rank {
-                     font-style: italic;
-                     font-size: 75%;
-                     cursor: pointer;
+                     &:nth-child(2) {
+                        color: #000;
+                        text-align: right;
+                        border: none;
+                     }
+
+                     a.rank {
+                        font-style: italic;
+                        font-size: 75%;
+                        cursor: pointer;
+                     }
+
                   }
 
                }
 
             }
-
          }
 
       }

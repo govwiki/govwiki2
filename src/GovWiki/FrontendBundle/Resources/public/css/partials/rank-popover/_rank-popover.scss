@@ -40,21 +40,21 @@
       overflow-y: scroll;
       height: 300px;
    }
-   .popover-content table th {
+   .popover-content table tr th {
       cursor: pointer;
    }
-   .popover-content table th:first-child {
+   .popover-content table tr th:first-child {
       width: 80%;
    }
-   .popover-content table th:last-child {
+   .popover-content table tr th:last-child {
       width: 19%;
    }
-   .popover-content table th,
-   .popover-content table td {
-      min-width: auto !important;
-      padding-right: inherit !important;
+   .popover-content table tr th,
+   .popover-content table tr td {
+//      min-width: auto !important;
+      padding-right: inherit;
       font-size: 80%;
-      color: black !important;
+      color: black;
    }
 
 }

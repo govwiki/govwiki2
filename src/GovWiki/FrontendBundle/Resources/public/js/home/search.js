@@ -9,7 +9,7 @@ $(function() {
             method: 'GET',
             url: window.gw.urls.search +'?search='+ query
         }).success(function(data) {
-            return asyncCallback(data);
+            asyncCallback(data);
         });
     };
 

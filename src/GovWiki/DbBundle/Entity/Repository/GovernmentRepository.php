@@ -151,12 +151,7 @@ class GovernmentRepository extends EntityRepository
     ) {
         $fieldName = preg_replace('|_rank$|', '', $rankFieldName);
 
-        error_log('Field name without rank: '. $fieldName);
-
         $con = $this->_em->getConnection();
-
-//        $qb = $con->createQueryBuilder();
-//        $expr = $qb->expr();
 
         $mainSql = "
             SELECT
@@ -170,25 +165,6 @@ class GovernmentRepository extends EntityRepository
         $wheres = [];
         $orderBys = [];
 
-//        $qb
-//            ->select(
-//                "government.slug AS name, extra.{$fieldName} AS amount",
-//                "extra.{$rankFieldName} AS value"
-//            )
-//            ->from($environment, 'extra')
-//            ->innerJoin(
-//                'extra',
-//                'governments',
-//                'government',
-//                'extra.government_id = government.id'
-//            )
-//            ->where($expr->eq(
-//                'government.alt_type_slug',
-//                $expr->literal($altTypeSlug)
-//            ));
-
-        error_log('Main query builder created.');
-
         /*
          * Get list of rank started from given government.
          */
@@ -196,7 +172,6 @@ class GovernmentRepository extends EntityRepository
             /*
              * Get rank for given government.
              */
-            error_log('Before init sub query builder');
 
             $sql = "
                 SELECT extra.{$rankFieldName}
@@ -209,72 +184,29 @@ class GovernmentRepository extends EntityRepository
                 LIMIT 1
             ";
 
-//            $qb2 = $con->createQueryBuilder();
-//
-//            error_log('Init sub query builder');
-//
-//            $qb2
-//                ->select("extra.{$rankFieldName}")
-//                ->from($environment, 'extra')
-//                ->innerJoin(
-//                    'extra',
-//                    'governments',
-//                    'government',
-//                    'extra.government_id = government.id'
-//                )
-//                ->where($expr->eq(
-//                    'government.alt_type_slug',
-//                    $expr->literal($altTypeSlug)
-//                ))
-//                ->andWhere(
-//                    $expr
-//                        ->eq('government.slug', $expr->literal($governmentSlug))
-//                )
-//                ->orderBy("extra.{$rankFieldName}", 'asc')
-//                ->setMaxResults(1);
-//
-//            error_log('Create sub query builder');
-
-//            $qb->andWhere(
-//                $expr->gte("extra.{$rankFieldName}", '('. $qb2->getSQL() .')')
-//            );
-
             $wheres[] = "extra.{$rankFieldName} >= (". $sql .')';
-            $orderBys[] = "extra.{$rankFieldName} ASC";
-
-//            if ((null === $nameOrder) && ('' === $nameOrder)) {
-//                $qb->orderBy("extra.{$rankFieldName}", 'asc');
-//            }
-
-            error_log('Sub query added');
+            if (('desc' !== $nameOrder) && ('asc' !== $nameOrder)) {
+                $orderBys[] = "extra.{$rankFieldName} ASC";
+            }
         /*
          * Get sorted information from offset computed on given page and limit.
          */
         } elseif ('desc' === $order) {
-//            $qb->addOrderBy("extra.{$fieldName}", 'desc');
             $orderBys[] = "extra.{$rankFieldName} DESC";
-
-            error_log('Add order by '. $fieldName .' desc');
         } elseif ('asc' === $order) {
-//            $qb->addOrderBy("extra.{$fieldName}", 'asc');
             $orderBys[] = "extra.{$rankFieldName} ASC";
-
-            error_log('Add order by '. $fieldName .' asc');
         }
 
         if ('desc' === $nameOrder) {
-//            $qb->orderBy('government.slug', 'desc');
             $orderBys[] = 'government.slug DESC';
-
-            error_log('Sub query added');
         } elseif ('asc' === $nameOrder) {
-//            $qb->orderBy('government.slug', 'asc');
             $orderBys[] = 'government.slug ASC';
-
-            error_log('Sub query added');
         }
 
-        $mainSql .= ' WHERE '. implode(' AND ', $wheres);
+        if (count($wheres) > 0) {
+            $mainSql .= ' WHERE ' . implode(' AND ', $wheres);
+        }
+
         if (count($orderBys) > 0) {
             $mainSql .= ' ORDER BY ' .implode(' , ', $orderBys);
         }
@@ -282,14 +214,6 @@ class GovernmentRepository extends EntityRepository
         $mainSql .= ' LIMIT '. ($page * $limit) .', '. $limit;
 
         return $con->fetchAll($mainSql);
-
-//        $qb
-//            ->setFirstResult($page * $limit)
-//            ->setMaxResults($limit);
-//
-//        error_log('Exec query: '. $qb->getSQL());
-//
-//        return $con->fetchAll($qb->getSQL());
     }
 
     /**
