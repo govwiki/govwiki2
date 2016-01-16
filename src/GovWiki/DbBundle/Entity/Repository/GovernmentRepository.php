@@ -186,34 +186,46 @@ class GovernmentRepository extends EntityRepository
              */
             error_log('Before init sub query builder');
 
-            $qb2 = $con->createQueryBuilder();
+            $sql = "
+                SELECT extra.{$rankFieldName}
+                FROM {$environment} extra
+                INNER JOIN governments government ON extra.government_id = government.id
+                WHERE
+                    government.alt_type_slug = '{$altTypeSlug}' AND
+                    government.slug = '{$governmentSlug}'
+                ORDER BY extra.{$rankFieldName}
+                LIMIT 1
+            ";
 
-            error_log('Init sub query builder');
-
-            $qb2
-                ->select("extra.{$rankFieldName}")
-                ->from($environment, 'extra')
-                ->innerJoin(
-                    'extra',
-                    'governments',
-                    'government',
-                    'extra.government_id = government.id'
-                )
-                ->where($expr->eq(
-                    'government.alt_type_slug',
-                    $expr->literal($altTypeSlug)
-                ))
-                ->andWhere(
-                    $expr
-                        ->eq('government.slug', $expr->literal($governmentSlug))
-                )
-                ->orderBy("extra.{$rankFieldName}", 'asc')
-                ->setMaxResults(1);
-
-            error_log('Create sub query builder');
+//            $qb2 = $con->createQueryBuilder();
+//
+//            error_log('Init sub query builder');
+//
+//            $qb2
+//                ->select("extra.{$rankFieldName}")
+//                ->from($environment, 'extra')
+//                ->innerJoin(
+//                    'extra',
+//                    'governments',
+//                    'government',
+//                    'extra.government_id = government.id'
+//                )
+//                ->where($expr->eq(
+//                    'government.alt_type_slug',
+//                    $expr->literal($altTypeSlug)
+//                ))
+//                ->andWhere(
+//                    $expr
+//                        ->eq('government.slug', $expr->literal($governmentSlug))
+//                )
+//                ->orderBy("extra.{$rankFieldName}", 'asc')
+//                ->setMaxResults(1);
+//
+//            error_log('Create sub query builder');
 
             $qb->andWhere(
-                $expr->gte("extra.{$rankFieldName}", '('. $qb2->getSQL() .')')
+                $expr->gte("extra.{$rankFieldName}", '('. $sql .')')
+//                $expr->gte("extra.{$rankFieldName}", '('. $qb2->getSQL() .')')
             );
 
             if ((null === $nameOrder) && ('' === $nameOrder)) {
