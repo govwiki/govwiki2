@@ -155,25 +155,37 @@ class GovernmentRepository extends EntityRepository
 
         $con = $this->_em->getConnection();
 
-        $qb = $con->createQueryBuilder();
-        $expr = $qb->expr();
+//        $qb = $con->createQueryBuilder();
+//        $expr = $qb->expr();
 
-        $qb
-            ->select(
-                "government.slug AS name, extra.{$fieldName} AS amount",
-                "extra.{$rankFieldName} AS value"
-            )
-            ->from($environment, 'extra')
-            ->innerJoin(
-                'extra',
-                'governments',
-                'government',
-                'extra.government_id = government.id'
-            )
-            ->where($expr->eq(
-                'government.alt_type_slug',
-                $expr->literal($altTypeSlug)
-            ));
+        $mainSql = "
+            SELECT
+                government.slug AS name,
+                extra.{$fieldName} AS amount,
+                extra.{$rankFieldName} AS value
+            FROM {$environment} extra
+            INNER JOIN governments government ON extra.government_id = government.id
+        ";
+
+        $wheres = [];
+        $orderBys = [];
+
+//        $qb
+//            ->select(
+//                "government.slug AS name, extra.{$fieldName} AS amount",
+//                "extra.{$rankFieldName} AS value"
+//            )
+//            ->from($environment, 'extra')
+//            ->innerJoin(
+//                'extra',
+//                'governments',
+//                'government',
+//                'extra.government_id = government.id'
+//            )
+//            ->where($expr->eq(
+//                'government.alt_type_slug',
+//                $expr->literal($altTypeSlug)
+//            ));
 
         error_log('Main query builder created.');
 
@@ -223,50 +235,61 @@ class GovernmentRepository extends EntityRepository
 //
 //            error_log('Create sub query builder');
 
-            $qb->andWhere(
-                $expr->gte("extra.{$rankFieldName}", '('. $sql .')')
+//            $qb->andWhere(
 //                $expr->gte("extra.{$rankFieldName}", '('. $qb2->getSQL() .')')
-            );
+//            );
 
-            if ((null === $nameOrder) && ('' === $nameOrder)) {
-                $qb->orderBy("extra.{$rankFieldName}", 'asc');
-            }
+            $wheres[] = "extra.{$rankFieldName} >= (". $sql .')';
+            $orderBys[] = "extra.{$rankFieldName} ASC";
+
+//            if ((null === $nameOrder) && ('' === $nameOrder)) {
+//                $qb->orderBy("extra.{$rankFieldName}", 'asc');
+//            }
 
             error_log('Sub query added');
         /*
          * Get sorted information from offset computed on given page and limit.
          */
         } elseif ('desc' === $order) {
-            $qb->addOrderBy("extra.{$fieldName}", 'desc');
+//            $qb->addOrderBy("extra.{$fieldName}", 'desc');
+            $orderBys[] = "extra.{$rankFieldName} DESC";
 
             error_log('Add order by '. $fieldName .' desc');
         } elseif ('asc' === $order) {
-            $qb->addOrderBy("extra.{$fieldName}", 'asc');
+//            $qb->addOrderBy("extra.{$fieldName}", 'asc');
+            $orderBys[] = "extra.{$rankFieldName} ASC";
 
             error_log('Add order by '. $fieldName .' asc');
         }
 
-        error_log('Before exec if');
-
         if ('desc' === $nameOrder) {
-            $qb->orderBy('government.slug', 'desc');
+//            $qb->orderBy('government.slug', 'desc');
+            $orderBys[] = 'government.slug DESC';
 
             error_log('Sub query added');
         } elseif ('asc' === $nameOrder) {
-            $qb->orderBy('government.slug', 'asc');
+//            $qb->orderBy('government.slug', 'asc');
+            $orderBys[] = 'government.slug ASC';
 
             error_log('Sub query added');
         }
 
-        error_log('Before exec query');
+        $mainSql .= ' WHERE '. implode(' AND ', $wheres);
+        if (count($orderBys) > 0) {
+            $mainSql .= ' ORDER BY ' .implode(' , ', $orderBys);
+        }
 
-        $qb
-            ->setFirstResult($page * $limit)
-            ->setMaxResults($limit);
+        $mainSql .= ' LIMIT '. ($page * $limit) .', '. $limit;
 
-        error_log('Exec query: '. $qb->getSQL());
+        return $con->fetchAll($mainSql);
 
-        return $con->fetchAll($qb->getSQL());
+//        $qb
+//            ->setFirstResult($page * $limit)
+//            ->setMaxResults($limit);
+//
+//        error_log('Exec query: '. $qb->getSQL());
+//
+//        return $con->fetchAll($qb->getSQL());
     }
 
     /**
