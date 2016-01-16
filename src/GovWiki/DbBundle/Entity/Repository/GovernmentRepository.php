@@ -246,6 +246,8 @@ class GovernmentRepository extends EntityRepository
             error_log('Add order by '. $fieldName .' asc');
         }
 
+        error_log('Before exec if');
+
         if ('desc' === $nameOrder) {
             $qb->orderBy('government.slug', 'desc');
 
@@ -256,7 +258,7 @@ class GovernmentRepository extends EntityRepository
             error_log('Sub query added');
         }
 
-        error_log('Before exec query: '. $qb->getSQL());
+        error_log('Before exec query');
 
         $qb
             ->setFirstResult($page * $limit)
