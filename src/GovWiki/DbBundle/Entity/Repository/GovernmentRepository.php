@@ -175,22 +175,42 @@ class GovernmentRepository extends EntityRepository
                 $expr->literal($altTypeSlug)
             ));
 
+        error_log('Main query builder created.');
+
         /*
          * Get list of rank started from given government.
          */
-        if (empty($order)) {
+        if ((null === $order) || ('' === $order)) {
             /*
              * Get rank for given government.
              */
-            $qb2 = clone $qb;
+            error_log('Before init sub query builder');
+
+            $qb2 = $con->createQueryBuilder();
+
+            error_log('Init sub query builder');
+
             $qb2
                 ->select("extra.{$rankFieldName}")
+                ->from($environment, 'extra')
+                ->innerJoin(
+                    'extra',
+                    'governments',
+                    'government',
+                    'extra.government_id = government.id'
+                )
+                ->where($expr->eq(
+                    'government.alt_type_slug',
+                    $expr->literal($altTypeSlug)
+                ))
                 ->andWhere(
                     $expr
                         ->eq('government.slug', $expr->literal($governmentSlug))
                 )
                 ->orderBy("extra.{$rankFieldName}", 'asc')
                 ->setMaxResults(1);
+
+            error_log('Create sub query builder');
 
             $qb->andWhere(
                 $expr->gte("extra.{$rankFieldName}", '('. $qb2->getSQL() .')')
@@ -199,19 +219,29 @@ class GovernmentRepository extends EntityRepository
             if (empty($nameOrder)) {
                 $qb->orderBy("extra.{$rankFieldName}", 'asc');
             }
+
+            error_log('Sub query added');
         /*
          * Get sorted information from offset computed on given page and limit.
          */
         } elseif ('desc' === $order) {
             $qb->addOrderBy("extra.{$fieldName}", 'desc');
+
+            error_log('Add order by '. $fieldName .' desc');
         } elseif ('asc' === $order) {
             $qb->addOrderBy("extra.{$fieldName}", 'asc');
+
+            error_log('Add order by '. $fieldName .' asc');
         }
 
         if ('desc' === $nameOrder) {
             $qb->orderBy('government.slug', 'desc');
+
+            error_log('Sub query added');
         } elseif ('asc' === $nameOrder) {
             $qb->orderBy('government.slug', 'asc');
+
+            error_log('Sub query added');
         }
 
         $qb
