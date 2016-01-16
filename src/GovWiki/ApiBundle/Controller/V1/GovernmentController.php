@@ -47,30 +47,9 @@ class GovernmentController extends AbstractGovWikiApiController
             );
         }
 
-        return new JsonResponse($this->environmentManager()->searchGovernment($search));
+        return new JsonResponse($this->environmentManager()
+            ->searchGovernment($search));
     }
-
-//    /**
-//     * @Route("/get-markers-data", methods="GET")
-//     *
-//     * Get markers data
-//     *
-//     * @param  Request $request A Request instance.
-//     *
-//     * @return JsonResponse
-//     */
-//    public function getMarkersDataAction(Request $request)
-//    {
-//        $em = $this->getDoctrine()->getManager();
-//
-//        if ($limit = $request->query->get('limit')) {
-//            $data = $em->getRepository('GovWikiDbBundle:Government')->getMarkers($request->query->get('altTypes'), $limit);
-//        } else {
-//            $data = $em->getRepository('GovWikiDbBundle:Government')->getMarkers($request->query->get('altTypes'));
-//        }
-//
-//        return new JsonResponse($data);
-//    }
 
     /**
      * @Route("/{altTypeSlug}/{slug}/get_ranks", methods={"GET"})
@@ -93,16 +72,19 @@ class GovernmentController extends AbstractGovWikiApiController
     public function getRanksAction(Request $request, $altTypeSlug, $slug)
     {
         $fieldName = $request->query->get('field_name', null);
-        if (empty($fieldName)) {
-            return new JsonResponse([ 'message' => 'Provide field_name query parameter.' ], 400);
+        if ((null === $fieldName) || ('' === $fieldName)) {
+            return new JsonResponse(
+                [ 'message' => 'Provide field_name query parameter.' ],
+                400
+            );
         }
+
+        error_log('Got field name: '. $fieldName);
 
         /*
          * Check field name.
          */
-//        $fields = $this->getDoctrine()->getManager()->getClassMetadata('GovWikiDbBundle:Government')
-//            ->getFieldNames();
-        $fields = $this->environmentManager()->getFields();
+        $fields = $this->environmentManager()->getRankedFields();
         $found = false;
         $tmp = preg_replace('|_rank$|', '', $fieldName);
         foreach ($fields as $field) {
@@ -113,9 +95,11 @@ class GovernmentController extends AbstractGovWikiApiController
         }
         if (! $found) {
             return new JsonResponse([
-                'message' => 'Unknown field name, provide in camel case like in Government entity.',
+                'message' => 'Unknown field name or maybe this field don\'t have rank.',
             ], 400);
         }
+
+        error_log('Found ranked field name');
 
         $data = $this->environmentManager()->getGovernmentRank(
             $altTypeSlug,
@@ -128,6 +112,8 @@ class GovernmentController extends AbstractGovWikiApiController
                 'name_order' => $request->query->get('name_order', null),
             ]
         );
+
+        error_log('Found '. count($data). ' elements');
 
         /*
          * Canonize field name and value.

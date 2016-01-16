@@ -151,6 +151,8 @@ class GovernmentRepository extends EntityRepository
     ) {
         $fieldName = preg_replace('|_rank$|', '', $rankFieldName);
 
+        error_log('Field name without rank: '. $fieldName);
+
         $con = $this->_em->getConnection();
 
         $qb = $con->createQueryBuilder();
@@ -215,6 +217,8 @@ class GovernmentRepository extends EntityRepository
         $qb
             ->setFirstResult($page * $limit)
             ->setMaxResults($limit);
+
+        error_log('Exec query: '. $qb->getSQL());
 
         return $con->fetchAll($qb->getSQL());
     }

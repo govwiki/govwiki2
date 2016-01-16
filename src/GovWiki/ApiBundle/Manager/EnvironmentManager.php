@@ -128,10 +128,10 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     /**
      * @return array
      */
-    public function getFields()
+    public function getRankedFields()
     {
         return $this->em->getRepository('GovWikiDbBundle:Format')
-            ->getFields($this->environment);
+            ->getRankedFields($this->environment);
     }
 
     /**
@@ -248,6 +248,8 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         $page = $parameters['page'];
         $order = $parameters['order'];
         $nameOrder = $parameters['name_order'];
+
+        error_log('Start request');
 
         return $this->em->getRepository('GovWikiDbBundle:Government')
             ->getGovernmentRank(

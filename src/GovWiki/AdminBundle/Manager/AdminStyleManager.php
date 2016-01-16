@@ -91,25 +91,27 @@ class AdminStyleManager
          */
 
         foreach ($data as $field => $value) {
-            $elements = explode('-', $field);
-            $path = $this->generatePath($styles, $elements);
+            if (null !== $value) {
+                $elements = explode('-', $field);
+                $path = $this->generatePath($styles, $elements);
 
-            if ($value instanceof UploadedFile) {
-                /*
-                 * Move uploaded file to upload directory.
-                 */
-                $filename = $this->manager->getSlug() .'.'.
-                    $value->getClientOriginalExtension();
+                if ($value instanceof UploadedFile) {
+                    /*
+                     * Move uploaded file to upload directory.
+                     */
+                    $filename = $this->manager->getSlug() . '.' .
+                        $value->getClientOriginalExtension();
 
-                $value->move(
-                    $this->uploadDirectory,
-                    $filename
-                );
+                    $value->move(
+                        $this->uploadDirectory,
+                        $filename
+                    );
 
-                $value = '/img/'. $filename;
+                    $value = '/img/' . $filename;
+                }
+
+                eval('$styles' . $path . ' = \'' . $value . '\';');
             }
-
-            eval('$styles'.$path.' = \''. $value.'\';');
         }
 
         return $styles;

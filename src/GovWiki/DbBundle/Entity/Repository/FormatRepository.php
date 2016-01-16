@@ -52,7 +52,7 @@ class FormatRepository extends EntityRepository
      *
      * @return array
      */
-    public function getFields($environment)
+    public function getRankedFields($environment)
     {
         $qb = $this->createQueryBuilder('Format');
         $expr = $qb->expr();
@@ -60,7 +60,10 @@ class FormatRepository extends EntityRepository
         return $qb
             ->select('Format.field')
             ->leftJoin('Format.environment', 'Environment')
-            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
+            ->where($expr->andX(
+                $expr->eq('Environment.slug', $expr->literal($environment)),
+                $expr->eq('Format.ranked', 1)
+            ))
             ->getQuery()
             ->getArrayResult();
     }
