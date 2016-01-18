@@ -4,6 +4,11 @@
 
 {% block title %}{{ parent() }} - {{ environment.name }}{% endblock %}
 
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{ macro.breadcrumbElement(environment.name|capitalize ~' environment') }}
+{% endblock breadcrumb %}
+
 {% block body %}
 
     <div class="row">

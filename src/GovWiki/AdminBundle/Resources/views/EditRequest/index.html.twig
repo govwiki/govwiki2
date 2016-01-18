@@ -1,5 +1,19 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
 {% block title %}{{ parent() }} - Edit requests{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+        macro.breadcrumbElement(
+            admin_environment|capitalize ~' environment',
+            'govwiki_admin_main_show',
+            { 'environment': admin_environment }
+        )
+    }}
+    {{ macro.breadcrumbElement('Edit Requests') }}
+{% endblock breadcrumb %}
+
 {% block body %}
     <div class="container-fluid">
         <div class="index-page-head">

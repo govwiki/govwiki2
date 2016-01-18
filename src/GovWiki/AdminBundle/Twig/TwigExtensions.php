@@ -33,6 +33,7 @@ class TwigExtensions extends \Twig_Extension
     {
         return [
             'admin_styles' => json_encode($this->manger->getStyle()),
+            'admin_environment' => $this->manger->getEnvironment(),
         ];
     }
 

@@ -1,5 +1,20 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
 {% block title %}{{ parent() }} - Create government{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+        macro.breadcrumbElement(
+            admin_environment|capitalize ~' environment',
+            'govwiki_admin_main_show',
+            { 'environment': admin_environment }
+        )
+    }}
+    {{ macro.breadcrumbElement('Governments', 'govwiki_admin_government_index') }}
+    {{ macro.breadcrumbElement('New') }}
+{% endblock breadcrumb %}
+
 {% block body %}
     <div class="container-fluid">
         {{ form_start(form) }}

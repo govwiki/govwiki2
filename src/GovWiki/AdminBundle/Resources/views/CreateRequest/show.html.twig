@@ -1,8 +1,29 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
 
-{% import _self as macro %}
+{% import _self as self %}
 
 {% block title %}{{ parent() }} - Show create request{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+        macro.breadcrumbElement(
+            admin_environment|capitalize ~' environment',
+            'govwiki_admin_main_show',
+            { 'environment': admin_environment }
+        )
+    }}
+    {{
+        macro.breadcrumbElement(
+            'Create Requests',
+            'govwiki_admin_createrequest_index'
+        )
+    }}
+    {{ macro.breadcrumbElement(
+        createRequest.user.username ~' at '~ createRequest.created|date('m/d/y g:i a')
+    )}}
+{% endblock breadcrumb %}
+
 {% block body %}
     <div class="container">
         {% if errors %}
@@ -85,7 +106,7 @@
                             <tr{% if not field.correct %} class="danger"{% endif %}>
                                 <td>{{ field.field|name_beautify }}</td>
                                 <td>
-                                    {{ macro.renderField(field) }}
+                                    {{ self.renderField(field) }}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -152,7 +173,7 @@
                                 <tr data-id="{{ child.associations[0].id }}">
                                     <td>{{ child.associations[0].name|name_beautify }}</td>
                                     {% for field in child.fields %}
-                                        <td{% if not field.correct %} class="danger"{% endif %}>{{ macro.renderField(field) }}</td>
+                                        <td{% if not field.correct %} class="danger"{% endif %}>{{ self.renderField(field) }}</td>
                                     {% endfor %}
                                     <td>
                                         <input type="checkbox" id="sendEmail-{{ loop.index0 }}" name="send_email[{{ loop.index0 }}]" checked>

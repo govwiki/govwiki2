@@ -360,6 +360,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
         }
 
         $result['childs'] = [];
+        $errors = [];
         if (!empty($data['childs'])) {
             foreach ($data['childs'] as $child) {
                 try {

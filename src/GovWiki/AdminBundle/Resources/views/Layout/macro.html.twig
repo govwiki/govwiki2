@@ -1,0 +1,29 @@
+{#
+    Add element to naviagtion breadcrumb.
+
+    title - title of new element.
+    route - route name for url generation.
+    parameters - route generation parameters.
+
+#}
+{% macro breadcrumbElement(title, route, parameters) %}
+    {% spaceless %}
+        {% if (route is defined and route is not empty) %}
+            {#
+                Add link to breadcrumb.
+            #}
+            <li>
+                <a href="{{ path(route, parameters|default({})) }}">
+                    {{ title }}
+                </a>
+            </li>
+        {% else %}
+            {#
+                If route name not provided asume what this element is current.
+            #}
+            <li class="active">
+                {{ title }}
+            </li>
+        {% endif %}
+    {% endspaceless %}
+{% endmacro %}

@@ -2,6 +2,18 @@
 
 {% block title %}{{ parent() }} - Legislations{% endblock %}
 
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+        macro.breadcrumbElement(
+            admin_environment|capitalize ~' environment',
+            'govwiki_admin_main_show',
+            { 'environment': admin_environment }
+        )
+    }}
+    {{ macro.breadcrumbElement('Legislations') }}
+{% endblock breadcrumb %}
+
 {% block body %}
 
     <div class="row">
@@ -12,7 +24,7 @@
 
                 {# Header #}
                 <div class="panel-heading">
-                    <h3 class="panel-title">Elected Official info</h3>
+                    <h3 class="panel-title">Legislation info</h3>
                 </div>
 
                 {# Body #}

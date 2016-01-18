@@ -41,7 +41,6 @@ class GovernmentType extends AbstractType
             ->add('altType')
 //            ->add('censusContact')
 //            ->add('city')
-            ->add('webSite')
             ->add('wikipediaPageName')
             ->add('mayorName')
             ->add('yearsMayorInOffice')

@@ -2,6 +2,18 @@
 
 {% block title %}{{ parent() }} - edit map{% endblock title %}
 
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+    macro.breadcrumbElement(
+    admin_environment|capitalize ~' environment',
+    'govwiki_admin_main_show',
+    { 'environment': admin_environment }
+    )
+    }}
+    {{ macro.breadcrumbElement('Map') }}
+{% endblock breadcrumb %}
+
 {% block body %}
 
     <div class="container">

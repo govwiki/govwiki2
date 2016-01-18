@@ -2,6 +2,10 @@
 
 {% block title %}{{ parent() }} - Environments{% endblock %}
 
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main') }}
+{% endblock breadcrumb %}
+
 {% block body %}
 
     <div class="row">

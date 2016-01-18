@@ -1,5 +1,7 @@
 {% extends "::base.html.twig" %}
 
+{% import "@GovWikiAdmin/Layout/macro.html.twig" as macro %}
+
 {% block title %}GovWiki Admin{% endblock title %}
 
 {% block header %}
@@ -88,7 +90,6 @@
     {% endfor %}
 
 {% endblock %}
-
 
 {# Modal #}
 {% block modal %}

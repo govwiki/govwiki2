@@ -19,6 +19,15 @@
 
         {# Main content #}
         <main class="container">
+            {# breadcrumb #}
+            {% set _breadcrumb = block('breadcrumb') %}
+            {% if (_breadcrumb) %}
+                <div class="breadcrumb-wrapper">
+                    <ol class="breadcrumb">
+                        {{ _breadcrumb|raw }}
+                    </ol>
+                </div>
+            {% endif %}
             {% block body %}{% endblock %}
         </main>
 

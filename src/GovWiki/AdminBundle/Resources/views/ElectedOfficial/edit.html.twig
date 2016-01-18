@@ -1,5 +1,25 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
 {% block title %}{{ parent() }} - Edit elected official{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+        macro.breadcrumbElement(
+            admin_environment|capitalize ~' environment',
+            'govwiki_admin_main_show',
+            { 'environment': admin_environment }
+        )
+    }}
+    {{
+        macro.breadcrumbElement(
+            'Elected Officials',
+            'govwiki_admin_electedofficial_index'
+        )
+    }}
+    {{ macro.breadcrumbElement('Edit '~ form.fullName.vars.data) }}
+{% endblock breadcrumb %}
+
 {% block body %}
     <div class="container-fluid">
         {{ form_start(form) }}
