@@ -1,4 +1,4 @@
-{% import 'GovWikiAdminBundle:User:show.html.twig' as macro %}
+{% import 'GovWikiAdminBundle:User:show.html.twig' as user_macro %}
 
 {% extends 'GovWikiAdminBundle:Layout:main.html.twig' %}
 
@@ -46,7 +46,7 @@
                             <tr>
                                 <td>{{ user.id }}</td>
                                 <td>{{ user.username }}</td>
-                                <td>{{ macro.renderBoolean(user.locked) }}</td>
+                                <td>{{ user_macro.renderBoolean(user.locked) }}</td>
                                 <td>{{ user.lastLogin|date('m/d/y g:i a') }}</td>
                                 <td>
                                     <div class="btn-group">

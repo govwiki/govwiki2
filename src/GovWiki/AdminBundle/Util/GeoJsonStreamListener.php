@@ -4,8 +4,6 @@ namespace GovWiki\AdminBundle\Util;
 use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\AdminBundle\Exception\InvalidGeoJsonException;
-use GovWiki\AdminBundle\Manager\AbstractAdminEntityManager;
-use GovWiki\AdminBundle\Manager\Entity\AdminGovernmentManager;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Government;
 
@@ -15,25 +13,37 @@ use GovWiki\DbBundle\Entity\Government;
  */
 class GeoJsonStreamListener implements \JsonStreamingParser_Listener
 {
-    /**
-     * @var boolean
-     */
-    private $onInitialStage = true;
+    const IN_COLLECTION = 1;
+    const IN_FEATURE = 2;
+    const IN_GEOMETRY = 4;
+    const IN_PROPERTIES = 8;
+
+    const COORDINATES_COLLECT = 16;
+    const PROPERTIES_COLLECT = 32;
 
     /**
-     * @var boolean
+     * Data from properties of feature and also contains current geometry type.
+     *
+     * @var array
      */
-    private $inGeometry = false;
+    private $data;
 
     /**
-     * @var boolean
+     * Coordinates of feature.
+     *
+     * @var array
      */
-    private $inCoordinates = false;
+    private $coordinates;
 
     /**
-     * @var boolean
+     * @var integer
      */
-    private $buildProperties = false;
+    private $level;
+
+    /**
+     * @var integer
+     */
+    private $flags;
 
     /**
      * @var string
@@ -46,24 +56,19 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     private $environment;
 
     /**
+     * @var array
+     */
+    private $sqls;
+
+    /**
      * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var array
-     */
-    private $data;
-
-    /**
      * @var CartoDbApi
      */
     private $api;
-
-    /**
-     * @var array
-     */
-    private $sql = [];
 
     /**
      * @param Environment            $environment A Environment instance.
@@ -91,15 +96,24 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
 
     /**
      * @return void
+     *
+     * @throws \Doctrine\DBAL\DBALException Some error while insert governments.
      */
     public function end_document()
     {
-        if (count($this->sql) > 0) {
+        if (count($this->sqls['db']) > 0) {
+            /*
+             * Add new data to our database and to cartodb.
+             */
+
+            $this->em->getConnection()->exec('
+                INSERT INTO governments (environment_id, name, slug, alt_type, alt_type_slug, county)
+                VALUES ' . implode(',', $this->sqls['db']));
+
             $this->api->sqlRequest("
-                INSERT INTO {$this->environment->slug}
-                    (id, the_geom, alt_type_slug, slug)
-                VALUES " . implode(',', $this->sql)
-            );
+                INSERT INTO {$this->environment->getSlug()}
+                    (the_geom, alt_type_slug, slug)
+                VALUES " . implode(',', $this->sqls['cartodb']));
         }
     }
 
@@ -108,13 +122,12 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
      */
     public function start_array()
     {
-        if (! $this->inCoordinates && ('coordinates' === $this->currentKey)) {
-            $this->data['_coordinates'] = [];
-            $this->data['_level'] = 0;
-            $this->inCoordinates = true;
-        } elseif ($this->inCoordinates) {
-            $this->data['_level']++;
-            $this->data['_tmp'][$this->data['_level']] = [];
+        if ($this->isFlagSet(self::IN_GEOMETRY)) {
+            /*
+             * If we currently in geometry object of feature assume what each
+             * array is coordinates of feature.
+             */
+            $this->level++;
         }
     }
 
@@ -123,15 +136,14 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
      */
     public function end_array()
     {
-        if ($this->inCoordinates) {
-            $this->data['_level']--;
-            $this->data['_tmp'][$this->data['_level']][] =
-                $this->data['_tmp'][$this->data['_level'] + 1];
-
-            if (0 === $this->data['_level']) {
-                $this->data['_coordinates'] = $this->data['_tmp'][$this->data['_level']][0];
-                $this->inCoordinates = false;
-            }
+        if ($this->isFlagSet(self::IN_GEOMETRY) && (0 !== $this->level)) {
+            /*
+             * Add collected array to previous.
+             */
+            $this->coordinates[$this->level - 1][] =
+                $this->coordinates[$this->level];
+            $this->coordinates[$this->level] = [];
+            $this->level--;
         }
     }
 
@@ -140,8 +152,29 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
      */
     public function start_object()
     {
-        if ('geometry' === $this->currentKey) {
-            $this->inGeometry = true;
+        if ((null === $this->currentKey) &&
+            (! $this->isFlagSet(self::IN_COLLECTION))) {
+            /*
+             * FeatureCollection started.
+             */
+            $this->setFlag(self::IN_COLLECTION);
+        } elseif ('geometry' === $this->currentKey) {
+            /*
+             * Geometry object started.
+             */
+            $this->setFlag(self::IN_GEOMETRY);
+        } elseif ('properties' === $this->currentKey) {
+            /*
+             * Property object started.
+             */
+            $this->setFlag(self::IN_PROPERTIES);
+        } elseif (! $this->isFlagSet(self::IN_FEATURE)) {
+            /*
+             * Process concrete point or polygon.
+             */
+            $this->data = [];
+            $this->coordinates = [];
+            $this->level = -1;
         }
     }
 
@@ -154,41 +187,59 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
      */
     public function end_object()
     {
-        if ($this->buildProperties &&
-            (array_key_exists('_geometry_type', $this->data)) &&
-            (array_key_exists('_coordinates', $this->data))) {
+        if ($this->isFlagSet(self::IN_GEOMETRY)) {
+            /*
+             * End process of coordinates.
+             */
+            $this->unsetFlag(self::IN_GEOMETRY);
+            $this->setFlag(self::COORDINATES_COLLECT);
+        } elseif ($this->isFlagSet(self::IN_PROPERTIES)) {
+            /*
+             * End process of properties.
+             */
+            $this->unsetFlag(self::IN_PROPERTIES);
+            $this->setFlag(self::PROPERTIES_COLLECT);
+        } elseif ($this->isFlagSet(self::IN_FEATURE) &&
+            $this->isFlagSet(self::COORDINATES_COLLECT) &&
+            $this->isFlagSet(self::PROPERTIES_COLLECT)
+        ) {
+            /*
+             * End process of feature.
+             */
+            if (array_key_exists('geometry_type', $this->data)) {
+                $isCounty = 'Point' !== $this->data['geometry_type'];
+                if ($isCounty) {
+                    $this->coordinates = $this->coordinates[0];
+                    $this->coordinates[0][0][] = $this->coordinates[0][0][0];
+                }
 
-            $government = new Government();
+                /*
+                 * Create GeoJson for concrete government.
+                 */
+                $value = json_encode([
+                    'type'        => $this->data['geometry_type'],
+                    'coordinates' => $this->coordinates,
+                ]);
 
-            $altType = $this->getAltType();
+                $name = $this->data['name'];
+                $slug = Government::slugifyName($name);
+                $altType = $this->getAltType();
+                $altTypeSlug = Government::slugifyAltType($altType);
 
-            $isCounty = 'Point' !== $this->data['_geometry_type'];
-
-            $government
-                ->setEnvironment($this->environment)
-                ->setName($this->data['name'])
-                ->setAltType($altType)
-                ->setCounty($isCounty);
-
-            $this->em->persist($government);
-            $this->em->flush();
-
-            if ($isCounty) {
-                $this->data['_coordinates'][0][] = $this->data['_coordinates'][0][0];
+                /*
+                 * Add sql parts for insert.
+                 */
+                $this->sqls['db'][] = "
+                    ({$this->environment->getId()} ,'{$name}', '{$slug}', '{$altType}', '{$altTypeSlug}', {$isCounty})
+                ";
+                $this->sqls['cartodb'][] =
+                    "(ST_SetSRID(ST_GeomFromGeoJSON('$value'), 4326)," .
+                    "'{$altTypeSlug}','{$slug}')";
             }
 
-            $value = json_encode([
-                'type' => $this->data['_geometry_type'],
-                'coordinates' => [ $this->data['_coordinates'] ],
-            ]);
-
-            $this->sql[] =
-                "({$government->getId()},ST_SetSRID(ST_GeomFromGeoJSON('$value'), 4326),".
-                "'{$government->getAltTypeSlug()}','{$government->getSlug()}')";
-
-
-            $this->buildProperties = false;
             $this->data = [];
+
+            $this->unsetFlag(self::IN_FEATURE);
         }
     }
 
@@ -199,10 +250,6 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
      */
     public function key($key)
     {
-        if (! $this->onInitialStage && 'properties' === $key) {
-            $this->buildProperties = true;
-            $this->data = [];
-        }
         $this->currentKey = $key;
     }
 
@@ -215,28 +262,39 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
      */
     public function value($value)
     {
-        if ('type' === $this->currentKey) {
-            if ($this->onInitialStage) {
-                if ('FeatureCollection' !== $value) {
-                    throw new InvalidGeoJsonException();
-                }
-
-                $this->onInitialStage = false;
-            } elseif ($this->inGeometry) {
-                $this->data['_geometry_type'] = $value;
-                $this->inGeometry = false;
-            } elseif ('Feature' !== $value) {
-                throw new InvalidGeoJsonException();
-            }
-        } elseif ($this->buildProperties) {
-            if ($this->inCoordinates) {
-                $this->data['_tmp'][$this->data['_level']][] = $value;
+        if ((('type' === $this->currentKey) && ('Feature' === $value)) &&
+            $this->isFlagSet(self::IN_COLLECTION) &&
+            ! $this->isFlagSet(self::IN_FEATURE)
+        ) {
+            /*
+             * Currently Feature object started.
+             */
+            $this->setFlag(self::IN_FEATURE);
+        } elseif ($this->isFlagSet(self::IN_GEOMETRY)) {
+            if ('coordinates' === $this->currentKey) {
+                /*
+                 * Store coordinates.
+                 */
+                $this->coordinates[$this->level][] = $value;
             } else {
-                $this->data[$this->currentKey] = $value;
+                /*
+                 * Store geometry type.
+                 */
+                $this->data['geometry_type'] = $value;
             }
+        } elseif ($this->isFlagSet(self::IN_PROPERTIES)) {
+            /*
+             * Store properties.
+             */
+            $this->data[$this->currentKey] = $value;
         }
     }
 
+    /**
+     * @param string $whitespace Whitespace characters.
+     *
+     * @return void
+     */
     public function whitespace($whitespace)
     {
         // Do nothing.
@@ -260,5 +318,35 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
         }
 
         return ucfirst(strtolower($altType));
+    }
+
+    /**
+     * @param integer $flag Flag.
+     *
+     * @return void
+     */
+    private function setFlag($flag)
+    {
+        $this->flags |= $flag;
+    }
+
+    /**
+     * @param integer $flag Flag.
+     *
+     * @return boolean
+     */
+    private function isFlagSet($flag)
+    {
+        return ($this->flags & $flag) > 0;
+    }
+
+    /**
+     * @param integer $flag Flag.
+     *
+     * @return void
+     */
+    private function unsetFlag($flag)
+    {
+        $this->flags &= ~ $flag;
     }
 }

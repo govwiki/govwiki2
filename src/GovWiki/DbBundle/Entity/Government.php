@@ -275,9 +275,19 @@ class Government
     public function setName($name)
     {
         $this->name = $name;
-        $this->slug = str_replace([' ', '-'], '_', str_replace(['County Of ', 'City Of '], '', ucwords(strtolower($name))));
+        $this->slug = self::slugifyName($name);
 
         return $this;
+    }
+
+    /**
+     * @param $string
+     *
+     * @return string
+     */
+    public static function slugifyName($string)
+    {
+        return str_replace([' ', '-'], '_', str_replace(['County Of ', 'City Of '], '', ucwords(strtolower($string))));
     }
 
     /**
@@ -348,9 +358,19 @@ class Government
     public function setAltType($altType)
     {
         $this->altType = $altType;
-        $this->altTypeSlug = str_replace(' ', '_', ucwords(strtolower($altType)));
+        $this->altTypeSlug = self::slugifyName($altType);
 
         return $this;
+    }
+
+    /**
+     * @param $string
+     *
+     * @return string
+     */
+    public static function slugifyAltType($string)
+    {
+        return str_replace(' ', '_', ucwords(strtolower($string)));
     }
 
     /**

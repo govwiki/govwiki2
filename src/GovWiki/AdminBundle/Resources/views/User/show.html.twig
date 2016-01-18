@@ -1,4 +1,4 @@
-{% import _self as macro %}
+{% import _self as user_macro %}
 
 {% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
 
@@ -21,7 +21,7 @@
                     <tr>
                         <td>Locked</td>
                         <td>
-                            {{ macro.renderBoolean(user.locked) }}
+                            {{ user_macro.renderBoolean(user.locked) }}
                         </td>
                     </tr>
                     <tr>

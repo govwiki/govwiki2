@@ -30,6 +30,8 @@ class UserController extends Controller
      * @param Request $request A Request instance.
      *
      * @return array
+     *
+     * @throws \LogicException Some required bundle not registered.
      */
     public function indexAction(Request $request)
     {
@@ -58,10 +60,11 @@ class UserController extends Controller
      *  class="GovWiki\UserBundle\Entity\User"
      * )
      *
-     * @return void
+     * @return array
      */
     public function showAction(User $user)
     {
+        return [ 'user' => $user ];
     }
 
     /**
@@ -74,6 +77,9 @@ class UserController extends Controller
      * @Configuration\ParamConverter(name="user", class="GovWiki\UserBundle\Entity\User")
      *
      * @return RedirectResponse
+     *
+     * @throws \LogicException Some required bundle not registered.
+     * @throws \InvalidArgumentException Invalid arguments.
      */
     public function enableToggleAction(Request $request, User $user)
     {

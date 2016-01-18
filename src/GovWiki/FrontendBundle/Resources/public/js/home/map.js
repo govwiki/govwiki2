@@ -151,7 +151,7 @@ $(function() {
             function initCountySubLayer() {
                 countySubLayer = subLayers[0];
                 countySubLayer.set({ 'interactivity': ['cartodb_id', 'slug', 'geometry'] }); // alias to template
-                countySubLayer.setSQL('SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.slug + '_county');
+                countySubLayer.setSQL('SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.slug + ' WHERE alt_type_slug = \'County\'');
 
                 countyTooltip = new cdb.geo.ui.Tooltip({
                     layer: countySubLayer,
@@ -170,7 +170,8 @@ $(function() {
             function initCitySubLayer(altType) {
 
                 citySubLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
+                    sql: "SELECT * FROM " + window.gw.slug +
+                        " WHERE alt_type_slug = '" + altType + "'",
                     cartocss: "#layer { marker-fill: #f00000; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug, alt_type_slug'
                 });
@@ -194,7 +195,8 @@ $(function() {
             function initSchoolSubLayer(altType) {
 
                 schoolSubLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
+                    sql: "SELECT * FROM " + window.gw.slug +
+                        " WHERE alt_type_slug = '" + altType + "'",
                     cartocss: "#layer { marker-fill: #add8e6; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug, alt_type_slug'
                 });
@@ -218,7 +220,8 @@ $(function() {
             function initSpecialSubLayer(altType) {
 
                 specialSubLayer = layer.createSubLayer({
-                    sql: "SELECT * FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
+                    sql: "SELECT * FROM " + window.gw.slug +
+                        " WHERE alt_type_slug = '" + altType + "'",
                     cartocss: "#layer { marker-fill: #800080; }", // TODO: Hardcoded
                     interactivity: 'cartodb_id, slug, alt_type_slug'
                 });

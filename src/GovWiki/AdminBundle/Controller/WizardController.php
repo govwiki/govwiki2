@@ -331,15 +331,14 @@ class WizardController extends AbstractGovWikiAdminController
 
             if (null !== $dataFile) {
                 /*
-                 * Parse data file
+                 * Parse data file.
                  */
                 /** @var EntityManagerInterface $em */
                 $em = $this->getDoctrine()->getManager();
-                $reference = $em->getReference('GovWikiDbBundle:Environment', $this->getEnvironmentEntity()->getId());
-                $reference->slug = $this->getEnvironmentEntity()->getSlug();
+
                 $stream = fopen($dataFile->getPathname(), 'r');
                 $listener = new GeoJsonStreamListener(
-                    $reference,
+                    $this->getEnvironmentEntity(),
                     $this->getDoctrine()->getManager(),
                     $this->get(CartoDbServices::CARTO_DB_API)
                 );
