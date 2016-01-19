@@ -36,6 +36,9 @@ class MapType extends AbstractType
         $builder
             ->add('centerLatitude', 'number')
             ->add('centerLongitude', 'number');
+        if ($this->isNew) {
+            $builder->add('countyFile', 'file');
+        }
 
         if (! $this->isNew) {
             $builder->add('zoom', 'integer');

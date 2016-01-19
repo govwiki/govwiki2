@@ -61,7 +61,7 @@ class Environment
      *
      * @var string
      *
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(type="json_array", nullable=true)
      */
     private $style;
 

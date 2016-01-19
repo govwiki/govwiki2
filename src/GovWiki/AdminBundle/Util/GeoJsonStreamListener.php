@@ -103,15 +103,33 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     {
         if (count($this->sqls['db']) > 0) {
             /*
-             * Add new data to our database and to cartodb.
+             * Add new data to our database.
              */
 
             $this->em->getConnection()->exec('
                 INSERT INTO governments (environment_id, name, slug, alt_type, alt_type_slug, county)
                 VALUES ' . implode(',', $this->sqls['db']));
 
+            /*
+             * Create datasets.
+             */
+            $this->api
+                ->createDataset($this->environment->getSlug() . '_county', [
+                    'alt_type_slug' => 'VARCHAR(255)',
+                    'slug' => 'VARCHAR(255)',
+                ]);
+
+            $this->api
+                ->createDataset($this->environment->getSlug(), [
+                    'alt_type_slug' => 'VARCHAR(255)',
+                    'slug' => 'VARCHAR(255)',
+                ]);
+
+            /*
+             * Add information to county dataset.
+             */
             $this->api->sqlRequest("
-                INSERT INTO {$this->environment->getSlug()}
+                INSERT INTO {$this->environment->getSlug()}_county
                     (the_geom, alt_type_slug, slug)
                 VALUES " . implode(',', $this->sqls['cartodb']));
         }
