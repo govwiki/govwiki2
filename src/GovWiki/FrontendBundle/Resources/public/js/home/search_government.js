@@ -7,7 +7,7 @@ $(function() {
     var findMatches = function findMatches(query, syncCallback, asyncCallback) {
         $.ajax({
             method: 'GET',
-            url: window.gw.urls.search +'?search='+ query
+            url: window.gw.urls.search_government +'?search='+ query
         }).success(function(data) {
             asyncCallback(data);
         });
@@ -16,7 +16,7 @@ $(function() {
     var searchValue = '';
 
     // Init typeahead
-    var $typeahead = $('.typeahead').typeahead({
+    var $typeahead = $('.typeahead_government').typeahead({
         hint: true,
         highlight: true,
         minLength: 3
@@ -38,7 +38,7 @@ $(function() {
 
     // Pressed mouse or enter button
     $typeahead.bind("typeahead:selected", function(obj, selectedItemData) {
-        $typeahead.typeahead('val', selectedItemData.gov_name);
+        $typeahead.typeahead('val', selectedItemData.name);
         window.location.pathname += [selectedItemData.altTypeSlug, selectedItemData.slug].join('/');
     });
 

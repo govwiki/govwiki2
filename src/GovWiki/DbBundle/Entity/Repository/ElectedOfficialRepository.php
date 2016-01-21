@@ -144,4 +144,37 @@ class ElectedOfficialRepository extends EntityRepository
             ->getQuery()
             ->getArrayResult();
     }
+
+    /**
+     * Search elected official with name like given in partOfName parameter.
+     *
+     * @param string $environment Environment name.
+     * @param string $partOfName  Part of elected official name.
+     *
+     * @return array
+     */
+    public function search($environment, $partOfName)
+    {
+        $qb = $this->createQueryBuilder('ElectedOfficial');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select(
+                'partial ElectedOfficial.{id, fullName, slug},
+                partial Government.{id, name, altTypeSlug, slug}'
+            )
+            ->leftJoin('ElectedOfficial.government', 'Government')
+            ->leftJoin('Government.environment', 'Environment')
+            ->where(
+                $expr->andX(
+                    $expr->eq('Environment.slug', $expr->literal($environment)),
+                    $expr->like(
+                        'ElectedOfficial.fullName',
+                        $expr->literal('%'.$partOfName.'%')
+                    )
+                )
+            )
+            ->getQuery()
+            ->getArrayResult();
+    }
 }
