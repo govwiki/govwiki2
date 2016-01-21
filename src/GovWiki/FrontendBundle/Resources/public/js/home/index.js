@@ -20,9 +20,6 @@ $(function(){
      */
     window.gw.map = JSON.parse(window.gw.map);
 
-    window.gw.map.username = 'joffemd';
-    window.gw.environment = 'california';
-
     //Create the leaflet map
     var map = L.map('map', {
         zoomControl: true,

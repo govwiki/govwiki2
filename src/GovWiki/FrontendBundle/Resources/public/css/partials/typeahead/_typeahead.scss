@@ -39,7 +39,7 @@
    -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
    cursor: default;
-   z-index: 200 !important; // Overflow map controls
+   z-index: 2000 !important; // Overflow map controls
 }
 .tt-suggestion {
    padding: 8px 12px;

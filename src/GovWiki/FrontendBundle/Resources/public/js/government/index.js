@@ -101,6 +101,10 @@ $(function() {
 
         console.log('median_pension30_year_retiree: ' + data['median_pension30_year_retiree']);
 
+        if (! data['median_pension30_year_retiree']) {
+            return;
+        }
+
         var chart, formatter, options, vis_data;
         vis_data = new google.visualization.DataTable();
         vis_data.addColumn('string', 'Median Pension');

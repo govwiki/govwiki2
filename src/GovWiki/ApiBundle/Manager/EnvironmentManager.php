@@ -131,15 +131,20 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         $fields = [];
         $rankedFields = [];
         $altType = str_replace('_', ' ', $altTypeSlug);
-        foreach ($formats as $format) {
+        foreach ($formats as $idx => $format) {
             if (in_array($altType, $format['showIn'], true)) {
                 $fields[] = $format['field'];
-                if (true === $format['ranked']) {
-                    $rankedFieldName = $format['field'] . '_rank';
-                    $fields[] = $rankedFieldName;
-                    $rankedFields[] =
-                        'MAX(' . $rankedFieldName . ') AS ' .
-                        $rankedFieldName;
+
+                if ('data' === $format['dataOrFormula']) {
+                    if (true === $format['ranked']) {
+                        $rankedFieldName = $format['field'] . '_rank';
+                        $fields[] = $rankedFieldName;
+                        $rankedFields[] =
+                            'MAX(' . $rankedFieldName . ') AS ' .
+                            $rankedFieldName;
+                    }
+                } else {
+                    unset($formats[$idx]);
                 }
             }
         }
