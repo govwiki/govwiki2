@@ -121,7 +121,7 @@ map.Map = function (selector, config)
             type: 'namedmap',
             named_map: {
                 name: map_name,
-                layers: [
+                sublayers: [
                     // County layer.
                     {
                         layer_name: 'county',
@@ -149,8 +149,9 @@ map.Map = function (selector, config)
             .done(function (layer) {
                 //layer.setInteraction(true);
                 self._subLayers = layer.getSubLayers();
+                console.log()
 
-                window.test = self._subLayers;
+                window.test = self._subLayers
 
                 _initSubLayerTooltip();
                 _initSublayerHandlers();
