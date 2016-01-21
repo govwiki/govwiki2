@@ -107,9 +107,10 @@ $(function(){
          * Tooltip work with 3.11-13 version, 3.15 is buggy
          */
         function initCountySubLayer() {
+            // todo change california dataset at staging and change back
             var cLayer = {
                 'cartocss': '#layer{polygon-fill: #D6301D;polygon-opacity: 0.7;}',
-                'sql': 'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.environment,
+                'sql': 'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.environment + '_county',
                 'interactivity': ['cartodb_id', 'slug', 'geometry']
             };
 
