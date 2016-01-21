@@ -2,13 +2,14 @@
 
 namespace GovWiki\UserBundle\Security;
 
+use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\ApiBundle\Manager\EnvironmentManagerAwareInterface;
+use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
-use Symfony\Component\Security\Http\Logout\LogoutSuccessHandlerInterface;
 
 /**
  * Class LoginSuccessHandler
@@ -23,11 +24,20 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
     private $router;
 
     /**
-     * @param RouterInterface $router A RouterInterface instance.
+     * @var EntityManagerInterface
      */
-    public function __construct(RouterInterface $router)
-    {
+    private $em;
+
+    /**
+     * @param RouterInterface        $router A RouterInterface instance.
+     * @param EntityManagerInterface $em     A EntityManagerInterface instance.
+     */
+    public function __construct(
+        RouterInterface $router,
+        EntityManagerInterface $em
+    ) {
         $this->router = $router;
+        $this->em = $em;
     }
 
     /**
@@ -40,11 +50,45 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
         $referer = $request->server->get('HTTP_REFERER');
 
         if (!empty($referer)) {
+
+            /** @var User $user */
+            $user = $token->getUser();
+
             if (strpos($referer, 'login')) {
-                return new RedirectResponse(
-                    $this->router->generate('govwiki_admin_main_home')
-                );
+                if ($user->hasRole('ROLE_ELECTED_OFFICIAL')) {
+                    /*
+                     * Elected official.
+                     * todo hardcoded for path determinator.
+                     */
+                    $data = $this->em
+                        ->getRepository('GovWikiDbBundle:ElectedOfficial')
+                        ->getRouteParameters($user->getId());
+
+                    return new RedirectResponse(
+                        $this->router->generate('elected', [
+                            'environment' => $data['env_slug'],
+                            'altTypeSlug' => $data['gov_alt_type_slug'],
+                            'slug' => $data['gov_slug'],
+                            'electedSlug' =>  $data['eo_slug']
+                        ]));
+
+                } elseif ($user->hasRole('ROLE_ADMIN')) {
+                    /*
+                     * Admin.
+                     */
+                    return new RedirectResponse(
+                        $this->router->generate('govwiki_admin_main_home')
+                    );
+                } else {
+                    /*
+                     * Ordinary user.
+                     */
+                    return new RedirectResponse(
+                        $this->router->generate('main')
+                    );
+                }
             }
+
             return new RedirectResponse($referer);
         }
         return new RedirectResponse('/');

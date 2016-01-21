@@ -143,10 +143,10 @@ class Extension extends \Twig_Extension
             $mask = $format['mask'];
             $prefix = '';
             $postfix = '';
-            $decimal = 1;
+            $decimal = 0;
 
             /*
-             * Ahtung! Hardcoded!
+             * todo Ahtung! Hardcoded!
              */
             if ('float' === $format['type']) {
                 $value *= 100;

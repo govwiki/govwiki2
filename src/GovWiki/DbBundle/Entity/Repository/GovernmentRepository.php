@@ -233,7 +233,9 @@ class GovernmentRepository extends EntityRepository
 
         $data = $qb
             ->select(
-                'Government, FinData, CaptionCategory, ElectedOfficial, Fund'
+                'Government, FinData, CaptionCategory',
+                'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
+                'Fund'
             )
             ->leftJoin('Government.finData', 'FinData')
             ->leftJoin('FinData.captionCategory', 'CaptionCategory')

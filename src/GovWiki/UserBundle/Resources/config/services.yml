@@ -9,7 +9,9 @@ services:
 
     govwiki.user_bundle.handler.login:
         class: GovWiki\UserBundle\Security\LoginSuccessHandler
-        arguments: [@router]
+        arguments:
+            - @router
+            - @doctrine.orm.default_entity_manager
 
     govwiki.user_bundle.redirection.logout:
         class: GovWiki\UserBundle\Security\LogoutSuccessHandler

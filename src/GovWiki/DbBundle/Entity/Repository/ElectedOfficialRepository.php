@@ -11,6 +11,29 @@ use Doctrine\ORM\Query\Expr\Join;
 class ElectedOfficialRepository extends EntityRepository
 {
     /**
+     * @param integer $userId User id.
+     *
+     * @return array
+     */
+    public function getRouteParameters($userId)
+    {
+        $qb = $this->createQueryBuilder('ElectedOfficial');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select(
+                'ElectedOfficial.slug AS eo_slug, Government.slug AS gov_slug',
+                'Government.altTypeSlug AS gov_alt_type_slug',
+                'Environment.slug AS env_slug'
+            )
+            ->join('ElectedOfficial.government', 'Government')
+            ->join('Government.environment', 'Environment')
+            ->where($expr->eq('ElectedOfficial.linkedUser', $userId))
+            ->getQuery()
+            ->getArrayResult()[0];
+    }
+
+    /**
      * @param string  $environment Environment name.
      * @param integer $id          Elected official id.
      * @param string  $fullName    Elected official full name.
