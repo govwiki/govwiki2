@@ -10,8 +10,10 @@
                 {# Typeahead Search #}
                 <div class="typeahead_wrap">
 
-                    <input id="search" type="text" placeholder="Loading the list of governments"
-                           class="text-uppercase typeahead form-control" disabled>
+                    <input id="search_government" type="text" placeholder="Loading the list of governments"
+                           class="text-uppercase typeahead_government form-control" disabled>
+                    <input id="search_elected" type="text" placeholder="Loading the list of elected officials"
+                           class="text-uppercase typeahead_elected form-control" disabled>
 
                     <p class="text-center text-nowrap hidden-xs hidden-sm">
                         Type part of the agency's name
@@ -146,13 +148,15 @@
         window.gw.map = '{{ map | raw }}';
         window.gw.environment = '{{ environment }}';
         window.gw.urls = {};
-        window.gw.urls.search = '{{ govwiki_path('govwiki_api_v1_government_search') }}';
+        window.gw.urls.search_government = '{{ govwiki_path('govwiki_api_v1_government_search') }}';
+        window.gw.urls.search_elected = '{{ govwiki_path('govwiki_api_v1_electedofficial_search') }}';
     </script>
 
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
                     '@GovWikiFrontendBundle/Resources/public/js/vendor/typeahead.js'
                     '@GovWikiFrontendBundle/Resources/public/js/script.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/home/search.js'
+                    '@GovWikiFrontendBundle/Resources/public/js/home/search_government.js'
+                    '@GovWikiFrontendBundle/Resources/public/js/home/search_elected.js'
                     '@GovWikiFrontendBundle/Resources/public/js/home/map.js'
                     '@GovWikiFrontendBundle/Resources/public/js/home/index.js'
                     output='js/map.js' %}

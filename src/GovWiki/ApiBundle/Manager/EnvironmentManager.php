@@ -11,6 +11,7 @@ use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
+use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
 use GovWiki\DbBundle\Utils\Functions;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -204,6 +205,18 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     {
         /** @var GovernmentRepository $repository */
         $repository = $this->em->getRepository('GovWikiDbBundle:Government');
+        return $repository->search($this->environment, $partOfName);
+    }
+
+    /**
+     * @param string $partOfName Part of elected official name.
+     *
+     * @return array
+     */
+    public function searchElectedOfficial($partOfName)
+    {
+        /** @var ElectedOfficialRepository $repository */
+        $repository = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial');
         return $repository->search($this->environment, $partOfName);
     }
 

@@ -6,6 +6,8 @@ use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Repository\CreateRequestRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use JMS\Serializer\SerializationContext;
 
 /**
@@ -87,5 +89,26 @@ class ElectedOfficialController extends AbstractGovWikiApiController
                 ->getElectedOfficial($govAltTypeSlug, $govSlug, $eoSlug),
             [ 'elected_official' ]
         );
+    }
+
+    /**
+     * @Route("/search")
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function searchAction(Request $request)
+    {
+        $search = $request->query->get('search', null);
+        error_log('search = '.$search);
+        if (null === $search) {
+            return $this->badRequestResponse(
+                'Provide required query parameter \'search\''
+            );
+        }
+
+        return new JsonResponse($this->environmentManager()
+            ->searchElectedOfficial($search));
     }
 }
