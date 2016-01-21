@@ -151,7 +151,7 @@ $(function() {
             function initCountySubLayer() {
                 countySubLayer = subLayers[0];
                 countySubLayer.set({ 'interactivity': ['cartodb_id', 'slug', 'geometry'] }); // alias to template
-                countySubLayer.setSQL('SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.slug + ' WHERE alt_type_slug = \'County\'');
+                countySubLayer.setSQL('SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.slug + '_county');
 
                 countyTooltip = new cdb.geo.ui.Tooltip({
                     layer: countySubLayer,
