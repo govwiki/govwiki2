@@ -30,6 +30,32 @@
             </div>
         </div>
 
+        <hr/>
+
+        <div class="row person-info-content">
+            <div class="col-xs-10 col-sm-10 col-md-10 col-md-push-1 col-lg-10 col-lg-push-1" style="font-size:16px;">
+                {% if elected.linkedUser and app.user.id == elected.linkedUser.id %}
+                    <p>Elected Official Message:</p>
+                    <form action="{{ govwiki_path('elected_official_comments_edit') }}">
+                        {{ form_start(electedOfficialCommentForm) }}
+                        {{ form_widget(electedOfficialCommentForm.comment) }}
+                        {{ form_widget(electedOfficialCommentForm.electedOfficialId) }}
+                        <input type="submit" class="btn btn-primary submit_comment_button">
+                        {{ form_end(electedOfficialCommentForm) }}
+                    </form>
+                {% else %}
+                    {% if elected.electedOfficialComments %}
+                        <p>Elected Official Message:</p>
+                        {% autoescape %}
+                            {{ elected.electedOfficialComments|raw }}
+                        {% endautoescape %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <hr/>
+
         <div class="row person-info-tabs">
             <div class="col-md-10 col-md-push-1">
 

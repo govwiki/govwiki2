@@ -127,6 +127,16 @@
                                                         <span class="glyphicon glyphicon-pencil"></span> Edit
                                                     </a>
                                                 </td>
+                                                <td>
+                                                    {% if not electedOfficial.linkedUser %}
+                                                        <a href="{{- path('govwiki_admin_electedofficial_createlinkeduser', {id: electedOfficial.id}) -}}"
+                                                           class="btn btn-sm btn-default">
+                                                            <span class="glyphicon glyphicon-pencil"></span> Create User
+                                                        </a>
+                                                    {% else %}
+                                                        User has been created
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>

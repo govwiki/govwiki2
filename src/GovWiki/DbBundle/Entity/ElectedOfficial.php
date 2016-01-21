@@ -108,6 +108,23 @@ class ElectedOfficial
     private $termExpires;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="elected_official_comments", type="text", nullable=true)
+     * @Groups({"government", "elected_official"})
+     */
+    private $electedOfficialComments;
+
+    /**
+     * @var string
+     *
+     * @ORM\OneToOne(targetEntity="GovWiki\UserBundle\Entity\User")
+     * @ORM\JoinColumn(name="linked_user_id", referencedColumnName="id")
+     * @Groups({"government", "elected_official"})
+     */
+    private $linkedUser;
+
+    /**
      * @ORM\OneToMany(targetEntity="Contribution", mappedBy="electedOfficial")
      * @Groups({"elected_official"})
      */
@@ -537,6 +554,29 @@ class ElectedOfficial
     }
 
     /**
+     * Set electedOfficialComments
+     *
+     * @param string $electedOfficialComments
+     * @return ElectedOfficial
+     */
+    public function setElectedOfficialComments($electedOfficialComments)
+    {
+        $this->electedOfficialComments = $electedOfficialComments;
+
+        return $this;
+    }
+
+    /**
+     * Get electedOfficialComments
+     *
+     * @return string
+     */
+    public function getElectedOfficialComments()
+    {
+        return $this->electedOfficialComments;
+    }
+
+    /**
      * @VirtualProperty
      *
      * @return string
@@ -585,5 +625,28 @@ class ElectedOfficial
         $clean = preg_replace("/[\/_|+ -]+/", $delimiter, trim($clean));
 
         return $clean;
+    }
+
+    /**
+     * Set linkedUser
+     *
+     * @param \GovWiki\UserBundle\Entity\User $linkedUser
+     * @return ElectedOfficial
+     */
+    public function setLinkedUser(\GovWiki\UserBundle\Entity\User $linkedUser = null)
+    {
+        $this->linkedUser = $linkedUser;
+
+        return $this;
+    }
+
+    /**
+     * Get linkedUser
+     *
+     * @return \GovWiki\UserBundle\Entity\User 
+     */
+    public function getLinkedUser()
+    {
+        return $this->linkedUser;
     }
 }
