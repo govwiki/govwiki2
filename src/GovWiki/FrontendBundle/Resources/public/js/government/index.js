@@ -245,7 +245,7 @@ $(function() {
 
         var revenues = data.financialStatements.Revenues;
         for(var key in revenues){
-            if(revenues.hasOwnProperty(key)) {
+            if(revenues.hasOwnProperty(key) && (revenues[key].caption != 'Total Revenues')) {
                 r = [revenues[key].caption, parseInt(revenues[key].totalfunds)];
                 rows.push(r);
             }
@@ -287,7 +287,7 @@ $(function() {
 
         var expenditures = data.financialStatements.Expenditures;
         for(var key in expenditures){
-            if(expenditures.hasOwnProperty(key)) {
+            if(expenditures.hasOwnProperty(key) && (expenditures[key].caption != 'Total Expenditures')) {
                 r = [expenditures[key].caption, parseInt(expenditures[key].totalfunds)];
                 rows.push(r);
             }

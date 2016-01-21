@@ -298,7 +298,9 @@ class GovernmentRepository extends EntityRepository
             $i++;
         }
 
-        unset($government['finData']);
+//        unset($government['finData']);
+
+        $government['finData'] = $financialStatements;
 
         $financialStatements = Functions::groupBy(
             $financialStatements,

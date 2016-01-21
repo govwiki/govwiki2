@@ -138,7 +138,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                     $rankedFieldName = $format['field'] . '_rank';
                     $fields[] = $rankedFieldName;
                     $rankedFields[] =
-                        'MAX(' . $rankedFieldName . ') as ' .
+                        'MAX(' . $rankedFieldName . ') AS ' .
                         $rankedFieldName;
                 }
             }
