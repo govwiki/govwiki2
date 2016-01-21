@@ -86,7 +86,7 @@ class Format
      * @Groups({"government"})
      * @Asset\Choice(
      *  callback="availableTypes",
-     *  message="Type must be 'integer' or 'string'"
+     *  message="Type must be 'integer', 'string' or float"
      * )
      */
     private $type = 'integer';
@@ -128,7 +128,7 @@ class Format
      */
     public static function availableTypes()
     {
-        return [ 'string', 'integer' ];
+        return [ 'string', 'integer', 'float' ];
     }
 
     /**

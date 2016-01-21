@@ -33,7 +33,9 @@
 
     {% endfor %}
 
-    {% include '@GovWikiFrontend/Partial/Government/category.html.twig' with {
-        fields: categories[""]
-    } %}
+    {% if categories[""] is defined %}
+        {% include '@GovWikiFrontend/Partial/Government/category.html.twig' with {
+            fields: categories[""]
+        } %}
+    {% endif %}
 </div>

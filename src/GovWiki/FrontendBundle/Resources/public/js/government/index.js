@@ -134,7 +134,15 @@ $(function() {
     }
 
     function financialHealth_one() {
-        console.log('public_safety_exp_over_tot_gov_fund_revenue: ' + data['public_safety_exp_over_tot_gov_fund_revenue']);
+        /*
+         Ahtung! Hardcode detected!
+         todo replace such bad code
+         */
+        if (! data['public_safety_exp_over_tot_gov_fund_revenue']) {
+            data['public_safety_exp_over_tot_gov_fund_revenue'] = data['public_safety_expense_total_governmental_fund_revenue'];
+        }
+
+        console.log('public_safety_exp_over_tot_gov_fund_revenue: '+ data['public_safety_exp_over_tot_gov_fund_revenue']);
 
         var chart, options, vis_data;
         vis_data = new google.visualization.DataTable();
@@ -163,8 +171,11 @@ $(function() {
             'pieStartAngle': 45
         };
 
-        chart = new google.visualization.PieChart(document.getElementById('public-safety-pie'));
-        chart.draw(vis_data, options);
+        var element = document.getElementById('public-safety-pie');
+        if (element) {
+            chart = new google.visualization.PieChart(element);
+            chart.draw(vis_data, options);
+        }
     }
 
     function financialHealth_two() {
@@ -224,7 +235,7 @@ $(function() {
     }
 
     function financialStatements_one() {
-        console.log('financial_statements Revenues: ' + data['financialStatements']);
+        console.log('financial_statements Revenues: ' + JSON.stringify(data['financialStatements']));
 
         var chart, item, len3, options, p, r, ref1, rows, vis_data;
         vis_data = new google.visualization.DataTable();
@@ -266,7 +277,7 @@ $(function() {
     }
 
     function financialStatements_two() {
-        console.log('financial_statements Expenditures: ' + data['financialStatements']);
+        console.log('financial_statements Expenditures: ' + JSON.stringify(data['financialStatements']));
 
         var chart, item, len3, options, p, r, ref1, rows, vis_data;
         vis_data = new google.visualization.DataTable();

@@ -398,6 +398,10 @@ class AdminEnvironmentManager
                 $type = 'int';
                 break;
 
+            case 'float':
+                $type = 'float';
+                break;
+
             default:
                 throw new \InvalidArgumentException('Invalid column type');
         }
@@ -425,6 +429,11 @@ class AdminEnvironmentManager
 
             case 'integer':
                 $newType = 'int';
+                break;
+
+
+            case 'float':
+                $newType = 'float';
                 break;
 
             default:
