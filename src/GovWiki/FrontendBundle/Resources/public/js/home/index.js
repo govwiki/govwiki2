@@ -1,3 +1,13 @@
+/**
+ * Extend CartoDB Tooltip
+ * Get Layer position
+ *
+ * @returns {number} Layer Position
+ */
+cdb.geo.ui.Tooltip.prototype.getLayerIndex = function () {
+    return this.options.layer._position;
+};
+
 $(function(){
 
     /**
@@ -9,6 +19,9 @@ $(function(){
      * }
      */
     window.gw.map = JSON.parse(window.gw.map);
+
+    window.gw.map.username = 'joffemd';
+    window.gw.environment = 'california';
 
     //Create the leaflet map
     var map = L.map('map', {
@@ -50,6 +63,8 @@ $(function(){
         sql.execute("SELECT alt_type_slug FROM " + window.gw.environment + " GROUP BY alt_type_slug")
             .done(function(altTypes) {
 
+                initCountySubLayer();
+
                 initSubLayers(altTypes);
 
                 initLegendHandlers();
@@ -77,10 +92,6 @@ $(function(){
             altTypes.rows.forEach(function(altType){
 
                 switch (altType.alt_type_slug) {
-
-                    case 'County':
-                        initCountySubLayer();
-                        break;
 
                     case 'City':
                         initCitySubLayer(altType.alt_type_slug);

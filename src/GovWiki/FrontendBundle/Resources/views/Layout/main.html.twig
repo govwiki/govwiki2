@@ -91,7 +91,7 @@
                 {% set username = app.user.username %}
             {% endif %}
             <script> window.gw.username = "{{ username }}"; </script>
-            <script> window.gw.styles = '{{ styles | raw }}' </script>
+            <script> window.gw.styles = '{{ styles |escape('js') }}' </script>
         {% endblock %}
 
     </body>
