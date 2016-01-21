@@ -1,0 +1,41 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block title %}{{ parent() }} - Create linked user for elected official{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+        macro.breadcrumbElement(
+            admin_environment|capitalize ~' environment',
+            'govwiki_admin_main_show',
+            { 'environment': admin_environment }
+        )
+    }}
+    {{
+        macro.breadcrumbElement(
+            'Elected Officials',
+            'govwiki_admin_electedofficial_index'
+        )
+    }}
+    {{ macro.breadcrumbElement('Create linked user') }}
+{% endblock breadcrumb %}
+
+{% block body %}
+    <div class="container-fluid">
+        {{ form_start(form) }}
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form_row(form.username) }}
+                    {{ form_row(form.email) }}
+                    {{ form_row(form.password) }}
+                    {{ form_row(form.send_notification_email) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="submit" class="btn btn-primary">
+                </div>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
