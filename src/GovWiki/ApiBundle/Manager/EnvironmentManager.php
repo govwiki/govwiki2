@@ -4,6 +4,7 @@ namespace GovWiki\ApiBundle\Manager;
 
 use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMException;
 use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
@@ -75,38 +76,12 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @return Map|null
-     *
-     * @throws NotFoundHttpException Import process failed.
+     * @return array|null
      */
     public function getMap()
     {
-        $map = $this->em->getRepository('GovWikiDbBundle:Map')
+        return $this->em->getRepository('GovWikiDbBundle:Map')
             ->get($this->environment);
-
-        if (null !== $map->getItemQueueId()) {
-            /*
-             * Check map import status.
-             */
-            $result = $this->api
-                ->checkImportProcess($map->getItemQueueId());
-
-            if (true === $result['success']) {
-                if ('complete' === $result['state']) {
-                    $map->setCreated(true);
-                    $map->setVizUrl($this->api->getVizUrl($result));
-                    $map->setItemQueueId(null);
-
-                    $this->em->persist($map);
-                    $this->em->flush();
-
-                } elseif ('failed' === $result['state']) {
-                    throw new NotFoundHttpException('Map not imported.');
-                }
-            }
-        }
-
-        return $map;
     }
 
     /**
@@ -118,11 +93,15 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             ->createQueryBuilder('Environment');
         $expr = $qb->expr();
 
-        return $qb
-            ->select('Environment.greetingText')
-            ->where($expr->eq('Environment.slug', $expr->literal($this->environment)))
-            ->getQuery()
-            ->getSingleScalarResult();
+        try {
+            return $qb
+                ->select('Environment.greetingText')
+                ->where($expr->eq('Environment.slug', $expr->literal($this->environment)))
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (ORMException $e) {
+            return '';
+        }
     }
 
     /**

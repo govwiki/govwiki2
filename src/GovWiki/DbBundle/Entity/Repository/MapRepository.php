@@ -56,10 +56,17 @@ class MapRepository extends EntityRepository
         $qb = $this->createQueryBuilder('Map');
         $expr = $qb->expr();
 
-        return $qb
+        $result = $qb
+            ->select('Map.centerLatitude, Map.centerLongitude, Map.zoom')
             ->leftJoin('Map.environment', 'Environment')
             ->where($expr->eq('Environment.slug', $expr->literal($name)))
             ->getQuery()
-            ->getSingleResult();
+            ->getArrayResult();
+
+        if (count($result) === 1) {
+            return $result[0];
+        }
+
+        return null;
     }
 }

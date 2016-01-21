@@ -29,22 +29,14 @@ class Map
     private $id;
 
     /**
-     * Unique identifier of carto db process.
+     * @var float
      *
-     * @var string
-     *
-     * @ORM\Column(nullable=true)
-     */
-    private $itemQueueId;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(nullable=true)
+     * @ORM\Column(type="float")
+     * @Asset\Type(type="float")
      *
      * @Groups({"map"})
      */
-    private $vizUrl;
+    private $centerLatitude = 0.0;
 
     /**
      * @var float
@@ -54,17 +46,7 @@ class Map
      *
      * @Groups({"map"})
      */
-    private $centerLatitude;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(type="float")
-     * @Asset\Type(type="float")
-     *
-     * @Groups({"map"})
-     */
-    private $centerLongitude;
+    private $centerLongitude = 0.0;
 
     /**
      * @var integer
@@ -95,15 +77,6 @@ class Map
     private $environment;
 
     /**
-     * Need to create process.
-     *
-     * @var UploadedFile
-     *
-     * @Asset\File()
-     */
-    private $countyFile;
-
-    /**
      *
      */
     public function __construct()
@@ -132,46 +105,6 @@ class Map
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getItemQueueId()
-    {
-        return $this->itemQueueId;
-    }
-
-    /**
-     * @param string $itemQueueId Unique identifier of carto db process.
-     *
-     * @return Map
-     */
-    public function setItemQueueId($itemQueueId)
-    {
-        $this->itemQueueId = $itemQueueId;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getVizUrl()
-    {
-        return $this->vizUrl;
-    }
-
-    /**
-     * @param string $vizUrl Carto db viz url.
-     *
-     * @return Map
-     */
-    public function setVizUrl($vizUrl)
-    {
-        $this->vizUrl = $vizUrl;
-
-        return $this;
     }
 
     /**
@@ -251,26 +184,6 @@ class Map
     {
         $environment->setMap($this);
         $this->environment = $environment;
-
-        return $this;
-    }
-
-    /**
-     * @return UploadedFile
-     */
-    public function getCountyFile()
-    {
-        return $this->countyFile;
-    }
-
-    /**
-     * @param UploadedFile $countyFile A UploadedFile instance.
-     *
-     * @return Map
-     */
-    public function setCountyFile(UploadedFile $countyFile = null)
-    {
-        $this->countyFile = $countyFile;
 
         return $this;
     }

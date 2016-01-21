@@ -5,8 +5,12 @@ namespace GovWiki\DbBundle\Importer;
 use Doctrine\DBAL\Connection;
 use GovWiki\AdminBundle\Exception\FileTransformerException;
 use GovWiki\AdminBundle\Manager\AbstractAdminEntityManager;
+use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\AdminBundle\Transformer\FileTransformerInterface;
+use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Exception\InvalidFieldNameException;
+use GovWiki\DbBundle\Reader\ReaderInterface;
+use GovWiki\DbBundle\Writer\WriterInterface;
 
 /**
  * Class AbstractImporter
@@ -14,57 +18,43 @@ use GovWiki\DbBundle\Exception\InvalidFieldNameException;
  */
 abstract class AbstractImporter
 {
-    /**
-     * @var AbstractAdminEntityManager
-     */
-    protected $manager;
 
     /**
-     * @var \Doctrine\DBAL\Connection
+     * @var Connection
      */
     protected $con;
 
     /**
-     * @param AbstractAdminEntityManager $manager A AbstractAdminEntityManager
-     *                                            instance.
+     * @var AdminEnvironmentManager
      */
-    public function __construct(Connection $con, AbstractAdminEntityManager $manager)
-    {
-        $this->manager = $manager;
+    protected $manager;
+
+    /**
+     * @param Connection              $con     A Connection instance.
+     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
+     *                                         instance.
+     */
+    public function __construct(
+        Connection $con,
+        AdminEnvironmentManager $manager
+    ) {
         $this->con = $con;
+        $this->manager = $manager;
     }
 
     /**
-     * @param string                   $filePath    Path to imported file.
-     * @param FileTransformerInterface $transformer A FileTransformerInterface
-     *                                              instance.
+     * @param ReaderInterface $reader A ReaderInterface instance.
      *
      * @return void
-     *
-     * @throws InvalidFieldNameException One of field not found in entity.
-     * @throws FileTransformerException File transformation fail.
      */
-    abstract public function import(
-        $filePath,
-        FileTransformerInterface $transformer
-    );
+    abstract public function import(ReaderInterface $reader);
 
     /**
-     * @param string                   $filePath    Path to imported file.
-     * @param array                    $columns     Array of exported columns.
-     * @param FileTransformerInterface $transformer A FileTransformerInterface
-     *                                              instance.
+     * @param WriterInterface $writer A WriterInterface instance.
+     * @param integer         $limit  Max elements count to import.
+     * @param integer         $offset Offset from table start.
      *
      * @return void
-     *
-     * @throws InvalidFieldNameException One of field not found in entity.
-     * @throws FileTransformerException File transformation fail.
      */
-    abstract public function export(
-        $filePath,
-        FileTransformerInterface $transformer,
-        array $columns = null,
-        $limit,
-        $offset
-    );
+    abstract public function export(WriterInterface $writer, $limit = null, $offset = 0);
 }

@@ -6,11 +6,11 @@ use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Form\EnvironmentType;
-use GovWiki\DbBundle\GovWikiDbServices;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Class MainController
@@ -27,6 +27,8 @@ class MainController extends AbstractGovWikiAdminController
      * @param Request $request A Request instance.
      *
      * @return array
+     *
+     * @throws \LogicException Some required bundle not registered.
      */
     public function homeAction(Request $request)
     {
@@ -37,6 +39,7 @@ class MainController extends AbstractGovWikiAdminController
         } else {
             $user = $user->getId();
         }
+        /** @var integer $user */
 
         $this->get('request');
 
@@ -61,6 +64,11 @@ class MainController extends AbstractGovWikiAdminController
      * @param string  $environment Environment name.
      *
      * @return array
+     *
+     * @throws AccessDeniedException User don't allow to manage current
+     * environment.
+     * @throws \LogicException Some required bundle not registered.
+     * @throws \InvalidArgumentException Unknown entity manager.
      */
     public function showAction(Request $request, $environment = '')
     {
@@ -116,49 +124,55 @@ class MainController extends AbstractGovWikiAdminController
      * @param string $environment Environment name.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @throws AccessDeniedException User don't allow to manage current
+     * environment.
+     * @throws \Doctrine\DBAL\DBALException Can't delete government related
+     *                                      table.
      */
     public function removeAction($environment)
     {
         $this->adminEnvironmentManager()->removeEnvironment($environment);
 
-        $this->get(CartoDbServices::CARTO_DB_API)->sqlRequest("
-            DROP TABLE {$environment}
-        ");
+        $api = $this->get(CartoDbServices::CARTO_DB_API);
+
+        $api->sqlRequest("DROP TABLE {$environment}");
+        $api->deleteMap($environment);
 
         return $this->redirectToRoute('govwiki_admin_main_home');
     }
 
-    /**
-     * @Configuration\Route("/export")
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function updateAction()
-    {
-        $environmentManager = $this->adminEnvironmentManager();
-
-        $environment = $environmentManager->getEnvironment();
-        $filePath = $this->getParameter('kernel.logs_dir').'/'.
-            $environment.'.json';
-
-        $transformerManager = $this
-            ->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
-
-        $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
-            ->export(
-                $filePath,
-                $transformerManager->getTransformer('geo_json'),
-                [ 'id', 'altTypeSlug', 'slug', 'latitude', 'longitude' ]
-            );
-
-        $this->get(CartoDbServices::CARTO_DB_API)
-            ->dropDataset($environment)
-            ->importDataset($filePath);
-
-        return $this->redirectToRoute('govwiki_admin_main_show', [
-            'environment' => $environment,
-        ]);
-    }
+//    /**
+//     * @Configuration\Route("/export")
+//     *
+//     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+//     */
+//    public function updateAction()
+//    {
+//        $environmentManager = $this->adminEnvironmentManager();
+//
+//        $environment = $environmentManager->getEnvironment();
+//        $filePath = $this->getParameter('kernel.logs_dir').'/'.
+//            $environment.'.json';
+//
+//        $transformerManager = $this
+//            ->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
+//
+//        $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
+//            ->export(
+//                $filePath,
+//                $transformerManager->getTransformer('geo_json'),
+//                [ 'id', 'altTypeSlug', 'slug', 'latitude', 'longitude' ]
+//            );
+//
+//        $this->get(CartoDbServices::CARTO_DB_API)
+//            ->dropDataset($environment)
+//            ->importDataset($filePath);
+//
+//        return $this->redirectToRoute('govwiki_admin_main_show', [
+//            'environment' => $environment,
+//        ]);
+//    }
 
     /**
      * @Configuration\Route("/enable")

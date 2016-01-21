@@ -66,9 +66,7 @@
                                 <a class="btn btn-sm btn-default" href="{{-
                                     path('govwiki_admin_government_export')
                                 -}}">Export</a>
-                                <a class="btn btn-sm btn-default" href="{{-
-                                    path('govwiki_admin_government_import')
-                                -}}">Import</a>
+                                <button class="btn btn-sm btn-default" id="import">Import</button>
                                 <a class="btn btn-sm btn-primary" href="{{-
                                     path('govwiki_admin_government_create')
                                 -}}">Create</a>
@@ -141,4 +139,38 @@
         </div>
     </div>
 
+    <div id="modal-import" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
+                <div class="modal-body">
+                    {{- render(controller('GovWikiAdminBundle:Government:import')) -}}
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-right">
+                        <a id="import-confirm" class="btn btn-danger">
+                            Import
+                        </a>
+                        <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(function() {
+
+            $('#import').click(function () {
+               $('#modal-import').modal('show');
+            });
+
+            $('#import-confirm').click(function () {
+                $('form', '#modal-import').submit();
+            });
+        });
+    </script>
+{% endblock javascripts %}

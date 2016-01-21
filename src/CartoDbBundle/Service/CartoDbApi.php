@@ -155,6 +155,18 @@ class CartoDbApi
     }
 
     /**
+     * Remove named map.
+     *
+     * @param string $name Map name.
+     *
+     * @return array
+     */
+    public function deleteMap($name)
+    {
+        return $this->makeRequest("/v1/map/named/{$name}", 'DELETE');
+    }
+
+    /**
      * @param string $sql Sql statement.
      *
      * @return array
@@ -238,7 +250,7 @@ class CartoDbApi
         ]);
 
         if ('GET' !== $method) {
-            curl_setopt($handler, CURLOPT_POST, true);
+//            curl_setopt($handler, CURLOPT_POST, true);
             curl_setopt($handler, CURLOPT_CUSTOMREQUEST, $method);
         }
 

@@ -246,11 +246,15 @@ class AdminEnvironmentManager
      *
      * @throws AccessDeniedException User don't allow to manage current
      * environment.
+     * @throws \Doctrine\DBAL\DBALException Can't delete government related
+     *                                      table.
      */
     public function removeEnvironment($environment)
     {
         $this->environment = $environment;
         $entity = $this->getReference();
+
+        $this->em->getConnection()->exec("DROP TABLE {$environment}");
 
         $qb = $this->em->createQueryBuilder();
         $expr = $qb->expr();
@@ -521,6 +525,28 @@ class AdminEnvironmentManager
             SELECT t.* FROM `{$this->environment}` t
             WHERE t.government_id = :id
         ", [ 'id' => $id ]);
+    }
+
+    /**
+     * @param integer $limit  Max row count.
+     * @param integer $offset Offset from table start.
+     *
+     * @return \Doctrine\DBAL\Driver\Statement
+     *
+     * @throws \Doctrine\DBAL\DBALException Query error.
+     */
+    public function getGovernments($limit = null, $offset = 0)
+    {
+        $sql = "
+            SELECT g.*, e.* FROM `{$this->environment}` e
+            INNER JOIN governments g ON e.government_id = g.id
+        ";
+
+        if (null !== $limit) {
+            $sql .= " LIMIT {$limit} OFFSET {$offset}";
+        }
+
+        return $this->em->getConnection()->query($sql);
     }
 
     /**
