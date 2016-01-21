@@ -3,6 +3,7 @@
 namespace CartoDbBundle\Service;
 
 use CartoDbBundle\Exception\CartoDBRequestFailException;
+use CartoDbBundle\Utils\NamedMap;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -134,6 +135,26 @@ class CartoDbApi
     }
 
     /**
+     * @param NamedMap $map A NamedMap instance.
+     *
+     * @return array
+     */
+    public function createMap(NamedMap $map)
+    {
+        $data = $map->toJson();
+
+        return $this->makeRequest('/v1/map/named', 'POST', [
+            'curl' => [
+                CURLOPT_HTTPHEADER => [
+                    'Content-Type: application/json',
+                    'Content-Length: '. strlen($data),
+                ],
+                CURLOPT_POSTFIELDS => $data,
+            ],
+        ]);
+    }
+
+    /**
      * @param string $sql Sql statement.
      *
      * @return array
@@ -145,6 +166,27 @@ class CartoDbApi
             'q' => $sql,
             'curl' => [ CURLOPT_POST => 'true' ],
         ]);
+    }
+
+    /**
+     * @param string $name   Dataset name.
+     * @param array  $fields Array of dataset field where key is field name and
+     *                       value if field type.
+     *
+     * @return CartoDbApi
+     */
+    public function createDataset($name, array $fields = [])
+    {
+        $sqlParts = [];
+        foreach ($fields as $field => $type) {
+            $sqlParts[] = $field .' '. $type;
+        }
+
+        $this->sqlRequest("CREATE TABLE {$name} (". implode(',', $sqlParts) .
+            ')');
+        $this->sqlRequest("SELECT cdb_cartodbfytable('{$name}')");
+
+        return $this;
     }
 
     /**

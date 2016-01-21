@@ -2,6 +2,7 @@
 
 namespace GovWiki\DbBundle\Entity;
 
+use CartoDbBundle\Utils\NamedMap;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
@@ -108,6 +109,21 @@ class Map
     public function __construct()
     {
         $this->governments = new ArrayCollection();
+    }
+
+    /**
+     * @param string $name Map name.
+     *
+     * @return NamedMap
+     */
+    public function toNamedMap($name)
+    {
+        $namedMap = new NamedMap($name);
+        $namedMap
+            ->setLatitude($this->centerLatitude)
+            ->setLongitude($this->centerLongitude)
+            ->setZoom($this->zoom);
+        return $namedMap;
     }
 
     /**
