@@ -42,10 +42,10 @@
                                 path('govwiki_admin_format_list') -}}">
                                     Edit formats
                                 </a>
-                                <a class="btn btn-default" href="{{-
+                                {#<a class="btn btn-default" href="{{-
                                 path('govwiki_admin_main_update') -}}">
                                     Update CartoDB
-                                </a>
+                                </a>#}
                             </div>
 
                         </div>
@@ -73,7 +73,6 @@
                                     <b>Map:</b>&nbsp;
                                     {%- if map and map.isCreated -%}
                                         <span class="text-success">Created</span>&nbsp;
-                                        <b>VizUrl:</b> {{ map.vizUrl }}
                                     {%- else -%}
                                         <span class="text-danger">Not created</span>
                                     {% endif %}

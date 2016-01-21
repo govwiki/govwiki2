@@ -110,13 +110,45 @@ class NamedMap
     }
 
     /**
-     * @param       $sql
-     * @param       $color
-     * @param array $interactive
+     * Add layer with polygons.
+     *
+     * @param string $sql           Sql query for data fetching from cartodb.
+     * @param string $color         Point colors.
+     * @param array  $interactivity Interactivity values.
      *
      * @return NamedMap
      */
-    public function addLayer($sql, $color, array $interactive = [])
+    public function addPolygonLayer($sql, $color, array $interactivity = [])
+    {
+        $this->layers[] = [
+            'type' => 'cartodb',
+            'options' => [
+                'cartocss_version' => '2.1.1',
+                'cartocss' => "#layer {
+                    polygon-fill: {$color};
+                    polygon-opacity: 0.7;
+                    line-color: #FFF;
+                    line-width: 0.5;
+                    line-opacity: 1;
+                }",
+                'sql' => $sql,
+                'interactivity' => $interactivity,
+            ],
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Add layer with markers.
+     *
+     * @param string $sql           Sql query for data fetching from cartodb.
+     * @param string $color         Point colors.
+     * @param array  $interactivity Interactivity values.
+     *
+     * @return NamedMap
+     */
+    public function addLayer($sql, $color, array $interactivity = [])
     {
         $this->layers[] = [
             'type' => 'cartodb',
@@ -124,7 +156,7 @@ class NamedMap
                 'cartocss_version' => '2.1.1',
                 'cartocss' => "#layer { marker-fill: {$color}; }",
                 'sql' => $sql,
-                'interactive' => $interactive,
+                'interactivity' => $interactivity,
             ],
         ];
 

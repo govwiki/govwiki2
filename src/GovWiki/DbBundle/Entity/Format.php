@@ -156,9 +156,22 @@ class Format
     {
         $this->name = $name;
         $this->field = preg_replace('/\W/', '_', $name);
+        $this->field = preg_replace('/_+/', '_', $this->field);
         $this->field = strtolower($this->field);
 
         return $this;
+    }
+
+    /**
+     * @param string $string Format name to slugify.
+     *
+     * @return string
+     */
+    public static function slugifyName($string)
+    {
+        $slug = preg_replace('/\W/', '_', $string);
+        $slug = preg_replace('/_+/', '_', $slug);
+        return trim(strtolower($slug), '_');
     }
 
     /**

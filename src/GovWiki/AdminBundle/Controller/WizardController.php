@@ -153,36 +153,59 @@ class WizardController extends AbstractGovWikiAdminController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $dataFile = $map->getCountyFile();
-            $map->setCountyFile(null);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($environment);
-            $em->flush();
-
             $api = $this->get(CartoDbServices::CARTO_DB_API);
 
             /*
-             * Parse data file.
+             * Create dataset for environments.
              */
-            $stream = fopen($dataFile->getPathname(), 'r');
-            $listener = new GeoJsonStreamListener(
-                $environment,
-                $this->getDoctrine()->getManager(),
-                $api
-            );
-            $parser = new \JsonStreamingParser_Parser($stream, $listener);
-            $parser->parse();
+            $api
+                ->createDataset($environment->getSlug(), [
+                    'alt_type_slug' => 'VARCHAR(255)',
+                    'slug' => 'VARCHAR(255)',
+                ]);
 
+            /*
+             * Create named map.
+             */
             $cartoDbMap = $map->toNamedMap($environment->getSlug());
-            $cartoDbMap->addLayer('SELECT * FROM '. $environment->getSlug(). '_county', '#ff0000');
+            // County layer.
+            $cartoDbMap->addPolygonLayer(
+                'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry
+                 FROM '. $environment->getSlug() .
+                ' WHERE alt_type_slug = \'County\'',
+                '#ff6600',
+                ['cartodb_id', 'alt_type_slug', 'slug', 'geometry']
+            );
+            // City layer.
+            $cartoDbMap->addLayer(
+                'SELECT * FROM '. $environment->getSlug() .
+                ' WHERE alt_type_slug = \'City\'',
+                '#f00000',
+                ['cartodb_id', 'alt_type_slug', 'slug']
+            );
+            // School District layer.
+            $cartoDbMap->addLayer(
+                'SELECT * FROM '. $environment->getSlug() .
+                ' WHERE alt_type_slug = \'School_District\'',
+                '#add8e6',
+                ['cartodb_id', 'alt_type_slug', 'slug']
+            );
+            // Special District layer.
+            $cartoDbMap->addLayer(
+                'SELECT * FROM '. $environment->getSlug() .
+                ' WHERE alt_type_slug = \'Special_District\'',
+                '#800080',
+                ['cartodb_id', 'alt_type_slug', 'slug']
+            );
 
-            $s = $api->createMap($cartoDbMap);
+            $api->createMap($cartoDbMap);
 
+            $map->setCreated(true);
+
+            $environment->setMap($map);
             $this->storeEnvironmentEntity($environment);
 
             return $this->nextStep();
-//            return $this->forward('GovWikiAdminBundle:Wizard:create');
         }
 
         return [
@@ -190,63 +213,6 @@ class WizardController extends AbstractGovWikiAdminController
             'environment' => $environment,
             'back_url' => $this->prevUrl(),
         ];
-    }
-
-    /**
-     * @Configuration\Template()
-     *
-     * @return array[]
-     */
-    public function createAction()
-    {
-//        $tmpDir = $this->getParameter('kernel.root_dir') .
-//            '/../web/img/';
-//        $newFile = $tmpDir . $this->getEnvironmentEntity()->getSlug() . '.json';
-//        copy($tmpDir . 'empty.json', $newFile);
-//
-//        return [
-//            'itemQueueId' => $this->get(CartoDbServices::CARTO_DB_API)
-//                ->importDataset($newFile, true),
-//            'next' => $this->generateUrl('govwiki_admin_wizard_complete'),
-//        ];
-    }
-
-    /**
-     * @Configuration\Route("/map/check", methods={"GET"})
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return JsonResponse
-     */
-    public function importAction(Request $request)
-    {
-        return new JsonResponse($this->get(CartoDbServices::CARTO_DB_API)
-            ->checkImportProcess($request->query->get('item_queue_id')));
-    }
-
-    /**
-     * @Configuration\Route("/map/create/complete")
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function completeAction(Request $request)
-    {
-        $itemQueueId = $request->query->get('item_queue_id');
-
-        $api = $this->get(CartoDbServices::CARTO_DB_API);
-        $vizUrl =  $api
-            ->getVizUrl($api->checkImportProcess($itemQueueId));
-
-        $environment = $this->getEnvironmentEntity();
-
-        $environment->getMap()
-            ->setItemQueueId(null)
-            ->setCreated(true)
-            ->setVizUrl($vizUrl);
-
-        $this->storeEnvironmentEntity($environment);
-
-        return $this->nextStep();
     }
 
     /**
@@ -267,11 +233,11 @@ class WizardController extends AbstractGovWikiAdminController
         if ($form->isSubmitted() && $form->isValid()) {
             $style = $manager->processForm($form);
 
-            $environment->setStyle($style);
+            $environment
+                ->setStyle($style)
+                ->setEnabled(true);
 
             $em = $this->getDoctrine()->getManager();
-
-            $environment->setEnabled(true);
 
             $em->persist($environment);
             $em->flush();

@@ -7,6 +7,7 @@ use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * MainController
@@ -47,10 +48,20 @@ class MainController extends Controller
         $environment = $environmentManager->getEnvironment();
 
         $map = $environmentManager->getMap();
+        if (null === $map) {
+            throw new NotFoundHttpException();
+        }
+        $map['username'] = $this->getParameter('carto_db.account');
 
-        $context = new SerializationContext();
-        $context->setGroups([ 'map' ]);
-        $map = $this->get('jms_serializer')->serialize($map, 'json', $context);
+        $map = str_replace(
+            [ '\'', '\\"' ],
+            [ '&apos;', '&quote;' ],
+            json_encode($map)
+        );
+
+//        $context = new SerializationContext();
+//        $context->setGroups([ 'map' ]);
+//        $map = $this->get('jms_serializer')->serialize($map, 'json', $context);
 
         return [
             'environment' => $environment,

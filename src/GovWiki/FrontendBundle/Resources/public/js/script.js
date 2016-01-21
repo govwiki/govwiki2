@@ -1,4 +1,3 @@
-
 var styles = JSON.parse(window.gw.styles);
 
 styles.forEach(function(style) {

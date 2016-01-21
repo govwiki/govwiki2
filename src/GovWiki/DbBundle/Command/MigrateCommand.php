@@ -54,7 +54,6 @@ class MigrateCommand extends ContainerAwareCommand
         /*
          * Migrate formats.
          */
-        $environmentsArray = [];
         foreach ($environments as $environment) {
             $output->writeln("Process environment '{$environment->getName()}'");
 
@@ -62,70 +61,20 @@ class MigrateCommand extends ContainerAwareCommand
 
             $formats = $environment->getFormats();
             $manager->changeEnvironment($environmentName);
-            $manager->createGovernmentTable($environmentName);
-
-            $environmentsArray[$environmentName] = [];
 
             /** @var Format $format */
             foreach ($formats as $format) {
-                $name = $format->getField();
-                $name = str_replace('_', ' ', $name);
-                $name = preg_replace('#(?(?!\s)([A-Z]|[0-9]+))#', ' $1', $name);
-                $name = preg_replace('#\s+#', ' ', $name);
-
-                $format->setName($name);
-                $format->setField(str_replace([' ', '-'], '_', strtolower($name)));
-                $format->setType('integer');
+                $oldFieldName = $format->getField();
+                $format->setField(Format::slugifyName($format->getName()));
 
                 $em->persist($format);
-                $manager->addColumnToGovernment($format->getField(), 'integer');
-                $environmentsArray[$environmentName][] = $format->getField();
+
+                $manager->changeColumnInGovernment($oldFieldName, $format->getField(), $format->getType());
 
                 if ($format->isRanked()) {
-                    $manager->addColumnToGovernment($format->getField(). '_rank', 'integer');
-                    $environmentsArray[$environmentName][] = $format->getField().'_rank';
+                    $manager->changeColumnInGovernment($oldFieldName.'_rank', $format->getField().'_rank', 'integer');
                 }
                 $em->flush();
-            }
-        }
-
-        /*
-         * Migrate governments.
-         */
-        $con = $em->getConnection();
-        foreach ($environmentsArray as $environmentName => $fields) {
-            /*
-             * Migrate environment depended data.
-             */
-            $fields = implode(',', $fields);
-            $con->exec("
-                INSERT INTO {$environmentName} ({$fields})
-                SELECT {$fields} FROM governments_old g
-                INNER JOIN environments e ON g.environment_id = e.id
-                WHERE e.slug = '{$environmentName}'
-            ");
-
-            /*
-             * Create link between environment depended data and general data.
-             */
-            $ids = $con->fetchAll("
-                SELECT og.id FROM governments_old og
-                INNER JOIN environments e ON og.environment_id = e.id
-                WHERE e.slug = '{$environmentName}'
-            ");
-            $envIds = $con->fetchAll("
-                SELECT id FROM {$environmentName}
-            ");
-            $count = count($ids);
-
-            for ($i = 0; $i < $count; ++$i) {
-                $output->writeln("Process $i record");
-                $con->exec("
-                    UPDATE {$environmentName}
-                    SET
-                        government_id = {$ids[$i]['id']}
-                    WHERE id = ". $envIds[$i]['id']
-                );
             }
         }
     }

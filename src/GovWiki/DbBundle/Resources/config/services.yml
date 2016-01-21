@@ -6,14 +6,14 @@ services:
 
     govwiki_db.importer.abstract:
         class: GovWiki\DbBundle\Importer\AbstractImporter
-        arguments: [@database_connection]
+        arguments:
+            - @database_connection
+            - @govwiki_admin.manager.environment
         abstract: true
 
     govwiki_db.importer.government:
         class: GovWiki\DbBundle\Importer\GovernmentImporter
-        arguments:
-            - @database_connection
-            - @govwiki_admin.entity_manager.government
+        arguments: [@carto_db.api]
         parent: govwiki_db.importer.abstract
 
     govwiki_db.form.type.alt_type:
