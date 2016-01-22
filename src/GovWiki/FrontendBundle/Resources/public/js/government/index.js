@@ -48,6 +48,11 @@ $(function() {
         console.log('median_wages_general_public: ' + data['median_wages_general_public']);
         console.log('median_benefits_general_public: ' + data['median_benefits_general_public']);
 
+        if (!data['median_salary_per_full_time_emp'] && !data['median_benefits_per_ft_emp'] &&
+            !data['median_wages_general_public'] && !data['median_benefits_general_public']) {
+            return;
+        }
+
         var chart, formatter, options, vis_data;
         vis_data = new google.visualization.DataTable();
         vis_data.addColumn('string', 'Median Compensation');
@@ -148,6 +153,11 @@ $(function() {
 
         console.log('public_safety_exp_over_tot_gov_fund_revenue: '+ data['public_safety_exp_over_tot_gov_fund_revenue']);
 
+
+        if (! data['public_safety_exp_over_tot_gov_fund_revenue']) {
+            return;
+        }
+
         var chart, options, vis_data;
         vis_data = new google.visualization.DataTable();
         vis_data.addColumn('string', 'Public Safety Expense');
@@ -185,6 +195,10 @@ $(function() {
     function financialHealth_two() {
         console.log('total_revenue_per_capita: ' + data['total_revenue_per_capita']);
 
+        if (! data['total_revenue_per_capita']) {
+            return;
+        }
+
         var chart, options, vis_data;
         vis_data = new google.visualization.DataTable();
         vis_data.addColumn('string', 'Per Capita');
@@ -212,6 +226,10 @@ $(function() {
 
     function financialHealth_three() {
         console.log('total_expenditures_per_capita: ' + data['total_expenditures_per_capita']);
+
+        if (! data['total_expenditures_per_capita']) {
+            return;
+        }
 
         var chart, options, vis_data;
         vis_data = new google.visualization.DataTable();
