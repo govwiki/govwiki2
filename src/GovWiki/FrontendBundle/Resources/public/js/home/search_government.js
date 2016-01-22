@@ -19,7 +19,8 @@ $(function() {
     var $typeahead = $('.typeahead_government').typeahead({
         hint: true,
         highlight: true,
-        minLength: 3
+        minLength: 3,
+        limit: 10
     }, {
         name: 'countries',
         source: findMatches,

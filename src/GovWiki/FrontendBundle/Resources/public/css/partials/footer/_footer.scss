@@ -10,14 +10,22 @@ footer {
    color: #eee;
    padding: 15px;
 
-   .copyright {
 
-
-
-      p {
-         margin-bottom: 0;
+   .copyright-wrapper {
+      /*
+         Add space between copyright and links on to mobile devices.
+      */
+      @media (max-width: $screen-sm-max) {
+         margin-bottom: 10px;
       }
 
+      .copyright {
+
+         p {
+            margin-bottom: 0;
+         }
+
+      }
    }
 
    a {
@@ -27,18 +35,6 @@ footer {
          color: #eee;
       }
 
-   }
-
-   .site-links {
-
-      a {
-         padding: 0 5px;
-      }
-
-   }
-
-   .social {
-      list-style-type: none;
    }
 
 }

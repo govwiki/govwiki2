@@ -76,6 +76,13 @@ body > header {
    .hamburger {
       margin-top: 22px;
 
+      /*
+         Remove right margin on mobile devices.
+      */
+      @media (max-width: $screen-sm-max) {
+         margin-right: 0;
+      }
+
       &.navbar-toggle{
          @media(max-width: $screen-sm-max) {
             display: block !important;

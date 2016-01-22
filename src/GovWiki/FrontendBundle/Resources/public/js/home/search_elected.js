@@ -9,6 +9,7 @@ $(function() {
             method: 'GET',
             url: window.gw.urls.search_elected +'?search='+ query
         }).success(function(data) {
+            console.log(data);
             asyncCallback(data);
         });
     };
@@ -19,7 +20,8 @@ $(function() {
     var $typeahead = $('.typeahead_elected').typeahead({
         hint: true,
         highlight: true,
-        minLength: 3
+        minLength: 3,
+        items: 25
     }, {
         name: 'elected_officials',
         source: findMatches,
