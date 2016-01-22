@@ -122,7 +122,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getGovernment($altTypeSlug, $slug)
     {
-        $formats = $this->em->getRepository('GovWikiDbBundle:Format')
+        $tmp = $this->em->getRepository('GovWikiDbBundle:Format')
             ->get($this->environment, true);
 
         /*
@@ -131,17 +131,22 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         $fields = [];
         $rankedFields = [];
         $altType = str_replace('_', ' ', $altTypeSlug);
-        foreach ($formats as $idx => $format) {
+        $formats = [];
+        foreach ($tmp as $format) {
             if (in_array($altType, $format['showIn'], true)) {
                 $fields[] = $format['field'];
 
-                if (true === $format['ranked']) {
-                    $rankedFieldName = $format['field'] . '_rank';
-                    $fields[] = $rankedFieldName;
-                    $rankedFields[] =
-                        'MAX(' . $rankedFieldName . ') AS ' .
-                        $rankedFieldName;
+                if ('data' === $format['dataOrFormula']) {
+                    $formats[] = $format;
+                    if (true === $format['ranked']) {
+                        $rankedFieldName = $format['field'] . '_rank';
+                        $fields[] = $rankedFieldName;
+                        $rankedFields[] =
+                            'MAX(' . $rankedFieldName . ') AS ' .
+                            $rankedFieldName;
+                    }
                 }
+
             }
         }
 
@@ -218,7 +223,8 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     {
         /** @var ElectedOfficialRepository $repository */
         $repository = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial');
-        return $repository->search($this->environment, $partOfName);
+        $result = $repository->search($this->environment, $partOfName);
+        return $result;
     }
 
     /**
