@@ -20,8 +20,7 @@ $(function() {
     var $typeahead = $('.typeahead_elected').typeahead({
         hint: true,
         highlight: true,
-        minLength: 3,
-        items: 25
+        minLength: 3
     }, {
         name: 'elected_officials',
         source: findMatches,

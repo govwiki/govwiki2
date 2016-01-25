@@ -48,8 +48,16 @@ $(function() {
         console.log('median_wages_general_public: ' + data['median_wages_general_public']);
         console.log('median_benefits_general_public: ' + data['median_benefits_general_public']);
 
-        if (!data['median_salary_per_full_time_emp'] && !data['median_benefits_per_ft_emp'] &&
-            !data['median_wages_general_public'] && !data['median_benefits_general_public']) {
+        if (data['median_wages_general_public'] == 0) {
+            data['median_wages_general_public'] = undefined;
+        }
+
+        if (data['median_benefits_general_public'] == 0) {
+            data['median_benefits_general_public'] = undefined;
+        }
+
+        if (!data['median_salary_per_full_time_emp'] || !data['median_benefits_per_ft_emp'] ||
+            !data['median_wages_general_public'] || !data['median_benefits_general_public']) {
             return;
         }
 
