@@ -11,6 +11,7 @@ abstract class GovWikiAdminServices
     const TRANSFORMER_MANAGER = 'govwiki_admin.manager.transformer';
     const ADMIN_ENVIRONMENT_MANAGER = 'govwiki_admin.manager.environment';
     const ADMIN_STYLE_MANAGER = 'govwiki_admin.manager.style';
+    const GOVERNMENT_TABLE_MANAGER = 'govwiki_admin.manager.government_table';
 
     /*
      * Entity namangers.

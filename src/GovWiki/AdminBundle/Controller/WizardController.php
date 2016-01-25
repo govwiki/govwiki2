@@ -243,7 +243,7 @@ class WizardController extends AbstractGovWikiAdminController
             $em->flush();
             $this->storeEnvironmentEntity($environment);
 
-            $this->adminEnvironmentManager()
+            $this->get(GovWikiAdminServices::GOVERNMENT_TABLE_MANAGER)
                 ->createGovernmentTable($environment->getSlug());
 
             return $this->nextStep();
@@ -282,7 +282,8 @@ class WizardController extends AbstractGovWikiAdminController
                 $listener = new GeoJsonStreamListener(
                     $this->getEnvironmentEntity(),
                     $this->getDoctrine()->getManager(),
-                    $this->get(CartoDbServices::CARTO_DB_API)
+                    $this->get(CartoDbServices::CARTO_DB_API),
+                    $this->get(GovWikiAdminServices::GOVERNMENT_TABLE_MANAGER)
                 );
                 $parser = new \JsonStreamingParser_Parser($stream, $listener);
                 $parser->parse();

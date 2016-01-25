@@ -4,7 +4,9 @@ namespace GovWiki\AdminBundle\Util;
 use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\AdminBundle\Exception\InvalidGeoJsonException;
+use GovWiki\AdminBundle\Manager\GovernmentTableManager;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Government;
 
 /**
@@ -58,7 +60,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     /**
      * @var array
      */
-    private $sqls;
+    private $sqls = [];
 
     /**
      * @var EntityManagerInterface
@@ -71,19 +73,28 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     private $api;
 
     /**
-     * @param Environment            $environment A Environment instance.
-     * @param EntityManagerInterface $em          A EntityManagerInterface
-     *                                            instance.
-     * @param CartoDbApi             $api         A CartoDbApi instance.
+     * @var GovernmentTableManager
+     */
+    private $tableManager;
+
+    /**
+     * @param Environment            $environment  A Environment instance.
+     * @param EntityManagerInterface $em           A EntityManagerInterface
+     *                                             instance.
+     * @param CartoDbApi             $api          A CartoDbApi instance.
+     * @param GovernmentTableManager $tableManager A GovernmentTableManager
+     *                                             instance.
      */
     public function __construct(
         Environment $environment,
         EntityManagerInterface $em,
-        CartoDbApi $api
+        CartoDbApi $api,
+        GovernmentTableManager $tableManager
     ) {
         $this->environment = $environment;
         $this->em = $em;
         $this->api = $api;
+        $this->tableManager = $tableManager;
     }
 
     /**
@@ -105,24 +116,84 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
             /*
              * Add new data to our database.
              */
-            $con = $this->em->getConnection();
 
+            $con = $this->em->getConnection();
+            $environment = $this->environment->getSlug();
+
+            $con->beginTransaction();
+            /*
+             * Create trigger to sync governments table and environment related
+             * table.
+             */
             $con->exec("
                 CREATE TRIGGER sync AFTER INSERT ON `governments`
-                FOR EACH ROW INSERT INTO {$this->environment->getSlug()} (government_id) VALUES (NEW.id)
+                FOR EACH ROW INSERT INTO {$environment} (government_id) VALUES (NEW.id)
             ");
 
+            /*
+             * Add governments row.
+             */
             $con->exec('
-                INSERT INTO governments (environment_id, name, slug, alt_type, alt_type_slug, county)
+                INSERT INTO governments
+                    (environment_id, name, slug, alt_type, alt_type_slug, county)
                 VALUES ' . implode(',', $this->sqls['db']));
 
+            /*
+             * Create columns.
+             */
+            $tableFields = [];
+            $formats = [];
+
+            foreach ($this->sqls['columns'] as $field => $data) {
+                /*
+                 * Update formats table.
+                 */
+                $slug = Format::slugifyName($field);
+                $ranked = (array_key_exists('ranked', $data) && $data['ranked']) ? 1 : 0;
+
+                $formats[] = "
+                        ('{$field}', '{$slug}', 'a:0:{}', 'data', {$ranked}, '{$data['type']}', {$this->environment->getId()})
+                ";
+
+
+                $type = GovernmentTableManager::resolveType($data['type']);
+                $tableFields[] = "ADD {$field} {$type} DEFAULT NULL";
+                if ($ranked) {
+                    $tableFields[] = "ADD {$field}_rank int(11) DEFAULT NULL";
+                }
+            }
+
+            /*
+             * Insert new formats and update environment related government
+             * table.
+             */
+            $con->exec('
+                INSERT INTO formats
+                    (name, field, show_in, data_or_formula, ranked, type, environment_id)
+                VALUES '. implode(',', $formats));
+            $con->exec(
+                "ALTER TABLE `{$environment}` ". implode(',', $tableFields)
+            );
+
+            /*
+             * Insert into environment related government table.
+             */
+            $con->exec("
+                INSERT INTO {$environment} (".
+                implode(',', array_keys($this->sqls['columns'])) .') VALUES '.
+                implode(',', $this->sqls['government']));
+
+            /*
+             * Delete trigger.
+             */
             $con->exec('DROP TRIGGER sync');
+            $con->commit();
 
             /*
              * Add information to cartodb dataset.
              */
             $this->api->sqlRequest("
-                INSERT INTO {$this->environment->getSlug()}
+                INSERT INTO {$environment}
                     (the_geom, alt_type_slug, slug)
                 VALUES " . implode(',', $this->sqls['cartodb']));
         }
@@ -147,7 +218,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
      */
     public function end_array()
     {
-        if ($this->isFlagSet(self::IN_GEOMETRY) && (0 !== $this->level)) {
+        if ((0 !== $this->level) && $this->isFlagSet(self::IN_GEOMETRY)) {
             /*
              * Add collected array to previous.
              */
@@ -227,7 +298,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 /*
                  * Create GeoJson for concrete government.
                  */
-                $value = json_encode([
+                $json = json_encode([
                     'type'        => $this->data['geometry_type'],
                     'coordinates' => $this->coordinates,
                 ]);
@@ -237,14 +308,72 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 $altType = $this->getAltType();
                 $altTypeSlug = Government::slugifyAltType($altType);
 
+                if (! array_key_exists('columns', $this->sqls)) {
+                    /*
+                     * Get columns name.
+                     */
+                    $fields = $this->data;
+                    $restrictedFields = [
+                        'name',
+                        'slug',
+                        'alt_type',
+                        'altType',
+                        'alt_type_slug',
+                        'altTypeSlug',
+                        'kind',
+                        'state',
+                        'web_site_address',
+                        'webSiteAddress',
+                    ];
+
+                    foreach ($fields as $field => $value) {
+                        if (! in_array($field, $restrictedFields, true)) {
+                            if (preg_match('|_?[Rr]ank$|', $field)) {
+                                /*
+                                 * Ranked field.
+                                 */
+                                $name = preg_replace('|_?[Rr]ank$|', '', $field);
+
+                                $this->sqls['columns'][$name]['ranked'] = true;
+                            } else {
+                                /*
+                                 * Normal field.
+                                 * Find out field type.
+                                 */
+                                $type = 'string';
+                                if (is_float($value)) {
+                                    $type = 'float';
+                                } elseif (is_int($value)) {
+                                    $type = 'integer';
+                                }
+
+                                $this->sqls['columns'][$field]['type'] = $type;
+                            }
+                        }
+                    }
+
+                }
+
                 /*
                  * Add sql parts for insert.
                  */
                 $this->sqls['db'][] = "
                     ({$this->environment->getId()} ,'{$name}', '{$slug}', '{$altType}', '{$altTypeSlug}', {$isCounty})
                 ";
+
+                $insertParts = [];
+                foreach ($this->sqls['columns'] as $column => $data) {
+                    if (array_key_exists('type', $data) && ('string' === $data['type'])) {
+                        $insertParts[] = '\''. $this->data[$column] .'\'';
+                    } else {
+                        $insertParts[] = $this->data[$column];
+                    }
+                }
+                $this->sqls['government'][] = '('. implode(',', $insertParts) .')';
+
+
                 $this->sqls['cartodb'][] =
-                    "(ST_SetSRID(ST_GeomFromGeoJSON('$value'), 4326)," .
+                    "(ST_SetSRID(ST_GeomFromGeoJSON('{$json}'), 4326)," .
                     "'{$altTypeSlug}','{$slug}')";
             }
 

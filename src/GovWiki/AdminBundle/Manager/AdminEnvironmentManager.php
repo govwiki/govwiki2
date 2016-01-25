@@ -3,7 +3,6 @@
 namespace GovWiki\AdminBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
-use GovWiki\ApiBundle\Manager\EnvironmentManagerAwareInterface;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Utils\Functions;
@@ -48,9 +47,18 @@ class AdminEnvironmentManager
     private $format;
 
     /**
-     * @param EntityManagerInterface $em      A EntityManagerInterface instance.
-     * @param TokenStorageInterface  $storage A TokenStorageInterface instance.
-     * @param Session                $session A Session instance.
+     * @var GovernmentTableManager
+     */
+    private $tableManager;
+
+    /**
+     * @param EntityManagerInterface $em           A EntityManagerInterface
+     *                                             instance.
+     * @param TokenStorageInterface  $storage      A TokenStorageInterface
+     *                                             instance.
+     * @param Session                $session      A Session instance.
+     * @param GovernmentTableManager $tableManager A GovernmentTableManager
+     *                                             instance.
      *
      * @throws AccessDeniedException Try to use AdminEnvironmentManager as
      * anonymous user.
@@ -58,7 +66,8 @@ class AdminEnvironmentManager
     public function __construct(
         EntityManagerInterface $em,
         TokenStorageInterface $storage,
-        Session $session
+        Session $session,
+        GovernmentTableManager $tableManager
     ) {
         /*
          * Get environment name from session. If session not contain environment
@@ -69,6 +78,7 @@ class AdminEnvironmentManager
         $this->session = $session;
         $this->em = $em;
         $this->storage = $storage;
+        $this->tableManager = $tableManager;
     }
 
     /**
@@ -139,6 +149,9 @@ class AdminEnvironmentManager
      * @param array $style Styles.
      *
      * @return void
+     *
+     * @throws AccessDeniedException User don't allow to manage current
+     * environment.
      */
     public function setStyle(array $style)
     {
@@ -276,6 +289,9 @@ class AdminEnvironmentManager
 
     /**
      * @return AdminEnvironmentManager
+     *
+     * @throws AccessDeniedException User don't allow to manage current
+     * environment.
      */
     public function disable()
     {
@@ -290,6 +306,9 @@ class AdminEnvironmentManager
 
     /**
      * @return AdminEnvironmentManager
+     *
+     * @throws AccessDeniedException User don't allow to manage current
+     * environment.
      */
     public function enable()
     {
@@ -339,6 +358,9 @@ class AdminEnvironmentManager
      *                                                        instance.
      *
      * @return void
+     *
+     * @throws AccessDeniedException User don't allow to manage current
+     * environment.
      */
     public function configure(AdminEntityManagerAwareInterface $entityManager)
     {
@@ -347,34 +369,25 @@ class AdminEnvironmentManager
     }
 
     /**
-     * @param string $name Government table name.
-     *
      * @return AdminEnvironmentManager
+     *
+     * @throws \Doctrine\DBAL\DBALException Can't execute query.
      */
-    public function createGovernmentTable($name)
+    public function createGovernmentTable()
     {
-        $this->em->getConnection()->exec("
-            CREATE TABLE `{$name}` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `government_id` int(11) DEFAULT NULL,
-                CONSTRAINT `fk_{$name}_government` FOREIGN KEY (`government_id`) REFERENCES `governments` (`id`),
-                PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-        ");
+        $this->tableManager->createGovernmentTable($this->environment);
 
         return $this;
     }
 
     /**
-     * @param string $name Government table name.
-     *
      * @return AdminEnvironmentManager
+     *
+     * @throws \Doctrine\DBAL\DBALException Can't execute query.
      */
-    public function deleteGovernmentTable($name)
+    public function deleteGovernmentTable()
     {
-        $this->em->getConnection()->exec("
-            DROP TABLE IF EXISTS `{$name}`
-        ");
+        $this->tableManager->deleteGovernmentTable($this->environment);
 
         return $this;
     }
@@ -386,29 +399,12 @@ class AdminEnvironmentManager
      * @return AdminEnvironmentManager
      *
      * @throws \InvalidArgumentException Invalid column type.
+     * @throws \Doctrine\DBAL\DBALException Can't execute query.
      */
     public function addColumnToGovernment($name, $type)
     {
-        switch ($type) {
-            case 'string':
-                $type = 'varchar(255)';
-                break;
-
-            case 'integer':
-                $type = 'int';
-                break;
-
-            case 'float':
-                $type = 'float';
-                break;
-
-            default:
-                throw new \InvalidArgumentException('Invalid column type');
-        }
-
-        $this->em->getConnection()->exec("
-            ALTER TABLE `{$this->environment}` ADD {$name} {$type} DEFAULT NULL
-        ");
+        $this->tableManager
+            ->addColumnToGovernment($this->environment, $name, $type);
 
         return $this;
     }
@@ -418,31 +414,20 @@ class AdminEnvironmentManager
      * @param string $newName New column name.
      * @param string $newType New column type.
      *
-     * @return $this
+     * @return AdminEnvironmentManager
+     *
+     * @throws \InvalidArgumentException Invalid column type.
+     * @throws \Doctrine\DBAL\DBALException Can't execute query.
      */
     public function changeColumnInGovernment($oldName, $newName, $newType)
     {
-        switch ($newType) {
-            case 'string':
-                $newType = 'varchar(255)';
-                break;
-
-            case 'integer':
-                $newType = 'int';
-                break;
-
-
-            case 'float':
-                $newType = 'float';
-                break;
-
-            default:
-                throw new \InvalidArgumentException('Invalid column type');
-        }
-
-        $this->em->getConnection()->exec("
-            ALTER TABLE `{$this->environment}` CHANGE {$oldName} {$newName} {$newType} DEFAULT NULL
-        ");
+        $this->tableManager
+            ->changeColumnInGovernment(
+                $this->environment,
+                $oldName,
+                $newName,
+                $newType
+            );
 
         return $this;
     }
@@ -451,25 +436,31 @@ class AdminEnvironmentManager
      * @param string $name Column name.
      *
      * @return AdminEnvironmentManager
+     *
+     * @throws \Doctrine\DBAL\DBALException Can't execute query.
      */
     public function deleteColumnFromGovernment($name)
     {
-        $this->em->getConnection()->exec("
-            ALTER TABLE `{$this->environment}` DROP {$name}
-        ");
+        $this->tableManager
+            ->deleteColumnFromGovernment($this->environment, $name);
 
         return $this;
     }
 
     /**
-     * @param array $data
+     * @param array $data Added data.
      *
      * @return AdminEnvironmentManager
+     *
+     * @throws \Doctrine\DBAL\DBALException Can't execute query.
      */
     public function addToGovernment(array $data)
     {
         $fields = array_keys($data);
         $values = array_values($data);
+        /*
+         * Add single quota around all string values.
+         */
         foreach ($values as &$value) {
             if (is_string($value)) {
                 $value = "'{$value}'";
@@ -485,9 +476,11 @@ class AdminEnvironmentManager
     }
 
     /**
-     * @param array $data
+     * @param array $data New data.
      *
      * @return AdminEnvironmentManager
+     *
+     * @throws \Doctrine\DBAL\DBALException Can't execute query.
      */
     public function updateGovernment(array $data)
     {
@@ -509,15 +502,17 @@ class AdminEnvironmentManager
     }
 
     /**
-     * @param integer $government_id Government entity id.
+     * @param integer $governmentId Government entity id.
      *
      * @return AdminEnvironmentManager
+     *
+     * @throws \Doctrine\DBAL\DBALException Can't execute query.
      */
-    public function deleteFromGovernment($government_id)
+    public function deleteFromGovernment($governmentId)
     {
         $this->em->getConnection()->exec("
             DELETE FROM `{$this->environment}`
-            WHERE government_id = {$government_id}
+            WHERE government_id = {$governmentId}
         ");
 
         return $this;
@@ -560,6 +555,8 @@ class AdminEnvironmentManager
 
     /**
      * @return User
+     *
+     * @throws AccessDeniedException Can't get token from storage.
      */
     private function getUser()
     {

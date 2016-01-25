@@ -9,12 +9,17 @@ services:
         class: GovWiki\AdminBundle\Transformer\Service\TransformerManager
         arguments: [@service_container]
 
+    govwiki_admin.manager.government_table:
+        class: GovWiki\AdminBundle\Manager\GovernmentTableManager
+        arguments: [@doctrine.orm.default_entity_manager]
+
     govwiki_admin.manager.environment:
         class: GovWiki\AdminBundle\Manager\AdminEnvironmentManager
         arguments:
             - @doctrine.orm.default_entity_manager
             - @security.token_storage
             - @session
+            - @govwiki_admin.manager.government_table
 
     govwiki_admin.manager.style:
         class: GovWiki\AdminBundle\Manager\AdminStyleManager

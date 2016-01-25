@@ -118,7 +118,7 @@ $(function(){
             // todo change california dataset at staging and change back
             var cLayer = {
                 'cartocss': '#layer{polygon-fill:  #FF6600 ;polygon-opacity: 0.7;line-color: #FFF; line-width: 0.5; line-opacity: 1;}',
-                'sql': 'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.environment + '_county',
+                'sql': 'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.environment,
                 'interactivity': ['cartodb_id', 'slug', 'geometry']
             };
 
