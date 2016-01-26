@@ -31,7 +31,6 @@ class ElectedController extends Controller
     {
         $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
             ->getElectedOfficial($altTypeSlug, $slug, $electedSlug);
-        //var_dump($data);
 
         if (null === $data) {
             return [];
