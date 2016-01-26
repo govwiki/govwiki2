@@ -22,10 +22,26 @@ services:
         tags:
             - { name: form.type, alias: alt_type }
 
+    govwiki_db.form.type.field_name:
+        class: GovWiki\DbBundle\Form\Type\FieldNameType
+        arguments: [@govwiki_admin.manager.environment]
+        tags:
+            - { name: form.type, alias: field_name }
+
     govwiki_db.form.type.color:
         class: GovWiki\DbBundle\Form\Type\ColorType
         tags:
             - { name: form.type, alias: color }
+
+    govwiki_db.form.type.conditions_type:
+        class: GovWiki\DbBundle\Form\Type\ConditionsType
+        tags:
+            - { name: form.type, alias: conditions }
+
+    govwiki_db.form.type.colorized_county_condition:
+        class: GovWiki\DbBundle\Form\Type\ColorizedCountyConditionType
+        tags:
+            - { name: form.type, alias: colorized_county_condition }
 
     govwiki_db.form.government:
         class: GovWiki\DbBundle\Form\GovernmentType

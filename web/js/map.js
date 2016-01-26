@@ -6631,7 +6631,7 @@ $(function(){
 
                 initSubLayers(altTypes);
 
-                initLegendHandlers();
+                initLegendHandlers(altTypes);
 
                 initTooltips();
 
@@ -6642,17 +6642,19 @@ $(function(){
                 loadFinished();
 
             })
-            .error(function() {
-                return cartodbError();
+            .error(function(errors) {
+                return cartodbError(errors);
             });
 
-        function cartodbError()
+        function cartodbError(errors)
         {
             $('.loader').hide();
             var $mapProcessing = $('.mapOnProcessing');
             $mapProcessing.find('h5').eq(0).text('Something went wrong, please contact with us (contact@californiapolicycenter.org) ');
             $mapProcessing.css({"opacity":1});
             $mapProcessing.show();
+
+            console.log(errors);
         }
 
         /**
@@ -6935,9 +6937,30 @@ $(function(){
         /**
          * Toggle layers
          */
-        function initLegendHandlers() {
+        function initLegendHandlers(altTypes) {
+            //// TODO generate legend on fly from given altTypes
+            var $legend = $('.legend-item');
+            ///*
+            //    Add new elements.
+            // */
+            //altTypes.forEach(function(altType) {
+            //    /**
+            //     * Span eleem
+            //     * @type {HTMLElement}
+            //     */
+            //    var okSymbol = document.createElement('span');
+            //    okSymbol.className = 'glyphicon glyphicon-ok';
+            //
+            //    var element = document.createElement('li');
+            //
+            //    switch (altType) {
+            //        case 'county':
+            //        case 'minicipio':
+            //
+            //    }
+            //});
 
-            $('.legend-item').click(function() {
+            $legend.click(function() {
                 $(this).toggleClass('selected');
                 LayerActions[$(this).attr('id')]();
             });

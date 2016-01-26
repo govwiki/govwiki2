@@ -192,6 +192,33 @@ class AdminEnvironmentManager
     }
 
     /**
+     * @return array
+     */
+    public function getGovernmentFields()
+    {
+        $qb = $this->em->getRepository('GovWikiDbBundle:Format')
+            ->createQueryBuilder('Format');
+        $expr = $qb->expr();
+
+        $tmp = $qb
+            ->select('Format.name, Format.field')
+            ->join('Format.environment', 'Environment')
+            ->where($expr->eq(
+                'Environment.slug',
+                $expr->literal($this->environment)
+            ))
+            ->getQuery()
+            ->getArrayResult();
+
+        $result = [];
+        foreach ($tmp as $row) {
+            $result[$row['field']] = $row['name'];
+        }
+
+        return $result;
+    }
+
+    /**
      * Get used alt types by government in current environment.
      *
      * @return array|null

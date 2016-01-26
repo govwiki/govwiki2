@@ -29,6 +29,8 @@ class MapController extends AbstractGovWikiAdminController
      * @return array
      *
      * @throws NotFoundHttpException Can't find map for given environment.
+     * @throws \LogicException If DoctrineBundle is not available.
+     * @throws \InvalidArgumentException Unknown manager.
      */
     public function editAction(Request $request)
     {
@@ -44,24 +46,19 @@ class MapController extends AbstractGovWikiAdminController
         $form = $this->createForm(new MapType(), $map);
 
         $form->handleRequest($request);
-        $form = $this->processForm($form);
-
-        return [ 'form' => $form->createView() ];
-    }
-
-    /**
-     * @param FormInterface $form A FormInterface instance.
-     *
-     * @return FormInterface
-     */
-    private function processForm(FormInterface $form)
-    {
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($form->getData());
+
+            /*
+             * This stuff is required because doctrine compare by reference.
+             */
+            $new = clone $map->getColorizedCountyConditions();
+            $map->setColorizedCountyConditions($new);
+
+            $em->persist($map);
             $em->flush();
         }
 
-        return $form;
+        return [ 'form' => $form->createView() ];
     }
 }

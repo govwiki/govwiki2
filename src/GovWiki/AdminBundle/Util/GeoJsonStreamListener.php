@@ -116,77 +116,83 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
             $con = $this->em->getConnection();
             $environment = $this->environment->getSlug();
 
-            $con->beginTransaction();
-            /*
-             * Create trigger to sync governments table and environment related
-             * governments table such as 'california'.
-             */
-            $con->exec("
-                CREATE TRIGGER sync AFTER INSERT ON `governments`
-                FOR EACH ROW INSERT INTO {$environment} (government_id) VALUES (NEW.id)
-            ");
+            try {
+                $con->beginTransaction();
+                /*
+                 * Create trigger to sync governments table and environment related
+                 * governments table such as 'california'.
+                 */
+                $con->exec("DROP TRIGGER IF EXISTS sync_{$environment}");
+                $con->exec("
+                    CREATE TRIGGER sync_{$environment} AFTER INSERT ON `governments`
+                    FOR EACH ROW INSERT INTO {$environment} (government_id) VALUES (NEW.id)
+                ");
 
-            /*
-             * Add governments.
-             */
-            $con->exec('
+                /*
+                 * Add governments.
+                 */
+                $con->exec('
                 INSERT INTO governments
                     (environment_id, name, slug, alt_type, alt_type_slug, county)
                 VALUES ' . implode(',', $this->sqls['db']));
 
-            /*
-             * Create columns.
-             */
-            $tableFields = [];
-            $formats = [];
-
-            foreach ($this->sqls['columns'] as $field => $data) {
                 /*
-                 * Generate formats table sqls.
+                 * Create columns.
                  */
-                $slug = Format::slugifyName($field);
-                $ranked = (array_key_exists('ranked', $data) && $data['ranked']) ? 1 : 0;
+                $tableFields = [];
+                $formats = [];
 
-                $formats[] = "
+                foreach ($this->sqls['columns'] as $field => $data) {
+                    /*
+                     * Generate formats table sqls.
+                     */
+                    $slug = Format::slugifyName($field);
+                    $ranked = (array_key_exists('ranked', $data) && $data['ranked']) ? 1 : 0;
+
+                    $formats[] = "
                         ('{$field}', '{$slug}', 'a:0:{}', 'data', {$ranked}, '{$data['type']}', {$this->environment->getId()})
                 ";
 
+                    /*
+                     * Generate alter table sqls for environment related government
+                     * table.
+                     */
+                    $type = GovernmentTableManager::resolveType($data['type']);
+                    $tableFields[] = "ADD {$field} {$type} DEFAULT NULL";
+                    if ($ranked) {
+                        $tableFields[] = "ADD {$field}_rank int(11) DEFAULT NULL";
+                    }
+                }
+
                 /*
-                 * Generate alter table sqls for environment related government
+                 * Insert new formats and update environment related government
                  * table.
                  */
-                $type = GovernmentTableManager::resolveType($data['type']);
-                $tableFields[] = "ADD {$field} {$type} DEFAULT NULL";
-                if ($ranked) {
-                    $tableFields[] = "ADD {$field}_rank int(11) DEFAULT NULL";
-                }
-            }
-
-            /*
-             * Insert new formats and update environment related government
-             * table.
-             */
-            $con->exec('
+                $con->exec('
                 INSERT INTO formats
                     (name, field, show_in, data_or_formula, ranked, type, environment_id)
-                VALUES '. implode(',', $formats));
-            $con->exec(
-                "ALTER TABLE `{$environment}` ". implode(',', $tableFields)
-            );
+                VALUES ' . implode(',', $formats));
+                $con->exec(
+                    "ALTER TABLE `{$environment}` " . implode(',', $tableFields)
+                );
 
-            /*
-             * Insert into environment related government table extended
-             * properties.
-             */
-            $con->exec("
-                INSERT INTO {$environment} (".
-                implode(',', array_keys($this->sqls['columns'])) .') VALUES '.
-                implode(',', $this->sqls['government']));
+                /*
+                 * Insert into environment related government table extended
+                 * properties.
+                 */
+                $con->exec("
+                INSERT INTO {$environment} (" .
+                    implode(',', array_keys($this->sqls['columns'])) . ') VALUES ' .
+                    implode(',', $this->sqls['government']));
 
-            /*
-             * Delete trigger.
-             */
-            $con->exec('DROP TRIGGER sync');
+                /*
+                 * Delete trigger.
+                 */
+                $con->exec('DROP TRIGGER sync');
+            } catch (\Exception $e) {
+                $con->rollBack();
+                throw $e;
+            }
             $con->commit();
 
             /*
@@ -325,6 +331,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                         'state',
                         'web_site_address',
                         'webSiteAddress',
+                        'geometry_type',
                     ];
 
                     foreach ($fields as $field => $value) {
@@ -344,7 +351,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                                 $type = 'string';
                                 if (is_float($value)) {
                                     $type = 'float';
-                                } elseif (is_int($value)) {
+                                } elseif (is_int($value) || preg_match('/^\d+$/', $value)) {
                                     $type = 'integer';
                                 }
 
@@ -369,7 +376,9 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 $insertParts = [];
                 foreach ($this->sqls['columns'] as $column => $data) {
                     if (array_key_exists('type', $data) && ('string' === $data['type'])) {
-                        $insertParts[] = '\''. $this->data[$column] .'\'';
+                        $insertParts[] = '\'' . $this->data[$column] . '\'';
+                    } elseif (null === $this->data[$column]) {
+                        $insertParts[] = 'NULL';
                     } else {
                         $insertParts[] = $this->data[$column];
                     }

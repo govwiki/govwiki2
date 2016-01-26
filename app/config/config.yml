@@ -73,6 +73,10 @@ doctrine:
         user:     "%database_user%"
         password: "%database_password%"
         charset:  UTF8
+        types:
+            colorized_county_condition: GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditionsType
+        mapping_types:
+            colorized_county_condition: text
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"

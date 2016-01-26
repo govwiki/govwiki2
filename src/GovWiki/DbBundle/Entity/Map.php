@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity;
 use CartoDbBundle\Utils\NamedMap;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Asset;
@@ -67,6 +68,13 @@ class Map
     private $position = 'left';
 
     /**
+     * @var ColorizedCountyConditions
+     *
+     * @ORM\Column(type="colorized_county_condition")
+     */
+    private $colorizedCountyConditions;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
@@ -98,6 +106,7 @@ class Map
     public function __construct()
     {
         $this->governments = new ArrayCollection();
+        $this->colorizedCountyConditions = new ColorizedCountyConditions();
     }
 
     /**
@@ -240,6 +249,26 @@ class Map
     public function setPosition($position)
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    /**
+     * @return ColorizedCountyConditions
+     */
+    public function getColorizedCountyConditions()
+    {
+        return $this->colorizedCountyConditions;
+    }
+
+    /**
+     * @param ColorizedCountyConditions $colorizedCountyConditions A ColorizedCountyConditions instance.
+     *
+     * @return Map
+     */
+    public function setColorizedCountyConditions(ColorizedCountyConditions $colorizedCountyConditions)
+    {
+        $this->colorizedCountyConditions = $colorizedCountyConditions;
 
         return $this;
     }

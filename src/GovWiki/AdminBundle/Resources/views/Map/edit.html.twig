@@ -44,3 +44,48 @@
     </div>
 
 {% endblock body %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(function() {
+            /**
+             * Condition add button.
+             *
+             * @type {*|jQuery|HTMLElement}
+             */
+            var $addBtn = $('#conditions-add');
+
+            /**
+             * Holder element for collection.
+             *
+             * @type {*|jQuery|HTMLElement}
+             */
+            var $collectionHolder = $('[data-prototype]');
+
+            $collectionHolder.data('index', $collectionHolder.find(':input').length / 2);
+
+            $addBtn.click(function() {
+                var prototype = $collectionHolder.data('prototype');
+
+                var index = $collectionHolder.data('index');
+                var newForm = prototype.replace(/__name__label__/g, index);
+                newForm = newForm.replace(/__name__/g, index);
+
+                $collectionHolder.data('index', index + 1);
+
+                $addBtn.before(newForm);
+
+                $('.color-picker').colorpicker({
+                    format: 'hex',
+                    align: 'left'
+                });
+            });
+
+            $('.color-picker').colorpicker({
+                format: 'hex',
+                align: 'left'
+            });
+        });
+    </script>
+{% endblock javascripts %}

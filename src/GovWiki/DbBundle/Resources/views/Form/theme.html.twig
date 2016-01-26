@@ -6,3 +6,32 @@
         </div>
     {% endspaceless %}
 {% endblock %}
+
+{% block conditions_widget %}
+    {% spaceless %}
+        <div class="row">
+            <div class="col-md-6 col-lg-6 col-xs-12">
+                {{- form_row(form.condition) -}}
+            </div>
+            <div class="col-md-6 col-lg-6 col-xs-12">
+                {{- form_row(form.color) -}}
+            </div>
+        </div>
+    {% endspaceless %}
+{% endblock conditions_widget %}
+
+{#
+
+    Colorized county condition form widget.
+
+#}
+{% block colorized_county_condition_widget %}
+    {% spaceless %}
+        <div class="conditions">
+            {{- form_row(form.colorized) -}}
+            {{- form_row(form.fieldName) -}}
+            {{- form_row(form.conditions) -}}
+            <button type="button" class=" pull-right btn btn-default" id="conditions-add">Add new conditions</button>
+        </div>
+    {% endspaceless %}
+{% endblock %}
