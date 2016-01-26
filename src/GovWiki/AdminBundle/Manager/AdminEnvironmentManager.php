@@ -253,6 +253,10 @@ class AdminEnvironmentManager
     }
 
     /**
+     * Remove environment from database. Delete record from environments table
+     * ans also clear all related to environment information such as government,
+     * elected officials and etc.
+     *
      * @param string $environment Environment name.
      *
      * @return AdminEnvironmentManager
@@ -267,22 +271,10 @@ class AdminEnvironmentManager
         $this->environment = $environment;
         $entity = $this->getReference();
 
-        $this->em->getConnection()->exec("DROP TABLE {$environment}");
-
-        $qb = $this->em->createQueryBuilder();
-        $expr = $qb->expr();
-
-        $qb
-            ->delete()
-            ->from('GovWikiDbBundle:Government', 'Government')
-            ->where($expr->eq('Government.environment', $entity->getId()))
-            ->getQuery()
-            ->execute();
+        $this->deleteGovernmentTable($environment);
 
         $this->em->remove($entity);
         $this->em->flush();
-
-        $this->deleteGovernmentTable($environment);
 
         return $this;
     }
@@ -381,6 +373,8 @@ class AdminEnvironmentManager
     }
 
     /**
+     * Remove environment related government table.
+     *
      * @return AdminEnvironmentManager
      *
      * @throws \Doctrine\DBAL\DBALException Can't execute query.

@@ -5468,7 +5468,7 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
                     if (!canceled && rendered < that.limit) {
                         that.cancel = $.noop;
                         rendered += suggestions.length;
-                        that._append(query, suggestions.slice(0, that.limit));
+                        that._append(query, suggestions);
                         that.async && that.trigger("asyncReceived", query);
                     }
                 }
@@ -6449,6 +6449,7 @@ $(function() {
             method: 'GET',
             url: window.gw.urls.search_elected +'?search='+ query
         }).success(function(data) {
+            console.log(data);
             asyncCallback(data);
         });
     };
@@ -6645,6 +6646,15 @@ $(function(){
                 return cartodbError();
             });
 
+        function cartodbError()
+        {
+            $('.loader').hide();
+            var $mapProcessing = $('.mapOnProcessing');
+            $mapProcessing.find('h5').eq(0).text('Something went wrong, please contact with us (contact@californiapolicycenter.org) ');
+            $mapProcessing.css({"opacity":1});
+            $mapProcessing.show();
+        }
+
         /**
          * Create additional subLayers by altType
          *
@@ -6684,7 +6694,7 @@ $(function(){
             // todo change california dataset at staging and change back
             var cLayer = {
                 'cartocss': '#layer{polygon-fill:  #FF6600 ;polygon-opacity: 0.7;line-color: #FFF; line-width: 0.5; line-opacity: 1;}',
-                'sql': 'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.environment + '_county',
+                'sql': 'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.environment,
                 'interactivity': ['cartodb_id', 'slug', 'geometry']
             };
 

@@ -37,7 +37,7 @@
 }
 
 .loader_wrap {
-   opacity: 1;
+   opacity: 0; // By default don't show loader.
    position: absolute;
    top: 0;
    width: 100%;
@@ -47,7 +47,7 @@
    transition: opacity 1s ease-out;
    visibility: visible;
 
-   .loader {
+   .loader_content {
       margin-top: 300px;
    }
 

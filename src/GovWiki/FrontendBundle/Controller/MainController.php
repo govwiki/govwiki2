@@ -48,6 +48,7 @@ class MainController extends Controller
         $environment = $environmentManager->getEnvironment();
 
         $map = $environmentManager->getMap();
+        $mapEntity = $map;
         if (null === $map) {
             throw new NotFoundHttpException();
         }
@@ -66,6 +67,7 @@ class MainController extends Controller
         return [
             'environment' => $environment,
             'map' => $map,
+            'mapEntity' => $mapEntity,
             'greetingText' => $environmentManager->getGreetingText(),
         ];
     }

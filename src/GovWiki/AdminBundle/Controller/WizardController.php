@@ -153,52 +153,6 @@ class WizardController extends AbstractGovWikiAdminController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $api = $this->get(CartoDbServices::CARTO_DB_API);
-
-            /*
-             * Create dataset for environments.
-             */
-            $api
-                ->createDataset($environment->getSlug(), [
-                    'alt_type_slug' => 'VARCHAR(255)',
-                    'slug' => 'VARCHAR(255)',
-                ]);
-
-            /*
-             * Create named map.
-             */
-            $cartoDbMap = $map->toNamedMap($environment->getSlug());
-            // County layer.
-            $cartoDbMap->addPolygonLayer(
-                'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry
-                 FROM '. $environment->getSlug() .
-                ' WHERE alt_type_slug = \'County\'',
-                '#ff6600',
-                ['cartodb_id', 'alt_type_slug', 'slug', 'geometry']
-            );
-            // City layer.
-            $cartoDbMap->addLayer(
-                'SELECT * FROM '. $environment->getSlug() .
-                ' WHERE alt_type_slug = \'City\'',
-                '#f00000',
-                ['cartodb_id', 'alt_type_slug', 'slug']
-            );
-            // School District layer.
-            $cartoDbMap->addLayer(
-                'SELECT * FROM '. $environment->getSlug() .
-                ' WHERE alt_type_slug = \'School_District\'',
-                '#add8e6',
-                ['cartodb_id', 'alt_type_slug', 'slug']
-            );
-            // Special District layer.
-            $cartoDbMap->addLayer(
-                'SELECT * FROM '. $environment->getSlug() .
-                ' WHERE alt_type_slug = \'Special_District\'',
-                '#800080',
-                ['cartodb_id', 'alt_type_slug', 'slug']
-            );
-
-            $api->createMap($cartoDbMap);
 
             $map->setCreated(true);
 
@@ -233,6 +187,54 @@ class WizardController extends AbstractGovWikiAdminController
         if ($form->isSubmitted() && $form->isValid()) {
             $style = $manager->processForm($form);
 
+            $api = $this->get(CartoDbServices::CARTO_DB_API);
+
+            /*
+             * Create dataset for environments.
+             */
+            $api
+                ->createDataset($environment->getSlug(), [
+                    'alt_type_slug' => 'VARCHAR(255)',
+                    'slug' => 'VARCHAR(255)',
+                ]);
+
+            /*
+             * Create named map.
+             */
+            $cartoDbMap = $environment->getMap()
+                ->toNamedMap($environment->getSlug());
+            // County layer.
+            $cartoDbMap->addPolygonLayer(
+                'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry
+                 FROM '. $environment->getSlug() .
+                ' WHERE alt_type_slug = \'County\'',
+                '#ff6600',
+                ['cartodb_id', 'alt_type_slug', 'slug', 'geometry']
+            );
+            // City layer.
+            $cartoDbMap->addLayer(
+                'SELECT * FROM '. $environment->getSlug() .
+                ' WHERE alt_type_slug = \'City\'',
+                '#f00000',
+                ['cartodb_id', 'alt_type_slug', 'slug']
+            );
+            // School District layer.
+            $cartoDbMap->addLayer(
+                'SELECT * FROM '. $environment->getSlug() .
+                ' WHERE alt_type_slug = \'School_District\'',
+                '#add8e6',
+                ['cartodb_id', 'alt_type_slug', 'slug']
+            );
+            // Special District layer.
+            $cartoDbMap->addLayer(
+                'SELECT * FROM '. $environment->getSlug() .
+                ' WHERE alt_type_slug = \'Special_District\'',
+                '#800080',
+                ['cartodb_id', 'alt_type_slug', 'slug']
+            );
+
+            $api->createMap($cartoDbMap);
+
             $environment
                 ->setStyle($style)
                 ->setEnabled(true);
@@ -245,6 +247,8 @@ class WizardController extends AbstractGovWikiAdminController
 
             $this->get(GovWikiAdminServices::GOVERNMENT_TABLE_MANAGER)
                 ->createGovernmentTable($environment->getSlug());
+
+            $this->adminEnvironmentManager()->changeEnvironment($environment);
 
             return $this->nextStep();
         }
@@ -280,10 +284,9 @@ class WizardController extends AbstractGovWikiAdminController
                  */
                 $stream = fopen($dataFile->getPathname(), 'r');
                 $listener = new GeoJsonStreamListener(
-                    $this->getEnvironmentEntity(),
                     $this->getDoctrine()->getManager(),
                     $this->get(CartoDbServices::CARTO_DB_API),
-                    $this->get(GovWikiAdminServices::GOVERNMENT_TABLE_MANAGER)
+                    $this->getEnvironmentEntity()
                 );
                 $parser = new \JsonStreamingParser_Parser($stream, $listener);
                 $parser->parse();

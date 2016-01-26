@@ -15,7 +15,7 @@
         <a class="pull-left btn btn-danger" href="{{ path('govwiki_admin_wizard_cancel') }}">Cancel</a>
         <div class="pull-right btn-group">
             <a class="btn btn-default" href="{{ back_url }}">Back</a>
-            <button class="btn btn-primary" type="submit">Next</button>
+            <button class="btn btn-primary" data-loader data-loader-message="Create environment ..." type="submit">Next</button>
         </div>
     {{ form_end(form) }}
 {% endblock content %}

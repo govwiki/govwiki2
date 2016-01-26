@@ -2,6 +2,7 @@
 
 namespace GovWiki\DbBundle\Form;
 
+use GovWiki\DbBundle\Entity\Map;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -35,7 +36,14 @@ class MapType extends AbstractType
             ->add('centerLongitude', 'number');
 
         if (! $this->isNew) {
-            $builder->add('zoom', 'integer');
+            $builder
+                ->add('zoom', 'integer')
+                ->add('position', 'choice', [
+                    'choices' => array_combine(
+                        Map::availablePositions(),
+                        Map::availablePositions()
+                    ),
+                ]);
         }
     }
 

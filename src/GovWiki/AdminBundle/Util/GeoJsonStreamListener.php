@@ -73,28 +73,19 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     private $api;
 
     /**
-     * @var GovernmentTableManager
-     */
-    private $tableManager;
-
-    /**
-     * @param Environment            $environment  A Environment instance.
-     * @param EntityManagerInterface $em           A EntityManagerInterface
-     *                                             instance.
-     * @param CartoDbApi             $api          A CartoDbApi instance.
-     * @param GovernmentTableManager $tableManager A GovernmentTableManager
-     *                                             instance.
+     * @param EntityManagerInterface $em          A EntityManagerInterface
+     *                                            instance.
+     * @param CartoDbApi             $api         A CartoDbApi instance.
+     * @param Environment            $environment A Environment instance.
      */
     public function __construct(
-        Environment $environment,
         EntityManagerInterface $em,
         CartoDbApi $api,
-        GovernmentTableManager $tableManager
+        Environment $environment
     ) {
-        $this->environment = $environment;
         $this->em = $em;
         $this->api = $api;
-        $this->tableManager = $tableManager;
+        $this->environment = $environment;
     }
 
     /**
@@ -109,6 +100,11 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
      * @return void
      *
      * @throws \Doctrine\DBAL\DBALException Some error while insert governments.
+     *
+     * @throws \InvalidArgumentException Invalid column type.
+     * @throws \Doctrine\DBAL\ConnectionException If the commit failed due to no
+     * active transaction or because the transaction was marked for rollback
+     * only.
      */
     public function end_document()
     {
@@ -123,7 +119,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
             $con->beginTransaction();
             /*
              * Create trigger to sync governments table and environment related
-             * table.
+             * governments table such as 'california'.
              */
             $con->exec("
                 CREATE TRIGGER sync AFTER INSERT ON `governments`
@@ -131,7 +127,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
             ");
 
             /*
-             * Add governments row.
+             * Add governments.
              */
             $con->exec('
                 INSERT INTO governments
@@ -146,7 +142,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
 
             foreach ($this->sqls['columns'] as $field => $data) {
                 /*
-                 * Update formats table.
+                 * Generate formats table sqls.
                  */
                 $slug = Format::slugifyName($field);
                 $ranked = (array_key_exists('ranked', $data) && $data['ranked']) ? 1 : 0;
@@ -155,7 +151,10 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                         ('{$field}', '{$slug}', 'a:0:{}', 'data', {$ranked}, '{$data['type']}', {$this->environment->getId()})
                 ";
 
-
+                /*
+                 * Generate alter table sqls for environment related government
+                 * table.
+                 */
                 $type = GovernmentTableManager::resolveType($data['type']);
                 $tableFields[] = "ADD {$field} {$type} DEFAULT NULL";
                 if ($ranked) {
@@ -176,7 +175,8 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
             );
 
             /*
-             * Insert into environment related government table.
+             * Insert into environment related government table extended
+             * properties.
              */
             $con->exec("
                 INSERT INTO {$environment} (".
@@ -190,7 +190,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
             $con->commit();
 
             /*
-             * Add information to cartodb dataset.
+             * Add information to CartoDB dataset.
              */
             $this->api->sqlRequest("
                 INSERT INTO {$environment}
@@ -310,7 +310,8 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
 
                 if (! array_key_exists('columns', $this->sqls)) {
                     /*
-                     * Get columns name.
+                     * Get extended column names that not exists in government
+                     * entity.
                      */
                     $fields = $this->data;
                     $restrictedFields = [
@@ -355,12 +356,16 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 }
 
                 /*
-                 * Add sql parts for insert.
+                 * Add sql parts for insert into government table.
                  */
                 $this->sqls['db'][] = "
                     ({$this->environment->getId()} ,'{$name}', '{$slug}', '{$altType}', '{$altTypeSlug}', {$isCounty})
                 ";
 
+                /*
+                 * Add sql parts for insert into environment related government
+                 * table.
+                 */
                 $insertParts = [];
                 foreach ($this->sqls['columns'] as $column => $data) {
                     if (array_key_exists('type', $data) && ('string' === $data['type'])) {
@@ -371,7 +376,9 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 }
                 $this->sqls['government'][] = '('. implode(',', $insertParts) .')';
 
-
+                /*
+                 * Add sql parts for insert into CartoDB dataset.
+                 */
                 $this->sqls['cartodb'][] =
                     "(ST_SetSRID(ST_GeomFromGeoJSON('{$json}'), 4326)," .
                     "'{$altTypeSlug}','{$slug}')";

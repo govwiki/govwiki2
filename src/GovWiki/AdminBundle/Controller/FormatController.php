@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\Request;
  * @package GovWiki\AdminBundle\Controller
  *
  * @Configuration\Route("/format")
+ * @deprecated To remove
+ * todo remove
  */
 class FormatController extends Controller
 {

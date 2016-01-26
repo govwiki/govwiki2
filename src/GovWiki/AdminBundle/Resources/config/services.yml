@@ -34,11 +34,11 @@ services:
 #        tags:
 #            - { name: doctrine.event_subscriber }
 
-    govwiki_admin.listener.government_table_upadte:
-        class: GovWiki\AdminBundle\Listener\UpdateGovernmentTable
-        arguments: [@service_container]
-        tags:
-            - { name: doctrine.event_subscriber }
+#    govwiki_admin.listener.government_table_upadte:
+#        class: GovWiki\AdminBundle\Listener\UpdateGovernmentTable
+#        arguments: [@service_container]
+#        tags:
+#            - { name: doctrine.event_subscriber }
 
     govwiki_admin.listener.wizard:
         class: GovWiki\AdminBundle\Listener\WizardStepListener

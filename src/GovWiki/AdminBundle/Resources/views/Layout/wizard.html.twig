@@ -37,3 +37,13 @@
 
     </div>
 {% endblock body %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@GovWikiAdminBundle/Resources/public/js/Loader.js'
+        '@GovWikiAdminBundle/Resources/public/js/Wizard/index.js'
+        output='js/wizard.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock javascripts %}

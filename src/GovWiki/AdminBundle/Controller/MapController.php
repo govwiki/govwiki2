@@ -27,6 +27,8 @@ class MapController extends AbstractGovWikiAdminController
      * @param Request $request A Request instance.
      *
      * @return array
+     *
+     * @throws NotFoundHttpException Can't find map for given environment.
      */
     public function editAction(Request $request)
     {
@@ -44,46 +46,7 @@ class MapController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
         $form = $this->processForm($form);
 
-        $isImported = null !== $map->getItemQueueId();
-        if ($isImported) {
-            $cartoDbApi = $this->get(CartoDbServices::CARTO_DB_API);
-            /*
-             * Governments data exported to CartoDB service.
-             */
-            $result = $cartoDbApi
-                ->checkImportProcess($map->getItemQueueId());
-
-            if (true === $result['success']) {
-                $em = $this->getDoctrine()->getManager();
-                if ('complete' === $result['state']) {
-                    if (! $map->isCreated()) {
-                        $map->setCreated(true);
-                        $map->setVizUrl($cartoDbApi->getVizUrl($result));
-                        $this->addFlash('admin_success', 'Map created');
-                    } else {
-                        $this->addFlash('admin_success', 'Map updated');
-                    }
-                    $map->setItemQueueId(null);
-                    $em->persist($map);
-                    $em->flush();
-                    $isImported = false;
-                } elseif ('failed' === $result['state']) {
-                    $em->remove($map->getEnvironment());
-                    $em->flush();
-                    $this->addFlash(
-                        'admin_error',
-                        "Can't create map: ({$result['error_code']})".
-                        "{$result['get_error_text']['what_about']}"
-                    );
-                }
-            }
-        }
-
-        return [
-            'form' => $form->createView(),
-            'vizUrl' => $map->getVizUrl(),
-            'canExport' => ! $isImported,
-        ];
+        return [ 'form' => $form->createView() ];
     }
 
     /**

@@ -59,6 +59,14 @@ class Map
     private $zoom = 3;
 
     /**
+     * @var string
+     *
+     * @ORM\Column()
+     * @Asset\Choice(callback="availablePositions")
+     */
+    private $position = 'left';
+
+    /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
@@ -75,6 +83,14 @@ class Map
      * @Groups({"map"})
      */
     private $environment;
+
+    /**
+     * @return array
+     */
+    public static function availablePositions()
+    {
+        return [ 'left', 'top' ];
+    }
 
     /**
      *
@@ -204,6 +220,26 @@ class Map
     public function setCreated($created)
     {
         $this->created = $created;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param string $position Map position in page layout.
+     *
+     * @return Map
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
 
         return $this;
     }
