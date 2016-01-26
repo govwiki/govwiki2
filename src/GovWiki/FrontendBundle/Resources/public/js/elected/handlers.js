@@ -1,13 +1,14 @@
-function sortTable(table, colNum)
+function sortTable(table, colNum, isDateColumn)
 {
+    isDateColumn = isDateColumn || false;
     /*
      Data rows to sort
      */
-    var rows = $(table + ' tbody  [data-id]').get();
+    var rows = $(table + ' tbody  tr[data-id]').get();
     /*
      Last row which contains "Add new ..."
      */
-    var lastRow = $(table + ' tbody  tr:last').get();
+    var lastRow = $(table + ' tbody tr.add_action');
     /*
      Clicked column.
      */
@@ -33,8 +34,13 @@ function sortTable(table, colNum)
         column.find('i').removeClass('icon__bottom').addClass('icon__top');
         sortFunction = function (a, b)
         {
-            A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
-            B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            if (isDateColumn) {
+                A = new Date($(a).children('td').eq(colNum).text());
+                B = new Date($(b).children('td').eq(colNum).text());
+            } else {
+                A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
+                B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            }
             if (A < B) {
                 return 1;
             }
@@ -43,7 +49,6 @@ function sortTable(table, colNum)
             }
             return 0;
         }
-
     } else if (column.hasClass('origin')) {
         /*
          Original table data order.
@@ -53,8 +58,13 @@ function sortTable(table, colNum)
         column.find('i').addClass('icon__bottom');
         sortFunction = function (a, b)
         {
-            A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
-            B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            if (isDateColumn) {
+                A = new Date($(a).children('td').eq(colNum).text());
+                B = new Date($(b).children('td').eq(colNum).text());
+            } else {
+                A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
+                B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            }
             if (A < B) {
                 return -1;
             }
@@ -74,8 +84,13 @@ function sortTable(table, colNum)
         column.find('i').addClass('icon__bottom');
         sortFunction = function (a, b)
         {
-            A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
-            B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            if (isDateColumn) {
+                A = new Date($(a).children('td').eq(colNum).text());
+                B = new Date($(b).children('td').eq(colNum).text());
+            } else {
+                A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
+                B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            }
             if (A < B) {
                 return -1;
             }
@@ -84,6 +99,112 @@ function sortTable(table, colNum)
             }
             return 0;
         };
+    }
+    if (makeSort) {
+        rows.sort(sortFunction)
+    }
+
+    $.each(
+        rows, function (index, row)
+        {
+            $(table).children('tbody').append(row);
+        }
+    );
+    $(table).children('tbody').append(lastRow)
+}
+
+
+function sortTableTwoStates(table, colNum, isDateColumn)
+{
+    isDateColumn = isDateColumn || false;
+    /*
+     Data rows to sort
+     */
+    var rows = $(table + ' tbody  tr[data-id]').get();
+    /*
+     Last row which contains "Add new ..."
+     */
+    var lastRow = $(table + ' tbody tr.add_action');
+    /*
+     Clicked column.
+     */
+    var column = $(table + ' tbody tr:first').children('th').eq(colNum);
+    var makeSort = true;
+    var sortFunction = undefined;
+
+    if (column.hasClass('desc')) {
+        /*
+         Table currently sorted in descending order.
+         Sort in asc order.
+         */
+        column.removeClass('desc').addClass('asc');
+        column.data('origin', rows.slice(0));
+        column.find('i').removeClass('icon__top').addClass('icon__bottom');
+        sortFunction = function (a, b)
+        {
+            if (isDateColumn) {
+                A = new Date($(a).children('td').eq(colNum).text());
+                B = new Date($(b).children('td').eq(colNum).text());
+            } else {
+                A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
+                B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            }
+            if (A < B) {
+                return -1;
+            }
+            if (A > B) {
+                return 1;
+            }
+            return 0;
+        };
+    } else if (column.hasClass('asc')) {
+        /*
+         Table currently sorted in ascending order.
+         Sort in desc order.
+         */
+        column.removeClass('asc').addClass('desc');
+        column.find('i').removeClass('icon__bottom').addClass('icon__top');
+        sortFunction = function (a, b)
+        {
+            if (isDateColumn) {
+                A = new Date($(a).children('td').eq(colNum).text());
+                B = new Date($(b).children('td').eq(colNum).text());
+            } else {
+                A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
+                B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            }
+            if (A < B) {
+                return 1;
+            }
+            if (A > B) {
+                return -1;
+            }
+            return 0;
+        }
+    } else {
+        /*
+         Table not ordered yet.
+         Store original data position and sort in desc order.
+         */
+        column.removeClass('asc').addClass('desc');
+        column.find('i').addClass('icon__top');
+        sortFunction = function (a, b)
+        {
+            if (isDateColumn) {
+                A = new Date($(a).children('td').eq(colNum).text());
+                B = new Date($(b).children('td').eq(colNum).text());
+            } else {
+                A = $(a).children('td').eq(colNum).text().toUpperCase().trim();
+                B = $(b).children('td').eq(colNum).text().toUpperCase().trim();
+            }
+            if (A < B) {
+                return 1;
+            }
+            if (A > B) {
+                return -1;
+            }
+            return 0;
+        }
     }
     if (makeSort) {
         rows.sort(sortFunction)
@@ -129,8 +250,19 @@ $(function() {
              Sort by contributor type.
              */
             sortTable('[data-entity-type="Contribution"]', 4);
+        } else if ('vote_date' == type) {
+            /*
+             Sort by vote date.
+             */
+            sortTableTwoStates('[data-entity-type="Legislation"]', 0, true);
+        } else if ('vote_category' == type) {
+            /*
+             Sort by vote category.
+             */
+            sortTable('[data-entity-type="Legislation"]', 5);
         }
     });
+    sortTableTwoStates('[data-entity-type="Legislation"]', 0, true);
 
     var Handlers = {};
 

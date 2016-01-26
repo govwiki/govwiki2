@@ -48,6 +48,18 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
+        function init()
+        {
+            $('.color-picker').colorpicker({
+                format: 'hex',
+                align: 'left'
+            });
+
+            $('.conditions-delete').click(function(){
+                $(this).closest('.condition-row').parent().remove();
+            });
+        }
+
         $(function() {
             /**
              * Condition add button.
@@ -63,7 +75,7 @@
              */
             var $collectionHolder = $('[data-prototype]');
 
-            $collectionHolder.data('index', $collectionHolder.find(':input').length / 2);
+            $collectionHolder.data('index', $collectionHolder.find('.condition-row').length);
 
             $addBtn.click(function() {
                 var prototype = $collectionHolder.data('prototype');
@@ -76,16 +88,10 @@
 
                 $addBtn.before(newForm);
 
-                $('.color-picker').colorpicker({
-                    format: 'hex',
-                    align: 'left'
-                });
+                init();
             });
 
-            $('.color-picker').colorpicker({
-                format: 'hex',
-                align: 'left'
-            });
+            init();
         });
     </script>
 {% endblock javascripts %}

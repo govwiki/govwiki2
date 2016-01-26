@@ -10,7 +10,11 @@
                 <form name="addStatements">
                     <div class="input-group">
                         <span class="input-group-addon">Category: </span>
-                        <select class="form-control" data-issue-category></select>
+                        <select class="form-control" data-issue-category>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Date: </span>

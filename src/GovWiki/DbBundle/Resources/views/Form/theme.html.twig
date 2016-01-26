@@ -9,12 +9,15 @@
 
 {% block conditions_widget %}
     {% spaceless %}
-        <div class="row">
+        <div class="row condition-row">
             <div class="col-md-6 col-lg-6 col-xs-12">
                 {{- form_row(form.condition) -}}
             </div>
-            <div class="col-md-6 col-lg-6 col-xs-12">
+            <div class="col-md-5 col-lg-5 col-xs-12">
                 {{- form_row(form.color) -}}
+            </div>
+            <div class="col-md-1 col-lg-1 col-xs-1">
+                <button type="button" class="btn btn-danger conditions-delete">Delete</button>
             </div>
         </div>
     {% endspaceless %}

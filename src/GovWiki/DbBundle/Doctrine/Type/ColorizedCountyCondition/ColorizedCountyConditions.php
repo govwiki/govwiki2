@@ -49,7 +49,7 @@ class ColorizedCountyConditions
         }
 
         if ($conditions) {
-            sort($conditions);
+            ksort($conditions);
         }
 
         return [
@@ -100,7 +100,7 @@ class ColorizedCountyConditions
 
         $object = new ColorizedCountyConditions($array['fieldName']);
         foreach ($array['conditions'] as $condition => $color) {
-            $object->addCondition($condition, $color);
+            $object->addCondition(new Condition($condition, $color));
         }
 
         return $object;
