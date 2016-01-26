@@ -4,12 +4,12 @@
 
     <table class="table table-hover" data-entity-type="Legislation">
         <tr>
-            <th class="column__date">Date</th>
+            <th class="column__date"><a class="sort" data-sort-type="vote_date">Date <i class="icon"></i></a></th>
             <th>Title of Measure</th>
             <th>Summary of Measure</th>
             <th class="column__vote">How official Voted</th>
             <th>Sponsored by this official?</th>
-            <th>Category</th>
+            <th><a class="sort" data-sort-type="vote_category">Category <i class="icon"></i></a></th>
             <th></th>
         </tr>
             {% if (elected.votes is defined) and (elected.votes is not empty) %}
@@ -26,7 +26,7 @@
                 {{ fun.renderNewVotes(createRequests, categories) }}
             {% endif %}
 
-            <tr>
+            <tr class="add_action">
                 <td colspan="7" class="add">
                     Add new Vote
                     <span class="glyphicon glyphicon-plus"></span>
