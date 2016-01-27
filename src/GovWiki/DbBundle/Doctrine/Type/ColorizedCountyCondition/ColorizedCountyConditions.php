@@ -83,7 +83,7 @@ class ColorizedCountyConditions
     {
         $array = unserialize($serializedData);
 
-        if (count($array) === 0) {
+        if (! is_array($array) || count($array) === 0) {
             /*
              * Return default.
              */
@@ -108,6 +108,8 @@ class ColorizedCountyConditions
          * Create new instance and fill by conditions.
          */
         $object = new ColorizedCountyConditions($array['fieldName']);
+        $object->setColorized($array['colorized']);
+
         foreach ($array['conditions'] as $condition => $color) {
             $object->addCondition(new Condition($condition, $color));
         }

@@ -119,22 +119,12 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
             try {
                 $con->beginTransaction();
                 /*
-                 * Create trigger to sync governments table and environment related
-                 * governments table such as 'california'.
-                 */
-                $con->exec("DROP TRIGGER IF EXISTS sync_{$environment}");
-                $con->exec("
-                    CREATE TRIGGER sync_{$environment} AFTER INSERT ON `governments`
-                    FOR EACH ROW INSERT INTO {$environment} (government_id) VALUES (NEW.id)
-                ");
-
-                /*
                  * Add governments.
                  */
                 $con->exec('
-                INSERT INTO governments
-                    (environment_id, name, slug, alt_type, alt_type_slug, county)
-                VALUES ' . implode(',', $this->sqls['db']));
+                    INSERT INTO governments
+                        (environment_id, name, slug, alt_type, alt_type_slug, county)
+                    VALUES ' . implode(',', $this->sqls['db']));
 
                 /*
                  * Create columns.
@@ -177,18 +167,13 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 );
 
                 /*
-                 * Insert into environment related government table extended
-                 * properties.
+                 * Pull environment related government with table extended
+                 * properties values.
                  */
                 $con->exec("
-                INSERT INTO {$environment} (" .
+                INSERT INTO {$environment} (government_id, " .
                     implode(',', array_keys($this->sqls['columns'])) . ') VALUES ' .
                     implode(',', $this->sqls['government']));
-
-                /*
-                 * Delete trigger.
-                 */
-                $con->exec('DROP TRIGGER sync');
             } catch (\Exception $e) {
                 $con->rollBack();
                 throw $e;
@@ -383,7 +368,14 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                         $insertParts[] = $this->data[$column];
                     }
                 }
-                $this->sqls['government'][] = '('. implode(',', $insertParts) .')';
+                $idSql = "
+                    SELECT id FROM governments
+                    WHERE slug = '{$slug}' AND
+                        alt_type_slug = '{$altTypeSlug}' AND
+                        environment_id = {$this->environment->getId()}
+                ";
+
+                $this->sqls['government'][] = "(({$idSql}),". implode(',', $insertParts) .')';
 
                 /*
                  * Add sql parts for insert into CartoDB dataset.

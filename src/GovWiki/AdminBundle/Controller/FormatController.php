@@ -66,31 +66,31 @@ class FormatController extends Controller
         $oldIsRanked = $format->isRanked();
 
         $form->handleRequest($request);
-        $this->processForm($form);
-
-        $manager = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
-        if ($format->isRanked()) {
-            if ($oldIsRanked) {
-                $manager->changeColumnInGovernment(
-                    $oldFieldName .'_rank',
-                    $format->getField() .'_rank',
-                    'integer'
-                );
-            } else {
-                $manager->addColumnToGovernment(
-                    $format->getField() .'_rank',
-                    'integer'
-                );
+        if ($this->processForm($form) ) {
+            $manager = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
+            if ($format->isRanked()) {
+                if ($oldIsRanked) {
+                    $manager->changeColumnInGovernment(
+                        $oldFieldName . '_rank',
+                        $format->getField() . '_rank',
+                        'integer'
+                    );
+                } else {
+                    $manager->addColumnToGovernment(
+                        $format->getField() . '_rank',
+                        'integer'
+                    );
+                }
+            } elseif ($oldIsRanked) {
+                $manager->deleteColumnFromGovernment($oldFieldName . '_rank');
             }
-        } elseif ($oldIsRanked) {
-            $manager->deleteColumnFromGovernment($oldFieldName .'_rank');
-        }
 
-        $manager->changeColumnInGovernment(
-            $oldFieldName,
-            $format->getField(),
-            $format->getType()
-        );
+            $manager->changeColumnInGovernment(
+                $oldFieldName,
+                $format->getField(),
+                $format->getType()
+            );
+        }
 
         return [ 'form' => $form->createView() ];
     }
@@ -110,6 +110,14 @@ class FormatController extends Controller
         $form = $this->createForm('format', $format);
         $form->handleRequest($request);
         if ($this->processForm($form)) {
+            $manager = $this
+                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
+
+            $manager->addColumnToGovernment(
+                $format->getField(),
+                $format->getType()
+            );
+
             return $this->redirectToRoute('govwiki_admin_format_edit', [
                 'id' => $format->getId(),
             ]);
@@ -158,31 +166,5 @@ class FormatController extends Controller
     private function getManager()
     {
         return $this->get(GovWikiAdminServices::FORMAT_MANAGER);
-    }
-
-    /**
-     * Delete after migration.
-     */
-    private function updateFieldsInFormats() {
-
-        $em = $this->getDoctrine()->getManager();
-        $result = $em->getRepository('GovWikiDbBundle:Format')->findAll();
-
-        foreach($result as $key => $value) {
-            $str = $value->getField();
-            $parts = explode('_', $str);
-
-            $str = $parts[0];
-            for ($i = 1; $i < count($parts); $i++) {
-                $str .= ucfirst($parts[$i]);
-            }
-
-            $value->setField($str);
-
-            $em->persist($value);
-            $em->flush();
-
-        }
-
     }
 }

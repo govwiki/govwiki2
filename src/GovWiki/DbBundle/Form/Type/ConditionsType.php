@@ -32,7 +32,8 @@ class ConditionsType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\Condition'
+            'data_class' => 'GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\Condition',
+            'label' => false,
         ]);
     }
 

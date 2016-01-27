@@ -22,6 +22,14 @@ class ColorType extends AbstractType
     /**
      * {@inheritdoc}
      */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefault('empty_data', '#000000');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getParent()
     {
         return 'text';

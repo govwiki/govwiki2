@@ -540,6 +540,22 @@ class AdminEnvironmentManager
     }
 
     /**
+     * todo annotate
+     *
+     * @param $field
+     *
+     * @return array
+     */
+    public function getGovernmentsFiledValues($field)
+    {
+        return $this->em->getConnection()->fetchAll("
+            SELECT g.slug, g.alt_type_slug, eg.${field} AS data
+            FROM {$this->environment} eg
+            JOIN governments g ON g.id = eg.government_id
+        ");
+    }
+
+    /**
      * @param integer $id Government id.
      *
      * @return array

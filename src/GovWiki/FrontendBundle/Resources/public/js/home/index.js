@@ -130,7 +130,7 @@ $(function(){
             var cLayer = {
                 'cartocss': '#layer{polygon-fill:  #FF6600 ;polygon-opacity: 0.7;line-color: #FFF; line-width: 0.5; line-opacity: 1;}',
                 'sql': 'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.environment,
-                'interactivity': ['cartodb_id', 'slug', 'geometry']
+                'interactivity': ['cartodb_id', 'slug', 'geometry', 'data']
             };
 
             countySubLayer = layer.createSubLayer(cLayer);
@@ -280,6 +280,9 @@ $(function(){
                          */
                         if (layerIndex == countySubLayer._position) {
                             drawAppropriatePolygon(data);
+
+                            // Printout received data.
+                            console.log(data);
                         } else {
                             removeAllHoverShapes();
                         }
@@ -376,22 +379,22 @@ $(function(){
             /*
                 Add new elements.
              */
-            altTypes.forEach(function(altType) {
-                /**
-                 * Span eleem
-                 * @type {HTMLElement}
-                 */
-                var okSymbol = document.createElement('span');
-                okSymbol.className = 'glyphicon glyphicon-ok';
-
-                var element = document.createElement('li');
-
-                switch (altType) {
-                    case 'county':
-                    case 'minicipio':
-
-                }
-            });
+            //altTypes.forEach(function(altType) {
+            //    /**
+            //     * Span eleem
+            //     * @type {HTMLElement}
+            //     */
+            //    var okSymbol = document.createElement('span');
+            //    okSymbol.className = 'glyphicon glyphicon-ok';
+            //
+            //    var element = document.createElement('li');
+            //
+            //    switch (altType) {
+            //        case 'county':
+            //        case 'minicipio':
+            //
+            //    }
+            //});
 
             $legend.click(function() {
                 $(this).toggleClass('selected');

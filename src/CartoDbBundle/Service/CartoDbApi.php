@@ -48,6 +48,8 @@ class CartoDbApi
      * @return string Item queue id.
      *
      * @throws CartoDBRequestFailException Fail request.
+     *
+     * @deprecated
      */
     public function importDataset($filePath, $createNewMap = false)
     {
@@ -122,6 +124,8 @@ class CartoDbApi
      *                        {@see CartoDbApi::checkImpostProcess}.
      *
      * @return string
+     *
+     * @deprecated
      */
     public function getVizUrl(array $response)
     {
@@ -181,13 +185,15 @@ class CartoDbApi
     }
 
     /**
+     * todo annotate
+     *
      * @param string $name   Dataset name.
      * @param array  $fields Array of dataset field where key is field name and
      *                       value if field type.
      *
      * @return CartoDbApi
      */
-    public function createDataset($name, array $fields = [])
+    public function createDataset($name, array $fields = [], $temporary = false)
     {
         $sqlParts = [];
         foreach ($fields as $field => $type) {
@@ -196,7 +202,9 @@ class CartoDbApi
 
         $this->sqlRequest("CREATE TABLE {$name} (". implode(',', $sqlParts) .
             ')');
-        $this->sqlRequest("SELECT cdb_cartodbfytable('{$name}')");
+        if (! $temporary) {
+            $this->sqlRequest("SELECT cdb_cartodbfytable('{$name}')");
+        }
 
         return $this;
     }

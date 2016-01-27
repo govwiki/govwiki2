@@ -69,12 +69,20 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
+        /*
+            Initialize color pickers.
+        */
+        $('.color-picker').colorpicker({
+            format: 'hex',
+            align: 'left'
+        });
+
+
+        /**
+         *  Initialize conditions remove button handler.
+         */
         function init()
         {
-            $('.color-picker').colorpicker({
-                format: 'hex',
-                align: 'left'
-            });
 
             $('.conditions-delete').click(function(){
                 $(this).closest('.condition-row').parent().remove();
@@ -90,7 +98,7 @@
             var $addBtn = $('#conditions-add');
 
             /**
-             * Holder element for collection.
+             * Holder element for conditions collection.
              *
              * @type {*|jQuery|HTMLElement}
              */
@@ -99,15 +107,29 @@
             $collectionHolder.data('index', $collectionHolder.find('.condition-row').length);
 
             $addBtn.click(function() {
+                /**
+                 * Prototype of condition form.
+                 *
+                 * @type {string}
+                 */
                 var prototype = $collectionHolder.data('prototype');
 
+                /**
+                 * Current condition form index.
+                 *
+                 * @type {number}
+                 */
                 var index = $collectionHolder.data('index');
-                var newForm = prototype.replace(/__name__label__/g, index);
+                var newForm = prototype.replace(/<label class="control-label required">__name__label__<\/label>/g, '');
                 newForm = newForm.replace(/__name__/g, index);
 
                 $collectionHolder.data('index', index + 1);
 
-                $addBtn.before(newForm);
+                $collectionHolder.append(newForm);
+
+                $collectionHolder.find('.color-picker:last')
+                        .colorpicker()
+                        .colorpicker('setValue', '#000000');
 
                 init();
             });
