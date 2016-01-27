@@ -5,28 +5,59 @@
 
         <div class="row">
             {# Typeahead Search #}
-            <div class="typeahead_wrap col-md-6 col-lg-5">
-                <input id="search_government" type="text" placeholder="Loading the list of governments" class="text-uppercase typeahead_government form-control" disabled>
-            </div>
-            <div class="typeahead_wrap col-md-6 col-lg-5">
-                <input id="search_elected" type="text" placeholder="Loading the list of elected officials" class="text-uppercase typeahead_elected form-control" disabled>
-            </div>
 
-            <div class="col-md-6 col-lg-5">
-                <p class="text-center text-nowrap hidden-xs hidden-sm">
-                    Type part of th
-                    e agency's name
-                    <img src="{{ asset('bundles/govwikifrontend/img/ArrowUp.gif') }}" style="width:40px">
-                    or click it on the map
-                    <img src="{{ asset('bundles/govwikifrontend/img/ArrowDown.gif') }}" style="width:40px">
-                </p>
-            </div>
-            <div class="col-md-6 col-lg-5">
-                <p class="text-nowrap hidden-xs hidden-sm" style="margin-left: 8%">
-                    Type part of the agency's name
-                    <img src="{{ asset('bundles/govwikifrontend/img/ArrowUp.gif') }}" style="width:40px">
-                </p>
-            </div>
+            {% if hasElectedOfficials %}
+                {#
+
+                    Current environment has elected officials in government.
+                    Show not only government search but also elected official
+                    search.
+
+                #}
+                <div class="typeahead_wrap col-md-6 col-lg-5">
+                    <input id="search_government" type="text" placeholder="Loading the list of governments" class="text-uppercase typeahead_government form-control" disabled>
+                </div>
+                <div class="typeahead_wrap col-md-6 col-lg-5">
+                    <input id="search_elected" type="text" placeholder="Loading the list of elected officials" class="text-uppercase typeahead_elected form-control" disabled>
+                </div>
+
+                <div class="col-md-6 col-lg-5">
+                    <p class="text-center text-nowrap hidden-xs hidden-sm">
+                        Type part of th
+                        e agency's name
+                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowUp.gif') }}" style="width:40px">
+                        or click it on the map
+                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowDown.gif') }}" style="width:40px">
+                    </p>
+                </div>
+                <div class="col-md-6 col-lg-5">
+                    <p class="text-nowrap hidden-xs hidden-sm" style="margin-left: 8%">
+                        Type part of the agency's name
+                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowUp.gif') }}" style="width:40px">
+                    </p>
+                </div>
+            {% else %}
+                {#
+
+                    Environment hasn't any elected official, show only
+                    government search.
+
+                #}
+                <div class="col-md-6 col-lg-5">
+                    <div class="typeahead_wrap">
+                        <input id="search_government" type="text" placeholder="Loading the list of governments" class="text-uppercase typeahead_government form-control" disabled>
+                    </div>
+                    <p class="text-center text-nowrap hidden-xs hidden-sm">
+                        Type part of th
+                        e agency's name
+                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowUp.gif') }}" style="width:40px">
+                        or click it on the map
+                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowDown.gif') }}" style="width:40px">
+                    </p>
+                </div>
+            {% endif %}
+
+
         </div>
 
         <div class="row">

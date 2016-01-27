@@ -29,6 +29,7 @@ class MainController extends Controller
             ->where(
                 $expr->eq('Environment.enabled', 1)
             )
+            ->orderBy($expr->desc('Environment.id'))
             ->setMaxResults(1)
             ->getQuery()
             ->getSingleScalarResult();
@@ -66,15 +67,13 @@ class MainController extends Controller
             json_encode($map)
         );
 
-//        $context = new SerializationContext();
-//        $context->setGroups([ 'map' ]);
-//        $map = $this->get('jms_serializer')->serialize($map, 'json', $context);
-
         return [
             'environment' => $environment,
             'map' => $map,
             'mapEntity' => $mapEntity,
             'greetingText' => $environmentManager->getGreetingText(),
+            'hasElectedOfficials' => $environmentManager
+                    ->countElectedOfficials() > 0,
         ];
     }
 }

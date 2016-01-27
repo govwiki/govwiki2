@@ -149,6 +149,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
             }
         }
+        unset($tmp);
 
         $government = $this->em->getRepository('GovWikiDbBundle:Government')
             ->findGovernment($this->environment, $altTypeSlug, $slug);
@@ -156,12 +157,19 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             return [];
         }
 
-        $fields = implode(',', $fields);
-        $data = $this->em->getConnection()->fetchAssoc("
-            SELECT {$fields} FROM {$this->environment}
-            WHERE government_id = {$government['id']}
-        ");
-        $government = array_merge($government, $data);
+        /*
+         * Fetch environment related government data if at least one field
+         * showing for given alt type.
+         */
+        if (is_array($fields) && (count($fields) > 0)) {
+            $fields = implode(',', $fields);
+            $data = $this->em->getConnection()->fetchAssoc("
+                SELECT {$fields} FROM {$this->environment}
+                WHERE government_id = {$government['id']}
+            ");
+            $government = array_merge($government, $data);
+            unset($data);
+        }
 
         /*
          * Compute max ranks.
@@ -303,6 +311,24 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         }
 
         return null;
+    }
+
+    public function countElectedOfficials()
+    {
+        $qb = $this->em->createQueryBuilder()
+            ->from('GovWikiDbBundle:ElectedOfficial', 'eo');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select($expr->count('eo.id'))
+            ->join('eo.government', 'Government')
+            ->join('Government.environment', 'Environment')
+            ->where($expr->eq(
+                'Environment.slug',
+                $expr->literal($this->environment
+            )))
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**

@@ -256,7 +256,11 @@ class GovernmentRepository extends EntityRepository
                 )
             )
             ->orderBy($expr->asc('CaptionCategory.id'))
-            ->getQuery()
+            ->getQuery();
+
+        $s = $data->getSQL();
+
+        $data = $data
             ->getArrayResult();
 
         if (count($data) <= 0) {
