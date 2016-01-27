@@ -26,10 +26,25 @@
                         <h3 class="panel-title">Map edit</h3>
                     </div>
                     <div class="panel-body">
+
                         {{ form_start(form) }}
-                        {{ form_widget(form) }}
-                        <button class="btn btn-success">Update</button>
-                        <a class="btn btn-default" href="{{ path('govwiki_admin_main_show') }}">Back</a>
+                        {# Map position, coordinates of center and zoom. #}
+                        <div class="col-md-6 col-lg-6 col-xs-12">
+                            {{- form_row(form.centerLatitude) -}}
+                            {{- form_row(form.centerLongitude) -}}
+                            {{- form_row(form.zoom) -}}
+                            {{- form_row(form.position) -}}
+                        </div>
+
+                        {# Colorized county conditions. #}
+                        <div class="col-md-6 col-lg-6 col-xs-12">
+                            {{- form_row(form.colorizedCountyConditions) -}}
+                        </div>
+                        <div class="col-md-12 col-lg-12 col-xs-12">
+                            <button class="btn btn-success">Update</button>
+                            <a class="btn btn-default" href="{{- path
+                            ('govwiki_admin_main_show') -}}">Back</a>
+                        </div>
                         {#<a class="btn btn-primary{%- if not canExport %} disabled{%- endif -%}" href="{{ path('map_export', {name: name}) }}">
                             Export to CartoDB
                         </a>#}
@@ -44,6 +59,12 @@
     </div>
 
 {% endblock body %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# Bootstrap colorpicker #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css"/>
+{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}

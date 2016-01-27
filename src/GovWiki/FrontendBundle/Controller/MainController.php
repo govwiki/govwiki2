@@ -3,6 +3,7 @@
 namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -48,6 +49,11 @@ class MainController extends Controller
         $environment = $environmentManager->getEnvironment();
 
         $map = $environmentManager->getMap();
+        /** @var ColorizedCountyConditions $colorizedCountyConditions */
+        $colorizedCountyConditions = $map['colorizedCountyConditions'];
+        $map['colorizedCountyConditions'] = $colorizedCountyConditions
+            ->toArray();
+
         $mapEntity = $map;
         if (null === $map) {
             throw new NotFoundHttpException();

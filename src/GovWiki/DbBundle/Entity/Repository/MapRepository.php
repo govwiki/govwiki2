@@ -59,7 +59,7 @@ class MapRepository extends EntityRepository
         $result = $qb
             ->select(
                 'Map.centerLatitude, Map.centerLongitude, Map.zoom',
-                'Map.position'
+                'Map.position, Map.colorizedCountyConditions'
             )
             ->leftJoin('Map.environment', 'Environment')
             ->where($expr->eq('Environment.slug', $expr->literal($name)))

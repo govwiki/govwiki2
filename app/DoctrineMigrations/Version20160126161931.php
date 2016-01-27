@@ -19,7 +19,7 @@ class Version20160126161931 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE maps ADD colorized_county_conditions LONGTEXT NOT NULL');
-        $this->addSql('UPDATE maps SET colorized_county_conditions = \'\'');
+        $this->addSql('UPDATE maps SET colorized_county_conditions = \'a:3:{s:9:"colorized";b:1;s:9:"fieldName";s:0:"";s:10:"conditions";a:0:{}}\'');
     }
 
     /**
