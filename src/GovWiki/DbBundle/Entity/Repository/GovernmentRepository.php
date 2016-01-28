@@ -160,9 +160,10 @@ class GovernmentRepository extends EntityRepository
                 extra.{$rankFieldName} AS value
             FROM {$environment} extra
             INNER JOIN governments government ON extra.government_id = government.id
+            INNER JOIN environments environment ON environment.id = government.environment_id
         ";
 
-        $wheres = [];
+        $wheres = [ "government.alt_type_slug = '{$altTypeSlug}'" ];
         $orderBys = [];
 
         /*

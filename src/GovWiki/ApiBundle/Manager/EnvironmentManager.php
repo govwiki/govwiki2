@@ -150,7 +150,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
             }
         }
-        unset($tmp);
 
         $government = $this->em->getRepository('GovWikiDbBundle:Government')
             ->findGovernment($this->environment, $altTypeSlug, $slug);
@@ -173,7 +172,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
              * Set properly type for values.
              */
             $validData = [];
-            $fieldFormats = Functions::groupBy($formats, [ 'field' ]);
+            $fieldFormats = Functions::groupBy($tmp, [ 'field' ]);
             foreach ($data as $field => $value) {
                 if (strpos($field, '_rank') === false) {
                     /*
