@@ -1,7 +1,7 @@
 
 /**
  * @param {Object} options
- * @param {String} options.selector
+ * @param {String} [options.selector]
  * @constructor
  */
 var RankPopover = function(options) {

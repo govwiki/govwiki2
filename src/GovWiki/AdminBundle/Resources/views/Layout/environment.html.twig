@@ -49,17 +49,17 @@
     {#</li>#}
 
     <li class="{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} active{% endif %}">
-        <a href="{{- path('govwiki_admin_government_index') -}}">
+        <a class="link" href="{{- path('govwiki_admin_government_index') -}}">
             Governments
         </a>
     </li>
     <li class="{% if app.request.attributes.get('_route') == 'govwiki_admin_electedofficial_index' %} active{% endif %}">
-        <a href="{{- path('govwiki_admin_electedofficial_index') -}}">
+        <a class="link" href="{{- path('govwiki_admin_electedofficial_index') -}}">
             Elected Officials
         </a>
     </li>
     <li class="{% if app.request.attributes.get('_route') == 'govwiki_admin_legislation_index' %} active{% endif %}">
-        <a href="{{- path('govwiki_admin_legislation_index') -}}">
+        <a class="link" href="{{- path('govwiki_admin_legislation_index') -}}">
             Legislation
         </a>
     </li>
@@ -67,15 +67,15 @@
     {# Requests menu #}
     {# Visibility: sm or more #}
     <li class="dropdown hidden-xs hidden-sm">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Requests<span class="caret"></span></a>
+        <a class="link" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Requests<span class="caret"></span></a>
         <ul class="dropdown-menu">
 
             <li{% if app.request.attributes.get('_route') == 'govwiki_admin_createrequest_index' %} class="active"{% endif %}>
-                <a href="{{- path('govwiki_admin_createrequest_index') -}}">Create Requests</a>
+                <a class="link" href="{{- path('govwiki_admin_createrequest_index') -}}">Create Requests</a>
             </li>
 
             <li{% if app.request.attributes.get('_route') == 'govwiki_admin_editrequest_index' %} class="active"{% endif %}>
-                <a href="{{- path('govwiki_admin_editrequest_index') -}}">Edit Requests</a>
+                <a class="link" href="{{- path('govwiki_admin_editrequest_index') -}}">Edit Requests</a>
             </li>
 
         </ul>
@@ -83,12 +83,12 @@
 
     {# Visibility: sm or less #}
     <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_createrequest_index' ? 'active' }} visible-xs visible-sm">
-        <a href="{{- path('govwiki_admin_createrequest_index') -}}">Create Requests</a>
+        <a class="link" href="{{- path('govwiki_admin_createrequest_index') -}}">Create Requests</a>
     </li>
 
     {# Visibility: sm or less #}
     <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_editrequest_index' ? 'active' }} visible-xs visible-sm">
-        <a href="{{- path('govwiki_admin_editrequest_index') -}}">Edit Requests</a>
+        <a class="link" href="{{- path('govwiki_admin_editrequest_index') -}}">Edit Requests</a>
     </li>
 
     {{ parent() }}
