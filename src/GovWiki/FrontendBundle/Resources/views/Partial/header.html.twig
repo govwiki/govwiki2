@@ -62,7 +62,7 @@
             {# Return to map #}
             {% if app.request.attributes.get('_route') != "map" %}
                 <li>
-                    <a href="/" class="link">
+                    <a href="{{ govwiki_path('map') }}" class="link">
                         Return to Map
                     </a>
                 </li>
