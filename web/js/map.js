@@ -6696,7 +6696,7 @@ $(function(){
             // todo change california dataset at staging and change back
             var cLayer = {
                 'cartocss': '#layer{polygon-fill:  #FF6600 ;polygon-opacity: 0.7;line-color: #FFF; line-width: 0.5; line-opacity: 1;}',
-                'sql': 'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.environment,
+                'sql': 'SELECT *, ST_AsGeoJSON(ST_Simplify(the_geom,.01)) AS geometry FROM ' + window.gw.environment + ' WHERE alt_type_slug = "County"',
                 'interactivity': ['cartodb_id', 'slug', 'geometry']
             };
 
@@ -6847,6 +6847,9 @@ $(function(){
                          */
                         if (layerIndex == countySubLayer._position) {
                             drawAppropriatePolygon(data);
+
+                            // Printout received data.
+                            console.log(data);
                         } else {
                             removeAllHoverShapes();
                         }
@@ -6938,11 +6941,11 @@ $(function(){
          * Toggle layers
          */
         function initLegendHandlers(altTypes) {
-            //// TODO generate legend on fly from given altTypes
+            // TODO generate legend on fly from given altTypes
             var $legend = $('.legend-item');
-            ///*
-            //    Add new elements.
-            // */
+            /*
+                Add new elements.
+             */
             //altTypes.forEach(function(altType) {
             //    /**
             //     * Span eleem

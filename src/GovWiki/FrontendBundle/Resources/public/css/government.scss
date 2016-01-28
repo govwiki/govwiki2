@@ -16,6 +16,13 @@
 
       h3 {
          color: $main-text;
+
+         /*
+            todo hardcode for puerto.
+         */
+         &.puerto {
+            color: #f15a29;
+         }
       }
 
    }
@@ -128,6 +135,30 @@
       }
 
       @import "partials/rank-popover/rank-popover";
+
+      /*
+         todo hardcode for puerto
+      */
+      .nav-pills__puerto {
+
+         .active {
+            a {
+               background-color: #f15a29;
+               color: white;
+            }
+         }
+
+         a {
+
+            background-color: white;
+            color: #f15a29;
+
+            &:hover {
+               background-color: #f15a29;
+               color: white;
+            }
+         }
+      }
 
    }
 

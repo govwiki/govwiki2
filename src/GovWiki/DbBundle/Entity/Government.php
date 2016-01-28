@@ -146,49 +146,12 @@ class Government
     private $countyAreaName;
 
     /**
-     * @var float
-     *
-     * @ORM\Column(name="rand", type="float", precision=10, scale=0, nullable=true)
-     * @Groups({"government"})
-     */
-    private $rand;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="inc_id", type="integer", nullable=true)
-     * @Groups({"government"})
-     */
-    private $incId;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="wikipedia_page_name", type="string", length=255, nullable=true)
      * @Groups({"government"})
      */
     private $wikipediaPageName;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="annual_salary_mayor", type="float", precision=10, scale=0, nullable=true)
-     */
-    private $annualSalaryMayor;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="mayor_name", type="string", length=255, nullable=true)
-     */
-    private $mayorName;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="years_mayor_in_office", type="integer", nullable=true)
-     */
-    private $yearsMayorInOffice;
 
     /**
      * @var string
@@ -676,78 +639,6 @@ class Government
     public function getWikipediaPageName()
     {
         return $this->wikipediaPageName;
-    }
-
-    /**
-     * Set annualSalaryMayor
-     *
-     * @param float $annualSalaryMayor
-     *
-     * @return Government
-     */
-    public function setAnnualSalaryMayor($annualSalaryMayor)
-    {
-        $this->annualSalaryMayor = $annualSalaryMayor;
-
-        return $this;
-    }
-
-    /**
-     * Get annualSalaryMayor
-     *
-     * @return float
-     */
-    public function getAnnualSalaryMayor()
-    {
-        return $this->annualSalaryMayor;
-    }
-
-    /**
-     * Set mayorName
-     *
-     * @param string $mayorName
-     *
-     * @return Government
-     */
-    public function setMayorName($mayorName)
-    {
-        $this->mayorName = $mayorName;
-
-        return $this;
-    }
-
-    /**
-     * Get mayorName
-     *
-     * @return string
-     */
-    public function getMayorName()
-    {
-        return $this->mayorName;
-    }
-
-    /**
-     * Set yearsMayorInOffice
-     *
-     * @param integer $yearsMayorInOffice
-     *
-     * @return Government
-     */
-    public function setYearsMayorInOffice($yearsMayorInOffice)
-    {
-        $this->yearsMayorInOffice = $yearsMayorInOffice;
-
-        return $this;
-    }
-
-    /**
-     * Get yearsMayorInOffice
-     *
-     * @return integer
-     */
-    public function getYearsMayorInOffice()
-    {
-        return $this->yearsMayorInOffice;
     }
 
     /**

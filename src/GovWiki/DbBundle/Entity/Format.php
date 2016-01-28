@@ -155,10 +155,7 @@ class Format
     public function setName($name)
     {
         $this->name = $name;
-        $this->field = preg_replace('/\W/', '_', $name);
-        $this->field = preg_replace('/_+/', '_', $this->field);
-        $this->field = strtolower($this->field);
-
+        $this->field = self::slugifyName($name);
         return $this;
     }
 
