@@ -5,6 +5,7 @@ namespace GovWiki\ApiBundle\Manager;
 use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
@@ -167,7 +168,36 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                 SELECT {$fields} FROM {$this->environment}
                 WHERE government_id = {$government['id']}
             ");
-            $government = array_merge($government, $data);
+
+            /*
+             * Set properly type for values.
+             */
+            $validData = [];
+            $fieldFormats = Functions::groupBy($formats, [ 'field' ]);
+            foreach ($data as $field => $value) {
+                if (strpos($field, '_rank') === false) {
+                    /*
+                     * Get field type from formats.
+                     */
+                    $type = $fieldFormats[$field]['type'];
+
+                    switch ($type) {
+                        case 'integer':
+                            $value = (int) $value;
+                            break;
+
+                        case 'float':
+                            $value = (float) $value;
+                            break;
+                    }
+                } else {
+                    $value = (int) $value;
+                }
+
+                $validData[$field] = $value;
+            }
+
+            $government = array_merge($government, $validData);
             unset($data);
         }
 
