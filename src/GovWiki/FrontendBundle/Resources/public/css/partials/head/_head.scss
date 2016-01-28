@@ -37,9 +37,17 @@ body > header {
    -moz-box-shadow: 2px 5px 22px -1px rgba(0,0,0,0.49);
    box-shadow: 2px 5px 22px -1px rgba(0,0,0,0.49);
 
+   /*
+      todo hardcode for puerto.
+   */
+   &.puerto {
+      border-bottom: 3px solid #808080;
+   }
+
    .logo {
       margin-top: 10px;
       margin-bottom: 10px;
+      max-height: 100px;
    }
 
    .navigation {

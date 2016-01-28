@@ -151,22 +151,29 @@ class Extension extends \Twig_Extension
             $postfix = '';
             $decimal = 0;
 
-            /*
-             * todo Ahtung! Hardcoded!
-             */
-            if ('float' === $format['type']) {
-                $value *= 100;
-            }
+
 
             if ('$' === $mask[0]) {
                 $prefix = '$';
+
+                if ($value < 0) {
+                    $value = abs($value);
+                    $prefix = '-$';
+                }
                 $decimalStr = $mask;
                 if (strpos($mask, ',') !== false) {
                     $decimalStr = explode(',', $mask)[1];
                 }
-                $decimal = strlen($decimalStr) - 1;
+                $decimal = strlen($decimalStr);
             } elseif (strpos($mask, '%') !== false) {
                 $postfix = '%';
+
+                /*
+                 * todo Ahtung! Hardcoded!
+                 */
+                if ('float' === $format['type']) {
+                    $value *= 100;
+                }
 
                 $decimalStr = $mask;
                 if (strpos($mask, '.') !== false) {
@@ -176,44 +183,12 @@ class Extension extends \Twig_Extension
             }
 
             $value = $prefix . number_format($value, $decimal) . $postfix;
+        } elseif (! is_string($value)) {
+            /*
+             * Add thousands separator.
+             */
+            $value = number_format($value);
         }
-
-//        if (strlen($format['mask']) > 0) {
-//            /*
-//             * Current value has mask.
-//             */
-//            $mask = $format['mask'];
-//
-//            $prefix = '';
-//            $postfix = '';
-//            $decimal = 1;
-//
-//            if ('$' === $mask[0]) {
-//                $prefix = '$';
-//
-//                /*
-//                 * Compute number of decimal point.
-//                 */
-//                $decimalStr = $mask;
-//                if (strpos($mask, ',') !== false) {
-//                    $decimalStr = explode(',', $mask)[1];
-//                }
-//                $decimal = strlen($decimalStr) - 1;
-//            } elseif (strpos($mask, '%') !== false) {
-//                $postfix = '%';
-//
-//                /*
-//                 * Compute number of decimal point.
-//                 */
-//                $decimalStr = $mask;
-//                if (strpos($mask, '.') !== false) {
-//                    $decimalStr = explode('.', $mask)[1];
-//                }
-//                $decimal = strlen($decimalStr) - 1;
-//            }
-//
-//            $value = $prefix . number_format($value, $decimal) . $postfix;
-//        }
 
         return $value;
     }

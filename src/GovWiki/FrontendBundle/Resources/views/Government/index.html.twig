@@ -40,7 +40,9 @@
             <header class="row">
                 <div class="col-md-12">
 
-                    <h3>{{government.name}}</h3>
+                    <h3 {% if environment == 'puerto_rico' -%}
+                            class="puerto"
+                    {%- endif -%}>{{government.name}}</h3>
 
                 </div>
             </header>
@@ -50,7 +52,10 @@
 
                     {# Tabs control #}
                     <nav>
-                        <ul class="nav nav-pills">
+                        {# todo styles for puerto-rico hardcoded #}
+                        <ul class="nav nav-pills {% if environment == 'puerto_rico' -%}
+                            nav-pills__puerto
+                        {%- endif -%}">
 
                             {% for tab in tabs %}
                                 <li class="{{ loop.first ? 'active' : '' }}">

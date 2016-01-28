@@ -19,7 +19,7 @@
     <body>
 
         {# Header #}
-        <header class="container">
+        <header class="container {% if environment == 'puerto_rico' %}puerto{% endif %}">
             {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
         </header>
 

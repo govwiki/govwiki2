@@ -63,6 +63,11 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     private $sqls = [];
 
     /**
+     * @var array
+     */
+    private $metadata;
+
+    /**
      * @var EntityManagerInterface
      */
     private $em;
@@ -118,13 +123,15 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
 
             try {
                 $con->beginTransaction();
+
                 /*
                  * Add governments.
                  */
                 $con->exec('
                     INSERT INTO governments
-                        (environment_id, name, slug, alt_type, alt_type_slug, county)
-                    VALUES ' . implode(',', $this->sqls['db']));
+                        (environment_id, county, slug, alt_type_slug, '.
+                        implode(',', array_keys($this->metadata['government']))
+                    .') VALUES ' . implode(',', $this->sqls['db']));
 
                 /*
                  * Create columns.
@@ -132,7 +139,8 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 $tableFields = [];
                 $formats = [];
 
-                foreach ($this->sqls['columns'] as $field => $data) {
+                $envRelatedGovernmentFields = [];
+                foreach ($this->metadata['extended'] as $field => $data) {
                     /*
                      * Generate formats table sqls.
                      */
@@ -149,7 +157,10 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                      */
                     $type = GovernmentTableManager::resolveType($data['type']);
                     $tableFields[] = "ADD {$field} {$type} DEFAULT NULL";
+
+                    $envRelatedGovernmentFields[] = $field;
                     if ($ranked) {
+                        $envRelatedGovernmentFields[] = $field. '_rank';
                         $tableFields[] = "ADD {$field}_rank int(11) DEFAULT NULL";
                     }
                 }
@@ -172,7 +183,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                  */
                 $con->exec("
                 INSERT INTO {$environment} (government_id, " .
-                    implode(',', array_keys($this->sqls['columns'])) . ') VALUES ' .
+                    implode(',', $envRelatedGovernmentFields) . ') VALUES ' .
                     implode(',', $this->sqls['government']));
             } catch (\Exception $e) {
                 $con->rollBack();
@@ -294,6 +305,11 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                     'coordinates' => $this->coordinates,
                 ]);
 
+                /*
+                 * Remove geometry type from data.
+                 */
+                unset($this->data['geometry_type']);
+
                 $name = $this->data['name'];
                 $slug = Government::slugifyName($name);
                 $altType = $this->getAltType();
@@ -301,73 +317,64 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
 
                 if (! array_key_exists('columns', $this->sqls)) {
                     /*
-                     * Get extended column names that not exists in government
-                     * entity.
+                     * If information about columns not collected, do it.
                      */
-                    $fields = $this->data;
-                    $restrictedFields = [
-                        'name',
-                        'slug',
-                        'alt_type',
-                        'altType',
-                        'alt_type_slug',
-                        'altTypeSlug',
-                        'kind',
-                        'state',
-                        'web_site_address',
-                        'webSiteAddress',
-                        'geometry_type',
-                    ];
-
-                    foreach ($fields as $field => $value) {
-                        if (! in_array($field, $restrictedFields, true)) {
-                            if (preg_match('|_?[Rr]ank$|', $field)) {
-                                /*
-                                 * Ranked field.
-                                 */
-                                $name = preg_replace('|_?[Rr]ank$|', '', $field);
-
-                                $this->sqls['columns'][$name]['ranked'] = true;
-                            } else {
-                                /*
-                                 * Normal field.
-                                 * Find out field type.
-                                 */
-                                $type = 'string';
-                                if (is_float($value)) {
-                                    $type = 'float';
-                                } elseif (is_int($value) || preg_match('/^\d+$/', $value)) {
-                                    $type = 'integer';
-                                }
-
-                                $this->sqls['columns'][$field]['type'] = $type;
-                            }
-                        }
-                    }
-
+                    $this->metadata = $this->collectMetadata($this->data);
                 }
 
                 /*
-                 * Add sql parts for insert into government table.
-                 */
-                $this->sqls['db'][] = "
-                    ({$this->environment->getId()} ,'{$name}', '{$slug}', '{$altType}', '{$altTypeSlug}', {$isCounty})
-                ";
-
-                /*
-                 * Add sql parts for insert into environment related government
-                 * table.
+                 * Generate sql parts for insert into government table.
                  */
                 $insertParts = [];
-                foreach ($this->sqls['columns'] as $column => $data) {
-                    if (array_key_exists('type', $data) && ('string' === $data['type'])) {
-                        $insertParts[] = '\'' . $this->data[$column] . '\'';
-                    } elseif (null === $this->data[$column]) {
+                foreach ($this->metadata['government'] as $column => $type) {
+                    /*
+                     * Get value for current column from read data.
+                     */
+                    $value = $this->data[$column];
+
+                    if ('string' === $type) {
+                        $value = "'{$value}'";
+                    } elseif (null === $value) {
+                        $value = 'NULL';
+                    }
+
+                    $insertParts[] = $value;
+                }
+
+                $this->sqls['db'][] = "
+                    ({$this->environment->getId()}, '{$isCounty}', ".
+                    "'{$slug}', '{$altTypeSlug}', ". implode(',', $insertParts) .')';
+
+                /*
+                 * Generate sql parts for insert into environment related
+                 * government table.
+                 */
+                $insertParts = [];
+                foreach ($this->metadata['extended'] as $column => $data) {
+                    /*
+                     * Get value for current column from read data.
+                     */
+                    $value = $this->data[$column];
+
+                    if (array_key_exists('type', $data) &&
+                        ('string' === $data['type'])) {
+                        $insertParts[] = '\'' . $value . '\'';
+                    } elseif (null === $value) {
                         $insertParts[] = 'NULL';
                     } else {
-                        $insertParts[] = $this->data[$column];
+                        $insertParts[] = $value;
+                    }
+
+                    if (array_key_exists('ranked', $data) && $data['ranked']) {
+                        /*
+                         * Add ranked column value.
+                         */
+                        $insertParts[] = $this->data[$column. '_rank'];
                     }
                 }
+                /*
+                 * Sql for fetching government_id for this government.
+                 */
                 $idSql = "
                     SELECT id FROM governments
                     WHERE slug = '{$slug}' AND
@@ -375,6 +382,8 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                         environment_id = {$this->environment->getId()}
                 ";
 
+
+                $this->tmp[] = $insertParts;
                 $this->sqls['government'][] = "(({$idSql}),". implode(',', $insertParts) .')';
 
                 /*
@@ -496,5 +505,104 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     private function unsetFlag($flag)
     {
         $this->flags &= ~ $flag;
+    }
+
+    /**
+     * Split fields on two group, in one all fields exists in
+     * government entity. Second group contains new fields.
+     *
+     * @param array $fields Array of fields from processing file.
+     *
+     * @return array
+     */
+    private function collectMetadata(array $fields)
+    {
+        /*
+         * Get metadata for government table.
+         */
+        $governmentMetadata = $this->em
+            ->getClassMetadata('GovWikiDbBundle:Government');
+        /*
+         * Government entity fields name, in camel case like it
+         * describe in Entity\Government.php.
+         */
+        $governmentFields = $governmentMetadata->getFieldNames();
+
+        /*
+         * Government table fields name, in snake case.
+         */
+        $governmentTableFields = array_map(function ($value) {
+
+            $value = lcfirst($value);
+            $value = preg_replace(
+                '/(?(?<=[a-z])([A-Z0-9])|[A-Z])/',
+                '_$0',
+                $value
+            );
+
+            return strtolower($value);
+        }, $governmentFields);
+
+
+        /*
+         * Relation between entity and table field names.
+         */
+        $governmentFieldsMap = array_combine(
+            $governmentTableFields,
+            $governmentFields
+        );
+        /*
+         * List of all government fields name, for processing
+         * file fields array.
+         */
+        $governmentFields = array_merge(
+            $governmentFields,
+            $governmentTableFields
+        );
+
+        $metadata = [
+            'government' => [],
+            'extended' => [],
+        ];
+        foreach ($fields as $field => $value) {
+            if (! in_array($field, $governmentFields, true)) {
+                /*
+                 * Field not exists in government entity, add to
+                 * environment related government table.
+                 */
+                $metadata['govColumns'][] = $field;
+
+                if (preg_match('|_?[Rr]ank$|', $field)) {
+                    /*
+                     * Ranked field.
+                     */
+                    $name = preg_replace('|_?[Rr]ank$|', '', $field);
+
+                    $metadata['extended'][$name]['ranked'] = true;
+                } else {
+                    /*
+                     * Normal field.
+                     * Find out field type.
+                     */
+                    $type = 'string';
+                    if (is_float($value)) {
+                        $type = 'float';
+                    } elseif (is_int($value) || preg_match('/^\d+$/', $value)) {
+                        $type = 'integer';
+                    }
+
+                    $metadata['extended'][$field]['type'] = $type;
+                }
+            } else {
+                /*
+                 * Field from government entity.
+                 */
+                $metadata['government'][$field] =
+                    $governmentMetadata
+                        ->getTypeOfField($governmentFieldsMap[$field]);
+            }
+        }
+
+        return $metadata;
     }
 }

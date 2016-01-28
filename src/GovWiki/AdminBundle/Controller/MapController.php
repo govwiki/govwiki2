@@ -83,7 +83,7 @@ class MapController extends AbstractGovWikiAdminController
                     ->createDataset($environment.'_temporary', [
                         'alt_type_slug' => 'VARCHAR(255)',
                         'slug' => 'VARCHAR(255)',
-                        'data' => 'VARCHAR(255)',
+                        'data' => 'double precision',
                     ], true)
                     // Load data into it.
                     ->sqlRequest("
