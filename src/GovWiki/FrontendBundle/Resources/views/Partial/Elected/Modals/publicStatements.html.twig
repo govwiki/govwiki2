@@ -10,7 +10,7 @@
                 <form name="addStatements">
                     <div class="input-group">
                         <span class="input-group-addon">Category: </span>
-                        <select class="form-control" data-issue-category>
+                        <select class="form-control" data-issue-category name="issueCategory">
                             {% for category in categories %}
                                 <option value="{{ category.id }}">{{ category.name }}</option>
                             {% endfor %}
@@ -33,6 +33,7 @@
                         <div class="url-content-title"></div>
                         <div class="url-content-body"></div>
                     </div>
+                    <input type="hidden" value="{{ app.user.username }}" data-username>
                 </form>
             </div>
             <div class="modal-footer">

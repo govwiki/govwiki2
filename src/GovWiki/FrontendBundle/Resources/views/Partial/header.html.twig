@@ -4,7 +4,15 @@
     <div class="col-xs-6 col-sm-6 col-md-3">
 
         <a href="http://californiapolicycenter.org/">
-            <img src="" alt="California Policy Center" class="logo">
+            {% if government is defined and government.secondaryLogoUrl %}
+                <img src="" alt="California Policy Center" class="logo" width="70%">
+                <img src="{{ asset(government.secondaryLogoUrl) }}" width="25%">
+            {% elseif elected.government is defined and elected.government.secondaryLogoUrl %}
+                <img src="" alt="California Policy Center" class="logo" width="70%">
+                <img src="{{ asset(elected.government.secondaryLogoUrl) }}" width="25%">
+            {% else %}
+                <img src="" alt="California Policy Center" class="logo">
+            {% endif %}
         </a>
 
     </div>

@@ -1,4 +1,3 @@
-
 {% import _self as fun %}
 <div role="tabpanel" class="tab-pane active" id="Votes">
 
@@ -12,26 +11,34 @@
             <th><a class="sort" data-sort-type="vote_category">Category <i class="icon"></i></a></th>
             <th></th>
         </tr>
-            {% if (elected.votes is defined) and (elected.votes is not empty) %}
-                {{ fun.renderVotes(elected.votes, elected) }}
-            {% else %}
-                <tr>
-                    <td colspan="7" align="center">
-                        <p style="font-size:18px;">No information at this time. Please check back later.</p>
-                    </td>
-                </tr>
-            {% endif %}
+        {% if (elected.votes is defined) and (elected.votes is not empty) %}
+
+            {{ fun.renderVotes(elected.votes, elected) }}
 
             {% if app.user and (createRequests is defined) %}
                 {{ fun.renderNewVotes(createRequests, categories) }}
             {% endif %}
 
-            <tr class="add_action">
-                <td colspan="7" class="add">
-                    Add new Vote
-                    <span class="glyphicon glyphicon-plus"></span>
+        {% elseif app.user and (createRequests is defined) %}
+
+            {{ fun.renderNewVotes(createRequests, categories) }}
+
+        {% else %}
+
+            <tr>
+                <td colspan="7" align="center">
+                    <p style="font-size:18px;">No information at this time. Please check back later.</p>
                 </td>
             </tr>
+
+        {% endif %}
+
+        <tr class="add_action">
+            <td colspan="7" class="add">
+                Add new Vote
+                <span class="glyphicon glyphicon-plus"></span>
+            </td>
+        </tr>
 
     </table>
 
@@ -80,19 +87,19 @@
 
 {% endmacro %}
 
-{% macro renderNewVotes(votes, categories) %}
+{% macro renderNewVotes(createRequests, categories) %}
 
-    {% for vote in votes %}
-        {% if vote.entityName == 'Legislation' and vote.fields.fields.dateConsidered is defined %}
-            <tr data-id="{{ vote.id }}" style="background: rgba(80, 0, 0, 0.1)">
-                <td data-date-considered="{{ vote.fields.fields.dateConsidered }}">
-                    {{ vote.fields.fields.dateConsidered }}
+    {% for createRequest in createRequests %}
+        {% if createRequest.entityName == 'Legislation' and createRequest.fields.fields.dateConsidered is defined %}
+            <tr data-id="{{ createRequest.id }}" style="background: rgba(80, 0, 0, 0.1)">
+                <td data-date-considered="{{ createRequest.fields.fields.dateConsidered }}">
+                    {{ createRequest.fields.fields.dateConsidered }}
                 </td>
-                <td data-name="{{ vote.fields.fields.name }}" data-no-editable>
-                    {{ vote.fields.fields.name }}
+                <td data-name="{{ createRequest.fields.fields.name }}" data-no-editable>
+                    {{ createRequest.fields.fields.name }}
                 </td>
-                <td data-summary="{{ vote.fields.fields.summary }}" data-no-editable>
-                    {{ vote.fields.fields.summary }}
+                <td data-summary="{{ createRequest.fields.fields.summary }}" data-no-editable>
+                    {{ createRequest.fields.fields.summary }}
                 </td>
                 <td data-vote="" data-no-editable>
 
@@ -103,7 +110,7 @@
 
                 {% set categoryName = '' %}
                 {% for category in categories %}
-                    {% if category.id == vote.fields.associations.issueCategory %}
+                    {% if category.id == createRequest.fields.associations.issueCategory %}
                         {% set categoryName = category.name %}
                     {% endif %}
                 {% endfor %}
@@ -111,7 +118,12 @@
                 <td data-issue-category="{{ categoryName }}" data-no-editable>
                     {{ categoryName }}
                 </td>
-                <td data-no-editable>{{ app.user.username }}</td>
+
+                {% set username = '' %}
+                {% if createRequest.fields.fields.username is defined %}
+                    {% set username = createRequest.fields.fields.username %}
+                {% endif %}
+                <td data-username="{{ username }}" data-no-editable>{{ username }}</td>
             </tr>
         {% endif %}
     {% endfor %}
