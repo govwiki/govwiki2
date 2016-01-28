@@ -1,6 +1,6 @@
 <div role="tabpanel" class="tab-pane active" id="General">
     <h3 class="text-center">General</h3>
-    <div class="col-md-4">
+    <div class="col-md-6">
         <h4>Main information</h4>
         {{ form_row(form.main.name) }}
         {{ form_row(form.main.altType) }}
@@ -8,14 +8,10 @@
             {{ form_row(form.main.environment) }}
         {% endif %}
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
         <h4>Urls</h4>
         {{ form_row(form.main.wikipediaPageName) }}
         {{ form_row(form.main.latestAuditUrl) }}
-    </div>
-    <div class="col-md-4">
-        <h4>Mayour (for counties or minicipios)</h4>
-        {{ form_row(form.main.mayorName) }}
-        {{ form_row(form.main.yearsMayorInOffice) }}
+        {{ form_row(form.main.secondaryLogoUrl) }}
     </div>
 </div>

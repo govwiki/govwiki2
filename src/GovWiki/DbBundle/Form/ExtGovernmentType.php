@@ -46,7 +46,7 @@ class ExtGovernmentType extends AbstractType
         if ($this->altType) {
             foreach ($formats as $format) {
                 if (in_array($this->altType, $format['showIn'], true)) {
-                    $format['type'] = ('string' === $format['type']) ? 'text' : $format['type'];
+                    $format['type'] = ('string' === $format['type']) ? 'text' : 'number';
 
                     $builder->add($format['field'], $format['type']);
                     if ($format['ranked']) {
@@ -56,7 +56,7 @@ class ExtGovernmentType extends AbstractType
             }
         } else {
             foreach ($formats as $format) {
-                $format['type'] = ('string' === $format['type']) ? 'text' : $format['type'];
+                $format['type'] = ('string' === $format['type']) ? 'text' : 'number';
 
                 $builder->add($format['field'], $format['type']);
                 if ($format['ranked']) {

@@ -42,8 +42,7 @@ class GovernmentType extends AbstractType
 //            ->add('censusContact')
 //            ->add('city')
             ->add('wikipediaPageName')
-            ->add('mayorName')
-            ->add('yearsMayorInOffice')
+            ->add('secondaryLogoUrl', 'file')
             ->add('latestAuditUrl');
 
         /** @var Government|null $current */
