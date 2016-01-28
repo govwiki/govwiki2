@@ -114,7 +114,7 @@ class ColorizedCountyConditions
          * Pull conditions to object, previously sort in reverse order.
          */
         $conditions = $array['conditions'];
-        krsort($condition);
+        krsort($conditions);
         foreach ($conditions as $condition => $color) {
             $object->addCondition(new Condition($condition, $color));
         }

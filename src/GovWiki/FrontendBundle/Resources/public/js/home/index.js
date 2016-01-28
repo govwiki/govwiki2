@@ -41,7 +41,7 @@ $(function(){
     .done(function(layer){
 
         var subLayers = {};
-        var markerColors = ['#f00', '#add8e6', '#800080'];
+        var markerColors = ['#f00', '#800080', '#add8e6'];
 
         /**
          * Available layers
@@ -58,7 +58,7 @@ $(function(){
          * SubLayers & tooltips initialization
          * Get unique altTypes and render new subLayers by them
          */
-        sql.execute("SELECT GeometryType(the_geom), alt_type_slug FROM " + window.gw.environment + " WHERE the_geom IS NOT NULL GROUP BY GeometryType(the_geom), alt_type_slug")
+        sql.execute("SELECT GeometryType(the_geom), alt_type_slug FROM " + window.gw.environment + " WHERE the_geom IS NOT NULL GROUP BY GeometryType(the_geom), alt_type_slug ORDER BY alt_type_slug")
             .done(function(data) {
 
                 var altTypes = data.rows.filter(function (alt) {
@@ -102,19 +102,24 @@ $(function(){
          */
         function initSubLayers(altTypes) {
 
-            altTypes.forEach(function(altType){
-
-                if (altType.geometrytype === "MULTIPOLYGON" || altType.geometrytype === "POLYGON"){
-                    initCountySubLayer(altType.alt_type_slug);
-                } else {
-                    initMarkerSubLayer(altType.alt_type_slug);
-                }
-
+            var countySubLayers = altTypes.filter(function(altType) {
+                return (altType.geometrytype === "MULTIPOLYGON" || altType.geometrytype === "POLYGON")
             });
 
+            var markerSubLayers = altTypes.filter(function(altType) {
+                return (altType.geometrytype !== "MULTIPOLYGON" && altType.geometrytype !== "POLYGON")
+            });
 
-                initSublayerHandlers();
-                loadFinished();
+            countySubLayers.forEach(function(altType) {
+                initCountySubLayer(altType.alt_type_slug);
+            });
+
+            markerSubLayers.forEach(function(altType) {
+                initMarkerSubLayer(altType.alt_type_slug);
+            });
+
+            initSublayerHandlers();
+            loadFinished();
 
         }
 
@@ -128,35 +133,40 @@ $(function(){
 
             var colorized = window.gw.map.colorizedCountyConditions.colorized;
 
-            var cartocss = '#layer { polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
-
-            // TODO: Generate cartocss
             if (colorized) {
 
                 var conditions = window.gw.map.colorizedCountyConditions.conditions;
+                var keys = Object.keys(conditions).reverse();
+                var defaultColor = conditions[keys[0]];
 
-                for (var key in conditions) {
+                var cartocss = '#layer { polygon-fill: '+ defaultColor +
+                    '; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+
+                keys.forEach(function(key){
                     if (conditions.hasOwnProperty(key)) {
 
                         cartocss += '#layer[data <= ' + key + '] { polygon-fill: ' + conditions[key] + '; } ';
 
                     }
-                }
+                });
 
+            } else {
+                cartocss = '#layer { polygon-fill: #F15A29; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } '
             }
 
-            // todo change california dataset at staging and change back
             var cLayer = {
-                'cartocss': '#layer { polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } #layer[data <= 25] { polygon-fill: #A6CEE3; } #layer[data > 25] { polygon-fill: #FF5C00; } #layer[data=null] { polygon-fill: #F11810; }',
-                'sql': 'SELECT *, ST_AsGeoJSON(the_geom) AS geometry FROM ' + window.gw.environment,
-                'interactivity': ['cartodb_id', 'slug', 'geometry']
+                'cartocss': cartocss,
+                'sql': 'SELECT *, ST_AsGeoJSON(the_geom) AS geometry FROM ' + window.gw.environment + ' WHERE  alt_type_slug = \''+ altType +'\'',
+                'interactivity': ['cartodb_id', 'slug', 'alt_type_slug', 'geometry']
             };
 
             countySubLayer = layer.createSubLayer(cLayer);
 
-            subLayers[altType] = countySubLayer;
+            var _altType = altType.toLowerCase();
 
-            initTooltip(altType);
+            subLayers[_altType] = countySubLayer;
+
+            initTooltip(_altType);
         }
 
         /**
