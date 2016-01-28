@@ -151,8 +151,6 @@ class Extension extends \Twig_Extension
             $postfix = '';
             $decimal = 0;
 
-
-
             if ('$' === $mask[0]) {
                 $prefix = '$';
 
@@ -164,7 +162,7 @@ class Extension extends \Twig_Extension
                 if (strpos($mask, ',') !== false) {
                     $decimalStr = explode(',', $mask)[1];
                 }
-                $decimal = strlen($decimalStr);
+                $decimal = strlen($decimalStr) - 1;
             } elseif (strpos($mask, '%') !== false) {
                 $postfix = '%';
 
