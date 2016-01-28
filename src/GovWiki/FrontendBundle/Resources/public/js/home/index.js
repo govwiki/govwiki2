@@ -389,7 +389,7 @@ $(function(){
                 var altTypeSlug = altType.alt_type_slug.replace(/_/g, ' ');
                 var _altTypeSlug = altType.alt_type_slug.toLowerCase();
 
-                var iconClass = (altType.geometrytype && (altType.alt_type_slug == "County" || altType.alt_type_slug == "Municipoi"))
+                var iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
                                         ? 'grey-line'
                                         : 'marker-circle ' + markerIcons.shift();
 
