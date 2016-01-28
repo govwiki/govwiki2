@@ -175,6 +175,13 @@ class Government
     private $environment;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="secondary_logo_url", nullable=true)
+     */
+    private $secondaryLogoUrl;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -814,5 +821,28 @@ class Government
         $this->environment = $environment;
 
         return $this;
+    }
+
+    /**
+     * Set secondaryLogoUrl
+     *
+     * @param string $secondaryLogoUrl
+     * @return Government
+     */
+    public function setSecondaryLogoUrl($secondaryLogoUrl)
+    {
+        $this->secondaryLogoUrl = $secondaryLogoUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get secondaryLogoUrl
+     *
+     * @return string 
+     */
+    public function getSecondaryLogoUrl()
+    {
+        return $this->secondaryLogoUrl;
     }
 }

@@ -1,4 +1,4 @@
-
+{% import _self as fun %}
 <div role="tabpanel" class="tab-pane" id="Contributions">
 
     <table class="table table-hover" data-entity-type="Contribution">
@@ -8,6 +8,7 @@
             <th>Ind. Exp. Desc.</th>
             <th><a class="sort" data-sort-type="amount">Amount <i class="icon"></i></a></th>
             <th><a class="sort" data-sort-type="contributor-type">Contributor Type <i class="icon"></i></a></th>
+            <th></th>
         </tr>
 
         {% if (elected.contributions is defined) and (elected.contributions is not empty) %}
@@ -50,10 +51,21 @@
                            title="">{{contribution.contributorType}}</a>
                         <span class="glyphicon glyphicon-pencil edit"></span>
                     </td>
+                    <td>
+
+                    </td>
 
                 </tr>
 
             {% endfor %}
+
+            {% if app.user and (createRequests is defined) %}
+                {{ fun.renderNewContributions(createRequests, categories) }}
+            {% endif %}
+
+        {% elseif app.user and (createRequests is defined) %}
+
+            {{ fun.renderNewContributions(createRequests, categories) }}
 
         {% else %}
 
@@ -75,3 +87,35 @@
     </table>
 
 </div>
+
+{% macro renderNewContributions(createRequests, categories) %}
+
+    {% for createRequest in createRequests %}
+        {% if createRequest.entityName == 'Contribution' and createRequest.fields.fields.electionYear is defined %}
+            <tr data-id="{{ createRequest.id }}" style="background: rgba(80, 0, 0, 0.1)">
+                <td data-election-year="{{ createRequest.fields.fields.electionYear }}">
+                    {{ createRequest.fields.fields.electionYear }}
+                </td>
+                <td data-contributor-name="{{ createRequest.fields.fields.contributorName }}" data-no-editable>
+                    {{ createRequest.fields.fields.contributorName }}
+                </td>
+                <td data-independent-expenditure-desc="{{ createRequest.fields.fields.independentExpenditureDesc }}" data-no-editable>
+                    {{ createRequest.fields.fields.independentExpenditureDesc }}
+                </td>
+                <td data-contribution-amount="{{ createRequest.fields.fields.contributionAmount }}" data-no-editable>
+                    {{ createRequest.fields.fields.contributionAmount }}
+                </td>
+                <td data-contributor-type="{{ createRequest.fields.fields.contributorType }}" data-no-editable>
+                    {{ createRequest.fields.fields.contributorType }}
+                </td>
+
+                {% set username = '' %}
+                {% if createRequest.fields.fields.username is defined %}
+                    {% set username = createRequest.fields.fields.username %}
+                {% endif %}
+                <td data-username="{{ username }}" data-no-editable>{{ username }}</td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+
+{% endmacro %}
