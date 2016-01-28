@@ -183,6 +183,8 @@ RankPopover.prototype.sortHandler = function sortHandler() {
 
     $popoverContent.on('click', 'th', function(e) {
 
+        self.$popoverContent.find('h3').remove();
+
         self.noMoreData = false;
         self.previousScrollTop = 0;
         self.currentPage = 0;
