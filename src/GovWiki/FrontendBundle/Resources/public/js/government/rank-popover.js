@@ -27,6 +27,7 @@ var RankPopover = function(options) {
 RankPopover.prototype.init = function init() {
 
     var self = this;
+    self.noMoreData = false;
 
     var $statistics = $('.statistics');
     var $governmentController = $('.governmentController');
@@ -36,7 +37,7 @@ RankPopover.prototype.init = function init() {
         placement: 'bottom',
         selector: this.selector,
         animation: true,
-        template: '<div class="popover rankPopover" role="tooltip"><div class="arrow"></div><div class="popover-title-custom"><h3 class="popover-title"></h3></div><div class="popover-content"><div class="loader"></div></div></div>'
+        template: '<div class="popover rankPopover" role="tooltip"><div class="arrow"></div><div class="popover-title-custom"><h3 class="popover-title"></h3></div><div class="popover-content"></div></div>'
     });
 
     $governmentController.on('click', function(e) {
@@ -66,8 +67,12 @@ RankPopover.prototype.init = function init() {
         self.$popover = $element;
 
         self.$popoverContent = $popover.next().find('.popover-content');
-        self.$preloader = self.$popoverContent.find('.loader');
+
         self.rankFieldName = $popover.attr('data-field');
+
+        self.$popover.on('hide.bs.popover', function () {
+            self.noMoreData = false;
+        });
 
         var $popoverContent = self.$popoverContent;
         var $preloader = self.$preloader;
@@ -75,7 +80,6 @@ RankPopover.prototype.init = function init() {
 
         if (rankFieldName) {
             self.loading = true;
-            $preloader.show();
 
             $.ajax({
                 url: window.gw.urls.popover,
@@ -84,15 +88,23 @@ RankPopover.prototype.init = function init() {
                     field_name: rankFieldName
                 },
                 success: function(data) {
-                    self.formatData.call(self, data);
-                    // Render rankTable template
-                    $popoverContent.html(Handlebars.templates.rankTable(data));
-                    self.$rankTable = $popoverContent.find('table tbody');
-                    // Initialize scroll and sort handlers
-                    self.scrollHandler.call(self);
-                    self.sortHandler.call(self);
-                    self.loading = false;
-                    $preloader.hide();
+                    if (data.data.length != 0) {
+                        self.formatData.call(self, data);
+                        // Render rankTable template
+                        $popoverContent.html(Handlebars.templates.rankTable(data));
+                        self.$rankTable = $popoverContent.find('table tbody');
+                        self.$preloader = $popoverContent.find('.loader');
+                        // Initialize scroll and sort handlers
+                        self.scrollHandler.call(self);
+                        self.sortHandler.call(self);
+                        self.loading = false;
+                    } else {
+                        if (!self.noMoreData) {
+                            self.$popoverContent[0].innerHTML = '<h3 style="text-align: center">No data</h3>';
+                            self.noMoreData = true;
+                            self.loading = false;
+                        }
+                    }
                 }
             });
         }
@@ -113,37 +125,45 @@ RankPopover.prototype.scrollHandler = function scrollHandler () {
     var $popoverContent = self.$popoverContent;
     var $preloader = self.$preloader;
 
-    var previousScrollTop = self.previousScrollTop;
-    var currentPage = self.currentPage;
     var rankFieldName = self.rankFieldName;
     var order = self.order;
 
-    previousScrollTop = 0;
-    currentPage = 0;
+    self.previousScrollTop = 0;
+    self.currentPage = 0;
 
     $popoverContent.scroll(function() {
 
         var currentScrollTop = $popoverContent.scrollTop();
 
-        if (previousScrollTop < currentScrollTop && currentScrollTop > 0.5 * $popoverContent[0].scrollHeight) {
-            previousScrollTop = currentScrollTop;
+        if (self.previousScrollTop < currentScrollTop && currentScrollTop > 0.5 * $popoverContent[0].scrollHeight && !self.noMoreData) {
+            self.previousScrollTop = currentScrollTop;
             if (self.loading === false) {
                 self.loading = true;
-                $preloader.show();
+                self.$preloader.show();
                 $.ajax({
                     url: window.gw.urls.popover,
                     dataType: 'json',
                     data: {
-                        page: ++currentPage,
+                        page: ++self.currentPage,
                         order: order.rank,
                         name_order: order.altType,
                         field_name: rankFieldName
                     },
                     success: function(data) {
-                        self.formatData(data);
-                        self.loading = false;
-                        $preloader.hide();
-                        $rankTable[0].innerHTML += Handlebars.templates.rankTableAdditionalRows(data);
+                        if (data.data.length != 0) {
+                            self.formatData(data);
+                            self.loading = false;
+                            self.$preloader.hide();
+                            $rankTable[0].innerHTML += Handlebars.templates.rankTableAdditionalRows(data);
+                        } else {
+                            if (!self.noMoreData) {
+                                self.noMoreData = true;
+                                var h3 = $('<h3 style="text-align: center">No more data</h3>');
+                                self.$popoverContent.append(h3);
+                                self.loading = false;
+                                self.$preloader.hide();
+                            }
+                        }
                     }
                 });
             }
@@ -162,6 +182,10 @@ RankPopover.prototype.sortHandler = function sortHandler() {
     var order = self.order;
 
     $popoverContent.on('click', 'th', function(e) {
+
+        self.noMoreData = false;
+        self.previousScrollTop = 0;
+        self.currentPage = 0;
 
         var $column = $(this).hasClass('sortable') ? $(this) : $(this).closest('th');
         var $sortIcon = $column.find('i');
@@ -204,10 +228,8 @@ RankPopover.prototype.loadNewRows = function loadNewRows (order) {
 
     $rankTable.html('');
 
-    $preloader.show();
+    self.$preloader.show();
     self.loading = true;
-    self.currentPage = 0;
-    self.previousScrollTop = 0;
 
     console.log(self.rankFieldName);
     $.ajax({
@@ -220,10 +242,16 @@ RankPopover.prototype.loadNewRows = function loadNewRows (order) {
             field_name: self.rankFieldName
         },
         success: function(data) {
-            self.formatData.call(self, data);
-            $rankTable.html(Handlebars.templates.rankTableAdditionalRows(data));
-            self.loading = false;
-            self.$preloader.hide();
+            if (data.data.length != 0) {
+                self.formatData.call(self, data);
+                $rankTable.html(Handlebars.templates.rankTableAdditionalRows(data));
+                self.loading = false;
+                self.$preloader.hide();
+            } else {
+                self.$popoverContent[0].innerHTML = '<h3 style="text-align: center">No data</h3>';
+                self.loading = false;
+                self.$preloader.hide();
+            }
         }
     });
 
