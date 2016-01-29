@@ -43,6 +43,13 @@ class Environment
      * @var string
      *
      * @ORM\Column()
+     */
+    private $title;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column()
      *
      * @Groups({"map"})
      */
@@ -177,6 +184,26 @@ class Environment
     {
         $this->name = trim($name);
         $this->slug = self::slugify($this->name);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title Page title.
+     *
+     * @return Environment
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
 
         return $this;
     }
