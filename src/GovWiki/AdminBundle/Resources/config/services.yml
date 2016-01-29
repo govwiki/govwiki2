@@ -26,7 +26,7 @@ services:
         arguments:
             - @form.factory
             - @govwiki_admin.manager.environment
-            - %kernel.root_dir%/../web/img
+            - %kernel.root_dir%/../web/img/upload
 
 #    govwiki_admin.listener.government_sync:
 #        class: GovWiki\AdminBundle\Listener\SyncGovernmentWithCartoDb

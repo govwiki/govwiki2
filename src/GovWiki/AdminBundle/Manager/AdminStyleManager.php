@@ -107,7 +107,7 @@ class AdminStyleManager
                         $filename
                     );
 
-                    $value = '/img/' . $filename;
+                    $value = '/img/upload/' . $filename;
                 }
 
                 eval('$styles' . $path . ' = \'' . $value . '\';');

@@ -81,8 +81,8 @@ fi
 APACHEUSER=`ps aux | grep -E '[a]pache|[h]ttpd' | grep -v root | head -1 | cut -d\  -f1`
 
 if [ `command -v setfacl 2>&1` ] ; then
-    setfacl -R -m u:$APACHEUSER:rwX -m u:`whoami`:rwX app/cache app/logs web/img
-    setfacl -dR -m u:$APACHEUSER:rwX -m u:`whoami`:rwX app/cache app/logs web/img
+    setfacl -R -m u:$APACHEUSER:rwX -m u:`whoami`:rwX app/cache app/logs web/img/upload
+    setfacl -dR -m u:$APACHEUSER:rwX -m u:`whoami`:rwX app/cache app/logs web/img/upload
     if [ $(getent group phpteam ) ]; then setfacl -R -m g:phpteam:rw ./; fi
 else
     chmod +a "$APACHEUSER allow delete,write,append,file_inherit,directory_inherit" app/cache app/logs web/img
