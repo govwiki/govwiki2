@@ -48,9 +48,17 @@ class ExtGovernmentType extends AbstractType
                 if (in_array($this->altType, $format['showIn'], true)) {
                     $format['type'] = ('string' === $format['type']) ? 'text' : 'number';
 
-                    $builder->add($format['field'], $format['type']);
+                    $builder->add(
+                        $format['field'],
+                        $format['type'],
+                        [ 'required' => false ]
+                    );
                     if ($format['ranked']) {
-                        $builder->add($format['field'] . '_rank', 'integer');
+                        $builder->add(
+                            $format['field'] . '_rank',
+                            'integer',
+                            [ 'required' => false ]
+                        );
                     }
                 }
             }
@@ -58,9 +66,17 @@ class ExtGovernmentType extends AbstractType
             foreach ($formats as $format) {
                 $format['type'] = ('string' === $format['type']) ? 'text' : 'number';
 
-                $builder->add($format['field'], $format['type']);
+                $builder->add(
+                    $format['field'],
+                    $format['type'],
+                    [ 'required' => false ]
+                );
                 if ($format['ranked']) {
-                    $builder->add($format['field'] . '_rank', 'integer');
+                    $builder->add(
+                        $format['field'] . '_rank',
+                        'integer',
+                        [ 'required' => false ]
+                    );
                 }
             }
         }
