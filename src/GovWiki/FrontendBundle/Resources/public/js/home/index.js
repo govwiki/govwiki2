@@ -427,8 +427,8 @@ $(function(){
             color: "#808080",
             weight: 1,
             opacity: 1,
-            fillOpacity: .45,
-            fillColor: "#00FF00",
+            fillOpacity: .6,
+            fillColor: "#000000",
             clickable: false
         };
 
