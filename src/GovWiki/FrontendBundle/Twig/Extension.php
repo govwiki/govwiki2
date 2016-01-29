@@ -94,17 +94,21 @@ class Extension extends \Twig_Extension
      */
     public function getGlobals()
     {
-        $styles = $this->manager->getStyle();
-        $styles = json_encode($styles);
+        if ($this->manager->getEnvironment()) {
+            $styles = $this->manager->getStyle();
+            $styles = json_encode($styles);
 
-        return [
-            'styles' => $styles,
-            'environment' => $this->manager->getEnvironment(),
-            'environment_slug' => $this->manager->getSlug(),
-            'hasElectedOfficials' => $this->manager
-                    ->countElectedOfficials() > 0,
-            'title' => $this->manager->getTitle(),
-        ];
+            return [
+                'styles' => $styles,
+                'environment' => $this->manager->getEnvironment(),
+                'environment_slug' => $this->manager->getSlug(),
+                'hasElectedOfficials' => $this->manager
+                        ->countElectedOfficials() > 0,
+                'title' => $this->manager->getTitle(),
+            ];
+        }
+
+        return [];
     }
 
 
