@@ -42,7 +42,7 @@ class GovernmentType extends AbstractType
 //            ->add('censusContact')
 //            ->add('city')
             ->add('wikipediaPageName')
-            ->add('secondaryLogoUrl', 'file')
+            ->add('secondaryLogo', 'file', [ 'required' => false ])
             ->add('latestAuditUrl');
 
         /** @var Government|null $current */

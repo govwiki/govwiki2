@@ -109,6 +109,8 @@ class Extension extends \Twig_Extension
             'styles' => $styles,
             'environment' => $this->manager->getEnvironment(),
             'environment_slug' => $this->manager->getSlug(),
+            'hasElectedOfficials' => $this->manager
+                    ->countElectedOfficials() > 0,
         ];
     }
 

@@ -162,27 +162,54 @@ class GovernmentController extends AbstractGovWikiAdminController
         $oldAltTypeSlug = $government->getAltTypeSlug();
 
         if ($form->isValid()) {
+            $file = $government->getSecondaryLogo();
+
+            if ($file instanceof UploadedFile) {
+                $filename = strtolower(
+                    $government->getAltTypeSlug() .'_'. $government->getSlug() .
+                    '.'. $file->getClientOriginalExtension()
+                );
+
+                $file->move(
+                    $this->getParameter('kernel.root_dir') .'/../web/img/upload',
+                    $filename
+                );
+
+                $government->setSecondaryLogoUrl('/img/upload/'. $filename);
+            }
+
+
             $this->getManager()->update($government);
 
             /*
-            * Update carto db service, if is needed.
+            * Update government record in CartoDB dataset.
             */
-            if (($government->getAltTypeSlug() !== $oldAltTypeSlug) ||
-                ($government->getSlug() !== $oldSlug)) {
-                $this->get(CartoDbServices::CARTO_DB_API)
-                    ->sqlRequest("
-                        UPDATE {$government->getEnvironment()->getSlug()}
-                        SET
-                            alt_type_slug = '{$government->getAltTypeSlug()}',
-                            slug = '{$government->getSlug()}'
-                        WHERE
-                            alt_type_slug = '{$oldAltTypeSlug}' AND
-                            slug = '{$oldSlug}'
-                    ");
+            $colorizedCountyConditions = $this->adminEnvironmentManager()->getMap()
+                ->getColorizedCountyConditions();
+            $colorizedFieldName = $colorizedCountyConditions->getFieldName();
+            $isColorized = $colorizedCountyConditions->isColorized();
+
+            $sql = "
+                UPDATE {$government->getEnvironment()->getSlug()}
+                SET
+                    alt_type_slug = '{$government->getAltTypeSlug()}',
+                    slug = '{$government->getSlug()}'
+            ";
+
+            $extraGovernmentData = $form->getData()['extension'];
+            if ($isColorized && $colorizedFieldName &&
+                array_key_exists($colorizedFieldName, $extraGovernmentData)) {
+                $sql .= ", data = {$extraGovernmentData[$colorizedFieldName]} ";
             }
 
+            $this->get(CartoDbServices::CARTO_DB_API)
+                ->sqlRequest($sql ." WHERE
+                    alt_type_slug = '{$oldAltTypeSlug}' AND
+                    slug = '{$oldSlug}'
+                ");
+
             $this->adminEnvironmentManager()
-                ->updateGovernment($form->getData()['extension']);
+                ->updateGovernment($extraGovernmentData);
 
             $this->addFlash('admin_success', 'Government '.
                 $government->getName() .' saved');

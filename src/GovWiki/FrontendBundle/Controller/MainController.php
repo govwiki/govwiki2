@@ -72,8 +72,6 @@ class MainController extends Controller
             'map' => $map,
             'mapEntity' => $mapEntity,
             'greetingText' => $environmentManager->getGreetingText(),
-            'hasElectedOfficials' => $environmentManager
-                    ->countElectedOfficials() > 0,
         ];
     }
 }

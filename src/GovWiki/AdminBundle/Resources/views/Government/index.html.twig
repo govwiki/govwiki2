@@ -42,20 +42,22 @@
                         <div class="col-xs-8 col-sm-9 col-md-5 col-lg-5 text-center text-left-sm">
 
                             <div class="row">
-                                <div class="col-xs-10">
+                                <form action="" method="get" class="form-inline controls">
+                                    <div class="col-xs-10">
 
-                                    <form class="form-inline controls">
-                                        <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id"
-                                               value="{{ app.request.query.get('filter') ? app.request.query.get('filter').id}}">
 
-                                        <input name="filter[name]" type="text" class="form-control input-sm" placeholder="Name"
-                                               value="{{app.request.query.get('filter') ? app.request.query.get('filter').name}}">
-                                    </form>
-                                </div>
+                                            <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id"
+                                                   value="{{ app.request.query.get('filter') ? app.request.query.get('filter').id}}">
 
-                                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
-                                    <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
-                                </div>
+                                            <input name="filter[name]" type="text" class="form-control input-sm" placeholder="Name"
+                                                   value="{{app.request.query.get('filter') ? app.request.query.get('filter').name}}">
+
+                                    </div>
+
+                                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
+                                        <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
+                                    </div>
+                                </form>
                             </div>
 
                         </div>

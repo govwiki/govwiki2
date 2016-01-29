@@ -7,6 +7,7 @@ use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\UserBundle\Entity\User;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use \Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -506,9 +507,14 @@ class AdminEnvironmentManager
     public function updateGovernment(array $data)
     {
         $stmt = '';
+        $id = $data['id'];
+        unset($data['id']);
+
         foreach ($data as $field => $value) {
             if (is_string($value)) {
                 $value = "'{$value}'";
+            } elseif (null === $value) {
+                $value = 'NULL';
             }
 
             $stmt .= "{$field} = {$value},";
@@ -517,6 +523,7 @@ class AdminEnvironmentManager
 
         $this->em->getConnection()->exec("
             UPDATE `{$this->environment}` SET {$stmt}
+            WHERE id = {$id}
         ");
 
         return $this;

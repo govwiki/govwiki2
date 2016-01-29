@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Government
@@ -180,6 +181,11 @@ class Government
      * @ORM\Column(name="secondary_logo_url", nullable=true)
      */
     private $secondaryLogoUrl;
+
+    /**
+     * @var UploadedFile
+     */
+    private $secondaryLogo;
 
     /**
      * Constructor
@@ -844,5 +850,21 @@ class Government
     public function getSecondaryLogoUrl()
     {
         return $this->secondaryLogoUrl;
+    }
+
+    /**
+     * @return UploadedFile
+     */
+    public function getSecondaryLogo()
+    {
+        return $this->secondaryLogo;
+    }
+
+    /**
+     * @param UploadedFile $secondaryLogo A UploadedFile instance.
+     */
+    public function setSecondaryLogo(UploadedFile $secondaryLogo)
+    {
+        $this->secondaryLogo = $secondaryLogo;
     }
 }
