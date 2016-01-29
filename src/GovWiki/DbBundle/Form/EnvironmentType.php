@@ -22,6 +22,7 @@ class EnvironmentType extends AbstractType
         $builder
             ->add('name')
             ->add('domain')
+            ->add('title')
             ->add('greetingText', 'ckeditor');
     }
 

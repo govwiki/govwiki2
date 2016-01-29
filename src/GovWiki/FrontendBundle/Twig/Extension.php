@@ -97,20 +97,13 @@ class Extension extends \Twig_Extension
         $styles = $this->manager->getStyle();
         $styles = json_encode($styles);
 
-//        $styles = str_replace(
-//            [ '\'', '\\"' ],
-//            [ '&apos;', '&quote;' ],
-//            json_encode($styles)
-//        );
-
-//        $styles = AdminStyleManager::getDefaultStyles();
-//       $styles = json_encode($styles);
         return [
             'styles' => $styles,
             'environment' => $this->manager->getEnvironment(),
             'environment_slug' => $this->manager->getSlug(),
             'hasElectedOfficials' => $this->manager
                     ->countElectedOfficials() > 0,
+            'title' => $this->manager->getTitle(),
         ];
     }
 

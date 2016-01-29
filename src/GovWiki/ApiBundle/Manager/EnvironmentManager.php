@@ -89,6 +89,25 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     /**
      * @return string
      */
+    public function getTitle()
+    {
+        $qb = $this->em->getRepository('GovWikiDbBundle:Environment')
+            ->createQueryBuilder('Environment');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select('Environment.title')
+            ->where($expr->eq(
+                'Environment.slug',
+                $expr->literal($this->environment)
+            ))
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @return string
+     */
     public function getGreetingText()
     {
         $qb = $this->em->getRepository('GovWikiDbBundle:Environment')
