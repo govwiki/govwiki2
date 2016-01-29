@@ -34,38 +34,40 @@
 
         <ul class="navigation navbar-collapse collapse" id="bs-navigation-collapse">
 
-            {% if app.user %}
-                {# Show User name (Athorized) #}
-                <li>
-                    <a href="javascript:void(0)" class="link">
-                        Logged in as {{ app.user.username }}
-                    </a>
-                </li>
+            {% if hasElectedOfficials %}
+                {% if app.user %}
+                    {# Show User name (Athorized) #}
+                    <li>
+                        <a href="javascript:void(0)" class="link">
+                            Logged in as {{ app.user.username }}
+                        </a>
+                    </li>
 
-                {# Logout button #}
-                <li>
-                    <a href="{{path('fos_user_security_logout')}}" class="link">
-                        Sign Out
-                    </a>
-                </li>
+                    {# Logout button #}
+                    <li>
+                        <a href="{{path('fos_user_security_logout')}}" class="link">
+                            Sign Out
+                        </a>
+                    </li>
 
-            {% else %}
-                {# Login button#}
-                <li>
-                    <a href="#" class="link" data-toggle="modal" data-target="#modal-window">
-                        Login / Sign Up
-                    </a>
-                </li>
+                {% else %}
+                    {# Login button#}
+                    <li>
+                        <a href="#" class="link" data-toggle="modal" data-target="#modal-window">
+                            Login / Sign Up
+                        </a>
+                    </li>
 
-            {% endif %}
+                {% endif %}
 
-            {# Return to map #}
-            {% if app.request.attributes.get('_route') != "map" %}
-                <li>
-                    <a href="{{ govwiki_path('map') }}" class="link">
-                        Return to Map
-                    </a>
-                </li>
+                {# Return to map #}
+                {% if app.request.attributes.get('_route') != "map" %}
+                    <li>
+                        <a href="{{ govwiki_path('map') }}" class="link">
+                            Return to Map
+                        </a>
+                    </li>
+                {% endif %}
             {% endif %}
 
             {# Return to some government #}
