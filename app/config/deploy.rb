@@ -1,5 +1,5 @@
 # Stages
-set :stages,        %w(demo droplet azure-staging)
+set :stages,        %w(demo droplet azure-staging azure-prod)
 set :default_stage, "demo"
 set :stage_dir,     "app/config/stage"
 set :keep_releases, 3
