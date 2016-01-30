@@ -64,6 +64,8 @@ class Map
      *
      * @ORM\Column()
      * @Asset\Choice(callback="availablePositions")
+     *
+     * @Groups({"map"})
      */
     private $position = 'left';
 
@@ -71,6 +73,8 @@ class Map
      * @var ColorizedCountyConditions
      *
      * @ORM\Column(type="colorized_county_condition")
+     *
+     * @Groups({"map"})
      */
     private $colorizedCountyConditions;
 

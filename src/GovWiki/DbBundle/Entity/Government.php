@@ -263,7 +263,9 @@ class Government
      */
     public static function slugifyName($string)
     {
-        return str_replace([' ', '-'], '_', str_replace(['County Of ', 'City Of '], '', ucwords(strtolower($string))));
+        $slug = str_replace([' ', '-'], '_', str_replace(['County Of ', 'City Of '], '', ucwords(strtolower($string))));
+        $slug = preg_replace('/\W/', '', $slug);
+        return $slug;
     }
 
     /**

@@ -13,6 +13,11 @@ use GovWiki\DbBundle\Entity\Environment;
 class EnvironmentRepository extends EntityRepository
 {
     /**
+     * @var array
+     */
+    private $style;
+
+    /**
      * @param integer $id User id, if set get environment where given user is
      *                    manager.
      *
@@ -133,25 +138,27 @@ class EnvironmentRepository extends EntityRepository
      */
     public function getStyle($environment)
     {
-        if (null === $environment) {
-            return [];
+        if (null === $this->style) {
+            if (null === $environment) {
+                return [];
+            }
+
+            $qb = $this->createQueryBuilder('Environment');
+            $expr = $qb->expr();
+
+            try {
+                $this->style = $qb
+                    ->select('Environment.style')
+                    ->where(
+                        $expr->eq('Environment.slug', $expr->literal($environment))
+                    )
+                    ->getQuery()
+                    ->getSingleResult()['style'];
+            } catch (ORMException $e) {
+                return [];
+            }
         }
 
-        $qb = $this->createQueryBuilder('Environment');
-        $expr = $qb->expr();
-
-        try {
-            $style = $qb
-                ->select('Environment.style')
-                ->where(
-                    $expr->eq('Environment.slug', $expr->literal($environment))
-                )
-                ->getQuery()
-                ->getSingleResult()['style'];
-
-            return $style;
-        } catch (ORMException $e) {
-            return [];
-        }
+        return $this->style;
     }
 }

@@ -78,6 +78,16 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     private $api;
 
     /**
+     * @var boolean
+     */
+    private $isMetadataUpdated = false;
+
+    /**
+     * @var array
+     */
+    private $envRelatedGovernmentFields;
+
+    /**
      * @param EntityManagerInterface $em          A EntityManagerInterface
      *                                            instance.
      * @param CartoDbApi             $api         A CartoDbApi instance.
@@ -114,90 +124,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     public function end_document()
     {
         if (count($this->sqls['db']) > 0) {
-            /*
-             * Add new data to our database.
-             */
-
-            $con = $this->em->getConnection();
-            $environment = $this->environment->getSlug();
-
-            try {
-                $con->beginTransaction();
-
-                /*
-                 * Add governments.
-                 */
-                $con->exec('
-                    INSERT INTO governments
-                        (environment_id, county, slug, alt_type_slug, '.
-                        implode(',', array_keys($this->metadata['government']))
-                    .') VALUES ' . implode(',', $this->sqls['db']));
-
-                /*
-                 * Create columns.
-                 */
-                $tableFields = [];
-                $formats = [];
-
-                $envRelatedGovernmentFields = [];
-                foreach ($this->metadata['extended'] as $field => $data) {
-                    /*
-                     * Generate formats table sqls.
-                     */
-                    $slug = Format::slugifyName($field);
-                    $ranked = (array_key_exists('ranked', $data) && $data['ranked']) ? 1 : 0;
-
-                    $formats[] = "
-                        ('{$field}', '{$slug}', 'a:0:{}', 'data', {$ranked}, '{$data['type']}', {$this->environment->getId()})
-                ";
-
-                    /*
-                     * Generate alter table sqls for environment related government
-                     * table.
-                     */
-                    $type = GovernmentTableManager::resolveType($data['type']);
-                    $tableFields[] = "ADD {$field} {$type} DEFAULT NULL";
-
-                    $envRelatedGovernmentFields[] = $field;
-                    if ($ranked) {
-                        $envRelatedGovernmentFields[] = $field. '_rank';
-                        $tableFields[] = "ADD {$field}_rank int(11) DEFAULT NULL";
-                    }
-                }
-
-                /*
-                 * Insert new formats and update environment related government
-                 * table.
-                 */
-                $con->exec('
-                INSERT INTO formats
-                    (name, field, show_in, data_or_formula, ranked, type, environment_id)
-                VALUES ' . implode(',', $formats));
-                $con->exec(
-                    "ALTER TABLE `{$environment}` " . implode(',', $tableFields)
-                );
-
-                /*
-                 * Pull environment related government with table extended
-                 * properties values.
-                 */
-                $con->exec("
-                INSERT INTO {$environment} (government_id, " .
-                    implode(',', $envRelatedGovernmentFields) . ') VALUES ' .
-                    implode(',', $this->sqls['government']));
-            } catch (\Exception $e) {
-                $con->rollBack();
-                throw $e;
-            }
-            $con->commit();
-
-            /*
-             * Add information to CartoDB dataset.
-             */
-            $this->api->sqlRequest("
-                INSERT INTO {$environment}
-                    (the_geom, alt_type_slug, slug)
-                VALUES " . implode(',', $this->sqls['cartodb']));
+            $this->update();
         }
     }
 
@@ -296,6 +223,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                     $this->coordinates = $this->coordinates[0];
                     $this->coordinates[0][0][] = $this->coordinates[0][0][0];
                 }
+                $isCounty = (int) $isCounty;
 
                 /*
                  * Create GeoJson for concrete government.
@@ -333,7 +261,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                     $value = $this->data[$column];
 
                     if ('string' === $type) {
-                        $value = "'{$value}'";
+                        $value = '\''. addslashes($value) .'\'';
                     } elseif (null === $value) {
                         $value = 'NULL';
                     }
@@ -342,7 +270,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 }
 
                 $this->sqls['db'][] = "
-                    ({$this->environment->getId()}, '{$isCounty}', ".
+                    ({$this->environment->getId()}, {$isCounty}, ".
                     "'{$slug}', '{$altTypeSlug}', ". implode(',', $insertParts) .')';
 
                 /*
@@ -358,7 +286,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
 
                     if (array_key_exists('type', $data) &&
                         ('string' === $data['type'])) {
-                        $insertParts[] = '\'' . $value . '\'';
+                        $insertParts[] = '\'' . addslashes($value) . '\'';
                     } elseif (null === $value) {
                         $insertParts[] = 'NULL';
                     } else {
@@ -382,8 +310,6 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                         environment_id = {$this->environment->getId()}
                 ";
 
-
-                $this->tmp[] = $insertParts;
                 $this->sqls['government'][] = "(({$idSql}),". implode(',', $insertParts) .')';
 
                 /*
@@ -392,6 +318,17 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 $this->sqls['cartodb'][] =
                     "(ST_SetSRID(ST_GeomFromGeoJSON('{$json}'), 4326)," .
                     "'{$altTypeSlug}','{$slug}')";
+
+                if (count($this->sqls['cartodb']) === 1000) {
+                    /*
+                     * Update parts of data.
+                     */
+                    $this->update();
+
+                    $this->sqls['cartodb'] = [];
+                    $this->sqls['db'] = [];
+                    $this->sqls['government'] = [];
+                }
             }
 
             $this->data = [];
@@ -534,15 +471,18 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
         $governmentTableFields = array_map(function ($value) {
 
             $value = lcfirst($value);
+            /*
+             * Replace all uppercase character and digit which place after
+             * lowercase characters.
+             */
             $value = preg_replace(
-                '/(?(?<=[a-z])([A-Z0-9])|[A-Z])/',
+                '/(?(?<=[a-z])[A-Z0-9]|[A-Z])/',
                 '_$0',
                 $value
             );
 
             return strtolower($value);
         }, $governmentFields);
-
 
         /*
          * Relation between entity and table field names.
@@ -604,5 +544,99 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
         }
 
         return $metadata;
+    }
+
+    /**
+     * @return void
+     */
+    private function update()
+    {
+        /*
+           * Add new data to our database.
+           */
+
+        $con = $this->em->getConnection();
+        $environment = $this->environment->getSlug();
+
+        try {
+            $con->beginTransaction();
+
+            /*
+             * Add governments.
+             */
+            $con->exec('
+                    INSERT INTO governments
+                        (environment_id, county, slug, alt_type_slug, '.
+                implode(',', array_keys($this->metadata['government']))
+                .') VALUES ' . implode(',', $this->sqls['db']));
+
+            if (! $this->isMetadataUpdated) {
+                /*
+                 * Create columns.
+                 */
+                $tableFields = [];
+                $formats = [];
+
+                $this->envRelatedGovernmentFields = [];
+                foreach ($this->metadata['extended'] as $field => $data) {
+                    /*
+                     * Generate formats table sqls.
+                     */
+                    $slug = Format::slugifyName($field);
+                    $ranked = (array_key_exists('ranked', $data) && $data['ranked']) ? 1 : 0;
+
+                    $formats[] = "
+                        ('{$field}', '{$slug}', 'a:0:{}', 'data', {$ranked}, '{$data['type']}', {$this->environment->getId()})
+                ";
+
+                    /*
+                     * Generate alter table sqls for environment related government
+                     * table.
+                     */
+                    $type = GovernmentTableManager::resolveType($data['type']);
+                    $tableFields[] = "ADD {$field} {$type} DEFAULT NULL";
+
+                    $this->envRelatedGovernmentFields[] = $field;
+                    if ($ranked) {
+                        $this->envRelatedGovernmentFields[] = $field . '_rank';
+                        $tableFields[] = "ADD {$field}_rank int(11) DEFAULT NULL";
+                    }
+                }
+
+                /*
+                 * Insert new formats and update environment related government
+                 * table.
+                 */
+                $con->exec('
+                    INSERT INTO formats
+                        (name, field, show_in, data_or_formula, ranked, type, environment_id)
+                    VALUES ' . implode(',', $formats));
+                $con->exec(
+                    "ALTER TABLE `{$environment}` " . implode(',', $tableFields)
+                );
+                $this->isMetadataUpdated = true;
+            }
+
+            /*
+             * Pull environment related government with table extended
+             * properties values.
+             */
+            $con->exec("
+                INSERT INTO {$environment} (government_id, " .
+                implode(',', $this->envRelatedGovernmentFields) . ') VALUES ' .
+                implode(',', $this->sqls['government']));
+        } catch (\Exception $e) {
+            $con->rollBack();
+            throw $e;
+        }
+        $con->commit();
+
+        /*
+         * Add information to CartoDB dataset.
+         */
+        $this->api->sqlRequest("
+                INSERT INTO {$environment}
+                    (the_geom, alt_type_slug, slug)
+                VALUES " . implode(',', $this->sqls['cartodb']));
     }
 }

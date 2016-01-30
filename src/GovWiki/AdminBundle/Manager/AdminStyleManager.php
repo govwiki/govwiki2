@@ -215,8 +215,14 @@ class AdminStyleManager
                         ],
                         'content' => [
                             [
-                                'elem' => 'logo',
-                                'attrs' => [ ['src' => 'http://placehold.it/244x60'] ],
+                                'block' => 'anchor',
+                                'attrs' => [ ['href' => ''] ],
+                                'content' => [
+                                    [
+                                        'elem' => 'logo',
+                                        'attrs' => [ ['src' => 'http://placehold.it/244x60'] ],
+                                    ],
+                                ],
                             ],
                             [
                                 'block' => 'menu',
@@ -426,6 +432,37 @@ class AdminStyleManager
             );
         }
 
+        /*
+         * Render element attributes.
+         */
+        if (array_key_exists('attrs', $style)) {
+            foreach ($style['attrs'] as $index => $attr) {
+                /*
+                 * Assume what first element of array is tag attribute.
+                 */
+                $attrName = array_keys($attr)[0];
+
+                $name = "{$prefix}-attrs_{$attrName}_{$index}";
+                $type = null;
+                if (strpos($name, 'src') !== false) {
+                    $type = 'file';
+                } elseif (strpos($name, 'href') !== false) {
+                    $type = 'url';
+                }
+                $builder->add($name, $type, [
+                    'label' => $this->generateLabel($prefix, $attrName),
+                    'required' => false,
+                ]);
+
+                /*
+                 * Store current value.
+                 */
+                if ('file' !== $type) {
+                    $this->currentData[$name] = $attr[$attrName];
+                }
+            }
+        }
+
         if (array_key_exists('content', $style)) {
             /*
              * Render block content.
@@ -490,6 +527,8 @@ class AdminStyleManager
                 $type = null;
                 if (strpos($name, 'src') !== false) {
                     $type = 'file';
+                } elseif (strpos($name, 'href') !== false) {
+                    $type = 'url';
                 }
                 $builder->add($name, $type, [
                     'label' => $this->generateLabel($prefix, $attrName),
@@ -508,7 +547,8 @@ class AdminStyleManager
         /*
          * Render element content.
          */
-        if (array_key_exists('content', $style)) {
+        if (array_key_exists('content', $style)
+            && !is_array($style['content'])) {
             $type = $this->getContentFieldType($style);
 
             $name = $prefix . '-content';
