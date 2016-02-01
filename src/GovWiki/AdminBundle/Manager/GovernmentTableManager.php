@@ -57,6 +57,7 @@ class GovernmentTableManager
      */
     public function deleteGovernmentTable($name)
     {
+        $name = strtolower($name);
         $this->em->getConnection()->exec("
             DROP TABLE IF EXISTS `{$name}`
         ");

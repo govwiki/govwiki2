@@ -23,6 +23,8 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     const COORDINATES_COLLECT = 16;
     const PROPERTIES_COLLECT = 32;
 
+    const MAX_SQL_PARTS_SIZE = 1000;
+
     /**
      * Data from properties of feature and also contains current geometry type.
      *
@@ -114,8 +116,8 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     /**
      * @return void
      *
+     * @throws \Exception While processing transaction.
      * @throws \Doctrine\DBAL\DBALException Some error while insert governments.
-     *
      * @throws \InvalidArgumentException Invalid column type.
      * @throws \Doctrine\DBAL\ConnectionException If the commit failed due to no
      * active transaction or because the transaction was marked for rollback
@@ -124,6 +126,9 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
     public function end_document()
     {
         if (count($this->sqls['db']) > 0) {
+            /*
+             * Insert last fields.
+             */
             $this->update();
         }
     }
@@ -195,6 +200,12 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
      * @return void
      *
      * @throws InvalidGeoJsonException Can't get alt type name.
+     * @throws \Exception While processing transaction.
+     * @throws \Doctrine\DBAL\DBALException Some error while insert governments.
+     * @throws \InvalidArgumentException Invalid column type.
+     * @throws \Doctrine\DBAL\ConnectionException If the commit failed due to no
+     * active transaction or because the transaction was marked for rollback
+     * only.
      */
     public function end_object()
     {
@@ -218,10 +229,34 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
              * End process of feature.
              */
             if (array_key_exists('geometry_type', $this->data)) {
+                /*
+                 * Find out feature type.
+                 * Assume that we have only point's and polygon's
+                 * (multi polygon's).
+                 */
                 $isCounty = 'Point' !== $this->data['geometry_type'];
+                $this->coordinates = $this->coordinates[0];
                 if ($isCounty) {
-                    $this->coordinates = $this->coordinates[0];
-                    $this->coordinates[0][0][] = $this->coordinates[0][0][0];
+                    /*
+                     * Check coordinates of last point.
+                     */
+                    $lastIdx = count($this->coordinates[0]) - 1;
+
+                    $last = $this->coordinates[0][$lastIdx];
+                    $first = $this->coordinates[0][0];
+
+                    if ( (abs($last[0] - $first[0]) > 0.001) || (abs($last[1] - $first[1]) > 0.001) ) {
+                        $this->coordinates[0][0][] = $this->coordinates[0][0][0];
+                    }
+
+                    if ('MultiPolygon' === $this->data['geometry_type']) {
+                        /*
+                         * Multi polygon's additionally wrap
+                         * coordinates into another array, otherwise CartoDB return
+                         * error.
+                         */
+                        $this->coordinates = [ $this->coordinates ];
+                    }
                 }
                 $isCounty = (int) $isCounty;
 
@@ -238,6 +273,9 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                  */
                 unset($this->data['geometry_type']);
 
+                /*
+                 * Prepare government name, alt type and they slug.
+                 */
                 $name = $this->data['name'];
                 $slug = Government::slugifyName($name);
                 $altType = $this->getAltType();
@@ -254,19 +292,12 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                  * Generate sql parts for insert into government table.
                  */
                 $insertParts = [];
-                foreach ($this->metadata['government'] as $column => $type) {
+                foreach ($this->metadata['government'] as $column => $data) {
                     /*
                      * Get value for current column from read data.
                      */
-                    $value = $this->data[$column];
-
-                    if ('string' === $type) {
-                        $value = '\''. addslashes($value) .'\'';
-                    } elseif (null === $value) {
-                        $value = 'NULL';
-                    }
-
-                    $insertParts[] = $value;
+                    $insertParts[] = $this
+                        ->getFieldValueFromData($column, $data);
                 }
 
                 $this->sqls['db'][] = "
@@ -282,22 +313,20 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                     /*
                      * Get value for current column from read data.
                      */
-                    $value = $this->data[$column];
-
-                    if (array_key_exists('type', $data) &&
-                        ('string' === $data['type'])) {
-                        $insertParts[] = '\'' . addslashes($value) . '\'';
-                    } elseif (null === $value) {
-                        $insertParts[] = 'NULL';
-                    } else {
-                        $insertParts[] = $value;
-                    }
+                    $insertParts[] = $this
+                        ->getFieldValueFromData($column, $data);
 
                     if (array_key_exists('ranked', $data) && $data['ranked']) {
                         /*
                          * Add ranked column value.
                          */
-                        $insertParts[] = $this->data[$column. '_rank'];
+                        $rankValue = $this->data[$column. '_rank'];
+                        if (null === $rankValue) {
+                            $rankValue = 'NULL';
+                        }
+
+                        $insertParts[] = $rankValue;
+
                     }
                 }
                 /*
@@ -308,6 +337,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                     WHERE slug = '{$slug}' AND
                         alt_type_slug = '{$altTypeSlug}' AND
                         environment_id = {$this->environment->getId()}
+                    LIMIT 1
                 ";
 
                 $this->sqls['government'][] = "(({$idSql}),". implode(',', $insertParts) .')';
@@ -319,15 +349,11 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                     "(ST_SetSRID(ST_GeomFromGeoJSON('{$json}'), 4326)," .
                     "'{$altTypeSlug}','{$slug}')";
 
-                if (count($this->sqls['cartodb']) === 1000) {
+                if (count($this->sqls['cartodb']) === self::MAX_SQL_PARTS_SIZE) {
                     /*
                      * Update parts of data.
                      */
                     $this->update();
-
-                    $this->sqls['cartodb'] = [];
-                    $this->sqls['db'] = [];
-                    $this->sqls['government'] = [];
                 }
             }
 
@@ -466,13 +492,14 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
         $governmentFields = $governmentMetadata->getFieldNames();
 
         /*
-         * Government table fields name, in snake case.
+         * Government table fields name, in snake case like column name in
+         * db table.
          */
         $governmentTableFields = array_map(function ($value) {
 
             $value = lcfirst($value);
             /*
-             * Replace all uppercase character and digit which place after
+             * Replace all uppercase character and digit which taken place after
              * lowercase characters.
              */
             $value = preg_replace(
@@ -491,6 +518,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
             $governmentTableFields,
             $governmentFields
         );
+
         /*
          * List of all government fields name, for processing
          * file fields array.
@@ -507,8 +535,8 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
         foreach ($fields as $field => $value) {
             if (! in_array($field, $governmentFields, true)) {
                 /*
-                 * Field not exists in government entity, add to
-                 * environment related government table.
+                 * Field not exists in government entity, add to environment
+                 * related government table.
                  */
                 $metadata['govColumns'][] = $field;
 
@@ -522,7 +550,8 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 } else {
                     /*
                      * Normal field.
-                     * Find out field type.
+                     * Find out field type, by default assume that field have
+                     * string type.
                      */
                     $type = 'string';
                     if (is_float($value)) {
@@ -537,7 +566,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 /*
                  * Field from government entity.
                  */
-                $metadata['government'][$field] =
+                $metadata['government'][$field]['type'] =
                     $governmentMetadata
                         ->getTypeOfField($governmentFieldsMap[$field]);
             }
@@ -548,12 +577,19 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
 
     /**
      * @return void
+     *
+     * @throws \Exception While processing transaction.
+     * @throws \Doctrine\DBAL\DBALException Some error while insert governments.
+     * @throws \InvalidArgumentException Invalid column type.
+     * @throws \Doctrine\DBAL\ConnectionException If the commit failed due to no
+     * active transaction or because the transaction was marked for rollback
+     * only.
      */
     private function update()
     {
         /*
-           * Add new data to our database.
-           */
+         * Add new data to our database.
+         */
 
         $con = $this->em->getConnection();
         $environment = $this->environment->getSlug();
@@ -565,7 +601,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
              * Add governments.
              */
             $con->exec('
-                    INSERT INTO governments
+                    INSERT IGNORE INTO governments
                         (environment_id, county, slug, alt_type_slug, '.
                 implode(',', array_keys($this->metadata['government']))
                 .') VALUES ' . implode(',', $this->sqls['db']));
@@ -622,7 +658,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
              * properties values.
              */
             $con->exec("
-                INSERT INTO {$environment} (government_id, " .
+                INSERT IGNORE INTO {$environment} (government_id, " .
                 implode(',', $this->envRelatedGovernmentFields) . ') VALUES ' .
                 implode(',', $this->sqls['government']));
         } catch (\Exception $e) {
@@ -638,5 +674,30 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 INSERT INTO {$environment}
                     (the_geom, alt_type_slug, slug)
                 VALUES " . implode(',', $this->sqls['cartodb']));
+
+        $this->sqls['db'] = [];
+        $this->sqls['cartodb'] = [];
+        $this->sqls['government'] = [];
+    }
+
+    /**
+     * @param string $column Column name from geojson file.
+     * @param array  $data   Metadata for column returned by
+     *                       {@see GeoJsonStreamListener::collectMetadata}.
+     *
+     * @return mixed
+     */
+    private function getFieldValueFromData($column, array $data)
+    {
+        $value = $this->data[$column];
+
+        if (null === $value) {
+            $value = 'NULL';
+        } elseif (array_key_exists('type', $data) &&
+            ('string' === $data['type'])) {
+            $value = '\'' . addslashes($value) . '\'';
+        }
+
+        return $value;
     }
 }

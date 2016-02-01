@@ -27,7 +27,7 @@ class MainController extends Controller
         $name = $qb
             ->select('Environment.slug')
             ->where(
-                $expr->eq('Environment.enabled', 1)
+                $expr->eq('Environment.slug', $expr->literal('puerto_rico'))
             )
             ->orderBy($expr->desc('Environment.id'))
             ->setMaxResults(1)

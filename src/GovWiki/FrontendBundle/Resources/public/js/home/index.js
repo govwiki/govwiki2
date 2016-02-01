@@ -157,7 +157,7 @@ $(function(){
             var cLayer = {
                 'cartocss': cartocss,
                 'sql': 'SELECT *, ST_AsGeoJSON(the_geom) AS geometry FROM ' + window.gw.environment + ' WHERE  alt_type_slug = \''+ altType +'\'',
-                'interactivity': ['cartodb_id', 'slug', 'alt_type_slug', 'geometry']
+                'interactivity': ['cartodb_id', 'slug', 'alt_type_slug', 'geometry', 'data']
             };
 
             countySubLayer = layer.createSubLayer(cLayer);
