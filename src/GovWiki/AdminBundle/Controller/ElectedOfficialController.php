@@ -7,7 +7,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
-use GovWiki\DbBundle\Form\ElectedOfficialType;
 use GovWiki\DbBundle\Form\ElectedOfficialLinkedUserType;
 
 /**
@@ -67,7 +66,7 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
         /** @var ElectedOfficial $electedOfficial */
         $electedOfficial = $this->getManager()->create();
 
-        $form = $this->createForm(new ElectedOfficialType(), $electedOfficial);
+        $form = $this->createForm('govwiki_dbbundle_electedofficial', $electedOfficial);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -98,7 +97,7 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
         Request $request,
         ElectedOfficial $electedOfficial
     ) {
-        $form = $this->createForm(new ElectedOfficialType(), $electedOfficial);
+        $form = $this->createForm('govwiki_dbbundle_electedofficial', $electedOfficial);
         $form->handleRequest($request);
 
         if ($form->isValid()) {

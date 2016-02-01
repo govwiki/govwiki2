@@ -7,6 +7,7 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\VirtualProperty;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * ElectedOfficial
@@ -40,6 +41,7 @@ class ElectedOfficial
      *
      * @ORM\Column(name="full_name", type="string", length=255, nullable=true)
      * @Groups({"government", "elected_official"})
+     * @NotBlank()
      */
     private $fullName;
 
@@ -48,6 +50,7 @@ class ElectedOfficial
      *
      * @ORM\Column(name="slug", type="string", length=255, nullable=true)
      * @Groups({"government", "elected_official"})
+     * @NotBlank()
      */
     private $slug;
 
@@ -56,6 +59,7 @@ class ElectedOfficial
      *
      * @ORM\Column(name="display_order", type="integer", nullable=true)
      * @Groups({"government", "elected_official"})
+     * @NotBlank()
      */
     private $displayOrder;
 
@@ -64,6 +68,7 @@ class ElectedOfficial
      *
      * @ORM\Column(name="title", type="string", length=255, nullable=true)
      * @Groups({"government", "elected_official"})
+     * @NotBlank()
      */
     private $title;
 

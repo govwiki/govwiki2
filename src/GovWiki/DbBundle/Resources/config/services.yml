@@ -22,6 +22,12 @@ services:
         tags:
             - { name: form.type, alias: alt_type }
 
+    govwiki_db.form.type.elected_official:
+        class: GovWiki\DbBundle\Form\ElectedOfficialType
+        arguments: [@govwiki_admin.manager.environment]
+        tags:
+            - { name: form.type, alias: govwiki_dbbundle_electedofficial }
+
     govwiki_db.form.type.field_name:
         class: GovWiki\DbBundle\Form\Type\FieldNameType
         arguments: [@govwiki_admin.manager.environment]

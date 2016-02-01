@@ -2,6 +2,8 @@
 
 namespace GovWiki\DbBundle\Form;
 
+use Doctrine\ORM\EntityRepository;
+use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,20 +15,48 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class ElectedOfficialType extends AbstractType
 {
     /**
+     * @var AdminEnvironmentManager
+     */
+    private $manger;
+
+    /**
+     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
+     *                                         instance.
+     */
+    public function __construct(AdminEnvironmentManager $manager)
+    {
+        $this->manger = $manager;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('fullName')
-            ->add('slug')
             ->add('displayOrder')
             ->add('title')
-            ->add('emailAddress', 'email')
-            ->add('telephoneNumber')
-            ->add('photoUrl', 'url')
-            ->add('bioUrl', 'url')
-            ->add('termExpires');
+            ->add('emailAddress', 'email', [ 'required' => false ])
+            ->add('telephoneNumber', null, [ 'required' => false ])
+            ->add('photoUrl', 'url', [ 'required' => false ])
+            ->add('bioUrl', 'url', [ 'required' => false ])
+            ->add('termExpires', null, [ 'required' => false ])
+            ->add('government', 'entity', [
+                'class' => 'GovWiki\DbBundle\Entity\Government',
+                'query_builder' => function (EntityRepository $repository) {
+                    $qb = $repository->createQueryBuilder('Government');
+                    $expr = $qb->expr();
+
+                    return $qb
+                        ->select('partial Government.{id, name}')
+                        ->join('Government.environment', 'Environment')
+                        ->where($expr->eq(
+                            'Environment.slug',
+                            $expr->literal($this->manger->getSlug())
+                        ));
+                },
+            ]);
     }
 
     /**
