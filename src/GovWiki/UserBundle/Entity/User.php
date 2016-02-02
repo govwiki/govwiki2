@@ -10,10 +10,14 @@ use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\Environment;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints\Email;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="users")
+ * @UniqueEntity(fields="username")
+ * @UniqueEntity(fields="email")
  */
 class User extends BaseUser
 {
@@ -29,6 +33,12 @@ class User extends BaseUser
      * @Groups({"elected_official"})
      */
     protected $username;
+
+    /**
+     * @var string
+     * @Email()
+     */
+    protected $email;
 
     /**
      * @var Collection

@@ -50,9 +50,7 @@
                                         <td>{{ environment.domain }}</td>
                                         <td>
                                             {% if is_granted('ROLE_ADMIN') %}
-                                                <button class="btn btn-danger delete" data-url="{{-
-                                                    path('govwiki_admin_main_remove',
-                                                    { environment: environment.slug }) -}}">
+                                                <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_main_remove', { environment: environment.slug }) -}}" data-description="Delete environment with all governments?">
                                                     Delete
                                                 </button>
                                             {% endif %}
@@ -75,39 +73,7 @@
 
             </div>
 
-            {% if is_granted('ROLE_ADMIN') %}
-                <div id="modal-delete" class="modal fade">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
-                            <div class="modal-body">Delete environment with all governments?</div>
-                            <div class="modal-footer">
-                                <div class="pull-right">
-                                    <a id="delete-confirm" class="btn btn-danger">
-                                        Delete
-                                    </a>
-                                    <button class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-
         </div>
     </div>
 
 {% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script>
-        $(function(){
-            $('.delete').click(function(){
-                console.log('asdas');
-                $('#delete-confirm').attr('href', $(this).attr('data-url'));
-                $('#modal-delete').modal('show');
-            });
-        });
-    </script>
-{% endblock javascripts %}

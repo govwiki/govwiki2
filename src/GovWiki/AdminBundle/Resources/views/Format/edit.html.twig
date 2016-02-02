@@ -54,3 +54,10 @@
     </div>
 
 {% endblock body %}
+
+{% block javascripts %}
+    {% javascripts '@GovWikiAdminBundle/Resources/public/js/Format/fieldname.js'
+    output='js/format.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock javascripts %}

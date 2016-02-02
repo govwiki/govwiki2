@@ -6198,9 +6198,11 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
 });
 var styles = JSON.parse(window.gw.styles);
 
-styles.forEach(function(style) {
-    parseStyles(style);
-});
+if (styles) {
+    styles.forEach(function (style) {
+        parseStyles(style);
+    });
+}
 
 $loaderWrap = $('.loader_wrap');
 $loaderWrap.css({"opacity":0});
@@ -6724,7 +6726,7 @@ $(function(){
             var cLayer = {
                 'cartocss': cartocss,
                 'sql': 'SELECT *, ST_AsGeoJSON(the_geom) AS geometry FROM ' + window.gw.environment + ' WHERE  alt_type_slug = \''+ altType +'\'',
-                'interactivity': ['cartodb_id', 'slug', 'alt_type_slug', 'geometry']
+                'interactivity': ['cartodb_id', 'slug', 'alt_type_slug', 'geometry', 'data']
             };
 
             countySubLayer = layer.createSubLayer(cLayer);
@@ -6956,7 +6958,7 @@ $(function(){
                 var altTypeSlug = altType.alt_type_slug.replace(/_/g, ' ');
                 var _altTypeSlug = altType.alt_type_slug.toLowerCase();
 
-                var iconClass = (altType.geometrytype && (altType.alt_type_slug == "County" || altType.alt_type_slug == "Municipoi"))
+                var iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
                                         ? 'grey-line'
                                         : 'marker-circle ' + markerIcons.shift();
 
@@ -6994,8 +6996,8 @@ $(function(){
             color: "#808080",
             weight: 1,
             opacity: 1,
-            fillOpacity: .45,
-            fillColor: "#00FF00",
+            fillOpacity: .6,
+            fillColor: "#000000",
             clickable: false
         };
 
