@@ -31,7 +31,7 @@
                 <div class="col-md-5">{{ name }}</div>
                 <div class="col-md-2 text-right">
                     {%- if not showTotalAndOver or loop.first -%}
-                        <div class="pull-left currency-symbol">$&nbsp;</div>
+                        $&nbsp;
                     {%- endif -%}
                     {{- macro.displayValue(data.genfund) -}}
                 </div>
@@ -39,13 +39,13 @@
                 {% if showTotalAndOver %}
                     <div class="col-md-2 text-right">
                         {%- if loop.first -%}
-                            <div class="pull-left currency-symbol">$&nbsp;</div>
+                            $&nbsp;
                         {%- endif -%}
                         {{- macro.displayValue(data.otherfunds) -}}
                     </div>
                     <div class="col-md-2 text-right">
                         {%- if loop.first -%}
-                            <div class="pull-left currency-symbol">$&nbsp;</div>
+                            $&nbsp;
                         {%- endif -%}
                         {{- macro.displayValue(data.totalfunds) -}}
                     </div>
