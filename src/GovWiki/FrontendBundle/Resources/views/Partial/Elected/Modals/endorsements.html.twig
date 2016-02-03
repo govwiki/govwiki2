@@ -8,18 +8,18 @@
                 <h4 class="modal-title">Add new Endorsements</h4>
             </div>
             <div class="modal-body">
-                <form name="addEndorsements">
+                <form name="addEndorsements" id="addEndorsementsForm">
                     <div class="input-group">
                         <span class="input-group-addon">Election Year: </span>
-                        <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>
+                        <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year required>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Name: </span>
-                        <input type="text" class="form-control" placeholder="Please enter Name" data-name-of-endorser>
+                        <input type="text" class="form-control" placeholder="Please enter Name" data-name-of-endorser required>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Type: </span>
-                        <select class="form-control" name="endorserType" data-endorser-type>
+                        <select class="form-control" name="endorserType" data-endorser-type required>
                             <option value=""></option>
                             <option value="Elected Official">Elected Official</option>
                             <option value="Organization">Organization</option>

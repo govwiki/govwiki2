@@ -8,14 +8,14 @@
                 <h4 class="modal-title">Add new Contributions</h4>
             </div>
             <div class="modal-body">
-                <form name="addContributions">
+                <form name="addContributions" id="addContributionsForm">
                     <div class="input-group">
                         <span class="input-group-addon">Election Year: </span>
-                        <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year>
+                        <input type="text" class="form-control" placeholder="Please enter Election Year" data-election-year required>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Name of contributor: </span>
-                        <input type="text" class="form-control" placeholder="Please enter Name of contributor" data-contributor-name>
+                        <input type="text" class="form-control" placeholder="Please enter Name of contributor" data-contributor-name required>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Ind. Exp. Desc.: </span>
@@ -23,11 +23,11 @@
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Amount: </span>
-                        <input type="text" class="form-control" placeholder="Please enter Amount" data-contribution-amount>
+                        <input type="text" class="form-control" placeholder="Please enter Amount" data-contribution-amount required>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Contributor Type? </span>
-                        <select class="form-control" name="contributorType" data-contributor-type>
+                        <select class="form-control" name="contributorType" data-contributor-type required>
                             <option value=""></option>
                             <option value="Candidate Committee">Candidate Committee</option>
                             <option value="Corporate">Corporate</option>

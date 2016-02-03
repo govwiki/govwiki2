@@ -7,10 +7,10 @@
                 <h4 class="modal-title">Add new Votes</h4>
             </div>
             <div class="modal-body">
-                <form name="addVotes">
+                <form name="addVotes" id="addVotesForm">
                     <div class="input-group">
                         <span class="input-group-addon">Category: </span>
-                        <select name="issueCategory" class="form-control" data-issue-category>
+                        <select name="issueCategory" class="form-control" data-issue-category required>
                             {% for category in categories %}
                                 <option value="{{ category.id }}">
                                     {{- category.name -}}
@@ -20,15 +20,15 @@
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Date: </span>
-                        <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered data-provide="datepicker">
+                        <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered data-provide="datepicker" required>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Title of Measure: </span>
-                        <input type="text" class="form-control" placeholder="Please enter Title of Measure" data-name>
+                        <input type="text" class="form-control" placeholder="Please enter Title of Measure" data-name required>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Summary of Measure: </span>
-                        <textarea class="form-control" placeholder="Please enter Summary of Measure" data-summary></textarea>
+                        <textarea class="form-control" placeholder="Please enter Summary of Measure" data-summary required></textarea>
                     </div>
                     <div id="electedVotes">
                         <table class="table table-hover" style="margin-top: 20px" data-entity-type="ElectedOfficialVote">

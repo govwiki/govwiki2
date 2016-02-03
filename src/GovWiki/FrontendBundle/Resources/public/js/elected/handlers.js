@@ -433,11 +433,19 @@ $(function() {
             associations["government"] = person.government.id;
         }
         childs = [];
+        var allRequiredFieldsFilled;
         if (modalType === 'addVotes') {
+
+            allRequiredFieldsFilled = true;
+            checkFields('addVotesForm');
+            if (!allRequiredFieldsFilled) {
+                return false;
+            }
 
             /*
              Add information about votes.
              */
+            var oneChildFieldFilled = false;
             modal.find('#electedVotes').find('tr[data-elected]').each(function(idx, element) {
                 var childEntityName, data, fields;
                 element = $(element);
@@ -454,6 +462,7 @@ $(function() {
                  Add only if all fields is set.
                  */
                 if (Object.keys(data).length === 2) {
+                    oneChildFieldFilled = true;
                     fields = Object.create(null, {});
                     fields['fields'] = data;
                     fields['associations'] = Object.create(null, {});
@@ -465,50 +474,56 @@ $(function() {
                     });
                 }
             });
-            select = modal.find('select')[0];
-            selectName = select.name;
-            selectedValue = select.options[select.selectedIndex].value;
-            if (selectedValue === '') {
-                window.alert('Please select category.');
-                select.focus();
+            if (!oneChildFieldFilled) {
+                window.alert('Please fill at least one of the Vote fields.');
                 return false;
             }
-            selectedText = $(select).find(':selected').text();
+
             associations[selectName] = selectedValue;
         } else if (modalType === 'addContributions') {
-            select = modal.find('select')[0];
-            selectName = select.name;
-            selectedValue = select.options[select.selectedIndex].value;
-            if (selectedValue === '') {
-                window.alert('Please select type.');
-                select.focus();
+            allRequiredFieldsFilled = true;
+            checkFields('addContributionsForm');
+            if (!allRequiredFieldsFilled) {
                 return false;
             }
-            selectedText = $(select).find(':selected').text();
             newRecord[selectName] = selectedValue;
         } else if (modalType === 'addEndorsements') {
-            select = modal.find('select')[0];
-            selectName = select.name;
-            selectedValue = select.options[select.selectedIndex].value;
-            if (selectedValue === '') {
-                window.alert('Please select type.');
-                select.focus();
+            allRequiredFieldsFilled = true;
+            checkFields('addEndorsementsForm');
+            if (!allRequiredFieldsFilled) {
                 return false;
             }
-            selectedText = $(select).find(':selected').text();
             newRecord[selectName] = selectedValue;
         } else if (modalType === 'addStatements') {
+            allRequiredFieldsFilled = true;
+            checkFields('addStatementsForm');
+            if (!allRequiredFieldsFilled) {
+                return false;
+            }
+            associations[selectName] = selectedValue;
+        }
+
+        function checkFields(formId) {
+            allRequiredFieldsFilled = true;
+            $('#' + formId).find('.form-control').each(function checkFields(idx, element) {
+                if (element.required && element.value == '') {
+                    if (element.tagName == 'SELECT') {
+                        window.alert('Please select type.');
+                    } else {
+                        window.alert('Please fill required field.');
+                    }
+                    element.focus();
+                    allRequiredFieldsFilled = false;
+                    return false;
+                }
+            });
+
             select = modal.find('select')[0];
             selectName = select.name;
             selectedValue = select.options[select.selectedIndex].value;
-            if (selectedValue === '') {
-                window.alert('Please select category.');
-                select.focus();
-                return false;
-            }
             selectedText = $(select).find(':selected').text();
-            associations[selectName] = selectedValue;
         }
+
         sendObject = {
             createRequest: {
                 entityName: entityType,
@@ -541,7 +556,7 @@ $(function() {
             ref1 = sendObject.createRequest.fields.childs;
             for (i = 0, len = ref1.length; i < len; i++) {
                 obj = ref1[i];
-                if (Number(obj.fields.associations.electedOfficial) === Number(person.id)) {
+                if (Number(obj.fields.associations.electedOfficial) === Number(person.id) && obj.fields.fields.vote) {
                     add = true;
                     ref2 = obj.fields.fields;
                     for (key in ref2) {

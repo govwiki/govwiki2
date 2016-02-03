@@ -7,10 +7,10 @@
                 <h4 class="modal-title">Add new Statements</h4>
             </div>
             <div class="modal-body">
-                <form name="addStatements">
+                <form name="addStatements" id="addStatementsForm">
                     <div class="input-group">
                         <span class="input-group-addon">Category: </span>
-                        <select class="form-control" data-issue-category name="issueCategory">
+                        <select class="form-control" data-issue-category name="issueCategory" required>
                             {% for category in categories %}
                                 <option value="{{ category.id }}">{{ category.name }}</option>
                             {% endfor %}
@@ -18,11 +18,11 @@
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Date: </span>
-                        <input type="text" class="form-control" placeholder="Please enter Date" data-date data-provide="datepicker">
+                        <input type="text" class="form-control" placeholder="Please enter Date" data-date data-provide="datepicker" required>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Summary: </span>
-                        <input type="text" class="form-control" placeholder="Please enter Summary" data-summary>
+                        <input type="text" class="form-control" placeholder="Please enter Summary" data-summary required>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">URL: </span>

@@ -16,12 +16,12 @@
             {{ fun.renderVotes(elected.votes, elected) }}
 
             {% if app.user and (createRequests is defined) %}
-                {{ fun.renderNewVotes(createRequests, categories) }}
+                {{ fun.renderNewVotes(createRequests, categories, elected) }}
             {% endif %}
 
         {% elseif app.user and (createRequests is defined) %}
 
-            {{ fun.renderNewVotes(createRequests, categories) }}
+            {{ fun.renderNewVotes(createRequests, categories, elected) }}
 
         {% else %}
 
@@ -87,7 +87,7 @@
 
 {% endmacro %}
 
-{% macro renderNewVotes(createRequests, categories) %}
+{% macro renderNewVotes(createRequests, categories, elected) %}
 
     {% for createRequest in createRequests %}
         {% if createRequest.entityName == 'Legislation' and createRequest.fields.fields.dateConsidered is defined %}
@@ -101,11 +101,26 @@
                 <td data-summary="{{ createRequest.fields.fields.summary }}" data-no-editable>
                     {{ createRequest.fields.fields.summary }}
                 </td>
-                <td data-vote="" data-no-editable>
 
+                {% set childs = createRequest.fields.childs %}
+                {% set create_request_vote = '' %}
+                {% set create_request_didElectedOfficialProposeThis = '' %}
+                {% for child in childs %}
+                    {% if child.fields.associations.electedOfficial == elected.id %}
+                        {% if child.fields.fields.vote is defined %}
+                            {% set create_request_vote = child.fields.fields.vote %}
+                        {% endif %}
+                        {% if child.fields.fields.didElectedOfficialProposeThis is defined %}
+                            {% set create_request_didElectedOfficialProposeThis = child.fields.fields.didElectedOfficialProposeThis %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                <td align="center" data-vote="{{ create_request_vote }}" data-no-editable>
+                    {{ create_request_vote }}
                 </td>
-                <td align="center" data-did-elected-official-propose-this="" data-no-editable>
 
+                <td align="center" data-did-elected-official-propose-this="{{ create_request_didElectedOfficialProposeThis }}" data-no-editable>
+                    {{ create_request_didElectedOfficialProposeThis }}
                 </td>
 
                 {% set categoryName = '' %}
