@@ -80,7 +80,7 @@
                                             {{ field.name }}</a>
                                     </td>
                                     <td>
-                                        <a class="btn btn-danger" href="{{ path('govwiki_admin_format_remove', { id: field.id }) }}">Delete</a>
+                                        <button data-description="Are you sure want to delete format '{{ field.name }}'?" class="btn btn-danger btn-delete" data-url="{{ path('govwiki_admin_format_remove', { id: field.id }) }}">Delete</button>
                                     </td>
                                 </tr>
                             {% endfor %}

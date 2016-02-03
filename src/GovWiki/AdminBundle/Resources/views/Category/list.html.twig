@@ -58,7 +58,7 @@
                     </td>
                     <td>
                         <a class="btn btn-default" href="{{ path('govwiki_admin_category_edit', { id: tab.id }) }}">Edit</a>
-                        <a class="btn btn-danger" href="{{ path('govwiki_admin_category_remove', { id: tab.id }) }}">Delete</a>
+                        <button class="btn btn-danger btn-delete" data-url="{{ path('govwiki_admin_category_remove', { id: tab.id }) }}" data-description="Are you sure want to delete category '{{ tab.name }}'?">Delete</button>
                     </td>
                 </tr>
             {% endfor %}

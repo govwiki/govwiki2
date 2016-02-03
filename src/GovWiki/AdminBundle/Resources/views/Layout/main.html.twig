@@ -89,6 +89,25 @@
         </div>
     {% endfor %}
 
+    {% if is_granted('ROLE_ADMIN') %}
+        <div id="modal-delete" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
+                    <div class="modal-body"><div class="text-center"></div></div>
+                    <div class="modal-footer">
+                        <div class="pull-right">
+                            <a id="delete-confirm" class="btn btn-danger">
+                                Delete
+                            </a>
+                            <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock %}
 
 {# Modal #}
@@ -123,7 +142,20 @@
     <script>
         window.gw = {
             styles: '{{ admin_styles|escape('js') }}'
-        }
+        };
+
+        $(function(){
+            $('.btn-delete').click(function() {
+                var $this = $(this);
+                var $modal = $('#modal-delete');
+
+                $('#delete-confirm').attr('href', $this.data('url'));
+
+                $modal.find('.modal-body').find('.text-center')
+                    .html($this.data('description'));
+                $modal.modal('show');
+            });
+        });
     </script>
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>

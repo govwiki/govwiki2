@@ -1,8 +1,10 @@
 var styles = JSON.parse(window.gw.styles);
 
-styles.forEach(function(style) {
-    parseStyles(style);
-});
+if (styles) {
+    styles.forEach(function (style) {
+        parseStyles(style);
+    });
+}
 
 $loaderWrap = $('.loader_wrap');
 $loaderWrap.css({"opacity":0});

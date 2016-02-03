@@ -155,7 +155,6 @@ class Format
     public function setName($name)
     {
         $this->name = $name;
-        $this->field = self::slugifyName($name);
         return $this;
     }
 

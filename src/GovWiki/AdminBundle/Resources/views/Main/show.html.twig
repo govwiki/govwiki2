@@ -99,9 +99,9 @@
 
                             <div class="btn-group pull-left">
                                 <button type="submit" class="btn btn-primary">Update</button>
-                                <a class="btn btn-danger" href="{{ path('govwiki_admin_main_remove', {environment: environment.name}) }}">
+                                <button type="button" data-description="Delete environment with all governments?" class="btn btn-danger btn-delete" data-url="{{ path('govwiki_admin_main_remove', {environment: environment.name}) }}">
                                     Delete
-                                </a>
+                                </button>
                             </div>
                             {{ form_end(form) }}
 

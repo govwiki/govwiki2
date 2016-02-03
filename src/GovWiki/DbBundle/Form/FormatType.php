@@ -74,6 +74,7 @@ class FormatType extends AbstractType
                         ));
                 }
             ])
+            ->add('field')
             ->add('name')
             ->add('type', 'choice', [ 'choices' => $availableTypes ])
             ->add('helpText', 'textarea', [ 'required' => false ])
