@@ -47,11 +47,11 @@ class ElectedController extends Controller
         /*
          * Replace single and double quote to html special char.
          */
-        $electedOfficialJSON = str_replace(
+        /*$electedOfficialJSON = str_replace(
             [ '\'', '\\"' ],
             [ '&apos;', '&quote;' ],
             $electedOfficialJSON
-        );
+        );*/
 
         $electedOfficialCommentForm = $this->createForm(new ElectedOfficialCommentType(), array(
             'current_text' => $data['electedOfficial']['electedOfficialComments'],

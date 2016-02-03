@@ -244,11 +244,12 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         /*
          * Replace single and double quote to html special char.
          */
-        $governmentJson = str_replace(
+        $governmentJson = json_encode($government);
+        /*$governmentJson = str_replace(
             [ '\'', '\\"' ],
             [ '&apos;', '&quote;' ],
             json_encode($government)
-        );
+        );*/
 
         return [
             'government' => $government,

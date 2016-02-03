@@ -61,11 +61,12 @@ class MainController extends Controller
         }
         $map['username'] = $this->getParameter('carto_db.account');
 
-        $map = str_replace(
+        $map = json_encode($map);
+        /*$map = str_replace(
             [ '\'', '\\"' ],
             [ '&apos;', '&quote;' ],
             json_encode($map)
-        );
+        );*/
 
         return [
             'environment' => $environment,

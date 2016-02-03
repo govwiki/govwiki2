@@ -177,7 +177,7 @@
 
     {% if government is defined %}
         <script>
-            window.gw.government = '{{ government_json|raw }}'
+            window.gw.government = '{{ government_json|escape('js') }}';
             window.gw.urls = {};
             window.gw.urls.popover = '{{ govwiki_path('govwiki_api_v1_government_getranks', {
                 'altTypeSlug': government.altTypeSlug,
