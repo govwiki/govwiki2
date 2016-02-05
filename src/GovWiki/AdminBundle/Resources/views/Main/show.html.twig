@@ -53,9 +53,13 @@
 
                     {# Main content #}
                     <div class="row">
-                        <div class="col-md-12">
 
+                        <div class="col-md-12">
                             <h3>{{ environment.name|capitalize }} environment</h3>
+                        </div>
+
+                        <div class="col-md-3">
+
                             <div>
                                 <div>
                                     <b>Status:</b>&nbsp;
@@ -86,10 +90,35 @@
                                     {%- endif -%}
                                 </div>
                             </div>
-
+                        </div>
+                        <div class="col-md-9">
                             {{ form_start(form) }}
-                            {{ form_widget(form) }}
+                            {# Nav tabs #}
+                            <ul class="nav nav-pills" role="tablist">
+                                <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">Greneral</a></li>
+                                <li role="presentation"><a href="#greeting-text" aria-controls="greeting-text" role="tab" data-toggle="tab">Greeting text</a></li>
+                                <li role="presentation"><a href="#bottom-text" aria-controls="bottom-text" role="tab" data-toggle="tab">Bottom text</a></li>
+                            </ul>
 
+                            {# Tab panes #}
+                            <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
+
+                                <div role="tabpanel" class="tab-pane active" id="general">
+                                    {{ form_row(form.name) }}
+                                    {{ form_row(form.domain) }}
+                                    {{ form_row(form.title) }}
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="greeting-text">
+                                   {{ form_row(form.greetingText) }}
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="bottom-text">
+                                    {{ form_row(form.showBottomText) }}
+                                    {{ form_row(form.bottomText) }}
+                                </div>
+
+                            </div>
                         </div>
                     </div>
 

@@ -23,7 +23,9 @@ class EnvironmentType extends AbstractType
             ->add('name')
             ->add('domain')
             ->add('title')
-            ->add('greetingText', 'ckeditor');
+            ->add('greetingText', 'ckeditor')
+            ->add('showBottomText', 'checkbox', [ 'required' => false ])
+            ->add('bottomText', 'ckeditor', [ 'required' => false ]);
     }
 
     /**

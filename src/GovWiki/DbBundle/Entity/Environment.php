@@ -81,6 +81,20 @@ class Environment
     private $greetingText;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="text")
+     */
+    private $bottomText = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $showBottomText;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
@@ -482,5 +496,45 @@ class Environment
     public function getSlug()
     {
         return $this->slug;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBottomText()
+    {
+        return $this->bottomText;
+    }
+
+    /**
+     * @param string $bottomText
+     *
+     * @return Environment
+     */
+    public function setBottomText($bottomText)
+    {
+        $this->bottomText = $bottomText;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isShowBottomText()
+    {
+        return $this->showBottomText;
+    }
+
+    /**
+     * @param boolean $showBottomText
+     *
+     * @return Environment
+     */
+    public function setShowBottomText($showBottomText)
+    {
+        $this->showBottomText = $showBottomText;
+
+        return $this;
     }
 }

@@ -105,6 +105,7 @@ class Extension extends \Twig_Extension
                 'hasElectedOfficials' => $this->manager
                         ->countElectedOfficials() > 0,
                 'title' => $this->manager->getTitle(),
+                'bottomText' => $this->manager->getBottomText(),
             ];
         }
 
