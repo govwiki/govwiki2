@@ -29,23 +29,72 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request)
     {
+        $session = $this->container->get('session');
+        $environment = $this->adminEnvironmentManager()->getEnvironment();
+
         $id = null;
         $fullName = null;
-        $government = null;
+        $governmentName = null;
+
+        $session_filter = $session->get('filter');
+        if (!$session_filter) {
+            $session_filter = array();
+            $session_filter[$environment] = array(
+                'elected' => array(
+                    'id' => null,
+                    'fullName' => null,
+                    'governmentName' => null
+                ),
+                'government' => array(
+                    'id' => null,
+                    'name' => null
+                )
+            );
+        } elseif (!isset($session_filter[$environment])) {
+            $session_filter[$environment] = array(
+                'elected' => array(
+                    'id' => null,
+                    'fullName' => null,
+                    'governmentName' => null
+                ),
+                'government' => array(
+                    'id' => null,
+                    'name' => null
+                )
+            );
+        } else {
+            $id = $session_filter[$environment]['elected']['id'];
+            $fullName = $session_filter[$environment]['elected']['fullName'];
+            $governmentName = $session_filter[$environment]['elected']['governmentName'];
+        }
+
         if ($filter = $request->query->get('filter')) {
             if (!empty($filter['id'])) {
                 $id = (int) $filter['id'];
+                $session_filter[$environment]['elected']['id'] = $id;
+            } else {
+                $id = null;
+                $session_filter[$environment]['elected']['id'] = null;
             }
             if (!empty($filter['fullName'])) {
                 $fullName = $filter['fullName'];
+                $session_filter[$environment]['elected']['fullName'] = $fullName;
+            } else {
+                $fullName = null;
+                $session_filter[$environment]['elected']['fullName'] = null;
             }
             if (!empty($filter['governmentName'])) {
-                $government = $filter['governmentName'];
+                $governmentName = $filter['governmentName'];
+                $session_filter[$environment]['elected']['governmentName'] = $governmentName;
+            } else {
+                $governmentName = null;
+                $session_filter[$environment]['elected']['governmentName'] = null;
             }
+            $session->set('filter', $session_filter);
         }
 
         $electedOfficials = $this->paginate(
-            $this->getManager()->getListQuery($id, $fullName, $government),
+            $this->getManager()->getListQuery($id, $fullName, $governmentName),
             $request->query->getInt('page', 1),
             50
         );

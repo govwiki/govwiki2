@@ -46,14 +46,29 @@
                                 <form method="get" class="form-inline controls">
                                     <div class="col-xs-10">
 
-                                            <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id"
-                                                   value="{{ app.request.query.get('filter') ? app.request.query.get('filter').id }}">
+                                        {% set session_filter = app.session.get('filter') %}
+                                        {% if session_filter and session_filter[admin_environment] is defined %}
+                                            {% set filter_id = session_filter[admin_environment].elected.id %}
+                                            {% set filter_fullName = session_filter[admin_environment].elected.fullName %}
+                                            {% set filter_governmentName = session_filter[admin_environment].elected.governmentName %}
+                                        {% elseif app.request.query.get('filter') %}
+                                            {% set filter_id = app.request.query.get('filter').id %}
+                                            {% set filter_fullName = app.request.query.get('filter').fullName %}
+                                            {% set filter_governmentName = app.request.query.get('filter').governmentName %}
+                                        {% else %}
+                                            {% set filter_id = '' %}
+                                            {% set filter_fullName = '' %}
+                                            {% set filter_governmentName = '' %}
+                                        {% endif %}
 
-                                            <input name="filter[fullName]" type="text" class="form-control input-sm" placeholder="Name"
-                                                   value="{{ app.request.query.get('filter') ? app.request.query.get('filter').fullName}}">
+                                        <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id"
+                                               value="{{ filter_id }}">
 
-                                            <input name="filter[governmentName]" type="text" class="form-control input-sm" placeholder="Government name"
-                                                   value="{{ app.request.query.get('filter') ? app.request.query.get('filter').governmentName}}">
+                                        <input name="filter[fullName]" type="text" class="form-control input-sm" placeholder="Name"
+                                               value="{{ filter_fullName }}">
+
+                                        <input name="filter[governmentName]" type="text" class="form-control input-sm" placeholder="Government name"
+                                               value="{{ filter_governmentName }}">
 
                                     </div>
 
