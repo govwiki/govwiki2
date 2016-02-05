@@ -3,17 +3,31 @@
     {# Logo #}
     <div class="col-xs-6 col-sm-6 col-md-3">
 
-        <a class="anchor" href="http://californiapolicycenter.org/">
-            {% if government is defined and government.secondaryLogoUrl %}
+        {% if government is defined and government.secondaryLogoPath %}
+            <a class="anchor" href="http://californiapolicycenter.org/">
                 <img src="" alt="California Policy Center" class="logo" width="70%">
-                <img class="secondary_logo" src="{{ asset(government.secondaryLogoUrl) }}" width="25%">
-            {% elseif elected.government is defined and elected.government.secondaryLogoUrl %}
-                <img src="" alt="California Policy Center" class="logo" width="70%">
-                <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoUrl) }}" width="25%">
+            </a>
+            {% if government.secondaryLogoUrl %}
+                <a class="anchor" href="{{ government.secondaryLogoUrl }}">
+                    <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
+                </a>
             {% else %}
-                <img src="" alt="California Policy Center" class="logo">
+                <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
             {% endif %}
-        </a>
+        {% elseif elected.government is defined and elected.government.secondaryLogoPath %}
+            <a class="anchor" href="http://californiapolicycenter.org/">
+                <img src="" alt="California Policy Center" class="logo" width="70%">
+            </a>
+            {% if elected.government.secondaryLogoUrl %}
+                <a class="anchor" href="{{ elected.government.secondaryLogoUrl }}">
+                    <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
+                </a>
+            {% else %}
+                <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
+            {% endif %}
+        {% else %}
+                <img src="" alt="California Policy Center" class="logo">
+        {% endif %}
 
     </div>
 

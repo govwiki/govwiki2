@@ -175,7 +175,7 @@ class GovernmentController extends AbstractGovWikiAdminController
                     $filename
                 );
 
-                $government->setSecondaryLogoUrl('/img/upload/'. $filename);
+                $government->setSecondaryLogoPath('/img/upload/'. $filename);
             }
 
 

@@ -178,6 +178,13 @@ class Government
     /**
      * @var string
      *
+     * @ORM\Column(name="secondary_logo_path", nullable=true)
+     */
+    private $secondaryLogoPath;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="secondary_logo_url", nullable=true)
      */
     private $secondaryLogoUrl;
@@ -839,6 +846,9 @@ class Government
      */
     public function setSecondaryLogoUrl($secondaryLogoUrl)
     {
+        if (strpos($secondaryLogoUrl, 'http://') === false) {
+            $secondaryLogoUrl = 'http://' . $secondaryLogoUrl;
+        }
         $this->secondaryLogoUrl = $secondaryLogoUrl;
 
         return $this;
@@ -868,5 +878,28 @@ class Government
     public function setSecondaryLogo(UploadedFile $secondaryLogo)
     {
         $this->secondaryLogo = $secondaryLogo;
+    }
+
+    /**
+     * Set secondaryLogoPath
+     *
+     * @param string $secondaryLogoPath
+     * @return Government
+     */
+    public function setSecondaryLogoPath($secondaryLogoPath)
+    {
+        $this->secondaryLogoPath = $secondaryLogoPath;
+
+        return $this;
+    }
+
+    /**
+     * Get secondaryLogoPath
+     *
+     * @return string 
+     */
+    public function getSecondaryLogoPath()
+    {
+        return $this->secondaryLogoPath;
     }
 }

@@ -7,6 +7,7 @@ use GovWiki\DbBundle\Entity\Government;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 
 /**
  * Class GovernmentType
@@ -43,6 +44,7 @@ class GovernmentType extends AbstractType
 //            ->add('city')
             ->add('wikipediaPageName')
             ->add('secondaryLogo', 'file', [ 'required' => false ])
+            ->add('secondaryLogoUrl')
             ->add('latestAuditUrl');
 
         /** @var Government|null $current */
