@@ -16,6 +16,10 @@ services:
         arguments: [@carto_db.api]
         parent: govwiki_db.importer.abstract
 
+    govwiki_db.importer.fin_data:
+        class: GovWiki\DbBundle\Importer\FinDataImporter
+        parent: govwiki_db.importer.abstract
+
     govwiki_db.form.type.alt_type:
         class: GovWiki\DbBundle\Form\Type\AltTypeType
         arguments: [@govwiki_admin.manager.environment]
@@ -60,3 +64,9 @@ services:
         arguments: [@govwiki_admin.manager.environment]
         tags:
             - { name: form.type, alias: format }
+
+    govwiki_db.form.fin_data:
+        class: GovWiki\DbBundle\Form\FinDataType
+        arguments: [@govwiki_admin.manager.environment]
+        tags:
+            - { name: form.type, alias: fin_data }

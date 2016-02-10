@@ -188,6 +188,13 @@ class Government
     private $secondaryLogo;
 
     /**
+     * Used for filtering fin data collection by year.
+     *
+     * @var integer
+     */
+    private $finDataYear;
+
+    /**
      * Constructor
      */
     public function __construct()

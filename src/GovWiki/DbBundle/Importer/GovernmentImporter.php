@@ -6,8 +6,8 @@ use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Query;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
-use GovWiki\DbBundle\Reader\ReaderInterface;
-use GovWiki\DbBundle\Writer\WriterInterface;
+use GovWiki\DbBundle\File\ReaderInterface;
+use GovWiki\DbBundle\File\WriterInterface;
 
 /**
  * Class GovernmentImporter

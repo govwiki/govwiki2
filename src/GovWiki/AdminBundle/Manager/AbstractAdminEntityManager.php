@@ -141,6 +141,16 @@ abstract class AbstractAdminEntityManager implements
     }
 
     /**
+     * @param string $dql Dql statement.
+     *
+     * @return \Doctrine\ORM\Query
+     */
+    protected function createQuery($dql)
+    {
+        return $this->em->createQuery($dql);
+    }
+
+    /**
      * @return Environment
      */
     public function getEnvironmentReference()

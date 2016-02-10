@@ -56,6 +56,14 @@ class Fund
     }
 
     /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    /**
      * Set id
      *
      * @param integer $id

@@ -2,17 +2,19 @@
 
 namespace GovWiki\DbBundle\Form;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\DbBundle\Entity\Format;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class ElectedOfficialType
+ * Class FinDataType
  * @package GovWiki\DbBundle\Form
  */
-class ElectedOfficialType extends AbstractType
+class FinDataType extends AbstractType
 {
     /**
      * @var AdminEnvironmentManager
@@ -27,21 +29,22 @@ class ElectedOfficialType extends AbstractType
     {
         $this->manager = $manager;
     }
-
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fullName')
-            ->add('displayOrder')
-            ->add('title')
-            ->add('emailAddress', 'email', [ 'required' => false ])
-            ->add('telephoneNumber', null, [ 'required' => false ])
-            ->add('photoUrl', 'url', [ 'required' => false ])
-            ->add('bioUrl', 'url', [ 'required' => false ])
-            ->add('termExpires', null, [ 'required' => false ])
+            ->add('year', 'integer')
+            ->add('caption')
+            ->add('fund', 'entity', [
+                'class' => 'GovWiki\DbBundle\Entity\Fund',
+            ])
+            ->add('captionCategory', 'entity', [
+                'class' => 'GovWiki\DbBundle\Entity\CaptionCategory',
+            ])
+            ->add('displayOrder', 'integer')
+            ->add('dollarAmount', 'money', [ 'currency' => 'USD' ])
             ->add('government', 'entity', [
                 'class' => 'GovWiki\DbBundle\Entity\Government',
                 'query_builder' => function (EntityRepository $repository) {
@@ -65,7 +68,7 @@ class ElectedOfficialType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'GovWiki\DbBundle\Entity\ElectedOfficial',
+            'data_class' => 'GovWiki\DbBundle\Entity\FinData',
         ]);
     }
 
@@ -74,6 +77,6 @@ class ElectedOfficialType extends AbstractType
      */
     public function getName()
     {
-        return 'govwiki_dbbundle_electedofficial';
+        return 'fin_data';
     }
 }

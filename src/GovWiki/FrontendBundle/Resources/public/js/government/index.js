@@ -348,5 +348,12 @@ $(function() {
         chart.draw(vis_data, options);
     }
 
+    /*
+        Change fin statement year.
+     */
+    $('#fin-stmt-year').change(function() {
+        var $this = $(this);
+        $this.closest('form').submit();
+    });
 
 });

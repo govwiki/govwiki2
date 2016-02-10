@@ -3,14 +3,10 @@
 namespace GovWiki\DbBundle\Importer;
 
 use Doctrine\DBAL\Connection;
-use GovWiki\AdminBundle\Exception\FileTransformerException;
-use GovWiki\AdminBundle\Manager\AbstractAdminEntityManager;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
-use GovWiki\AdminBundle\Transformer\FileTransformerInterface;
-use GovWiki\ApiBundle\GovWikiApiServices;
-use GovWiki\DbBundle\Exception\InvalidFieldNameException;
-use GovWiki\DbBundle\Reader\ReaderInterface;
-use GovWiki\DbBundle\Writer\WriterInterface;
+use GovWiki\DbBundle\Exception\GovWikiDbBundleException;
+use GovWiki\DbBundle\File\ReaderInterface;
+use GovWiki\DbBundle\File\WriterInterface;
 
 /**
  * Class AbstractImporter
@@ -46,6 +42,11 @@ abstract class AbstractImporter
      * @param ReaderInterface $reader A ReaderInterface instance.
      *
      * @return void
+     *
+     * @throws GovWikiDbBundleException Some error occurs while importing. More
+     * explanation in concrete importer and in exception message.
+     * @throws \RuntimeException Some error from reader.
+     * @throws \Doctrine\DBAL\DBALException Can't import.
      */
     abstract public function import(ReaderInterface $reader);
 

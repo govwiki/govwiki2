@@ -71,7 +71,7 @@
 
 
                             {% if showFinStmt %}
-                                <li><a href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">Financial Statements</a></li>
+                                <li><a href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">Financial Statements {{ government.finData.year }}</a></li>
                             {% endif %}
 
                         </ul>
@@ -113,7 +113,12 @@
                             {# Financial Statements (if exists) #}
                             {% if showFinStmt %}
                                 <div class="tab-pane" id="Financial_Statements">
-                                    <h4>Financial Statements</h4>
+                                    <form method="get">
+                                        <h4>
+                                            Financial Statements
+                                            {% include '@GovWikiFrontend/Partial/Government/year_select.html.twig' %}
+                                        </h4>
+                                    </form>
                                     <br>
 
                                     {# Statistics #}

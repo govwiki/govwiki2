@@ -218,6 +218,7 @@ class GovernmentController extends AbstractGovWikiAdminController
         }
 
         return [
+            'id' => $government->getId(),
             'form' => $form->createView(),
             'formats' => $this->adminEnvironmentManager()
                 ->getFormats(false, $government->getAltType()),

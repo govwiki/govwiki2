@@ -61,3 +61,7 @@ category:
 wizard:
     resource: @GovWikiAdminBundle/Controller/WizardController.php
     type:     annotation
+
+fin_data:
+    resource: @GovWikiAdminBundle/Controller/FinDataController.php
+    type:     annotation

@@ -12,7 +12,6 @@
 {% for categoryName, fields in financialStatements %}
     <div>
         {% set showTotalAndOver = (fields|first).otherfunds is defined %}
-
         {# Category caption. #}
         <div class="row">
 
@@ -33,7 +32,11 @@
                     {%- if not showTotalAndOver or loop.first -%}
                         $&nbsp;
                     {%- endif -%}
-                    {{- macro.displayValue(data.genfund) -}}
+                    {% if data.genfund is defined %}
+                        {{- macro.displayValue(data.genfund) -}}
+                    {%- else -%}
+                        0
+                    {%- endif -%}
                 </div>
 
                 {% if showTotalAndOver %}
@@ -41,13 +44,22 @@
                         {%- if loop.first -%}
                             $&nbsp;
                         {%- endif -%}
-                        {{- macro.displayValue(data.otherfunds) -}}
+                        {% if data.otherfunds is defined %}
+                            {{- macro.displayValue(data.otherfunds) -}}
+                        {%- else -%}
+                            0
+                        {%- endif -%}
                     </div>
                     <div class="col-md-2 text-right">
                         {%- if loop.first -%}
                             $&nbsp;
                         {%- endif -%}
-                        {{- macro.displayValue(data.totalfunds) -}}
+
+                        {% if data.totalfunds is defined %}
+                            {{- macro.displayValue(data.totalfunds) -}}
+                        {%- else -%}
+                            0
+                        {%- endif -%}
                     </div>
                 {% endif %}
             </div>

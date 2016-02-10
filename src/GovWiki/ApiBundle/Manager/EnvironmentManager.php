@@ -135,12 +135,13 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @param string $altTypeSlug Slugged government alt type.
-     * @param string $slug        Slugged government name.
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
+     * @param integer $year        For fetching fin data.
      *
      * @return array
      */
-    public function getGovernment($altTypeSlug, $slug)
+    public function getGovernment($altTypeSlug, $slug, $year = null)
     {
         $tmp = $this->em->getRepository('GovWikiDbBundle:Format')
             ->get($this->environment, true);
@@ -171,7 +172,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         }
 
         $government = $this->em->getRepository('GovWikiDbBundle:Government')
-            ->findGovernment($this->environment, $altTypeSlug, $slug);
+            ->findGovernment($this->environment, $altTypeSlug, $slug, $year);
         if (null === $government) {
             return [];
         }
@@ -245,11 +246,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
          * Replace single and double quote to html special char.
          */
         $governmentJson = json_encode($government);
-        /*$governmentJson = str_replace(
-            [ '\'', '\\"' ],
-            [ '&apos;', '&quote;' ],
-            json_encode($government)
-        );*/
 
         return [
             'government' => $government,

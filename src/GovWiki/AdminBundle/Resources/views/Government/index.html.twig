@@ -65,10 +65,10 @@
                         {# Controls #}
                         <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3 text-center text-right-sm">
                             <div class="btn-group controls">
-                                <a class="btn btn-sm btn-default" href="{{-
-                                    path('govwiki_admin_government_export')
-                                -}}">Export</a>
-                                <button class="btn btn-sm btn-default" id="import">Import</button>
+                                {#<a class="btn btn-sm btn-default" href="{{-#}
+                                    {#path('govwiki_admin_government_export')#}
+                                {#-}}">Export</a>#}
+                                <button class="btn btn-sm btn-default" id="import">Import fin. stmt.</button>
                                 <a class="btn btn-sm btn-primary" href="{{-
                                     path('govwiki_admin_government_create')
                                 -}}">Create</a>
@@ -146,7 +146,7 @@
             <div class="modal-content">
                 <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
                 <div class="modal-body">
-                    {{- render(controller('GovWikiAdminBundle:Government:import')) -}}
+                    {{- render(controller('GovWikiAdminBundle:FinData:import')) -}}
                 </div>
                 <div class="modal-footer">
                     <div class="pull-right">
