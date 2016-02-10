@@ -4,9 +4,71 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "72300001c680b519dbdb2e138401b864",
-    "content-hash": "ff29fb6e828618b7131818c71936a5c1",
+    "hash": "402a3c8d08d3bb88733b0cd8acfe25fb",
+    "content-hash": "3c15b8a29c77e9cce49ec5e255ed4051",
     "packages": [
+        {
+            "name": "asm/translation-loader-bundle",
+            "version": "v1.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maschmann/TranslationLoaderBundle.git",
+                "reference": "3d1ce4a6d60a0289f6b774cf067c48a8c1aa0e0c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maschmann/TranslationLoaderBundle/zipball/3d1ce4a6d60a0289f6b774cf067c48a8c1aa0e0c",
+                "reference": "3d1ce4a6d60a0289f6b774cf067c48a8c1aa0e0c",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/orm": "~2.2,>=2.2.3",
+                "php": ">=5.3.0",
+                "symfony/config": "~2.2",
+                "symfony/console": "~2.2",
+                "symfony/dependency-injection": "~2.2",
+                "symfony/event-dispatcher": "~2.2",
+                "symfony/filesystem": "~2.2",
+                "symfony/finder": "~2.2",
+                "symfony/http-kernel": "~2.2",
+                "symfony/translation": "~2.2"
+            },
+            "require-dev": {
+                "matthiasnoback/symfony-dependency-injection-test": "~0.6",
+                "mikey179/vfsstream": "1.*",
+                "symfony/framework-bundle": "~2.2",
+                "symfony/security-bundle": "~2.2"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Asm\\TranslationLoaderBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marc Aschmann",
+                    "email": "maschmann@gmail.com"
+                }
+            ],
+            "description": "Symfony2 bundle with database translation loader",
+            "homepage": "https://github.com/maschmann/TranslationLoaderBundle",
+            "keywords": [
+                "symfony translation",
+                "translation database",
+                "translation loader"
+            ],
+            "time": "2015-02-28 13:10:09"
+        },
         {
             "name": "behat/transliterator",
             "version": "v1.1.0",
@@ -1043,7 +1105,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/6ccff96434c0ac7fee077d1dce90966341dfd278",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/140cc28026304d3023c880f441689986f99b913b",
                 "reference": "6ccff96434c0ac7fee077d1dce90966341dfd278",
                 "shasum": ""
             },

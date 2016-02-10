@@ -35,6 +35,7 @@ class AppKernel extends Kernel
             new GovWiki\FrontendBundle\GovWikiFrontendBundle(),
             new Ivory\CKEditorBundle\IvoryCKEditorBundle(),
             new CartoDbBundle\CartoDbBundle(),
+            new Asm\TranslationLoaderBundle\AsmTranslationLoaderBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

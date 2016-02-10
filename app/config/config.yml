@@ -40,7 +40,7 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     form:
-        resources: ['bootstrap_3_layout.html.twig']
+        resources: ['GovWikiDbBundle:Form:govwiki_form_theme.html.twig']
     form_themes:
         - GovWikiDbBundle:Form:theme.html.twig
     globals:
@@ -127,3 +127,7 @@ ivory_ck_editor:
         elected_official_comment_config:
             toolbar: [ [ 'Cut','Copy','Paste','Undo','Redo' ], [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ], [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ], [ 'Styles','Format','Font','FontSize' ], [ 'TextColor','BGColor' ] ]
 
+asm_translation_loader:
+    driver: orm
+    database:
+        entity_manager: default

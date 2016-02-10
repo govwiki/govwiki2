@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use Asm\TranslationLoaderBundle\Entity\Translation;
 use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Form\ExtGovernmentType;
@@ -14,6 +15,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\DbBundle\Entity\Government;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Class GovernmentController
@@ -56,6 +58,46 @@ class GovernmentController extends AbstractGovWikiAdminController
         );
 
         return [ 'governments' => $governments ];
+    }
+
+    /**
+     *
+     *
+     * @Configuration\Route("/create_translation")
+     * @Configuration\Template()
+     *
+     * @param Request $request A Request instance.
+     *
+     */
+    public function createTranslationAction(Request $request)
+    {
+        $trans_key = $request->get('trans_key');
+        $trans_text = $request->get('trans_text');
+
+        $em = $this->getDoctrine()->getManager();
+
+        $translationManager = $this->container->get('asm_translation_loader.translation_manager');
+        $exist_translation = $translationManager->findTranslationBy(
+            array(
+                'transKey' => $trans_key
+            )
+        );
+
+        if (!$exist_translation) {
+            $translation = new Translation();
+            $translation->setTransKey($trans_key);
+            $translation->setMessageDomain('messages');
+            $translation->setTransLocale('en');
+            $translation->setTranslation($trans_text);
+            $translation->setDateCreated(new \DateTime());
+            $translation->setDateUpdated(new \DateTime());
+            $em->persist($translation);
+            $em->flush();
+        }
+
+        return new JsonResponse(array(
+            'result' => true
+        ));
     }
 
     /**
