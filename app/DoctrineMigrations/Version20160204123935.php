@@ -18,7 +18,7 @@ class Version20160204123935 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE governments DROP annual_salary_mayor, DROP years_mayor_in_office, CHANGE mayor_name secondary_logo_path VARCHAR(255) DEFAULT NULL');
+        $this->addSql('ALTER TABLE governments ADD secondary_logo_path VARCHAR(255) DEFAULT NULL');
         $this->addSql('UPDATE governments SET secondary_logo_path = secondary_logo_url');
         $this->addSql('UPDATE governments SET secondary_logo_url = NULL');
     }
