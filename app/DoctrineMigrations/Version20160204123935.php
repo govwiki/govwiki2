@@ -33,6 +33,6 @@ class Version20160204123935 extends AbstractMigration
 
         $this->addSql('UPDATE governments SET secondary_logo_url = secondary_logo_path');
         $this->addSql('UPDATE governments SET secondary_logo_path = NULL');
-        $this->addSql('ALTER TABLE governments ADD annual_salary_mayor DOUBLE PRECISION DEFAULT NULL, ADD years_mayor_in_office INT DEFAULT NULL, CHANGE secondary_logo_path mayor_name VARCHAR(255) DEFAULT NULL');
+        $this->addSql('ALTER TABLE DROP secondary_logo_path');
     }
 }
