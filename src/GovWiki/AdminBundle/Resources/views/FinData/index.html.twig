@@ -1,0 +1,194 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block title %}{{ parent() }} - governments{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+    macro.breadcrumbElement(
+    admin_environment|capitalize ~' environment',
+    'govwiki_admin_main_show',
+    { 'environment': admin_environment }
+    )
+    }}
+    {{ macro.breadcrumbElement('Governments', 'govwiki_admin_government_index') }}
+    {{ macro.breadcrumbElement('Edit ' ~ government.name, 'govwiki_admin_government_edit',
+        { 'id': government.id })
+    }}
+    {{ macro.breadcrumbElement('Financial Statements') }}
+{% endblock breadcrumb %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-md-12">
+
+            {# Panel #}
+            <div class="panel panel-primary">
+
+                {# Header #}
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        {{ government.name }} Financial Statements
+                    </h3>
+                </div>
+
+                {# Body #}
+                <div class="panel-body">
+                    <div class="row">
+
+                        {# Pagination #}
+                        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center">
+                            {{ knp_pagination_render(fin_data) }}
+                        </div>
+
+                        {# Filter #}
+                        <div class="col-xs-8 col-sm-9 col-md-5 col-lg-5 text-center text-left-sm">
+
+                            <div class="row">
+                                <form action="" method="get" class="form-inline controls">
+                                    <div class="col-xs-10">
+
+                                        <label>Year:</label>
+                                        <select name="filter[year]" style="min-width: 60px">
+                                            {% for year in years %}
+                                                <option {%
+                                            if (year == (app.request.query.get('filter') ? app.request.query.get('filter').year))
+                                            -%}selected=""{% endif %}>
+                                                    {{- year -}}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+
+                                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
+                                        <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+
+                        {# Controls #}
+                        <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3 text-center text-right-sm">
+                                {#<a class="btn btn-sm btn-primary" href="{{-
+                                path('govwiki_admin_government_create')
+                                -}}">Create</a>#}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover text-center">
+                                    <tr>
+                                        <th>
+                                            {{-
+                                            knp_pagination_sortable(fin_data, 'Caption', 'FinData.caption')
+                                            -}}
+                                        </th>
+                                        <th>
+                                            {{-
+                                            knp_pagination_sortable(fin_data, 'Fund', 'Fund.name')
+                                            -}}
+                                        </th>
+                                        <th>
+                                            {{-
+                                            knp_pagination_sortable(fin_data, 'Category', 'CaptionCategory.name')
+                                            -}}
+                                        </th>
+                                        <th>
+                                            {{-
+                                            knp_pagination_sortable(fin_data, 'Order', 'FinData.displayOrder')
+                                            -}}
+                                        </th>
+                                        <th>Action</th>
+                                    </tr>
+                                    {% for statement in fin_data %}
+                                        <tr>
+                                            <td>{{ statement.caption }}</td>
+                                            <td>
+                                                {%- if statement.fund -%}
+                                                    {{- statement.fund.name -}}
+                                                {%- endif -%}
+                                            </td>
+                                            <td>
+                                                {%- if statement.captionCategory -%}
+                                                    {{- statement.captionCategory.name -}}
+                                                {%- endif -%}
+                                            </td>
+                                            <td>{{ statement.displayOrder }}</td>
+                                            <td>
+                                                <a class="btn btn-sm btn-default" href="{{-
+                                                path('govwiki_admin_findata_edit',
+                                                { 'finData': statement.id })
+                                                -}}"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+                                                <button data-url="
+                                                {{- path('govwiki_admin_government_remove', { id: government.id })
+                                                -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete financial statement '{{ statement.caption }}'?">
+                                                    <span class="glyphicon glyphicon-remove"></span> Remove
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Navigation #}
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+
+                            {# Pagination #}
+                            <div class="navigation">
+                                {{ knp_pagination_render(fin_data) }}
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="modal-import" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
+                    <div class="modal-body">
+                        {{- render(controller('GovWikiAdminBundle:FinData:import')) -}}
+                    </div>
+                    <div class="modal-footer">
+                        <div class="pull-right">
+                            <a id="import-confirm" class="btn btn-danger">
+                                Import
+                            </a>
+                            <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(function() {
+
+            $('#import').click(function () {
+                $('#modal-import').modal('show');
+            });
+
+            $('#import-confirm').click(function () {
+                $('form', '#modal-import').submit();
+            });
+        });
+    </script>
+{% endblock javascripts %}

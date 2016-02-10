@@ -598,6 +598,16 @@ class AdminEnvironmentManager
     }
 
     /**
+     * @param string $className Entity class name.
+     *
+     * @return \Doctrine\Orm\Mapping\ClassMetadata
+     */
+    public function getMetadata($className)
+    {
+        return $this->em->getClassMetadata($className);
+    }
+
+    /**
      * @return User
      *
      * @throws AccessDeniedException Can't get token from storage.

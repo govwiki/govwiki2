@@ -1,10 +1,10 @@
 <?php
 
-namespace GovWiki\DbBundle\Writer;
+namespace GovWiki\DbBundle\File;
 
 /**
  * Interface WriterInterface
- * @package GovWiki\DbBundle\Writer
+ * @package GovWiki\DbBundle\File
  */
 interface WriterInterface
 {

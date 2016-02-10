@@ -11,7 +11,9 @@ use JMS\Serializer\Annotation\Groups;
  * FinData
  *
  * @ORM\Table(name="findata")
- * @ORM\Entity
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\FinDataRepository"
+ * )
  * @ExclusionPolicy("none")
  */
 class FinData

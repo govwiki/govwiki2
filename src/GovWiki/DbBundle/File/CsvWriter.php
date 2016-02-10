@@ -1,14 +1,14 @@
 <?php
 
-namespace GovWiki\DbBundle\Writer;
+namespace GovWiki\DbBundle\File;
 
 /**
  * Write data to CSV file.
  * {@link https://www.ietf.org/rfc/rfc4180.txt}
  *
- * @package GovWiki\DbBundle\Writer
+ * @package GovWiki\DbBundle\File
  */
-class CsvWriter implements WriterInterface
+class CsvFile implements WriterInterface
 {
 
     /**
@@ -46,9 +46,9 @@ class CsvWriter implements WriterInterface
             /*
              * Add caption line to csv file. (rfc4180.2.3)
              */
-            fwrite($this->handle, implode(';', array_keys($row)) ."\n");
+            fwrite($this->handle, implode(',', array_keys($row)) ."\n");
             $this->isCaptionWrote = true;
         }
-        fwrite($this->handle, implode(';', $row) ."\n");
+        fwrite($this->handle, implode(',', $row) ."\n");
     }
 }

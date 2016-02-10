@@ -17,6 +17,15 @@
 
 {% block body %}
     <div class="container-fluid">
+
+        <nav>
+            <a class="pull-right btn btn-primary" href="{{-
+                path('govwiki_admin_findata_index', {
+                    'government': id
+                })
+            -}}">Financial Statements</a>
+        </nav>
+
         {{ form_start(form) }}
         {# Nav tabs #}
         <ul class="nav nav-pills" role="tablist">
