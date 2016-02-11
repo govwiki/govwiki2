@@ -5,6 +5,7 @@ namespace GovWiki\AdminBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class LocalizationController
@@ -24,15 +25,18 @@ class LocalizationController extends Controller
      *
      * @throws \LogicException Some required bundle not registered.
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        /*$l10ns = $this->paginate(
-            $this->getManager()
-                ->getListQuery($id, $name),
-            $request->query->getInt('page', 1),
-            50
-        );*/
+        //$em = $this->getDoctrine()->getManager();
+        $translationManager = $this->container->get('asm_translation_loader.translation_manager');
+        $l10n_list = $translationManager->findTranslationsByLocaleAndDomain('en');
 
-        return [ 'governments' => 'dfg' ];
+        $l10n_pagination = $this->paginate(
+            $l10n_list,
+            $request->query->getInt('page', 1),
+            20
+        );
+
+        return [ 'l10n_list' => $l10n_pagination ];
     }
 }

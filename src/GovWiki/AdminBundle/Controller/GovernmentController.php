@@ -77,11 +77,9 @@ class GovernmentController extends AbstractGovWikiAdminController
         $em = $this->getDoctrine()->getManager();
 
         $translationManager = $this->container->get('asm_translation_loader.translation_manager');
-        $exist_translation = $translationManager->findTranslationBy(
-            array(
-                'transKey' => $trans_key
-            )
-        );
+        $exist_translation = $translationManager->findTranslationBy(array(
+            'transKey' => $trans_key
+        ));
 
         if (!$exist_translation) {
             $translation = new Translation();
