@@ -1,0 +1,38 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% block title %}{{ parent() }} - Templates{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{ macro.breadcrumbElement('Templates') }}
+{% endblock breadcrumb %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-md-12">
+
+            {# Panel #}
+            <div class="panel panel-primary">
+
+                {# Header #}
+                <div class="panel-heading">
+                    <h3 class="panel-title">Templates</h3>
+                </div>
+
+                {# Body #}
+                <div class="panel-body">
+
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    {{ form_end(form) }}
+
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

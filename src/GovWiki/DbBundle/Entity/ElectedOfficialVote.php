@@ -2,7 +2,9 @@
 
 namespace GovWiki\DbBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use GovWiki\CommentBundle\Entity\VoteComment;
 use JMS\Serializer\Annotation\Groups;
 
 /**
@@ -49,6 +51,16 @@ class ElectedOfficialVote
      * @Groups({"elected_official"})
      */
     private $legislation;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\ManyToOne(
+     *  targetEntity="GovWiki\CommentBundle\Entity\VoteComment",
+     *  inversedBy="vote"
+     * )
+     */
+    private $comments;
 
     /**
      * Get id
@@ -150,5 +162,43 @@ class ElectedOfficialVote
     public function getLegislation()
     {
         return $this->legislation;
+    }
+
+    /**
+     * Add comment
+     *
+     * @param VoteComment $comment A VoteComment instance.
+     * @return Legislation
+     */
+    public function addComment(VoteComment $comment)
+    {
+        $this->comments[] = $comment;
+        $comment->setSubject($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove comment
+     *
+     * @param VoteComment $comment A VoteComment instance.
+     *
+     * @return ElectedOfficialVote
+     */
+    public function removeComment(VoteComment $comment)
+    {
+        $this->comments->removeElement($comment);
+
+        return $this;
+    }
+
+    /**
+     * Get comment
+     *
+     * @return Collection
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 }

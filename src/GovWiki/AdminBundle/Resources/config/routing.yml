@@ -65,3 +65,7 @@ wizard:
 fin_data:
     resource: @GovWikiAdminBundle/Controller/FinDataController.php
     type:     annotation
+
+template:
+    resource: "@GovWikiAdminBundle/Controller/TemplateController.php"
+    type:     annotation
