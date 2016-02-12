@@ -91,6 +91,8 @@ class FinDataImporter extends AbstractImporter
                     $value = 'NULL';
                 } elseif (('string' === $type)) {
                     $value = '\''. addslashes($value) .'\'';
+                } elseif ('' === $value) {
+                    $value = 'NULL';
                 }
 
                 $parts[] = $value;
