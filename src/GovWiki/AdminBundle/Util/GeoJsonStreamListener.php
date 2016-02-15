@@ -8,6 +8,7 @@ use GovWiki\AdminBundle\Manager\GovernmentTableManager;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Government;
+use Symfony\Component\Debug\Exception\FatalErrorException;
 
 /**
  * Class GeoJsonStreamListener
@@ -245,7 +246,12 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                     $last = $this->coordinates[0][$lastIdx];
                     $first = $this->coordinates[0][0];
 
-                    if ( (abs($last[0] - $first[0]) > 0.001) || (abs($last[1] - $first[1]) > 0.001) ) {
+                    if (is_array($last)) {
+                        $last = $last[count($last) - 1];
+                        $first = $first[count($first) - 1];
+                    }
+
+                    if ((abs($last[0] - $first[0]) > 0.001) || (abs($last[1] - $first[1]) > 0.001)) {
                         $this->coordinates[0][0][] = $this->coordinates[0][0][0];
                     }
 
@@ -296,8 +302,10 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                     /*
                      * Get value for current column from read data.
                      */
-                    $insertParts[] = $this
-                        ->getFieldValueFromData($column, $data);
+                    if (('slug' !== $column) || ('alt_type_slug' !== $column)) {
+                        $insertParts[] = $this
+                            ->getFieldValueFromData($column, $data);
+                    }
                 }
 
                 $this->sqls['db'][] = "

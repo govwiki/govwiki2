@@ -45,6 +45,14 @@ abstract class AbstractComment
     private $created;
 
     /**
+     *
+     */
+    public function __construct()
+    {
+        $this->created = new \DateTime();
+    }
+
+    /**
      * @return integer
      */
     public function getId()

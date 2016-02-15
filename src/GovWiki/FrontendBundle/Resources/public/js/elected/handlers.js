@@ -56,7 +56,7 @@ function sortTable(table, colNum, columnContentType)
             colNum: colNum,
             columnContentType: columnContentType,
             sortDirection: sortDirection
-        })
+        });
     }
 
     $.each(
@@ -112,16 +112,33 @@ function sortTableTwoStates(table, colNum, columnContentType)
         sortDirection = 'desc';
     }
 
+    var result = [];
     if (makeSort) {
         rows = sortByProperty(rows, {
             colNum: colNum,
             columnContentType: columnContentType,
             sortDirection: sortDirection
-        })
+        });
+
+        rows.forEach(function (elem, idx) {
+            console.log(idx, elem.className);
+            if ('elected-comment' == elem.className) {
+                var id = elem.dataset.id;
+                result.forEach(function (elem, idx) {
+                    if (elem.dataset.id === id) {
+                        $(elem).insertAfter()
+                    }
+                });
+            } else {
+                result.append(elem);
+            }
+        });
+    } else {
+        result = rows;
     }
 
     $.each(
-        rows, function (index, row)
+        result, function (index, row)
         {
             $(table).children('tbody').append(row);
         }

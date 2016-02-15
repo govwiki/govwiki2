@@ -48,12 +48,13 @@ class CommentController extends Controller
         $comment->setSubject($vote);
 
         $form = $this->createForm(new VoteCommentType(), $comment);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
-            $vote->addComment($comment);
-            $em->persist($vote);
+            $comment->setElected($vote->getElectedOfficial());
+            $em->persist($comment);
             $em->flush();
 
             $manager->remove($key);
