@@ -55,9 +55,9 @@ class ElectedOfficialVote
     /**
      * @var Collection
      *
-     * @ORM\ManyToOne(
+     * @ORM\OneToMany(
      *  targetEntity="GovWiki\CommentBundle\Entity\VoteComment",
-     *  inversedBy="vote"
+     *  mappedBy="subject"
      * )
      */
     private $comments;

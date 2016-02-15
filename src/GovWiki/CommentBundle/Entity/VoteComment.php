@@ -14,10 +14,7 @@ class VoteComment extends AbstractComment
     /**
      * @var ElectedOfficial
      *
-     * @ORM\ManyToOne(
-     *  targetEntity="GovWiki\DbBundle\Entity\ElectedOfficial",
-     *  inversedBy="comments"
-     * )
+     * @ORM\ManyToOne(targetEntity="GovWiki\DbBundle\Entity\ElectedOfficial")
      * @ORM\JoinColumn("elected_id")
      */
     private $elected;

@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Table(name="keys")
+ * @ORM\Table(name="generated_keys")
  * @ORM\Entity()
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\MappedSuperclass()
@@ -31,7 +31,7 @@ abstract class AbstractKey
     /**
      * @var string
      *
-     * @ORM\Column()
+     * @ORM\Column(name="`key`")
      */
     private $key;
 

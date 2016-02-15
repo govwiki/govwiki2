@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\CommentBundle\Service;
+namespace GovWiki\CommentBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\CommentBundle\Entity\CommentKey;
@@ -45,22 +45,38 @@ class CommentKeyManager
         return $key;
     }
 
+    public function getElectedOfficial($key, $vote)
+    {
+
+    }
+
     /**
      * @param string $key Generated key.
      *
-     * @return ElectedOfficialVote|null
+     * @return ElectedOfficialVote
      *
      * @throws UnknownKeyException Can't find given key.
      */
-    public function getVote($key)
+    public function getEntity($key)
     {
         $commentKey = $this->em->getRepository('GovWikiCommentBundle:CommentKey')
-            ->findKey($key);
+            ->find($key);
 
         if (null === $commentKey) {
             throw new UnknownKeyException($key);
         }
 
         return $commentKey->getVote();
+    }
+
+    /**
+     * @param string $key Generated key.
+     *
+     * @return void
+     */
+    public function remove($key)
+    {
+        $this->em->getRepository('GovWikiCommentBundle:CommentKey')
+            ->remove($key);
     }
 }

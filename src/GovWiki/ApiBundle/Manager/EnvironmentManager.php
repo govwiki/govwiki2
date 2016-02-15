@@ -342,6 +342,11 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             );
     }
 
+    public function getElectedUrl()
+    {
+
+    }
+
     /**
      * @return array|null
      */

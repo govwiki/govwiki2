@@ -21,7 +21,8 @@ class PathDeterminator extends AbstractEnvironmentDeterminator
         if (null !== $request) {
             $controller = $request->attributes->get('_controller');
             if ((strpos($controller, 'Frontend') !== false) ||
-                (strpos($controller, 'Api') !== false)
+                (strpos($controller, 'Api') !== false) ||
+                (strpos($controller, 'Comment') !== false)
             ) {
                 $this->slug = $request->attributes->get('environment', '');
 //                $this->slug = explode('/', $path)[1];

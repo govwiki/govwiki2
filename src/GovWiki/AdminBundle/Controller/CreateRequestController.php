@@ -7,16 +7,20 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\CommentBundle\GovWikiCommentServices;
 use GovWiki\DbBundle\Entity\Contribution;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\ElectedOfficialVote;
 use GovWiki\DbBundle\Entity\Endorsement;
 use GovWiki\DbBundle\Entity\IssueCategory;
+use GovWiki\DbBundle\Entity\Legislation;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use GovWiki\DbBundle\Entity\CreateRequest;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class CreateRequestController
@@ -105,15 +109,13 @@ class CreateRequestController extends AbstractGovWikiAdminController
                 [
                     'redirect' => $this->generateUrl(
                         'govwiki_admin_createrequest_show',
-                        [
-                            'id' => $createRequest->getId(),
-                        ]
+                        [ 'id' => $createRequest->getId() ]
                     ),
                 ]
             );
         }
 
-        $this->persistData(
+        $entity = $this->persistData(
             $createRequest->getEntityName(),
             $request->request->get('data'),
             $em
@@ -153,6 +155,10 @@ class CreateRequestController extends AbstractGovWikiAdminController
                     $type = 'vote';
                 }
 
+                $commentKeyManager = $this
+                    ->get(GovWikiCommentServices::COMMENT_KEY_MANAGER);
+                $govwikiRouter = $this->get(GovWikiApiServices::URL_GENERATOR);
+
                 foreach ($data as $row) {
                     $message = \Swift_Message::newInstance();
                     if ($this->getParameter('debug')) {
@@ -161,20 +167,40 @@ class CreateRequestController extends AbstractGovWikiAdminController
                         $message->setTo($row['emailAddress']);
                     }
 
+                    $template = 'GovWikiAdminBundle::email.html.twig';
+                    $parameters = [
+                        'full_name' => $row['fullName'],
+                        'title' => $row['title'],
+                        'type' => $type,
+                        'email' => $this->getParameter('admin_email'),
+                        'government_name' => $row['name'],
+                        'profileUrl' => $govwikiRouter->generate('elected', [
+                            'altTypeSlug' => $row['altTypeSlug'],
+                            'slug' => $row['government_slug'],
+                            'electedSlug' => $row['elected_slug'],
+                        ], RouterInterface::ABSOLUTE_URL)
+                    ];
+
+                    if ('vote' === $type) {
+                        $template = 'GovWikiAdminBundle:Template/Email:vote.html.twig';
+                        $vote = $this->getVote($entity, $row['id']);
+                        $key = $commentKeyManager->create($vote);
+                        $parameters['vote'] = $vote;
+                        $parameters['key'] = $key->getKey();
+                        $parameters['addCommentUrl'] = $govwikiRouter
+                            ->generate('govwiki_comment_comment_add', [],
+                                RouterInterface::ABSOLUTE_URL);
+
+                        $em->persist($key);
+                    }
+
                     $message
                         ->setSubject($this->getParameter('email_subject'))
                         ->setFrom($this->getParameter('admin_email'))
                         ->setBody(
                             $this->renderView(
-                                'GovWikiAdminBundle::email.html.twig',
-                                [
-                                    'full_name' => $row['fullName'],
-                                    'title' => $row['title'],
-                                    'type' => $type,
-                                    'email' => $this->getParameter('admin_email'),
-                                    'government_name' => $row['name'],
-                                    'governments_slug' => $row['slug'],
-                                ]
+                                $template,
+                                $parameters
                             ),
                             'text/html'
                         );
@@ -463,6 +489,18 @@ class CreateRequestController extends AbstractGovWikiAdminController
         $em->persist($newEntity);
 
         return $newEntity;
+    }
+
+    public function getVote(Legislation $legislation, $electedOfficialId)
+    {
+        /** @var ElectedOfficialVote $vote */
+        foreach ($legislation->getElectedOfficialVotes() as $vote) {
+            if ($vote->getElectedOfficial()->getId() === $electedOfficialId) {
+                return $vote;
+            }
+        }
+
+        return null;
     }
 
     /**

@@ -156,11 +156,14 @@ class ElectedOfficialRepository extends EntityRepository
         $qb = $this->createQueryBuilder('ElectedOfficial');
         return $qb
             ->select('
+                ElectedOfficial.id,
                 ElectedOfficial.fullName,
                 ElectedOfficial.title,
                 ElectedOfficial.emailAddress,
+                ElectedOfficial.slug AS elected_slug,
                 Government.name,
-                Government.slug
+                Government.slug AS government_slug,
+                Government.altTypeSlug
             ')
             ->join('ElectedOfficial.government', 'Government')
             ->where(
