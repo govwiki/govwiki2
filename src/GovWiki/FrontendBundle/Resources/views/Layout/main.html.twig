@@ -88,6 +88,7 @@
             <script> window.gw.authorized = "{{ app.user }}"; </script>
             {% set username = '' %}
             {% if app.user %}
+                <script> window.gw.user_id = "{{ app.user.id }}"; </script>
                 {% set username = app.user.username %}
             {% endif %}
             <script> window.gw.username = "{{ username }}"; </script>

@@ -14,6 +14,7 @@ use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
 use GovWiki\DbBundle\Utils\Functions;
+use Metadata\ClassMetadata;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**

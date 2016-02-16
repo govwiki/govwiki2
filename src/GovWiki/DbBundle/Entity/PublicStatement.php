@@ -11,7 +11,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="public_statements")
  * @ORM\Entity
  */
-class PublicStatement
+class PublicStatement extends AbstractCreatable
 {
     /**
      * @var integer

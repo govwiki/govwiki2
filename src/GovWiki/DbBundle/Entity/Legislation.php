@@ -16,7 +16,7 @@ use JMS\Serializer\Annotation\Groups;
  * )
  * @ExclusionPolicy("none")
  */
-class Legislation
+class Legislation extends AbstractCreatable
 {
     /**
      * @var integer
@@ -85,7 +85,11 @@ class Legislation
     private $notes;
 
     /**
-     * @ORM\OneToMany(targetEntity="ElectedOfficialVote", mappedBy="legislation")
+     * @ORM\OneToMany(
+     *  targetEntity="ElectedOfficialVote",
+     *  mappedBy="legislation",
+     *  cascade={ "persist", "remove" }
+     * )
      * @Exclude
      */
     private $electedOfficialVotes;
@@ -115,6 +119,7 @@ class Legislation
      */
     public function __construct()
     {
+        parent::__construct();
         $this->electedOfficialVotes = new \Doctrine\Common\Collections\ArrayCollection();
     }
 

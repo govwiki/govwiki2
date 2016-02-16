@@ -70,3 +70,7 @@ services:
         arguments: [@govwiki_admin.manager.environment]
         tags:
             - { name: form.type, alias: fin_data }
+
+    govwiki_db.manager.create_request:
+        class: GovWiki\DbBundle\CreateRequest\CreateRequestManager
+        arguments: [@doctrine.orm.default_entity_manager]

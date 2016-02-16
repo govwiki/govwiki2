@@ -11,7 +11,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="contributions")
  * @ORM\Entity
  */
-class Contribution
+class Contribution extends AbstractCreatable
 {
     /**
      * @var integer

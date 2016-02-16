@@ -11,7 +11,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="endorsements")
  * @ORM\Entity
  */
-class Endorsement
+class Endorsement extends AbstractCreatable
 {
     /**
      * @var integer
@@ -176,7 +176,7 @@ class Endorsement
     /**
      * Get issueCategory
      *
-     * @return \GovWiki\DbBundle\Entity\IssueCategory 
+     * @return \GovWiki\DbBundle\Entity\IssueCategory
      */
     public function getIssueCategory()
     {

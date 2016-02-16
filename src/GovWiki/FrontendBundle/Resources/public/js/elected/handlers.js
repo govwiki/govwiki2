@@ -527,6 +527,7 @@ $(function() {
         sendObject = {
             createRequest: {
                 entityName: entityType,
+                user: window.gw.user_id,
                 fields: {
                     fields: newRecord,
                     associations: associations,
