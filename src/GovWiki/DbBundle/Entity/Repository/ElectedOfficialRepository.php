@@ -99,7 +99,7 @@ class ElectedOfficialRepository extends EntityRepository
         return $qb
             ->addSelect(
                 'Contribution, Endorsement, PublicStatement, Vote',
-                'Legislation, CreateRequest, IssueCategory, PublicStatementIssueCategory, LinkedUser',
+                'Legislation, CreateRequest, IssueCategory, PublicStatementIssueCategory, LinkedUser, VoteComment',
                 'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}'
             )
             ->leftJoin('ElectedOfficial.contributions', 'Contribution')
@@ -111,6 +111,7 @@ class ElectedOfficialRepository extends EntityRepository
             ->leftJoin('ElectedOfficial.linkedUser', 'LinkedUser')
             ->leftJoin('Vote.legislation', 'Legislation')
             ->leftJoin('Legislation.issueCategory', 'IssueCategory')
+            ->leftJoin('Vote.comments', 'VoteComment')
             /*
              * Join made but not applied create requests.
              */
@@ -155,11 +156,14 @@ class ElectedOfficialRepository extends EntityRepository
         $qb = $this->createQueryBuilder('ElectedOfficial');
         return $qb
             ->select('
+                ElectedOfficial.id,
                 ElectedOfficial.fullName,
                 ElectedOfficial.title,
                 ElectedOfficial.emailAddress,
+                ElectedOfficial.slug AS elected_slug,
                 Government.name,
-                Government.slug
+                Government.slug AS government_slug,
+                Government.altTypeSlug
             ')
             ->join('ElectedOfficial.government', 'Government')
             ->where(

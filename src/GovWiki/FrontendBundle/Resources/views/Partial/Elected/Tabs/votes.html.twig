@@ -83,6 +83,12 @@
             <td data-issue-category="{{vote.legislation.issueCategory.name}}" data-no-editable>{{vote.legislation.issueCategory.name}}</td>
             <td data-no-editable><span class="disqus-comment-count vote" id="{{elected.id}}_v{{vote.id}}" data-legislation-name="{{vote.legislation.name}}" data-disqus-identifier="{{elected.id}}_v{{vote.id}}">0</span></td>
         </tr>
+        {% if vote.comments|length > 0 %}
+            {% set electedComment = vote.comments|first %}
+            <tr data-id="{{vote.legislation.id}}" class="elected-comment">
+                <td colspan="7">{{ electedComment.body|raw }}</td>
+            </tr>
+        {% endif %}
     {% endfor %}
 
 {% endmacro %}

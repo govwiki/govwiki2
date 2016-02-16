@@ -64,7 +64,6 @@ class GovWikiLoader extends AnnotationFileLoader
                 foreach ($collection as $route) {
                     $route->setPath('/{environment}'. $route->getPath());
                     $route->setRequirement('environment', '\w+');
-//                    $route->setRequirement('environment', '(?(?!admin)\w+)');
                 }
 
                 $route = new Route('/', [

@@ -54,6 +54,13 @@ services:
         tags:
             - { name: routing.loader }
 
+    govwiki_api.url.generator:
+        class: GovWiki\ApiBundle\Router\GovWikiUrlGenerator
+        arguments:
+            - @router
+            - %determinator.name%
+            - @govwiki_admin.manager.environment
+
     govwiki_api.serizlizer.deserialization_visitor:
         class: GovWiki\ApiBundle\Serializer\ArrayDeserializationVisitor
         arguments:

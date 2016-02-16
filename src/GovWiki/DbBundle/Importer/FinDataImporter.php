@@ -39,6 +39,7 @@ class FinDataImporter extends AbstractImporter
          * Get FinData entity metadata in order to generate required column
          * names and get they types.
          */
+        /** @var \Doctrine\Orm\Mapping\ClassMetadata $metadata */
         $metadata = $this->manager->getMetadata('GovWikiDbBundle:FinData');
 
         $fields = $metadata->getFieldNames();
@@ -48,6 +49,9 @@ class FinDataImporter extends AbstractImporter
             $fieldMetadata = $metadata->getFieldMapping($field);
             $this->columns[$fieldMetadata['columnName']] = $fieldMetadata['type'];
         }
+        /*
+         * It added due to a typo in csv the column name.
+         */
 
         foreach ($associationFields as $field) {
             $this->columns[$field['joinColumns'][0]['name']] = 'integer';
