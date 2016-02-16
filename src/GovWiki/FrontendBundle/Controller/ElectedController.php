@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\Request;
 class ElectedController extends Controller
 {
 
+    const ROWS_PER_PAGE = 25;
+
     /**
      * @Route("/{altTypeSlug}/{slug}/{electedSlug}", name="elected")
      * @Template("GovWikiFrontendBundle:Elected:index.html.twig")
@@ -26,6 +28,8 @@ class ElectedController extends Controller
      * @param string $electedSlug Slugged elected official full name.
      *
      * @return array
+     *
+     * @throws \LogicException Some required bundle not registered.
      */
     public function showAction($altTypeSlug, $slug, $electedSlug, Request $request)
     {
@@ -36,6 +40,30 @@ class ElectedController extends Controller
             return [];
         }
 
+        $paginator = $this->get('knp_paginator');
+
+        $data['votes'] = $paginator->paginate(
+            $data['votes'],
+            $request->query->getInt('vote_page', 1),
+            self::ROWS_PER_PAGE,
+            [
+                'pageParameterName' => 'vote_page',
+                'sortFieldParameterName' => 'vote_sort',
+                'sortDirectionParameterName' => 'vote_direction',
+            ]
+        );
+
+        $data['contributions'] = $paginator->paginate(
+            $data['contributions'],
+            $request->query->getInt('contribution_page', 1),
+            self::ROWS_PER_PAGE,
+            [
+                'pageParameterName' => 'contribution_page',
+                'sortFieldParameterName' => 'contribution_sort',
+                'sortDirectionParameterName' => 'contribution_direction',
+            ]
+        );
+
         $context = new SerializationContext();
         $context->setGroups(['elected_official']);
 
@@ -44,14 +72,6 @@ class ElectedController extends Controller
          */
         $electedOfficialJSON = $this->get('jms_serializer')
             ->serialize($data['electedOfficial'], 'json', $context);
-        /*
-         * Replace single and double quote to html special char.
-         */
-        /*$electedOfficialJSON = str_replace(
-            [ '\'', '\\"' ],
-            [ '&apos;', '&quote;' ],
-            $electedOfficialJSON
-        );*/
 
         $electedOfficialCommentForm = $this->createForm(new ElectedOfficialCommentType(), array(
             'current_text' => $data['electedOfficial']['electedOfficialComments'],

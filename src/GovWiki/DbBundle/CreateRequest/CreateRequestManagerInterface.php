@@ -1,9 +1,9 @@
 <?php
 namespace GovWiki\DbBundle\CreateRequest;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\MappingException;
-use GovWiki\DbBundle\Entity\AbstractCreatable;
+use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
+use GovWiki\RequestBundle\Entity\Interfaces\CreatableInterface;
 
 /**
  * Interface CreateRequestManagerInterface
@@ -13,9 +13,15 @@ interface CreateRequestManagerInterface
 {
 
     /**
-     * @param array $data Create request, received from user.
+     * @param array  $data        Create request, received from user.
+     * @param string $environment A Environment instance.
      *
-     * @return AbstractCreatable
+     * @return CreatableInterface
+     *
+     * @throws \Doctrine\ORM\Mapping\MappingException Can't get mapping of
+     * 'request' field.
+     * @throws \RuntimeException Wrong entity name.
+     * @throws \Doctrine\ORM\ORMException Error while getting entity proxy.
      */
-    public function process(array $data);
+    public function process(array $data, $environment = null);
 }

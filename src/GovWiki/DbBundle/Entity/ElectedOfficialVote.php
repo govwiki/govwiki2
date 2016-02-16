@@ -11,10 +11,19 @@ use JMS\Serializer\Annotation\Groups;
  * ElectedOfficialVote
  *
  * @ORM\Table(name="elected_officials_votes")
- * @ORM\Entity
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\ElectedOfficialVoteRepository"
+ * )
  */
 class ElectedOfficialVote
 {
+
+    const YES = 'Yes';
+    const NO = 'No';
+    const ABSTAIN = 'Abstain';
+    const ABSENCE = 'Absence';
+    const NOT_IN_OFFICE = 'Not in office';
+
     /**
      * @var integer
      *
@@ -93,6 +102,20 @@ class ElectedOfficialVote
     public function getVote()
     {
         return $this->vote;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAvailable()
+    {
+        return [
+            self::YES => self::YES,
+            self::NO => self::NO,
+            self::ABSTAIN => self::ABSTAIN,
+            self::ABSENCE => self::ABSENCE,
+            self::NOT_IN_OFFICE => self::NOT_IN_OFFICE,
+        ];
     }
 
     /**

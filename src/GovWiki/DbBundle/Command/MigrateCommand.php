@@ -47,25 +47,25 @@ class MigrateCommand extends ContainerAwareCommand
 
         $manager = $this->getContainer()->get(GovWikiDbServices::CREATE_REQUEST_MANAGER);
 
+        $em->createQuery('DELETE FROM GovWikiRequestBundle:AbstractCreateRequest')
+        ->execute();
+
         /** @var CreateRequest $row */
         foreach ($data as $row) {
             $fields = $row->getFields();
             dump($fields);
             try {
+                /** @var  $entity */
                 $entity = $manager->process([
                     'entityName' => $row->getEntityName(),
                     'user' => $row->getUser()->getId(),
                     'fields' => $fields,
-                ]
-                );
+                ], $row->getEnvironment());
             } catch (\Exception $e) {
                 $em->remove($row);
                 continue;
             }
 
-            $entity
-                ->setState($row->getStatus())
-                ->setCreateAt($row->getCreated());
             $em->persist($entity);
         }
 

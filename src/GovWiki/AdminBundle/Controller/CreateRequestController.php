@@ -16,10 +16,12 @@ use GovWiki\DbBundle\Entity\Endorsement;
 use GovWiki\DbBundle\Entity\IssueCategory;
 use GovWiki\DbBundle\Entity\Legislation;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
+use GovWiki\DbBundle\Form\LegislationType;
+use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use GovWiki\DbBundle\Entity\CreateRequest;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -37,6 +39,8 @@ class CreateRequestController extends AbstractGovWikiAdminController
      * @param Request $request A Request instance.
      *
      * @return array
+     *
+     * @throws \LogicException Some required bundle not registered.
      */
     public function indexAction(Request $request)
     {
@@ -51,40 +55,70 @@ class CreateRequestController extends AbstractGovWikiAdminController
 
     /**
      * @Configuration\Route("/{id}")
-     * @Configuration\Template
      *
-     * @param CreateRequest $createRequest A CreateRequest instance.
+     * @Configuration\ParamConverter(
+     *  "createRequest",
+     *  class="GovWiki\RequestBundle\Entity\AbstractCreateRequest",
+     *  options={ "repository_method": "getOne" }
+     * )
      *
-     * @return array
+     * @param Request               $request       A Request instance.
+     * @param AbstractCreateRequest $createRequest A AbstractCreateRequest
+     *                                             instance.
+     *
+     * @return Response
+     *
+     * @throws \LogicException Some required bundle not registered.
+     * @throws \InvalidArgumentException Invalid entity manager name.
      */
-    public function showAction(CreateRequest $createRequest)
-    {
+    public function showAction(
+        Request $request,
+        AbstractCreateRequest $createRequest
+    ) {
         $em = $this->getDoctrine()->getManager();
-        $errors = [];
 
-        $entityName = $createRequest->getEntityName();
+        $type = $createRequest->getFormType();
+        $form = $this->createForm($type, $createRequest->getSubject());
+        $form->handleRequest($request);
 
-        try {
-            $targetClassMetadata = $em
-                ->getClassMetadata(
-                    "GovWikiDbBundle:{$entityName}"
-                );
-        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
-            $targetClassMetadata = null;
-            $errors[] = "Can't find entity with name '{$entityName}', due ".
-                'to bad entry or internal system error';
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($request->request->has('discard')) {
+                /*
+                 * Discard current create request.
+                 */
+                $createRequest
+                    ->setStatus(AbstractCreateRequest::STATE_DISCARDED);
+
+                $em->persist($createRequest);
+            } else {
+                /*
+                 * Apply current create request.
+                 */
+                $createRequest
+                    ->setStatus(AbstractCreateRequest::STATE_APPLIED);
+                $em->persist($createRequest);
+
+                /*
+                 * todo send email
+                 */
+            }
+
+            $em->flush();
         }
 
-        $data = $this
-            ->buildData($createRequest->getFields(), $targetClassMetadata);
+        $templateName = strtolower(str_replace(
+            ' ',
+            '_',
+            $createRequest->getEntityName()
+        ));
 
-        return [
-            'createRequest' => $createRequest,
-            'fields'        => $data['fields'],
-            'associations'  => $data['associations'],
-            'childs'        => $data['childs'],
-            'errors'        => $errors,
-        ];
+        return $this->render(
+            "@GovWikiAdmin/CreateRequest/{$templateName}.html.twig",
+            [
+                'form' => $form->createView(),
+                'createRequest' => $createRequest,
+            ]
+        );
     }
 
     /**

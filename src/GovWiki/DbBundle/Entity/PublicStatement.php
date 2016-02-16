@@ -3,13 +3,18 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\QueryBuilder;
+use GovWiki\RequestBundle\Entity\AbstractCreatable;
+use GovWiki\RequestBundle\Entity\PublicStatementCreateRequest;
 use JMS\Serializer\Annotation\Groups;
 
 /**
  * PublicStatement
  *
  * @ORM\Table(name="public_statements")
- * @ORM\Entity
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\PublicStatementRepository"
+ * )
  */
 class PublicStatement extends AbstractCreatable
 {
@@ -57,6 +62,18 @@ class PublicStatement extends AbstractCreatable
      * @Groups({"elected_official"})
      */
     private $issueCategory;
+
+    /**
+     * @var PublicStatementCreateRequest
+     *
+     * @ORM\OneToOne(
+     *  targetEntity="GovWiki\RequestBundle\Entity\PublicStatementCreateRequest",
+     *  inversedBy="subject",
+     *  cascade={ "persist", "remove" }
+     * )
+     * @ORM\JoinColumn(name="request_id")
+     */
+    protected $request;
 
     /**
      * Get id

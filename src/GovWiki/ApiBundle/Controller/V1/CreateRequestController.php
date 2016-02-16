@@ -2,6 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller\V1;
 
+use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\GovWikiDbServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -32,12 +33,19 @@ class CreateRequestController extends Controller
             if ($this->getUser() and $this->getUser()->hasRole('ROLE_USER')) {
                 $data = $request->request->get('createRequest');
 
-                $createRequest = $this
+                $environment = $this
+                    ->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+                    ->getEnvironment();
+
+                $entity = $this
                     ->get(GovWikiDbServices::CREATE_REQUEST_MANAGER)
-                    ->process($data);
+                    ->process(
+                        $data,
+                        $environment
+                    );
 
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($createRequest);
+                $em->persist($entity);
                 $em->flush();
 
                 return new JsonResponse(['message' => 'We save your edit request. Thank you!'], 200);

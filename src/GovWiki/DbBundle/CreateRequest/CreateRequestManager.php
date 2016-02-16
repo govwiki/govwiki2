@@ -2,8 +2,12 @@
 namespace GovWiki\DbBundle\CreateRequest;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
-use GovWiki\DbBundle\Entity\AbstractCreatable;
+use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
+use GovWiki\RequestBundle\Entity\Interfaces\CreatableInterface;
+use GovWiki\UserBundle\Entity\User;
 
 /**
  * Class CreateRequestManager
@@ -28,7 +32,7 @@ class CreateRequestManager implements CreateRequestManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function process(array $data)
+    public function process(array $data, $environment = null)
     {
         /*
          * Get all parameters from array.
@@ -80,15 +84,40 @@ class CreateRequestManager implements CreateRequestManagerInterface
             }
         }
 
-        if ($entity instanceof AbstractCreatable) {
+        if ($entity instanceof CreatableInterface) {
+            /** @var User $user */
             $user = $this->em
                 ->getReference('GovWiki\UserBundle\Entity\User', $user);
-            $entity
-                ->setState(AbstractCreatable::STATE_PENDING)
-                ->setCreator($user);
+            $request = $this->createCreateRequest($metadata);
+
+            $request
+                ->setCreator($user)
+                ->setSubject($entity)
+                ->setEnvironment(
+                    $this->em->getRepository('GovWikiDbBundle:Environment')
+                        ->getReferenceByName($environment)
+                );
+
+            $entity->setRequest($request);
         }
 
         return $entity;
+    }
+
+    /**
+     * @param ClassMetadataInfo $metadata A ClassMetadataInfo instance.
+     *
+     * @return AbstractCreateRequest
+     *
+     * @throws \Doctrine\ORM\Mapping\MappingException Can't get mapping of
+     * 'request' field.
+     */
+    private function createCreateRequest(ClassMetadataInfo $metadata) // :-)
+    {
+        $mapping = $metadata->getAssociationMapping('request');
+        $requestClassName = $mapping['targetEntity'];
+
+        return new $requestClassName();
     }
 
     /**
@@ -138,7 +167,7 @@ class CreateRequestManager implements CreateRequestManagerInterface
      * @param mixed   $argument   Entity setter argument.
      * @param boolean $collection Flag, if set try to use add* method.
      *
-     * @return string
+     * @return void
      */
     private function callSetter(
         $entity,

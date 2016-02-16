@@ -343,11 +343,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             );
     }
 
-    public function getElectedUrl()
-    {
-
-    }
-
     /**
      * @return array|null
      */
@@ -366,20 +361,29 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getElectedOfficial($altTypeSlug, $slug, $eoSlug)
     {
-        $data = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
+        $electedOfficial = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
             ->findOne($this->environment, $altTypeSlug, $slug, $eoSlug);
 
-        $dataCount = count($data);
-        if ($dataCount > 0) {
-            $electedOfficial = $data[0];
-            $createRequests = [];
-            for ($i = 1; $i < $dataCount; $i++) {
-                $createRequests[] = $data[$i];
-            }
+        if (null !== $electedOfficial) {
+
+            /*
+            * Create queries for legislations, contributions and etc.
+            */
+            $votes = $this->em->getRepository('GovWikiDbBundle:ElectedOfficialVote')
+                ->getListQuery($electedOfficial['id']);
+            $contributions = $this->em->getRepository('GovWikiDbBundle:Contribution')
+                ->getListQuery($this->environment);
+            $endorsements = $this->em->getRepository('GovWikiDbBundle:Endorsement')
+                ->getListQuery($this->environment);
+            $publicStatements = $this->em->getRepository('GovWikiDbBundle:PublicStatement')
+                ->getListQuery($this->environment);
 
             return [
                 'electedOfficial' => $electedOfficial,
-                'createRequests' => $createRequests,
+                'votes' => $votes,
+                'contributions' => $contributions,
+                'endorsements' => $endorsements,
+                'publicStatements' => $publicStatements,
                 'categories' => $this->em
                     ->getRepository('GovWikiDbBundle:IssueCategory')
                     ->findAll(),

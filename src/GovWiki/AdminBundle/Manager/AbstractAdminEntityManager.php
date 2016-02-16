@@ -16,7 +16,7 @@ abstract class AbstractAdminEntityManager implements
     /**
      * @var EntityManagerInterface
      */
-    private $em;
+    protected $em;
 
     /**
      * @var string

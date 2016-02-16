@@ -34,6 +34,7 @@ class AppKernel extends Kernel
             new GovWiki\UserBundle\GovWikiUserBundle(),
             new GovWiki\FrontendBundle\GovWikiFrontendBundle(),
             new GovWiki\CommentBundle\GovWikiCommentBundle(),
+            new GovWiki\RequestBundle\GovWikiRequestBundle(),
             new Ivory\CKEditorBundle\IvoryCKEditorBundle(),
             new CartoDbBundle\CartoDbBundle(),
         ];

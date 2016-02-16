@@ -17,7 +17,7 @@ class AdminCreateRequestManager extends AbstractAdminEntityManager
      */
     protected function getEntityClassName()
     {
-        return 'GovWiki\DbBundle\Entity\CreateRequest';
+        return 'GovWiki\RequestBundle\Entity\AbstractCreateRequest';
     }
 
     /**
@@ -27,6 +27,7 @@ class AdminCreateRequestManager extends AbstractAdminEntityManager
     {
         /** @var CreateRequestRepository $repository */
         $repository = $this->getRepository();
+
         return $repository->getListQuery($this->environment);
     }
 }
