@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation\Groups;
 /**
  * CreateRequest
  *
- * @ORM\Table(name="create_requests")
+ * @ORM\Table(name="create_requests_old")
  * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\CreateRequestRepository")
  */
 class CreateRequest

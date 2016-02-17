@@ -1,0 +1,16 @@
+{% extends '@GovWikiAdmin/CreateRequest/show.html.twig' %}
+
+{% import '@GovWikiAdmin/CreateRequest/show.html.twig' as show_macro %}
+
+{% block detailed %}
+    {{ show_macro.addFormRow(form.nameOfEndorser) }}
+    {{ show_macro.addFormRow(form.endorserType) }}
+    {{ show_macro.addFormRow(form.electionYear) }}
+{% endblock detailed %}
+
+{% block associations %}
+    <tr>
+        <td>Government</td>
+        <td>{{ form.vars.value.electedOfficial  }}</td>
+    </tr>
+{% endblock associations %}

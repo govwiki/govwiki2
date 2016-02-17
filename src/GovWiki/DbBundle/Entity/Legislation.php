@@ -3,6 +3,9 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\QueryBuilder;
+use GovWiki\RequestBundle\Entity\AbstractCreatable;
+use GovWiki\RequestBundle\Entity\LegislationCreateRequest;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
@@ -16,7 +19,7 @@ use JMS\Serializer\Annotation\Groups;
  * )
  * @ExclusionPolicy("none")
  */
-class Legislation
+class Legislation extends AbstractCreatable
 {
     /**
      * @var integer
@@ -85,7 +88,11 @@ class Legislation
     private $notes;
 
     /**
-     * @ORM\OneToMany(targetEntity="ElectedOfficialVote", mappedBy="legislation")
+     * @ORM\OneToMany(
+     *  targetEntity="ElectedOfficialVote",
+     *  mappedBy="legislation",
+     *  cascade={ "persist", "remove" }
+     * )
      * @Exclude
      */
     private $electedOfficialVotes;
@@ -101,6 +108,18 @@ class Legislation
      * @Exclude
      */
     private $government;
+
+    /**
+     * @var LegislationCreateRequest
+     *
+     * @ORM\OneToOne(
+     *  targetEntity="GovWiki\RequestBundle\Entity\LegislationCreateRequest",
+     *  inversedBy="subject",
+     *  cascade={ "persist", "remove" }
+     * )
+     * @ORM\JoinColumn(name="request_id")
+     */
+    protected $request;
 
     /**
      * @return string

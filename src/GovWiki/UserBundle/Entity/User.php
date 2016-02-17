@@ -39,16 +39,16 @@ class User extends BaseUser
      * @Email()
      */
     protected $email;
-
-    /**
-     * @var Collection
-     *
-     * @ORM\OneToMany(
-     *  targetEntity="GovWiki\DbBundle\Entity\CreateRequest",
-     *  mappedBy="user"
-     * )
-     */
-    private $createRequests;
+//
+//    /**
+//     * @var Collection
+//     *
+//     * @ORM\OneToMany(
+//     *  targetEntity="GovWiki\RequestBundle\Entity\AbstractCreateRequest",
+//     *  mappedBy="user"
+//     * )
+//     */
+//    private $createRequests;
 
     /**
      * @var Collection

@@ -2,21 +2,18 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use Doctrine\Common\Persistence\Mapping\MappingException;
-use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\AdminBundle\GovWikiAdminServices;
-use GovWiki\DbBundle\Entity\Contribution;
+use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\CommentBundle\GovWikiCommentServices;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\ElectedOfficialVote;
-use GovWiki\DbBundle\Entity\Endorsement;
-use GovWiki\DbBundle\Entity\IssueCategory;
+use GovWiki\DbBundle\Entity\Legislation;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
+use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use GovWiki\DbBundle\Entity\CreateRequest;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class CreateRequestController
@@ -33,6 +30,8 @@ class CreateRequestController extends AbstractGovWikiAdminController
      * @param Request $request A Request instance.
      *
      * @return array
+     *
+     * @throws \LogicException Some required bundle not registered.
      */
     public function indexAction(Request $request)
     {
@@ -47,428 +46,188 @@ class CreateRequestController extends AbstractGovWikiAdminController
 
     /**
      * @Configuration\Route("/{id}")
-     * @Configuration\Template
      *
-     * @param CreateRequest $createRequest A CreateRequest instance.
+     * @Configuration\ParamConverter(
+     *  "createRequest",
+     *  class="GovWiki\RequestBundle\Entity\AbstractCreateRequest",
+     *  options={ "repository_method": "getOne" }
+     * )
      *
-     * @return array
+     * @param Request               $request       A Request instance.
+     * @param AbstractCreateRequest $createRequest A AbstractCreateRequest
+     *                                             instance.
+     *
+     * @return Response
+     *
+     * @throws \LogicException Some required bundle not registered.
+     * @throws \InvalidArgumentException Invalid entity manager name.
      */
-    public function showAction(CreateRequest $createRequest)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $errors = [];
-
-        $entityName = $createRequest->getEntityName();
-
-        try {
-            $targetClassMetadata = $em
-                ->getClassMetadata(
-                    "GovWikiDbBundle:{$entityName}"
-                );
-        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
-            $targetClassMetadata = null;
-            $errors[] = "Can't find entity with name '{$entityName}', due ".
-                'to bad entry or internal system error';
-        }
-
-        $data = $this
-            ->buildData($createRequest->getFields(), $targetClassMetadata);
-
-        return [
-            'createRequest' => $createRequest,
-            'fields'        => $data['fields'],
-            'associations'  => $data['associations'],
-            'childs'        => $data['childs'],
-            'errors'        => $errors,
-        ];
-    }
-
-    /**
-     * @Configuration\Route("/{id}/apply")
-     *
-     * @param Request       $request       A Request instance.
-     * @param CreateRequest $createRequest A CreateRequest instance.
-     *
-     * @return JsonResponse
-     */
-    public function applyAction(Request $request, CreateRequest $createRequest)
-    {
-        /** @var EntityManagerInterface $em */
+    public function showAction(
+        Request $request,
+        AbstractCreateRequest $createRequest
+    ) {
         $em = $this->getDoctrine()->getManager();
 
-        if (! $request->request->has('data')) {
-            /*
-             * If in request we don't get any data, ignore request and
-             * redirect back to create request show page.
-             */
-            return new JsonResponse(
-                [
-                    'redirect' => $this->generateUrl(
-                        'govwiki_admin_createrequest_show',
-                        [
-                            'id' => $createRequest->getId(),
-                        ]
-                    ),
-                ]
-            );
-        }
+        $type = $createRequest->getFormType();
+        $form = $this->createForm($type, $createRequest->getSubject());
+        $form->handleRequest($request);
 
-        $this->persistData(
-            $createRequest->getEntityName(),
-            $request->request->get('data'),
-            $em
-        );
-
-        $createRequest->setStatus('applied');
-
-        /*
-         * Send email notification to elected official.
-         */
-        if ($request->request->has('emailFlags')) {
-            /*
-             * Get all elected officials id for who send email flag is set.
-             */
-            $ids = [];
-            foreach ($request->request->get('emailFlags') as $id => $isSend) {
-                if ('true' === $isSend) {
-                    $ids[] = $id;
-                }
-            }
-
-            if (count($ids) > 0) {
-                /** @var ElectedOfficialRepository $repository */
-                $repository = $this->getDoctrine()
-                    ->getRepository('GovWikiDbBundle:ElectedOfficial');
-
-                $data = $repository->getDataForEmailByIds($ids);
-
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($request->request->has('discard')) {
                 /*
-                 * Send emails.
+                 * Discard current create request.
                  */
-                /** @var \Swift_Mailer $mailer */
-                $mailer = $this->get('mailer');
+                $createRequest
+                    ->setStatus(AbstractCreateRequest::STATE_DISCARDED);
 
-                $type = 'public statement';
-                if ($createRequest->getEntityName() === 'Legislation') {
-                    $type = 'vote';
-                }
+                $em->persist($createRequest);
+            } else {
+                /*
+                 * Apply current create request.
+                 */
+                $createRequest
+                    ->setStatus(AbstractCreateRequest::STATE_APPLIED);
+                $em->persist($createRequest);
 
-                foreach ($data as $row) {
-                    $message = \Swift_Message::newInstance();
-                    if ($this->getParameter('debug')) {
-                        $message->setTo('user1@mail1.dev');
-                    } else {
-                        $message->setTo($row['emailAddress']);
-                    }
-
-                    $message
-                        ->setSubject($this->getParameter('email_subject'))
-                        ->setFrom($this->getParameter('admin_email'))
-                        ->setBody(
-                            $this->renderView(
-                                'GovWikiAdminBundle::email.html.twig',
-                                [
-                                    'full_name' => $row['fullName'],
-                                    'title' => $row['title'],
-                                    'type' => $type,
-                                    'email' => $this->getParameter('admin_email'),
-                                    'government_name' => $row['name'],
-                                    'governments_slug' => $row['slug'],
-                                ]
-                            ),
-                            'text/html'
-                        );
-
-                    $mailer->send($message);
+                $electedIds = $request->request->get('send_email', []);
+                if (count($electedIds) > 0) {
+                    $this->sendEmails($electedIds, $createRequest);
                 }
             }
+
+            $em->flush();
         }
 
-        /*
-         * Update CreateRequest entity.
-         */
-        $createRequest->setFields($request->request->get('data'));
-        $em->persist($createRequest);
+        $templateName = strtolower(str_replace(
+            ' ',
+            '_',
+            $createRequest->getEntityName()
+        ));
 
-        $em->flush();
-
-        return new JsonResponse([
-            'redirect' => $this
-                ->generateUrl('govwiki_admin_createrequest_index'),
-        ]);
-    }
-
-    /**
-     * @Configuration\Route("/{id}/discard")
-     *
-     * @param CreateRequest $createRequest A CreateRequest instance.
-     *
-     * @return JsonResponse
-     */
-    public function discardAction(CreateRequest $createRequest)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $createRequest->setStatus('discarded');
-        $em->flush();
-
-        return new JsonResponse([
-            'redirect' => $this
-                ->generateUrl('govwiki_admin_createrequest_index'),
-        ]);
+        return $this->render(
+            "@GovWikiAdmin/CreateRequest/{$templateName}.html.twig",
+            [
+                'form' => $form->createView(),
+                'createRequest' => $createRequest,
+            ]
+        );
     }
 
     /**
      * @Configuration\Route("/{id}/remove")
      *
-     * @param CreateRequest $createRequest A CreateRequest instance.
+     * @param AbstractCreateRequest $createRequest A CreateRequest instance.
      *
-     * @return JsonResponse
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function removeAction(CreateRequest $createRequest)
+    public function removeAction(AbstractCreateRequest $createRequest)
     {
         $em = $this->getDoctrine()->getManager();
         $em->remove($createRequest);
         $em->flush();
 
-        return new JsonResponse(['status' => 'ok']);
+        return $this->redirectToRoute('govwiki_admin_createrequest_index');
     }
 
     /**
-     * @param array         $data                Entity data.
-     * @param ClassMetadata $targetClassMetadata Entity class metadata.
+     * @param integer[] $electedList List of Elected Officials ids.
      *
-     * @return array
+     * @return void
      */
-    private function buildData(array $data, ClassMetadata $targetClassMetadata)
+    private function sendEmails(array $electedList, AbstractCreateRequest $createRequest)
     {
-        static $associationCache = [];
+        $commentKeyManager = $this
+            ->get(GovWikiCommentServices::COMMENT_KEY_MANAGER);
+        $govwikiRouter = $this
+            ->get(GovWikiApiServices::URL_GENERATOR);
+        $mailer = $this
+            ->get('swiftmailer.mailer');
 
-        $em = $this->getDoctrine()->getManager();
-        $newEntity = $targetClassMetadata->newInstance();
+        $type = 'public statement';
+        if ($createRequest->getEntityName() === 'Legislation') {
+            $type = 'vote';
+        }
 
-        $result['fields'] = [];
-        foreach ($data['fields'] as $field => $value) {
-            $correctField = true;
-            $setter = 'set'.ucfirst($field);
+        /** @var ElectedOfficialRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:ElectedOfficial');
 
-            if (!method_exists($newEntity, $setter)) {
-                $correctField = false;
+        $data = $repository->getDataForEmailByIds($electedList);
+
+        foreach ($data as $row) {
+            $message = \Swift_Message::newInstance();
+            if ($this->getParameter('debug')) {
+                $message->setTo('user1@mail1.dev');
+            } else {
+                $message->setTo($row['emailAddress']);
             }
 
-            $fields = [
-                'field'   => $field,
-                'value'   => $value,
-                'correct' => $correctField,
+            $template = 'GovWikiAdminBundle::email.html.twig';
+            $parameters = [
+                'full_name' => $row['fullName'],
+                'title' => $row['title'],
+                'type' => $type,
+                'email' => $this->getParameter('admin_email'),
+                'government_name' => $row['name'],
+                'profileUrl' => $govwikiRouter->generate(
+                    'elected',
+                    [
+                        'altTypeSlug' => $row['altTypeSlug'],
+                        'slug' => $row['government_slug'],
+                        'electedSlug' => $row['elected_slug'],
+                    ],
+                    RouterInterface::ABSOLUTE_URL
+                ),
             ];
-            if (($newEntity instanceof Contribution) &&
-                ('contributorType' === $field)) {
-                $fields['choices'] = [
-                    'Candidate Committee' => 'Candidate Committee',
-                    'Corporate' => 'Corporate',
-                    'Individual' => 'Individual',
-                    'Political Party' => 'Political Party',
-                    'Political Action Committee' => 'Political Action Committee',
-                    'Self' => 'Self',
-                    'Union' => 'Union',
-                    'Other' => 'Other',
-                ];
-            } elseif (($newEntity instanceof Endorsement) &&
-                ('endorserType' === $field)) {
-                $fields['choices'] = [
-                    'Elected Official' => 'Elected Official',
-                    'Organization' => 'Organization',
-                    'Political Party' => 'Political Party',
-                    'Union' => 'Union',
-                    'Other' => 'Other',
-                ];
-            } elseif (($newEntity instanceof ElectedOfficialVote)) {
-                if ('vote' === $field) {
-                    $fields['choices'] = [
-                        'Yes' => 'Yes',
-                        'No' => 'No',
-                        'Abstain' => 'Abstain',
-                        'Absence' => 'Absence',
-                        'Not in Office' => 'Not in Office',
-                    ];
-                } elseif ('didElectedOfficialProposeThis' === $field) {
-                    $fields['choices'] = [
-                        'Yes' => 'Yes',
-                        'No' => 'No',
-                    ];
-                }
+
+            if ('vote' === $type) {
+                $template = 'GovWikiAdminBundle:Template/Email:vote.html.twig';
+                $vote =
+                    $this->getVote($createRequest->getSubject(), $row['id']);
+                $key = $commentKeyManager->create($vote);
+                $parameters['vote'] = $vote;
+                $parameters['key'] = $key->getKey();
+                $parameters['addCommentUrl'] = $govwikiRouter
+                    ->generate(
+                        'govwiki_comment_comment_add',
+                        [ ],
+                        RouterInterface::ABSOLUTE_URL
+                    );
+
+                $this->getDoctrine()->getManager()->persist($key);
             }
 
-            $result['fields'][] = $fields;
+            $message
+                ->setSubject($this->getParameter('email_subject'))
+                ->setFrom($this->getParameter('admin_email'))
+                ->setBody(
+                    $this->renderView(
+                        $template,
+                        $parameters
+                    ),
+                    'text/html'
+                );
+
+            $mailer->send($message);
         }
-
-        $result['associations'] = [];
-        foreach ($data['associations'] as $association => $id) {
-            $correctAssociation = true;
-            $associationName    = '';
-            try {
-                /** @var ObjectRepository $associationRepository */
-                $associationRepository = $em->getRepository("GovWikiDbBundle:{$association}");
-            } catch (MappingException $e) {
-                $associationRepository = null;
-                $correctAssociation = false;
-            }
-
-            $associationData = [];
-            if ($correctAssociation) {
-                $associationEntity = $associationRepository->find($id);
-                if ($associationEntity) {
-                    if (method_exists($associationEntity, '__toString')) {
-                        $associationName = (string) $associationEntity;
-                    } else {
-                        $associationName = 'Can\'t display name';
-                    }
-                } else {
-                    $correctAssociation = false;
-                }
-
-                /*
-                 * Get associated entity id.
-                 */
-                $associationData = [
-                    'id' => $associationEntity->getId(),
-                ];
-                if ($associationEntity instanceof IssueCategory) {
-                    /*
-                     * Get association choices.
-                     */
-                    if (empty($associationCache[$association])) {
-                        $tmp = $associationRepository->findAll();
-                        foreach ($tmp as $entity) {
-                            if (method_exists($associationEntity, '__toString')) {
-                                $associationCache[$association][$entity->getId()] =
-                                    (string) $entity;
-                            } else {
-                                $associationCache[$association][$entity->getId()] =
-                                    'Can\'t display name';
-                            }
-                        }
-                    }
-
-                    $associationData['choices'] = $associationCache[$association];
-                }
-            }
-            $associationData['field'] = $association;
-            $associationData['name'] = $associationName;
-            $associationData['correct'] = $correctAssociation;
-
-            $result['associations'][] = $associationData;
-        }
-
-        $result['childs'] = [];
-        $errors = [];
-        if (!empty($data['childs'])) {
-            foreach ($data['childs'] as $child) {
-                try {
-                    $childClassMetadata = $em
-                        ->getClassMetadata(
-                            "GovWikiDbBundle:{$child['entityName']}"
-                        );
-                } catch (MappingException $e) {
-                    $childClassMetadata = null;
-                    $errors[] = 'Can\'t find entity with name' .
-                        "{$child['entityName']}', due to bad entry or " .
-                        'internal system error';
-                }
-
-                if (count($errors) <= 0) {
-                    $result['childs'][] = $this
-                            ->buildData(
-                                $child['fields'],
-                                $childClassMetadata
-                            ) +
-                        ['dataType' => $child['entityName']];
-                }
-            }
-        }
-
-        return $result;
     }
 
-    /**
-     * @param string                 $entityName Persisted entity name.
-     * @param array                  $data       Persisted data.
-     * @param EntityManagerInterface $em         A EntityManagerInterface
-     *                                           instance.
-     *
-     * @return object
-     */
-    private function persistData(
-        $entityName,
-        array $data,
-        EntityManagerInterface $em
-    ) {
-        /** @var ClassMetadata $targetClassMetadata */
-        $targetClassMetadata = $em->getClassMetadata("GovWikiDbBundle:$entityName");
-        $newEntity = $targetClassMetadata->newInstance();
-
-        if (!empty($data['fields'])) {
-            foreach ($data['fields'] as $field => $value) {
-//                $correctField = true;
-                $setter = 'set'.ucfirst($field);
-
-                if (method_exists($newEntity, $setter)) {
-                    if ($targetClassMetadata->getFieldMapping($field)['type'] ===
-                        'date') {
-                        $newEntity->$setter(new \Datetime($value));
-                    } else {
-                        $newEntity->$setter($value);
-                    }
-                }
+    private function getVote(Legislation $legislation, $electedOfficialId)
+    {
+        /** @var ElectedOfficialVote $vote */
+        foreach ($legislation->getElectedOfficialVotes() as $vote) {
+            if ($vote->getElectedOfficial()->getId() === $electedOfficialId) {
+                return $vote;
             }
         }
 
-        if (!empty($data['associations'])) {
-            foreach ($data['associations'] as $association => $id) {
-                $correctAssociation = true;
-                try {
-                    /** @var ObjectRepository $associationRepository */
-                    $associationRepository = $em
-                        ->getRepository("GovWikiDbBundle:{$association}");
-                } catch (MappingException $e) {
-                    $associationRepository = null;
-                    $correctAssociation = false;
-                }
-
-                if ($correctAssociation) {
-                    $associationEntity = $associationRepository->find($id);
-                    if ($associationEntity) {
-                        $associationSetter = 'set'.ucfirst($association);
-                        $newEntity->$associationSetter($associationEntity);
-                    }
-                }
-            }
-        }
-
-        if (!empty($data['childs'])) {
-            foreach ($data['childs'] as $child) {
-                $adder = 'add'.$child['entityName'];
-
-                if (method_exists($newEntity, $adder)) {
-                    $child = $this->persistData(
-                        $child['entityName'],
-                        $child['fields'],
-                        $em
-                    );
-                    $em->persist($child);
-                    $newEntity->$adder($child);
-                }
-            }
-        }
-
-        $em->persist($newEntity);
-
-        return $newEntity;
+        return null;
     }
 
     /**
      * @return \GovWiki\AdminBundle\Manager\Entity\AdminCreateRequestManager
      */
-    public function getManager()
+    private function getManager()
     {
         return $this->get(GovWikiAdminServices::CREATE_REQUEST_MANAGER);
     }

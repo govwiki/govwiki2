@@ -18,6 +18,17 @@
       }
    }
 
+   .tab-pane {
+      min-height: 600px;
+   }
+
+   .loader{
+      position: absolute;
+      margin-top: 240px;
+      left: 49%;
+      display: none;
+   }
+
    /*
       Table for votes, contribution and etc.
    */
