@@ -1,32 +1,53 @@
-{{! Set lower limit. }}
-<div class="form-group col-md-3 col-xs-12">
-    <label for="condition_{{idx}}_min">Lower limit</label>
-    <input class="form-control" id="condition_{{idx}}_min" name="ccc[conditions][{{idx}}][min]" value="{{condition.min}}">
-</div>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>
+            <label for="condition_{{idx}}_min">
+                Lower limit
+            </label>
+        </th>
+        <th>
+            <label for="condition_{{idx}}_max">
+                Upper limit
+            </label>
+        </th>
+        <th><label for="condition_{{idx}}_color">Apply colors</label></th>
+        <th style="min-width: 130px"><label for="condition_{{idx}}_type">Condition type</label></th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
 
-{{! Set upper limit. }}
-<div class="form-group col-md-3 col-xs-12">
-    <label for="condition_{{idx}}_max">Upper limit</label>
-    <input class="form-control" id="condition_{{idx}}_max" name="ccc[conditions][{{idx}}][max]" value="{{condition.max}}">
-</div>
+        {{! Set lower limit. }}
+        <td>
+            <input class="form-control" id="condition_{{idx}}_min" name="ccc[conditions][{{idx}}][min]" value="{{condition.min}}">
+        </td>
 
-{{! Color selection. }}
-<div class="form-group col-md-3 col-xs-12">
-    <label for="condition_{{idx}}_color">Color</label>
+        {{! Set upper limit. }}
+        <td>
+            <input class="form-control" id="condition_{{idx}}_max" name="ccc[conditions][{{idx}}][max]" value="{{condition.max}}">
+        </td>
 
-    <div class="input-group color-picker colorpicker-element">
-        <span class="input-group-addon"><i></i></span>
-        <input type="text" id="condition_{{idx}}_color" name="ccc[conditions][{{idx}}][color]" required="required" class="form-control" value="{{condition.color}}">
-    </div>
-</div>
 
-{{! Condition type. }}
-<div class="form-group col-md-3 col-xs-12">
-    <label for="condition_{{idx}}_type">Type</label>
-    <select name="ccc[conditions][{{idx}}][type]" id="condition_{{idx}}_type" data-idx="{{idx}}" class="condition-type">
-        <option value="simple">Comparison</option>
-        <option value="period" selected>Period</option>
-        <option value="null">Is Null</option>
-    </select>
-    <button type="button" class="btn btn-danger condition-remove">Remove</button>
-</div>
+        <td>
+            <div class="input-group color-picker colorpicker-element">
+                <span class="input-group-addon"><i></i></span>
+                <input type="text" id="condition_{{idx}}_color" name="ccc[conditions][{{idx}}][color]" required="required" class="form-control" value="{{condition.color}}">
+            </div>
+        </td>
+
+        <td>
+            <select name="ccc[conditions][{{idx}}][type]" id="condition_{{idx}}_type" data-idx="{{idx}}" class="condition-type form-control">
+                <option value="simple">Comparison</option>
+                <option value="period" selected>Period</option>
+                <option value="null">Is Null</option>
+            </select>
+        </td>
+
+        <td>
+            <button type="button" class="btn btn-danger condition-remove">Remove</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
