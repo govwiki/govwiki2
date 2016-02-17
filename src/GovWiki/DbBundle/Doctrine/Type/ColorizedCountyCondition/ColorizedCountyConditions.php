@@ -87,7 +87,6 @@ class ColorizedCountyConditions
          * Pull conditions to object, previously sort in reverse order.
          */
         $conditions = $array['conditions'];
-        krsort($conditions);
         foreach ($conditions as $condition) {
             switch ($condition['type']) {
                 case SimpleCondition::getType():

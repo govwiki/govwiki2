@@ -10,6 +10,10 @@ $(function() {
     var $addBtn = $('#condition-add');
     var $conditionList = $('#conditions-list');
 
+    $('#colorized').change(function () {
+        $('#conditions-main').toggle();
+    });
+
     /*
         Add exists conditions.
      */
@@ -65,6 +69,7 @@ $(function() {
             idx: $conditionList.find('.condition-row').length,
             condition: {
                 value: 0,
+                color: '#000000',
                 operation: '<=',
                 type: 'simple'
             }

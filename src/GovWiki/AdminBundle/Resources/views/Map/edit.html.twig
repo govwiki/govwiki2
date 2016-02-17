@@ -28,6 +28,9 @@
                     <div class="panel-body">
 
                         {{ form_start(form) }}
+
+                        {{- form_row(form.debug) -}}
+
                         {# Map position, coordinates of center and zoom. #}
                         <div class="col-md-6 col-lg-6 col-xs-12">
                             {{- form_row(form.centerLatitude) -}}
@@ -51,7 +54,7 @@
                                         {%- if (conditions.colorized) %} checked{%- endif -%}>
                             </div>
 
-                            <div class="condition-main"
+                            <div id="conditions-main"
                                     {%- if not (conditions.colorized) -%} style="display: none"{%- endif -%}>
 
                                 {# Field name selector. #}
@@ -72,9 +75,9 @@
                                     <label class="control-label">Conditions</label>
                                     <div id="conditions-list"></div>
                                 </div>
-                            </div>
 
-                            <button type="button" class="pull-right btn btn-default" id="condition-add">Add new conditions</button>
+                                <button type="button" class="pull-right btn btn-default" id="condition-add">Add new conditions</button>
+                            </div>
                         </div>
                         {# Colorized county conditions. #}
                        {# <div class="col-md-6 col-lg-6 col-xs-12">
