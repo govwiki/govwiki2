@@ -46,7 +46,7 @@ $(function() {
             }));
         }
 
-        $element.colorpicker({
+        $('.color-picker').colorpicker({
             format: 'hex',
             align: 'left'
         });
@@ -70,12 +70,13 @@ $(function() {
             }
         }));
 
-        $element.colorpicker({
+        $conditionList.append($element);
+
+        $('.color-picker').colorpicker({
             format: 'hex',
             align: 'left'
         });
 
-        $conditionList.append($element);
     });
 
     /*
@@ -125,19 +126,11 @@ $(function() {
         var $row = $(this).closest('.condition-row');
         $row.html(data);
 
-        $row.colorpicker({
-            format: 'hex',
-            align: 'left'
-        });
-
-
-        /*
-         Initialize color pickers.
-         */
         $('.color-picker').colorpicker({
             format: 'hex',
             align: 'left'
         });
+
     });
 
     /*

@@ -111,6 +111,45 @@
 
       }
 
+      .marker-icon {
+         display: inline-block;
+         width: 20px;
+         height: 20px;
+         -webkit-mask-repeat: no-repeat;
+         mask-repeat: no-repeat;
+         -webkit-mask-size: 100% 100%;
+         mask-size: 100% 100%;
+         margin: 0 4px;
+         vertical-align: middle;
+         stroke: red;
+      }
+
+      .marker-triangle-up {
+         display: inline-block;
+         width: 0;
+         height: 0;
+         margin-left: 4px;
+         margin-right: 4px;
+         border-bottom: 12px solid #103252;
+         border-left: 6px solid transparent;
+         border-right: 6px solid transparent;
+         vertical-align: middle;
+
+
+         &.red {
+            border-bottom-color: #f00;
+         }
+
+         &.blue {
+            border-bottom-color: #add8e6;
+         }
+
+         &.purple {
+            border-bottom-color: #800080;
+         }
+
+      }
+
       /*map legend circles*/
       .marker-circle {
          display: inline-block;
@@ -123,15 +162,15 @@
          -moz-border-radius: 50%;
          border-radius: 50%;
 
-         &.red-circle {
+         &.red {
             background: #f00;
          }
 
-         &.blue-circle {
+         &.blue {
             background: #add8e6;
          }
 
-         &.purple-circle {
+         &.purple {
             background: #800080;
          }
       }
