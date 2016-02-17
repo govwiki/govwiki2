@@ -63,13 +63,6 @@ class ColorizedCountyConditions
      */
     public static function fromArray(array $array)
     {
-        if (! is_array($array) || count($array) === 0) {
-            /*
-             * Return default.
-             */
-            return new ColorizedCountyConditions();
-        }
-
         /*
          * Check array keys and value types.
          */
@@ -142,6 +135,10 @@ class ColorizedCountyConditions
     public static function unserialize($serializedData)
     {
         $array = unserialize($serializedData);
+        if (! is_array($array)) {
+            return new ColorizedCountyConditions();
+        }
+
         return self::fromArray($array);
     }
 
