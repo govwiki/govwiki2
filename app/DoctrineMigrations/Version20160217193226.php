@@ -19,6 +19,7 @@ class Version20160217193226 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE maps ADD debug TINYINT(1) NOT NULL');
+        $this->addSql('UPDATE maps SET colorized_county_conditions = NULL');
     }
 
     /**
