@@ -1,0 +1,32 @@
+{{! Set lower limit. }}
+<div class="form-group col-md-3 col-xs-12">
+    <label for="condition_{{idx}}_min">Lower limit</label>
+    <input class="form-control" id="condition_{{idx}}_min" name="ccc[conditions][{{idx}}][min]" value="{{condition.min}}">
+</div>
+
+{{! Set upper limit. }}
+<div class="form-group col-md-3 col-xs-12">
+    <label for="condition_{{idx}}_max">Upper limit</label>
+    <input class="form-control" id="condition_{{idx}}_max" name="ccc[conditions][{{idx}}][max]" value="{{condition.max}}">
+</div>
+
+{{! Color selection. }}
+<div class="form-group col-md-3 col-xs-12">
+    <label for="condition_{{idx}}_color">Color</label>
+
+    <div class="input-group color-picker colorpicker-element">
+        <span class="input-group-addon"><i></i></span>
+        <input type="text" id="condition_{{idx}}_color" name="ccc[conditions][{{idx}}][color]" required="required" class="form-control" value="{{condition.color}}">
+    </div>
+</div>
+
+{{! Condition type. }}
+<div class="form-group col-md-3 col-xs-12">
+    <label for="condition_{{idx}}_type">Type</label>
+    <select name="ccc[conditions][{{idx}}][type]" id="condition_{{idx}}_type" data-idx="{{idx}}" class="condition-type">
+        <option value="simple">Comparison</option>
+        <option value="period" selected>Period</option>
+        <option value="null">Is Null</option>
+    </select>
+    <button type="button" class="btn btn-danger condition-remove">Remove</button>
+</div>

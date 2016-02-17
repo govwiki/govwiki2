@@ -3,6 +3,8 @@
 namespace GovWiki\AdminBundle\Twig;
 
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\AbstractCondition;
+use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ConditionInterface;
 
 /**
  * Class TwigExtensions
@@ -37,6 +39,18 @@ class TwigExtensions extends \Twig_Extension
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getFunctions()
+    {
+        return [
+            new \Twig_SimpleFunction('condition_form_template', [
+                $this,
+                'getConditionFormTemplate',
+            ]),
+        ];
+    }
 
     /**
      * {@inheritdoc}
@@ -53,7 +67,23 @@ class TwigExtensions extends \Twig_Extension
                 $this,
                 'nameBeautify',
             ]),
+
+            new \Twig_SimpleFilter('condition_type', [
+                $this,
+                'getConditionType',
+            ])
         ];
+    }
+
+    /**
+     * @param ConditionInterface $condition A ConditionInterface instance.
+     *
+     * @return string
+     */
+    public function getConditionFormTemplate(ConditionInterface $condition)
+    {
+        return '@GovWikiAdmin/Partial/Map/Form/'. strtolower($condition::getType()) .
+            '.html.twig';
     }
 
     /**
@@ -84,5 +114,15 @@ class TwigExtensions extends \Twig_Extension
          * Split name by uppercase letters.
          */
         return ucfirst(preg_replace('/([A-Z])/', ' $1', $name));
+    }
+
+    /**
+     * @param ConditionInterface $condition A ConditionInterface instance.
+     *
+     * @return string
+     */
+    public function getConditionType(ConditionInterface $condition)
+    {
+        return $condition::getType();
     }
 }

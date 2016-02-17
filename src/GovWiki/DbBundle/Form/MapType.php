@@ -43,11 +43,11 @@ class MapType extends AbstractType
                         Map::availablePositions(),
                         Map::availablePositions()
                     ),
-                ])
-                ->add(
-                    'colorizedCountyConditions',
-                    'colorized_county_condition'
-                );
+                ]);
+//                ->add(
+//                    'colorizedCountyConditions',
+//                    'colorized_county_condition'
+//                );
         }
     }
 

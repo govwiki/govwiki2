@@ -5,6 +5,7 @@ namespace GovWiki\AdminBundle\Controller;
 use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Form\MapType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
@@ -49,17 +50,13 @@ class MapController extends AbstractGovWikiAdminController
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
-            /*
-             * This stuff is required because doctrine compare by reference.
-             */
-            $new = clone $map->getColorizedCountyConditions();
-            $map->setColorizedCountyConditions($new);
-            if ($new->isColorized()) {
-                /*
-                 * Update CartoDB.
-                 */
+            $data = $request->request->get('ccc');
+            $data['colorized'] = $data['colorized'] === 'on';
+            $conditions = ColorizedCountyConditions::fromArray($data);
+
+            if ($data['colorized']) {
                 $values = $this->adminEnvironmentManager()
-                    ->getGovernmentsFiledValues($new->getFieldName());
+                    ->getGovernmentsFiledValues($conditions->getFieldName());
                 $environment = $this->adminEnvironmentManager()
                     ->getEnvironment();
 
@@ -103,10 +100,17 @@ class MapController extends AbstractGovWikiAdminController
                 $api->dropDataset($environment.'_temporary');
             }
 
+            $map->setColorizedCountyConditions($conditions);
             $em->persist($map);
             $em->flush();
         }
 
-        return [ 'form' => $form->createView() ];
+        return [
+            'form' => $form->createView(),
+            'conditions' => $map->getColorizedCountyConditions(),
+            'fields' => $this
+                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
+                ->getGovernmentFields()
+        ];
     }
 }
