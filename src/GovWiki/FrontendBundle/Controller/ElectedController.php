@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 class ElectedController extends Controller
 {
 
-    const ROWS_PER_PAGE = 25;
+    const ROWS_PER_PAGE = 2;
 
     /**
      * @Route("/{altTypeSlug}/{slug}/{electedSlug}", name="elected")
@@ -44,24 +44,26 @@ class ElectedController extends Controller
 
         $data['votes'] = $paginator->paginate(
             $data['votes'],
-            $request->query->getInt('vote_page', 1),
-            self::ROWS_PER_PAGE,
-            [
-                'pageParameterName' => 'vote_page',
-                'sortFieldParameterName' => 'vote_sort',
-                'sortDirectionParameterName' => 'vote_direction',
-            ]
+            1,
+            self::ROWS_PER_PAGE
         );
 
         $data['contributions'] = $paginator->paginate(
             $data['contributions'],
-            $request->query->getInt('contribution_page', 1),
-            self::ROWS_PER_PAGE,
-            [
-                'pageParameterName' => 'contribution_page',
-                'sortFieldParameterName' => 'contribution_sort',
-                'sortDirectionParameterName' => 'contribution_direction',
-            ]
+            1,
+            self::ROWS_PER_PAGE
+        );
+
+        $data['endorsements'] = $paginator->paginate(
+            $data['endorsements'],
+            1,
+            self::ROWS_PER_PAGE
+        );
+
+        $data['publicStatements'] = $paginator->paginate(
+            $data['publicStatements'],
+            1,
+            self::ROWS_PER_PAGE
         );
 
         $context = new SerializationContext();

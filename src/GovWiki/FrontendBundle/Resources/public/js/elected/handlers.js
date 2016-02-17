@@ -208,6 +208,40 @@ $(function() {
 
     var authorized = window.gw.authorized;
 
+    /*
+        Pagination and sorting.
+     */
+    $('.tab-pane').on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $this = $(this);
+        var $pane = $this.closest('.tab-pane');
+        var entity = $pane.attr('id');
+        var url = $this.attr('href');
+
+        if (url.indexOf('api') == -1) {
+            url = url.substr(1, url.length);
+            var firstElement = url.substr(0, url.indexOf('/'));
+
+
+            if ('app_dev.php' == firstElement) {
+                var path = url.substr(url.indexOf('/') + 1, url.length);
+                url = '/' + firstElement + '/api/v1/elected-official/' + path +
+                      '&entity=' + entity;
+            } else {
+                url = '/api/v1/elected-official/' + url + '&entity=' + entity;
+            }
+        }
+
+        var $mainContent = $pane.find('.tab-pane-main');
+        $mainContent.html('');
+
+        $.ajax(url).success(function(data) {
+            $mainContent.html(data);
+        });
+    });
+
     $('[data-toggle="tooltip"]').tooltip();
 
     var $editable = $('.editable');

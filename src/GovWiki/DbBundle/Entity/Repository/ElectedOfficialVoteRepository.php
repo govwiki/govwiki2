@@ -9,8 +9,9 @@ use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
 /**
  * ElectedOfficialVoteRepository
  */
-class ElectedOfficialVoteRepository extends EntityRepository
+class ElectedOfficialVoteRepository extends EntityRepository implements ListedEntityRepositoryInterface
 {
+
     /**
      * @param integer $electedOfficial Elected official entity id.
      *
@@ -36,6 +37,39 @@ class ElectedOfficialVoteRepository extends EntityRepository
                         $expr->literal(AbstractCreateRequest::STATE_DISCARDED)
                     )
                 )
+            ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListQueryBySlugs($govAltTypeSlug, $govSlug, $eoSlug)
+    {
+        $qb = $this->createQueryBuilder('Vote');
+        $expr = $qb->expr();
+
+        return $qb
+            ->addSelect('Legislation, Comment, Request, Creator')
+            ->join('Vote.legislation', 'Legislation')
+            ->leftJoin('Legislation.request', 'Request')
+            ->leftJoin('Request.creator', 'Creator')
+            ->leftJoin('Vote.comments', 'Comment')
+            ->join('Vote.electedOfficial', 'ElectedOfficial')
+            ->join('ElectedOfficial.government', 'Government')
+            ->where($expr->andX(
+                $expr->andX(
+                    $expr->eq('Government.altTypeSlug', $expr->literal($govAltTypeSlug)),
+                    $expr->eq('Government.slug', $expr->literal($govSlug)),
+                    $expr->eq('ElectedOfficial.slug', $expr->literal($eoSlug))
+                ),
+                $expr->orX(
+                    $expr->isNull('Legislation.request'),
+                    $expr->neq(
+                        'Request.status',
+                        $expr->literal(AbstractCreateRequest::STATE_DISCARDED)
+                    )
+                )
+
             ));
     }
 }

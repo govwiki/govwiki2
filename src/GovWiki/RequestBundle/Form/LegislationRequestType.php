@@ -2,8 +2,7 @@
 
 namespace GovWiki\RequestBundle\Form;
 
-use Doctrine\ORM\EntityRepository;
-use GovWiki\ApiBundle\Manager\EnvironmentManagerAwareInterface;
+use GovWiki\DbBundle\Form\ElectedOfficialVoteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

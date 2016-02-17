@@ -372,11 +372,11 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             $votes = $this->em->getRepository('GovWikiDbBundle:ElectedOfficialVote')
                 ->getListQuery($electedOfficial['id']);
             $contributions = $this->em->getRepository('GovWikiDbBundle:Contribution')
-                ->getListQuery($this->environment);
+                ->getListQuery($electedOfficial['id']);
             $endorsements = $this->em->getRepository('GovWikiDbBundle:Endorsement')
-                ->getListQuery($this->environment);
+                ->getListQuery($electedOfficial['id']);
             $publicStatements = $this->em->getRepository('GovWikiDbBundle:PublicStatement')
-                ->getListQuery($this->environment);
+                ->getListQuery($electedOfficial['id']);
 
             return [
                 'electedOfficial' => $electedOfficial,
