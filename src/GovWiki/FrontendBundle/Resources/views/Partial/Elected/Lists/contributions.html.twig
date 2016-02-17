@@ -2,11 +2,20 @@
 
 <table class="table table-hover" data-entity-type="Contribution">
     <tr>
-        <th><a class="sort" data-sort-type="year">Election Year <i class="icon"></i></a></th>
-        <th><a class="sort" data-sort-type="name">Name of contributor <i class="icon"></i></a></th>
+        <th class="sortable">
+            {{- knp_pagination_sortable(list, 'Election year', 'Contribution.electionYear') -}}
+            <i class="icon"></i>
+        </th>
+        <th class="sortable">
+            {{- knp_pagination_sortable(list, 'Name of contributor', 'Contribution.contributorName') -}}<i class="icon"></i>
+        </th>
         <th>Ind. Exp. Desc.</th>
-        <th><a class="sort" data-sort-type="amount">Amount <i class="icon"></i></a></th>
-        <th><a class="sort" data-sort-type="contributor-type">Contributor Type <i class="icon"></i></a></th>
+        <th class="sortable">
+            {{- knp_pagination_sortable(list, 'Amount', 'Contribution.contributionAmount') -}}<i class="icon"></i>
+        </th>
+        <th class="sortable">
+            {{- knp_pagination_sortable(list, 'Contributor Type', 'Contribution.contributorType') -}}<i class="icon"></i>
+        </th>
         <th></th>
     </tr>
 

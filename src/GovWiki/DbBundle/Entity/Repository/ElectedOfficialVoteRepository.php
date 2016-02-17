@@ -23,8 +23,9 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
         $expr = $qb->expr();
 
         return $qb
-            ->addSelect('Legislation, Comment, Request, Creator')
+            ->addSelect('Legislation, Comment, Request, Creator, IssueCategory')
             ->join('Vote.legislation', 'Legislation')
+            ->join('Legislation.issueCategory', 'IssueCategory')
             ->leftJoin('Legislation.request', 'Request')
             ->leftJoin('Request.creator', 'Creator')
             ->leftJoin('Vote.comments', 'Comment')
@@ -49,8 +50,9 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
         $expr = $qb->expr();
 
         return $qb
-            ->addSelect('Legislation, Comment, Request, Creator')
+            ->addSelect('Legislation, Comment, Request, Creator, IssueCategory')
             ->join('Vote.legislation', 'Legislation')
+            ->join('Legislation.issueCategory', 'IssueCategory')
             ->leftJoin('Legislation.request', 'Request')
             ->leftJoin('Request.creator', 'Creator')
             ->leftJoin('Vote.comments', 'Comment')

@@ -2,12 +2,12 @@
 
 <table class="table" data-entity-type="Legislation">
     <tr>
-        <th class="column__date">Date <i class="icon"></i></th>
+        <th class="column__date sortable">{{ knp_pagination_sortable(list, 'Data', 'Legislation.dateConsidered') }}<i class="icon"></i></th>
         <th>Title of Measure</th>
         <th>Summary of Measure</th>
         <th class="column__vote">How official Voted</th>
         <th>Sponsored by this official?</th>
-        <th><a class="sort" data-sort-type="vote_category">Category <i class="icon"></i></a></th>
+        <th class="sortable">{{ knp_pagination_sortable(list, 'Category', 'IssueCategory.name') }}<i class="icon"></i></th>
         <th></th>
     </tr>
 

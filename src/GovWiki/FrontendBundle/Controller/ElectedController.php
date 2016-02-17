@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 class ElectedController extends Controller
 {
 
-    const ROWS_PER_PAGE = 2;
+    const ROWS_PER_PAGE = 15;
 
     /**
      * @Route("/{altTypeSlug}/{slug}/{electedSlug}", name="elected")
