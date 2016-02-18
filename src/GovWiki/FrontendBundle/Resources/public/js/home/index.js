@@ -161,16 +161,6 @@ $(function(){
                 return '';
             }
 
-            // Fill polygon or marker
-            var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
-            var fillColor = isMarkerLayer ? markerColors.shift() : condition.color;
-            var fill = fillRule + ': ' + fillColor + ';';
-
-            // Stroke polygon or marker
-            var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
-            var lineColor = isMarkerLayer ? markerColors.shift() : '#FFFFFF';
-            var line = lineColorRule + ': ' + lineColor + ';';
-
             var cssConditions = '';
 
             var periodConditions = conditions.filter(function(condition) {
@@ -185,7 +175,7 @@ $(function(){
 
                     // Fill polygon or marker
                     var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
-                    var fillColor = isMarkerLayer ? 'white' : condition.color;
+                    var fillColor = isMarkerLayer ? condition.color : condition.color;
                     var fill = fillRule + ': ' + fillColor + ';';
 
                     // Stroke polygon or marker
@@ -235,7 +225,7 @@ $(function(){
                 simpleConditions.forEach(function(condition) {
                     // Fill polygon or marker
                     var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
-                    var fillColor = isMarkerLayer ? 'white' : condition.color;
+                    var fillColor = isMarkerLayer ? condition.color : condition.color;
                     var fill = fillRule + ': ' + fillColor + ';';
 
                     // Stroke polygon or marker
@@ -626,7 +616,7 @@ $(function(){
              */
             var compiledLegendItems = '';
 
-            var markerIcons = ['red-circle', 'purple-circle', 'blue-circle'];
+            var markerIcons = ['red', 'purple', 'blue'];
 
             altTypes.forEach(function(altType) {
 
