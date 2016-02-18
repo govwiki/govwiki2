@@ -161,17 +161,18 @@
          -webkit-border-radius: 50%;
          -moz-border-radius: 50%;
          border-radius: 50%;
+         background: white;
 
          &.red {
-            background: #f00;
+            border: 1px solid #f00000;
          }
 
          &.blue {
-            background: #add8e6;
+            border: 1px solid #add8e6;
          }
 
          &.purple {
-            background: #800080;
+            border: 1px solid #800080;
          }
       }
 
