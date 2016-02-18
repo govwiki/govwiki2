@@ -45,3 +45,11 @@ services:
         arguments: [@session]
         tags:
             - { name: kernel.event_listener, event: kernel.controller }
+
+    govwiki_admin.sitemap.generator.txt:
+        class: GovWiki\AdminBundle\Services\TxtSitemapGenerator
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @router
+            - %determinator.name%
+            - %kernel.root_dir%/../web/

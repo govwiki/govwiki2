@@ -8,6 +8,8 @@ namespace GovWiki\AdminBundle;
  */
 abstract class GovWikiAdminServices
 {
+    const TXT_SITEMAP_GENERATOR = 'govwiki_admin.sitemap.generator.txt';
+
     const TRANSFORMER_MANAGER = 'govwiki_admin.manager.transformer';
     const ADMIN_ENVIRONMENT_MANAGER = 'govwiki_admin.manager.environment';
     const ADMIN_STYLE_MANAGER = 'govwiki_admin.manager.style';
