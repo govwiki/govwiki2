@@ -163,7 +163,7 @@ $(function(){
 
             // Fill polygon or marker
             var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
-            var fillColor = isMarkerLayer ? markerColors.shift() : nullCondition[0].color;
+            var fillColor = isMarkerLayer ? markerColors.shift() : condition.color;
             var fill = fillRule + ': ' + fillColor + ';';
 
             // Stroke polygon or marker
@@ -182,6 +182,17 @@ $(function(){
 
 
                 periodConditions.forEach(function (condition) {
+
+                    // Fill polygon or marker
+                    var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
+                    var fillColor = isMarkerLayer ? 'white' : condition.color;
+                    var fill = fillRule + ': ' + fillColor + ';';
+
+                    // Stroke polygon or marker
+                    var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
+                    var lineColor = isMarkerLayer ? markerColors.shift() : '#FFFFFF';
+                    var line = lineColorRule + ': ' + lineColor + ';';
+
                     var min = '[data >= ' + condition.min + ']';
                     var max = '[data <= ' + condition.max + ']';
                     var style = '{ ' + fill + line + ' line-width: 0.5; line-opacity: 1; polygon-opacity: 0.3; } ';
@@ -207,16 +218,6 @@ $(function(){
                 return '';
             }
 
-            // Fill polygon or marker
-            var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
-            var fillColor = isMarkerLayer ? markerColors.shift() : nullCondition[0].color;
-            var fill = fillRule + ': ' + fillColor + ';';
-
-            // Stroke polygon or marker
-            var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
-            var lineColor = isMarkerLayer ? markerColors.shift() : '#FFFFFF';
-            var line = lineColorRule + ': ' + lineColor + ';';
-
             var cssConditions = '';
 
             var simpleConditions = conditions.filter(function(condition) {
@@ -232,6 +233,16 @@ $(function(){
                 });
 
                 simpleConditions.forEach(function(condition) {
+                    // Fill polygon or marker
+                    var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
+                    var fillColor = isMarkerLayer ? 'white' : condition.color;
+                    var fill = fillRule + ': ' + fillColor + ';';
+
+                    // Stroke polygon or marker
+                    var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
+                    var lineColor = isMarkerLayer ? markerColors.shift() : '#FFFFFF';
+                    var line = lineColorRule + ': ' + lineColor + ';';
+
                     var value = '[data ' + condition.operation + ' ' + condition.value + ']';
                     var style = '{ ' + fill + line + ' line-width: 0.5; line-opacity: 1; polygon-opacity: 0.3; } ';
                     cssConditions += '#layer' + value + style;
@@ -256,6 +267,12 @@ $(function(){
                 return '';
             }
 
+            var cssConditions = '';
+
+            var nullCondition = conditions.filter(function(condition) {
+                return condition.type === 'null';
+            });
+
             // Fill polygon or marker
             var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
             var fillColor = isMarkerLayer ? markerColors.shift() : nullCondition[0].color;
@@ -265,12 +282,6 @@ $(function(){
             var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
             var lineColor = isMarkerLayer ? markerColors.shift() : '#FFFFFF';
             var line = lineColorRule + ': ' + lineColor + ';';
-
-            var cssConditions = '';
-
-            var nullCondition = conditions.filter(function(condition) {
-                return condition.type === 'null';
-            });
 
             // If null condition found
             if (nullCondition.length !== 0) {
