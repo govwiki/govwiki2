@@ -27,7 +27,7 @@
 {% macro addFormRow(form_row) %}
     <tr>
         <td>
-            {{ form_row.vars.name|capitalize }}
+            {{ form_row.vars.name|name_beautify }}
         </td>
         <td>
             {{ form_errors(form_row) }}
