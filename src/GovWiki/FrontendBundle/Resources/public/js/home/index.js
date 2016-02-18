@@ -20,6 +20,8 @@ $(function(){
      */
     window.gw.map = JSON.parse(window.gw.map);
 
+    var color = '';
+
     // TODO: Hardcoded
     window.gw.map.county = window.gw.map.colorizedCountyConditions;
 
@@ -151,10 +153,11 @@ $(function(){
          * Get period conditions as css string
          *
          * @param conditions - window.gw.map.county.conditions
+         * @param color
          * @param isMarkerLayer
          * @returns {string} CSS String || ''
          */
-        function getPeriodConditionsAsCss(conditions, isMarkerLayer) {
+        function getPeriodConditionsAsCss(conditions, color, isMarkerLayer) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getPeriodConditionsAsCss() function');
@@ -180,7 +183,7 @@ $(function(){
 
                     // Stroke polygon or marker
                     var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
-                    var lineColor = isMarkerLayer ? markerColors.shift() : '#FFFFFF';
+                    var lineColor = isMarkerLayer ? color : '#FFFFFF';
                     var line = lineColorRule + ': ' + lineColor + ';';
                     var stroke = isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
 
@@ -202,10 +205,11 @@ $(function(){
          * Get simple conditions as css string
          *
          * @param conditions - window.gw.map.county.conditions
+         * @param color
          * @param isMarkerLayer
          * @returns {string} CSS String || ''
          */
-        function getSimpleConditionsAsCss(conditions, isMarkerLayer) {
+        function getSimpleConditionsAsCss(conditions, color, isMarkerLayer) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getSimpleConditionsAssCss() function');
@@ -234,7 +238,7 @@ $(function(){
 
                     // Stroke polygon or marker
                     var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
-                    var lineColor = isMarkerLayer ? markerColors.shift() : '#FFFFFF';
+                    var lineColor = isMarkerLayer ? color : '#FFFFFF';
                     var line = lineColorRule + ': ' + lineColor + ';';
                     var stroke = isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
 
@@ -252,10 +256,11 @@ $(function(){
          * Get Null condition as css string
          *
          * @param conditions - window.gw.map.county.conditions
+         * @param color
          * @param isMarkerLayer
          * @returns {string} CSS String || ''
          */
-        function getNullConditionAsCss(conditions, isMarkerLayer) {
+        function getNullConditionAsCss(conditions, color, isMarkerLayer) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getNullConditionAsCss() function');
@@ -270,12 +275,12 @@ $(function(){
 
             // Fill polygon or marker
             var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
-            var fillColor = isMarkerLayer ? markerColors.shift() : nullCondition[0].color;
+            var fillColor = isMarkerLayer ? nullCondition[0].color : nullCondition[0].color;
             var fill = fillRule + ': ' + fillColor + ';';
 
             // Stroke polygon or marker
             var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
-            var lineColor = isMarkerLayer ? markerColors.shift() : '#FFFFFF';
+            var lineColor = isMarkerLayer ? color : '#FFFFFF';
             var line = lineColorRule + ': ' + lineColor + ';';
             var stroke = isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
 
@@ -300,7 +305,6 @@ $(function(){
             var colorized = window.gw.map.county.colorized;
 
             if (colorized) {
-
                 var conditions = window.gw.map.county.conditions;
 
                 cartocss += '#layer { polygon-fill: #DDDDDD; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
@@ -383,13 +387,16 @@ $(function(){
 
                 var conditions = window.gw.map.county.conditions;
 
-                cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                var color = markerColors.shift();
+                debugger;
 
-                cartocss += getPeriodConditionsAsCss(conditions, true);
+                //cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
 
-                cartocss += getSimpleConditionsAsCss(conditions, true);
+                cartocss += getPeriodConditionsAsCss(conditions, color, true);
 
-                cartocss += getNullConditionAsCss(conditions, true);
+                cartocss += getSimpleConditionsAsCss(conditions, color, true);
+
+                cartocss += getNullConditionAsCss(conditions, color, true);
 
                 if (cartocss === '') {
                     console.warn('Can\'t find any condition, please verify your window.gw.map.county.conditions data');
