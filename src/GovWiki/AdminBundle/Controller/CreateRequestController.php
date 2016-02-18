@@ -212,6 +212,12 @@ class CreateRequestController extends AbstractGovWikiAdminController
         }
     }
 
+    /**
+     * @param Legislation $legislation       A Legislation instance.
+     * @param integer     $electedOfficialId Elected official id.
+     *
+     * @return ElectedOfficialVote|null
+     */
     private function getVote(Legislation $legislation, $electedOfficialId)
     {
         /** @var ElectedOfficialVote $vote */
