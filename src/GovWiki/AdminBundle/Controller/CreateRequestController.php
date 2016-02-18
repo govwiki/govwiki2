@@ -161,6 +161,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
             } else {
                 $message->setTo($row['emailAddress']);
             }
+            error_log('Send to '. json_encode($message->getTo()));
 
             $template = 'GovWikiAdminBundle::email.html.twig';
             $parameters = [
