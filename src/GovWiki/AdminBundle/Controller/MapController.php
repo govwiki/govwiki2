@@ -66,7 +66,7 @@ class MapController extends AbstractGovWikiAdminController
                 $sqlParts = [];
                 foreach ($values as $row) {
                     if (null === $row['data']) {
-                        $row['data'] = 0;
+                        $row['data'] = 'NULL';
                     }
                     $sqlParts[] = "
                         ('{$row['slug']}', '{$row['alt_type_slug']}', '{$row['data']}')
