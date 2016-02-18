@@ -97,6 +97,15 @@ class Map
     private $environment;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     *
+     * @Groups({"map"})
+     */
+    private $debug;
+
+    /**
      * @return array
      */
     public static function availablePositions()
@@ -273,6 +282,26 @@ class Map
     public function setColorizedCountyConditions(ColorizedCountyConditions $colorizedCountyConditions)
     {
         $this->colorizedCountyConditions = $colorizedCountyConditions;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getDebug()
+    {
+        return $this->debug;
+    }
+
+    /**
+     * @param boolean $debug Debug flag.
+     *
+     * @return Map
+     */
+    public function setDebug($debug)
+    {
+        $this->debug = $debug;
 
         return $this;
     }

@@ -1,0 +1,59 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>
+                <label for="condition_{{idx}}_value">
+                    Comparison value
+                </label>
+            </th>
+            <th style="min-width: 60px">
+                <label for="condition_{{idx}}_operation">
+                    Comparison operation
+                </label>
+            </th>
+            <th><label for="condition_{{idx}}_color">Apply colors</label></th>
+            <th style="min-width: 130px"><label for="condition_{{idx}}_type">Condition type</label></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+
+            {{! Comparison value. }}
+            <td>
+                <input class="form-control" id="condition_{{idx}}_value" name="ccc[conditions][{{idx}}][value]" value="{{condition.value}}">
+            </td>
+
+            {{! Comparison operation. }}
+            <td>
+                <select class="form-control" style="width: 80px" id="condition_{{idx}}_operation" name="ccc[conditions][{{idx}}][operation]">
+                    <option value="<=" {{#ifCond condition.operation '<=' }} selected{{/ifCond}}><</option>
+                    <option value=">=" {{#ifCond condition.operation '>=' }} selected{{/ifCond}}>></option>
+                </select>
+            </td>
+
+            {{! Apply colors. }}
+            <td>
+                <div class="input-group color-picker colorpicker-element">
+                    <span class="input-group-addon"><i></i></span>
+                    <input type="text" id="condition_{{idx}}_color" name="ccc[conditions][{{idx}}][color]" required="required" class="form-control" value="{{condition.color}}">
+                </div>
+            </td>
+
+            {{! Condition type. }}
+            <td>
+                <select name="ccc[conditions][{{idx}}][type]" id="condition_{{idx}}_type" data-idx="{{idx}}" class="condition-type form-control">
+                    <option value="simple" selected>Comparison</option>
+                    <option value="period">Period</option>
+                    <option value="null">Is Null</option>
+                </select>
+            </td>
+
+            {{! Actions. }}
+            <td>
+                <button type="button" class="btn btn-danger condition-remove">Remove</button>
+            </td>
+
+        </tr>
+    </tbody>
+</table>

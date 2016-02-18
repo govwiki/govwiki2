@@ -5,6 +5,7 @@ namespace GovWiki\AdminBundle\Controller;
 use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Form\MapType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
@@ -49,17 +50,13 @@ class MapController extends AbstractGovWikiAdminController
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
-            /*
-             * This stuff is required because doctrine compare by reference.
-             */
-            $new = clone $map->getColorizedCountyConditions();
-            $map->setColorizedCountyConditions($new);
-            if ($new->isColorized()) {
-                /*
-                 * Update CartoDB.
-                 */
+            $data = $request->request->get('ccc');
+            $data['colorized'] = $data['colorized'] === 'on';
+            $conditions = ColorizedCountyConditions::fromArray($data);
+
+            if ($data['colorized']) {
                 $values = $this->adminEnvironmentManager()
-                    ->getGovernmentsFiledValues($new->getFieldName());
+                    ->getGovernmentsFiledValues($conditions->getFieldName());
                 $environment = $this->adminEnvironmentManager()
                     ->getEnvironment();
 
@@ -77,36 +74,43 @@ class MapController extends AbstractGovWikiAdminController
                 }
 
 
-                $api = $this->get(CartoDbServices::CARTO_DB_API);
-                $api
-                    // Create temporary dataset.
-                    ->createDataset($environment.'_temporary', [
-                        'alt_type_slug' => 'VARCHAR(255)',
-                        'slug' => 'VARCHAR(255)',
-                        'data' => 'double precision',
-                    ], true)
-                    // Load data into it.
-                    ->sqlRequest("
-                        INSERT INTO {$environment}_temporary
-                            (slug, alt_type_slug, data)
-                        VALUES". implode(',', $sqlParts));
-                    // Update concrete environment dataset from temporary
-                    // dataset.
-                $api->sqlRequest("
-                    UPDATE {$environment} e
-                    SET data = t.data
-                    FROM {$environment}_temporary t
-                    WHERE e.slug = t.slug AND
-                        e.alt_type_slug = t.alt_type_slug
-                ");
-                    // Remove temporary dataset.
-                $api->dropDataset($environment.'_temporary');
+//                $api = $this->get(CartoDbServices::CARTO_DB_API);
+//                $api
+//                    // Create temporary dataset.
+//                    ->createDataset($environment.'_temporary', [
+//                        'alt_type_slug' => 'VARCHAR(255)',
+//                        'slug' => 'VARCHAR(255)',
+//                        'data' => 'double precision',
+//                    ], true)
+//                    // Load data into it.
+//                    ->sqlRequest("
+//                        INSERT INTO {$environment}_temporary
+//                            (slug, alt_type_slug, data)
+//                        VALUES". implode(',', $sqlParts));
+//                    // Update concrete environment dataset from temporary
+//                    // dataset.
+//                $api->sqlRequest("
+//                    UPDATE {$environment} e
+//                    SET data = t.data
+//                    FROM {$environment}_temporary t
+//                    WHERE e.slug = t.slug AND
+//                        e.alt_type_slug = t.alt_type_slug
+//                ");
+//                    // Remove temporary dataset.
+//                $api->dropDataset($environment.'_temporary');
             }
 
+            $map->setColorizedCountyConditions($conditions);
             $em->persist($map);
             $em->flush();
         }
 
-        return [ 'form' => $form->createView() ];
+        return [
+            'form' => $form->createView(),
+            'conditions' => $map->getColorizedCountyConditions(),
+            'fields' => $this
+                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
+                ->getGovernmentFields()
+        ];
     }
 }
