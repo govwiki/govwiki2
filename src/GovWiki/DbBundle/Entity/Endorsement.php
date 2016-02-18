@@ -3,16 +3,27 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\QueryBuilder;
+use GovWiki\RequestBundle\Entity\AbstractCreatable;
+use GovWiki\RequestBundle\Entity\EndorsementCreateRequest;
 use JMS\Serializer\Annotation\Groups;
 
 /**
  * Endorsement
  *
  * @ORM\Table(name="endorsements")
- * @ORM\Entity
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\EndorsementRepository"
+ * )
  */
-class Endorsement
+class Endorsement extends AbstractCreatable
 {
+    const ELECTED_OFFICIAL = 'Elected Official';
+    const ORGANIZATION = 'Organization';
+    const POLITICAL_PARTY = 'Political party';
+    const UNION = 'Union';
+    const OTHER = 'Other';
+
     /**
      * @var integer
      *
@@ -57,6 +68,32 @@ class Endorsement
      * @Groups({"elected_official"})
      */
     private $issueCategory;
+
+    /**
+     * @var EndorsementCreateRequest
+     *
+     * @ORM\OneToOne(
+     *  targetEntity="GovWiki\RequestBundle\Entity\EndorsementCreateRequest",
+     *  inversedBy="subject",
+     *  cascade={ "persist", "remove" }
+     * )
+     * @ORM\JoinColumn(name="request_id")
+     */
+    protected $request;
+
+    /**
+     * @return array
+     */
+    public static function getAvailableEndorserType()
+    {
+        return [
+            self::ELECTED_OFFICIAL => self::ELECTED_OFFICIAL,
+            self::ORGANIZATION => self::ORGANIZATION,
+            self::POLITICAL_PARTY => self::POLITICAL_PARTY,
+            self::UNION => self::UNION,
+            self::OTHER => self::OTHER,
+        ];
+    }
 
     /**
      * Get id
@@ -176,7 +213,7 @@ class Endorsement
     /**
      * Get issueCategory
      *
-     * @return \GovWiki\DbBundle\Entity\IssueCategory 
+     * @return \GovWiki\DbBundle\Entity\IssueCategory
      */
     public function getIssueCategory()
     {

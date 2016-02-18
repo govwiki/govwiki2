@@ -55,11 +55,11 @@
                             <table class="table table-bordered table-hover text-center">
                                 <thead>
                                 <tr>
-                                    <td>{{ knp_pagination_sortable(createRequests, 'Id',        'cr.id') }}</td>
-                                    <td>{{ knp_pagination_sortable(createRequests, 'Created',   'cr.created') }}</td>
-                                    <td>{{ knp_pagination_sortable(createRequests, 'Status',    'cr.status') }}</td>
-                                    <td>{{ knp_pagination_sortable(createRequests, 'User',      'u.username') }}</td>
-                                    <td>{{ knp_pagination_sortable(createRequests, 'Data Type', 'cr.entityName') }}</td>
+                                    <td>{{ knp_pagination_sortable(createRequests, 'Id',        'CreateRequest.id') }}</td>
+                                    <td>{{ knp_pagination_sortable(createRequests, 'Created',   'CreateRequest.createdAt') }}</td>
+                                    <td>{{ knp_pagination_sortable(createRequests, 'Status',    'CreateRequest.status') }}</td>
+                                    <td>{{ knp_pagination_sortable(createRequests, 'User',      'Creator.username') }}</td>
+                                    <td>{{ knp_pagination_sortable(createRequests, 'Data Type', 'CreateRequest.entityName') }}</td>
                                     <td>Actions</td>
                                 </tr>
                                 </thead>
@@ -67,9 +67,9 @@
                                 {% for createRequest in createRequests %}
                                     <tr>
                                         <td>{{ createRequest.id }}</td>
-                                        <td>{{ createRequest.created|date('m/d/y g:i a') }}</td>
+                                        <td>{{ createRequest.createdAt|date('m/d/y g:i a') }}</td>
                                         <td>{{ createRequest.status|capitalize }}</td>
-                                        <td>{% if createRequest.user %}{{ createRequest.user.username }}{% endif %}</td>
+                                        <td>{% if createRequest.creator %}{{ createRequest.creator.username }}{% endif %}</td>
                                         <td>{{ createRequest.entityName }}</td>
                                         <td>
                                             <div class="btn-group">
@@ -118,7 +118,7 @@
 
     </div>
 
-    </div>>
+    </div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}

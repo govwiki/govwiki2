@@ -65,10 +65,6 @@
                             {% endfor %}
                         </table>
                     </div>
-
-                    {% if app.user is not null %}
-                        <input type="hidden" value="{{ app.user.username }}" data-username>
-                    {% endif %}
                     <!--<div class="input-group">
                         <span class="input-group-addon">How official Voted: </span>
                         <input type="text" class="form-control" placeholder="Please enter How official Voted" data-vote>

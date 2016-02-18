@@ -2,6 +2,7 @@
 
 namespace GovWiki\DbBundle\Form;
 
+use GovWiki\DbBundle\Entity\Endorsement;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -19,11 +20,10 @@ class EndorsementType extends AbstractType
     {
         $builder
             ->add('nameOfEndorser')
-            ->add('endorserType')
-            ->add('electionYear')
-            ->add('issueCategory', 'entity', [
-                'class' => 'GovWiki\DbBundle\Entity\IssueCategory',
-            ]);
+            ->add('endorserType', 'choice', [
+                'choices' => Endorsement::getAvailableEndorserType(),
+            ])
+            ->add('electionYear');
     }
 
     /**

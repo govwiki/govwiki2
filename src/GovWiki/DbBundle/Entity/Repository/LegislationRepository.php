@@ -21,7 +21,9 @@ class LegislationRepository extends EntityRepository
         $expr = $qb->expr();
 
         return $qb
+            ->addSelect('IssueCategory')
             ->leftJoin('Legislation.government', 'Government')
+            ->leftJoin('Legislation.issueCategory', 'IssueCategory')
             ->leftJoin('Government.environment', 'Environment')
             ->where($expr->eq('Environment.slug', $expr->literal($environment)))
             ->getQuery();

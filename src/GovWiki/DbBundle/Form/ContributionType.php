@@ -2,6 +2,7 @@
 
 namespace GovWiki\DbBundle\Form;
 
+use GovWiki\DbBundle\Entity\Contribution;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -22,7 +23,9 @@ class ContributionType extends AbstractType
             ->add('contributorName')
             ->add('independentExpenditureDesc')
             ->add('contributionAmount')
-            ->add('contributorType');
+            ->add('contributorType', 'choice', [
+                'choices' => Contribution::getAvailableContributorType()
+            ]);
     }
 
     /**

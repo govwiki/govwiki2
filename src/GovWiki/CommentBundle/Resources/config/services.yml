@@ -1,0 +1,4 @@
+services:
+    gowviki_comment.manager.key:
+        class: GovWiki\CommentBundle\Manager\CommentKeyManager
+        arguments: [@doctrine.orm.default_entity_manager]

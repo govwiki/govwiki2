@@ -1,0 +1,42 @@
+{% extends 'GovWikiFrontendBundle:Layout:main.html.twig' %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-md-12">
+            <h3>{{ vote.legislation.name }} <small>{{ vote.legislation.issueCategory.name }}</small></h3>
+            <p>Summary: {{ vote.legislation.summary }}</p>
+            <p>You vote: {{ vote.vote }}</p>
+            <p>Sponsored by you: {%
+                if (vote.didElectedOfficialProposeThis)
+            -%}
+                Yes
+            {%- else -%}
+                No
+            {%- endif-%}</p>
+        </div>
+        <div style="margin-bottom: 15px" class="col-md-10 col-md-offset-1">
+            {{ form_start(form) }}
+            {{ form_errors(form.body) }}
+            {{ form_row(form.body) }}
+            <button type="submit" class="btn btn-primary pull-right clearfix">Add comment</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock main %}
+
+{% block stylesheets %}
+
+    {{parent()}}
+
+    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/main.scss' filter='scss' %}
+    <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@GovWikiFrontendBundle/Resources/public/js/script.js' output='js/comment.js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock javascripts %}

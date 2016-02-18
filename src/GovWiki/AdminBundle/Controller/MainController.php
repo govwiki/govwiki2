@@ -96,6 +96,22 @@ class MainController extends AbstractGovWikiAdminController
     }
 
     /**
+     * @Configuration\Route("/sitemap")
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function sitemapAction()
+    {
+        $environment = $this->adminEnvironmentManager()->getSlug();
+        $this->get(GovWikiAdminServices::TXT_SITEMAP_GENERATOR)
+            ->generate($environment);
+
+        return $this->redirectToRoute('govwiki_admin_main_show', [
+            'environment' => $environment,
+        ]);
+    }
+
+    /**
      * @Configuration\Route("/style")
      * @Configuration\Template()
      *

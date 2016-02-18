@@ -1,0 +1,3 @@
+comment:
+    resource: "@GovWikiCommentBundle/Controller/CommentController.php"
+    type:     govwiki
