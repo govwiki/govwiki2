@@ -66,10 +66,10 @@ class MapController extends AbstractGovWikiAdminController
                 $sqlParts = [];
                 foreach ($values as $row) {
                     if (null === $row['data']) {
-                        $row['data'] = 'NULL';
+                        $row['data'] = 'null';
                     }
                     $sqlParts[] = "
-                        ('{$row['slug']}', '{$row['alt_type_slug']}', '{$row['data']}')
+                        ('{$row['slug']}', '{$row['alt_type_slug']}', {$row['data']})
                     ";
                 }
 
@@ -82,7 +82,6 @@ class MapController extends AbstractGovWikiAdminController
                         'slug' => 'VARCHAR(255)',
                         'data' => 'double precision',
                     ], true)
-                    // Load data into it.
                     ->sqlRequest("
                         INSERT INTO {$environment}_temporary
                             (slug, alt_type_slug, data)

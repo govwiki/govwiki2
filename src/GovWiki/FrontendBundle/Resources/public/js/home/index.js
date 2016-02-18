@@ -275,7 +275,11 @@ $(function(){
 
             // Fill polygon or marker
             var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
-            var fillColor = isMarkerLayer ? nullCondition[0].color : nullCondition[0].color;
+            var fillColor = '#ffffff';
+            if  (nullCondition.length != 0) {
+                fillColor = isMarkerLayer ? nullCondition[ 0 ].color :
+                                nullCondition[ 0 ].color;
+            }
             var fill = fillRule + ': ' + fillColor + ';';
 
             // Stroke polygon or marker
@@ -388,7 +392,6 @@ $(function(){
                 var conditions = window.gw.map.county.conditions;
 
                 var color = markerColors.shift();
-                debugger;
 
                 //cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
 
