@@ -16,7 +16,7 @@ services:
     govwiki_api.environment_manager.configurator:
         class: GovWiki\ApiBundle\Manager\EnvironmentManagerConfigurator
         arguments:
-            - '' # set by configuration.
+            - @govwiki_api.environment.determinator.host
 
     govwiki_api.environment.determinator.path:
         class: GovWiki\ApiBundle\Determinator\PathDeterminator
