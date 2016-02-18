@@ -150,14 +150,17 @@ $(function(){
          * Get period conditions as css string
          *
          * @param conditions - window.gw.map.county.conditions
+         * @param isMarkerLayer
          * @returns {string} CSS String || ''
          */
-        function getPeriodConditionsAsCss(conditions) {
+        function getPeriodConditionsAsCss(conditions, isMarkerLayer) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getPeriodConditionsAsCss() function');
                 return '';
             }
+
+            var polygonOrMarker = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
 
             var cssConditions = '';
 
@@ -172,7 +175,7 @@ $(function(){
                 periodConditions.forEach(function (condition) {
                     var min = '[data >= ' + condition.min + ']';
                     var max = '[data <= ' + condition.max + ']';
-                    var style = '{ polygon-fill: ' + condition.color + '; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                    var style = '{ ' + polygonOrMarker + ': ' + condition.color + '; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
                     cssConditions += '#layer' + min + max + style;
                 });
 
@@ -185,14 +188,17 @@ $(function(){
          * Get simple conditions as css string
          *
          * @param conditions - window.gw.map.county.conditions
+         * @param isMarkerLayer
          * @returns {string} CSS String || ''
          */
-        function getSimpleConditionsAsCss(conditions) {
+        function getSimpleConditionsAsCss(conditions, isMarkerLayer) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getSimpleConditionsAssCss() function');
                 return '';
             }
+
+            var polygonOrMarker = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
 
             var cssConditions = '';
 
@@ -210,7 +216,7 @@ $(function(){
 
                 simpleConditions.forEach(function(condition) {
                     var value = '[data ' + condition.operation + ' ' + condition.value + ']';
-                    var style = '{ polygon-fill: ' + condition.color + '; } ';
+                    var style = '{ ' + polygonOrMarker + ': ' + condition.color + '; } ';
                     cssConditions += '#layer' + value + style;
                 });
 
@@ -223,14 +229,17 @@ $(function(){
          * Get Null condition as css string
          *
          * @param conditions - window.gw.map.county.conditions
+         * @param isMarkerLayer
          * @returns {string} CSS String || ''
          */
-        function getNullConditionAsCss(conditions) {
+        function getNullConditionAsCss(conditions, isMarkerLayer) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getNullConditionAsCss() function');
                 return '';
             }
+
+            var polygonOrMarker = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
 
             var cssConditions = '';
 
@@ -240,7 +249,7 @@ $(function(){
 
             // If null condition found
             if (nullCondition.length !== 0) {
-                var style = '{ polygon-fill: ' + nullCondition[0].color + '; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                var style = '{ ' + polygonOrMarker + ': ' + nullCondition[0].color + '; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
                 cssConditions += '#layer[data = null]' + style;
             }
 
@@ -335,9 +344,35 @@ $(function(){
 
             var _altType = altType.toLowerCase();
 
+            var cartocss = '';
+            var colorized = window.gw.map.county.colorized;
+
+            if (colorized) {
+
+                var conditions = window.gw.map.county.conditions;
+
+                cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+
+                cartocss += getPeriodConditionsAsCss(conditions, true);
+
+                cartocss += getSimpleConditionsAsCss(conditions, true);
+
+                cartocss += getNullConditionAsCss(conditions, true);
+
+                if (cartocss === '') {
+                    console.warn('Can\'t find any condition, please verify your window.gw.map.county.conditions data');
+                    console.warn('or check getPeriodConditionsAsCss, getSimpleConditionsAsCss, getNullConditionAsCss functions');
+                }
+
+            } else {
+                cartocss = '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+            }
+
+            console.log(cartocss);
+
             subLayers[_altType] = layer.createSubLayer({
                 sql: "SELECT *, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
-                cartocss: "#layer { marker-fill: " + markerColors.shift() + " }", // TODO: Hardcoded
+                cartocss: cartocss,
                 interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype']
             });
 
@@ -351,9 +386,19 @@ $(function(){
          * @param altType
          */
         function initTooltip(altType) {
+            var tooltipTpl = '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"></p>';
+
+            if (window.gw.map.debug) {
+                tooltipTpl += '<p>{{data}}</p><p>{{slug}}</p>';
+            } else {
+                tooltipTpl += '<p>{{slug}}</p>';
+            }
+
+            tooltipTpl += '</div></div>';
+
             tooltips[altType] = new cdb.geo.ui.Tooltip({
                 layer: subLayers[altType],
-                template: '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"></p><p>{{slug}}</p></div></div>',
+                template: tooltipTpl,
                 width: 200,
                 position: 'bottom|right'
             });
