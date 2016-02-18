@@ -236,71 +236,73 @@ class GovernmentRepository extends EntityRepository
         $finStmtYears = $this->_em->getRepository('GovWikiDbBundle:FinData')
             ->getAvailableYears($government['id']);
 
-        if (null === $year) {
+        $government['finData'] = [];
+        $government['financialStatements'] = [];
+        if (null === $year && (count($finStmtYears) > 0)) {
             $year = $finStmtYears[0];
-        }
 
-        $finData = $this
-            ->_em->getRepository('GovWikiDbBundle:FinData')
-            ->createQueryBuilder('FinData')
-            ->select(
-                'partial FinData.{id, caption, dollarAmount, displayOrder}',
-                'CaptionCategory, Fund'
-            )
-            ->leftJoin('FinData.captionCategory', 'CaptionCategory')
-            ->leftJoin('FinData.fund', 'Fund')
-            ->where(
-                $expr->andX(
-                    $expr->eq('FinData.government', $government['id']),
-                    $expr->eq('FinData.year', $year)
+            $finData = $this
+                ->_em->getRepository('GovWikiDbBundle:FinData')
+                ->createQueryBuilder('FinData')
+                ->select(
+                    'partial FinData.{id, caption, dollarAmount, displayOrder}',
+                    'CaptionCategory, Fund'
                 )
-            )
-            ->orderBy($expr->asc('CaptionCategory.id'))
-            ->getQuery()
-            ->getArrayResult();
+                ->leftJoin('FinData.captionCategory', 'CaptionCategory')
+                ->leftJoin('FinData.fund', 'Fund')
+                ->where(
+                    $expr->andX(
+                        $expr->eq('FinData.government', $government['id']),
+                        $expr->eq('FinData.year', $year)
+                    )
+                )
+                ->orderBy($expr->asc('CaptionCategory.id'))
+                ->getQuery()
+                ->getArrayResult();
 
-        $financialStatementsGroups = [];
-        foreach ($finData as $finDataItem) {
-            $financialStatementsGroups[$finDataItem['caption']][] = $finDataItem;
-        }
-        $i = 0;
-        $financialStatements = [];
-        foreach ($financialStatementsGroups as $caption => $finData) {
+            $financialStatementsGroups = [];
             foreach ($finData as $finDataItem) {
-                $financialStatements[$i]['caption'] = $caption;
-                $financialStatements[$i]['category_name'] = $finDataItem['captionCategory']['name'];
-                $financialStatements[$i]['display_order'] = $finDataItem['displayOrder'];
-                if (empty($financialStatements[$i]['genfund'])) {
-                    if (empty($finDataItem['fund'])) {
-                        $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
-                    } elseif ($finDataItem['fund']['name'] === 'General Fund') {
-                        $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
-                    }
-                }
-                if (empty($financialStatements[$i]['otherfunds'])) {
-                    if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Other') {
-                        $financialStatements[$i]['otherfunds'] = $finDataItem['dollarAmount'];
-                    }
-                }
-                if (empty($financialStatements[$i]['totalfunds'])) {
-                    if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Total') {
-                        $financialStatements[$i]['totalfunds'] = $finDataItem['dollarAmount'];
-                    }
-                }
+                $financialStatementsGroups[$finDataItem['caption']][] = $finDataItem;
             }
-            $i++;
+            $i = 0;
+            $financialStatements = [];
+            foreach ($financialStatementsGroups as $caption => $finData) {
+                foreach ($finData as $finDataItem) {
+                    $financialStatements[$i]['caption'] = $caption;
+                    $financialStatements[$i]['category_name'] = $finDataItem['captionCategory']['name'];
+                    $financialStatements[$i]['display_order'] = $finDataItem['displayOrder'];
+                    if (empty($financialStatements[$i]['genfund'])) {
+                        if (empty($finDataItem['fund'])) {
+                            $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
+                        } elseif ($finDataItem['fund']['name'] === 'General Fund') {
+                            $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
+                        }
+                    }
+                    if (empty($financialStatements[$i]['otherfunds'])) {
+                        if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Other') {
+                            $financialStatements[$i]['otherfunds'] = $finDataItem['dollarAmount'];
+                        }
+                    }
+                    if (empty($financialStatements[$i]['totalfunds'])) {
+                        if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Total') {
+                            $financialStatements[$i]['totalfunds'] = $finDataItem['dollarAmount'];
+                        }
+                    }
+                }
+                $i++;
+            }
+
+            $government['finData'] = $financialStatements;
+            $government['finData']['year'] = $year;
+            $government['finData']['fin_stmt_years'] = $finStmtYears;
+
+            $financialStatements = Functions::groupBy(
+                $financialStatements,
+                [ 'category_name', 'caption' ]
+            );
+
+            $government['financialStatements'] = $financialStatements;
         }
-
-        $government['finData'] = $financialStatements;
-        $government['finData']['year'] = $year;
-        $government['finData']['fin_stmt_years'] = $finStmtYears;
-
-        $financialStatements = Functions::groupBy(
-            $financialStatements,
-            [ 'category_name', 'caption' ]
-        );
-
-        $government['financialStatements'] = $financialStatements;
 
         return $government;
     }

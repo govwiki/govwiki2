@@ -2,6 +2,7 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
+use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Services\TxtSitemapGenerator;
 use GovWiki\ApiBundle\GovWikiApiServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -25,6 +26,11 @@ class RobotsController extends Controller
         $robotsTxtName = TxtSitemapGenerator::getRobotsTxtName($environment);
         $path = $this->getParameter('kernel.root_dir') .'/../web/'.
             $robotsTxtName;
+
+        if (! file_exists($path)) {
+            $this->get(GovWikiAdminServices::TXT_SITEMAP_GENERATOR)
+                ->generate($environment);
+        }
 
         $response->setContent(file_get_contents($path));
 

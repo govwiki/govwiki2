@@ -64,6 +64,7 @@ $(function(){
     .done(function(layer){
 
         var subLayers = {};
+        // todo remove if it's not need anymore
         var markerColors = ['#f00', '#800080', '#add8e6'];
 
         /**
@@ -175,7 +176,7 @@ $(function(){
                 periodConditions.forEach(function (condition) {
                     var min = '[data >= ' + condition.min + ']';
                     var max = '[data <= ' + condition.max + ']';
-                    var style = '{ ' + polygonOrMarker + ': ' + condition.color + '; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                    var style = '{ ' + polygonOrMarker + ': ' + condition.color + '; polygon-opacity: 0.3; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
                     cssConditions += '#layer' + min + max + style;
                 });
 
@@ -216,7 +217,7 @@ $(function(){
 
                 simpleConditions.forEach(function(condition) {
                     var value = '[data ' + condition.operation + ' ' + condition.value + ']';
-                    var style = '{ ' + polygonOrMarker + ': ' + condition.color + '; } ';
+                    var style = '{ ' + polygonOrMarker + ': ' + condition.color + '; polygon-opacity: 0.3; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
                     cssConditions += '#layer' + value + style;
                 });
 
@@ -249,7 +250,7 @@ $(function(){
 
             // If null condition found
             if (nullCondition.length !== 0) {
-                var style = '{ ' + polygonOrMarker + ': ' + nullCondition[0].color + '; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                var style = '{ ' + polygonOrMarker + ': ' + nullCondition[0].color + '; polygon-opacity: 0.3; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
                 cssConditions += '#layer[data = null]' + style;
             }
 
@@ -561,7 +562,13 @@ $(function(){
                          */
                         data.slug = data.slug.replace(/ /g, '_');
 
-                        window.location.pathname += data.alt_type_slug + '/' + data.slug;
+                        var pathname = window.location.pathname;
+
+                        if (pathname[pathname.length - 1] !== '/') {
+                            pathname += '/';
+                        }
+
+                        window.location.pathname = pathname + data.alt_type_slug + '/' + data.slug;
                     });
 
                 }

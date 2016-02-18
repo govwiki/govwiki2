@@ -74,30 +74,30 @@ class MapController extends AbstractGovWikiAdminController
                 }
 
 
-//                $api = $this->get(CartoDbServices::CARTO_DB_API);
-//                $api
-//                    // Create temporary dataset.
-//                    ->createDataset($environment.'_temporary', [
-//                        'alt_type_slug' => 'VARCHAR(255)',
-//                        'slug' => 'VARCHAR(255)',
-//                        'data' => 'double precision',
-//                    ], true)
-//                    // Load data into it.
-//                    ->sqlRequest("
-//                        INSERT INTO {$environment}_temporary
-//                            (slug, alt_type_slug, data)
-//                        VALUES". implode(',', $sqlParts));
-//                    // Update concrete environment dataset from temporary
-//                    // dataset.
-//                $api->sqlRequest("
-//                    UPDATE {$environment} e
-//                    SET data = t.data
-//                    FROM {$environment}_temporary t
-//                    WHERE e.slug = t.slug AND
-//                        e.alt_type_slug = t.alt_type_slug
-//                ");
-//                    // Remove temporary dataset.
-//                $api->dropDataset($environment.'_temporary');
+                $api = $this->get(CartoDbServices::CARTO_DB_API);
+                $api
+                    // Create temporary dataset.
+                    ->createDataset($environment.'_temporary', [
+                        'alt_type_slug' => 'VARCHAR(255)',
+                        'slug' => 'VARCHAR(255)',
+                        'data' => 'double precision',
+                    ], true)
+                    // Load data into it.
+                    ->sqlRequest("
+                        INSERT INTO {$environment}_temporary
+                            (slug, alt_type_slug, data)
+                        VALUES". implode(',', $sqlParts));
+                    // Update concrete environment dataset from temporary
+                    // dataset.
+                $api->sqlRequest("
+                    UPDATE {$environment} e
+                    SET data = t.data
+                    FROM {$environment}_temporary t
+                    WHERE e.slug = t.slug AND
+                        e.alt_type_slug = t.alt_type_slug
+                ");
+                    // Remove temporary dataset.
+                $api->dropDataset($environment.'_temporary');
             }
 
             $map->setColorizedCountyConditions($conditions);
