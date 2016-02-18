@@ -182,10 +182,14 @@ $(function(){
                     var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
                     var lineColor = isMarkerLayer ? markerColors.shift() : '#FFFFFF';
                     var line = lineColorRule + ': ' + lineColor + ';';
+                    var stroke = isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
 
                     var min = '[data >= ' + condition.min + ']';
                     var max = '[data <= ' + condition.max + ']';
-                    var style = '{ ' + fill + line + ' line-width: 0.5; line-opacity: 1; polygon-opacity: 0.3; } ';
+                    var style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
+
+                    console.log(style);
+
                     cssConditions += '#layer' + min + max + style;
                 });
 
@@ -232,9 +236,10 @@ $(function(){
                     var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
                     var lineColor = isMarkerLayer ? markerColors.shift() : '#FFFFFF';
                     var line = lineColorRule + ': ' + lineColor + ';';
+                    var stroke = isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
 
                     var value = '[data ' + condition.operation + ' ' + condition.value + ']';
-                    var style = '{ ' + fill + line + ' line-width: 0.5; line-opacity: 1; polygon-opacity: 0.3; } ';
+                    var style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
                     cssConditions += '#layer' + value + style;
                 });
 
@@ -272,10 +277,11 @@ $(function(){
             var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
             var lineColor = isMarkerLayer ? markerColors.shift() : '#FFFFFF';
             var line = lineColorRule + ': ' + lineColor + ';';
+            var stroke = isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
 
             // If null condition found
             if (nullCondition.length !== 0) {
-                var style = '{ ' + fill + line + ' line-width: 0.5; line-opacity: 1; polygon-opacity: 0.3; } ';
+                var style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
                 cssConditions += '#layer[data = null]' + style;
             }
 
