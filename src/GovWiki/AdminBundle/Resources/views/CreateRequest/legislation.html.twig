@@ -27,7 +27,6 @@
             </tr>
         </thead>
         <tbody>
-            {% dump form.electedOfficialVotes %}
             {% for vote in form.electedOfficialVotes %}
                 {% set elected = vote.vars.value.electedOfficial %}
                 <tr>
