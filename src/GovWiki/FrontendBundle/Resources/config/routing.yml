@@ -11,3 +11,7 @@ main:
     resource: "@GovWikiFrontendBundle/Controller/MainController.php"
     type:     govwiki
     prefix:   /
+
+robots:
+    resource: "@GovWikiFrontendBundle/Controller/RobotsController.php"
+    type:     annotation
