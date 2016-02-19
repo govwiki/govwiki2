@@ -91,11 +91,11 @@ $(function(){
                     return !!alt.alt_type_slug
                 });
 
-                console.log(altTypes);
-
                 initSubLayers(altTypes);
 
                 initLegend(altTypes);
+
+                initRangeLegend();
 
                 initTooltips();
 
@@ -150,6 +150,18 @@ $(function(){
         }
 
         /**
+         * Get condition filtered by conditionType
+         * @param {Array} conditions
+         * @param {String} conditionType - period, simple, null
+         * @returns {*}
+         */
+        function getConditionsByType(conditions, conditionType) {
+            return conditions.filter(function(condition) {
+                return condition.type === conditionType;
+            });
+        }
+
+        /**
          * Get period conditions as css string
          *
          * @param conditions - window.gw.map.county.conditions
@@ -166,9 +178,7 @@ $(function(){
 
             var cssConditions = '';
 
-            var periodConditions = conditions.filter(function(condition) {
-                return condition.type === 'period';
-            });
+            var periodConditions = getConditionsByType(conditions, 'period');
 
             // If simple conditions found
             if (periodConditions.length !== 0) {
@@ -190,8 +200,6 @@ $(function(){
                     var min = '[data >= ' + condition.min + ']';
                     var max = '[data <= ' + condition.max + ']';
                     var style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
-
-                    console.log(style);
 
                     cssConditions += '#layer' + min + max + style;
                 });
@@ -218,9 +226,7 @@ $(function(){
 
             var cssConditions = '';
 
-            var simpleConditions = conditions.filter(function(condition) {
-                return condition.type === 'simple';
-            });
+            var simpleConditions = getConditionsByType(conditions, 'simple');
 
             // If simple conditions found
             if (simpleConditions.length !== 0) {
@@ -269,17 +275,11 @@ $(function(){
 
             var cssConditions = '';
 
-            var nullCondition = conditions.filter(function(condition) {
-                return condition.type === 'null';
-            });
+            var nullCondition = getConditionsByType(conditions, 'null');
 
             // Fill polygon or marker
             var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
-            var fillColor = '#ffffff';
-            if  (nullCondition.length != 0) {
-                fillColor = isMarkerLayer ? nullCondition[ 0 ].color :
-                                nullCondition[ 0 ].color;
-            }
+            var fillColor = isMarkerLayer ? nullCondition[0].color : nullCondition[0].color;
             var fill = fillRule + ': ' + fillColor + ';';
 
             // Stroke polygon or marker
@@ -393,7 +393,7 @@ $(function(){
 
                 var conditions = window.gw.map.county.conditions;
 
-                //cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
 
                 cartocss += getPeriodConditionsAsCss(conditions, color, true);
 
@@ -407,10 +407,8 @@ $(function(){
                 }
 
             } else {
-                cartocss = '#layer { marker-fill: '+ color +'; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                cartocss = '#layer { marker-fill: ' + color + '; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
             }
-
-            console.log(cartocss);
 
             subLayers[_altType] = layer.createSubLayer({
                 sql: "SELECT *, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
@@ -618,6 +616,67 @@ $(function(){
 
         }
 
+        function initRangeLegend() {
+
+            if (!window.gw.map.debug) { return false; }
+
+            var legendItems = '';
+            var fieldName = window.gw.map.county.fieldName.replace('_', ' ');
+            var conditions = window.gw.map.county.conditions;
+
+            var periodConditions = getConditionsByType(conditions, 'period');
+
+            var simpleConditions = getConditionsByType(conditions, 'simple');
+
+            var nullCondition = getConditionsByType(conditions, 'null');
+
+            // Build legend items for period conditions
+            if (periodConditions.length !== 0) {
+
+                periodConditions.forEach(function(condition) {
+                    var conditionColor = 'background: ' + condition.color;
+                    var conditionText = condition.min + ' - ' + condition.max;
+
+                    legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>' +
+                                        conditionText +
+                                   '</li>';
+                });
+
+            }
+
+            // Build legend items for simple conditions
+            if (simpleConditions.length !== 0) {
+
+                simpleConditions.forEach(function(condition) {
+                    var conditionColor = 'background: ' + condition.color;
+                    var conditionText = condition.operation + ' ' + condition.value;
+
+                    legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>' +
+                                        conditionText +
+                                    '</li>';
+                });
+
+            }
+
+
+            // Build legend items for null conditions
+            if (nullCondition.length !== 0) {
+
+                var conditionColor = 'background: ' + nullCondition[0].color;
+
+                legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>null</li>';
+
+            }
+
+            var legend = '<div class="cartodb-legend-stack" style=""><div class="cartodb-legend custom" style="display: block;"><div class="legend-title">' +
+                            fieldName +
+                         '</div><ul>' +
+                            legendItems +
+                         '</ul></div></div>';
+
+            $('#map').append(legend);
+
+        }
 
         /**
          * Init legend
