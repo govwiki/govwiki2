@@ -632,16 +632,26 @@ $(function(){
              */
             var compiledLegendItems = '';
 
-            var markerIcons = ['red', 'purple', 'blue'];
+            var markerIcons = {
+                "stroke": ['red-stroke', 'purple-stroke', 'blue-stroke'],
+                "fill": ['red-fill', 'purple-fill', 'blue-fill']
+            };
 
             altTypes.forEach(function(altType) {
 
                 var altTypeSlug = altType.alt_type_slug.replace(/_/g, ' ');
                 var _altTypeSlug = altType.alt_type_slug.toLowerCase();
 
-                var iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
-                    ? 'grey-line'
-                    : 'marker-circle ' + markerIcons.shift();
+                var iconClass = '';
+                if (window.gw.map.county.colorized) {
+                    iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
+                        ? 'grey-line'
+                        : 'marker-circle ' + markerIcons['stroke'].shift();
+                } else {
+                    iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
+                        ? 'grey-line'
+                        : 'marker-circle ' + markerIcons['fill'].shift();
+                }
 
                 compiledLegendItems += '<li id=' + _altTypeSlug + ' class="' + _altTypeSlug + ' legend-item selected">' +
                     '<span class="glyphicon glyphicon-ok"></span>' +
