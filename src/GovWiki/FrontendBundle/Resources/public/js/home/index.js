@@ -619,9 +619,10 @@ $(function(){
         function initRangeLegend() {
 
             if (!window.gw.map.debug) { return false; }
+            if (!window.gw.map.county.colorized) { return false; }
 
             var legendItems = '';
-            var fieldName = window.gw.map.county.fieldName.replace('_', ' ');
+            var fieldName = window.gw.map.county.fieldName.replace(/_/g, ' ');
             var conditions = window.gw.map.county.conditions;
 
             var periodConditions = getConditionsByType(conditions, 'period');
