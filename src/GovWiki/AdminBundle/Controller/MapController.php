@@ -9,7 +9,6 @@ use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyCondi
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Form\MapType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -21,6 +20,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class MapController extends AbstractGovWikiAdminController
 {
+
     /**
      * @Configuration\Route("/edit")
      * @Configuration\Template()

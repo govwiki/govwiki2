@@ -53,3 +53,10 @@ services:
             - @router
             - %determinator.name%
             - %kernel.root_dir%/../web/
+
+    govwiki_admin.manager.shape:
+        class: GovWiki\AdminBundle\Services\ShapeManager
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - %kernel.root_dir%/../web/
+            - uploads/shape/

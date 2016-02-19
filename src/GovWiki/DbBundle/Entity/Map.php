@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
 use JMS\Serializer\Annotation\Groups;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Asset;
 
 /**
@@ -104,6 +103,15 @@ class Map
      * @Groups({"map"})
      */
     private $debug;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(type="array")
+     *
+     * @Groups({"map"})
+     */
+    private $legend;
 
     /**
      * @return array
@@ -302,6 +310,26 @@ class Map
     public function setDebug($debug)
     {
         $this->debug = $debug;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLegend()
+    {
+        return $this->legend;
+    }
+
+    /**
+     * @param array $legend Legend array.
+     *
+     * @return Map
+     */
+    public function setLegend(array $legend)
+    {
+        $this->legend = $legend;
 
         return $this;
     }
