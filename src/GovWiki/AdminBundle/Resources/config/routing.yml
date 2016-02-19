@@ -69,3 +69,11 @@ fin_data:
 template:
     resource: "@GovWikiAdminBundle/Controller/TemplateController.php"
     type:     annotation
+
+legend:
+    resource: "@GovWikiAdminBundle/Controller/LegendController.php"
+    type:     annotation
+
+shape:
+    resource: "@GovWikiAdminBundle/Controller/ShapeController.php"
+    type:      annotation
