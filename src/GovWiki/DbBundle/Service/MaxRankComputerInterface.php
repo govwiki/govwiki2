@@ -20,6 +20,8 @@ interface MaxRankComputerInterface
      * @param string $environment Environment slug.
      *
      * @return void
+     *
+     * @throws \Doctrine\DBAL\DBALException Error while update max ranks.
      */
     public function compute($environment);
 
