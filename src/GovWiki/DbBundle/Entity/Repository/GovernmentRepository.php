@@ -405,13 +405,34 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
+     * Return all available government alt types in given environment.
+     *
+     * @param $environment
+     *
+     * @return array
+     */
+    public function getAvailableAltTypes($environment)
+    {
+        $qb = $this->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select('Government.altTypeSlug')
+            ->join('Government.environment', 'Environment')
+            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
+            ->groupBy('Government.altTypeSlug')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
      * Compute max ranks for given alt type.
      *
      * @param string $altType One of the government alt type.
      *
      * @return array
      */
-    public function computeMaxRanks($altType)
+    public function computeMaxRanks($altType, $ranked)
     {
         $qb = $this->createQueryBuilder('Government');
 

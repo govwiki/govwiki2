@@ -6,6 +6,7 @@ use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Form\EnvironmentType;
+use GovWiki\DbBundle\GovWikiDbServices;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -93,6 +94,22 @@ class MainController extends AbstractGovWikiAdminController
             'form' => $form->createView(),
             'environment' => $entity,
         ];
+    }
+
+    /**
+     * @Configuration\Route("/max_ranks")
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function ranksAction()
+    {
+        $environment = $this->adminEnvironmentManager()->getSlug();
+        $this->get(GovWikiDbServices::MAX_RANKS_COMPUTER)
+            ->compute($environment);
+
+        return $this->redirectToRoute('govwiki_admin_main_show', [
+            'environment' => $environment,
+        ]);
     }
 
     /**
