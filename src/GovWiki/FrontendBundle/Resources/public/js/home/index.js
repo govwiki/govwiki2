@@ -383,14 +383,13 @@ $(function(){
             var cartocss = '';
             var colorized = window.gw.map.county.colorized;
 
+            var color = markerColors.shift();
+
             if (colorized) {
 
                 var conditions = window.gw.map.county.conditions;
 
-                var color = markerColors.shift();
-                debugger;
-
-                //cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
 
                 cartocss += getPeriodConditionsAsCss(conditions, color, true);
 
@@ -404,7 +403,7 @@ $(function(){
                 }
 
             } else {
-                cartocss = '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                cartocss = '#layer { marker-fill: ' + color + '; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
             }
 
             console.log(cartocss);
