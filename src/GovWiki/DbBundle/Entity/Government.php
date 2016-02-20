@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation\Slug;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\Groups;
@@ -78,6 +79,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="slug", type="string", length=255, nullable=true)
+     * @Slug(fields={"name"}, separator="_", style="camel")
      * @Groups({"government", "government_list", "elected_official", "map"})
      */
     private $slug;
@@ -102,6 +104,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="alt_type_slug", type="string", length=20, nullable=true)
+     * @Slug(fields={"name"}, separator="_", style="camel")
      * @Groups({"government", "elected_official", "map"})
      */
     private $altTypeSlug;
@@ -864,7 +867,7 @@ class Government
     /**
      * Get secondaryLogoUrl
      *
-     * @return string 
+     * @return string
      */
     public function getSecondaryLogoUrl()
     {
@@ -903,7 +906,7 @@ class Government
     /**
      * Get secondaryLogoPath
      *
-     * @return string 
+     * @return string
      */
     public function getSecondaryLogoPath()
     {
