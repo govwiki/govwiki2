@@ -7,10 +7,10 @@ use GovWiki\DbBundle\Entity\Shape;
 use Symfony\Component\Form\DataTransformerInterface;
 
 /**
- * Class ShapeToNameTransformer
+ * Class ShapeToPathTransformer
  * @package GovWiki\DbBundle\Form\Transformer
  */
-class ShapeToNameTransformer implements DataTransformerInterface
+class ShapeToPathTransformer implements DataTransformerInterface
 {
 
     /**
@@ -33,9 +33,9 @@ class ShapeToNameTransformer implements DataTransformerInterface
     {
         if (is_string($value)) {
             $entity = $this->em->getRepository('GovWikiDbBundle:Shape')
-                ->findOneBy([ 'name' => $value]);
+                ->findOneBy([ 'path' => $value]);
 
-            $value = $entity->getId();
+            $value = $entity;
         }
 
         return $value;
@@ -48,7 +48,7 @@ class ShapeToNameTransformer implements DataTransformerInterface
     public function reverseTransform($value)
     {
         if ($value instanceof Shape) {
-            $value = $value->getName();
+            $value = $value->getPath();
         }
 
         return $value;

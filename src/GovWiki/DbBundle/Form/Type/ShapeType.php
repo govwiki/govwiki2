@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Form\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\AdminBundle\Services\ShapeManagerInterface;
 use GovWiki\DbBundle\Form\Transformer\ShapeToNameTransformer;
+use GovWiki\DbBundle\Form\Transformer\ShapeToPathTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -42,7 +43,7 @@ class ShapeType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $transformer = new ShapeToNameTransformer($this->em);
+        $transformer = new ShapeToPathTransformer($this->em);
         $builder->addModelTransformer($transformer);
     }
 
@@ -52,8 +53,8 @@ class ShapeType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'class' => 'GovWiki\DbBundle\Entity\Shape',
             'attr' => [ 'class' => 'shape-selector' ],
+            'class' => 'GovWiki\DbBundle\Entity\Shape',
         ]);
     }
 

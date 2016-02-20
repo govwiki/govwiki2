@@ -58,7 +58,15 @@ class LegendController extends Controller
             ->getQuery()
             ->getArrayResult();
 
-        $mainBuilder = $this->createFormBuilder($map->getLegend());
+        $data = $map->getLegend();
+        $legend = [];
+        foreach ($data as $row) {
+            $altType = $row['altType'];
+            unset($row['altType']);
+            $legend[$altType] = $row;
+        }
+
+        $mainBuilder = $this->createFormBuilder($legend);
         foreach ($altTypeList as $altType) {
             $mainBuilder->add(
                 $altType['altTypeSlug'],
@@ -75,7 +83,15 @@ class LegendController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
-            $map->setLegend($form->getData());
+            $data = $form->getData();
+            $result = [];
+            foreach ($data as $altType => $row) {
+                $row['altType'] = $altType;
+                $result[] = $row;
+            }
+
+
+            $map->setLegend($result);
 
             $em->persist($map);
             $em->flush();
