@@ -55,15 +55,6 @@ class MainController extends Controller
         $map['colorizedCountyConditions'] = $colorizedCountyConditions
             ->toArray();
 
-        /*
-         * todo replace after
-         */
-        if ($map['legends']) {
-            foreach ($map['legends'] as &$legend) {
-                $legend['shape'] = 'img/' . $legend['shape'];
-            }
-        }
-
         $mapEntity = $map;
         if (null === $map) {
             throw new NotFoundHttpException();

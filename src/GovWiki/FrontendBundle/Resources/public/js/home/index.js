@@ -25,7 +25,10 @@ $(function(){
     // TODO: Hardcoded
     window.gw.map.county = window.gw.map.colorizedCountyConditions;
 
-    var legend = window.gw.map.legend.sort(function(a, b){ return a.order < b.order; });
+    window.gw.map.legend = window.gw.map.legend || [];
+    var legend = window.gw.map.legend.sort(function (a, b) {
+        return a.order < b.order;
+    });
     var legendConfig = {
         fillColor: 'white'
     };
@@ -78,9 +81,13 @@ $(function(){
 
                 initSubLayers(altTypes);
 
-                initLegend(altTypes);
+                if (window.gw.map.legendTypes.altTypes) {
+                    initLegend(altTypes);
+                }
 
-                initRangeLegend();
+                if (window.gw.map.legendTypes.range) {
+                    initRangeLegend();
+                }
 
                 initTooltips();
 
