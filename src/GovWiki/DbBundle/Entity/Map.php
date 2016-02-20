@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Asset;
 class Map
 {
     const LEGEND_ALT_TYPES = 'altTypes';
-    const LEGEND_COLORS = 'legend';
+    const LEGEND_COLORS = 'range';
 
     /**
      * @var integer
