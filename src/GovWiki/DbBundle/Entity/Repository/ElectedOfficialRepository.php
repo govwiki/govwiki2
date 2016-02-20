@@ -3,7 +3,6 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * ElectedOfficialRepository
@@ -102,7 +101,7 @@ class ElectedOfficialRepository extends EntityRepository
                 'LinkedUser',
                 'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}'
             )
-            ->join('ElectedOfficial.linkedUser', 'LinkedUser')
+            ->leftJoin('ElectedOfficial.linkedUser', 'LinkedUser')
             ->join('ElectedOfficial.government', 'Government')
             ->join('Government.environment', 'Environment')
             ->where(
@@ -124,58 +123,6 @@ class ElectedOfficialRepository extends EntityRepository
         }
 
         return null;
-
-//        return $qb
-//            ->addSelect(
-//                'Contribution, Endorsement, PublicStatement, Vote',
-//                'Legislation, IssueCategory, PublicStatementIssueCategory',
-//                'LinkedUser',
-//                'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}'
-//            )
-//            ->leftJoin('ElectedOfficial.contributions', 'Contribution')
-//            ->leftJoin('ElectedOfficial.endorsements', 'Endorsement')
-//            ->leftJoin('ElectedOfficial.publicStatements', 'PublicStatement')
-//            ->leftJoin('PublicStatement.issueCategory', 'PublicStatementIssueCategory')
-//            ->leftJoin('ElectedOfficial.votes', 'Vote')
-//            ->leftJoin('ElectedOfficial.government', 'Government')
-//            ->leftJoin('ElectedOfficial.linkedUser', 'LinkedUser')
-//            ->leftJoin('Vote.legislation', 'Legislation')
-//            ->leftJoin('Legislation.issueCategory', 'IssueCategory')
-//            ->leftJoin('Vote.comments', 'VoteComment')
-//            ->leftJoin('Contribution.request', 'CCR')
-//            ->leftJoin('Legislation.request', 'LCR')
-//            ->leftJoin('PublicStatement.request', 'PSCR')
-//            ->leftJoin('Endorsement.request', 'ECR')
-//            /*
-//             * Join made but not applied create requests.
-//             */
-//            ->leftJoin(
-//                'GovWikiDbBundle:CreateRequest',
-//                'CreateRequest',
-//                Join::WITH,
-//                $expr->andX(
-//                    "regexp(CONCAT('electedOfficial\";s:[0-9]+:\"', ElectedOfficial.id), CreateRequest.fields) != false",
-//                    $expr->neq(
-//                        'CreateRequest.status',
-//                        $expr->literal('applied')
-//                    )
-//                )
-//            )
-
-//            ->leftJoin('Government.environment', 'Environment')
-//            ->where(
-//                $expr->andX(
-//                    $expr->eq('Environment.slug', $expr->literal($environment)),
-//                    $expr->eq('ElectedOfficial.slug', $expr->literal($eoSlug)),
-//                    $expr->eq('Government.slug', $expr->literal($slug)),
-//                    $expr->eq(
-//                        'Government.altTypeSlug',
-//                        $expr->literal($altTypeSlug)
-//                    )
-//                )
-//            )
-//            ->getQuery()
-//            ->getArrayResult();
     }
 
     /**

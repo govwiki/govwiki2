@@ -6,7 +6,6 @@ use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
@@ -17,8 +16,6 @@ use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
 use GovWiki\DbBundle\Service\MaxRankComputer;
 use GovWiki\DbBundle\Service\MaxRankComputerInterface;
 use GovWiki\DbBundle\Utils\Functions;
-use Metadata\ClassMetadata;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class EnvironmentManager

@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
 use JMS\Serializer\Annotation\Groups;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Asset;
 
 /**
@@ -146,6 +145,7 @@ class Map
             ->setLatitude($this->centerLatitude)
             ->setLongitude($this->centerLongitude)
             ->setZoom($this->zoom);
+
         return $namedMap;
     }
 
