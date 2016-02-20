@@ -114,6 +114,15 @@ class Map
      *
      * @Groups({"map"})
      */
+    private $legend;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(type="array")
+     *
+     * @Groups({"map"})
+     */
     private $legendTypes = [ self::LEGEND_ALT_TYPES ];
 
     /**
@@ -314,6 +323,26 @@ class Map
     public function setDebug($debug)
     {
         $this->debug = $debug;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLegend()
+    {
+        return $this->legend;
+    }
+
+    /**
+     * @param array $legend Legend array.
+     *
+     * @return Map
+     */
+    public function setLegend(array $legend)
+    {
+        $this->legend = $legend;
 
         return $this;
     }

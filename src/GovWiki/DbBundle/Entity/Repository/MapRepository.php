@@ -60,7 +60,7 @@ class MapRepository extends EntityRepository
             ->select(
                 'Map.centerLatitude, Map.centerLongitude, Map.zoom',
                 'Map.position, Map.colorizedCountyConditions, Map.debug',
-                'Map.legendTypes'
+                'Map.legendTypes, Map.legend'
             )
             ->leftJoin('Map.environment', 'Environment')
             ->where($expr->eq('Environment.slug', $expr->literal($name)))
