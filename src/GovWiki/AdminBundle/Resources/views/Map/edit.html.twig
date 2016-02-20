@@ -29,17 +29,17 @@
 
                         {{ form_start(form) }}
 
-                        {{- form_row(form.debug) -}}
-
                         {# Map position, coordinates of center and zoom. #}
                         <div class="col-md-6 col-lg-6 col-xs-12">
                             {{- form_row(form.centerLatitude) -}}
                             {{- form_row(form.centerLongitude) -}}
+                            {{- form_row(form.zoom) -}}
                         </div>
 
                         <div class="col-md-6 col-lg-6 col-xs-12">
-                            {{- form_row(form.zoom) -}}
                             {{- form_row(form.position) -}}
+                            {{- form_row(form.legendTypes) -}}
+                            {{- form_row(form.debug) -}}
                         </div>
 
                         {# Colorized county conditions. #}

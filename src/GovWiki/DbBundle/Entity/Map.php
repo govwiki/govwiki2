@@ -18,6 +18,9 @@ use Symfony\Component\Validator\Constraints as Asset;
  */
 class Map
 {
+    const LEGEND_ALT_TYPES = 'altTypes';
+    const LEGEND_COLORS = 'legend';
+
     /**
      * @var integer
      *
@@ -104,6 +107,15 @@ class Map
      * @Groups({"map"})
      */
     private $debug;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(type="array")
+     *
+     * @Groups({"map"})
+     */
+    private $legendTypes = [ self::LEGEND_ALT_TYPES ];
 
     /**
      * @return array
@@ -289,7 +301,7 @@ class Map
     /**
      * @return boolean
      */
-    public function getDebug()
+    public function isDebug()
     {
         return $this->debug;
     }
@@ -302,6 +314,26 @@ class Map
     public function setDebug($debug)
     {
         $this->debug = $debug;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLegendTypes()
+    {
+        return $this->legendTypes;
+    }
+
+    /**
+     * @param array $legendTypes Array of available alt types.
+     *
+     * @return Map
+     */
+    public function setLegendTypes(array $legendTypes)
+    {
+        $this->legendTypes = $legendTypes;
 
         return $this;
     }
