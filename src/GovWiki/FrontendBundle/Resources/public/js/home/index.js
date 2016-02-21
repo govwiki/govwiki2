@@ -171,9 +171,11 @@ $(function(){
                 return false;
             }
 
+            var url = window.location.href.substr(0, window.location.href.length-1);
+
             // If url to marker exist, create new css rule (path to marker icon)
             var markerIconUrl = foundLegend ? foundLegend["shape"] : false;
-            var markerFileCss = markerIconUrl ? "marker-file: url(" + markerIconUrl + ");" : '';
+            var markerFileCss = markerIconUrl ? "marker-file: url(" + url + markerIconUrl + ");" : '';
 
             var markerStrokeColor = foundLegend ? foundLegend['color'] : false;
             var markerLineColorColorCss = "marker-line-color: " + markerStrokeColor + "; ";
@@ -646,8 +648,7 @@ $(function(){
         }
 
         function initRangeLegend() {
-
-            if (!window.gw.map.debug) { return false; }
+            
             if (!window.gw.map.county.colorized) { return false; }
 
             var legendItems = '';
