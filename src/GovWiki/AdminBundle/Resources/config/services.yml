@@ -59,4 +59,4 @@ services:
         arguments:
             - @doctrine.orm.default_entity_manager
             - %kernel.root_dir%/../web/
-            - img/uploads/shape/
+            - img/upload/shape/
