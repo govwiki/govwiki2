@@ -26,6 +26,7 @@ $(function(){
     window.gw.map.county = window.gw.map.colorizedCountyConditions;
 
     window.gw.map.legend = window.gw.map.legend || [];
+    window.gw.map.legendTypes = window.gw.map.legendTypes || [];
     var legend = window.gw.map.legend.sort(function (a, b) {
         return a.order < b.order;
     });
@@ -81,11 +82,11 @@ $(function(){
 
                 initSubLayers(altTypes);
 
-                if (window.gw.map.legendTypes.altTypes) {
+                if (findLegendType('altTypes')) {
                     initLegend(altTypes);
                 }
 
-                if (window.gw.map.legendTypes.range) {
+                if (findLegendType('range')) {
                     initRangeLegend();
                 }
 
@@ -172,7 +173,7 @@ $(function(){
 
             // If url to marker exist, create new css rule (path to marker icon)
             var markerIconUrl = foundLegend ? foundLegend["shape"] : false;
-            var markerFileCss = markerIconUrl ? "marker-file: url(http://texas.govwiki.freedemster.com" + markerIconUrl + ");" : '';
+            var markerFileCss = markerIconUrl ? "marker-file: url(" + markerIconUrl + ");" : '';
 
             var markerStrokeColor = foundLegend ? foundLegend['color'] : false;
             var markerLineColorColorCss = "marker-line-color: " + markerStrokeColor + "; ";
@@ -182,6 +183,12 @@ $(function(){
                 markerLineColorColorCss: markerLineColorColorCss
             };
 
+        }
+
+        function findLegendType (legendType) {
+            return window.gw.map.legendTypes.filter(function(legend) {
+                return legend === legendType;
+            })[0];
         }
 
         /**
