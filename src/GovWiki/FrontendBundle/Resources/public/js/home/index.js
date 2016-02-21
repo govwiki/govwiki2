@@ -82,12 +82,14 @@ $(function(){
 
                 initSubLayers(altTypes);
 
+                var isAltTypeLegendUsed = false;
                 if (findLegendType('altTypes')) {
                     initLegend(altTypes);
+                    isAltTypeLegendUsed = true
                 }
 
                 if (findLegendType('range')) {
-                    initRangeLegend();
+                    initRangeLegend(! isAltTypeLegendUsed);
                 }
 
                 initTooltips();
@@ -647,8 +649,8 @@ $(function(){
 
         }
 
-        function initRangeLegend() {
-            
+        function initRangeLegend(showOnTop) {
+
             if (!window.gw.map.county.colorized) { return false; }
 
             var legendItems = '';
@@ -699,7 +701,12 @@ $(function(){
 
             }
 
-            var legend = '<div class="cartodb-legend-stack" style=""><div class="cartodb-legend custom" style="display: block;"><div class="legend-title">' +
+            var legendClass = 'cartodb-legend-stack';
+            if (showOnTop) {
+                legendClass += ' cartodb-legend-stack__top';
+            }
+
+            var legend = '<div class="'+ legendClass +'" style=""><div class="cartodb-legend custom" style="display: block;"><div class="legend-title">' +
                             fieldName +
                          '</div><ul>' +
                             legendItems +

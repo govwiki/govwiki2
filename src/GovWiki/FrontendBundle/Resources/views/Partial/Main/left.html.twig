@@ -15,10 +15,11 @@
         {# Legend #}
         <ul id='menu'>
 
-            <li class="legend-header">
-                <span>Select type(s):</span>
-            </li>
-
+            {% if 'altTypes' in mapEntity.legendTypes %}
+                <li class="legend-header">
+                    <span>Select type(s):</span>
+                </li>
+            {% endif %}
         </ul>
 
         {# Map #}
