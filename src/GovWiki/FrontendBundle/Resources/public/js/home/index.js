@@ -160,9 +160,12 @@ $(function(){
          * CartoCSS !!!
          *
          * @param altType
+         * @param {boolean?} useFill
          * @returns {*}
          */
-        function getLegendItemAsCss (altType) {
+        function getLegendItemAsCss (altType, useFill) {
+
+            useFill = useFill || false;
 
             // Search current altType in legend (window.gw.map.legend = [Object, Object, ...])
             var foundLegend = legend.filter(function(item){
@@ -180,7 +183,11 @@ $(function(){
             var markerFileCss = markerIconUrl ? "marker-file: url(" + url + markerIconUrl + ");" : '';
 
             var markerStrokeColor = foundLegend ? foundLegend['color'] : false;
+
             var markerLineColorColorCss = "marker-line-color: " + markerStrokeColor + "; ";
+            if (useFill) {
+                markerLineColorColorCss = "marker-fill: " + markerStrokeColor + "; ";
+            }
 
             return {
                 markerFileCss: markerFileCss,
@@ -410,6 +417,7 @@ $(function(){
             var colorized = window.gw.map.county.colorized;
 
             var color = markerColors.shift();
+            var legendItemCss = {};
 
             if (colorized) {
 
@@ -418,7 +426,7 @@ $(function(){
                         isMarkerLayer: true
                     };
 
-                var legendItemCss = getLegendItemAsCss(altType);
+                legendItemCss = getLegendItemAsCss(altType);
                 if (legendItemCss) {
                     options.markerFileCss = legendItemCss.markerFileCss;
                     options.markerLineColorColorCss = legendItemCss.markerLineColorColorCss;
@@ -439,8 +447,9 @@ $(function(){
                 }
 
             } else {
-                // Default colors if colorized disabled (flag in admin panel)
-                cartocss = '#layer { marker-fill: ' + color + '; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+
+                legendItemCss = getLegendItemAsCss(altType);
+                cartocss = '#layer { '+ legendItemCss.markerFileCss + legendItemCss.markerLineColorColorCss +' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
             }
 
             subLayers[_altType] = layer.createSubLayer({
@@ -775,10 +784,10 @@ $(function(){
         function initLegend(altTypes) {
             // TODO generate legend on fly from given altTypes
 
-            var markerIcons = {
-                "stroke": ['red-stroke', 'purple-stroke', 'blue-stroke'],
-                "fill": ['red-fill', 'purple-fill', 'blue-fill']
-            };
+            //var markerIcons = {
+            //    "stroke": ['red-stroke', 'purple-stroke', 'blue-stroke'],
+            //    "fill": ['red-fill', 'purple-fill', 'blue-fill']
+            //};
 
             var $legendContainer = $('#menu');
 
@@ -799,13 +808,16 @@ $(function(){
                 var iconCounty = '',
                     iconMarker = '';
 
+                var fillColor = '',
+                    strokeColor = '';
+
                 // Colorize markers & counties by range number
                 if (window.gw.map.county.colorized) {
 
                     // If url to shape exist - show marker
                     if (menu_item.shape) {
-                        var fillColor = 'fillColor="' + legendConfig.fillColor + '" ';
-                        var strokeColor = 'strokeColor="' + menu_item['color'] + '" ';
+                        fillColor = 'fillColor="' + legendConfig.fillColor + '" ';
+                        strokeColor = 'strokeColor="' + menu_item['color'] + '" ';
                         iconMarker = '<img src="' + menu_item['shape'] + '" class="svg" ' + strokeColor + fillColor + '/>';
 
                     // Else - show county line
@@ -815,9 +827,21 @@ $(function(){
 
                 // Use default styles (hardcoded in this file)
                 } else {
-                    iconMarker = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
-                        ? '<i class="grey-line"></i>'
-                        : '<i class="marker-circle ' + markerIcons['fill'].shift() + '"></i>';
+
+                    // If url to shape exist - show marker
+                    if (menu_item.shape) {
+                        fillColor = 'fillColor="' + menu_item['color'] + '" ';
+                        strokeColor = 'strokeColor="' + menu_item['color'] + '" ';
+                        iconMarker = '<img src="' + menu_item['shape'] + '" class="svg" ' + strokeColor + fillColor + '/>';
+
+                        // Else - show county line
+                    } else {
+                        iconCounty = '<i class="grey-line"></i>';
+                    }
+
+                    //iconMarker = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
+                    //    ? '<i class="grey-line"></i>'
+                    //    : '<i class="marker-circle ' + markerIcons['fill'].shift() + '"></i>';
                 }
 
                 compiledLegendItems += '<li id=' + _altTypeSlug + ' class="' + _altTypeSlug + ' legend-item selected">' +
