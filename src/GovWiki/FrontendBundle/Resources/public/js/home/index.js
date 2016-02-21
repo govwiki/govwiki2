@@ -448,7 +448,7 @@ $(function(){
 
             } else {
 
-                legendItemCss = getLegendItemAsCss(altType);
+                legendItemCss = getLegendItemAsCss(altType, true);
                 cartocss = '#layer { '+ legendItemCss.markerFileCss + legendItemCss.markerLineColorColorCss +' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
             }
 
