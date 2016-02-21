@@ -46,7 +46,7 @@
                                 <tr>
                                     {% if '_token' != name %}
                                         <td>{{ form_label(children) }}</td>
-                                        {% dump children %}
+
                                         {% if children.children.shape is defined %}
                                             <td>{{ form_widget(children.shape) }}</td>
                                             <td>{{ form_widget(children.title) }}</td>

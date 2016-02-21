@@ -28,7 +28,7 @@ $(function(){
     window.gw.map.legend = window.gw.map.legend || [];
     window.gw.map.legendTypes = window.gw.map.legendTypes || [];
     var legend = window.gw.map.legend.sort(function (a, b) {
-        return a.order < b.order;
+        return a.order > b.order;
     });
     var legendConfig = {
         fillColor: 'white'
