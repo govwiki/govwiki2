@@ -242,4 +242,63 @@ class MainController extends AbstractGovWikiAdminController
 
         return $this->redirectToRoute('govwiki_admin_main_show');
     }
+
+    /**
+     * Save images
+     *
+     * @Configuration\Route("/load-favicon")
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function faviconLoadAction(Request $request)
+    {
+        if ($request->isXmlHttpRequest()) {
+            $user = $this->getUser();
+            if ($user->hasRole('ROLE_ADMIN')) {
+
+                // validate extension
+                $extensionValues = [
+                    'ico',
+                ];
+
+                // get environment name
+                $folderName = $request->request->get('environment');
+
+                // favicon dir
+                $dir = $this->get('kernel')->getRootDir().'/../web/img/'.$folderName;
+
+                $image = $request->files->get('upload-favicon');
+                $fileName = $image->getClientOriginalName();
+                $extension = explode('.', $fileName);
+                $extension = array_pop($extension);
+                //$size = $image->getClientSize()/1000; // KB
+
+                // validate by extension
+                if (in_array($extension, $extensionValues)) {
+                    if (!file_exists($dir)) {
+                        mkdir($dir);
+                    }
+
+                    $image->move($dir, 'favicon.ico');
+
+                    return new JsonResponse(
+                        [
+                            'message' => 'Favicon upload success!',
+                            'error' => false,
+                        ]
+                    );
+                }
+
+                return new JsonResponse(
+                    [
+                        'message' => 'Broken favicon extension! Favicon not loaded',
+                        'error' => true,
+                    ]
+                );
+            }
+        }
+
+        throw $this->createNotFoundException();
+    }
 }
