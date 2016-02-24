@@ -2,12 +2,12 @@
 
 namespace GovWiki\AdminBundle\Manager;
 
+use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\UserBundle\Entity\User;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use \Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -53,6 +53,11 @@ class AdminEnvironmentManager
     private $tableManager;
 
     /**
+     * @var CartoDbApi
+     */
+    private $api;
+
+    /**
      * @param EntityManagerInterface $em           A EntityManagerInterface
      *                                             instance.
      * @param TokenStorageInterface  $storage      A TokenStorageInterface
@@ -68,7 +73,8 @@ class AdminEnvironmentManager
         EntityManagerInterface $em,
         TokenStorageInterface $storage,
         Session $session,
-        GovernmentTableManager $tableManager
+        GovernmentTableManager $tableManager,
+        CartoDbApi $api
     ) {
         /*
          * Get environment name from session. If session not contain environment
@@ -80,6 +86,7 @@ class AdminEnvironmentManager
         $this->em = $em;
         $this->storage = $storage;
         $this->tableManager = $tableManager;
+        $this->api = $api;
     }
 
     /**
@@ -484,7 +491,9 @@ class AdminEnvironmentManager
          * Add single quota around all string values.
          */
         foreach ($values as &$value) {
-            if (is_string($value)) {
+            if (null === $value) {
+                $value = 'NULL';
+            } if (is_string($value)) {
                 $value = "'{$value}'";
             }
         }
@@ -546,17 +555,83 @@ class AdminEnvironmentManager
         return $this;
     }
 
+
     /**
-     * todo annotate
+     * @param string $field Data field name.
      *
-     * @param $field
+     * @return array
+     *
+     * @throws \RuntimeException Error while updating.
+     */
+    public function updateCartoDB($field = null)
+    {
+        /*
+        * All needed columns for current environment table.
+        */
+        $columns = [
+            'slug' => 'VARCHAR(255)',
+            'alt_type_slug' => 'VARCHAR(255)',
+            'data' => 'double precision',
+            'name' => 'VARCHAR(255)',
+        ];
+
+        /*
+         * Get all needed data such as governments slug, alt type slug, name and
+         * data for colorizing (if field is set).
+         */
+        $fieldSql = "eg.${field}";
+        if (null === $field) {
+            $fieldSql = 'NULL';
+        }
+        $values = $this->em->getConnection()->fetchAll("
+            SELECT g.slug, g.alt_type_slug, g.name, {$fieldSql} AS data
+            FROM {$this->environment} eg
+            JOIN governments g ON g.id = eg.government_id
+        ");
+
+        /*
+         * Generate sql query to CartoDB.
+         */
+        $sqlParts = [];
+        foreach ($values as $row) {
+            if (null === $row['data']) {
+                $row['data'] = 'null';
+            }
+
+            $slug = CartoDbApi::escapeString($row['slug']);
+            $altTypeSlug = CartoDbApi::escapeString($row['alt_type_slug']);
+            $data = $row['data'];
+            $name = CartoDbApi::escapeString($row['name']);
+
+            $sqlParts[] = "('{$slug}', '{$altTypeSlug}', {$data}, '{$name}')";
+        }
+
+        $response = $this->api
+            ->createDataset($this->environment.'_temporary', $columns, true)
+            ->sqlRequest("
+                INSERT INTO {$this->environment}_temporary
+                (slug, alt_type_slug, data, name)
+                VALUES ". implode(',', $sqlParts));
+        if (count($response) === 1) {
+            throw new \RuntimeException($response['error']);
+        }
+
+        $this->api->sqlRequest("UPDATE {$this->environment} e
+            SET data = t.data and name = t.name
+            FROM {$this->environment}_temporary t
+            WHERE e.slug = t.slug AND
+                e.alt_type_slug = t.alt_type_slug");
+    }
+
+    /**
+     * @param string $field Field value
      *
      * @return array
      */
     public function getGovernmentsFiledValues($field)
     {
         return $this->em->getConnection()->fetchAll("
-            SELECT g.slug, g.alt_type_slug, eg.${field} AS data
+            SELECT g.slug, g.alt_type_slug, g.name, eg.${field} AS data
             FROM {$this->environment} eg
             JOIN governments g ON g.id = eg.government_id
         ");

@@ -114,7 +114,7 @@ class MapController extends AbstractGovWikiAdminController
             'conditions' => $map->getColorizedCountyConditions(),
             'fields' => $this
                 ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
-                ->getGovernmentFields()
+                ->getGovernmentFields(),
         ];
     }
 }

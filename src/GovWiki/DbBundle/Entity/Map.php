@@ -105,7 +105,7 @@ class Map
      *
      * @Groups({"map"})
      */
-    private $debug;
+    private $debug = false;
 
     /**
      * @var array
@@ -114,7 +114,7 @@ class Map
      *
      * @Groups({"map"})
      */
-    private $legend;
+    private $legend = [];
 
     /**
      * @var array

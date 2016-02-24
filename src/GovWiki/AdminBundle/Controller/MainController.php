@@ -175,37 +175,23 @@ class MainController extends AbstractGovWikiAdminController
         return $this->redirectToRoute('govwiki_admin_main_home');
     }
 
-//    /**
-//     * @Configuration\Route("/export")
-//     *
-//     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-//     */
-//    public function updateAction()
-//    {
-//        $environmentManager = $this->adminEnvironmentManager();
-//
-//        $environment = $environmentManager->getEnvironment();
-//        $filePath = $this->getParameter('kernel.logs_dir').'/'.
-//            $environment.'.json';
-//
-//        $transformerManager = $this
-//            ->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
-//
-//        $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
-//            ->export(
-//                $filePath,
-//                $transformerManager->getTransformer('geo_json'),
-//                [ 'id', 'altTypeSlug', 'slug', 'latitude', 'longitude' ]
-//            );
-//
-//        $this->get(CartoDbServices::CARTO_DB_API)
-//            ->dropDataset($environment)
-//            ->importDataset($filePath);
-//
-//        return $this->redirectToRoute('govwiki_admin_main_show', [
-//            'environment' => $environment,
-//        ]);
-//    }
+    /**
+     * @Configuration\Route("/export")
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function updateAction()
+    {
+        $environmentManager = $this->adminEnvironmentManager();
+        $map = $this->adminEnvironmentManager()->getMap();
+        $environmentManager->updateCartoDB(
+            $map->getColorizedCountyConditions()->getFieldName()
+        );
+
+        return $this->redirectToRoute('govwiki_admin_main_show', [
+            'environment' => $environmentManager->getEnvironment(),
+        ]);
+    }
 
     /**
      * @Configuration\Route("/enable")

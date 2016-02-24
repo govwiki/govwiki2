@@ -4,6 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class AbstractGovWikiAdminController
@@ -29,6 +30,18 @@ class AbstractGovWikiAdminController extends Controller
             $page,
             $limit
         );
+    }
+
+    /**
+     * @param string $name  Event name.
+     * @param Event  $event A Event instance.
+     *
+     * @return Event
+     */
+    protected function dispatch($name, Event $event)
+    {
+        $dispatcher = $this->get('event_dispatcher');
+        return $dispatcher->dispatch($name, $event);
     }
 
     /**

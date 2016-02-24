@@ -20,6 +20,7 @@ services:
             - @security.token_storage
             - @session
             - @govwiki_admin.manager.government_table
+            - @carto_db.api
 
     govwiki_admin.manager.style:
         class: GovWiki\AdminBundle\Manager\AdminStyleManager
@@ -27,6 +28,19 @@ services:
             - @form.factory
             - @govwiki_admin.manager.environment
             - %kernel.root_dir%/../web/img/upload
+
+    govwiki_admin.listener.government_sync:
+        class: GovWiki\AdminBundle\Listener\GovernmentUpdateListener
+        arguments: [@carto_db.api]
+        tags:
+            -
+                name: kernel.event_listener
+                event: gowviki.event.government.add
+                method: onGovernmentAdd
+#            -
+#                name: kernel.event_listener
+#                event: govwiki.event.government.update
+#                method:
 
 #    govwiki_admin.listener.government_sync:
 #        class: GovWiki\AdminBundle\Listener\SyncGovernmentWithCartoDb

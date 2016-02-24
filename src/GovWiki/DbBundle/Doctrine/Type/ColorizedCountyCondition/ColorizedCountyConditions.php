@@ -30,7 +30,7 @@ class ColorizedCountyConditions
      *                          which color is used base on this field values
      *                          for concrete county.
      */
-    public function __construct($fieldName = ' ')
+    public function __construct($fieldName = null)
     {
         $this->fieldName = $fieldName;
         $this->conditions = new ArrayCollection();

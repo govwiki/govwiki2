@@ -104,7 +104,7 @@ class Government
      * @var string
      *
      * @ORM\Column(name="alt_type_slug", type="string", length=20, nullable=true)
-     * @Slug(fields={"altType"}, separator="_", style="camel")
+     * @Slug(fields={"altType"}, separator="_", style="camel", unique=false)
      * @Groups({"government", "elected_official", "map"})
      */
     private $altTypeSlug;
