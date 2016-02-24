@@ -1,17 +1,18 @@
 {{ knp_pagination_render(list) }}
-
 <table class="table" data-entity-type="Legislation">
     <tr>
         <th class="column__date sortable">{{ knp_pagination_sortable(list, 'Data', 'Legislation.dateConsidered') }}<i class="icon"></i></th>
+        <th class="sortable">{{ knp_pagination_sortable(list, 'Category', 'IssueCategory.name') }}<i class="icon"></i></th>
+        <th>Bill Number</th>
         <th>Title of Measure</th>
         <th>Summary of Measure</th>
-        <th class="column__vote">How official Voted</th>
-        <th>Sponsored by this official?</th>
-        <th class="sortable">{{ knp_pagination_sortable(list, 'Category', 'IssueCategory.name') }}<i class="icon"></i></th>
+        <th class="column__vote">How official voted</th>
+        <th>Did official sponsor?</th>
         <th></th>
     </tr>
 
     {% for vote in list %}
+        {#{ dump(vote.legislation.govAssignedNumber) }#}
         <tr data-id="{{vote.legislation.id}}" {%
         if (vote.legislation.request is not null) and (vote.legislation.request.status == 'pending') -%}
             style="background: rgba(80, 0, 0, 0.1)"
@@ -25,6 +26,15 @@
                    title="">{{vote.legislation.dateConsidered | date("m/d/Y") }}</a>
                 <span class="glyphicon glyphicon-pencil edit"></span>
             </td>
+            <td data-issue-category="{{vote.legislation.issueCategory.name}}" data-no-editable>{{vote.legislation.issueCategory.name}}</td>
+            <td data-gov-assigned-number="{{ vote.legislation.govAssignedNumber }}">
+                <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                   data-placeholder="Please edit" data-title="Please edit"
+                   class="editable editable-pre-wrapped editable-click" data-original-title=""
+                   title="">{{ vote.legislation.govAssignedNumber }}</a>
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </td>
+
             <td data-name="{{vote.legislation.name}}">
                 <a href="javascript:void(0);" data-type="textarea" data-pk="1"
                    data-placeholder="Please edit" data-title="Please edit"
@@ -50,7 +60,6 @@
                 <a href="javascript:void(0);" data-type="select" data-source="{'0': 'No', '1': 'Yes'}" data-pk="1" data-placeholder="Please edit" data-title="Please edit" class="editable editable-pre-wrapped editable-click" data-original-title="" title="">{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}</a>
                 <span data-id="{{vote.id}}" class="glyphicon glyphicon-pencil edit"></span>
             </td>
-            <td data-issue-category="{{vote.legislation.issueCategory.name}}" data-no-editable>{{vote.legislation.issueCategory.name}}</td>
 
             {%- if (vote.legislation.request is not null) and (vote.legislation.request.status == 'pending') -%}
                 <td>{{ vote.legislation.request.creator.username }}</td>

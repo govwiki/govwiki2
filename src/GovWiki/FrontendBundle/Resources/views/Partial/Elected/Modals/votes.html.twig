@@ -9,6 +9,10 @@
             <div class="modal-body">
                 <form name="addVotes" id="addVotesForm">
                     <div class="input-group">
+                        <span class="input-group-addon">Date: </span>
+                        <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered data-provide="datepicker" required>
+                    </div>
+                    <div class="input-group">
                         <span class="input-group-addon">Category: </span>
                         <select name="issueCategory" class="form-control" data-issue-category required>
                             {% for category in categories %}
@@ -19,8 +23,8 @@
                         </select>
                     </div>
                     <div class="input-group">
-                        <span class="input-group-addon">Date: </span>
-                        <input type="text" class="form-control" placeholder="Please enter Date" data-date-considered data-provide="datepicker" required>
+                        <span class="input-group-addon">Bill Number: </span>
+                        <input type="text" class="form-control" placeholder="Please enter a bill number" data-gov-assigned-number required>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">Title of Measure: </span>
