@@ -616,11 +616,15 @@ class AdminEnvironmentManager
             throw new \RuntimeException($response['error']);
         }
 
-        $this->api->sqlRequest("UPDATE {$this->environment} e
-            SET data = t.data and name = t.name
+        $response = $this->api->sqlRequest("UPDATE {$this->environment} e
+            SET data = t.data, name = t.name
             FROM {$this->environment}_temporary t
             WHERE e.slug = t.slug AND
                 e.alt_type_slug = t.alt_type_slug");
+
+        if (count($response) === 1) {
+            throw new \RuntimeException($response['error'][0]);
+        }
     }
 
     /**
