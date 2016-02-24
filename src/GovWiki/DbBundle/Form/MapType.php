@@ -44,6 +44,13 @@ class MapType extends AbstractType
                         Map::availablePositions()
                     ),
                 ])
+                ->add('legendTypes', 'choice', [
+                    'multiple' => true,
+                    'choices' => [
+                        Map::LEGEND_ALT_TYPES => 'Alt types',
+                        Map::LEGEND_COLORS => 'Range',
+                    ],
+                ])
                 ->add('debug', 'checkbox', [ 'required' => false ]);
         }
     }

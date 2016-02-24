@@ -25,25 +25,14 @@ $(function(){
     // TODO: Hardcoded
     window.gw.map.county = window.gw.map.colorizedCountyConditions;
 
-    // TODO: Hardcoded
-    //var legend = window.gw.map.legend = [
-    //    {
-    //        "title": "More than 1",
-    //        "altType": "County",
-    //        "marker-file": "http://com.cartodb.users-assets.production.s3.amazonaws.com/pin-maps/bag1.svg",
-    //        "marker-fill": "#FFFFFF",
-    //        "geometrytype": "POLYGON",
-    //        "order": 2
-    //    },
-    //    {
-    //        "title": "More than 2",
-    //        "altType": "City",
-    //        "marker-file": "http://com.cartodb.users-assets.production.s3.amazonaws.com/pin-maps/bag1.svg",
-    //        "marker-fill": "red",
-    //        "geometrytype": "POINT",
-    //        "order": 1
-    //    }
-    //];
+    window.gw.map.legend = window.gw.map.legend || [];
+    window.gw.map.legendTypes = window.gw.map.legendTypes || [];
+    var legend = window.gw.map.legend.sort(function (a, b) {
+        return a.order > b.order;
+    });
+    var legendConfig = {
+        fillColor: 'white'
+    };
 
     //Create the leaflet map
     var map = L.map('map', {
@@ -91,11 +80,17 @@ $(function(){
                     return !!alt.alt_type_slug
                 });
 
-                console.log(altTypes);
-
                 initSubLayers(altTypes);
 
-                initLegend(altTypes);
+                var isAltTypeLegendUsed = false;
+                if (findLegendType('altTypes')) {
+                    initLegend(altTypes);
+                    isAltTypeLegendUsed = true
+                }
+
+                if (findLegendType('range')) {
+                    initRangeLegend(! isAltTypeLegendUsed);
+                }
 
                 initTooltips();
 
@@ -150,48 +145,107 @@ $(function(){
         }
 
         /**
+         * Get condition filtered by conditionType
+         * @param {Array} conditions
+         * @param {String} conditionType - period, simple, null
+         * @returns {*}
+         */
+        function getConditionsByType(conditions, conditionType) {
+            return conditions.filter(function(condition) {
+                return condition.type === conditionType;
+            });
+        }
+
+        /**
+         * CartoCSS !!!
+         *
+         * @param altType
+         * @param {boolean?} useFill
+         * @returns {*}
+         */
+        function getLegendItemAsCss (altType, useFill) {
+
+            useFill = useFill || false;
+
+            // Search current altType in legend (window.gw.map.legend = [Object, Object, ...])
+            var foundLegend = legend.filter(function(item){
+                return item.altType == altType
+            })[0];
+
+            if (!foundLegend) {
+                return false;
+            }
+
+            var url = window.location.href.substr(0, window.location.href.length-1);
+
+            // If url to marker exist, create new css rule (path to marker icon)
+            var markerIconUrl = foundLegend ? foundLegend["shape"] : false;
+            var markerFileCss = markerIconUrl ? "marker-file: url(" + url + markerIconUrl + ");" : '';
+
+            var markerStrokeColor = foundLegend ? foundLegend['color'] : false;
+
+            var markerLineColorColorCss = "marker-line-color: " + markerStrokeColor + "; ";
+            if (useFill) {
+                markerLineColorColorCss = "marker-fill: " + markerStrokeColor + "; ";
+            }
+
+            return {
+                markerFileCss: markerFileCss,
+                markerLineColorColorCss: markerLineColorColorCss
+            };
+
+        }
+
+        function findLegendType (legendType) {
+            return window.gw.map.legendTypes.filter(function(legend) {
+                return legend === legendType;
+            })[0];
+        }
+
+        /**
          * Get period conditions as css string
          *
          * @param conditions - window.gw.map.county.conditions
          * @param color
-         * @param isMarkerLayer
+         * @param options
          * @returns {string} CSS String || ''
          */
-        function getPeriodConditionsAsCss(conditions, color, isMarkerLayer) {
+        function getPeriodConditionsAsCss(conditions, color, options) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getPeriodConditionsAsCss() function');
                 return '';
             }
 
+            options = options || {};
+
             var cssConditions = '';
 
-            var periodConditions = conditions.filter(function(condition) {
-                return condition.type === 'period';
-            });
+            var periodConditions = getConditionsByType(conditions, 'period');
 
             // If simple conditions found
             if (periodConditions.length !== 0) {
 
-
                 periodConditions.forEach(function (condition) {
 
                     // Fill polygon or marker
-                    var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
-                    var fillColor = isMarkerLayer ? condition.color : condition.color;
-                    var fill = fillRule + ': ' + fillColor + ';';
+                    var fillRule = options.isMarkerLayer ? 'marker-fill' : 'polygon-fill';
+                    var fillColor = options.isMarkerLayer ? condition.color : condition.color;
+                    var markerTypeCss = options.markerFileCss ? options.markerFileCss : '';
+                    var fill = fillRule + ': ' + fillColor + ';' + markerTypeCss;
 
                     // Stroke polygon or marker
-                    var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
-                    var lineColor = isMarkerLayer ? color : '#FFFFFF';
+                    var lineColorRule = options.isMarkerLayer ? 'marker-line-color' : 'line-color';
+                    var lineColor = options.isMarkerLayer ? color : '#FFFFFF';
                     var line = lineColorRule + ': ' + lineColor + ';';
-                    var stroke = isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
+                    if (options.markerLineColorColorCss) {
+                        line = options.markerLineColorColorCss;
+                    }
+                    var stroke = options.isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
 
                     var min = '[data >= ' + condition.min + ']';
                     var max = '[data <= ' + condition.max + ']';
                     var style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
-
-                    console.log(style);
 
                     cssConditions += '#layer' + min + max + style;
                 });
@@ -206,21 +260,21 @@ $(function(){
          *
          * @param conditions - window.gw.map.county.conditions
          * @param color
-         * @param isMarkerLayer
+         * @param options
          * @returns {string} CSS String || ''
          */
-        function getSimpleConditionsAsCss(conditions, color, isMarkerLayer) {
+        function getSimpleConditionsAsCss(conditions, color, options) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getSimpleConditionsAssCss() function');
                 return '';
             }
 
+            options = options || {};
+
             var cssConditions = '';
 
-            var simpleConditions = conditions.filter(function(condition) {
-                return condition.type === 'simple';
-            });
+            var simpleConditions = getConditionsByType(conditions, 'simple');
 
             // If simple conditions found
             if (simpleConditions.length !== 0) {
@@ -232,15 +286,19 @@ $(function(){
 
                 simpleConditions.forEach(function(condition) {
                     // Fill polygon or marker
-                    var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
-                    var fillColor = isMarkerLayer ? condition.color : condition.color;
-                    var fill = fillRule + ': ' + fillColor + ';';
+                    var fillRule = options.isMarkerLayer ? 'marker-fill' : 'polygon-fill';
+                    var fillColor = options.isMarkerLayer ? condition.color : condition.color;
+                    var markerTypeCss = options.markerFileCss ? options.markerFileCss : '';
+                    var fill = fillRule + ': ' + fillColor + '; ' + markerTypeCss;
 
                     // Stroke polygon or marker
-                    var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
-                    var lineColor = isMarkerLayer ? color : '#FFFFFF';
+                    var lineColorRule = options.isMarkerLayer ? 'marker-line-color' : 'line-color';
+                    var lineColor = options.isMarkerLayer ? color : '#FFFFFF';
                     var line = lineColorRule + ': ' + lineColor + ';';
-                    var stroke = isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
+                    if (options.markerLineColorColorCss) {
+                        line = options.markerLineColorColorCss;
+                    }
+                    var stroke = options.isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
 
                     var value = '[data ' + condition.operation + ' ' + condition.value + ']';
                     var style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
@@ -257,39 +315,39 @@ $(function(){
          *
          * @param conditions - window.gw.map.county.conditions
          * @param color
-         * @param isMarkerLayer
+         * @param options
          * @returns {string} CSS String || ''
          */
-        function getNullConditionAsCss(conditions, color, isMarkerLayer) {
+        function getNullConditionAsCss(conditions, color, options) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getNullConditionAsCss() function');
                 return '';
             }
 
+            options = options || {};
+
             var cssConditions = '';
 
-            var nullCondition = conditions.filter(function(condition) {
-                return condition.type === 'null';
-            });
-
-            // Fill polygon or marker
-            var fillRule = isMarkerLayer ? 'marker-fill' : 'polygon-fill';
-            var fillColor = '#ffffff';
-            if  (nullCondition.length != 0) {
-                fillColor = isMarkerLayer ? nullCondition[ 0 ].color :
-                                nullCondition[ 0 ].color;
-            }
-            var fill = fillRule + ': ' + fillColor + ';';
-
-            // Stroke polygon or marker
-            var lineColorRule = isMarkerLayer ? 'marker-line-color' : 'line-color';
-            var lineColor = isMarkerLayer ? color : '#FFFFFF';
-            var line = lineColorRule + ': ' + lineColor + ';';
-            var stroke = isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
+            var nullCondition = getConditionsByType(conditions, 'null');
 
             // If null condition found
             if (nullCondition.length !== 0) {
+                // Fill polygon or marker
+                var fillRule = options.isMarkerLayer ? 'marker-fill' : 'polygon-fill';
+                var fillColor = options.isMarkerLayer ? nullCondition[0].color : nullCondition[0].color;
+                var markerTypeCss = options.markerFileCss ? options.markerFileCss : '';
+                var fill = fillRule + ': ' + fillColor + ';' + markerTypeCss;
+
+                // Stroke polygon or marker
+                var lineColorRule = options.isMarkerLayer ? 'marker-line-color' : 'line-color';
+                var lineColor = options.isMarkerLayer ? color : '#FFFFFF';
+                var line = lineColorRule + ': ' + lineColor + ';';
+                if (options.markerLineColorColorCss) {
+                    line = options.markerLineColorColorCss;
+                }
+                var stroke = options.isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
+
                 var style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
                 cssConditions += '#layer[data = null]' + style;
             }
@@ -311,6 +369,7 @@ $(function(){
             if (colorized) {
                 var conditions = window.gw.map.county.conditions;
 
+                // Default county color
                 cartocss += '#layer { polygon-fill: #DDDDDD; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
 
                 cartocss += getPeriodConditionsAsCss(conditions);
@@ -325,6 +384,7 @@ $(function(){
                 }
 
             } else {
+                // Default county color if colorized disabled (flag in admin panel)
                 cartocss = '#layer { polygon-fill: #DDDDDD; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
             }
 
@@ -344,37 +404,6 @@ $(function(){
         }
 
         /**
-         * TODO: Replace when legend will be ready
-         * Initialization Marker SubLayer (NEW)
-         *
-         * Tooltip window
-         * Tooltip work with 3.11-13 version, 3.15 is buggy
-         */
-        //function initMarkerSubLayer_new(altType) {
-        //
-        //    var _altType = altType.toLowerCase();
-        //
-        //    // Search current altType in legend (window.gw.map.legend = [Object, Object, ...])
-        //    var foundLegend = legend.filter(function(item){
-        //        return item.altType == altType
-        //    });
-        //
-        //    // If url to marker exist, create new css rule (path to marker icon)
-        //    var markerIconUrl = foundLegend[0] ? foundLegend[0]["marker-file"] : false;
-        //    var markerIconCss = markerIconUrl ? "marker-file: url(" + markerIconUrl + ");" : '';
-        //    var markerIconColor = foundLegend[0] ? foundLegend[0]["marker-fill"] : false;
-        //
-        //    subLayers[_altType] = layer.createSubLayer({
-        //        sql: "SELECT *, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
-        //        cartocss: "#layer { " + markerIconCss + "marker-fill: " + markerIconColor + " }",
-        //        interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype']
-        //    });
-        //
-        //    initTooltip(_altType);
-        //
-        //}
-
-        /**
          * Initialization Marker SubLayer
          *
          * Tooltip window
@@ -388,18 +417,29 @@ $(function(){
             var colorized = window.gw.map.county.colorized;
 
             var color = markerColors.shift();
+            var legendItemCss = {};
 
             if (colorized) {
 
-                var conditions = window.gw.map.county.conditions;
+                var conditions = window.gw.map.county.conditions,
+                    options = {
+                        isMarkerLayer: true
+                    };
 
-                //cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                legendItemCss = getLegendItemAsCss(altType);
+                if (legendItemCss) {
+                    options.markerFileCss = legendItemCss.markerFileCss;
+                    options.markerLineColorColorCss = legendItemCss.markerLineColorColorCss;
+                }
 
-                cartocss += getPeriodConditionsAsCss(conditions, color, true);
+                // Default marker color
+                cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
 
-                cartocss += getSimpleConditionsAsCss(conditions, color, true);
+                cartocss += getPeriodConditionsAsCss(conditions, color, options);
 
-                cartocss += getNullConditionAsCss(conditions, color, true);
+                cartocss += getSimpleConditionsAsCss(conditions, color, options);
+
+                cartocss += getNullConditionAsCss(conditions, color, options);
 
                 if (cartocss === '') {
                     console.warn('Can\'t find any condition, please verify your window.gw.map.county.conditions data');
@@ -407,10 +447,10 @@ $(function(){
                 }
 
             } else {
-                cartocss = '#layer { marker-fill: '+ color +'; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
-            }
 
-            console.log(cartocss);
+                legendItemCss = getLegendItemAsCss(altType, true);
+                cartocss = '#layer { '+ legendItemCss.markerFileCss + legendItemCss.markerLineColorColorCss +' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+            }
 
             subLayers[_altType] = layer.createSubLayer({
                 sql: "SELECT *, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
@@ -618,81 +658,112 @@ $(function(){
 
         }
 
+        function initRangeLegend(showOnTop) {
 
-        /**
-         * Init legend
-         */
-        function initLegend(altTypes) {
-            // TODO generate legend on fly from given altTypes
+            if (!window.gw.map.county.colorized) { return false; }
 
-            var $legendContainer = $('#menu');
+            var legendItems = '';
+            var fieldName = window.gw.map.county.fieldName.replace(/_/g, ' ');
+            var conditions = window.gw.map.county.conditions;
 
-            /*
-             Add new elements.
-             */
-            var compiledLegendItems = '';
+            var periodConditions = getConditionsByType(conditions, 'period');
 
-            var markerIcons = ['red', 'purple', 'blue'];
+            var simpleConditions = getConditionsByType(conditions, 'simple');
 
-            altTypes.forEach(function(altType) {
+            var nullCondition = getConditionsByType(conditions, 'null');
 
-                var altTypeSlug = altType.alt_type_slug.replace(/_/g, ' ');
-                var _altTypeSlug = altType.alt_type_slug.toLowerCase();
+            // Build legend items for period conditions
+            if (periodConditions.length !== 0) {
 
-                var iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
-                    ? 'grey-line'
-                    : 'marker-circle ' + markerIcons.shift();
+                periodConditions.forEach(function(condition) {
+                    var conditionColor = 'background: ' + condition.color;
+                    var conditionText = condition.min + ' - ' + condition.max;
 
-                compiledLegendItems += '<li id=' + _altTypeSlug + ' class="' + _altTypeSlug + ' legend-item selected">' +
-                    '<span class="glyphicon glyphicon-ok"></span>' +
-                    '<i class="' + iconClass + '"></i>' +
-                    '<a href="javascript:void(0)">' + altTypeSlug + '</a>' +
-                    '</li>';
+                    legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>' +
+                                        conditionText +
+                                   '</li>';
+                });
 
-            });
+            }
 
-            $legendContainer.append(compiledLegendItems);
+            // Build legend items for simple conditions
+            if (simpleConditions.length !== 0) {
 
-            $legendContainer.on('click', '.legend-item', function() {
-                $(this).toggleClass('selected');
-                var countyName = $(this).attr('id');
-                subLayers[countyName].toggle();
-            });
+                simpleConditions.forEach(function(condition) {
+                    var conditionColor = 'background: ' + condition.color;
+                    var conditionText = condition.operation + ' ' + condition.value;
+
+                    legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>' +
+                                        conditionText +
+                                    '</li>';
+                });
+
+            }
+
+
+            // Build legend items for null conditions
+            if (nullCondition.length !== 0) {
+
+                var conditionColor = 'background: ' + nullCondition[0].color;
+
+                legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>null</li>';
+
+            }
+
+            var legendClass = 'cartodb-legend-stack';
+            if (showOnTop) {
+                legendClass += ' cartodb-legend-stack__top';
+            }
+
+            var legend = '<div class="'+ legendClass +'" style=""><div class="cartodb-legend custom" style="display: block;"><div class="legend-title">' +
+                            fieldName +
+                         '</div><ul>' +
+                            legendItems +
+                         '</ul></div></div>';
+
+            $('#map').append(legend);
 
         }
 
         /**
-         * TODO: Replace when legend will be ready
-         * Init legend (NEW)
+         * Init legend
          */
-        //function initLegend_new(altTypes) {
+        //function initLegend(altTypes) {
         //    // TODO generate legend on fly from given altTypes
         //
         //    var $legendContainer = $('#menu');
         //
         //    /*
-        //        Add new elements.
+        //     Add new elements.
         //     */
         //    var compiledLegendItems = '';
         //
-        //    legend.forEach(function(menu_item) {
+        //    var markerIcons = {
+        //        "stroke": ['red-stroke', 'purple-stroke', 'blue-stroke'],
+        //        "fill": ['red-fill', 'purple-fill', 'blue-fill']
+        //    };
         //
-        //        var altTypeSlug = menu_item.altType.replace(/_/g, ' ');
-        //        var _altTypeSlug = menu_item.altType.toLowerCase();
-        //        var iconCounty = '',
-        //            iconMarker = '';
+        //    altTypes.forEach(function(altType) {
         //
-        //        if (menu_item.geometrytype && (menu_item.geometrytype == "MULTIPOLYGON" || menu_item.geometrytype == "POLYGON")) {
-        //            iconCounty = '<i class="grey-line"></i>';
+        //        var altTypeSlug = altType.alt_type_slug.replace(/_/g, ' ');
+        //        var _altTypeSlug = altType.alt_type_slug.toLowerCase();
+        //
+        //        var iconClass = '';
+        //        if (window.gw.map.county.colorized) {
+        //            iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
+        //                ? 'grey-line'
+        //                : 'marker-circle ' + markerIcons['stroke'].shift();
         //        } else {
-        //            iconMarker = '<i class="marker-icon" style="-webkit-mask-image: url('+menu_item["marker-file"]+'); background-color: ' + menu_item["marker-fill"] + ';"/>';
+        //            iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
+        //                ? 'grey-line'
+        //                : 'marker-circle ' + markerIcons['fill'].shift();
         //        }
         //
         //        compiledLegendItems += '<li id=' + _altTypeSlug + ' class="' + _altTypeSlug + ' legend-item selected">' +
-        //                                 '<span class="glyphicon glyphicon-ok"></span>' +
-        //                                  iconCounty + iconMarker +
-        //                                 '<a href="javascript:void(0)">' + menu_item.title + '</a>' +
-        //                              '</li>';
+        //            '<span class="glyphicon glyphicon-ok"></span>' +
+        //            '<i class="' + iconClass + '"></i>' +
+        //            '<a href="javascript:void(0)">' + altTypeSlug + '</a>' +
+        //            '</li>';
         //
         //    });
         //
@@ -705,6 +776,131 @@ $(function(){
         //    });
         //
         //}
+
+        /**
+         * TODO: Replace when legend will be ready
+         * Init legend (NEW)
+         */
+        function initLegend(altTypes) {
+            // TODO generate legend on fly from given altTypes
+
+            //var markerIcons = {
+            //    "stroke": ['red-stroke', 'purple-stroke', 'blue-stroke'],
+            //    "fill": ['red-fill', 'purple-fill', 'blue-fill']
+            //};
+
+            var $legendContainer = $('#menu');
+
+            /*
+                Add new elements.
+             */
+            var compiledLegendItems = '';
+
+            legend.forEach(function(menu_item) {
+
+                var altType = altTypes.filter(function(altType) {
+                    return (altType.alt_type_slug === menu_item.altType)
+                })[0];
+
+                var altTypeSlug = menu_item.altType.replace(/_/g, ' ');
+                var _altTypeSlug = menu_item.altType.toLowerCase();
+
+                var iconCounty = '',
+                    iconMarker = '';
+
+                var fillColor = '',
+                    strokeColor = '';
+
+                // Colorize markers & counties by range number
+                if (window.gw.map.county.colorized) {
+
+                    // If url to shape exist - show marker
+                    if (menu_item.shape) {
+                        fillColor = 'fillColor="' + legendConfig.fillColor + '" ';
+                        strokeColor = 'strokeColor="' + menu_item['color'] + '" ';
+                        iconMarker = '<img src="' + menu_item['shape'] + '" class="svg" ' + strokeColor + fillColor + '/>';
+
+                    // Else - show county line
+                    } else {
+                        iconCounty = '<i class="grey-line"></i>';
+                    }
+
+                // Use default styles (hardcoded in this file)
+                } else {
+
+                    // If url to shape exist - show marker
+                    if (menu_item.shape) {
+                        fillColor = 'fillColor="' + menu_item['color'] + '" ';
+                        strokeColor = 'strokeColor="' + menu_item['color'] + '" ';
+                        iconMarker = '<img src="' + menu_item['shape'] + '" class="svg" ' + strokeColor + fillColor + '/>';
+
+                        // Else - show county line
+                    } else {
+                        iconCounty = '<i class="grey-line"></i>';
+                    }
+
+                    //iconMarker = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
+                    //    ? '<i class="grey-line"></i>'
+                    //    : '<i class="marker-circle ' + markerIcons['fill'].shift() + '"></i>';
+                }
+
+                compiledLegendItems += '<li id=' + _altTypeSlug + ' class="' + _altTypeSlug + ' legend-item selected">' +
+                                         '<span class="glyphicon glyphicon-ok"></span>' +
+                                          iconCounty + iconMarker +
+                                         '<a href="javascript:void(0)">' + menu_item.title + '</a>' +
+                                      '</li>';
+
+            });
+
+            $legendContainer.append(compiledLegendItems);
+
+            /*
+             * Replace all SVG images with inline SVG
+             */
+            jQuery('img.svg').each(function(){
+                var $img = jQuery(this);
+                var imgID = $img.attr('id');
+                var imgClass = $img.attr('class');
+                var imgURL = $img.attr('src');
+
+                var fillColor = $img.attr('fillColor');
+                var strokeColor = $img.attr('strokeColor');
+
+                jQuery.get(imgURL, function(data) {
+                    // Get the SVG tag, ignore the rest
+                    var $svg = jQuery(data).find('svg');
+                    var $rect = $svg.find('rect');
+                    var $path = $svg.find('path');
+
+                    $rect[0] == null || $rect.css({'fill': fillColor, 'stroke': strokeColor});
+                    $path[0] == null || $path.css({'fill': fillColor, 'stroke': strokeColor});
+
+                    // Add replaced image's ID to the new SVG
+                    if(typeof imgID !== 'undefined') {
+                        $svg = $svg.attr('id', imgID);
+                    }
+                    // Add replaced image's classes to the new SVG
+                    if(typeof imgClass !== 'undefined') {
+                        $svg = $svg.attr('class', imgClass+' replaced-svg');
+                    }
+
+                    // Remove any invalid XML tags as per http://validator.w3.org
+                    $svg = $svg.removeAttr('xmlns:a');
+
+                    // Replace image with new SVG
+                    $img.replaceWith($svg);
+
+                }, 'xml');
+
+            });
+
+            $legendContainer.on('click', '.legend-item', function() {
+                $(this).toggleClass('selected');
+                var countyName = $(this).attr('id');
+                subLayers[countyName].toggle();
+            });
+
+        }
 
         /**
          * Show map, legend, hide loader

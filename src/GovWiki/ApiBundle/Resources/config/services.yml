@@ -37,6 +37,7 @@ services:
         arguments:
             - @doctrine.orm.default_entity_manager
             - @carto_db.api
+            - @govwiki_db.service.max_ranks_computer
         configurator: [@govwiki_api.environment_manager.configurator, configure]
 
     govwiki_api.serializer.serialization_visitor:

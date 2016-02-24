@@ -3,14 +3,13 @@
 namespace GovWiki\DbBundle\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
-use GovWiki\DbBundle\Entity\MaxRank;
-use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
+use GovWiki\DbBundle\Entity\Repository\FormatRepository;
 
 /**
  * Class MaxRankComputer
  * @package GovWiki\DbBundle\Service
  */
-class MaxRankComputer
+class MaxRankComputer implements MaxRankComputerInterface
 {
     /**
      * @var EntityManagerInterface
@@ -26,42 +25,44 @@ class MaxRankComputer
     }
 
     /**
-     * Compute and persist to database new max ranks values.
-     *
-     * @return MaxRankComputer
+     * {@inheritdoc}
      */
-    public function compute()
+    public function compute($environment)
     {
-        $altTypes = [
-            'County',
-            'City',
-            'School District',
-            'Special District',
-        ];
+        /** @var FormatRepository $repository */
+        $formatRepository = $this->em->getRepository('GovWikiDbBundle:Format');
+        $rankedFieldList = $formatRepository->getRankedFields($environment);
 
-        /** @var GovernmentRepository $repository */
-        $repository = $this->em->getRepository('GovWikiDbBundle:Government');
+        $makeSqlPart = function ($element) {
+            $element = $element['field'];
+            return "MAX(e.{$element}_rank) AS {$element}";
+        };
+        $rankedFieldList = array_map($makeSqlPart, $rankedFieldList);
+        $sql = implode(',', $rankedFieldList);
 
-        foreach ($altTypes as $type) {
-            $data = $repository->computeMaxRanks($type);
+        $con = $this->em->getConnection();
+        $tableName = self::getTableName($environment);
 
-            $maxRank = new MaxRank();
-            $maxRank->setAltType($type);
+        $con->exec("DROP TABLE IF EXISTS {$tableName}");
+        $con->exec("
+            CREATE TABLE `{$tableName}`
+            (
+                SELECT
+                    g.alt_type_slug AS alt_type_slug,
+                    g.environment_id AS environment_id,
+                    {$sql}
+                FROM {$environment} e
+                INNER JOIN governments g ON e.government_id = g.id
+                GROUP BY g.alt_type_slug
+            )
+        ");
+    }
 
-            foreach ($data as $field => $value) {
-                call_user_func([$maxRank, 'set' . ucfirst($field)], $value);
-            }
-            $this->em->persist($maxRank);
-        }
-
-        $this->em
-            ->createQueryBuilder()
-            ->delete()
-            ->from('GovWikiDbBundle:MaxRank', 'MaxRank')
-            ->getQuery()
-            ->execute();
-        $this->em->flush();
-
-        return $this;
+    /**
+     * {@inheritdoc}
+     */
+    public static function getTableName($environment)
+    {
+        return "{$environment}_max_ranks";
     }
 }

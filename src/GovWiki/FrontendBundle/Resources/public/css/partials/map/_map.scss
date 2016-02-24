@@ -43,6 +43,11 @@
    height: 500px;
    overflow: hidden;
 
+   .svg {
+      margin: 0 4px;
+      vertical-align: middle;
+   }
+
    .mapOnProcessing {
       margin-top: 200px;
       text-align: center;
@@ -111,19 +116,6 @@
 
       }
 
-      .marker-icon {
-         display: inline-block;
-         width: 20px;
-         height: 20px;
-         -webkit-mask-repeat: no-repeat;
-         mask-repeat: no-repeat;
-         -webkit-mask-size: 100% 100%;
-         mask-size: 100% 100%;
-         margin: 0 4px;
-         vertical-align: middle;
-         stroke: red;
-      }
-
       .marker-triangle-up {
          display: inline-block;
          width: 0;
@@ -163,17 +155,31 @@
          border-radius: 50%;
          background: white;
 
-         &.red {
+         &.red-stroke {
             border: 1px solid #f00000;
          }
 
-         &.blue {
+         &.blue-stroke {
             border: 1px solid #add8e6;
          }
 
-         &.purple {
+         &.purple-stroke {
             border: 1px solid #800080;
          }
+
+
+         &.red-fill {
+            background-color: #f00000;
+         }
+
+         &.blue-fill {
+            background-color: #add8e6;
+         }
+
+         &.purple-fill {
+            background-color: #800080;
+         }
+
       }
 
       .grey-line {

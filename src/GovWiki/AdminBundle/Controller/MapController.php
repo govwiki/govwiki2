@@ -78,12 +78,13 @@ class MapController extends AbstractGovWikiAdminController
                     ";
                 }
 
+
                 $api = $this->get(CartoDbServices::CARTO_DB_API);
                 $api
                     // Create temporary dataset.
                     ->createDataset($environment.'_temporary', [
-                        'slug' => 'VARCHAR(255)',
                         'alt_type_slug' => 'VARCHAR(255)',
+                        'slug' => 'VARCHAR(255)',
                         'data' => 'double precision',
                     ], true)
                     ->sqlRequest("

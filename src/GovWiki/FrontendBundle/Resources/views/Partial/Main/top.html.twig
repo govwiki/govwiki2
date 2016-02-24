@@ -15,33 +15,11 @@
         {# Legend #}
         <ul id='menu'>
 
-            <li class="legend-header">
-                <span>Select type(s):</span>
-            </li>
-
-            {#<li id="cities" class="legend-item cities selected">
-                <span class="glyphicon glyphicon-ok"></span>
-                <i class="red-circle marker-circle"></i>
-                <a href="javascript:void(0)">Cities</a>
-            </li>
-
-            <li id="counties" class="legend-item counties selected">
-                <span class="glyphicon glyphicon-ok"></span>
-                <i class="grey-line"></i>
-                <a href="javascript:void(0)">Counties</a>
-            </li>
-
-            <li id="school" class="legend-item school selected">
-                <span class="glyphicon glyphicon-ok"></span>
-                <i class="blue-circle marker-circle"></i>
-                <a href="javascript:void(0)">School Districts</a>
-            </li>
-
-            <li id="special" class="legend-item special selected">
-                <span class="glyphicon glyphicon-ok"></span>
-                <i class="purple-circle marker-circle"></i>
-                <a href="javascript:void(0)">Special Districts</a>
-            </li>#}
+            {% if 'altTypes' in mapEntity.legendTypes %}
+                <li class="legend-header">
+                    <span>Select type(s):</span>
+                </li>
+            {% endif %}
 
         </ul>
 
