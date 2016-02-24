@@ -3,13 +3,13 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
+use CartoDbBundle\Service\CartoDbApi;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Form\MapType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -68,24 +68,28 @@ class MapController extends AbstractGovWikiAdminController
                     if (null === $row['data']) {
                         $row['data'] = 'null';
                     }
+
+                    $slug = CartoDbApi::escapeString($row['slug']);
+                    $altTypeSlug = CartoDbApi::escapeString($row['alt_type_slug']);
+                    $data = $row['data'];
+
                     $sqlParts[] = "
-                        ('{$row['slug']}', '{$row['alt_type_slug']}', {$row['data']})
+                        ('{$slug}', '{$altTypeSlug}', {$data})
                     ";
                 }
-
 
                 $api = $this->get(CartoDbServices::CARTO_DB_API);
                 $api
                     // Create temporary dataset.
                     ->createDataset($environment.'_temporary', [
-                        'alt_type_slug' => 'VARCHAR(255)',
                         'slug' => 'VARCHAR(255)',
+                        'alt_type_slug' => 'VARCHAR(255)',
                         'data' => 'double precision',
                     ], true)
                     ->sqlRequest("
                         INSERT INTO {$environment}_temporary
                             (slug, alt_type_slug, data)
-                        VALUES". implode(',', $sqlParts));
+                        VALUES ". implode(',', $sqlParts));
                     // Update concrete environment dataset from temporary
                     // dataset.
                 $api->sqlRequest("

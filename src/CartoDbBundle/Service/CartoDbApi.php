@@ -222,6 +222,16 @@ class CartoDbApi
     }
 
     /**
+     * @param string $string String for escaping.
+     *
+     * @return string
+     */
+    public static function escapeString($string)
+    {
+        return str_replace([ "'" ], [ "''" ], $string);
+    }
+
+    /**
      * Wrapper under curl for making request to CartoDB api.
      *
      * @param string $uri        Relative to CartoDB api end point.
