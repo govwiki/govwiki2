@@ -282,7 +282,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                 /*
                  * Prepare government name, alt type and they slug.
                  */
-                $name = $this->data['name'];
+                $name = CartoDbApi::escapeString($this->data['name']);
                 $slug = Government::slugifyName($name);
                 $altType = $this->getAltType();
                 $altTypeSlug = Government::slugifyAltType($altType);
@@ -355,7 +355,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                  */
                 $this->sqls['cartodb'][] =
                     "(ST_SetSRID(ST_GeomFromGeoJSON('{$json}'), 4326)," .
-                    "'{$altTypeSlug}','{$slug}')";
+                    "'{$altTypeSlug}','{$slug}', '{$name}')";
 
                 if (count($this->sqls['cartodb']) === self::MAX_SQL_PARTS_SIZE) {
                     /*
@@ -680,7 +680,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
          */
         $this->api->sqlRequest("
                 INSERT INTO {$environment}
-                    (the_geom, alt_type_slug, slug)
+                    (the_geom, alt_type_slug, slug, name)
                 VALUES " . implode(',', $this->sqls['cartodb']));
 
         $this->sqls['db'] = [];

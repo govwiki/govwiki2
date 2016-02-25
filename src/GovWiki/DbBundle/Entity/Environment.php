@@ -75,8 +75,7 @@ class Environment
     /**
      * @var string
      *
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank()
+     * @ORM\Column(type="text", nullable=true)
      */
     private $greetingText;
 

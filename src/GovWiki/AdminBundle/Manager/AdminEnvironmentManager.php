@@ -308,8 +308,155 @@ class AdminEnvironmentManager
 
         $this->deleteGovernmentTable($environment);
 
-        $this->em->remove($entity);
-        $this->em->flush();
+        $con = $this->em->getConnection();
+
+        $con->beginTransaction();
+        try {
+            $con->exec("
+                DELETE c FROM `comments` c
+                LEFT JOIN `elected_officials_votes` v ON v.id = c.subject_id
+                LEFT JOIN `elected_officials` eo ON eo.id = v.elected_official_id
+                LEFT JOIN `governments` g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$entity->getId()} AND
+                    c.type = 'vote'
+            ");
+
+            $con->exec("
+                DELETE v FROM elected_officials_votes v
+                LEFT JOIN elected_officials eo ON v.elected_official_id = eo.id
+                LEFT JOIN governments g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$entity->getId()}
+            ");
+
+            $con->exec("
+                DELETE l FROM legislations l
+                LEFT JOIN governments g ON l.government_id = g.id
+                WHERE
+                    g.environment_id = {$entity->getId()}
+            ");
+
+            $con->exec("
+                DELETE c FROM contributions c
+                LEFT JOIN elected_officials eo ON c.elected_official_id = eo.id
+                LEFT JOIN governments g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$entity->getId()}
+            ");
+
+            $con->exec("
+                DELETE e FROM endorsements e
+                LEFT JOIN elected_officials eo ON e.elected_official_id = eo.id
+                LEFT JOIN governments g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$entity->getId()}
+            ");
+
+            $con->exec("
+                DELETE ps FROM public_statements ps
+                LEFT JOIN elected_officials eo ON ps.elected_official_id = eo.id
+                LEFT JOIN governments g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$entity->getId()}
+            ");
+
+            $con->exec("
+                DELETE eo FROM elected_officials eo
+                LEFT JOIN governments g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$entity->getId()}
+            ");
+
+            $con->exec("
+                DELETE f FROM findata f
+                LEFT JOIN governments g ON f.government_id = g.id
+                WHERE
+                    g.environment_id = {$entity->getId()}
+            ");
+
+            $con->exec("
+                DELETE g FROM governments g
+                WHERE
+                    g.environment_id = {$entity->getId()}
+            ");
+
+            $con->exec("
+                DELETE f FROM formats f
+                WHERE
+                    f.environment_id = {$entity->getId()}
+            ");
+
+            $con->exec("
+                DELETE g FROM groups g
+                WHERE
+                    g.environment_id = {$entity->getId()}
+            ");
+
+            $con->exec("
+                DELETE e, m FROM environments e
+                JOIN maps m ON m.id = e.map_id
+                WHERE
+                    e.id = {$entity->getId()}
+            ");
+
+            $con->commit();
+        } catch (\Exception $e) {
+            $con->rollBack();
+        }
+
+//
+//
+//        $em->createQueryBuilder()
+//            ->delete('GovWikiDbBundle:Format', 'Format')
+//            ->where($expr->eq('Format.environment', $entity->getId()))
+//            ->getQuery()
+//            ->execute();
+//
+//        $em->createQueryBuilder()
+//            ->delete('GovWikiDbBundle:AbstractGroup', 'Group')
+//            ->where($expr->eq('Group.environment', $entity->getId()))
+//            ->getQuery()
+//            ->execute();
+
+//        $con = $this->em->getConnection();
+//        $con->exec("
+//            DELETE
+//                `government`, `elected_official`, `format`,
+//                `elected_official_vote`, `endorsement`, `fin_data`, `group`,
+//                `legislation`, `map`, `public_statement`, `comment`, `environment`
+//            FROM
+//                environments AS `environment`
+//            LEFT JOIN governments AS `government`
+//                ON `government`.environment_id = `environment`.id
+//            LEFT JOIN elected_officials AS elected_official
+//                ON `elected_official`.government_id = `government`.id
+//            LEFT JOIN elected_officials_votes AS `elected_official_vote`
+//                ON `elected_official_vote`.elected_official_id = `elected_official`.id
+//            LEFT JOIN comments AS `comment`
+//                ON `comment`.subject_id = elected_official_vote.id
+//                    AND `comment`.type = 'vote'
+//            LEFT JOIN legislations AS `legislation`
+//                ON `legislation`.government_id = `government`.id
+//            LEFT JOIN contributions AS `contribution`
+//                ON `contribution`.elected_official_id = `elected_official`.id
+//            LEFT JOIN endorsements AS `endorsement`
+//                ON `endorsement`.elected_official_id = `elected_official`.id
+//            LEFT JOIN public_statements AS `public_statement`
+//                ON `public_statement`.elected_official_id = `elected_official`.id
+//            LEFT JOIN findata AS `fin_data`
+//                ON `fin_data`.government_id = `government`.id
+//            LEFT JOIN groups AS `group`
+//                ON `group`.environment_id = `environment`.id
+//            LEFT JOIN maps AS `map`
+//                ON `map`.id = `environment`.map_id
+//            LEFT JOIN formats AS `format`
+//                ON `format`.environment_id = `environment`.id
+//            WHERE `environment`.id = {$entity->getId()}
+//        ");
+
+//        $em->remove($entity);
+//        $em->flush();
 
         return $this;
     }
