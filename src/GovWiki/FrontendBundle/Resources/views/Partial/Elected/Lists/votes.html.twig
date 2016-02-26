@@ -12,11 +12,11 @@
     </tr>
 
     {% for vote in list %}
-        {#{ dump(vote.legislation.govAssignedNumber) }#}
+        {% set hasComment = vote.comments is defined and vote.comments|length > 0 %}
         <tr data-id="{{vote.legislation.id}}" {%
         if (vote.legislation.request is not null) and (vote.legislation.request.status == 'pending') -%}
             style="background: rgba(80, 0, 0, 0.1)"
-        {%- endif -%}
+        {%- endif -%}{%- if hasComment %} class="row__has_comment"{%- endif -%}
             >
 
             <td data-date-considered="{{vote.legislation.dateConsidered | date("m/d/Y") }}">
@@ -69,23 +69,23 @@
 
         </tr>
 
-        {% if vote.comments is defined and vote.comments|length > 0 %}
+        {% if hasComment %}
             <tr>
-                <td colspan="7">
+                <td colspan="8">
                     {{ vote.comments|first.body|raw }}
                 </td>
             </tr>
         {% endif %}
     {% else %}
         <tr>
-            <td colspan="7" align="center">
+            <td colspan="8" align="center">
                 <p style="font-size:18px; margin: 0;">No information at this time. Please check back later.</p>
             </td>
         </tr>
     {% endfor %}
 
     <tr class="add_action">
-        <td colspan="7" class="add">
+        <td colspan="8" class="add">
             Add new Vote
             <span class="glyphicon glyphicon-plus"></span>
         </td>

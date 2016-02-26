@@ -46,6 +46,14 @@
             width: 127px;
          }
       }
+
+      tr {
+         &:not([ data-id ]) {
+            td {
+               border-top: 1px dashed #eeeeee;
+            }
+         }
+      }
    }
 
    .add {
