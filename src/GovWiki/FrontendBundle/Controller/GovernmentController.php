@@ -26,6 +26,22 @@ class GovernmentController extends Controller
      */
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
+        // get compared data
+        if ($request->request->get('comparedData')) {
+            return new JsonResponse(
+                $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+                    ->getComparedGovernments($request->request->get('comparedData'))
+            );
+        }
+
+        // get request for get category
+        if ($request->request->get('governmentsId')) {
+            return new JsonResponse(
+                $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+                ->getCategoriesRevenuesAndExpendituresByGoverment($request->request->get('governmentsId'))
+            );
+        }
+
         // get request years for government
         if ($request->request->get('yearByGovId')) {
             return new JsonResponse(
