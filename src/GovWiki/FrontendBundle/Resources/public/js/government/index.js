@@ -2,8 +2,98 @@ $(function() {
 
     var rankPopover = new RankPopover();
 
+    var chart = {
+            employeeCompensation_one: {
+                init: false
+            },
+            employeeCompensation_two: {
+                init: false
+            },
+            financialHealth_one: {
+                init: false
+            },
+            financialHealth_two: {
+                init: false
+            },
+            financialHealth_three: {
+                init: false
+            },
+            financialStatements_one: {
+                init: false
+            },
+            financialStatements_two: {
+                init: false
+            },
+            financialStatementsTree: {
+                init: false
+            }
+        };
+
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+
         var tabname = $(e.target).attr('data-tabname');
+
+        /**
+         * Init graphs
+         */
+        switch (tabname) {
+            case 'Employee Compensation':
+                employeeCompensation_one();
+                employeeCompensation_two();
+                break;
+            case 'Quality of Services':
+                break;
+            case 'Financial Health':
+                financialHealth_one();
+                financialHealth_two();
+                financialHealth_three();
+                break;
+            case 'Financial Financial_Statements':
+                financialStatements_one();
+                financialStatements_two();
+                break;
+        }
+
+    });
+
+    $('#Financial_Statements').on('click', '.chart-controls .btn', function() {
+
+        var chartType = this.getElementsByTagName('input')[0].id;
+
+        if (chartType == 'chart'){
+            hideChartGroup('pie-charts', false);
+            hideChartGroup('tree-chart', true);
+            if (!chart.financialStatements_one.init || !chart.financialStatements_two.init) {
+                financialStatements_one();
+                financialStatements_two();
+            }
+
+        } else if (chartType == 'tree') {
+
+            hideChartGroup('pie-charts', true);
+            hideChartGroup('tree-chart', false);
+            if (!chart.financialStatementsTree.init) {
+                financialStatementsTree();
+            }
+        }
+
+        /**
+         * Hide chart group. Group may contain few charts
+         */
+        function hideChartGroup(chartGroup, hide) {
+
+            var display = hide ? {display: 'none'} : {display: 'block'};
+
+            if (chartGroup == 'pie-charts') {
+                $('#total-expenditures-pie').css(display);
+                $('#total-revenue-pie').css(display);
+
+            } else if (chartGroup == 'tree-chart') {
+                $('#total-tree').css(display);
+            }
+
+        }
+
     });
 
     toTitleCase = function(str) {
@@ -18,22 +108,16 @@ $(function() {
         data = JSON.parse(window.gw.government);
         smallChartWidth = 340;
         bigChartWidth = 470;
-        employeeCompensation_one();
-        employeeCompensation_two();
-        financialHealth_one();
-        financialHealth_two();
-        financialHealth_three();
-        financialStatements_one();
-        financialStatements_two();
+        //window.ch = financialStatementsTree;
 
     }
 
-    google.load('visualization', '1.0', {'packages': 'corechart', 'callback': initCharts});
+    google.load('visualization', '1.0', {'packages': ['treemap', 'corechart'], 'callback': initCharts});
 
     function employeeCompensation_one() {
         /*
-            Ahtung! Hardcode detected!
-            todo replace such bad code
+         Ahtung! Hardcode detected!
+         todo replace such bad code
          */
         if (! data['median_salary_per_full_time_emp']) {
             data['median_salary_per_full_time_emp'] = data['median_salary_for_full_time_employees'];
@@ -105,8 +189,8 @@ $(function() {
 
     function employeeCompensation_two() {
         /*
-             Ahtung! Hardcode detected!
-             todo replace such bad code
+         Ahtung! Hardcode detected!
+         todo replace such bad code
          */
         if (! data['median_pension30_year_retiree']) {
             data['median_pension30_year_retiree'] = data['median_pension_for_retiree_with_30_years_service'];
@@ -264,8 +348,97 @@ $(function() {
         chart.draw(vis_data, options);
     }
 
+
+    function financialStatementsTree() {
+
+        var chart, item, len3, options, p, r, ref1, rows, vis_data;
+
+        rows = [
+            ['Location', 'Parent', 'FinData', 'Heat'],
+            ['Financial Data', null, 0, 0],
+            ['Overview', 'Financial Data', 0, 0],
+            ['Revenues', 'Financial Data', 0, 0],
+            ['Expenditures', 'Financial Data', 0, 0],
+            ['Surplus/Deficit', 'Financial Data', 0, 0]
+        ];
+
+        var financialStatements = data.financialStatements;
+
+        for(var financialCategoryKey in financialStatements){
+            if(financialStatements.hasOwnProperty(financialCategoryKey)) {
+
+                var category = financialStatements[financialCategoryKey];
+
+                for(var key in category) {
+                    if (category.hasOwnProperty(key)){
+
+                        var subCategory = financialStatements[financialCategoryKey][key];
+
+                        /**
+                         * TODO: Hardcoded!! Please ask the question to client, which field must be there?
+                         */
+                        if (subCategory.totalfunds) {
+
+                            if (subCategory.totalfunds < 0) {
+                                subCategory.totalfunds = -(subCategory.totalfunds);
+                            }
+
+                        } else if (subCategory.genfund) {
+
+                            if (subCategory.genfund < 0) {
+                                subCategory.genfund = -(subCategory.genfund);
+                            }
+
+                        } else if (subCategory.otherfunds) {
+
+                            if (subCategory.otherfunds < 0) {
+                                subCategory.otherfunds = -(subCategory.otherfunds);
+                            }
+
+                        }
+
+                        var subCatValue = subCategory.totalfunds || subCategory.genfund || subCategory.otherfunds;
+
+                        rows.push(
+                            [subCategory.caption, financialCategoryKey, parseInt(subCatValue), parseInt(subCatValue)]
+                        );
+
+                    }
+                }
+
+            }
+        }
+
+        var options = {
+            highlightOnMouseOver: true,
+            maxDepth: 1,
+            maxPostDepth: 2,
+            minHighlightColor: '#8c6bb1',
+            midHighlightColor: '#9ebcda',
+            maxHighlightColor: '#edf8fb',
+            minColor: '#009688',
+            midColor: '#f7f7f7',
+            maxColor: '#ee8100',
+            headerHeight: 15,
+            showScale: true,
+            height: 500,
+            useWeightedAverageForAggregation: true,
+            generateTooltip: showStaticTooltip
+        };
+
+        function showStaticTooltip(row, size, value) {
+            return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +  vis_data.getValue(row, 2) + '</div>';
+        }
+
+
+        vis_data = new google.visualization.arrayToDataTable(rows);
+        chart = new google.visualization.TreeMap(document.getElementById('total-tree'));
+        chart.draw(vis_data, options);
+
+    }
+
+
     function financialStatements_one() {
-        console.log('financial_statements Revenues: ' + JSON.stringify(data['financialStatements']));
 
         var chart, item, len3, options, p, r, ref1, rows, vis_data;
         vis_data = new google.visualization.DataTable();
@@ -307,7 +480,6 @@ $(function() {
     }
 
     function financialStatements_two() {
-        console.log('financial_statements Expenditures: ' + JSON.stringify(data['financialStatements']));
 
         var chart, item, len3, options, p, r, ref1, rows, vis_data;
         vis_data = new google.visualization.DataTable();
@@ -349,7 +521,7 @@ $(function() {
     }
 
     /*
-        Change fin statement year.
+     Change fin statement year.
      */
     $('#fin-stmt-year').change(function() {
         var $this = $(this);

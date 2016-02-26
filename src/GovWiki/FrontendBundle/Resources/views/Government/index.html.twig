@@ -121,12 +121,9 @@
                                     </form>
                                     <br>
 
-                                    {# Statistics #}
-                                    <div class="statistics fin-values-block">
-                                        {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
-                                            'financialStatements': government.financialStatements
-                                        } %}
-                                    </div>
+                                    {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
+                                        'financialStatements': government.financialStatements
+                                    } %}
                                 </div>
                             {% endif %}
 
@@ -177,6 +174,7 @@
 
     {{parent()}}
 
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
     <script src='http://www.google.com/jsapi'></script>
 
