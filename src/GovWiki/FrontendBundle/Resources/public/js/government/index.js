@@ -84,6 +84,7 @@ $(function() {
         } else if (chartType == 'tree') {
 
             hideChartGroup('pie-charts', true);
+            hideChartGroup('tree-charts', true);
             hideChartGroup('tree-chart', false);
             if (!chart.financialStatementsTree.init) {
                 financialStatementsTree();
@@ -428,11 +429,21 @@ $(function() {
             showScale: true,
             height: 500,
             useWeightedAverageForAggregation: true,
-            generateTooltip: showStaticTooltip
+            generateTooltip: treeTooltip
         };
 
-        function showStaticTooltip(row, size, value) {
-            return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +  vis_data.getValue(row, 2) + '</div>';
+        function treeTooltip(row, size, value) {
+            var tpl,
+                val = vis_data.getValue(row, 2);
+
+            if (!!val) {
+                tpl = '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
+                numeral(val).format('$0,0'); + '</div>';
+            } else {
+                tpl = '<div></div>';
+            }
+
+            return tpl;
         }
 
 
