@@ -391,7 +391,7 @@ $(function(){
             var cLayer = {
                 'cartocss': cartocss,
                 'sql': 'SELECT *, ST_AsGeoJSON(the_geom) AS geometry FROM ' + window.gw.environment + ' WHERE  alt_type_slug = \''+ altType +'\'',
-                'interactivity': ['cartodb_id', 'slug', 'alt_type_slug', 'geometry', 'data']
+                'interactivity': ['cartodb_id', 'slug', 'alt_type_slug', 'geometry', 'data', 'name']
             };
 
             countySubLayer = layer.createSubLayer(cLayer);
@@ -433,7 +433,8 @@ $(function(){
                 }
 
                 // Default marker color
-                cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                //cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+                cartocss += '#layer { '+ legendItemCss.markerFileCss + legendItemCss.markerLineColorColorCss +' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
 
                 cartocss += getPeriodConditionsAsCss(conditions, color, options);
 
@@ -455,7 +456,7 @@ $(function(){
             subLayers[_altType] = layer.createSubLayer({
                 sql: "SELECT *, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
                 cartocss: cartocss,
-                interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype']
+                interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype', 'name']
             });
 
             initTooltip(_altType);
@@ -471,9 +472,9 @@ $(function(){
             var tooltipTpl = '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"></p>';
 
             if (window.gw.map.debug) {
-                tooltipTpl += '<p>{{data}}</p><p>{{slug}}</p>';
+                tooltipTpl += '<p>{{data}}</p><p>{{name}}</p>';
             } else {
-                tooltipTpl += '<p>{{slug}}</p>';
+                tooltipTpl += '<p>{{name}}</p>';
             }
 
             tooltipTpl += '</div></div>';

@@ -37,10 +37,10 @@ services:
                 name: kernel.event_listener
                 event: gowviki.event.government.add
                 method: onGovernmentAdd
-#            -
-#                name: kernel.event_listener
-#                event: govwiki.event.government.update
-#                method:
+            -
+                name: kernel.event_listener
+                event: govwiki.event.government.update
+                method:
 
 #    govwiki_admin.listener.government_sync:
 #        class: GovWiki\AdminBundle\Listener\SyncGovernmentWithCartoDb

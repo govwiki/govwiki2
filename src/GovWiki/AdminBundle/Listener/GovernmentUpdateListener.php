@@ -56,4 +56,14 @@ class GovernmentUpdateListener
                     )
             ");
     }
+
+    /**
+     * @param GovernmentUpdateEvent $event A GovernmentUpdateEvent instance.
+     *
+     * @return void
+     */
+    public function onGovernmentUpdate(GovernmentUpdateEvent $event)
+    {
+
+    }
 }

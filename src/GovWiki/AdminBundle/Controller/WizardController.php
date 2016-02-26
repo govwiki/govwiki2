@@ -197,6 +197,7 @@ class WizardController extends AbstractGovWikiAdminController
                     'alt_type_slug' => 'VARCHAR(255)',
                     'slug' => 'VARCHAR(255)',
                     'data' => 'double precision',
+                    'name' => 'VARCHAR(255)',
                 ]);
 
             /*
@@ -210,28 +211,28 @@ class WizardController extends AbstractGovWikiAdminController
                  FROM '. $environment->getSlug() .
                 ' WHERE alt_type_slug = \'County\'',
                 '#ff6600',
-                ['cartodb_id', 'alt_type_slug', 'slug', 'geometry']
+                ['cartodb_id', 'alt_type_slug', 'slug', 'geometry', 'name']
             );
             // City layer.
             $cartoDbMap->addLayer(
                 'SELECT * FROM '. $environment->getSlug() .
                 ' WHERE alt_type_slug = \'City\'',
                 '#f00000',
-                ['cartodb_id', 'alt_type_slug', 'slug']
+                ['cartodb_id', 'alt_type_slug', 'slug', 'name']
             );
             // School District layer.
             $cartoDbMap->addLayer(
                 'SELECT * FROM '. $environment->getSlug() .
                 ' WHERE alt_type_slug = \'School_District\'',
                 '#add8e6',
-                ['cartodb_id', 'alt_type_slug', 'slug']
+                ['cartodb_id', 'alt_type_slug', 'slug', 'name']
             );
             // Special District layer.
             $cartoDbMap->addLayer(
                 'SELECT * FROM '. $environment->getSlug() .
                 ' WHERE alt_type_slug = \'Special_District\'',
                 '#800080',
-                ['cartodb_id', 'alt_type_slug', 'slug']
+                ['cartodb_id', 'alt_type_slug', 'slug', 'name']
             );
 
             $api->createMap($cartoDbMap);
