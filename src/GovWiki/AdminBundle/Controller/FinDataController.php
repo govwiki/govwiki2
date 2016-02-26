@@ -124,13 +124,20 @@ class FinDataController extends AbstractGovWikiAdminController
 
                 $filePath = $file->getPathname();
 
-                $this->get(GovWikiDbServices::FIN_DATA_IMPORTER)
-                    ->import(new CsvReader($filePath));
+                try {
+                    $this->get(GovWikiDbServices::FIN_DATA_IMPORTER)
+                        ->import(new CsvReader($filePath));
+                } catch (\Exception $e) {
+                    $this->errorMessage('Can\'t import new financial statements');
+                    return [ 'form' => $form->createView() ];
+                }
+
+                $this->successMessage('Financial statements imported successfully');
+
+                return $this->redirectToRoute('govwiki_admin_government_index');
             }
 
-            $this->addFlash('error', 'Can\'t import new financial statements');
-
-            return $this->redirectToRoute('govwiki_admin_government_index');
+            $this->errorMessage('Can\'t import new financial statements');
         }
 
         return [ 'form' => $form->createView() ];

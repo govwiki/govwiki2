@@ -51,4 +51,34 @@ class AbstractGovWikiAdminController extends Controller
     {
         return $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
     }
+
+    /**
+     * @param string $message Message.
+     *
+     * @return void
+     */
+    protected function successMessage($message)
+    {
+        $this->addFlash('success', $message);
+    }
+
+    /**
+     * @param string $message Message.
+     *
+     * @return void
+     */
+    protected function errorMessage($message)
+    {
+        $this->addFlash('error', $message);
+    }
+
+    /**
+     * @param string $message Message.
+     *
+     * @return void
+     */
+    protected function infoMessage($message)
+    {
+        $this->addFlash('Info', $message);
+    }
 }

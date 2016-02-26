@@ -4,6 +4,38 @@
 
 {% block title %}GovWiki Admin{% endblock title %}
 
+{% block flashMessages %}
+    {# Error messages #}
+    {% for flashMessage in app.session.flashbag.get('error') %}
+        <div class="row">
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ flashMessage }}
+            </div>
+        </div>
+    {% endfor %}
+
+    {# Success messages #}
+    {% for flashMessage in app.session.flashbag.get('success') %}
+        <div class="row">
+            <div class="alert alert-success alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ flashMessage }}
+            </div>
+        </div>
+    {% endfor %}
+
+    {# Info messages #}
+    {% for flashMessage in app.session.flashbag.get('info') %}
+        <div class="row">
+            <div class="alert alert-info alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ flashMessage }}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock flashMessages %}
+
 {% block header %}
 
     <div class="row header">
@@ -78,16 +110,6 @@
         </nav>
 
     </div>
-
-    {# Flash message #}
-    {% for flashMessage in app.session.flashbag.get('info') %}
-        <div class="container">
-            <div class="alert alert-info alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                {{ flashMessage }}
-            </div>
-        </div>
-    {% endfor %}
 
     {% if is_granted('ROLE_ADMIN') %}
         <div id="modal-delete" class="modal fade">
