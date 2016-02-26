@@ -86,11 +86,21 @@ class FinDataImporter extends AbstractImporter
                 }
                 $columnChecked = true;
 
+                $environment = $this->manager->getEnvironment();
+
                 /*
                  * Remove the old information for the year.
                  */
                 $this->con
-                    ->exec('DELETE FROM findata WHERE year = '. $row['year']);
+                    ->exec("
+                        DELETE f FROM findata f
+                        INNER JOIN governments g ON g.id = f.government_id
+                        INNER JOIN environments e ON e.id = g.environment_id
+                        WHERE
+                            year = '{$row['year']}' AND
+                            e.slug = '{$environment}'
+
+                    ");
             }
 
             $parts = [];
