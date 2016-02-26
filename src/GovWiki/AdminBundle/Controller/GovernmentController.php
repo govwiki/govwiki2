@@ -114,7 +114,7 @@ class GovernmentController extends AbstractGovWikiAdminController
             $this->adminEnvironmentManager()->addToGovernment($data);
 
             $this->addFlash(
-                'admin_success',
+                'success',
                 'Government '. $government->getName() .' successfully created'
             );
 

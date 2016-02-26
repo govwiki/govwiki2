@@ -256,7 +256,7 @@ class GovernmentRepository extends EntityRepository
                         $expr->eq('FinData.year', $year)
                     )
                 )
-                ->orderBy($expr->asc('CaptionCategory.id'))
+                ->orderBy($expr->asc('CaptionCategory.name'))
                 ->getQuery()
                 ->getArrayResult();
 
@@ -300,6 +300,22 @@ class GovernmentRepository extends EntityRepository
                 $financialStatements,
                 [ 'category_name', 'caption' ]
             );
+
+            /*
+             * Sort findata by display order.
+             */
+            foreach ($financialStatements as &$statement) {
+                uasort($statement, function ($a, $b) {
+                    $a = $a['display_order'];
+                    $b = $b['display_order'];
+
+                    if ($a === $b) {
+                        return 0;
+                    }
+
+                    return ($a < $b) ? -1: 1;
+                });
+            }
 
             $government['financialStatements'] = $financialStatements;
         }

@@ -46,12 +46,12 @@ class FinDataImporter extends AbstractImporter
         $associationFields = $metadata->getAssociationMappings();
 
         foreach ($fields as $field) {
-            $fieldMetadata = $metadata->getFieldMapping($field);
-            $this->columns[$fieldMetadata['columnName']] = $fieldMetadata['type'];
+            if ('id' !== $field) {
+                $fieldMetadata = $metadata->getFieldMapping($field);
+                $this->columns[$fieldMetadata['columnName']] =
+                    $fieldMetadata['type'];
+            }
         }
-        /*
-         * It added due to a typo in csv the column name.
-         */
 
         foreach ($associationFields as $field) {
             $this->columns[$field['joinColumns'][0]['name']] = 'integer';
@@ -85,6 +85,22 @@ class FinDataImporter extends AbstractImporter
                     );
                 }
                 $columnChecked = true;
+
+                $environment = $this->manager->getEnvironment();
+
+                /*
+                 * Remove the old information for the year.
+                 */
+                $this->con
+                    ->exec("
+                        DELETE f FROM findata f
+                        INNER JOIN governments g ON g.id = f.government_id
+                        INNER JOIN environments e ON e.id = g.environment_id
+                        WHERE
+                            year = '{$row['year']}' AND
+                            e.slug = '{$environment}'
+
+                    ");
             }
 
             $parts = [];
@@ -110,6 +126,10 @@ class FinDataImporter extends AbstractImporter
                 $sql = '';
             }
         }
+
+        if (count($sql) > 0) {
+            $this->update($sql);
+        }
     }
 
     /**
@@ -130,7 +150,7 @@ class FinDataImporter extends AbstractImporter
     private function update(array $sql)
     {
         $this->con->exec(
-            'INSERT IGNORE findata ('. implode(',', array_keys($this->columns)) .
+            'INSERT IGNORE INTO findata ('. implode(',', array_keys($this->columns)) .
             ') VALUES '. implode(',', $sql)
         );
     }
