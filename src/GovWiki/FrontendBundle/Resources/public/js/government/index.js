@@ -2,7 +2,7 @@ $(function() {
 
     var rankPopover = new RankPopover();
 
-    var data = JSON.parse(window.gw.government);
+    var data = JSON.parse(window.gw.government);console.log(data);
     var smallChartWidth = 340;
     var bigChartWidth = 470;
 
@@ -544,6 +544,9 @@ $(function() {
 
                 var subCategory = RevenuesData[rKey];
                 var subCatValue = getSubCatValue(subCategory);
+                if (!subCatValue) {
+                    continue;
+                }
 
                 RevenuesDataTable.push(
                     [subCategory.caption, 'Total Revenues', parseInt(subCatValue), parseInt(subCatValue)]
@@ -564,21 +567,9 @@ $(function() {
                     subCategory.totalfunds = -(subCategory.totalfunds);
                 }
 
-            } else if (subCategory.genfund) {
-
-                if (subCategory.genfund < 0) {
-                    subCategory.genfund = -(subCategory.genfund);
-                }
-
-            } else if (subCategory.otherfunds) {
-
-                if (subCategory.otherfunds < 0) {
-                    subCategory.otherfunds = -(subCategory.otherfunds);
-                }
-
             }
 
-            return subCategory.totalfunds || subCategory.genfund || subCategory.otherfunds;
+            return subCategory.totalfunds || false;
         }
 
         var options = {
@@ -599,7 +590,9 @@ $(function() {
         };
 
         function revenuesTooltip(row, size, value) {
-            return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +  vis_data.getValue(row, 2) + '</div>';
+            var val = vis_data.getValue(row, 2);
+            return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
+                numeral(val).format('$0,0'); + '</div>';
         }
 
 
@@ -625,6 +618,9 @@ $(function() {
 
                 var subCategory = ExpendituresData[eKey];
                 var subCatValue = getSubCatValue(subCategory);
+                if (!subCatValue) {
+                    continue;
+                }
 
                 ExpendituresDataTable.push(
                     [subCategory.caption, 'Total Expenditures', parseInt(subCatValue), parseInt(subCatValue)]
@@ -633,9 +629,6 @@ $(function() {
             }
         }
 
-        /**
-         * TODO: Hardcoded!! Please ask the question to client, which field must be there?
-         */
         function getSubCatValue(subCategory) {
 
             if (subCategory.totalfunds) {
@@ -644,21 +637,9 @@ $(function() {
                     subCategory.totalfunds = -(subCategory.totalfunds);
                 }
 
-            } else if (subCategory.genfund) {
-
-                if (subCategory.genfund < 0) {
-                    subCategory.genfund = -(subCategory.genfund);
-                }
-
-            } else if (subCategory.otherfunds) {
-
-                if (subCategory.otherfunds < 0) {
-                    subCategory.otherfunds = -(subCategory.otherfunds);
-                }
-
             }
 
-            return subCategory.totalfunds || subCategory.genfund || subCategory.otherfunds;
+            return subCategory.totalfunds || false;
         }
 
         var options = {
@@ -679,7 +660,9 @@ $(function() {
         };
 
         function expendituresTooltip(row, size, value) {
-            return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +  vis_data.getValue(row, 2) + '</div>';
+            var val = vis_data.getValue(row, 2);
+            return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
+                numeral(val).format('$0,0'); + '</div>';
         }
 
         vis_data = new google.visualization.arrayToDataTable(ExpendituresDataTable);
