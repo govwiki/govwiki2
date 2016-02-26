@@ -29,6 +29,8 @@ class ElectedController extends Controller
      */
     public function showAction($altTypeSlug, $slug, $electedSlug, Request $request)
     {
+        $this->clearTranslationsCache();
+
         $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
             ->getElectedOfficial($altTypeSlug, $slug, $electedSlug);
 
@@ -99,5 +101,15 @@ class ElectedController extends Controller
             'slug' => $gov_slug,
             'electedSlug' => $elected_official_slug
         ));
+    }
+
+    private function clearTranslationsCache()
+    {
+        $cacheDir = __DIR__ . "/../../../../app/cache";
+        $finder = new \Symfony\Component\Finder\Finder();
+        $finder->in(array($cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"))->files();
+        foreach($finder as $file){
+            unlink($file->getRealpath());
+        }
     }
 }

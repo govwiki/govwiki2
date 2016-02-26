@@ -61,3 +61,7 @@ category:
 wizard:
     resource: @GovWikiAdminBundle/Controller/WizardController.php
     type:     annotation
+
+locale:
+    resource: @GovWikiAdminBundle/Controller/LocalizationController.php
+    type:     annotation

@@ -4,6 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Format;
+use GovWiki\DbBundle\Entity\Translation;
 use GovWiki\DbBundle\Form\AbstractGroupType;
 use GovWiki\DbBundle\Form\FormatType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
@@ -90,6 +91,8 @@ class FormatController extends Controller
                 $format->getField(),
                 $format->getType()
             );
+
+            $this->changeFormatTranslation('edit', $format->getField(), $format->getName());
         }
 
         return [ 'form' => $form->createView() ];
@@ -118,6 +121,8 @@ class FormatController extends Controller
                 $format->getType()
             );
 
+            $this->changeFormatTranslation('new', $format->getField(), $format->getName());
+
             return $this->redirectToRoute('govwiki_admin_format_edit', [
                 'id' => $format->getId(),
             ]);
@@ -139,6 +144,9 @@ class FormatController extends Controller
     public function removeAction(Format $format)
     {
         $em = $this->getDoctrine()->getManager();
+
+        $this->changeFormatTranslation('remove', $format->getField());
+
         $em->remove($format);
         $em->flush();
 
@@ -161,10 +169,73 @@ class FormatController extends Controller
     }
 
     /**
+     * @param string $action Action that will be executed on tab translation.
+     * @param integer $format_field Format Field for TransKey
+     * @param string $format_name Format Name for Translation's text
+     */
+    private function changeFormatTranslation($action, $format_field, $format_name = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $locale = $this->getLocaleManager()->getOneLocaleByShortName('en');
+        $transKey = 'env.format.' . $format_field;
+        $needOneResult = true;
+        $trans_key_settings = null;
+        if (!empty($transKey)) {
+            $trans_key_settings = array(
+                'matching' => 'eq',
+                'transKeys' => array($transKey)
+            );
+        }
+
+        /** @var Translation $translation */
+        if ('new' == $action) {
+            $translation = new Translation();
+            $translation->setTransKey($transKey);
+            $translation->setTranslation($format_name);
+            $translation->setLocale($locale);
+            $em->persist($translation);
+        } elseif ('edit' == $action) {
+            $translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
+            if (!empty($translation)) {
+                $translation->setTranslation($format_name);
+            } else {
+                $translation = new Translation();
+                $translation->setTransKey($transKey);
+                $translation->setTranslation($format_name);
+                $translation->setLocale($locale);
+                $em->persist($translation);
+            }
+        } elseif ('remove' == $action) {
+            $translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
+            if (!empty($translation)) {
+                $em->remove($translation);
+            }
+        }
+        $em->flush();
+    }
+
+    /**
      * @return \GovWiki\AdminBundle\Manager\Entity\AdminFormatManager
      */
     private function getManager()
     {
         return $this->get(GovWikiAdminServices::FORMAT_MANAGER);
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminLocaleManager
+     */
+    private function getLocaleManager()
+    {
+        return $this->get(GovWikiAdminServices::LOCALE_MANAGER);
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminTranslationManager
+     */
+    private function getTranslationManager()
+    {
+        return $this->get(GovWikiAdminServices::TRANSLATION_MANAGER);
     }
 }

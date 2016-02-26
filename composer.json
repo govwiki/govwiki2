@@ -28,8 +28,7 @@
         "friendsofsymfony/user-bundle": "~2.0@dev",
         "guzzlehttp/guzzle": "~6.1",
         "egeloen/ckeditor-bundle": "^2.5",
-        "salsify/json-streaming-parser": "^4.0",
-        "asm/translation-loader-bundle": "~1.0"
+        "salsify/json-streaming-parser": "^4.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

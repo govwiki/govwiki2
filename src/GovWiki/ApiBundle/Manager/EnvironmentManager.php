@@ -106,54 +106,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @return string
-     */
-    public function getGreetingText()
-    {
-        $qb = $this->em->getRepository('GovWikiDbBundle:Environment')
-            ->createQueryBuilder('Environment');
-        $expr = $qb->expr();
-
-        try {
-            return $qb
-                ->select('Environment.greetingText')
-                ->where($expr->eq('Environment.slug', $expr->literal($this->environment)))
-                ->getQuery()
-                ->getSingleScalarResult();
-        } catch (ORMException $e) {
-            return '';
-        }
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getBottomText()
-    {
-        $qb = $this->em->getRepository('GovWikiDbBundle:Environment')
-            ->createQueryBuilder('Environment');
-        $expr = $qb->expr();
-
-        try {
-            return $qb
-                ->select('Environment.bottomText')
-                ->where(
-                    $expr->andX(
-                        $expr->eq(
-                            'Environment.slug',
-                            $expr->literal($this->environment)
-                        ),
-                        $expr->eq('Environment.showBottomText', 1)
-                    )
-                )
-                ->getQuery()
-                ->getSingleScalarResult();
-        } catch (ORMException $e) {
-            return '';
-        }
-    }
-
-    /**
      * @return array
      */
     public function getRankedFields()
@@ -273,11 +225,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
          * Replace single and double quote to html special char.
          */
         $governmentJson = json_encode($government);
-        /*$governmentJson = str_replace(
-            [ '\'', '\\"' ],
-            [ '&apos;', '&quote;' ],
-            json_encode($government)
-        );*/
 
         return [
             'government' => $government,

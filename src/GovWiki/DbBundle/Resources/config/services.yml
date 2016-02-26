@@ -60,3 +60,16 @@ services:
         arguments: [@govwiki_admin.manager.environment]
         tags:
             - { name: form.type, alias: format }
+
+    translation.loader.db:
+        class:     'GovWiki\DbBundle\Translation\DatabaseLoader'
+        arguments: [ '@doctrine.orm.entity_manager', '@session' ]
+        tags:
+            - { name: translation.loader, alias: db }
+        configurator: [@govwiki_api.environment_manager.configurator, configure]
+
+    govwiki_db.locale_listener:
+        class: 'GovWiki\DbBundle\EventListener\LocaleListener'
+        arguments: ['%kernel.default_locale%']
+        tags:
+            - { name: kernel.event_subscriber }

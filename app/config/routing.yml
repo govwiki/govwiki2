@@ -17,7 +17,3 @@ govwiki_admin:
 govwiki_frontend:
     resource: "@GovWikiFrontendBundle/Resources/config/routing.yml"
     prefix: /
-
-asm_translation_loader.gui:
-    resource: "@AsmTranslationLoaderBundle/Resources/config/routing.yml"
-    prefix:   /translation

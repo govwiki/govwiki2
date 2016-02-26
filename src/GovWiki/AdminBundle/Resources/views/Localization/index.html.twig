@@ -1,9 +1,17 @@
 {% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
 
-{% block title %}{{ parent() }} - Environments{% endblock %}
+{% block title %}{{ parent() }} - Localizations{% endblock %}
 
 {% block breadcrumb %}
-    {{ macro.breadcrumbElement('Main') }}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+    macro.breadcrumbElement(
+    admin_environment|capitalize ~' environment',
+    'govwiki_admin_main_show',
+    { 'environment': admin_environment }
+    )
+    }}
+    {{ macro.breadcrumbElement('Localization') }}
 {% endblock breadcrumb %}
 
 {% block body %}
@@ -16,7 +24,7 @@
 
                 {# Header #}
                 <div class="panel-heading">
-                    <h3 class="panel-title">Environment list</h3>
+                    <h3 class="panel-title">Localization list</h3>
                 </div>
 
                 {# Body #}
@@ -24,33 +32,31 @@
 
                     <div class="row">
                         <div class="col-md-12">
-                            <h3>Environments</h3>
+                            <h3>Localizations</h3>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-12">
 
-                            {{ knp_pagination_render(environments) }}
+                            {{ knp_pagination_render(locale_names_list) }}
 
                             <table class="table table-bordered text-center">
                                 <tr>
                                     <th>Name</th>
-                                    <th>Domain</th>
                                     <th class="actions">Actions</th>
                                 </tr>
-                                {%- for environment in environments -%}
+                                {%- for locale in locale_names_list -%}
                                     <tr>
                                         <td>
-                                            <a href="{{ path('govwiki_admin_main_show',
-                                                { environment: environment.slug}) }}">
-                                                {{ environment.name }}
+                                            <a href="{{ path('govwiki_admin_localization_showlocale',
+                                                { locale_name: locale.shortName}) }}">
+                                                {{ locale.shortName|upper }}
                                             </a>
                                         </td>
-                                        <td>{{ environment.domain }}</td>
                                         <td>
-                                            {% if is_granted('ROLE_ADMIN') %}
-                                                <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_main_remove', { environment: environment.slug }) -}}" data-description="Delete environment with all governments?">
+                                            {% if is_granted('ROLE_ADMIN') and locale.shortName != 'en' %}
+                                                <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_localization_removelocale', { locale_name: locale.shortName }) -}}" data-description="Delete localization?">
                                                     Delete
                                                 </button>
                                             {% endif %}
@@ -59,11 +65,11 @@
                                 {%- endfor -%}
                             </table>
 
-                            {{ knp_pagination_render(environments) }}
+                            {{ knp_pagination_render(locale_names_list) }}
 
                             {% if is_granted('ROLE_ADMIN') %}
-                                <a class="btn btn-primary" href="{{ path('govwiki_admin_wizard_start') }}">
-                                    Add environment
+                                <a class="btn btn-primary" href="{{ path('govwiki_admin_localization_createlocale') }}">
+                                    Add localization
                                 </a>
                             {% endif %}
                         </div>

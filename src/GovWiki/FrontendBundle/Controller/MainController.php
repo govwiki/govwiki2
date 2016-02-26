@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * MainController
@@ -45,6 +46,8 @@ class MainController extends Controller
      */
     public function mapAction()
     {
+        $this->clearTranslationsCache();
+
         $environmentManager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
 
         $environment = $environmentManager->getEnvironment();
@@ -62,17 +65,32 @@ class MainController extends Controller
         $map['username'] = $this->getParameter('carto_db.account');
 
         $map = json_encode($map);
-        /*$map = str_replace(
-            [ '\'', '\\"' ],
-            [ '&apos;', '&quote;' ],
-            json_encode($map)
-        );*/
+
+        /** @var MessageCatalogue $catalogue */
+        $translator = $this->get('translator');
+        $catalogue = $translator->getCatalogue();
+        $transKey = 'map.greeting_text';
+        if ($catalogue->has($transKey)) {
+            $greetingText = $translator->trans($transKey);
+        } else {
+            $greetingText = '';
+        }
 
         return [
             'environment' => $environment,
             'map' => $map,
             'mapEntity' => $mapEntity,
-            'greetingText' => $environmentManager->getGreetingText(),
+            'greetingText' => $greetingText
         ];
+    }
+
+    private function clearTranslationsCache()
+    {
+        $cacheDir = __DIR__ . "/../../../../app/cache";
+        $finder = new \Symfony\Component\Finder\Finder();
+        $finder->in(array($cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"))->files();
+        foreach($finder as $file){
+            unlink($file->getRealpath());
+        }
     }
 }

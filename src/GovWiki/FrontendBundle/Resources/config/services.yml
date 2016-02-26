@@ -6,5 +6,6 @@ services:
             - @jms_serializer
             - %determinator.name%
             - @service_container
+            - @translator
         tags:
             - { name: twig.extension }

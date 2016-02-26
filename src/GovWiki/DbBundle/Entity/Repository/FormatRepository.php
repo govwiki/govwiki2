@@ -33,7 +33,7 @@ class FormatRepository extends EntityRepository
 
         return $qb
             ->addSelect(
-                'Tab.name AS tab_name, Category.name AS category_name',
+                'Tab.id AS tab_id, Tab.name AS tab_name, Category.id AS category_id, Category.name AS category_name',
                 'Category.decoration as category_decoration'
             )
             ->leftJoin('Format.environment', 'Environment')
