@@ -1,5 +1,6 @@
 var styles = JSON.parse(window.gw.styles);
 
+
 if (styles) {
     styles.forEach(function (style) {
         parseStyles(style);
