@@ -294,10 +294,10 @@
             getCategories: function() {
                 var data = {
                     governmentsId:
-                        [
-                            $('#first-municipality').attr('data-id'),
-                            $('#second-municipality').attr('data-id')
-                        ]
+                            [
+                                $('#first-municipality').attr('data-id'),
+                                $('#second-municipality').attr('data-id')
+                            ]
                 };
 
                 var el = $('#municipality-categories');
@@ -381,9 +381,52 @@
                             }
                         }
                         obj.data = data.comparedData;
+
                         console.log(obj.data);
+                        obj.drawDiagramm(obj.data.firstMunicipality.data, 'total-revenue-pie', 'Total Revenues');
+                        obj.drawDiagramm(obj.data.secondMunicipality.data, 'total-expenditures-pie', 'Total Expenditures');
                     }
                 });
+            },
+            drawDiagramm: function(data, blockId, title) {
+                var obj = this;
+                var chart, item, len3, options, p, r, ref1, rows, vis_data;
+                vis_data = new google.visualization.DataTable();
+                vis_data.addColumn('string', 'Total Gov. Expenditures');
+                vis_data.addColumn('number', 'Total');
+                rows = [];
+
+                var revenues = data;
+                for(var key in revenues){
+                    if(revenues.hasOwnProperty(key) && (revenues[key].caption != title)) {
+                        r = [revenues[key].caption, parseInt(revenues[key].dollarAmount)];
+                        rows.push(r);
+                    }
+                }
+
+                vis_data.addRows(rows);
+                options = {
+                    'title': title,
+                    'titleTextStyle': {
+                        'fontSize': 16
+                    },
+                    'tooltip': {
+                        'textStyle': {
+                            'fontSize': 12
+                        }
+                    },
+                    'width': 470,
+                    'height': 350,
+                    'pieStartAngle': 60,
+                    'sliceVisibilityThreshold': .05,
+                    'forceIFrame': true,
+                    'chartArea': {
+                        width: '90%',
+                        height: '75%'
+                    }
+                };
+                chart = new google.visualization.PieChart(document.getElementById(blockId));
+                chart.draw(vis_data, options);
             }
         }
 
