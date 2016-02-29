@@ -55,7 +55,7 @@ RankPopover.prototype.init = function init() {
         $popover = $element.hasClass('rank') ? $element : $element.closest('.rank');
 
         if ($popover.length == 0) {
-            return false;
+            return true;
         }
 
         self.$popover = $element;
