@@ -71,6 +71,20 @@ services:
         parent: govwiki_admin.entity_manager.abstract
 
     #
+    # Locale admin entity manager.
+    #
+    govwiki_admin.entity_manager.locale:
+        class: GovWiki\AdminBundle\Manager\Entity\AdminLocaleManager
+        parent: govwiki_admin.entity_manager.abstract
+
+    #
+    # Translation admin entity manager.
+    #
+    govwiki_admin.entity_manager.translation:
+        class: GovWiki\AdminBundle\Manager\Entity\AdminTranslationManager
+        parent: govwiki_admin.entity_manager.abstract
+
+    #
     # FinData admin entity manager.
     #
     govwiki_admin.entity_manager.fin_data:

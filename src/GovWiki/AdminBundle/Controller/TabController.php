@@ -4,6 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Tab;
+use GovWiki\DbBundle\Entity\Translation;
 use GovWiki\DbBundle\Form\AbstractGroupType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,6 +50,8 @@ class TabController extends AbstractGovWikiAdminController
     public function removeAction(Tab $tab)
     {
         $em = $this->getDoctrine()->getManager();
+
+        $this->changeTabTranslation('remove', $tab->getId());
 
         $em->remove($tab);
         $em->flush();
@@ -105,6 +108,8 @@ class TabController extends AbstractGovWikiAdminController
 
         $this->processForm($request, $form);
 
+        $this->changeTabTranslation('new', $tab->getId(), $tab->getName());
+
         return [ 'form' => $form->createView() ];
     }
 
@@ -124,6 +129,8 @@ class TabController extends AbstractGovWikiAdminController
         $form = $this->createForm(new AbstractGroupType(), $tab);
 
         $this->processForm($request, $form);
+
+        $this->changeTabTranslation('edit', $tab->getId(), $tab->getName());
 
         return [ 'form' => $form->createView() ];
     }
@@ -145,10 +152,73 @@ class TabController extends AbstractGovWikiAdminController
     }
 
     /**
+     * @param string $action Action that will be executed on tab translation.
+     * @param integer $tab_id Tab ID for TransKey
+     * @param string $tab_name Tab Name for Translation's text
+     */
+    private function changeTabTranslation($action, $tab_id, $tab_name = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $locale = $this->getLocaleManager()->getOneLocaleByShortName('en');
+        $transKey = 'env.groups.group_id_' . $tab_id;
+        $needOneResult = true;
+        $trans_key_settings = null;
+        if (!empty($transKey)) {
+            $trans_key_settings = array(
+                'matching' => 'eq',
+                'transKeys' => array($transKey)
+            );
+        }
+
+        /** @var Translation $translation */
+        if ('new' == $action) {
+            $translation = new Translation();
+            $translation->setTransKey($transKey);
+            $translation->setTranslation($tab_name);
+            $translation->setLocale($locale);
+            $em->persist($translation);
+        } elseif ('edit' == $action) {
+            $translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
+            if (!empty($translation)) {
+                $translation->setTranslation($tab_name);
+            } else {
+                $translation = new Translation();
+                $translation->setTransKey($transKey);
+                $translation->setTranslation($tab_name);
+                $translation->setLocale($locale);
+                $em->persist($translation);
+            }
+        } elseif ('remove' == $action) {
+            $translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
+            if (!empty($translation)) {
+                $em->remove($translation);
+            }
+        }
+        $em->flush();
+    }
+
+    /**
      * @return \GovWiki\AdminBundle\Manager\Entity\AdminTabManager
      */
     private function getManager()
     {
         return $this->get(GovWikiAdminServices::TAB_MANAGER);
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminLocaleManager
+     */
+    private function getLocaleManager()
+    {
+            return $this->get(GovWikiAdminServices::LOCALE_MANAGER);
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminTranslationManager
+     */
+    private function getTranslationManager()
+    {
+        return $this->get(GovWikiAdminServices::TRANSLATION_MANAGER);
     }
 }

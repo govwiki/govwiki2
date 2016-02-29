@@ -77,3 +77,11 @@ legend:
 shape:
     resource: "@GovWikiAdminBundle/Controller/ShapeController.php"
     type:      annotation
+
+adverting:
+    resource: "@GovWikiAdminBundle/Controller/AdvertingController.php"
+    type:     annotation
+
+locale:
+    resource: @GovWikiAdminBundle/Controller/LocalizationController.php
+    type:     annotation

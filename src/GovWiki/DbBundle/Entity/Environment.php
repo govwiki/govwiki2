@@ -73,27 +73,6 @@ class Environment
     private $style;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $greetingText;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $bottomText = false;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $showBottomText;
-
-    /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")

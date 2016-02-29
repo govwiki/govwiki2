@@ -1,0 +1,14 @@
+{% extends 'GovWikiAdminBundle:Layout:main.html.twig' %}
+
+{% block title %}Adverting{% endblock %}
+
+{% block body %}
+    <h3>Adverting</h3>
+    <br>
+    {{ form_start(form) }}
+        {{ form_row(form.advertingType) }}
+        {{ form_row(form.advertingEnable) }}
+        {{ form_row(form.advertingCode) }}
+        {{ form_row(form.submit, { 'label': 'Save' }) }}
+    {{ form_end(form) }}
+{% endblock body %}

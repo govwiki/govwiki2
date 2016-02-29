@@ -74,7 +74,7 @@
                     <a href="#" class="dropdown-toggle link" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >System<span class="caret"></span></a>
                     <ul class="dropdown-menu">
 
-                        <li>
+                        <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_main_home' ? 'active' }}">
                             <a class="link" href="{{ path('govwiki_admin_main_home') }}"> Environments</a>
 
                         </li>
@@ -83,17 +83,25 @@
                             <a class="link" href="{{ path('govwiki_admin_user_index') }}"> Users </a>
                         </li>
 
+                        <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_adverting_index' ? 'active' }}">
+                            <a class="link" href="{{ path('govwiki_admin_adverting_index') }}"> Adverting </a>
+                        </li>
+
                     </ul>
                 </li>
 
                 {# Visibility: sm or less #}
-                <li class="visible-xs visible-sm">
+                <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_main_home' ? 'active' }} visible-xs visible-sm">
                     <a class="link" href="{{ path('govwiki_admin_main_home') }}"> Environments </a>
                 </li>
 
                 {# Visibility: sm or less #}
                 <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_user_index' ? 'active' }} visible-xs visible-sm">
                     <a class="link" href="{{ path('govwiki_admin_user_index') }}"> Users </a>
+                </li>
+
+                <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_adverting_index' ? 'active' }} visible-xs visible-sm">
+                    <a class="link" href="{{ path('govwiki_admin_adverting_index') }}"> Adverting </a>
                 </li>
 
                 {# Logout icon #}
