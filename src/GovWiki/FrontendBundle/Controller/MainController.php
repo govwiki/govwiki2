@@ -73,7 +73,7 @@ class MainController extends Controller
         if ($catalogue->has($transKey)) {
             $greetingText = $translator->trans($transKey);
         } else {
-            $greetingText = '';
+            $greetingText = '<div class="title"><h3>Welcome to California Policy Center&rsquo;s Civic Performance Profiles</h3></div><div class="content"><p>Is your local government giving you value for money? Use CPC&rsquo;s Civic Performance Profiles to see how your city, county, school district or special district stacks up.</p><p>Among the surprising facts we learned while compiling this database:</p><ul><li><a href="County/Los_Angeles">Los Angeles County</a> has unfunded retiree health liabilities of $26.7 billion.</li>	<li>Median full time public employee salary and benefits in <a href="/City/San_Jose">San Jose</a> exceeds $157,000.</li>	<li>The Superintendent of <a href="/School_District/New_Haven_Unified_School_District">New Haven Unified School District</a> in Alameda County received almost $650,000 in salary and benefits while the district&rsquo;s Academic Performance Index is below the state median.</li></ul><p>To learn more about a California local government that affects you, please select it from the map or by typing its name.</p></div>';
         }
 
         return [

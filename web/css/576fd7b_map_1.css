@@ -245,6 +245,15 @@ div.cartodb-tooltip-content-wrapper p {
 .leaflet-tile-pane .leaflet-layer:last-child {
   z-index: 1000; }
 
+/* ========================= */
+/* ======== Adverting ======== */
+/* ========================= */
+.adverting-top {
+  padding: 18px 0 0 0;
+  max-width: 728px;
+  margin: 0 auto;
+  overflow: hidden; }
+
 .mapController {
   margin-bottom: 20px;
   /* ========================= */

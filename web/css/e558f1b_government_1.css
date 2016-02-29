@@ -245,6 +245,15 @@ div.cartodb-tooltip-content-wrapper p {
 .leaflet-tile-pane .leaflet-layer:last-child {
   z-index: 1000; }
 
+/* ========================= */
+/* ======== Adverting ======== */
+/* ========================= */
+.adverting-top {
+  padding: 18px 0 0 0;
+  max-width: 728px;
+  margin: 0 auto;
+  overflow: hidden; }
+
 .governmentController nav a {
   display: inline-block;
   margin-top: 10px; }
@@ -407,3 +416,15 @@ div.cartodb-tooltip-content-wrapper p {
     .governmentController section .nav-pills__puerto a:hover {
       background-color: #f15a29;
       color: white; }
+  .governmentController section .municipality-search {
+    position: absolute;
+    background: #fff;
+    z-index: 5;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 0 4px #ccc; }
+    .governmentController section .municipality-search div {
+      cursor: pointer;
+      padding: 2px 6px; }
+    .governmentController section .municipality-search div:hover {
+      background: #F9F9F9; }
