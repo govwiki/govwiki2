@@ -192,9 +192,12 @@
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.runtime.js'
                     '@GovWikiFrontendBundle/Resources/public/js/script.js'
                     '@GovWikiFrontendBundle/Resources/public/js/government/rank-popover.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/common.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/government/index.bundle.js'
                     output='js/governemnt.js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    {% javascripts '@GovWikiFrontendBundle/Resources/public/js/common.js'
+                   '@GovWikiFrontendBundle/Resources/public/js/government/bundle/index.js' %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 

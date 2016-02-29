@@ -1,0 +1,24 @@
+{
+  "name": "govwiki",
+  "version": "1.0.0",
+  "description": "Government Wiki Project",
+  "main": "README.md",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.sibers.com:sibers/govwiki.git"
+  },
+  "keywords": [
+    "symfony2"
+  ],
+  "author": "sibers",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gutil": "^1.6.4",
+    "webpack": "^1.12.14",
+    "webpack-load-plugins": "^0.1.2"
+  }
+}
