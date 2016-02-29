@@ -25,11 +25,23 @@ class GovernmentController extends Controller
      */
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
+        $this->clearTranslationsCache();
+
         return $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
             ->getGovernment(
                 $altTypeSlug,
                 $slug,
                 $request->query->get('year', null)
             );
+    }
+
+    private function clearTranslationsCache()
+    {
+        $cacheDir = __DIR__ . "/../../../../app/cache";
+        $finder = new \Symfony\Component\Finder\Finder();
+        $finder->in(array($cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"))->files();
+        foreach($finder as $file){
+            unlink($file->getRealpath());
+        }
     }
 }

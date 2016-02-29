@@ -139,7 +139,6 @@ class ElectedOfficialController extends AbstractGovWikiApiController
     public function searchAction(Request $request)
     {
         $search = $request->query->get('search', null);
-        error_log('search = '.$search);
         if (null === $search) {
             return $this->badRequestResponse(
                 'Provide required query parameter \'search\''

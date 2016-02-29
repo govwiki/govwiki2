@@ -23,3 +23,16 @@ services:
     govwiki_db.manager.create_request:
         class: GovWiki\DbBundle\CreateRequest\CreateRequestManager
         arguments: [@doctrine.orm.default_entity_manager]
+        
+    translation.loader.db:
+        class:     'GovWiki\DbBundle\Translation\DatabaseLoader'
+        arguments: [ '@doctrine.orm.entity_manager', '@session' ]
+        tags:
+            - { name: translation.loader, alias: db }
+        configurator: [@govwiki_api.environment_manager.configurator, configure]
+
+    govwiki_db.locale_listener:
+        class: 'GovWiki\DbBundle\EventListener\LocaleListener'
+        arguments: ['%kernel.default_locale%']
+        tags:
+            - { name: kernel.event_subscriber }

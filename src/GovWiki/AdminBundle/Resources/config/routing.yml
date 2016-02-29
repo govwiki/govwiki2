@@ -77,3 +77,7 @@ legend:
 shape:
     resource: "@GovWikiAdminBundle/Controller/ShapeController.php"
     type:      annotation
+
+locale:
+    resource: @GovWikiAdminBundle/Controller/LocalizationController.php
+    type:     annotation

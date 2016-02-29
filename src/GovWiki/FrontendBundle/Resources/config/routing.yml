@@ -1,3 +1,6 @@
+localization:
+    resource: "@GovWikiFrontendBundle/Controller/LocalizationController.php"
+    type:     govwiki
 
 elected:
     resource: "@GovWikiFrontendBundle/Controller/ElectedController.php"
