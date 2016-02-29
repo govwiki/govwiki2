@@ -1,38 +1,48 @@
 'use strict';
 
-var webpack = require("webpack");
+var pathUtil = require('path');
+var webpack = require('webpack');
 
-var base = './src/GovWiki/FrontendBundle/Resources/public/js';
-
-/**
- * Entry points
- */
-var entry = {};
-entry[base + "/home/bundle/index"] = base + "/home/index.js";
-entry[base + "/government/bundle/index"] = base + "/government/index.js";
-
+var path = {
+    base: './src/GovWiki/FrontendBundle/Resources/public/js',
+    web: './web/js'
+};
 
 module.exports = {
+    entry: {
+        map: path.base + '/home/index.js',
+        government: path.base + '/government/index.js',
+        common: path.base + '/common.js'
+    },
     output: {
-        filename: "[name].js",
-        chunkFilename: "[id].js"
+        path: __dirname + '/web/js',
+        filename: '[name].js',
+        chunkFilename: '[id].js'
     },
     devtool: 'source-map',
+    resolve: {
+        root: [pathUtil.join(__dirname, 'bower_components')]
+    },
     plugins: [
         new webpack.DefinePlugin({
-            "process.env": {
+            'process.env': {
                 // This has effect on the react lib size
-                "NODE_ENV": JSON.stringify("production")
+                'NODE_ENV': JSON.stringify('production')
             }
         }),
         new webpack.optimize.DedupePlugin(),
         new webpack.NoErrorsPlugin(),
-        //new webpack.optimize.UglifyJsPlugin(),
+        //new webpack.optimize.UglifyJsPlugin({
+        //    compress: {
+        //        warnings: false
+        //    }
+        //}),
         new webpack.optimize.CommonsChunkPlugin({
-            name: "common",
-            filename: base + "/common.js"
-        })
+            names: ['common'],
+            filename: 'common.js'
+        }),
+        new webpack.ResolverPlugin(
+            new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin('.bower.json', ['main'])
+        )
     ]
 };
-
-module.exports.entry = entry;                                                                                                                                                                                                                                                                                                                                                                                                                                   

@@ -84,8 +84,6 @@
 
     {{parent()}}
 
-    <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.13/cartodb.js"></script>
-
     <script>
         window.gw.map = '{{ map | escape('js') }}';
         window.gw.environment = '{{ environment }}';
@@ -94,15 +92,8 @@
         window.gw.urls.search_elected = '{{ govwiki_path('govwiki_api_v1_electedofficial_search') }}';
     </script>
 
-    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/vendor/typeahead.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/script.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/home/search_government.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/home/search_elected.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/home/map.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/home/bundle/index.js'
-                    output='js/map.js' %}
-        <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/map.js"></script>
 
 {% endblock %}

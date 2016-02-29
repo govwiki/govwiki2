@@ -265,19 +265,11 @@ function handler_switchChart() {
             hideChartGroup('pie-charts', false);
             hideChartGroup('tree-chart', true);
             hideChartGroup('tree-charts', true);
-            if (!chart.financialStatements_one.init || !chart.financialStatements_two.init) {
-                financialStatements_one();
-                financialStatements_two();
+            if (!chart.financialStatements_revenues.init || !chart.financialStatements_expenditures.init) {
+                financialStatements_revenue();
+                financialStatements_expenditures();
             }
 
-        } else if (chartType == 'tree') {
-
-            hideChartGroup('pie-charts', true);
-            hideChartGroup('tree-charts', true);
-            hideChartGroup('tree-chart', false);
-            if (!chart.financialStatementsTree.init) {
-                financialStatementsTree();
-            }
         } else if (chartType == 'tree-charts') {
             hideChartGroup('pie-charts', true);
             hideChartGroup('tree-chart', true);

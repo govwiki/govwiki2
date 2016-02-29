@@ -401,12 +401,7 @@
         </script>
     {% endif %}
 
-    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.runtime.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/script.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/government/rank-popover.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/government/index.js'
-                    output='js/governemnt.js' %}
-        <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+    <script src="/js/common.js"></script>
+    <script src="/js/government.js"></script>
 
 {% endblock %}

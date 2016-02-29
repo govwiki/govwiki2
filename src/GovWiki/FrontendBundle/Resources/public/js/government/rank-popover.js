@@ -1,3 +1,4 @@
+require('../vendor/handlebars.runtime.js');
 
 /**
  * @param {Object} options
@@ -342,3 +343,5 @@ RankPopover.prototype.formatData = function formatData (data) {
         return buffer;
     },"useData":true});
 })();
+
+module.exports = RankPopover;

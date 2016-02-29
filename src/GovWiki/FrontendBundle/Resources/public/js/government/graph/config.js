@@ -14,10 +14,10 @@ var chart = {
     financialHealth_three: {
         init: false
     },
-    financialStatements_one: {
+    financialStatements_expenditures: {
         init: false
     },
-    financialStatements_two: {
+    financialStatements_revenues: {
         init: false
     },
     financialStatementsTree: {
