@@ -8,15 +8,16 @@ var base = './src/GovWiki/FrontendBundle/Resources/public/js';
  * Entry points
  */
 var entry = {};
-entry[base + "/home/index"] = base + "/home/index.js";
-entry[base + "/government/index"] = base + "/government/index.js";
+entry[base + "/home/bundle/index"] = base + "/home/index.js";
+entry[base + "/government/bundle/index"] = base + "/government/index.js";
 
 
 module.exports = {
     output: {
-        filename: "[name].bundle.js",
-        chunkFilename: "[id].bundle.js"
+        filename: "[name].js",
+        chunkFilename: "[id].js"
     },
+    devtool: 'source-map',
     plugins: [
         new webpack.DefinePlugin({
             "process.env": {
