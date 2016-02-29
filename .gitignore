@@ -12,3 +12,5 @@
 /vendor/
 /web/bundles/
 /web/img/
+node_modules/
+src/GovWiki/FrontendBundle/Resources/public/js/
