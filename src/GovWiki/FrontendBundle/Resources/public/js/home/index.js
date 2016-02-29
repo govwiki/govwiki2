@@ -1,5 +1,4 @@
 require('jquery');
-//require('../vendor/cartodb.js');
 require('../vendor/bootstrap.js');
 
 require('./search_elected.js');

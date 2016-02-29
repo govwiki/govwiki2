@@ -1,4 +1,4 @@
-require('../vendor/handlebars.runtime.js');
+var Handlebars = require('../vendor/handlebars.runtime.js');
 
 /**
  * @param {Object} options

@@ -2,12 +2,10 @@ webpackJsonp([1],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(1);
-	
 	$(function() {
 	
-	    __webpack_require__(2);
-	    var RankPopover = __webpack_require__(8);
+	    __webpack_require__(1);
+	    var RankPopover = __webpack_require__(7);
 	    var rankPopover = new RankPopover();
 	
 	    /**
@@ -30,6 +28,1062 @@ webpackJsonp([1],[
 
 /***/ },
 /* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var employeeCompensationGraphs = __webpack_require__(2);
+	var financialHealthGraphs = __webpack_require__(5);
+	var financialStatementGraphs = __webpack_require__(6);
+	
+	/**
+	 * Initialization
+	 */
+	function init() {
+	    handler_onTabSwitch();
+	}
+	
+	/**
+	 * (Handler)
+	 * On tab switch
+	 */
+	function handler_onTabSwitch() {
+	
+	    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+	
+	        var tabname = $(e.target).attr('data-tabname');
+	
+	        /**
+	         * Init graphs
+	         */
+	        switch (tabname) {
+	            case 'Quality of Services':
+	                break;
+	            case 'Employee Compensation':
+	                employeeCompensationGraphs.initAll();
+	                break;
+	            case 'Financial Health':
+	                financialHealthGraphs.initAll();
+	                break;
+	            case 'Financial Financial_Statements':
+	                financialStatementGraphs.initAll();
+	                break;
+	        }
+	
+	    });
+	
+	}
+	
+	google.load('visualization', '1.0', {'packages': ['treemap', 'corechart'], 'callback': init});
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var data = __webpack_require__(3).data;
+	var chart = __webpack_require__(4).chart;
+	
+	/**
+	 * Initialization
+	 */
+	function init() {
+	    employeeCompensation_one();
+	    employeeCompensation_two();
+	}
+	
+	/**
+	 * median-comp-graph
+	 */
+	function employeeCompensation_one() {
+	    /*
+	     Ahtung! Hardcode detected!
+	     todo replace such bad code
+	     */
+	    if (! data['median_salary_per_full_time_emp']) {
+	        data['median_salary_per_full_time_emp'] = data['median_salary_for_full_time_employees'];
+	    }
+	    if (! data['median_benefits_per_ft_emp']) {
+	        data['median_benefits_per_ft_emp'] = data['median_benefits_for_full_time_employees'];
+	    }
+	
+	    if (data['median_wages_general_public'] == 0) {
+	        data['median_wages_general_public'] = undefined;
+	    }
+	
+	    if (data['median_benefits_general_public'] == 0) {
+	        data['median_benefits_general_public'] = undefined;
+	    }
+	
+	    if (!data['median_salary_per_full_time_emp'] || !data['median_benefits_per_ft_emp'] ||
+	        !data['median_wages_general_public'] || !data['median_benefits_general_public']) {
+	        return;
+	    }
+	
+	    var chart, formatter, options, vis_data;
+	    vis_data = new google.visualization.DataTable();
+	    vis_data.addColumn('string', 'Median Compensation');
+	    vis_data.addColumn('number', 'Wages');
+	    vis_data.addColumn('number', 'Bens.');
+	    vis_data.addRows([
+	        [
+	            toTitleCase(data.name + '\n Employees'),
+	            +data['median_salary_per_full_time_emp'],
+	            +data['median_benefits_per_ft_emp']
+	        ],
+	        [
+	            'All \n' + toTitleCase(data.name + ' \n Residents'),
+	            +data['median_wages_general_public'],
+	            +data['median_benefits_general_public']
+	        ]
+	    ]);
+	    formatter = new google.visualization.NumberFormat({
+	        groupingSymbol: ',',
+	        fractionDigits: '0'
+	    });
+	    formatter.format(vis_data, 1);
+	    formatter.format(vis_data, 2);
+	    options = {
+	        'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
+	        'titleTextStyle': {
+	            'fontSize': 12
+	        },
+	        'tooltip': {
+	            'textStyle': {
+	                'fontSize': 12
+	            }
+	        },
+	        'width': 340,
+	        'height': 300,
+	        'isStacked': 'true',
+	        'colors': ['#005ce6', '#009933']
+	    };
+	    chart = new google.visualization.ColumnChart(document.getElementById('median-comp-graph'));
+	    chart.draw(vis_data, options);
+	
+	
+	    function toTitleCase (str) {
+	        return str.replace(/\w\S*/g, function(txt) {
+	            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+	        });
+	    }
+	
+	}
+	
+	/**
+	 * median-pension-graph
+	 */
+	function employeeCompensation_two() {
+	    /*
+	     Ahtung! Hardcode detected!
+	     todo replace such bad code
+	     */
+	    if (! data['median_pension30_year_retiree']) {
+	        data['median_pension30_year_retiree'] = data['median_pension_for_retiree_with_30_years_service'];
+	    }
+	
+	    if (! data['median_pension30_year_retiree']) {
+	        return;
+	    }
+	
+	    var chart, formatter, options, vis_data;
+	    vis_data = new google.visualization.DataTable();
+	    vis_data.addColumn('string', 'Median Pension');
+	    vis_data.addColumn('number', 'Wages');
+	    vis_data.addRows([['Pension for \n Retiree w/ 30 Years', +data['median_pension30_year_retiree']]]);
+	    formatter = new google.visualization.NumberFormat({
+	        groupingSymbol: ',',
+	        fractionDigits: '0'
+	    });
+	    formatter.format(vis_data, 1);
+	    options = {
+	        'title': 'Median Total Pension',
+	        'titleTextStyle': {
+	            'fontSize': 12
+	        },
+	        'tooltip': {
+	            'textStyle': {
+	                'fontSize': 12
+	            }
+	        },
+	        'width': 340,
+	        'height': 300,
+	        'bar': {
+	            'groupWidth': '30%'
+	        },
+	        'isStacked': 'true',
+	        'colors': ['#005ce6', '#009933']
+	    };
+	    chart = new google.visualization.ColumnChart(document.getElementById('median-pension-graph'));
+	    chart.draw(vis_data, options);
+	}
+	
+	
+	module.exports = {
+	    init: init,
+	    initAll: init
+	};
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	var data = JSON.parse(window.gw.government);
+	
+	module.exports = {
+	    data: data
+	};
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	var chart = {
+	    employeeCompensation_one: {
+	        init: false
+	    },
+	    employeeCompensation_two: {
+	        init: false
+	    },
+	    financialHealth_one: {
+	        init: false
+	    },
+	    financialHealth_two: {
+	        init: false
+	    },
+	    financialHealth_three: {
+	        init: false
+	    },
+	    financialStatements_expenditures: {
+	        init: false
+	    },
+	    financialStatements_revenues: {
+	        init: false
+	    },
+	    financialStatementsTree: {
+	        init: false
+	    },
+	    financialStatementsTree_expenditures: {
+	        init: false
+	    },
+	    financialStatementsTree_revenues: {
+	        init: false
+	    }
+	};
+	
+	module.exports = {
+	    chart: chart
+	};
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var data = __webpack_require__(3).data;
+	var chart = __webpack_require__(4).chart;
+	
+	/**
+	 * Initialization
+	 */
+	function init() {
+	    financialHealth_one();
+	    financialHealth_two();
+	    financialHealth_three();
+	}
+	
+	/**
+	 * public-safety-pie
+	 */
+	function financialHealth_one() {
+	    /**
+	     * Ahtung! Hardcode detected!
+	     * todo replace such bad code
+	     */
+	    if (! data['public_safety_exp_over_tot_gov_fund_revenue']) {
+	        data['public_safety_exp_over_tot_gov_fund_revenue'] = data['public_safety_expense_total_governmental_fund_revenue'];
+	    }
+	
+	    if (! data['public_safety_exp_over_tot_gov_fund_revenue']) {
+	        return;
+	    }
+	
+	    var chart, options, vis_data;
+	    vis_data = new google.visualization.DataTable();
+	    vis_data.addColumn('string', 'Public Safety Expense');
+	    vis_data.addColumn('number', 'Total');
+	    vis_data.addRows([['Public Safety Exp', 1 - data['public_safety_exp_over_tot_gov_fund_revenue']], ['Other', +data['public_safety_exp_over_tot_gov_fund_revenue']]]);
+	    options = {
+	        'title': 'Public safety expense',
+	        'titleTextStyle': {
+	            'fontSize': 12
+	        },
+	        'tooltip': {
+	            'textStyle': {
+	                'fontSize': 12
+	            }
+	        },
+	        'width': 340,
+	        'height': 300,
+	        'is3D': 'true',
+	        'colors': ['#005ce6', '#009933'],
+	        'slices': {
+	            1: {
+	                offset: 0.2
+	            }
+	        },
+	        'pieStartAngle': 45
+	    };
+	
+	    var element = document.getElementById('public-safety-pie');
+	    if (element) {
+	        chart = new google.visualization.PieChart(element);
+	        chart.draw(vis_data, options);
+	    }
+	}
+	
+	/**
+	 * fin-health-revenue-graph
+	 */
+	function financialHealth_two() {
+	
+	    if (! data['total_revenue_per_capita']) {
+	        return;
+	    }
+	
+	    var chart, options, vis_data;
+	    vis_data = new google.visualization.DataTable();
+	    vis_data.addColumn('string', 'Per Capita');
+	    vis_data.addColumn('number', 'Rev.');
+	    vis_data.addRows([['Total Revenue \n Per Capita', +data['total_revenue_per_capita']], ['Median Total \n Revenue Per \n Capita For All Cities', 420]]);
+	    options = {
+	        'title': 'Total Revenue',
+	        'titleTextStyle': {
+	            'fontSize': 12
+	        },
+	        'tooltip': {
+	            'textStyle': {
+	                'fontSize': 12
+	            }
+	        },
+	        'width': 340,
+	        'height': 300,
+	        'isStacked': 'true',
+	        'colors': ['#005ce6', '#009933'],
+	        'chartArea.width': '100%'
+	    };
+	    chart = new google.visualization.ColumnChart(document.getElementById('fin-health-revenue-graph'));
+	    chart.draw(vis_data, options);
+	}
+	
+	/**
+	 * fin-health-expenditures-graph
+	 */
+	function financialHealth_three() {
+	
+	    if (! data['total_expenditures_per_capita']) {
+	        return;
+	    }
+	
+	    var chart, options, vis_data;
+	    vis_data = new google.visualization.DataTable();
+	    vis_data.addColumn('string', 'Per Capita');
+	    vis_data.addColumn('number', 'Exp.');
+	    vis_data.addRows([['Total Expenditures \n Per Capita', +data['total_expenditures_per_capita']], ['Median Total \n Expenditures \n Per Capita \n For All Cities', 420]]);
+	    options = {
+	        'title': 'Total Expenditures',
+	        'titleTextStyle': {
+	            'fontSize': 12
+	        },
+	        'tooltip': {
+	            'textStyle': {
+	                'fontSize': 12
+	            }
+	        },
+	        'width': 340,
+	        'height': 300,
+	        'isStacked': 'true',
+	        'colors': ['#005ce6', '#009933'],
+	        'chartArea.width': '100%'
+	    };
+	    chart = new google.visualization.ColumnChart(document.getElementById('fin-health-expenditures-graph'));
+	    chart.draw(vis_data, options);
+	}
+	
+	
+	module.exports = {
+	    init: init,
+	    initAll: init
+	};
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var data = __webpack_require__(3).data;
+	var chart = __webpack_require__(4).chart;
+	
+	/**
+	 * Initialization
+	 */
+	function init() {
+	    handler_switchChart();
+	    financialStatements_revenue();
+	    financialStatements_expenditures();
+	    financialStatementsTree_expenditures();
+	    financialStatementsTree_revenues();
+	}
+	
+	/**
+	 * #total-revenue-pie
+	 */
+	function financialStatements_revenue() {
+	
+	    var chart, item, len3, options, p, r, ref1, rows, vis_data;
+	    vis_data = new google.visualization.DataTable();
+	    vis_data.addColumn('string', 'Total Gov. Expenditures');
+	    vis_data.addColumn('number', 'Total');
+	    rows = [];
+	
+	    var revenues = data.financialStatements.Revenues;
+	    for(var key in revenues){
+	        if(revenues.hasOwnProperty(key) && (revenues[key].caption != 'Total Revenues')) {
+	            r = [revenues[key].caption, parseInt(revenues[key].totalfunds)];
+	            rows.push(r);
+	        }
+	    }
+	
+	    vis_data.addRows(rows);
+	    options = {
+	        'title': 'Total Revenues',
+	        'titleTextStyle': {
+	            'fontSize': 16
+	        },
+	        'tooltip': {
+	            'textStyle': {
+	                'fontSize': 12
+	            }
+	        },
+	        'width': 470,
+	        'height': 350,
+	        'pieStartAngle': 60,
+	        'sliceVisibilityThreshold': .05,
+	        'forceIFrame': true,
+	        'chartArea': {
+	            width: '90%',
+	            height: '75%'
+	        }
+	    };
+	    chart = new google.visualization.PieChart(document.getElementById('total-revenue-pie'));
+	    chart.draw(vis_data, options);
+	}
+	
+	/**
+	 * #total-expenditures-pie
+	 */
+	function financialStatements_expenditures() {
+	
+	    var chart, item, len3, options, p, r, ref1, rows, vis_data;
+	    vis_data = new google.visualization.DataTable();
+	    vis_data.addColumn('string', 'Total Gov. Expenditures');
+	    vis_data.addColumn('number', 'Total');
+	    rows = [];
+	
+	    var expenditures = data.financialStatements.Expenditures;
+	    for(var key in expenditures){
+	        if(expenditures.hasOwnProperty(key) && (expenditures[key].caption != 'Total Expenditures')) {
+	            r = [expenditures[key].caption, parseInt(expenditures[key].totalfunds)];
+	            rows.push(r);
+	        }
+	    }
+	
+	    vis_data.addRows(rows);
+	    options = {
+	        'title': 'Total Expenditures',
+	        'titleTextStyle': {
+	            'fontSize': 16
+	        },
+	        'tooltip': {
+	            'textStyle': {
+	                'fontSize': 12
+	            }
+	        },
+	        'width': 470,
+	        'height': 350,
+	        'pieStartAngle': 60,
+	        'sliceVisibilityThreshold': .05,
+	        'forceIFrame': true,
+	        'chartArea': {
+	            width: '90%',
+	            height: '75%'
+	        }
+	    };
+	    chart = new google.visualization.PieChart(document.getElementById('total-expenditures-pie'));
+	    chart.draw(vis_data, options);
+	}
+	
+	
+	/**
+	 * TODO: Refactor
+	 * #total-revenue-tree
+	 */
+	function financialStatementsTree_revenues() {
+	
+	    var chart, item, len3, options, p, r, ref1, RevenuesDataTable, vis_data;
+	
+	    RevenuesDataTable = [
+	        ['Location', 'Parent', 'FinData', 'Heat'],
+	        ['Total Revenues', null, 0, 0]
+	    ];
+	
+	    var RevenuesData = data.financialStatements.Revenues;
+	
+	    // Prepare Revenues data to Google Tree Chart
+	    for(var rKey in RevenuesData) {
+	        if (RevenuesData.hasOwnProperty(rKey)){
+	
+	            var subCategory = RevenuesData[rKey];
+	            var subCatValue = getSubCatValue(subCategory);
+	            if (!subCatValue) {
+	                continue;
+	            }
+	
+	            RevenuesDataTable.push(
+	                [subCategory.caption, 'Total Revenues', parseInt(subCatValue), parseInt(subCatValue)]
+	            );
+	
+	        }
+	    }
+	
+	
+	    /**
+	     * TODO: Hardcoded!! Please ask the question to client, which field must be there?
+	     */
+	    function getSubCatValue(subCategory) {
+	
+	        if (subCategory.totalfunds) {
+	
+	            if (subCategory.totalfunds < 0) {
+	                subCategory.totalfunds = -(subCategory.totalfunds);
+	            }
+	
+	        }
+	
+	        return subCategory.totalfunds || false;
+	    }
+	
+	    var options = {
+	        highlightOnMouseOver: true,
+	        maxDepth: 1,
+	        maxPostDepth: 2,
+	        minHighlightColor: '#8c6bb1',
+	        midHighlightColor: '#9ebcda',
+	        maxHighlightColor: '#edf8fb',
+	        minColor: '#009688',
+	        midColor: '#f7f7f7',
+	        maxColor: '#ee8100',
+	        headerHeight: 15,
+	        showScale: true,
+	        height: 500,
+	        useWeightedAverageForAggregation: true,
+	        generateTooltip: revenuesTooltip
+	    };
+	
+	    function revenuesTooltip(row, size, value) {
+	        var val = vis_data.getValue(row, 2);
+	        return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
+	            numeral(val).format('$0,0'); + '</div>';
+	    }
+	
+	
+	    vis_data = new google.visualization.arrayToDataTable(RevenuesDataTable);
+	    chart = new google.visualization.TreeMap(document.getElementById('total-revenue-tree'));
+	    chart.draw(vis_data, options);
+	}
+	
+	/**
+	 * TODO: Refactor
+	 * #total-expenditures-tree
+	 */
+	function financialStatementsTree_expenditures() {
+	
+	    var chart, item, len3, options, p, r, ref1, ExpendituresDataTable, RevenuesDataTable, vis_data;
+	
+	    ExpendituresDataTable = [
+	        ['Location', 'Parent', 'FinData', 'Heat'],
+	        ['Total Expenditures', null, 0, 0]
+	    ];
+	
+	    var ExpendituresData = data.financialStatements.Expenditures;
+	
+	    // Prepare ExpendituresData data to Google Tree Chart
+	    for(var eKey in ExpendituresData) {
+	        if (ExpendituresData.hasOwnProperty(eKey)){
+	
+	            var subCategory = ExpendituresData[eKey];
+	            var subCatValue = getSubCatValue(subCategory);
+	            if (!subCatValue) {
+	                continue;
+	            }
+	
+	            ExpendituresDataTable.push(
+	                [subCategory.caption, 'Total Expenditures', parseInt(subCatValue), parseInt(subCatValue)]
+	            );
+	
+	        }
+	    }
+	
+	    function getSubCatValue(subCategory) {
+	
+	        if (subCategory.totalfunds) {
+	
+	            if (subCategory.totalfunds < 0) {
+	                subCategory.totalfunds = -(subCategory.totalfunds);
+	            }
+	
+	        }
+	
+	        return subCategory.totalfunds || false;
+	    }
+	
+	    var options = {
+	        highlightOnMouseOver: true,
+	        maxDepth: 1,
+	        maxPostDepth: 2,
+	        minHighlightColor: '#8c6bb1',
+	        midHighlightColor: '#9ebcda',
+	        maxHighlightColor: '#edf8fb',
+	        minColor: '#009688',
+	        midColor: '#f7f7f7',
+	        maxColor: '#ee8100',
+	        headerHeight: 15,
+	        showScale: true,
+	        height: 500,
+	        useWeightedAverageForAggregation: true,
+	        generateTooltip: expendituresTooltip
+	    };
+	
+	    function expendituresTooltip(row, size, value) {
+	        var val = vis_data.getValue(row, 2);
+	        return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
+	            numeral(val).format('$0,0'); + '</div>';
+	    }
+	
+	    vis_data = new google.visualization.arrayToDataTable(ExpendituresDataTable);
+	    chart = new google.visualization.TreeMap(document.getElementById('total-expenditures-tree'));
+	    chart.draw(vis_data, options);
+	
+	}
+	
+	/**
+	 * #Financial_Statements (.chart-controls .btn)
+	 */
+	function handler_switchChart() {
+	    $('#Financial_Statements').on('click', '.chart-controls .btn', function() {
+	
+	        var chartType = this.getElementsByTagName('input')[0].id;
+	
+	        if (chartType == 'chart'){
+	            hideChartGroup('pie-charts', false);
+	            hideChartGroup('tree-chart', true);
+	            hideChartGroup('tree-charts', true);
+	            if (!chart.financialStatements_revenues.init || !chart.financialStatements_expenditures.init) {
+	                financialStatements_revenue();
+	                financialStatements_expenditures();
+	            }
+	
+	        } else if (chartType == 'tree-charts') {
+	            hideChartGroup('pie-charts', true);
+	            hideChartGroup('tree-chart', true);
+	            hideChartGroup('tree-charts', false);
+	            if (!chart.financialStatementsTree_expenditures.init || !chart.financialStatementsTree_revenues.init) {
+	                financialStatementsTree_expenditures();
+	                financialStatementsTree_revenues();
+	            }
+	        }
+	
+	        /**
+	         * Hide chart group. Group may contain few charts
+	         */
+	        function hideChartGroup(chartGroup, hide) {
+	
+	            var display = hide ? {display: 'none'} : {display: 'block'};
+	
+	            if (chartGroup == 'pie-charts') {
+	                $('#total-expenditures-pie').css(display);
+	                $('#total-revenue-pie').css(display);
+	
+	            } else if (chartGroup == 'tree-chart') {
+	                $('#total-tree').css(display);
+	
+	            } else if (chartGroup == 'tree-charts') {
+	                $('#total-expenditures-tree').css(display);
+	                $('#total-revenue-tree').css(display);
+	            }
+	
+	        }
+	
+	    });
+	}
+	
+	module.exports = {
+	    init: init,
+	    initAll: init
+	};
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Handlebars = __webpack_require__(8);
+	
+	/**
+	 * @param {Object} options
+	 * @param {String} [options.selector]
+	 * @constructor
+	 */
+	var RankPopover = function(options) {
+	    options = options | {};
+	
+	    this.$popover = null;
+	    this.$rankTable = null;
+	    this.$preloader = null;
+	    this.$rankTable = null;
+	
+	    this.selector = options.selector || '.rank';
+	    this.loading = false;
+	    this.rankFieldName = null;
+	    this.order = { altType: '', rank: ''};
+	
+	    this.init();
+	};
+	
+	
+	/**
+	 * Initialize popover
+	 */
+	RankPopover.prototype.init = function init() {
+	
+	    var self = this;
+	    self.noMoreData = false;
+	
+	    var $statistics = $('.statistics');
+	    var $governmentController = $('.governmentController');
+	
+	    // Popover window (Rank over all altTypes)
+	    $statistics.popover({
+	        placement: 'bottom',
+	        selector: this.selector,
+	        animation: true,
+	        template: '<div class="popover rankPopover" role="tooltip"><div class="arrow"></div><div class="popover-title-custom"><h3 class="popover-title"></h3></div><div class="popover-content"></div></div>'
+	    });
+	
+	    $governmentController.on('click', function(e) {
+	        // Close other popovers
+	        if (!$(e.target).closest('.popover')[0]) {
+	            $('.rank').not(e.target).popover('destroy');
+	        }
+	    });
+	
+	    $statistics.on('click', function(e) {
+	        e.preventDefault();
+	        e.stopPropagation();
+	
+	        $element = $(e.target);
+	
+	        // Close other popovers
+	        if (!$(e.target).closest('.popover')[0]) {
+	            $('.rank').not(e.target).popover('destroy');
+	        }
+	
+	        $popover = $element.hasClass('rank') ? $element : $element.closest('.rank');
+	
+	        if ($popover.length == 0) {
+	            return false;
+	        }
+	
+	        self.$popover = $element;
+	
+	        self.$popoverContent = $popover.next().find('.popover-content');
+	
+	        self.rankFieldName = $popover.attr('data-field');
+	
+	        self.$popover.on('hide.bs.popover', function () {
+	            self.noMoreData = false;
+	        });
+	
+	        var $popoverContent = self.$popoverContent;
+	        var $preloader = self.$preloader;
+	        var rankFieldName = self.rankFieldName;
+	
+	        if (rankFieldName) {
+	            self.loading = true;
+	
+	            $.ajax({
+	                url: window.gw.urls.popover,
+	                dataType: 'json',
+	                data: {
+	                    field_name: rankFieldName
+	                },
+	                success: function(data) {
+	                    if (data.data.length != 0) {
+	                        self.formatData.call(self, data);
+	                        // Render rankTable template
+	                        $popoverContent.html(Handlebars.templates.rankTable(data));
+	                        self.$rankTable = $popoverContent.find('table tbody');
+	                        self.$preloader = $popoverContent.find('.loader');
+	                        // Initialize scroll and sort handlers
+	                        self.scrollHandler.call(self);
+	                        self.sortHandler.call(self);
+	                        self.loading = false;
+	                    } else {
+	                        if (!self.noMoreData) {
+	                            self.$popoverContent[0].innerHTML = '<h3 style="text-align: center">No data</h3>';
+	                            self.noMoreData = true;
+	                            self.loading = false;
+	                        }
+	                    }
+	                }
+	            });
+	        }
+	
+	
+	    });
+	
+	};
+	
+	/**
+	 * Add scroll handler on popoverContent
+	 */
+	RankPopover.prototype.scrollHandler = function scrollHandler () {
+	
+	    var self = this;
+	
+	    var $rankTable = self.$rankTable;
+	    var $popoverContent = self.$popoverContent;
+	    var $preloader = self.$preloader;
+	
+	    var rankFieldName = self.rankFieldName;
+	    var order = self.order;
+	
+	    self.previousScrollTop = 0;
+	    self.currentPage = 0;
+	
+	    $popoverContent.scroll(function() {
+	
+	        var currentScrollTop = $popoverContent.scrollTop();
+	
+	        if (self.previousScrollTop < currentScrollTop && currentScrollTop > 0.5 * $popoverContent[0].scrollHeight && !self.noMoreData) {
+	            self.previousScrollTop = currentScrollTop;
+	            if (self.loading === false) {
+	                self.loading = true;
+	                self.$preloader.show();
+	                $.ajax({
+	                    url: window.gw.urls.popover,
+	                    dataType: 'json',
+	                    data: {
+	                        page: ++self.currentPage,
+	                        order: order.rank,
+	                        name_order: order.altType,
+	                        field_name: rankFieldName
+	                    },
+	                    success: function(data) {
+	                        if (data.data.length != 0) {
+	                            self.formatData(data);
+	                            self.loading = false;
+	                            self.$preloader.hide();
+	                            $rankTable[0].innerHTML += Handlebars.templates.rankTableAdditionalRows(data);
+	                        } else {
+	                            if (!self.noMoreData) {
+	                                self.noMoreData = true;
+	                                var h3 = $('<h3 style="text-align: center">No more data</h3>');
+	                                self.$popoverContent.append(h3);
+	                                self.loading = false;
+	                                self.$preloader.hide();
+	                            }
+	                        }
+	                    }
+	                });
+	            }
+	        }
+	    });
+	
+	};
+	
+	/**
+	 * Add sort handler for rankTable header (th)
+	 */
+	RankPopover.prototype.sortHandler = function sortHandler() {
+	
+	    var self = this;
+	    var $popoverContent = self.$popoverContent;
+	    var order = self.order;
+	
+	    $popoverContent.on('click', 'th', function(e) {
+	
+	        self.$popoverContent.find('h3').remove();
+	
+	        self.noMoreData = false;
+	        self.previousScrollTop = 0;
+	        self.currentPage = 0;
+	
+	        var $column = $(this).hasClass('sortable') ? $(this) : $(this).closest('th');
+	        var $sortIcon = $column.find('i');
+	
+	        if ($column.hasClass('desc')) {
+	            $column.attr('data-sort-type') === 'name_order' ? order.altType = '' : order.rank = '';
+	            $column.removeClass('desc').removeClass('asc');
+	            $sortIcon.removeClass('icon__bottom').removeClass('icon__top');
+	
+	        } else if ($column.hasClass('asc')) {
+	            $column.attr('data-sort-type') === 'name_order' ? order.altType = 'desc' : order.rank = 'desc';
+	            $column.removeClass('asc').addClass('desc');
+	            $sortIcon.removeClass('icon__top').addClass('icon__bottom');
+	
+	        } else {
+	            $column.attr('data-sort-type') === 'name_order' ? order.altType = 'asc' : order.rank = 'asc';
+	            $column.addClass('asc');
+	            $sortIcon.addClass('icon__top');
+	        }
+	
+	        self.loadNewRows.call(self, order);
+	
+	    });
+	
+	};
+	
+	/**
+	 * Lazy load additional rows
+	 * @param {Object} [order] Sort
+	 * @param {String} [order.altType] Available values: '', 'asc', 'desc'
+	 * @param {String} [order.rank] Available values: '', 'asc', 'desc'
+	 */
+	RankPopover.prototype.loadNewRows = function loadNewRows (order) {
+	    order = order || this.order;
+	
+	    var self = this;
+	
+	    var $preloader = self.$preloader;
+	    var $rankTable = self.$rankTable || self.$popoverContent.find('table tbody');
+	
+	    $rankTable.html('');
+	
+	    self.$preloader.show();
+	    self.loading = true;
+	
+	    console.log(self.rankFieldName);
+	    $.ajax({
+	        url: window.gw.urls.popover,
+	        dataType: 'json',
+	        data: {
+	            page: self.currentPage,
+	            order: order.rank,
+	            name_order: order.altType,
+	            field_name: self.rankFieldName
+	        },
+	        success: function(data) {
+	            if (data.data.length != 0) {
+	                self.formatData.call(self, data);
+	                $rankTable.html(Handlebars.templates.rankTableAdditionalRows(data));
+	                self.loading = false;
+	                self.$preloader.hide();
+	            } else {
+	                self.$popoverContent[0].innerHTML = '<h3 style="text-align: center">No data</h3>';
+	                self.loading = false;
+	                self.$preloader.hide();
+	            }
+	        }
+	    });
+	
+	};
+	
+	/**
+	 * Apply mask with numeric.js library
+	 *
+	 * @param data
+	 * @returns {void|*}
+	 */
+	RankPopover.prototype.formatData = function formatData (data) {
+	
+	    var self = this;
+	
+	    var $popover = self.$popover;
+	    var mask = $popover.attr('data-mask');
+	
+	    if (mask) {
+	        return data.data.forEach(function(rank) {
+	            return rank.amount = numeral(rank.amount).format(mask);
+	        });
+	    }
+	};
+	
+	// rankTable template
+	(function() {
+	    var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+	    templates['rankTable'] = template({"1":function(container,depth0,helpers,partials,data) {
+	        var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+	
+	        return " <tr> <td>"
+	            + alias4(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
+	            + "</td> <td> "
+	            + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.value : depth0),{"name":"if","hash":{},"fn":container.program(2, data, 0),"inverse":container.program(4, data, 0),"data":data})) != null ? stack1 : "")
+	            + "</td> <td> "
+	            + alias4(((helper = (helper = helpers.amount || (depth0 != null ? depth0.amount : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"amount","hash":{},"data":data}) : helper)))
+	            + "</td> </tr> ";
+	    },"2":function(container,depth0,helpers,partials,data) {
+	        var helper;
+	
+	        return " "
+	            + container.escapeExpression(((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"value","hash":{},"data":data}) : helper)))
+	            + " ";
+	    },"4":function(container,depth0,helpers,partials,data) {
+	        return " No data ";
+	    },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+	        var stack1, helper, options, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", buffer =
+	            "<table class=\"table table-condensed table-hover\"> <thead> <tr> <th data-sort-type=\"name_order\" class=\"sortable\"><nobr>"
+	            + container.escapeExpression(((helper = (helper = helpers.alt_type || (depth0 != null ? depth0.alt_type : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"alt_type","hash":{},"data":data}) : helper)))
+	            + "<i class=\"icon\"></i></nobr></th> <th data-sort-type=\"order\" class=\"sortable\"><nobr>Rank<i class=\"icon\"></i></nobr></th> <th>Amount</th> </tr> </thead> <tbody> ";
+	        stack1 = ((helper = (helper = helpers.data || (depth0 != null ? depth0.data : depth0)) != null ? helper : alias2),(options={"name":"data","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data}),(typeof helper === alias3 ? helper.call(alias1,options) : helper));
+	        if (!helpers.data) { stack1 = helpers.blockHelperMissing.call(depth0,stack1,options)}
+	        if (stack1 != null) { buffer += stack1; }
+	        return buffer + "\n    </tbody>\n</table>\n<div class=\"loader\"></div>\n";
+	    },"useData":true});
+	})();
+	
+	// rankTableAdditionalRows template
+	(function() {
+	    var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+	    templates['rankTableAdditionalRows'] = template({"1":function(container,depth0,helpers,partials,data) {
+	        var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+	
+	        return " <tr> <td>"
+	            + alias4(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
+	            + "</td> <td> "
+	            + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.value : depth0),{"name":"if","hash":{},"fn":container.program(2, data, 0),"inverse":container.program(4, data, 0),"data":data})) != null ? stack1 : "")
+	            + "\n        </td>\n        <td>\n            "
+	            + alias4(((helper = (helper = helpers.amount || (depth0 != null ? depth0.amount : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"amount","hash":{},"data":data}) : helper)))
+	            + "\n        </td>\n    </tr>\n";
+	    },"2":function(container,depth0,helpers,partials,data) {
+	        var helper;
+	
+	        return " "
+	            + container.escapeExpression(((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"value","hash":{},"data":data}) : helper)))
+	            + " ";
+	    },"4":function(container,depth0,helpers,partials,data) {
+	        return " No data ";
+	    },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+	        var stack1, helper, options, buffer = "";
+	
+	        stack1 = ((helper = (helper = helpers.data || (depth0 != null ? depth0.data : depth0)) != null ? helper : helpers.helperMissing),(options={"name":"data","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data}),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},options) : helper));
+	        if (!helpers.data) { stack1 = helpers.blockHelperMissing.call(depth0,stack1,options)}
+	        if (stack1 != null) { buffer += stack1; }
+	        return buffer;
+	    },"useData":true});
+	})();
+	
+	module.exports = RankPopover;
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -1272,1062 +2326,6 @@ webpackJsonp([1],[
 	/******/ ])
 	});
 	;
-
-/***/ },
-/* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var employeeCompensationGraphs = __webpack_require__(3);
-	var financialHealthGraphs = __webpack_require__(6);
-	var financialStatementGraphs = __webpack_require__(7);
-	
-	/**
-	 * Initialization
-	 */
-	function init() {
-	    handler_onTabSwitch();
-	}
-	
-	/**
-	 * (Handler)
-	 * On tab switch
-	 */
-	function handler_onTabSwitch() {
-	
-	    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-	
-	        var tabname = $(e.target).attr('data-tabname');
-	
-	        /**
-	         * Init graphs
-	         */
-	        switch (tabname) {
-	            case 'Quality of Services':
-	                break;
-	            case 'Employee Compensation':
-	                employeeCompensationGraphs.initAll();
-	                break;
-	            case 'Financial Health':
-	                financialHealthGraphs.initAll();
-	                break;
-	            case 'Financial Financial_Statements':
-	                financialStatementGraphs.initAll();
-	                break;
-	        }
-	
-	    });
-	
-	}
-	
-	google.load('visualization', '1.0', {'packages': ['treemap', 'corechart'], 'callback': init});
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var data = __webpack_require__(4).data;
-	var chart = __webpack_require__(5).chart;
-	
-	/**
-	 * Initialization
-	 */
-	function init() {
-	    employeeCompensation_one();
-	    employeeCompensation_two();
-	}
-	
-	/**
-	 * median-comp-graph
-	 */
-	function employeeCompensation_one() {
-	    /*
-	     Ahtung! Hardcode detected!
-	     todo replace such bad code
-	     */
-	    if (! data['median_salary_per_full_time_emp']) {
-	        data['median_salary_per_full_time_emp'] = data['median_salary_for_full_time_employees'];
-	    }
-	    if (! data['median_benefits_per_ft_emp']) {
-	        data['median_benefits_per_ft_emp'] = data['median_benefits_for_full_time_employees'];
-	    }
-	
-	    if (data['median_wages_general_public'] == 0) {
-	        data['median_wages_general_public'] = undefined;
-	    }
-	
-	    if (data['median_benefits_general_public'] == 0) {
-	        data['median_benefits_general_public'] = undefined;
-	    }
-	
-	    if (!data['median_salary_per_full_time_emp'] || !data['median_benefits_per_ft_emp'] ||
-	        !data['median_wages_general_public'] || !data['median_benefits_general_public']) {
-	        return;
-	    }
-	
-	    var chart, formatter, options, vis_data;
-	    vis_data = new google.visualization.DataTable();
-	    vis_data.addColumn('string', 'Median Compensation');
-	    vis_data.addColumn('number', 'Wages');
-	    vis_data.addColumn('number', 'Bens.');
-	    vis_data.addRows([
-	        [
-	            toTitleCase(data.name + '\n Employees'),
-	            +data['median_salary_per_full_time_emp'],
-	            +data['median_benefits_per_ft_emp']
-	        ],
-	        [
-	            'All \n' + toTitleCase(data.name + ' \n Residents'),
-	            +data['median_wages_general_public'],
-	            +data['median_benefits_general_public']
-	        ]
-	    ]);
-	    formatter = new google.visualization.NumberFormat({
-	        groupingSymbol: ',',
-	        fractionDigits: '0'
-	    });
-	    formatter.format(vis_data, 1);
-	    formatter.format(vis_data, 2);
-	    options = {
-	        'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
-	        'titleTextStyle': {
-	            'fontSize': 12
-	        },
-	        'tooltip': {
-	            'textStyle': {
-	                'fontSize': 12
-	            }
-	        },
-	        'width': 340,
-	        'height': 300,
-	        'isStacked': 'true',
-	        'colors': ['#005ce6', '#009933']
-	    };
-	    chart = new google.visualization.ColumnChart(document.getElementById('median-comp-graph'));
-	    chart.draw(vis_data, options);
-	
-	
-	    function toTitleCase (str) {
-	        return str.replace(/\w\S*/g, function(txt) {
-	            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-	        });
-	    }
-	
-	}
-	
-	/**
-	 * median-pension-graph
-	 */
-	function employeeCompensation_two() {
-	    /*
-	     Ahtung! Hardcode detected!
-	     todo replace such bad code
-	     */
-	    if (! data['median_pension30_year_retiree']) {
-	        data['median_pension30_year_retiree'] = data['median_pension_for_retiree_with_30_years_service'];
-	    }
-	
-	    if (! data['median_pension30_year_retiree']) {
-	        return;
-	    }
-	
-	    var chart, formatter, options, vis_data;
-	    vis_data = new google.visualization.DataTable();
-	    vis_data.addColumn('string', 'Median Pension');
-	    vis_data.addColumn('number', 'Wages');
-	    vis_data.addRows([['Pension for \n Retiree w/ 30 Years', +data['median_pension30_year_retiree']]]);
-	    formatter = new google.visualization.NumberFormat({
-	        groupingSymbol: ',',
-	        fractionDigits: '0'
-	    });
-	    formatter.format(vis_data, 1);
-	    options = {
-	        'title': 'Median Total Pension',
-	        'titleTextStyle': {
-	            'fontSize': 12
-	        },
-	        'tooltip': {
-	            'textStyle': {
-	                'fontSize': 12
-	            }
-	        },
-	        'width': 340,
-	        'height': 300,
-	        'bar': {
-	            'groupWidth': '30%'
-	        },
-	        'isStacked': 'true',
-	        'colors': ['#005ce6', '#009933']
-	    };
-	    chart = new google.visualization.ColumnChart(document.getElementById('median-pension-graph'));
-	    chart.draw(vis_data, options);
-	}
-	
-	
-	module.exports = {
-	    init: init,
-	    initAll: init
-	};
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports) {
-
-	var data = JSON.parse(window.gw.government);
-	
-	module.exports = {
-	    data: data
-	};
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-	var chart = {
-	    employeeCompensation_one: {
-	        init: false
-	    },
-	    employeeCompensation_two: {
-	        init: false
-	    },
-	    financialHealth_one: {
-	        init: false
-	    },
-	    financialHealth_two: {
-	        init: false
-	    },
-	    financialHealth_three: {
-	        init: false
-	    },
-	    financialStatements_expenditures: {
-	        init: false
-	    },
-	    financialStatements_revenues: {
-	        init: false
-	    },
-	    financialStatementsTree: {
-	        init: false
-	    },
-	    financialStatementsTree_expenditures: {
-	        init: false
-	    },
-	    financialStatementsTree_revenues: {
-	        init: false
-	    }
-	};
-	
-	module.exports = {
-	    chart: chart
-	};
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var data = __webpack_require__(4).data;
-	var chart = __webpack_require__(5).chart;
-	
-	/**
-	 * Initialization
-	 */
-	function init() {
-	    financialHealth_one();
-	    financialHealth_two();
-	    financialHealth_three();
-	}
-	
-	/**
-	 * public-safety-pie
-	 */
-	function financialHealth_one() {
-	    /**
-	     * Ahtung! Hardcode detected!
-	     * todo replace such bad code
-	     */
-	    if (! data['public_safety_exp_over_tot_gov_fund_revenue']) {
-	        data['public_safety_exp_over_tot_gov_fund_revenue'] = data['public_safety_expense_total_governmental_fund_revenue'];
-	    }
-	
-	    if (! data['public_safety_exp_over_tot_gov_fund_revenue']) {
-	        return;
-	    }
-	
-	    var chart, options, vis_data;
-	    vis_data = new google.visualization.DataTable();
-	    vis_data.addColumn('string', 'Public Safety Expense');
-	    vis_data.addColumn('number', 'Total');
-	    vis_data.addRows([['Public Safety Exp', 1 - data['public_safety_exp_over_tot_gov_fund_revenue']], ['Other', +data['public_safety_exp_over_tot_gov_fund_revenue']]]);
-	    options = {
-	        'title': 'Public safety expense',
-	        'titleTextStyle': {
-	            'fontSize': 12
-	        },
-	        'tooltip': {
-	            'textStyle': {
-	                'fontSize': 12
-	            }
-	        },
-	        'width': 340,
-	        'height': 300,
-	        'is3D': 'true',
-	        'colors': ['#005ce6', '#009933'],
-	        'slices': {
-	            1: {
-	                offset: 0.2
-	            }
-	        },
-	        'pieStartAngle': 45
-	    };
-	
-	    var element = document.getElementById('public-safety-pie');
-	    if (element) {
-	        chart = new google.visualization.PieChart(element);
-	        chart.draw(vis_data, options);
-	    }
-	}
-	
-	/**
-	 * fin-health-revenue-graph
-	 */
-	function financialHealth_two() {
-	
-	    if (! data['total_revenue_per_capita']) {
-	        return;
-	    }
-	
-	    var chart, options, vis_data;
-	    vis_data = new google.visualization.DataTable();
-	    vis_data.addColumn('string', 'Per Capita');
-	    vis_data.addColumn('number', 'Rev.');
-	    vis_data.addRows([['Total Revenue \n Per Capita', +data['total_revenue_per_capita']], ['Median Total \n Revenue Per \n Capita For All Cities', 420]]);
-	    options = {
-	        'title': 'Total Revenue',
-	        'titleTextStyle': {
-	            'fontSize': 12
-	        },
-	        'tooltip': {
-	            'textStyle': {
-	                'fontSize': 12
-	            }
-	        },
-	        'width': 340,
-	        'height': 300,
-	        'isStacked': 'true',
-	        'colors': ['#005ce6', '#009933'],
-	        'chartArea.width': '100%'
-	    };
-	    chart = new google.visualization.ColumnChart(document.getElementById('fin-health-revenue-graph'));
-	    chart.draw(vis_data, options);
-	}
-	
-	/**
-	 * fin-health-expenditures-graph
-	 */
-	function financialHealth_three() {
-	
-	    if (! data['total_expenditures_per_capita']) {
-	        return;
-	    }
-	
-	    var chart, options, vis_data;
-	    vis_data = new google.visualization.DataTable();
-	    vis_data.addColumn('string', 'Per Capita');
-	    vis_data.addColumn('number', 'Exp.');
-	    vis_data.addRows([['Total Expenditures \n Per Capita', +data['total_expenditures_per_capita']], ['Median Total \n Expenditures \n Per Capita \n For All Cities', 420]]);
-	    options = {
-	        'title': 'Total Expenditures',
-	        'titleTextStyle': {
-	            'fontSize': 12
-	        },
-	        'tooltip': {
-	            'textStyle': {
-	                'fontSize': 12
-	            }
-	        },
-	        'width': 340,
-	        'height': 300,
-	        'isStacked': 'true',
-	        'colors': ['#005ce6', '#009933'],
-	        'chartArea.width': '100%'
-	    };
-	    chart = new google.visualization.ColumnChart(document.getElementById('fin-health-expenditures-graph'));
-	    chart.draw(vis_data, options);
-	}
-	
-	
-	module.exports = {
-	    init: init,
-	    initAll: init
-	};
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var data = __webpack_require__(4).data;
-	var chart = __webpack_require__(5).chart;
-	
-	/**
-	 * Initialization
-	 */
-	function init() {
-	    handler_switchChart();
-	    financialStatements_revenue();
-	    financialStatements_expenditures();
-	    financialStatementsTree_expenditures();
-	    financialStatementsTree_revenues();
-	}
-	
-	/**
-	 * #total-revenue-pie
-	 */
-	function financialStatements_revenue() {
-	
-	    var chart, item, len3, options, p, r, ref1, rows, vis_data;
-	    vis_data = new google.visualization.DataTable();
-	    vis_data.addColumn('string', 'Total Gov. Expenditures');
-	    vis_data.addColumn('number', 'Total');
-	    rows = [];
-	
-	    var revenues = data.financialStatements.Revenues;
-	    for(var key in revenues){
-	        if(revenues.hasOwnProperty(key) && (revenues[key].caption != 'Total Revenues')) {
-	            r = [revenues[key].caption, parseInt(revenues[key].totalfunds)];
-	            rows.push(r);
-	        }
-	    }
-	
-	    vis_data.addRows(rows);
-	    options = {
-	        'title': 'Total Revenues',
-	        'titleTextStyle': {
-	            'fontSize': 16
-	        },
-	        'tooltip': {
-	            'textStyle': {
-	                'fontSize': 12
-	            }
-	        },
-	        'width': 470,
-	        'height': 350,
-	        'pieStartAngle': 60,
-	        'sliceVisibilityThreshold': .05,
-	        'forceIFrame': true,
-	        'chartArea': {
-	            width: '90%',
-	            height: '75%'
-	        }
-	    };
-	    chart = new google.visualization.PieChart(document.getElementById('total-revenue-pie'));
-	    chart.draw(vis_data, options);
-	}
-	
-	/**
-	 * #total-expenditures-pie
-	 */
-	function financialStatements_expenditures() {
-	
-	    var chart, item, len3, options, p, r, ref1, rows, vis_data;
-	    vis_data = new google.visualization.DataTable();
-	    vis_data.addColumn('string', 'Total Gov. Expenditures');
-	    vis_data.addColumn('number', 'Total');
-	    rows = [];
-	
-	    var expenditures = data.financialStatements.Expenditures;
-	    for(var key in expenditures){
-	        if(expenditures.hasOwnProperty(key) && (expenditures[key].caption != 'Total Expenditures')) {
-	            r = [expenditures[key].caption, parseInt(expenditures[key].totalfunds)];
-	            rows.push(r);
-	        }
-	    }
-	
-	    vis_data.addRows(rows);
-	    options = {
-	        'title': 'Total Expenditures',
-	        'titleTextStyle': {
-	            'fontSize': 16
-	        },
-	        'tooltip': {
-	            'textStyle': {
-	                'fontSize': 12
-	            }
-	        },
-	        'width': 470,
-	        'height': 350,
-	        'pieStartAngle': 60,
-	        'sliceVisibilityThreshold': .05,
-	        'forceIFrame': true,
-	        'chartArea': {
-	            width: '90%',
-	            height: '75%'
-	        }
-	    };
-	    chart = new google.visualization.PieChart(document.getElementById('total-expenditures-pie'));
-	    chart.draw(vis_data, options);
-	}
-	
-	
-	/**
-	 * TODO: Refactor
-	 * #total-revenue-tree
-	 */
-	function financialStatementsTree_revenues() {
-	
-	    var chart, item, len3, options, p, r, ref1, RevenuesDataTable, vis_data;
-	
-	    RevenuesDataTable = [
-	        ['Location', 'Parent', 'FinData', 'Heat'],
-	        ['Total Revenues', null, 0, 0]
-	    ];
-	
-	    var RevenuesData = data.financialStatements.Revenues;
-	
-	    // Prepare Revenues data to Google Tree Chart
-	    for(var rKey in RevenuesData) {
-	        if (RevenuesData.hasOwnProperty(rKey)){
-	
-	            var subCategory = RevenuesData[rKey];
-	            var subCatValue = getSubCatValue(subCategory);
-	            if (!subCatValue) {
-	                continue;
-	            }
-	
-	            RevenuesDataTable.push(
-	                [subCategory.caption, 'Total Revenues', parseInt(subCatValue), parseInt(subCatValue)]
-	            );
-	
-	        }
-	    }
-	
-	
-	    /**
-	     * TODO: Hardcoded!! Please ask the question to client, which field must be there?
-	     */
-	    function getSubCatValue(subCategory) {
-	
-	        if (subCategory.totalfunds) {
-	
-	            if (subCategory.totalfunds < 0) {
-	                subCategory.totalfunds = -(subCategory.totalfunds);
-	            }
-	
-	        }
-	
-	        return subCategory.totalfunds || false;
-	    }
-	
-	    var options = {
-	        highlightOnMouseOver: true,
-	        maxDepth: 1,
-	        maxPostDepth: 2,
-	        minHighlightColor: '#8c6bb1',
-	        midHighlightColor: '#9ebcda',
-	        maxHighlightColor: '#edf8fb',
-	        minColor: '#009688',
-	        midColor: '#f7f7f7',
-	        maxColor: '#ee8100',
-	        headerHeight: 15,
-	        showScale: true,
-	        height: 500,
-	        useWeightedAverageForAggregation: true,
-	        generateTooltip: revenuesTooltip
-	    };
-	
-	    function revenuesTooltip(row, size, value) {
-	        var val = vis_data.getValue(row, 2);
-	        return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
-	            numeral(val).format('$0,0'); + '</div>';
-	    }
-	
-	
-	    vis_data = new google.visualization.arrayToDataTable(RevenuesDataTable);
-	    chart = new google.visualization.TreeMap(document.getElementById('total-revenue-tree'));
-	    chart.draw(vis_data, options);
-	}
-	
-	/**
-	 * TODO: Refactor
-	 * #total-expenditures-tree
-	 */
-	function financialStatementsTree_expenditures() {
-	
-	    var chart, item, len3, options, p, r, ref1, ExpendituresDataTable, RevenuesDataTable, vis_data;
-	
-	    ExpendituresDataTable = [
-	        ['Location', 'Parent', 'FinData', 'Heat'],
-	        ['Total Expenditures', null, 0, 0]
-	    ];
-	
-	    var ExpendituresData = data.financialStatements.Expenditures;
-	
-	    // Prepare ExpendituresData data to Google Tree Chart
-	    for(var eKey in ExpendituresData) {
-	        if (ExpendituresData.hasOwnProperty(eKey)){
-	
-	            var subCategory = ExpendituresData[eKey];
-	            var subCatValue = getSubCatValue(subCategory);
-	            if (!subCatValue) {
-	                continue;
-	            }
-	
-	            ExpendituresDataTable.push(
-	                [subCategory.caption, 'Total Expenditures', parseInt(subCatValue), parseInt(subCatValue)]
-	            );
-	
-	        }
-	    }
-	
-	    function getSubCatValue(subCategory) {
-	
-	        if (subCategory.totalfunds) {
-	
-	            if (subCategory.totalfunds < 0) {
-	                subCategory.totalfunds = -(subCategory.totalfunds);
-	            }
-	
-	        }
-	
-	        return subCategory.totalfunds || false;
-	    }
-	
-	    var options = {
-	        highlightOnMouseOver: true,
-	        maxDepth: 1,
-	        maxPostDepth: 2,
-	        minHighlightColor: '#8c6bb1',
-	        midHighlightColor: '#9ebcda',
-	        maxHighlightColor: '#edf8fb',
-	        minColor: '#009688',
-	        midColor: '#f7f7f7',
-	        maxColor: '#ee8100',
-	        headerHeight: 15,
-	        showScale: true,
-	        height: 500,
-	        useWeightedAverageForAggregation: true,
-	        generateTooltip: expendituresTooltip
-	    };
-	
-	    function expendituresTooltip(row, size, value) {
-	        var val = vis_data.getValue(row, 2);
-	        return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
-	            numeral(val).format('$0,0'); + '</div>';
-	    }
-	
-	    vis_data = new google.visualization.arrayToDataTable(ExpendituresDataTable);
-	    chart = new google.visualization.TreeMap(document.getElementById('total-expenditures-tree'));
-	    chart.draw(vis_data, options);
-	
-	}
-	
-	/**
-	 * #Financial_Statements (.chart-controls .btn)
-	 */
-	function handler_switchChart() {
-	    $('#Financial_Statements').on('click', '.chart-controls .btn', function() {
-	
-	        var chartType = this.getElementsByTagName('input')[0].id;
-	
-	        if (chartType == 'chart'){
-	            hideChartGroup('pie-charts', false);
-	            hideChartGroup('tree-chart', true);
-	            hideChartGroup('tree-charts', true);
-	            if (!chart.financialStatements_revenues.init || !chart.financialStatements_expenditures.init) {
-	                financialStatements_revenue();
-	                financialStatements_expenditures();
-	            }
-	
-	        } else if (chartType == 'tree-charts') {
-	            hideChartGroup('pie-charts', true);
-	            hideChartGroup('tree-chart', true);
-	            hideChartGroup('tree-charts', false);
-	            if (!chart.financialStatementsTree_expenditures.init || !chart.financialStatementsTree_revenues.init) {
-	                financialStatementsTree_expenditures();
-	                financialStatementsTree_revenues();
-	            }
-	        }
-	
-	        /**
-	         * Hide chart group. Group may contain few charts
-	         */
-	        function hideChartGroup(chartGroup, hide) {
-	
-	            var display = hide ? {display: 'none'} : {display: 'block'};
-	
-	            if (chartGroup == 'pie-charts') {
-	                $('#total-expenditures-pie').css(display);
-	                $('#total-revenue-pie').css(display);
-	
-	            } else if (chartGroup == 'tree-chart') {
-	                $('#total-tree').css(display);
-	
-	            } else if (chartGroup == 'tree-charts') {
-	                $('#total-expenditures-tree').css(display);
-	                $('#total-revenue-tree').css(display);
-	            }
-	
-	        }
-	
-	    });
-	}
-	
-	module.exports = {
-	    init: init,
-	    initAll: init
-	};
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	__webpack_require__(1);
-	
-	/**
-	 * @param {Object} options
-	 * @param {String} [options.selector]
-	 * @constructor
-	 */
-	var RankPopover = function(options) {
-	    options = options | {};
-	
-	    this.$popover = null;
-	    this.$rankTable = null;
-	    this.$preloader = null;
-	    this.$rankTable = null;
-	
-	    this.selector = options.selector || '.rank';
-	    this.loading = false;
-	    this.rankFieldName = null;
-	    this.order = { altType: '', rank: ''};
-	
-	    this.init();
-	};
-	
-	
-	/**
-	 * Initialize popover
-	 */
-	RankPopover.prototype.init = function init() {
-	
-	    var self = this;
-	    self.noMoreData = false;
-	
-	    var $statistics = $('.statistics');
-	    var $governmentController = $('.governmentController');
-	
-	    // Popover window (Rank over all altTypes)
-	    $statistics.popover({
-	        placement: 'bottom',
-	        selector: this.selector,
-	        animation: true,
-	        template: '<div class="popover rankPopover" role="tooltip"><div class="arrow"></div><div class="popover-title-custom"><h3 class="popover-title"></h3></div><div class="popover-content"></div></div>'
-	    });
-	
-	    $governmentController.on('click', function(e) {
-	        // Close other popovers
-	        if (!$(e.target).closest('.popover')[0]) {
-	            $('.rank').not(e.target).popover('destroy');
-	        }
-	    });
-	
-	    $statistics.on('click', function(e) {
-	        e.preventDefault();
-	        e.stopPropagation();
-	
-	        $element = $(e.target);
-	
-	        // Close other popovers
-	        if (!$(e.target).closest('.popover')[0]) {
-	            $('.rank').not(e.target).popover('destroy');
-	        }
-	
-	        $popover = $element.hasClass('rank') ? $element : $element.closest('.rank');
-	
-	        if ($popover.length == 0) {
-	            return false;
-	        }
-	
-	        self.$popover = $element;
-	
-	        self.$popoverContent = $popover.next().find('.popover-content');
-	
-	        self.rankFieldName = $popover.attr('data-field');
-	
-	        self.$popover.on('hide.bs.popover', function () {
-	            self.noMoreData = false;
-	        });
-	
-	        var $popoverContent = self.$popoverContent;
-	        var $preloader = self.$preloader;
-	        var rankFieldName = self.rankFieldName;
-	
-	        if (rankFieldName) {
-	            self.loading = true;
-	
-	            $.ajax({
-	                url: window.gw.urls.popover,
-	                dataType: 'json',
-	                data: {
-	                    field_name: rankFieldName
-	                },
-	                success: function(data) {
-	                    if (data.data.length != 0) {
-	                        self.formatData.call(self, data);
-	                        // Render rankTable template
-	                        $popoverContent.html(Handlebars.templates.rankTable(data));
-	                        self.$rankTable = $popoverContent.find('table tbody');
-	                        self.$preloader = $popoverContent.find('.loader');
-	                        // Initialize scroll and sort handlers
-	                        self.scrollHandler.call(self);
-	                        self.sortHandler.call(self);
-	                        self.loading = false;
-	                    } else {
-	                        if (!self.noMoreData) {
-	                            self.$popoverContent[0].innerHTML = '<h3 style="text-align: center">No data</h3>';
-	                            self.noMoreData = true;
-	                            self.loading = false;
-	                        }
-	                    }
-	                }
-	            });
-	        }
-	
-	
-	    });
-	
-	};
-	
-	/**
-	 * Add scroll handler on popoverContent
-	 */
-	RankPopover.prototype.scrollHandler = function scrollHandler () {
-	
-	    var self = this;
-	
-	    var $rankTable = self.$rankTable;
-	    var $popoverContent = self.$popoverContent;
-	    var $preloader = self.$preloader;
-	
-	    var rankFieldName = self.rankFieldName;
-	    var order = self.order;
-	
-	    self.previousScrollTop = 0;
-	    self.currentPage = 0;
-	
-	    $popoverContent.scroll(function() {
-	
-	        var currentScrollTop = $popoverContent.scrollTop();
-	
-	        if (self.previousScrollTop < currentScrollTop && currentScrollTop > 0.5 * $popoverContent[0].scrollHeight && !self.noMoreData) {
-	            self.previousScrollTop = currentScrollTop;
-	            if (self.loading === false) {
-	                self.loading = true;
-	                self.$preloader.show();
-	                $.ajax({
-	                    url: window.gw.urls.popover,
-	                    dataType: 'json',
-	                    data: {
-	                        page: ++self.currentPage,
-	                        order: order.rank,
-	                        name_order: order.altType,
-	                        field_name: rankFieldName
-	                    },
-	                    success: function(data) {
-	                        if (data.data.length != 0) {
-	                            self.formatData(data);
-	                            self.loading = false;
-	                            self.$preloader.hide();
-	                            $rankTable[0].innerHTML += Handlebars.templates.rankTableAdditionalRows(data);
-	                        } else {
-	                            if (!self.noMoreData) {
-	                                self.noMoreData = true;
-	                                var h3 = $('<h3 style="text-align: center">No more data</h3>');
-	                                self.$popoverContent.append(h3);
-	                                self.loading = false;
-	                                self.$preloader.hide();
-	                            }
-	                        }
-	                    }
-	                });
-	            }
-	        }
-	    });
-	
-	};
-	
-	/**
-	 * Add sort handler for rankTable header (th)
-	 */
-	RankPopover.prototype.sortHandler = function sortHandler() {
-	
-	    var self = this;
-	    var $popoverContent = self.$popoverContent;
-	    var order = self.order;
-	
-	    $popoverContent.on('click', 'th', function(e) {
-	
-	        self.$popoverContent.find('h3').remove();
-	
-	        self.noMoreData = false;
-	        self.previousScrollTop = 0;
-	        self.currentPage = 0;
-	
-	        var $column = $(this).hasClass('sortable') ? $(this) : $(this).closest('th');
-	        var $sortIcon = $column.find('i');
-	
-	        if ($column.hasClass('desc')) {
-	            $column.attr('data-sort-type') === 'name_order' ? order.altType = '' : order.rank = '';
-	            $column.removeClass('desc').removeClass('asc');
-	            $sortIcon.removeClass('icon__bottom').removeClass('icon__top');
-	
-	        } else if ($column.hasClass('asc')) {
-	            $column.attr('data-sort-type') === 'name_order' ? order.altType = 'desc' : order.rank = 'desc';
-	            $column.removeClass('asc').addClass('desc');
-	            $sortIcon.removeClass('icon__top').addClass('icon__bottom');
-	
-	        } else {
-	            $column.attr('data-sort-type') === 'name_order' ? order.altType = 'asc' : order.rank = 'asc';
-	            $column.addClass('asc');
-	            $sortIcon.addClass('icon__top');
-	        }
-	
-	        self.loadNewRows.call(self, order);
-	
-	    });
-	
-	};
-	
-	/**
-	 * Lazy load additional rows
-	 * @param {Object} [order] Sort
-	 * @param {String} [order.altType] Available values: '', 'asc', 'desc'
-	 * @param {String} [order.rank] Available values: '', 'asc', 'desc'
-	 */
-	RankPopover.prototype.loadNewRows = function loadNewRows (order) {
-	    order = order || this.order;
-	
-	    var self = this;
-	
-	    var $preloader = self.$preloader;
-	    var $rankTable = self.$rankTable || self.$popoverContent.find('table tbody');
-	
-	    $rankTable.html('');
-	
-	    self.$preloader.show();
-	    self.loading = true;
-	
-	    console.log(self.rankFieldName);
-	    $.ajax({
-	        url: window.gw.urls.popover,
-	        dataType: 'json',
-	        data: {
-	            page: self.currentPage,
-	            order: order.rank,
-	            name_order: order.altType,
-	            field_name: self.rankFieldName
-	        },
-	        success: function(data) {
-	            if (data.data.length != 0) {
-	                self.formatData.call(self, data);
-	                $rankTable.html(Handlebars.templates.rankTableAdditionalRows(data));
-	                self.loading = false;
-	                self.$preloader.hide();
-	            } else {
-	                self.$popoverContent[0].innerHTML = '<h3 style="text-align: center">No data</h3>';
-	                self.loading = false;
-	                self.$preloader.hide();
-	            }
-	        }
-	    });
-	
-	};
-	
-	/**
-	 * Apply mask with numeric.js library
-	 *
-	 * @param data
-	 * @returns {void|*}
-	 */
-	RankPopover.prototype.formatData = function formatData (data) {
-	
-	    var self = this;
-	
-	    var $popover = self.$popover;
-	    var mask = $popover.attr('data-mask');
-	
-	    if (mask) {
-	        return data.data.forEach(function(rank) {
-	            return rank.amount = numeral(rank.amount).format(mask);
-	        });
-	    }
-	};
-	
-	// rankTable template
-	(function() {
-	    var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
-	    templates['rankTable'] = template({"1":function(container,depth0,helpers,partials,data) {
-	        var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
-	
-	        return " <tr> <td>"
-	            + alias4(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
-	            + "</td> <td> "
-	            + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.value : depth0),{"name":"if","hash":{},"fn":container.program(2, data, 0),"inverse":container.program(4, data, 0),"data":data})) != null ? stack1 : "")
-	            + "</td> <td> "
-	            + alias4(((helper = (helper = helpers.amount || (depth0 != null ? depth0.amount : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"amount","hash":{},"data":data}) : helper)))
-	            + "</td> </tr> ";
-	    },"2":function(container,depth0,helpers,partials,data) {
-	        var helper;
-	
-	        return " "
-	            + container.escapeExpression(((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"value","hash":{},"data":data}) : helper)))
-	            + " ";
-	    },"4":function(container,depth0,helpers,partials,data) {
-	        return " No data ";
-	    },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-	        var stack1, helper, options, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", buffer =
-	            "<table class=\"table table-condensed table-hover\"> <thead> <tr> <th data-sort-type=\"name_order\" class=\"sortable\"><nobr>"
-	            + container.escapeExpression(((helper = (helper = helpers.alt_type || (depth0 != null ? depth0.alt_type : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"alt_type","hash":{},"data":data}) : helper)))
-	            + "<i class=\"icon\"></i></nobr></th> <th data-sort-type=\"order\" class=\"sortable\"><nobr>Rank<i class=\"icon\"></i></nobr></th> <th>Amount</th> </tr> </thead> <tbody> ";
-	        stack1 = ((helper = (helper = helpers.data || (depth0 != null ? depth0.data : depth0)) != null ? helper : alias2),(options={"name":"data","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data}),(typeof helper === alias3 ? helper.call(alias1,options) : helper));
-	        if (!helpers.data) { stack1 = helpers.blockHelperMissing.call(depth0,stack1,options)}
-	        if (stack1 != null) { buffer += stack1; }
-	        return buffer + "\n    </tbody>\n</table>\n<div class=\"loader\"></div>\n";
-	    },"useData":true});
-	})();
-	
-	// rankTableAdditionalRows template
-	(function() {
-	    var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
-	    templates['rankTableAdditionalRows'] = template({"1":function(container,depth0,helpers,partials,data) {
-	        var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
-	
-	        return " <tr> <td>"
-	            + alias4(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
-	            + "</td> <td> "
-	            + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.value : depth0),{"name":"if","hash":{},"fn":container.program(2, data, 0),"inverse":container.program(4, data, 0),"data":data})) != null ? stack1 : "")
-	            + "\n        </td>\n        <td>\n            "
-	            + alias4(((helper = (helper = helpers.amount || (depth0 != null ? depth0.amount : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"amount","hash":{},"data":data}) : helper)))
-	            + "\n        </td>\n    </tr>\n";
-	    },"2":function(container,depth0,helpers,partials,data) {
-	        var helper;
-	
-	        return " "
-	            + container.escapeExpression(((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"value","hash":{},"data":data}) : helper)))
-	            + " ";
-	    },"4":function(container,depth0,helpers,partials,data) {
-	        return " No data ";
-	    },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-	        var stack1, helper, options, buffer = "";
-	
-	        stack1 = ((helper = (helper = helpers.data || (depth0 != null ? depth0.data : depth0)) != null ? helper : helpers.helperMissing),(options={"name":"data","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data}),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},options) : helper));
-	        if (!helpers.data) { stack1 = helpers.blockHelperMissing.call(depth0,stack1,options)}
-	        if (stack1 != null) { buffer += stack1; }
-	        return buffer;
-	    },"useData":true});
-	})();
-	
-	module.exports = RankPopover;
 
 /***/ }
 ]);

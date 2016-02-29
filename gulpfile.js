@@ -5,7 +5,11 @@ var webpack = require('webpack');
 var webpackConfig = require('./webpack.config.js');
 var gutil = require('gulp-util');
 
-gulp.task('build:js', function(callback) {
+gulp.task('build:vendor', function() {
+    gulp.src(path.base + '/vendor/*').pipe(gulp.dest('./web/js/vendor/'));
+});
+
+gulp.task('build:js', ['build:vendor'], function(callback) {
 
     function error(err, stats) {
 

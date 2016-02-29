@@ -1,5 +1,3 @@
-require('../vendor/handlebars.runtime.js');
-
 $(function() {
 
     require('./graphs.js');
