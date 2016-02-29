@@ -37,8 +37,8 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Domain</th>
-                                    <th class="actions">Actions</th>
                                     <th class="favicon">Favicon</th>
+                                    <th class="actions">Actions</th>
                                 </tr>
                                 {%- for environment in environments -%}
                                     <tr>
@@ -51,17 +51,17 @@
                                         <td>{{ environment.domain }}</td>
                                         <td>
                                             {% if is_granted('ROLE_ADMIN') %}
-                                                <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_main_remove', { environment: environment.slug }) -}}" data-description="Delete environment with all governments?">
-                                                    Delete
-                                                </button>
+                                                <form data-environment="{{ environment.slug }}" action="{{ path('govwiki_admin_main_faviconload') }}" class="upload-favicon-form" enctype="multipart/form-data">
+                                                    <input type="hidden" name="environment" value="{{ environment.slug }}" />
+                                                    <input class="upload-favicon" type="file" name="upload-favicon" />
+                                                </form>
                                             {% endif %}
                                         </td>
                                         <td>
                                             {% if is_granted('ROLE_ADMIN') %}
-                                            <form data-environment="{{ environment.slug }}" action="{{ path('govwiki_admin_main_faviconload') }}" class="upload-favicon-form" enctype="multipart/form-data">
-                                                <input type="hidden" name="environment" value="{{ environment.slug }}" />
-                                                <input class="upload-favicon" type="file" name="upload-favicon" />
-                                            </form>
+                                                <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_main_remove', { environment: environment.slug }) -}}" data-description="Delete environment with all governments?">
+                                                    Delete
+                                                </button>
                                             {% endif %}
                                         </td>
                                     </tr>
