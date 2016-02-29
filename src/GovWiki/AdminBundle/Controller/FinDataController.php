@@ -129,7 +129,7 @@ class FinDataController extends AbstractGovWikiAdminController
                         ->import(new CsvReader($filePath));
                 } catch (\Exception $e) {
                     $this->errorMessage('Can\'t import new financial statements');
-                    return [ 'form' => $form->createView() ];
+                    return $this->redirectToRoute('govwiki_admin_government_index');
                 }
 
                 $this->successMessage('Financial statements imported successfully');
