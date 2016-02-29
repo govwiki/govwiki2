@@ -17,7 +17,7 @@ class ElectedOfficialType extends AbstractType
     /**
      * @var AdminEnvironmentManager
      */
-    private $manger;
+    private $manager;
 
     /**
      * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
@@ -25,7 +25,7 @@ class ElectedOfficialType extends AbstractType
      */
     public function __construct(AdminEnvironmentManager $manager)
     {
-        $this->manger = $manager;
+        $this->manager = $manager;
     }
 
     /**
@@ -53,7 +53,7 @@ class ElectedOfficialType extends AbstractType
                         ->join('Government.environment', 'Environment')
                         ->where($expr->eq(
                             'Environment.slug',
-                            $expr->literal($this->manger->getSlug())
+                            $expr->literal($this->manager->getSlug())
                         ));
                 },
             ]);

@@ -33,11 +33,12 @@
 
                             {{ knp_pagination_render(environments) }}
 
-                            <table class="table table-bordered text-center">
+                            <table id="environments-list" class="table table-bordered text-center">
                                 <tr>
                                     <th>Name</th>
                                     <th>Domain</th>
                                     <th class="actions">Actions</th>
+                                    <th class="favicon">Favicon</th>
                                 </tr>
                                 {%- for environment in environments -%}
                                     <tr>
@@ -53,6 +54,14 @@
                                                 <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_main_remove', { environment: environment.slug }) -}}" data-description="Delete environment with all governments?">
                                                     Delete
                                                 </button>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if is_granted('ROLE_ADMIN') %}
+                                            <form data-environment="{{ environment.slug }}" action="{{ path('govwiki_admin_main_faviconload') }}" class="upload-favicon-form" enctype="multipart/form-data">
+                                                <input type="hidden" name="environment" value="{{ environment.slug }}" />
+                                                <input class="upload-favicon" type="file" name="upload-favicon" />
+                                            </form>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -76,4 +85,53 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $('.upload-favicon-form').submit(function(e) {
+            e.preventDefault();
+
+            $form = $(this);
+            $formData = new FormData($form.get(0));
+
+            $.ajax({
+                url: $form.attr('action'),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: $formData,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                        alert(data.message);
+                    } else {
+                        location.reload();
+                    }
+                }
+            });
+        });
+
+        $('.upload-favicon').change(function() {
+            $(this).submit();
+        });
+
+        $('.upload-favicon-form').each(function() {
+            var el = $(this);
+            var src = '/img/'+el.attr('data-environment')+'/favicon.ico';
+            $.ajax({
+                url: src,
+                type:'HEAD',
+                error: function()
+                {
+                    //console.log('File not found');
+                },
+                success: function()
+                {
+                    el.before('<img class="favicon-image" src="'+src+'" />');
+                }
+            });
+        });
+    </script>
 {% endblock %}

@@ -2,38 +2,134 @@ $(function() {
 
     var rankPopover = new RankPopover();
 
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        var tabname = $(e.target).attr('data-tabname');
-    });
+    var data = JSON.parse(window.gw.government);console.log(data);
+    var smallChartWidth = 340;
+    var bigChartWidth = 470;
 
-    toTitleCase = function(str) {
-        return str.replace(/\w\S*/g, function(txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        });
-    };
-
+    var chart = {
+            employeeCompensation_one: {
+                init: false
+            },
+            employeeCompensation_two: {
+                init: false
+            },
+            financialHealth_one: {
+                init: false
+            },
+            financialHealth_two: {
+                init: false
+            },
+            financialHealth_three: {
+                init: false
+            },
+            financialStatements_one: {
+                init: false
+            },
+            financialStatements_two: {
+                init: false
+            },
+            financialStatementsTree: {
+                init: false
+            },
+            financialStatementsTree_expenditures: {
+                init: false
+            },
+            financialStatementsTree_revenues: {
+                init: false
+            }
+        };
 
     function initCharts() {
 
-        data = JSON.parse(window.gw.government);
-        smallChartWidth = 340;
-        bigChartWidth = 470;
-        employeeCompensation_one();
-        employeeCompensation_two();
-        financialHealth_one();
-        financialHealth_two();
-        financialHealth_three();
-        financialStatements_one();
-        financialStatements_two();
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+
+            var tabname = $(e.target).attr('data-tabname');
+
+            /**
+             * Init graphs
+             */
+            switch (tabname) {
+                case 'Employee Compensation':
+                    employeeCompensation_one();
+                    employeeCompensation_two();
+                    break;
+                case 'Quality of Services':
+                    break;
+                case 'Financial Health':
+                    financialHealth_one();
+                    financialHealth_two();
+                    financialHealth_three();
+                    break;
+                case 'Financial Financial_Statements':
+                    financialStatements_one();
+                    financialStatements_two();
+                    break;
+            }
+
+        });
+
+        $('#Financial_Statements').on('click', '.chart-controls .btn', function() {
+
+        var chartType = this.getElementsByTagName('input')[0].id;
+
+        if (chartType == 'chart'){
+            hideChartGroup('pie-charts', false);
+            hideChartGroup('tree-chart', true);
+            hideChartGroup('tree-charts', true);
+            if (!chart.financialStatements_one.init || !chart.financialStatements_two.init) {
+                financialStatements_one();
+                financialStatements_two();
+            }
+
+        } else if (chartType == 'tree') {
+
+            hideChartGroup('pie-charts', true);
+            hideChartGroup('tree-charts', true);
+            hideChartGroup('tree-chart', false);
+            if (!chart.financialStatementsTree.init) {
+                financialStatementsTree();
+            }
+        } else if (chartType == 'tree-charts') {
+            hideChartGroup('pie-charts', true);
+            hideChartGroup('tree-chart', true);
+            hideChartGroup('tree-charts', false);
+            if (!chart.financialStatementsTree_expenditures.init || !chart.financialStatementsTree_revenues.init) {
+                financialStatementsTree_expenditures();
+                financialStatementsTree_revenues();
+            }
+        }
+
+        /**
+         * Hide chart group. Group may contain few charts
+         */
+        function hideChartGroup(chartGroup, hide) {
+
+            var display = hide ? {display: 'none'} : {display: 'block'};
+
+            if (chartGroup == 'pie-charts') {
+                $('#total-expenditures-pie').css(display);
+                $('#total-revenue-pie').css(display);
+
+            } else if (chartGroup == 'tree-chart') {
+                $('#total-tree').css(display);
+
+            } else if (chartGroup == 'tree-charts') {
+                $('#total-expenditures-tree').css(display);
+                $('#total-revenue-tree').css(display);
+            }
+
+        }
+
+    });
 
     }
 
-    google.load('visualization', '1.0', {'packages': 'corechart', 'callback': initCharts});
+    google.load('visualization', '1.0', {'packages': ['treemap', 'corechart'], 'callback': initCharts});
 
     function employeeCompensation_one() {
         /*
-            Ahtung! Hardcode detected!
-            todo replace such bad code
+         Ahtung! Hardcode detected!
+         todo replace such bad code
          */
         if (! data['median_salary_per_full_time_emp']) {
             data['median_salary_per_full_time_emp'] = data['median_salary_for_full_time_employees'];
@@ -41,12 +137,6 @@ $(function() {
         if (! data['median_benefits_per_ft_emp']) {
             data['median_benefits_per_ft_emp'] = data['median_benefits_for_full_time_employees'];
         }
-
-        console.log('median_salary_per_full_time_emp: ' + data['median_salary_per_full_time_emp']);
-        console.log('median_benefits_per_ft_emp: ' + data['median_benefits_per_ft_emp']);
-
-        console.log('median_wages_general_public: ' + data['median_wages_general_public']);
-        console.log('median_benefits_general_public: ' + data['median_benefits_general_public']);
 
         if (data['median_wages_general_public'] == 0) {
             data['median_wages_general_public'] = undefined;
@@ -101,18 +191,24 @@ $(function() {
         };
         chart = new google.visualization.ColumnChart(document.getElementById('median-comp-graph'));
         chart.draw(vis_data, options);
+
+
+        function toTitleCase (str) {
+            return str.replace(/\w\S*/g, function(txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+        }
+
     }
 
     function employeeCompensation_two() {
         /*
-             Ahtung! Hardcode detected!
-             todo replace such bad code
+         Ahtung! Hardcode detected!
+         todo replace such bad code
          */
         if (! data['median_pension30_year_retiree']) {
             data['median_pension30_year_retiree'] = data['median_pension_for_retiree_with_30_years_service'];
         }
-
-        console.log('median_pension30_year_retiree: ' + data['median_pension30_year_retiree']);
 
         if (! data['median_pension30_year_retiree']) {
             return;
@@ -151,16 +247,13 @@ $(function() {
     }
 
     function financialHealth_one() {
-        /*
-         Ahtung! Hardcode detected!
-         todo replace such bad code
+        /**
+         * Ahtung! Hardcode detected!
+         * todo replace such bad code
          */
         if (! data['public_safety_exp_over_tot_gov_fund_revenue']) {
             data['public_safety_exp_over_tot_gov_fund_revenue'] = data['public_safety_expense_total_governmental_fund_revenue'];
         }
-
-        console.log('public_safety_exp_over_tot_gov_fund_revenue: '+ data['public_safety_exp_over_tot_gov_fund_revenue']);
-
 
         if (! data['public_safety_exp_over_tot_gov_fund_revenue']) {
             return;
@@ -201,7 +294,6 @@ $(function() {
     }
 
     function financialHealth_two() {
-        console.log('total_revenue_per_capita: ' + data['total_revenue_per_capita']);
 
         if (! data['total_revenue_per_capita']) {
             return;
@@ -233,7 +325,6 @@ $(function() {
     }
 
     function financialHealth_three() {
-        console.log('total_expenditures_per_capita: ' + data['total_expenditures_per_capita']);
 
         if (! data['total_expenditures_per_capita']) {
             return;
@@ -264,8 +355,105 @@ $(function() {
         chart.draw(vis_data, options);
     }
 
+    function financialStatementsTree() {
+
+        var chart, item, len3, options, p, r, ref1, rows, vis_data;
+
+        rows = [
+            ['Location', 'Parent', 'FinData', 'Heat'],
+            ['Financial Data', null, 0, 0],
+            ['Overview', 'Financial Data', 0, 0],
+            ['Revenues', 'Financial Data', 0, 0],
+            ['Expenditures', 'Financial Data', 0, 0],
+            ['Surplus/Deficit', 'Financial Data', 0, 0]
+        ];
+
+        var financialStatements = data.financialStatements;
+
+        for(var financialCategoryKey in financialStatements){
+            if(financialStatements.hasOwnProperty(financialCategoryKey)) {
+
+                var category = financialStatements[financialCategoryKey];
+
+                for(var key in category) {
+                    if (category.hasOwnProperty(key)){
+
+                        var subCategory = financialStatements[financialCategoryKey][key];
+
+                        /**
+                         * TODO: Hardcoded!! Please ask the question to client, which field must be there?
+                         */
+                        if (subCategory.totalfunds) {
+
+                            if (subCategory.totalfunds < 0) {
+                                subCategory.totalfunds = -(subCategory.totalfunds);
+                            }
+
+                        } else if (subCategory.genfund) {
+
+                            if (subCategory.genfund < 0) {
+                                subCategory.genfund = -(subCategory.genfund);
+                            }
+
+                        } else if (subCategory.otherfunds) {
+
+                            if (subCategory.otherfunds < 0) {
+                                subCategory.otherfunds = -(subCategory.otherfunds);
+                            }
+
+                        }
+
+                        var subCatValue = subCategory.totalfunds || subCategory.genfund || subCategory.otherfunds;
+
+                        rows.push(
+                            [subCategory.caption, financialCategoryKey, parseInt(subCatValue), parseInt(subCatValue)]
+                        );
+
+                    }
+                }
+
+            }
+        }
+
+        var options = {
+            highlightOnMouseOver: true,
+            maxDepth: 1,
+            maxPostDepth: 2,
+            minHighlightColor: '#8c6bb1',
+            midHighlightColor: '#9ebcda',
+            maxHighlightColor: '#edf8fb',
+            minColor: '#009688',
+            midColor: '#f7f7f7',
+            maxColor: '#ee8100',
+            headerHeight: 15,
+            showScale: true,
+            height: 500,
+            useWeightedAverageForAggregation: true,
+            generateTooltip: treeTooltip
+        };
+
+        function treeTooltip(row, size, value) {
+            var tpl,
+                val = vis_data.getValue(row, 2);
+
+            if (!!val) {
+                tpl = '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
+                numeral(val).format('$0,0'); + '</div>';
+            } else {
+                tpl = '<div></div>';
+            }
+
+            return tpl;
+        }
+
+
+        vis_data = new google.visualization.arrayToDataTable(rows);
+        chart = new google.visualization.TreeMap(document.getElementById('total-tree'));
+        chart.draw(vis_data, options);
+
+    }
+
     function financialStatements_one() {
-        console.log('financial_statements Revenues: ' + JSON.stringify(data['financialStatements']));
 
         var chart, item, len3, options, p, r, ref1, rows, vis_data;
         vis_data = new google.visualization.DataTable();
@@ -307,7 +495,6 @@ $(function() {
     }
 
     function financialStatements_two() {
-        console.log('financial_statements Expenditures: ' + JSON.stringify(data['financialStatements']));
 
         var chart, item, len3, options, p, r, ref1, rows, vis_data;
         vis_data = new google.visualization.DataTable();
@@ -348,5 +535,166 @@ $(function() {
         chart.draw(vis_data, options);
     }
 
+    /**
+     * TODO: Test variant, only for demo to client
+     */
+    function financialStatementsTree_revenues() {
 
+        var chart, item, len3, options, p, r, ref1, RevenuesDataTable, vis_data;
+
+        RevenuesDataTable = [
+            ['Location', 'Parent', 'FinData', 'Heat'],
+            ['Total Revenues', null, 0, 0]
+        ];
+
+        var RevenuesData = data.financialStatements.Revenues;
+
+        // Prepare Revenues data to Google Tree Chart
+        for(var rKey in RevenuesData) {
+            if (RevenuesData.hasOwnProperty(rKey)){
+
+                var subCategory = RevenuesData[rKey];
+                var subCatValue = getSubCatValue(subCategory);
+                if (!subCatValue) {
+                    continue;
+                }
+
+                RevenuesDataTable.push(
+                    [subCategory.caption, 'Total Revenues', parseInt(subCatValue), parseInt(subCatValue)]
+                );
+
+            }
+        }
+
+
+        /**
+         * TODO: Hardcoded!! Please ask the question to client, which field must be there?
+         */
+        function getSubCatValue(subCategory) {
+
+            if (subCategory.totalfunds) {
+
+                if (subCategory.totalfunds < 0) {
+                    subCategory.totalfunds = -(subCategory.totalfunds);
+                }
+
+            }
+
+            return subCategory.totalfunds || false;
+        }
+
+        var options = {
+            highlightOnMouseOver: true,
+            maxDepth: 1,
+            maxPostDepth: 2,
+            minHighlightColor: '#8c6bb1',
+            midHighlightColor: '#9ebcda',
+            maxHighlightColor: '#edf8fb',
+            minColor: '#009688',
+            midColor: '#f7f7f7',
+            maxColor: '#ee8100',
+            headerHeight: 15,
+            showScale: true,
+            height: 500,
+            useWeightedAverageForAggregation: true,
+            generateTooltip: revenuesTooltip
+        };
+
+        function revenuesTooltip(row, size, value) {
+            var val = vis_data.getValue(row, 2);
+            return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
+                numeral(val).format('$0,0'); + '</div>';
+        }
+
+
+        vis_data = new google.visualization.arrayToDataTable(RevenuesDataTable);
+        chart = new google.visualization.TreeMap(document.getElementById('total-revenue-tree'));
+        chart.draw(vis_data, options);
+    }
+
+    function financialStatementsTree_expenditures() {
+
+        var chart, item, len3, options, p, r, ref1, ExpendituresDataTable, RevenuesDataTable, vis_data;
+
+        ExpendituresDataTable = [
+            ['Location', 'Parent', 'FinData', 'Heat'],
+            ['Total Expenditures', null, 0, 0]
+        ];
+
+        var ExpendituresData = data.financialStatements.Expenditures;
+
+        // Prepare ExpendituresData data to Google Tree Chart
+        for(var eKey in ExpendituresData) {
+            if (ExpendituresData.hasOwnProperty(eKey)){
+
+                var subCategory = ExpendituresData[eKey];
+                var subCatValue = getSubCatValue(subCategory);
+                if (!subCatValue) {
+                    continue;
+                }
+
+                ExpendituresDataTable.push(
+                    [subCategory.caption, 'Total Expenditures', parseInt(subCatValue), parseInt(subCatValue)]
+                );
+
+            }
+        }
+
+        function getSubCatValue(subCategory) {
+
+            if (subCategory.totalfunds) {
+
+                if (subCategory.totalfunds < 0) {
+                    subCategory.totalfunds = -(subCategory.totalfunds);
+                }
+
+            }
+
+            return subCategory.totalfunds || false;
+        }
+
+        var options = {
+            highlightOnMouseOver: true,
+            maxDepth: 1,
+            maxPostDepth: 2,
+            minHighlightColor: '#8c6bb1',
+            midHighlightColor: '#9ebcda',
+            maxHighlightColor: '#edf8fb',
+            minColor: '#009688',
+            midColor: '#f7f7f7',
+            maxColor: '#ee8100',
+            headerHeight: 15,
+            showScale: true,
+            height: 500,
+            useWeightedAverageForAggregation: true,
+            generateTooltip: expendituresTooltip
+        };
+
+        function expendituresTooltip(row, size, value) {
+            var val = vis_data.getValue(row, 2);
+            return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
+                numeral(val).format('$0,0'); + '</div>';
+        }
+
+        vis_data = new google.visualization.arrayToDataTable(ExpendituresDataTable);
+        chart = new google.visualization.TreeMap(document.getElementById('total-expenditures-tree'));
+        chart.draw(vis_data, options);
+
+    }
+
+    /*
+     Change fin statement year.
+     */
+    $('#fin-stmt-year').change(function() {
+        var $this = $(this);
+        $this.closest('form').submit();
+        window.localStorage.setItem('tab', 'Financial_Statements');
+    });
+
+
+    var tab = window.localStorage.getItem('tab');
+    if (tab) {
+        window.localStorage.removeItem('tab');
+        $('.nav-pills a[href="#' + tab + '"]').tab('show');
+    }
 });

@@ -6,10 +6,12 @@ use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Form\EnvironmentType;
+use GovWiki\DbBundle\GovWikiDbServices;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -39,9 +41,6 @@ class MainController extends AbstractGovWikiAdminController
         } else {
             $user = $user->getId();
         }
-        /** @var integer $user */
-
-        $this->get('request');
 
         $environments = $this->paginate(
             $this->getDoctrine()
@@ -96,6 +95,38 @@ class MainController extends AbstractGovWikiAdminController
     }
 
     /**
+     * @Configuration\Route("/max_ranks")
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function ranksAction()
+    {
+        $environment = $this->adminEnvironmentManager()->getSlug();
+        $this->get(GovWikiDbServices::MAX_RANKS_COMPUTER)
+            ->compute($environment);
+
+        return $this->redirectToRoute('govwiki_admin_main_show', [
+            'environment' => $environment,
+        ]);
+    }
+
+    /**
+     * @Configuration\Route("/sitemap")
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function sitemapAction()
+    {
+        $environment = $this->adminEnvironmentManager()->getSlug();
+        $this->get(GovWikiAdminServices::TXT_SITEMAP_GENERATOR)
+            ->generate($environment);
+
+        return $this->redirectToRoute('govwiki_admin_main_show', [
+            'environment' => $environment,
+        ]);
+    }
+
+    /**
      * @Configuration\Route("/style")
      * @Configuration\Template()
      *
@@ -142,37 +173,23 @@ class MainController extends AbstractGovWikiAdminController
         return $this->redirectToRoute('govwiki_admin_main_home');
     }
 
-//    /**
-//     * @Configuration\Route("/export")
-//     *
-//     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-//     */
-//    public function updateAction()
-//    {
-//        $environmentManager = $this->adminEnvironmentManager();
-//
-//        $environment = $environmentManager->getEnvironment();
-//        $filePath = $this->getParameter('kernel.logs_dir').'/'.
-//            $environment.'.json';
-//
-//        $transformerManager = $this
-//            ->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
-//
-//        $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
-//            ->export(
-//                $filePath,
-//                $transformerManager->getTransformer('geo_json'),
-//                [ 'id', 'altTypeSlug', 'slug', 'latitude', 'longitude' ]
-//            );
-//
-//        $this->get(CartoDbServices::CARTO_DB_API)
-//            ->dropDataset($environment)
-//            ->importDataset($filePath);
-//
-//        return $this->redirectToRoute('govwiki_admin_main_show', [
-//            'environment' => $environment,
-//        ]);
-//    }
+    /**
+     * @Configuration\Route("/export")
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function updateAction()
+    {
+        $environmentManager = $this->adminEnvironmentManager();
+        $map = $this->adminEnvironmentManager()->getMap();
+        $environmentManager->updateCartoDB(
+            $map->getColorizedCountyConditions()->getFieldName()
+        );
+
+        return $this->redirectToRoute('govwiki_admin_main_show', [
+            'environment' => $environmentManager->getEnvironment(),
+        ]);
+    }
 
     /**
      * @Configuration\Route("/enable")
@@ -208,5 +225,64 @@ class MainController extends AbstractGovWikiAdminController
         }
 
         return $this->redirectToRoute('govwiki_admin_main_show');
+    }
+
+    /**
+     * Save images
+     *
+     * @Configuration\Route("/load-favicon")
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function faviconLoadAction(Request $request)
+    {
+        if ($request->isXmlHttpRequest()) {
+            $user = $this->getUser();
+            if ($user->hasRole('ROLE_ADMIN')) {
+
+                // validate extension
+                $extensionValues = [
+                    'ico',
+                ];
+
+                // get environment name
+                $folderName = $request->request->get('environment');
+
+                // favicon dir
+                $dir = $this->get('kernel')->getRootDir().'/../web/img/'.$folderName;
+
+                $image = $request->files->get('upload-favicon');
+                $fileName = $image->getClientOriginalName();
+                $extension = explode('.', $fileName);
+                $extension = array_pop($extension);
+                //$size = $image->getClientSize()/1000; // KB
+
+                // validate by extension
+                if (in_array($extension, $extensionValues)) {
+                    if (!file_exists($dir)) {
+                        mkdir($dir);
+                    }
+
+                    $image->move($dir, 'favicon.ico');
+
+                    return new JsonResponse(
+                        [
+                            'message' => 'Favicon upload success!',
+                            'error' => false,
+                        ]
+                    );
+                }
+
+                return new JsonResponse(
+                    [
+                        'message' => 'Broken favicon extension! Favicon not loaded',
+                        'error' => true,
+                    ]
+                );
+            }
+        }
+
+        throw $this->createNotFoundException();
     }
 }

@@ -4,6 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class AbstractGovWikiAdminController
@@ -32,10 +33,52 @@ class AbstractGovWikiAdminController extends Controller
     }
 
     /**
+     * @param string $name  Event name.
+     * @param Event  $event A Event instance.
+     *
+     * @return Event
+     */
+    protected function dispatch($name, Event $event)
+    {
+        $dispatcher = $this->get('event_dispatcher');
+        return $dispatcher->dispatch($name, $event);
+    }
+
+    /**
      * @return \GovWiki\AdminBundle\Manager\AdminEnvironmentManager
      */
     protected function adminEnvironmentManager()
     {
         return $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
+    }
+
+    /**
+     * @param string $message Message.
+     *
+     * @return void
+     */
+    protected function successMessage($message)
+    {
+        $this->addFlash('success', $message);
+    }
+
+    /**
+     * @param string $message Message.
+     *
+     * @return void
+     */
+    protected function errorMessage($message)
+    {
+        $this->addFlash('error', $message);
+    }
+
+    /**
+     * @param string $message Message.
+     *
+     * @return void
+     */
+    protected function infoMessage($message)
+    {
+        $this->addFlash('Info', $message);
     }
 }

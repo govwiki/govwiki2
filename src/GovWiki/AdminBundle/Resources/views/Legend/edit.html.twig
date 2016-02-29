@@ -1,0 +1,116 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block title %}{{ parent() }} - edit map{% endblock title %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+        macro.breadcrumbElement(
+        admin_environment|capitalize ~' environment',
+        'govwiki_admin_main_show',
+        { 'environment': admin_environment }
+        )
+    }}
+    {{ macro.breadcrumbElement('Map', 'govwiki_admin_map_edit') }}
+    {{ macro.breadcrumbElement('Legend') }}
+{% endblock breadcrumb %}
+
+{% block body %}
+
+    <div class="container" id="legend-edit">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Legend edit</h3>
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="col-md-12">
+                            {{ form_start(form) }}
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Alt Type</th>
+                                    <th>Shape</th>
+                                    <th width="25%">Title</th>
+                                    <th>Color</th>
+                                    <th>Order</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% for name, children in form.children %}
+                                <tr>
+                                    {% if '_token' != name %}
+                                        <td>{{ form_label(children) }}</td>
+
+                                        {% if children.children.shape is defined %}
+                                            <td>{{ form_widget(children.shape) }}</td>
+                                            <td>{{ form_widget(children.title) }}</td>
+                                        {% else %}
+                                            <td colspan="2">
+                                                {{ form_widget(children.title) }}
+                                            </td>
+                                        {% endif %}
+                                        <td>{{ form_widget(children.color) }}</td>
+                                        <td>{{ form_widget(children.order) }}</td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+
+                            <button type="submit" class="btn btn-success">
+                                Update
+                            </button>
+                            {{ form_end(form) }}
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="shape" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">New shape</h4>
+                </div>
+                <div class="modal-body">
+                    {{ render(controller('GovWikiAdminBundle:Shape:form')) }}
+                <div class="modal-footer">
+                    <button type="button" id="new-shape" class="btn btn-success">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# Bootstrap colorpicker #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {%- javascripts
+        '@GovWikiAdminBundle/Resources/public/js/Legend/edit.js'
+        output='js/admin_legend.js'
+    -%}
+    <script src="{{ asset_url }}"></script>
+    {%- endjavascripts -%}
+
+{% endblock javascripts %}

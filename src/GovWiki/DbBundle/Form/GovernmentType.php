@@ -46,21 +46,6 @@ class GovernmentType extends AbstractType
             ->add('secondaryLogo', 'file', [ 'required' => false ])
             ->add('secondaryLogoUrl')
             ->add('latestAuditUrl');
-
-        /** @var Government|null $current */
-        $current = $builder->getData();
-
-        if ((null !== $current) && ($current->getId() !== null)) {
-            /*
-             * Form use for update government, give user a chance to change
-             * government environment. Otherwise create government into current
-             * environment.
-             */
-            $builder->add('environment', 'entity', [
-                'class' => 'GovWiki\DbBundle\Entity\Environment',
-                'data' => $this->manger->getReference()->getId(),
-            ]);
-        }
     }
 
     /**

@@ -6,8 +6,8 @@ use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Query;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
-use GovWiki\DbBundle\Reader\ReaderInterface;
-use GovWiki\DbBundle\Writer\WriterInterface;
+use GovWiki\DbBundle\File\ReaderInterface;
+use GovWiki\DbBundle\File\WriterInterface;
 
 /**
  * Class GovernmentImporter
@@ -72,30 +72,6 @@ class GovernmentImporter extends AbstractImporter
         while (($row = $reader->read()) !== null) {
             dump($row);
         }
-
-//        $data = $transformer->transform($filePath);
-//        $id = $this->manager->getEnvironmentReference()->getId();
-//
-//        $insertStmts = [];
-//        $columns = [ 'environment_id' ];
-//        foreach (array_keys($data[0]) as $field) {
-//            $str = strtolower(preg_replace('|([A-Z])|', '_$1', $field));
-//            $str = preg_replace('|(\d+)|', '_$1', $str);
-//            $columns[] = $str;
-//        }
-//
-//        foreach ($data as $row) {
-//            foreach ($row as &$value) {
-//                $value = (empty($value)) ? 'null' : '"'. $value .'"';
-//            }
-//
-//            $insertStmts[] = '(' . $id . ', '. implode(',', $row). ')';
-//        }
-//
-//        $this->con->exec('
-//            insert into governments ('. implode(',', $columns) .') values
-//            '. implode(',', $insertStmts) .'
-//        ');
     }
 
     /**

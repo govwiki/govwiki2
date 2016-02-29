@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Form;
 
 use Doctrine\ORM\EntityRepository;
+use GovWiki\ApiBundle\Manager\EnvironmentManagerAwareInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -21,9 +22,21 @@ class LegislationType extends AbstractType
     /**
      * @param string $environment Environment name.
      */
-    public function __construct($environment)
+    public function __construct($environment = null)
     {
         $this->environment = $environment;
+    }
+
+    /**
+     * @param string $environment Environment name.
+     *
+     * @return LegislationType
+     */
+    public function setEnvironment($environment)
+    {
+        $this->environment = $environment;
+
+        return $this;
     }
 
     /**
@@ -35,7 +48,7 @@ class LegislationType extends AbstractType
 
         $builder
             ->add('govAssignedNumber')
-            ->add('dateConsidered')
+            ->add('dateConsidered', 'date')
             ->add('name')
             ->add('summary')
             ->add('evaluatorApprovedPosition')
@@ -44,6 +57,10 @@ class LegislationType extends AbstractType
             ->add('issueCategory', 'entity', [
                 'class' => 'GovWiki\DbBundle\Entity\IssueCategory',
                 'choice_label' => 'name',
+            ])
+            ->add('electedOfficialVotes', 'collection', [
+                'type' => new ElectedOfficialVoteType(),
+                'by_reference' => 'false',
             ])
             ->add('government', 'entity', [
                 'class' => 'GovWiki\DbBundle\Entity\Government',

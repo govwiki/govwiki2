@@ -35,7 +35,7 @@ class GovernmentTableManager
     {
         $con = $this->em->getConnection();
 
-        $con->exec("DROP TABLE IF EXISTS {$name}");
+        $con->exec("DROP TABLE IF EXISTS `{$name}`");
         $con->exec("
             CREATE TABLE `{$name}` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,

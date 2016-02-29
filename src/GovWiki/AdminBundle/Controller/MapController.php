@@ -3,12 +3,13 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
+use CartoDbBundle\Service\CartoDbApi;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Form\MapType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -49,17 +50,13 @@ class MapController extends AbstractGovWikiAdminController
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
-            /*
-             * This stuff is required because doctrine compare by reference.
-             */
-            $new = clone $map->getColorizedCountyConditions();
-            $map->setColorizedCountyConditions($new);
-            if ($new->isColorized()) {
-                /*
-                 * Update CartoDB.
-                 */
+            $data = $request->request->get('ccc');
+            $data['colorized'] = $data['colorized'] === 'on';
+            $conditions = ColorizedCountyConditions::fromArray($data);
+
+            if ($data['colorized']) {
                 $values = $this->adminEnvironmentManager()
-                    ->getGovernmentsFiledValues($new->getFieldName());
+                    ->getGovernmentsFiledValues($conditions->getFieldName());
                 $environment = $this->adminEnvironmentManager()
                     ->getEnvironment();
 
@@ -69,10 +66,15 @@ class MapController extends AbstractGovWikiAdminController
                 $sqlParts = [];
                 foreach ($values as $row) {
                     if (null === $row['data']) {
-                        $row['data'] = 0;
+                        $row['data'] = 'null';
                     }
+
+                    $slug = CartoDbApi::escapeString($row['slug']);
+                    $altTypeSlug = CartoDbApi::escapeString($row['alt_type_slug']);
+                    $data = $row['data'];
+
                     $sqlParts[] = "
-                        ('{$row['slug']}', '{$row['alt_type_slug']}', '{$row['data']}')
+                        ('{$slug}', '{$altTypeSlug}', {$data})
                     ";
                 }
 
@@ -85,11 +87,10 @@ class MapController extends AbstractGovWikiAdminController
                         'slug' => 'VARCHAR(255)',
                         'data' => 'double precision',
                     ], true)
-                    // Load data into it.
                     ->sqlRequest("
                         INSERT INTO {$environment}_temporary
                             (slug, alt_type_slug, data)
-                        VALUES". implode(',', $sqlParts));
+                        VALUES ". implode(',', $sqlParts));
                     // Update concrete environment dataset from temporary
                     // dataset.
                 $api->sqlRequest("
@@ -103,10 +104,17 @@ class MapController extends AbstractGovWikiAdminController
                 $api->dropDataset($environment.'_temporary');
             }
 
+            $map->setColorizedCountyConditions($conditions);
             $em->persist($map);
             $em->flush();
         }
 
-        return [ 'form' => $form->createView() ];
+        return [
+            'form' => $form->createView(),
+            'conditions' => $map->getColorizedCountyConditions(),
+            'fields' => $this
+                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
+                ->getGovernmentFields(),
+        ];
     }
 }

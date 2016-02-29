@@ -135,18 +135,12 @@ class Environment
     private $groups;
 
     /**
-     * @ORM\OneToMany(targetEntity="Locale", mappedBy="environment", cascade={"remove"})
-     */
-    private $locales;
-
-    /**
      *
      */
     public function __construct()
     {
         $this->governments = new ArrayCollection();
         $this->formats = new ArrayCollection();
-        $this->locales = new ArrayCollection();
     }
 
     /**
@@ -232,6 +226,26 @@ class Environment
     public function setDomain($domain)
     {
         $this->domain = $domain;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGreetingText()
+    {
+        return $this->greetingText;
+    }
+
+    /**
+     * @param string $greetingText
+     *
+     * @return Environment
+     */
+    public function setGreetingText($greetingText)
+    {
+        $this->greetingText = $greetingText;
 
         return $this;
     }
@@ -463,35 +477,42 @@ class Environment
     }
 
     /**
-     * Add locales
+     * @return string
+     */
+    public function getBottomText()
+    {
+        return $this->bottomText;
+    }
+
+    /**
+     * @param string $bottomText
      *
-     * @param \GovWiki\DbBundle\Entity\Locale $locales
      * @return Environment
      */
-    public function addLocale(\GovWiki\DbBundle\Entity\Locale $locales)
+    public function setBottomText($bottomText)
     {
-        $this->locales[] = $locales;
+        $this->bottomText = $bottomText;
 
         return $this;
     }
 
     /**
-     * Remove locales
-     *
-     * @param \GovWiki\DbBundle\Entity\Locale $locales
+     * @return boolean
      */
-    public function removeLocale(\GovWiki\DbBundle\Entity\Locale $locales)
+    public function isShowBottomText()
     {
-        $this->locales->removeElement($locales);
+        return $this->showBottomText;
     }
 
     /**
-     * Get locales
+     * @param boolean $showBottomText
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Environment
      */
-    public function getLocales()
+    public function setShowBottomText($showBottomText)
     {
-        return $this->locales;
+        $this->showBottomText = $showBottomText;
+
+        return $this;
     }
 }

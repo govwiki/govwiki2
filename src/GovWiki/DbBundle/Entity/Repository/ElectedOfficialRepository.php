@@ -3,7 +3,6 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * ElectedOfficialRepository
@@ -96,38 +95,15 @@ class ElectedOfficialRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('ElectedOfficial');
         $expr = $qb->expr();
-        return $qb
+
+        $result = $qb
             ->addSelect(
-                'Contribution, Endorsement, PublicStatement, Vote',
-                'Legislation, CreateRequest, IssueCategory, PublicStatementIssueCategory, LinkedUser',
+                'LinkedUser',
                 'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}'
             )
-            ->leftJoin('ElectedOfficial.contributions', 'Contribution')
-            ->leftJoin('ElectedOfficial.endorsements', 'Endorsement')
-            ->leftJoin('ElectedOfficial.publicStatements', 'PublicStatement')
-            ->leftJoin('PublicStatement.issueCategory', 'PublicStatementIssueCategory')
-            ->leftJoin('ElectedOfficial.votes', 'Vote')
-            ->leftJoin('ElectedOfficial.government', 'Government')
             ->leftJoin('ElectedOfficial.linkedUser', 'LinkedUser')
-            ->leftJoin('Vote.legislation', 'Legislation')
-            ->leftJoin('Legislation.issueCategory', 'IssueCategory')
-            /*
-             * Join made but not applied create requests.
-             */
-            ->leftJoin(
-                'GovWikiDbBundle:CreateRequest',
-                'CreateRequest',
-                Join::WITH,
-                $expr->andX(
-                    "regexp(CONCAT('electedOfficial\";s:[0-9]+:\"', ElectedOfficial.id), CreateRequest.fields) != false",
-                    $expr->neq(
-                        'CreateRequest.status',
-                        $expr->literal('applied')
-                    )
-                )
-            )
-
-            ->leftJoin('Government.environment', 'Environment')
+            ->join('ElectedOfficial.government', 'Government')
+            ->join('Government.environment', 'Environment')
             ->where(
                 $expr->andX(
                     $expr->eq('Environment.slug', $expr->literal($environment)),
@@ -141,6 +117,12 @@ class ElectedOfficialRepository extends EntityRepository
             )
             ->getQuery()
             ->getArrayResult();
+
+        if (is_array($result)) {
+            return $result[0];
+        }
+
+        return null;
     }
 
     /**
@@ -155,11 +137,14 @@ class ElectedOfficialRepository extends EntityRepository
         $qb = $this->createQueryBuilder('ElectedOfficial');
         return $qb
             ->select('
+                ElectedOfficial.id,
                 ElectedOfficial.fullName,
                 ElectedOfficial.title,
                 ElectedOfficial.emailAddress,
+                ElectedOfficial.slug AS elected_slug,
                 Government.name,
-                Government.slug
+                Government.slug AS government_slug,
+                Government.altTypeSlug
             ')
             ->join('ElectedOfficial.government', 'Government')
             ->where(

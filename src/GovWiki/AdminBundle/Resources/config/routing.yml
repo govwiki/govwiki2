@@ -62,6 +62,22 @@ wizard:
     resource: @GovWikiAdminBundle/Controller/WizardController.php
     type:     annotation
 
+fin_data:
+    resource: @GovWikiAdminBundle/Controller/FinDataController.php
+    type:     annotation
+
+template:
+    resource: "@GovWikiAdminBundle/Controller/TemplateController.php"
+    type:     annotation
+
+legend:
+    resource: "@GovWikiAdminBundle/Controller/LegendController.php"
+    type:     annotation
+
+shape:
+    resource: "@GovWikiAdminBundle/Controller/ShapeController.php"
+    type:      annotation    type:     annotation
+
 locale:
     resource: @GovWikiAdminBundle/Controller/LocalizationController.php
     type:     annotation

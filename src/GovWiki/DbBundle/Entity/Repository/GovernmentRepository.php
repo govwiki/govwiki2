@@ -3,6 +3,8 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
@@ -14,6 +16,50 @@ use GovWiki\DbBundle\Utils\Functions;
  */
 class GovernmentRepository extends EntityRepository
 {
+    /**
+     * @param integer $government Government id.
+     * @param integer $year       That year's of data to show. If null -
+     *                            show for latest.
+     *
+     * @return Government
+     *
+     * @throws NonUniqueResultException If the query result is not unique.
+     * @throws NoResultException If the query returned no result.
+     */
+    public function getGovernmentWithFinData($government, $year = null)
+    {
+        $qb = $this->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
+        $qb
+            ->addSelect('FinData, CaptionCategory, Fund')
+            ->leftJoin('Government.finData', 'FinData')
+            ->leftJoin('FinData.fund', 'Fund')
+            ->leftJoin('FinData.captionCategory', 'CaptionCategory')
+            ->where($expr->eq('Government.id', $government));
+
+        if (null === $year) {
+            /*
+             * Query for fetching latest year.
+             */
+            $latestYear = $this->_em->createQuery('
+                SELECT FinData2.year
+                FROM GovWikiDbBundle:FinData FinData2
+                WHERE FinData2.government = '. $government .'
+                GROUP BY FinData2.year
+                ORDER BY FinData2.year DESC
+            ')
+                ->setMaxResults(1)
+                ->getDQL();
+
+            $qb->andWhere($expr->eq('FinData.year', "({$latestYear})"));
+        } else {
+            $qb->andWhere($expr->eq('FinData.year', $year));
+        }
+
+        return $qb->getQuery()->getSingleResult();
+    }
+
     /**
      * @param string  $environment Environment name.
      * @param integer $id          Government id.
@@ -43,87 +89,6 @@ class GovernmentRepository extends EntityRepository
 
         return $qb->getQuery();
     }
-//    /**
-//     * @param string $altTypeSlug Government slugged alt type.
-//     *
-//     * @return integer
-//     */
-//    public function countGovernments($altTypeSlug)
-//    {
-//        $qb = $this->createQueryBuilder('Government');
-//        return $qb
-//            ->select($qb->expr()->count('Government.id'))
-//            ->where(
-//                $qb->expr()->eq(
-//                    'Government.altTypeSlug',
-//                    $qb->expr()->literal($altTypeSlug)
-//                )
-//            )
-//            ->getQuery()
-//            ->getSingleScalarResult();
-//    }
-
-//    /**
-//     * @param string  $altTypeSlug Government slugged alt type.
-//     * @param integer $page        Page to show.
-//     * @param integer $limit       Max entities per page.
-//     * @param array   $orderFields Assoc array, fields name as key and
-//     *                             sort direction ('desc' or 'asc' (default))
-//     *                             as value.
-//     *
-//     * @return string[]
-//     */
-//    public function getGovernments($altTypeSlug, $page, $limit, array $orderFields = [])
-//    {
-//        $qb = $this->createQueryBuilder('Government');
-//        $qb
-//            ->select('Government.name, Government.altTypeSlug, Government.slug')
-//            ->where(
-//                $qb->expr()->eq(
-//                    'Government.altTypeSlug',
-//                    $qb->expr()->literal($altTypeSlug)
-//                )
-//            )
-//            ->setFirstResult($page * $limit)
-//            ->setMaxResults($limit);
-//
-//        /*
-//        * Get all class property with 'Rank' postfix.
-//        */
-//        foreach ($this->getClassMetadata()->columnNames as $key => $value) {
-//            if (false !== strpos($key, 'Rank')) {
-//                $qb->addSelect("Government.$key");
-//            }
-//        }
-//
-//        if ($orderFields) {
-//            foreach ($orderFields as $fieldName => $direction) {
-//                $fieldName .= 'Rank';
-//                if ('desc' === $direction) {
-//                    $qb->addOrderBy($qb->expr()->desc('Government.'. $fieldName));
-//                } else {
-//                    $qb->addOrderBy($qb->expr()->asc('Government.'. $fieldName));
-//                }
-//            }
-//        }
-//
-//        $data = $qb
-//            ->getQuery()
-//            ->getArrayResult();
-//
-//        /*
-//         * Remove empty fields.
-//         */
-//        foreach ($data as &$row) {
-//            foreach ($row as $key => $field) {
-//                if (empty($field)) {
-//                    unset($row[$key]);
-//                }
-//            }
-//        }
-//
-//        return $data;
-//    }
 
     /**
      * @param string  $environment    Environment name.
@@ -221,27 +186,27 @@ class GovernmentRepository extends EntityRepository
      * Find government by slug and altTypeSlug.
      * Append maxRanks and financialStatements.
      *
-     * @param string $environment Environment name.
-     * @param string $altTypeSlug Slugged government alt type.
-     * @param string $slug        Slugged government name.
+     * @param string  $environment Environment name.
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
+     * @param integer $year        For fetching fin data.
      *
      * @return array|null
      */
-    public function findGovernment($environment, $altTypeSlug, $slug)
+    public function findGovernment($environment, $altTypeSlug, $slug, $year = null)
     {
         $qb = $this->createQueryBuilder('Government');
         $expr = $qb->expr();
 
+        /*
+         * Get government.
+         */
         $data = $qb
             ->select(
-                'Government, FinData, CaptionCategory',
-                'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
-                'Fund'
+                'Government',
+                'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}'
             )
-            ->leftJoin('Government.finData', 'FinData')
-            ->leftJoin('FinData.captionCategory', 'CaptionCategory')
             ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
-            ->leftJoin('FinData.fund', 'Fund')
             ->leftJoin('Government.environment', 'Environment')
             ->where(
                 $expr->andX(
@@ -256,12 +221,7 @@ class GovernmentRepository extends EntityRepository
                     $expr->eq('Environment.slug', $expr->literal($environment))
                 )
             )
-            ->orderBy($expr->asc('CaptionCategory.id'))
-            ->getQuery();
-
-        $s = $data->getSQL();
-
-        $data = $data
+            ->getQuery()
             ->getArrayResult();
 
         if (count($data) <= 0) {
@@ -270,49 +230,95 @@ class GovernmentRepository extends EntityRepository
 
         $government = $data[0];
 
-        $financialStatementsGroups = [];
-        $finData = $government['finData'];
-        foreach ($finData as $finDataItem) {
-            $financialStatementsGroups[$finDataItem['caption']][] = $finDataItem;
-        }
-        $i = 0;
-        $financialStatements = [];
-        foreach ($financialStatementsGroups as $caption => $finData) {
+        /*
+         * Get financial statements.
+         */
+        $finStmtYears = $this->_em->getRepository('GovWikiDbBundle:FinData')
+            ->getAvailableYears($government['id']);
+
+        $government['finData'] = [];
+        $government['financialStatements'] = [];
+        if (null === $year && (count($finStmtYears) > 0)) {
+            $year = $finStmtYears[0];
+
+            $finData = $this
+                ->_em->getRepository('GovWikiDbBundle:FinData')
+                ->createQueryBuilder('FinData')
+                ->select(
+                    'partial FinData.{id, caption, dollarAmount, displayOrder}',
+                    'CaptionCategory, Fund'
+                )
+                ->leftJoin('FinData.captionCategory', 'CaptionCategory')
+                ->leftJoin('FinData.fund', 'Fund')
+                ->where(
+                    $expr->andX(
+                        $expr->eq('FinData.government', $government['id']),
+                        $expr->eq('FinData.year', $year)
+                    )
+                )
+                ->orderBy($expr->asc('CaptionCategory.name'))
+                ->getQuery()
+                ->getArrayResult();
+
+            $financialStatementsGroups = [];
             foreach ($finData as $finDataItem) {
-                $financialStatements[$i]['caption'] = $caption;
-                $financialStatements[$i]['category_name'] = $finDataItem['captionCategory']['name'];
-                $financialStatements[$i]['display_order'] = $finDataItem['displayOrder'];
-                if (empty($financialStatements[$i]['genfund'])) {
-                    if (empty($finDataItem['fund'])) {
-                        $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
-                    } elseif ($finDataItem['fund']['name'] === 'General Fund') {
-                        $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
-                    }
-                }
-                if (empty($financialStatements[$i]['otherfunds'])) {
-                    if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Other') {
-                        $financialStatements[$i]['otherfunds'] = $finDataItem['dollarAmount'];
-                    }
-                }
-                if (empty($financialStatements[$i]['totalfunds'])) {
-                    if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Total') {
-                        $financialStatements[$i]['totalfunds'] = $finDataItem['dollarAmount'];
-                    }
-                }
+                $financialStatementsGroups[$finDataItem['caption']][] = $finDataItem;
             }
-            $i++;
+            $i = 0;
+            $financialStatements = [];
+            foreach ($financialStatementsGroups as $caption => $finData) {
+                foreach ($finData as $finDataItem) {
+                    $financialStatements[$i]['caption'] = $caption;
+                    $financialStatements[$i]['category_name'] = $finDataItem['captionCategory']['name'];
+                    $financialStatements[$i]['display_order'] = $finDataItem['displayOrder'];
+                    if (empty($financialStatements[$i]['genfund'])) {
+                        if (empty($finDataItem['fund'])) {
+                            $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
+                        } elseif ($finDataItem['fund']['name'] === 'General Fund') {
+                            $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
+                        }
+                    }
+                    if (empty($financialStatements[$i]['otherfunds'])) {
+                        if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Other') {
+                            $financialStatements[$i]['otherfunds'] = $finDataItem['dollarAmount'];
+                        }
+                    }
+                    if (empty($financialStatements[$i]['totalfunds'])) {
+                        if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Total') {
+                            $financialStatements[$i]['totalfunds'] = $finDataItem['dollarAmount'];
+                        }
+                    }
+                }
+                $i++;
+            }
+
+            $government['finData'] = $financialStatements;
+            $government['finData']['year'] = $year;
+            $government['finData']['fin_stmt_years'] = $finStmtYears;
+
+            $financialStatements = Functions::groupBy(
+                $financialStatements,
+                [ 'category_name', 'caption' ]
+            );
+
+            /*
+             * Sort findata by display order.
+             */
+            foreach ($financialStatements as &$statement) {
+                uasort($statement, function ($a, $b) {
+                    $a = $a['display_order'];
+                    $b = $b['display_order'];
+
+                    if ($a === $b) {
+                        return 0;
+                    }
+
+                    return ($a < $b) ? -1: 1;
+                });
+            }
+
+            $government['financialStatements'] = $financialStatements;
         }
-
-//        unset($government['finData']);
-
-        $government['finData'] = $financialStatements;
-
-        $financialStatements = Functions::groupBy(
-            $financialStatements,
-            [ 'category_name', 'caption' ]
-        );
-
-        $government['financialStatements'] = $financialStatements;
 
         return $government;
     }
@@ -415,13 +421,34 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
+     * Return all available government alt types in given environment.
+     *
+     * @param $environment
+     *
+     * @return array
+     */
+    public function getAvailableAltTypes($environment)
+    {
+        $qb = $this->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
+        return $qb
+            ->select('Government.altTypeSlug')
+            ->join('Government.environment', 'Environment')
+            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
+            ->groupBy('Government.altTypeSlug')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
      * Compute max ranks for given alt type.
      *
      * @param string $altType One of the government alt type.
      *
      * @return array
      */
-    public function computeMaxRanks($altType)
+    public function computeMaxRanks($altType, $ranked)
     {
         $qb = $this->createQueryBuilder('Government');
 

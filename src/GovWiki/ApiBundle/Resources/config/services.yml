@@ -16,7 +16,7 @@ services:
     govwiki_api.environment_manager.configurator:
         class: GovWiki\ApiBundle\Manager\EnvironmentManagerConfigurator
         arguments:
-            - '' # set by configuration.
+            - @govwiki_api.environment.determinator.host
 
     govwiki_api.environment.determinator.path:
         class: GovWiki\ApiBundle\Determinator\PathDeterminator
@@ -37,6 +37,7 @@ services:
         arguments:
             - @doctrine.orm.default_entity_manager
             - @carto_db.api
+            - @govwiki_db.service.max_ranks_computer
         configurator: [@govwiki_api.environment_manager.configurator, configure]
 
     govwiki_api.serializer.serialization_visitor:
@@ -53,6 +54,13 @@ services:
             - %determinator.name%
         tags:
             - { name: routing.loader }
+
+    govwiki_api.url.generator:
+        class: GovWiki\ApiBundle\Router\GovWikiUrlGenerator
+        arguments:
+            - @router
+            - %determinator.name%
+            - @govwiki_admin.manager.environment
 
     govwiki_api.serizlizer.deserialization_visitor:
         class: GovWiki\ApiBundle\Serializer\ArrayDeserializationVisitor

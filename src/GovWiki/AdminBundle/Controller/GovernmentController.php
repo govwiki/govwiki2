@@ -3,6 +3,8 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
+use GovWiki\AdminBundle\Event\GovernmentAddEvent;
+use GovWiki\AdminBundle\GovWikiAdminEvents;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Form\ExtGovernmentType;
 use GovWiki\DbBundle\GovWikiDbServices;
@@ -83,26 +85,29 @@ class GovernmentController extends AbstractGovWikiAdminController
                 'extension',
                 new ExtGovernmentType($this->adminEnvironmentManager())
             )
-            ->setData([ 'main' => $government, 'extension' =>[] ])
+            ->setData([ 'main' => $government, 'extension' => [] ])
             ->getForm();
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $manager->update($government);
 
-            /*
-             * Update carto db service.
-             */
-            $this->get(CartoDbServices::CARTO_DB_API)
-                ->sqlRequest("
-                    INSERT INTO {$government->getEnvironment()->getSlug()}
-                        (alt_type_slug, slug)
-                    VALUES
-                        (
-                            '{$government->getAltTypeSlug()}',
-                            '{$government->getSlug()}'
-                        )
-                ");
+            $colorizedCountyConditions = $this->adminEnvironmentManager()->getMap()
+                ->getColorizedCountyConditions();
+            $colorizedFieldName = $colorizedCountyConditions->getFieldName();
+            $isColorized = $colorizedCountyConditions->isColorized();
+
+            $extraGovernmentData = $form->getData()['extension'];
+            $data = null;
+            if ($isColorized && $colorizedFieldName &&
+                array_key_exists($colorizedFieldName, $extraGovernmentData)) {
+                $data = $extraGovernmentData[$colorizedFieldName];
+            }
+
+            $this->dispatch(
+                GovWikiAdminEvents::GOVERNMENT_ADD,
+                new GovernmentAddEvent($government, $data)
+            );
 
             $data = $form->getData()['extension'];
             $data['government_id'] = $government->getId();
@@ -110,7 +115,7 @@ class GovernmentController extends AbstractGovWikiAdminController
             $this->adminEnvironmentManager()->addToGovernment($data);
 
             $this->addFlash(
-                'admin_success',
+                'success',
                 'Government '. $government->getName() .' successfully created'
             );
 
@@ -198,10 +203,15 @@ class GovernmentController extends AbstractGovWikiAdminController
             ";
 
             $extraGovernmentData = $form->getData()['extension'];
+            $data = null;
             if ($isColorized && $colorizedFieldName &&
                 array_key_exists($colorizedFieldName, $extraGovernmentData)) {
-                $sql .= ", data = {$extraGovernmentData[$colorizedFieldName]} ";
+                $data = $extraGovernmentData[$colorizedFieldName];
             }
+//            $this->dispatch(
+//                GovWikiAdminEvents::GOVERNMENT_ADD,
+//                new GovernmentAddEvent($government, $data)
+//            );
 
             $this->get(CartoDbServices::CARTO_DB_API)
                 ->sqlRequest($sql ." WHERE
@@ -219,6 +229,7 @@ class GovernmentController extends AbstractGovWikiAdminController
         }
 
         return [
+            'id' => $government->getId(),
             'form' => $form->createView(),
             'formats' => $this->adminEnvironmentManager()
                 ->getFormats(false, $government->getAltType()),

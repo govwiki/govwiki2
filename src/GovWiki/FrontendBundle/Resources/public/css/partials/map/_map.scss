@@ -43,6 +43,11 @@
    height: 500px;
    overflow: hidden;
 
+   .svg {
+      margin: 0 4px;
+      vertical-align: middle;
+   }
+
    .mapOnProcessing {
       margin-top: 200px;
       text-align: center;
@@ -111,6 +116,32 @@
 
       }
 
+      .marker-triangle-up {
+         display: inline-block;
+         width: 0;
+         height: 0;
+         margin-left: 4px;
+         margin-right: 4px;
+         border-bottom: 12px solid #103252;
+         border-left: 6px solid transparent;
+         border-right: 6px solid transparent;
+         vertical-align: middle;
+
+
+         &.red {
+            border-bottom-color: #f00;
+         }
+
+         &.blue {
+            border-bottom-color: #add8e6;
+         }
+
+         &.purple {
+            border-bottom-color: #800080;
+         }
+
+      }
+
       /*map legend circles*/
       .marker-circle {
          display: inline-block;
@@ -122,18 +153,33 @@
          -webkit-border-radius: 50%;
          -moz-border-radius: 50%;
          border-radius: 50%;
+         background: white;
 
-         &.red-circle {
-            background: #f00;
+         &.red-stroke {
+            border: 1px solid #f00000;
          }
 
-         &.blue-circle {
-            background: #add8e6;
+         &.blue-stroke {
+            border: 1px solid #add8e6;
          }
 
-         &.purple-circle {
-            background: #800080;
+         &.purple-stroke {
+            border: 1px solid #800080;
          }
+
+
+         &.red-fill {
+            background-color: #f00000;
+         }
+
+         &.blue-fill {
+            background-color: #add8e6;
+         }
+
+         &.purple-fill {
+            background-color: #800080;
+         }
+
       }
 
       .grey-line {

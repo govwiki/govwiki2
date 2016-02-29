@@ -4,8 +4,10 @@ namespace GovWiki\DbBundle\Command;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Format;
+use GovWiki\DbBundle\GovWikiDbServices;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,45 +39,36 @@ class MigrateCommand extends ContainerAwareCommand
     {
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
 
-        $qb = $em->createQueryBuilder()
-            ->select('Environment, Format')
-            ->from('GovWikiDbBundle:Environment', 'Environment');
-
-        /** @var Environment[] $environments */
-        $environments = $qb
-            ->innerJoin('Environment.formats', 'Format')
+        $data = $em->createQueryBuilder()
+            ->from('GovWikiDbBundle:CreateRequest', 'CreateRequest')
+            ->select('CreateRequest')
             ->getQuery()
             ->getResult();
 
-        /** @var AdminEnvironmentManager $manager */
-        $manager = $this->getContainer()
-            ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
+        $manager = $this->getContainer()->get(GovWikiDbServices::CREATE_REQUEST_MANAGER);
 
-        /*
-         * Migrate formats.
-         */
-        foreach ($environments as $environment) {
-            $output->writeln("Process environment '{$environment->getName()}'");
+        $em->createQuery('DELETE FROM GovWikiRequestBundle:AbstractCreateRequest')
+        ->execute();
 
-            $environmentName = $environment->getSlug();
-
-            $formats = $environment->getFormats();
-            $manager->changeEnvironment($environmentName);
-
-            /** @var Format $format */
-            foreach ($formats as $format) {
-                $oldFieldName = $format->getField();
-                $format->setField(Format::slugifyName($format->getName()));
-
-                $em->persist($format);
-
-                $manager->changeColumnInGovernment($oldFieldName, $format->getField(), $format->getType());
-
-                if ($format->isRanked()) {
-                    $manager->changeColumnInGovernment($oldFieldName.'_rank', $format->getField().'_rank', 'integer');
-                }
-                $em->flush();
+        /** @var CreateRequest $row */
+        foreach ($data as $row) {
+            $fields = $row->getFields();
+            dump($fields);
+            try {
+                /** @var  $entity */
+                $entity = $manager->process([
+                    'entityName' => $row->getEntityName(),
+                    'user' => $row->getUser()->getId(),
+                    'fields' => $fields,
+                ], $row->getEnvironment());
+            } catch (\Exception $e) {
+                $em->remove($row);
+                continue;
             }
+
+            $em->persist($entity);
         }
+
+        $em->flush();
     }
 }

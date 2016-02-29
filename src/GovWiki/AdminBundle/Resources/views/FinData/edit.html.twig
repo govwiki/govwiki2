@@ -1,0 +1,63 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block title %}{{ parent() }} - edit format{% endblock title %}
+
+{% block breadcrumb %}
+    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
+    {{-
+    macro.breadcrumbElement(
+    admin_environment|capitalize ~' environment',
+    'govwiki_admin_main_show',
+    { 'environment': admin_environment }
+    )
+    -}}
+    {{- macro.breadcrumbElement('Governments', 'govwiki_admin_government_index') -}}
+    {{-
+        macro.breadcrumbElement('Edit ' ~ form.government.vars.data.name, 'govwiki_admin_government_edit',
+        { 'id': form.government.vars.data.id })
+    -}}
+    {{- macro.breadcrumbElement('Financial Statements', 'govwiki_admin_findata_index',
+        { 'government': form.government.vars.data.id })
+    -}}
+{% endblock breadcrumb %}
+
+{% block body %}
+
+    <div class="container">
+
+        {# Panel #}
+        <div class="panel panel-success">
+
+            {# Header #}
+            <div class="panel-heading">
+                <h3 class="panel-title">Edit format field</h3>
+            </div>
+
+            {# Body #}
+            <div class="panel-body">
+
+                {# Navigation controls #}
+                <div class="row">
+                    <div class="col-md-12">
+
+                        {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <button class="btn btn-success">Update</button>
+                        <a class="btn btn-default" href="{{-
+                            path(
+                                'govwiki_admin_findata_index',
+                                { 'government': form.government.vars.data.id }
+                            )
+                        -}}">Back</a>
+                        {{ form_end(form) }}
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock body %}

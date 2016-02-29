@@ -16,7 +16,7 @@ abstract class AbstractAdminEntityManager implements
     /**
      * @var EntityManagerInterface
      */
-    private $em;
+    protected $em;
 
     /**
      * @var string
@@ -138,6 +138,16 @@ abstract class AbstractAdminEntityManager implements
     protected function createQueryBuilder($alias)
     {
         return $this->getRepository()->createQueryBuilder($alias);
+    }
+
+    /**
+     * @param string $dql Dql statement.
+     *
+     * @return \Doctrine\ORM\Query
+     */
+    protected function createQuery($dql)
+    {
+        return $this->em->createQuery($dql);
     }
 
     /**

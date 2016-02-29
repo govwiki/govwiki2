@@ -1,0 +1,50 @@
+{% extends '@GovWikiAdmin/CreateRequest/show.html.twig' %}
+
+{% import '@GovWikiAdmin/CreateRequest/show.html.twig' as show_macro %}
+
+{% block detailed %}
+    {{ show_macro.addFormRow(form.dateConsidered) }}
+    {{ show_macro.addFormRow(form.summary) }}
+    {{ show_macro.addFormRow(form.name) }}
+{% endblock detailed %}
+
+{% block associations %}
+    <tr>
+        <td>Government</td>
+        <td>{{ form.vars.value.government  }}</td>
+    </tr>
+    {{ show_macro.addFormRow(form.issueCategory) }}
+{% endblock associations %}
+
+{% block childs %}
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Elected Official</th>
+                <th>How Voted</th>
+                <th>Sponsored by?</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vote in form.electedOfficialVotes %}
+                {% set elected = vote.vars.value.electedOfficial %}
+                <tr>
+                    <td>{{ elected.fullName }}</td>
+                    <td>
+                        {{ form_errors(vote.didElectedOfficialProposeThis) }}
+                        {{ form_widget(vote.didElectedOfficialProposeThis) }}
+                    </td>
+                    <td>
+                        {{ form_errors(vote.vote) }}
+                        {{ form_widget(vote.vote) }}
+                    </td>
+                    <td>
+                         <input type="checkbox" id="send_email-{{ loop.index0 }}" name="send_email[{{ loop.index0 }}]" value="{{ elected.id }}" checked>
+                        <label for="send_email-{{ loop.index0 }}">Email this vote to elected official</label>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -3,16 +3,30 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\QueryBuilder;
+use GovWiki\RequestBundle\Entity\AbstractCreatable;
+use GovWiki\RequestBundle\Entity\ContributionCreateRequest;
 use JMS\Serializer\Annotation\Groups;
 
 /**
  * Contribution
  *
  * @ORM\Table(name="contributions")
- * @ORM\Entity
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\ContributionRepository"
+ * )
  */
-class Contribution
+class Contribution extends AbstractCreatable
 {
+    const CANDIDATE_COMMITEE = 'Candidate Committee';
+    const CORPORATE = 'Corporate';
+    const INDIVIDUAL = 'Individual';
+    const POLITICAL_PARTY = 'Political Party';
+    const POLITICAL_ACTION_COMMITTEE = 'Political Action Committee';
+    const SELF = 'Self';
+    const UNION = 'Union';
+    const OTHER = 'Other';
+
     /**
      * @var integer
      *
@@ -67,6 +81,35 @@ class Contribution
      * @ORM\ManyToOne(targetEntity="ElectedOfficial", inversedBy="contributions")
      */
     private $electedOfficial;
+
+    /**
+     * @var ContributionCreateRequest
+     *
+     * @ORM\OneToOne(
+     *  targetEntity="GovWiki\RequestBundle\Entity\ContributionCreateRequest",
+     *  inversedBy="subject",
+     *  cascade={ "persist", "remove" }
+     * )
+     * @ORM\JoinColumn(name="request_id")
+     */
+    protected $request;
+
+    /**
+     * @return array
+     */
+    public static function getAvailableContributorType()
+    {
+       return [
+           self::CANDIDATE_COMMITEE => self::CANDIDATE_COMMITEE,
+           self::CORPORATE => self::CORPORATE,
+           self::INDIVIDUAL => self::INDIVIDUAL,
+           self::POLITICAL_PARTY => self::POLITICAL_PARTY,
+           self::POLITICAL_ACTION_COMMITTEE => self::POLITICAL_ACTION_COMMITTEE,
+           self::SELF => self::SELF,
+           self::UNION => self::UNION,
+           self::OTHER => self::OTHER,
+       ];
+    }
 
     /**
      * Get id

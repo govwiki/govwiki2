@@ -18,6 +18,17 @@
       }
    }
 
+   .tab-pane {
+      min-height: 600px;
+   }
+
+   .loader{
+      position: absolute;
+      margin-top: 240px;
+      left: 49%;
+      display: none;
+   }
+
    /*
       Table for votes, contribution and etc.
    */
@@ -33,6 +44,14 @@
 
          &.column__date {
             width: 127px;
+         }
+      }
+
+      tr {
+         &:not([ data-id ]) {
+            td {
+               border-top: 1px dashed #eeeeee;
+            }
          }
       }
    }

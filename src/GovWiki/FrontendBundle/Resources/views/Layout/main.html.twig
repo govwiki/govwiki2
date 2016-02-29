@@ -7,8 +7,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% if environment is defined %}
+        <link rel="icon" href="{{ asset('/img/'~environment~'/favicon.ico') }}" type="image/x-icon" />
+        {% else %}
         <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
-
+        {% endif %}
         <link href="https://bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
 
@@ -17,7 +20,6 @@
     </head>
 
     <body>
-
         {# Header #}
         <header class="container {% if environment == 'puerto_rico' %}puerto{% endif %}">
             {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
@@ -79,7 +81,10 @@
             <div class="loader"></div>
         </div>
 
-        <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+        {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/jquery.min.js'
+            output='js/jquery.js' %}
+            <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
         {% block javascripts %}
@@ -88,6 +93,7 @@
             <script> window.gw.authorized = "{{ app.user }}"; </script>
             {% set username = '' %}
             {% if app.user %}
+                <script> window.gw.user_id = "{{ app.user.id }}"; </script>
                 {% set username = app.user.username %}
             {% endif %}
             <script> window.gw.username = "{{ username }}"; </script>
@@ -96,25 +102,3 @@
 
     </body>
 </html>
-
-{#
-
-<h3 style="text-align:center;">PUERTO RICO MUNICIPAL FISCAL SCORES</h3>
-<font size="3">
-
-<p>New research by the Center for Integrity and Public Policy (CIPP) ranks all 78 municipalities in Puerto Rico based on data from the financial statements.  The ranking was based on thirteen (13) financial indicators developed by CIPP, using a short term and long term financial perspective. During 2013, the municipality with the highest index was Fajardo. The lowest score was for Yabucoa.  Below are the major findings from the research:</p>
-
-<ul style="list-style-type:disc">
-<li>70 municipalities have a negative unrestricted net position
-<li>50 municipalities had a deficit of revenues over expenditures
-<li>43 municipalities had a negative fund balance in their general fund
-<li>24 municipalities expend more than 15% of the revenues on debt service
-<li>40 municipalities get more than 40% of their general fund from the state government
-<li>The consolidated long term debt for all municipalities is more than $5 billion
-</ul>
-<p>Click <a href="http://www.govwiki.info//pdfs/Analysis/CIPP%20Report%20Indice%2020151029.pdf" target="_blank" >HERE</a> to learn more about the financial health index for Puerto Rico Municipios (in Spanish)'.</p>
-
-</font>
-
-
-#}

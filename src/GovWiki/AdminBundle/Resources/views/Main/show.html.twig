@@ -30,6 +30,10 @@
                         <div class="col-md-12">
 
                             <div class="btn-group pull-right">
+                                <a class="btn btn-default" href="{{-
+                                    path('govwiki_admin_main_sitemap') -}}">
+                                    Generate sitemap
+                                </a>
                                 <a class="btn btn-primary" href="{{-
                                 path('govwiki_admin_localization_index') -}}">
                                     Localizations
@@ -46,10 +50,15 @@
                                 path('govwiki_admin_format_list') -}}">
                                     Edit formats
                                 </a>
-                                {#<a class="btn btn-default" href="{{-
+                                <a class="btn btn-primary" href="{{-
+                                    path('govwiki_admin_main_ranks')
+                                -}}">
+                                    Compute max ranks
+                                </a>
+                                <a class="btn btn-default" href="{{-
                                 path('govwiki_admin_main_update') -}}">
                                     Update CartoDB
-                                </a>#}
+                                </a>
                             </div>
 
                         </div>

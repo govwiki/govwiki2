@@ -27,19 +27,71 @@
                     </div>
                     <div class="panel-body">
 
+                        <div class="col-md-12">
+                            <a class="btn btn-primary pull-right" href="{{-
+                                path('govwiki_admin_legend_edit')
+                            -}}">
+                                Edit legend
+                            </a>
+                        </div>
+                        <br>
+
                         {{ form_start(form) }}
+
                         {# Map position, coordinates of center and zoom. #}
                         <div class="col-md-6 col-lg-6 col-xs-12">
                             {{- form_row(form.centerLatitude) -}}
                             {{- form_row(form.centerLongitude) -}}
                             {{- form_row(form.zoom) -}}
+                        </div>
+
+                        <div class="col-md-6 col-lg-6 col-xs-12">
                             {{- form_row(form.position) -}}
+                            {{- form_row(form.legendTypes) -}}
+                            {{- form_row(form.debug) -}}
                         </div>
 
                         {# Colorized county conditions. #}
-                        <div class="col-md-6 col-lg-6 col-xs-12">
-                            {{- form_row(form.colorizedCountyConditions) -}}
+                        <div class="col-md-12 col-lg-12 col-xs-12">
+                            <h3>Colorized conditions</h3>
+
+                            <div class="form-group">
+                                <label class="control-label" for="colorized">
+                                    Colorized
+                                </label>
+                                <input type="checkbox" id="colorized" name="ccc[colorized]"
+                                        {%- if (conditions.colorized) %} checked{%- endif -%}>
+                            </div>
+
+                            <div id="conditions-main"
+                                    {%- if not (conditions.colorized) -%} style="display: none"{%- endif -%}>
+
+                                {# Field name selector. #}
+                                <div class="form-group">
+                                    <label for="condition-field-name">Field name</label>
+                                    <select class="form-control" id="condition-field-name" name="ccc[fieldName]">
+                                        {% for field, name in fields %}
+                                            <option value="{{ field }}"
+                                                    {%- if (field == conditions.fieldName) -%} selected
+                                                    {%- endif -%}
+                                                    >{{ name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                {# Conditions. #}
+                                <div class="form-group">
+                                    <label class="control-label">Conditions</label>
+                                    <div id="conditions-list"></div>
+                                </div>
+
+                                <button type="button" class="pull-right btn btn-default" id="condition-add">Add new conditions</button>
+                            </div>
                         </div>
+                        {# Colorized county conditions. #}
+                       {# <div class="col-md-6 col-lg-6 col-xs-12">
+                            {{- form_row(form.colorizedCountyConditions) -}}
+                        </div>#}
                         <div class="col-md-12 col-lg-12 col-xs-12">
                             <button class="btn btn-success">Update</button>
                             <a class="btn btn-default" href="{{- path
@@ -68,73 +120,16 @@
 
 {% block javascripts %}
     {{ parent() }}
+    {%- javascripts
+        '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.runtime.js'
+        '@GovWikiAdminBundle/Resources/public/js/Map/map.js'
+        '@GovWikiAdminBundle/Resources/public/js/Map/templates.js'
+        output='js/admin_map.js'
+    -%}
+        <script src="{{ asset_url }}"></script>
+    {%- endjavascripts -%}
+
     <script>
-        /*
-            Initialize color pickers.
-        */
-        $('.color-picker').colorpicker({
-            format: 'hex',
-            align: 'left'
-        });
-
-
-        /**
-         *  Initialize conditions remove button handler.
-         */
-        function init()
-        {
-
-            $('.conditions-delete').click(function(){
-                $(this).closest('.condition-row').parent().remove();
-            });
-        }
-
-        $(function() {
-            /**
-             * Condition add button.
-             *
-             * @type {*|jQuery|HTMLElement}
-             */
-            var $addBtn = $('#conditions-add');
-
-            /**
-             * Holder element for conditions collection.
-             *
-             * @type {*|jQuery|HTMLElement}
-             */
-            var $collectionHolder = $('[data-prototype]');
-
-            $collectionHolder.data('index', $collectionHolder.find('.condition-row').length);
-
-            $addBtn.click(function() {
-                /**
-                 * Prototype of condition form.
-                 *
-                 * @type {string}
-                 */
-                var prototype = $collectionHolder.data('prototype');
-
-                /**
-                 * Current condition form index.
-                 *
-                 * @type {number}
-                 */
-                var index = $collectionHolder.data('index');
-                var newForm = prototype.replace(/<label class="control-label required">__name__label__<\/label>/g, '');
-                newForm = newForm.replace(/__name__/g, index);
-
-                $collectionHolder.data('index', index + 1);
-
-                $collectionHolder.append(newForm);
-
-                $collectionHolder.find('.color-picker:last')
-                        .colorpicker()
-                        .colorpicker('setValue', '#000000');
-
-                init();
-            });
-
-            init();
-        });
+        window.gw.county = JSON.parse('{{ conditions.toArray|json_encode|e('js') }}');
     </script>
 {% endblock javascripts %}

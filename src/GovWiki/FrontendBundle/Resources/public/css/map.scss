@@ -25,4 +25,13 @@
 
    }
 
+   /*
+      Move CartoDD color range legend on top
+   */
+   .cartodb-legend-stack__top {
+      top: 0;
+      right: 5px;
+      bottom: inherit;
+   }
+
 }

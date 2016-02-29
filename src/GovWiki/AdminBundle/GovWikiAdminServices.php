@@ -8,6 +8,10 @@ namespace GovWiki\AdminBundle;
  */
 abstract class GovWikiAdminServices
 {
+    const TXT_SITEMAP_GENERATOR = 'govwiki_admin.sitemap.generator.txt';
+
+    const SHAPE_MANAGER = 'govwiki_admin.manager.shape';
+
     const TRANSFORMER_MANAGER = 'govwiki_admin.manager.transformer';
     const ADMIN_ENVIRONMENT_MANAGER = 'govwiki_admin.manager.environment';
     const ADMIN_STYLE_MANAGER = 'govwiki_admin.manager.style';
@@ -25,6 +29,7 @@ abstract class GovWikiAdminServices
     const FORMAT_MANAGER = 'govwiki_admin.entity_manager.format';
     const TAB_MANAGER = 'govwiki_admin.entity_manager.tab';
     const CATEGORY_MANAGER = 'govwiki_admin.entity_manager.category';
+    const FIN_DATA_MANAGER = 'govwiki_admin.entity_manager.fin_data';
     const LOCALE_MANAGER = 'govwiki_admin.entity_manager.locale';
     const TRANSLATION_MANAGER = 'govwiki_admin.entity_manager.translation';
 }

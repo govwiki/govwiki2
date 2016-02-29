@@ -2,17 +2,28 @@
 
 namespace GovWiki\DbBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use GovWiki\CommentBundle\Entity\VoteComment;
 use JMS\Serializer\Annotation\Groups;
 
 /**
  * ElectedOfficialVote
  *
  * @ORM\Table(name="elected_officials_votes")
- * @ORM\Entity
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\ElectedOfficialVoteRepository"
+ * )
  */
 class ElectedOfficialVote
 {
+
+    const YES = 'Yes';
+    const NO = 'No';
+    const ABSTAIN = 'Abstain';
+    const ABSENCE = 'Absence';
+    const NOT_IN_OFFICE = 'Not in office';
+
     /**
      * @var integer
      *
@@ -51,6 +62,16 @@ class ElectedOfficialVote
     private $legislation;
 
     /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(
+     *  targetEntity="GovWiki\CommentBundle\Entity\VoteComment",
+     *  mappedBy="subject"
+     * )
+     */
+    private $comments;
+
+    /**
      * Get id
      *
      * @return integer
@@ -81,6 +102,20 @@ class ElectedOfficialVote
     public function getVote()
     {
         return $this->vote;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAvailable()
+    {
+        return [
+            self::YES => self::YES,
+            self::NO => self::NO,
+            self::ABSTAIN => self::ABSTAIN,
+            self::ABSENCE => self::ABSENCE,
+            self::NOT_IN_OFFICE => self::NOT_IN_OFFICE,
+        ];
     }
 
     /**
@@ -150,5 +185,43 @@ class ElectedOfficialVote
     public function getLegislation()
     {
         return $this->legislation;
+    }
+
+    /**
+     * Add comment
+     *
+     * @param VoteComment $comment A VoteComment instance.
+     * @return Legislation
+     */
+    public function addComment(VoteComment $comment)
+    {
+        $this->comments[] = $comment;
+        $comment->setSubject($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove comment
+     *
+     * @param VoteComment $comment A VoteComment instance.
+     *
+     * @return ElectedOfficialVote
+     */
+    public function removeComment(VoteComment $comment)
+    {
+        $this->comments->removeElement($comment);
+
+        return $this;
+    }
+
+    /**
+     * Get comment
+     *
+     * @return Collection
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 }

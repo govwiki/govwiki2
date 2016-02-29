@@ -3,9 +3,9 @@
 namespace GovWiki\ApiBundle\Manager;
 
 use CartoDbBundle\Service\CartoDbApi;
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
@@ -13,8 +13,9 @@ use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
+use GovWiki\DbBundle\Service\MaxRankComputer;
+use GovWiki\DbBundle\Service\MaxRankComputerInterface;
 use GovWiki\DbBundle\Utils\Functions;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class EnvironmentManager
@@ -38,13 +39,25 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     private $environment;
 
     /**
-     * @param EntityManagerInterface $em  A EntityManagerInterface instance.
-     * @param CartoDbApi             $api A CartoDbApi instance.
+     * @var MaxRankComputerInterface
      */
-    public function __construct(EntityManagerInterface $em, CartoDbApi $api)
-    {
+    private $computer;
+
+    /**
+     * @param EntityManagerInterface   $em       A EntityManagerInterface
+     *                                           instance.
+     * @param CartoDbApi               $api      A CartoDbApi instance.
+     * @param MaxRankComputerInterface $computer A MaxRankComputerInterface
+     *                                           instance.
+     */
+    public function __construct(
+        EntityManagerInterface $em,
+        CartoDbApi $api,
+        MaxRankComputerInterface $computer
+    ) {
         $this->em = $em;
         $this->api = $api;
+        $this->computer = $computer;
     }
 
     /**
@@ -115,12 +128,13 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @param string $altTypeSlug Slugged government alt type.
-     * @param string $slug        Slugged government name.
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
+     * @param integer $year        For fetching fin data.
      *
      * @return array
      */
-    public function getGovernment($altTypeSlug, $slug)
+    public function getGovernment($altTypeSlug, $slug, $year = null)
     {
         $tmp = $this->em->getRepository('GovWikiDbBundle:Format')
             ->get($this->environment, true);
@@ -129,7 +143,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
          * Get array of fields and array of ranked fields.
          */
         $fields = [];
-        $rankedFields = [];
         $altType = str_replace('_', ' ', $altTypeSlug);
         $formats = [];
         foreach ($tmp as $format) {
@@ -141,9 +154,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                     if (true === $format['ranked']) {
                         $rankedFieldName = $format['field'] . '_rank';
                         $fields[] = $rankedFieldName;
-                        $rankedFields[] =
-                            'MAX(' . $rankedFieldName . ') AS ' .
-                            $rankedFieldName;
                     }
                 }
 
@@ -151,7 +161,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         }
 
         $government = $this->em->getRepository('GovWikiDbBundle:Government')
-            ->findGovernment($this->environment, $altTypeSlug, $slug);
+            ->findGovernment($this->environment, $altTypeSlug, $slug, $year);
         if (null === $government) {
             return [];
         }
@@ -200,22 +210,47 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         }
 
         /*
-         * Compute max ranks.
+         * Get max ranks.
          */
         $government['ranks'] = [];
-        if (count($rankedFields) > 0) {
-            $rankedFields = implode(',', $rankedFields);
 
-            $ranks = $this->em->getConnection()->fetchAssoc("
-                SELECT {$rankedFields} FROM {$this->environment}
+        $con = $this->em->getConnection();
+        $tableName = MaxRankComputer::getTableName($this->environment);
+
+        try {
+            $data = $con->fetchAssoc("
+                SELECT m.*
+                FROM {$tableName} m
+                INNER JOIN environments e ON m.environment_id = e.id
+                WHERE
+                    e.slug = '{$this->environment}' AND
+                    m.alt_type_slug = '{$altTypeSlug}'
             ");
+        } catch (DBALException $e) {
+            $this->computer->compute($this->environment);
+            $data = $con->fetchAssoc("
+                SELECT m.*
+                FROM {$tableName} m
+                INNER JOIN environments e ON m.environment_id = e.id
+                WHERE
+                    e.slug = '{$this->environment}' AND
+                    m.alt_type_slug = '{$altTypeSlug}'
+            ");
+        }
 
-            if (count($ranks) > 0) {
-                foreach ($ranks as $field => $value) {
-                    $government['ranks'][$field] = [ $government[$field], $value ];
+        if (count($data) > 0) {
+            unset($data['alt_type_slug'], $data['environment_id']);
+            foreach ($data as $field => $value) {
+                if (array_key_exists($field, $government)) {
+                    $government['ranks'][$field .'_rank'] = [
+                        $government[$field .'_rank'],
+                        $value
+                    ];
                 }
             }
+
         }
+
         $formats = Functions::groupBy(
             $formats,
             [ 'tab_name', 'category_name', 'field' ]
@@ -311,20 +346,29 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getElectedOfficial($altTypeSlug, $slug, $eoSlug)
     {
-        $data = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
+        $electedOfficial = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
             ->findOne($this->environment, $altTypeSlug, $slug, $eoSlug);
 
-        $dataCount = count($data);
-        if ($dataCount > 0) {
-            $electedOfficial = $data[0];
-            $createRequests = [];
-            for ($i = 1; $i < $dataCount; $i++) {
-                $createRequests[] = $data[$i];
-            }
+        if (null !== $electedOfficial) {
+
+            /*
+            * Create queries for legislations, contributions and etc.
+            */
+            $votes = $this->em->getRepository('GovWikiDbBundle:ElectedOfficialVote')
+                ->getListQuery($electedOfficial['id']);
+            $contributions = $this->em->getRepository('GovWikiDbBundle:Contribution')
+                ->getListQuery($electedOfficial['id']);
+            $endorsements = $this->em->getRepository('GovWikiDbBundle:Endorsement')
+                ->getListQuery($electedOfficial['id']);
+            $publicStatements = $this->em->getRepository('GovWikiDbBundle:PublicStatement')
+                ->getListQuery($electedOfficial['id']);
 
             return [
                 'electedOfficial' => $electedOfficial,
-                'createRequests' => $createRequests,
+                'votes' => $votes,
+                'contributions' => $contributions,
+                'endorsements' => $endorsements,
+                'publicStatements' => $publicStatements,
                 'categories' => $this->em
                     ->getRepository('GovWikiDbBundle:IssueCategory')
                     ->findAll(),

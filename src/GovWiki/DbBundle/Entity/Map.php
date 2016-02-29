@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
 use JMS\Serializer\Annotation\Groups;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Asset;
 
 /**
@@ -18,6 +17,9 @@ use Symfony\Component\Validator\Constraints as Asset;
  */
 class Map
 {
+    const LEGEND_ALT_TYPES = 'altTypes';
+    const LEGEND_COLORS = 'range';
+
     /**
      * @var integer
      *
@@ -97,6 +99,33 @@ class Map
     private $environment;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     *
+     * @Groups({"map"})
+     */
+    private $debug = false;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(type="array")
+     *
+     * @Groups({"map"})
+     */
+    private $legend = [];
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(type="array")
+     *
+     * @Groups({"map"})
+     */
+    private $legendTypes = [ self::LEGEND_ALT_TYPES ];
+
+    /**
      * @return array
      */
     public static function availablePositions()
@@ -125,6 +154,7 @@ class Map
             ->setLatitude($this->centerLatitude)
             ->setLongitude($this->centerLongitude)
             ->setZoom($this->zoom);
+
         return $namedMap;
     }
 
@@ -273,6 +303,66 @@ class Map
     public function setColorizedCountyConditions(ColorizedCountyConditions $colorizedCountyConditions)
     {
         $this->colorizedCountyConditions = $colorizedCountyConditions;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDebug()
+    {
+        return $this->debug;
+    }
+
+    /**
+     * @param boolean $debug Debug flag.
+     *
+     * @return Map
+     */
+    public function setDebug($debug)
+    {
+        $this->debug = $debug;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLegend()
+    {
+        return $this->legend;
+    }
+
+    /**
+     * @param array $legend Legend array.
+     *
+     * @return Map
+     */
+    public function setLegend(array $legend)
+    {
+        $this->legend = $legend;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLegendTypes()
+    {
+        return $this->legendTypes;
+    }
+
+    /**
+     * @param array $legendTypes Array of available alt types.
+     *
+     * @return Map
+     */
+    public function setLegendTypes(array $legendTypes)
+    {
+        $this->legendTypes = $legendTypes;
 
         return $this;
     }

@@ -30,7 +30,7 @@ class ColorizedCountyConditions
      *                          which color is used base on this field values
      *                          for concrete county.
      */
-    public function __construct($fieldName = ' ')
+    public function __construct($fieldName = null)
     {
         $this->fieldName = $fieldName;
         $this->conditions = new ArrayCollection();
@@ -44,12 +44,9 @@ class ColorizedCountyConditions
     public function toArray()
     {
         $conditions = [];
+        /** @var ConditionInterface $condition */
         foreach ($this->conditions as $condition) {
-            $conditions[$condition->getCondition()] = $condition->getColor();
-        }
-
-        if ($conditions) {
-            krsort($conditions);
+            $conditions[] = $condition->toArray();
         }
 
         return [
@@ -57,6 +54,61 @@ class ColorizedCountyConditions
             'fieldName' => $this->fieldName,
             'conditions' => $conditions,
         ];
+    }
+
+    /**
+     * @param array $array Serialized colorized county conditions data.
+     *
+     * @return ColorizedCountyConditions
+     */
+    public static function fromArray(array $array)
+    {
+        /*
+         * Check array keys and value types.
+         */
+        if (! array_key_exists('fieldName', $array) ||
+            ! array_key_exists('conditions', $array) ||
+            ! array_key_exists('colorized', $array) ||
+            ! is_string($array['fieldName']) ||
+            ! is_array($array['conditions']) ||
+            ! is_bool($array['colorized'])) {
+            throw new \InvalidArgumentException(
+                'Wrong serialized data, expect array with two keys: \'fieldName\' with string value, \'conditions\' with array value and \'colorized\' with boolean value.'
+            );
+        }
+
+        /*
+         * Create new instance and fill by conditions.
+         */
+        $object = new ColorizedCountyConditions($array['fieldName']);
+        $object->setColorized($array['colorized']);
+
+        /*
+         * Pull conditions to object, previously sort in reverse order.
+         */
+        $conditions = $array['conditions'];
+        foreach ($conditions as $condition) {
+            switch ($condition['type']) {
+                case SimpleCondition::getType():
+                    $entity = SimpleCondition::fromArray($condition);
+                    break;
+
+                case PeriodCondition::getType():
+                    $entity = PeriodCondition::fromArray($condition);
+                    break;
+
+                case NullCondition::getType():
+                    $entity = NullCondition::fromArray($condition);
+                    break;
+
+                default:
+                    continue 2;
+            }
+
+            $object->addCondition($entity);
+        }
+
+        return $object;
     }
 
     /**
@@ -82,44 +134,11 @@ class ColorizedCountyConditions
     public static function unserialize($serializedData)
     {
         $array = unserialize($serializedData);
-
-        if (! is_array($array) || count($array) === 0) {
-            /*
-             * Return default.
-             */
+        if (! is_array($array)) {
             return new ColorizedCountyConditions();
         }
 
-        /*
-         * Check array keys and value types.
-         */
-        if (! array_key_exists('fieldName', $array) ||
-            ! array_key_exists('conditions', $array) ||
-            ! array_key_exists('colorized', $array) ||
-            ! is_string($array['fieldName']) ||
-            ! is_array($array['conditions']) ||
-            ! is_bool($array['colorized'])) {
-            throw new \InvalidArgumentException(
-                'Wrong serialized data, expect array with two keys: \'fieldName\' with string value, \'conditions\' with array value and \'isColorized\' with boolean value.'
-            );
-        }
-
-        /*
-         * Create new instance and fill by conditions.
-         */
-        $object = new ColorizedCountyConditions($array['fieldName']);
-        $object->setColorized($array['colorized']);
-
-        /*
-         * Pull conditions to object, previously sort in reverse order.
-         */
-        $conditions = $array['conditions'];
-        krsort($conditions);
-        foreach ($conditions as $condition => $color) {
-            $object->addCondition(new Condition($condition, $color));
-        }
-
-        return $object;
+        return self::fromArray($array);
     }
 
     /**
@@ -155,11 +174,11 @@ class ColorizedCountyConditions
     /**
      * Add new color condition.
      *
-     * @param Condition $condition A Condition instance.
+     * @param ConditionInterface $condition A Condition instance.
      *
      * @return ColorizedCountyConditions
      */
-    public function addCondition(Condition $condition)
+    public function addCondition(ConditionInterface $condition)
     {
         $this->conditions[] = $condition;
 
@@ -169,11 +188,11 @@ class ColorizedCountyConditions
     /**
      * Remove condition.
      *
-     * @param Condition $condition A Condition instance.
+     * @param ConditionInterface $condition A Condition instance.
      *
      * @return $this
      */
-    public function removeCondition(Condition $condition)
+    public function removeCondition(ConditionInterface $condition)
     {
         $this->conditions->removeElement($condition);
 

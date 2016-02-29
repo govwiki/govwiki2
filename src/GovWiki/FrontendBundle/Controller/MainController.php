@@ -4,7 +4,6 @@ namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
-use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -16,6 +15,7 @@ use Symfony\Component\Translation\MessageCatalogue;
  */
 class MainController extends Controller
 {
+
     /**
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */

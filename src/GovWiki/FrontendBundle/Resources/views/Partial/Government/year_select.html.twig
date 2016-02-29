@@ -1,0 +1,11 @@
+{% if (government.finData.fin_stmt_years|length > 1) %}
+
+    <select name="year" style="min-width: 60px" id="fin-stmt-year">
+        {% for year in government.finData.fin_stmt_years %}
+            <option {% if year == government.finData.year %}selected="" {% endif %}>
+                {{- year -}}
+            </option>
+        {% endfor %}
+    </select>
+
+{% endif %}

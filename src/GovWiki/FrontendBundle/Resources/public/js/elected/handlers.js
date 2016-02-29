@@ -56,7 +56,7 @@ function sortTable(table, colNum, columnContentType)
             colNum: colNum,
             columnContentType: columnContentType,
             sortDirection: sortDirection
-        })
+        });
     }
 
     $.each(
@@ -112,16 +112,19 @@ function sortTableTwoStates(table, colNum, columnContentType)
         sortDirection = 'desc';
     }
 
+    var result = [];
     if (makeSort) {
         rows = sortByProperty(rows, {
             colNum: colNum,
             columnContentType: columnContentType,
             sortDirection: sortDirection
-        })
+        });
+    } else {
+        result = rows;
     }
 
     $.each(
-        rows, function (index, row)
+        result, function (index, row)
         {
             $(table).children('tbody').append(row);
         }
@@ -204,6 +207,79 @@ $(function() {
     var Handlers = {};
 
     var authorized = window.gw.authorized;
+
+    /*
+        Pagination and sorting.
+     */
+    var $pane = $('.tab-pane');
+
+    $pane.on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $this = $(this);
+        var $pane = $this.closest('.tab-pane');
+        var entity = $pane.attr('id');
+        var url = $this.attr('href');
+
+        if (url.indexOf('api') == -1) {
+            url = url.substr(1, url.length);
+            var firstElement = url.substr(0, url.indexOf('/'));
+
+
+            if ('app_dev.php' == firstElement) {
+                var path = url.substr(url.indexOf('/') + 1, url.length);
+                url = '/' + firstElement + '/api/v1/elected-official/' + path +
+                      '&entity=' + entity;
+            } else {
+                url = '/api/v1/elected-official/' + url + '&entity=' + entity;
+            }
+        }
+
+        var $mainContent = $pane.find('.tab-pane-main');
+        $mainContent.html('');
+
+        var $loader = $('.tab-content').find('.loader');
+        $loader.show();
+        $.ajax(url).success(function(data) {
+            $loader.hide();
+            $mainContent.html(data);
+        });
+    });
+
+    $pane.on('click', '.sortable a', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $this = $(this);
+        var $pane = $this.closest('.tab-pane');
+        var entity = $pane.attr('id');
+        var url = $this.attr('href');
+
+        if (url.indexOf('api') == -1) {
+            url = url.substr(1, url.length);
+            var firstElement = url.substr(0, url.indexOf('/'));
+
+
+            if ('app_dev.php' == firstElement) {
+                var path = url.substr(url.indexOf('/') + 1, url.length);
+                url = '/' + firstElement + '/api/v1/elected-official/' + path +
+                '&entity=' + entity;
+            } else {
+                url = '/api/v1/elected-official/' + url + '&entity=' + entity;
+            }
+        }
+
+        var $mainContent = $pane.find('.tab-pane-main');
+        $mainContent.html('');
+
+        var $loader = $('.tab-content').find('.loader');
+        $loader.show();
+        $.ajax(url).success(function(data) {
+            $loader.hide();
+            $mainContent.html(data);
+        });
+    });
 
     $('[data-toggle="tooltip"]').tooltip();
 
@@ -527,6 +603,7 @@ $(function() {
         sendObject = {
             createRequest: {
                 entityName: entityType,
+                user: window.gw.user_id,
                 fields: {
                     fields: newRecord,
                     associations: associations,

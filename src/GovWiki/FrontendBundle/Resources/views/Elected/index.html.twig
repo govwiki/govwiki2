@@ -32,7 +32,7 @@
 
         <hr/>
 
-        <div class="row person-info-content">
+        {#<div class="row person-info-content">
             <div class="col-xs-10 col-sm-10 col-md-10 col-md-push-1 col-lg-10 col-lg-push-1" style="font-size:16px;">
                 {% if app.user and elected.linkedUser and app.user.id == elected.linkedUser.id %}
                     <p>Elected Official Message:</p>
@@ -54,7 +54,7 @@
             </div>
         </div>
 
-        <hr/>
+        <hr/>#}
 
         <div class="row person-info-tabs">
             <div class="col-md-10 col-md-push-1">
@@ -70,6 +70,8 @@
                 <!-- Tab panes -->
                 <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
 
+                    <div class="loader"></div>
+
                     {# Votes #}
                     {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:votes.html.twig') }}
 
@@ -81,6 +83,7 @@
 
                     {# Public Statements #}
                     {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}
+
 
                 </div>
 

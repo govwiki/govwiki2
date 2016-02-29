@@ -43,6 +43,13 @@ class ColorizedCountyConditionsType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return ColorizedCountyConditions::unserialize($value);
+        try {
+            return ColorizedCountyConditions::unserialize($value);
+        } catch (\InvalidArgumentException $e) {
+            /*
+             * Some error while unserialize Colorized conditions.
+             */
+            return new ColorizedCountyConditions();
+        }
     }
 }
