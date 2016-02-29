@@ -9,3 +9,7 @@ services:
             - @translator
         tags:
             - { name: twig.extension }
+
+    govwiki.frontend_bundle.adverting:
+        class: GovWiki\FrontendBundle\Service\GetAdverting
+        arguments: ["@doctrine", "@templating"]
