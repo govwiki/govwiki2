@@ -286,6 +286,26 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             ");
         }
 
+        /*
+        $distinctGovermentsCity = $this->em->createQueryBuilder()
+            ->select('Government.id, Government.city, Government.slug')
+            ->from('GovWikiDbBundle:Government', 'Government')
+            ->where('Government.environment = :id')
+            ->setParameters(
+                [
+                    'id' => $data['environment_id'],
+                ]
+            )
+            ->groupBy('Government.slug')
+            ->getQuery()
+            ->getResult();
+
+        var_dump($distinctGovermentsCity);
+        die;
+        */
+
+        $environmentId = $data['environment_id'];
+
         if (count($data) > 0) {
             unset($data['alt_type_slug'], $data['environment_id']);
             foreach ($data as $field => $value) {
@@ -314,6 +334,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             'government_json' => $governmentJson,
             'formats' => $formats,
             'tabs' => array_keys($formats),
+            'categoriesRevenuesAndExpenditures' => $this->getCategoriesRevenuesAndExpendituresByGoverment($government['id']),
         ];
     }
 
@@ -473,5 +494,55 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             $this->em->getRepository('GovWikiDbBundle:Environment')
                 ->getReferenceByName($this->environment)
         );
+    }
+
+    /**
+     * Get years by government
+     *
+     * @param int $id
+     * @return array
+     */
+    public function getYearsByGovernment($id)
+    {
+        $governments = $this->em->createQueryBuilder()
+            ->select('FinData.id, FinData.year')
+            ->from('GovWikiDbBundle:FinData', 'FinData')
+            ->where('FinData.government = :id')
+            ->setParameters(
+                [
+                    'id' => $id,
+                ]
+            )
+            ->groupBy('FinData.year')
+            ->getQuery()
+            ->getResult();
+
+        return $governments;
+    }
+
+    /**
+     * Get revenues and expenditures by government
+     *
+     * @param int $id
+     * @return array
+     */
+    public function getCategoriesRevenuesAndExpendituresByGoverment($id)
+    {
+        $governments = $this->em->createQueryBuilder()
+            ->select('FinData.id, FinData.caption, IDENTITY(FinData.captionCategory) as captionCategory')
+            ->from('GovWikiDbBundle:FinData', 'FinData')
+            ->where('FinData.government = :id')
+            ->andWhere('FinData.captionCategory IN (:capId)')
+            ->setParameters(
+                [
+                    'id' => $id,
+                    'capId' => [2, 3],
+                ]
+            )
+            ->groupBy('FinData.caption')
+            ->getQuery()
+            ->getResult();
+
+        return $governments;
     }
 }

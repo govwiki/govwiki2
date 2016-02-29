@@ -1,0 +1,409 @@
+/* ==================================== */
+/* ====== Government Controller ======= */
+/* ==================================== */
+/* ============================= */
+/* ======== Main layout ======== */
+/* ============================= */
+/* ===================== */
+/* ====== Loader ======= */
+/* ===================== */
+.loader {
+  margin: 60px auto;
+  font-size: 4px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 2px solid rgba(200, 200, 200, 0.5);
+  border-right: 2px solid rgba(200, 200, 200, 0.5);
+  border-bottom: 2px solid rgba(200, 200, 200, 0.5);
+  border-left: 2px solid #0b4d70;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load8 0.7s infinite linear;
+  animation: load8 0.7s infinite linear; }
+
+.loader, .loader:after {
+  border-radius: 50%;
+  width: 10em;
+  height: 10em; }
+
+@-webkit-keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+.loader_wrap {
+  opacity: 1;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 110%;
+  background-color: lightgrey;
+  z-index: 100000;
+  transition: opacity 1s ease-out;
+  visibility: visible; }
+  .loader_wrap .loader {
+    margin-top: 300px; }
+
+/* ========================= */
+/* ========= HEADER ======== */
+/* ========================= */
+body > header {
+  background-color: #0b4d70;
+  -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  /*
+     todo hardcode for puerto.
+  */ }
+  body > header.puerto {
+    border-bottom: 3px solid #808080; }
+  body > header .logo {
+    max-height: 60px;
+    margin-top: 10px;
+    margin-bottom: 10px; }
+  body > header .secondary_logo {
+    max-height: 60px;
+    margin-left: 2px; }
+  body > header .navigation {
+    list-style-type: none;
+    padding-right: 0;
+    margin-bottom: 15px; }
+    body > header .navigation li {
+      display: inline-block;
+      background-color: #0b4d70;
+      margin-right: 10px;
+      margin-top: 10px; }
+      body > header .navigation li a {
+        display: inline-block;
+        line-height: 5em;
+        text-decoration: none;
+        color: #b2dbfb;
+        padding: 0 10px;
+        outline: none; }
+        body > header .navigation li a:hover {
+          text-decoration: none;
+          color: #b2dbfb;
+          background-color: #3b708c; }
+  @media (max-width: 991px) {
+    body > header .navigation {
+      text-align: left;
+      list-style-type: none;
+      padding: 0;
+      margin: 0; }
+      body > header .navigation li {
+        margin: 0;
+        display: block;
+        border-top: 1px solid #3E5E77; }
+        body > header .navigation li a {
+          width: 100%; } }
+  body > header .hamburger {
+    margin-top: 22px;
+    /*
+       Remove right margin on mobile devices.
+    */ }
+    @media (max-width: 991px) {
+      body > header .hamburger {
+        margin-right: 0; } }
+    @media (max-width: 991px) {
+      body > header .hamburger.navbar-toggle {
+        display: block !important; } }
+    body > header .hamburger .icon-bar {
+      background-color: white; }
+  @media (max-width: 991px) {
+    body > header {
+      /* since 3.1.0 */ }
+      body > header .navbar-header {
+        float: none; }
+      body > header .navbar-toggle {
+        display: block; }
+      body > header .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+      body > header .navbar-collapse.collapse {
+        display: none !important; }
+      body > header .navbar-nav {
+        float: none !important;
+        margin: 7.5px -15px; }
+      body > header .navbar-nav > li {
+        float: none; }
+      body > header .navbar-nav > li > a {
+        padding-top: 10px;
+        padding-bottom: 10px; }
+      body > header .navbar-text {
+        float: none;
+        margin: 15px 0; }
+      body > header .navbar-collapse.collapse.in {
+        display: block !important; }
+      body > header .collapsing {
+        overflow: hidden !important; } }
+
+footer {
+  min-height: 80px;
+  position: relative;
+  padding-top: 10px;
+  background-color: #0b4d70;
+  -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+  font-size: 11px;
+  color: #eee;
+  padding: 15px; }
+  footer .copyright-wrapper {
+    /*
+       Add space between copyright and links on to mobile devices.
+    */ }
+    @media (max-width: 991px) {
+      footer .copyright-wrapper {
+        margin-bottom: 10px; } }
+    footer .copyright-wrapper .copyright p {
+      margin-bottom: 0; }
+  footer a {
+    color: #eee; }
+    footer a:hover {
+      color: #eee; }
+
+html, body, #map {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-size: 13px; }
+
+body {
+  background-color: #d1d1d1; }
+
+main {
+  background-color: white;
+  padding: 0 15px; }
+
+.notice {
+  width: 50%;
+  margin: 0 auto;
+  border: 1px solid #f7a4af;
+  box-shadow: 0 1px 4px rgba(255, 0, 0, 0.6); }
+
+/* Temporary (start) */
+/* Temporary (end) */
+/* ===================================================== */
+/* ======== Customize bootstrap & global styles ======== */
+/* ===================================================== */
+a {
+  color: #074d71; }
+
+.nowrap {
+  white-space: nowrap; }
+
+i.icon {
+  background: url("/bundles/govwikifrontend/img/bg.gif");
+  width: 21px;
+  height: 9px;
+  display: inline-block; }
+  i.icon.icon__bottom {
+    height: 4px;
+    margin-bottom: 4px;
+    background: url("/bundles/govwikifrontend/img/desc.gif"); }
+  i.icon.icon__top {
+    height: 4px;
+    margin-bottom: 4px;
+    background: url("/bundles/govwikifrontend/img/asc.gif"); }
+
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  background-color: #0b4d70; }
+
+/*
+   Set z-index for date picker.
+*/
+.datepicker-dropdown {
+  z-index: 10000 !important; }
+
+/*
+   Remove border from table in financial statement tab at government page.
+*/
+#Financial_Statements .table th,
+#Financial_Statements .table td {
+  border: none; }
+
+/* ========================= */
+/* ======== CartoDB ======== */
+/* ========================= */
+div.cartodb-tooltip {
+  min-width: inherit;
+  margin-top: 10px;
+  margin-left: 10px; }
+
+div.cartodb-tooltip-content-wrapper {
+  background-color: rgba(0, 0, 0, 0.9); }
+
+div.cartodb-tooltip-content-wrapper p {
+  color: white; }
+
+.leaflet-tile-pane .leaflet-layer:last-child {
+  z-index: 1000; }
+
+.governmentController nav a {
+  display: inline-block;
+  margin-top: 10px; }
+.governmentController header h3 {
+  color: #074d71;
+  /*
+     todo hardcode for puerto.
+  */ }
+  .governmentController header h3.puerto {
+    color: #f15a29; }
+.governmentController section {
+  /* ===================== */
+  /* ====== Loader ======= */
+  /* ===================== */
+  /* ==================================== */
+  /* ======= Rank Popover Window ======== */
+  /* ==================================== */
+  /*
+     todo hardcode for puerto
+  */ }
+  .governmentController section .loader {
+    margin: 60px auto;
+    font-size: 4px;
+    position: relative;
+    text-indent: -9999em;
+    border-top: 2px solid rgba(200, 200, 200, 0.5);
+    border-right: 2px solid rgba(200, 200, 200, 0.5);
+    border-bottom: 2px solid rgba(200, 200, 200, 0.5);
+    border-left: 2px solid #0b4d70;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation: load8 0.7s infinite linear;
+    animation: load8 0.7s infinite linear; }
+  .governmentController section .loader, .governmentController section .loader:after {
+    border-radius: 50%;
+    width: 10em;
+    height: 10em; }
+@-webkit-keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+  .governmentController section .loader_wrap {
+    opacity: 1;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 110%;
+    background-color: lightgrey;
+    z-index: 100000;
+    transition: opacity 1s ease-out;
+    visibility: visible; }
+    .governmentController section .loader_wrap .loader {
+      margin-top: 300px; }
+  .governmentController section nav {
+    margin-bottom: 30px; }
+    .governmentController section nav a {
+      font-size: 1.4em; }
+  .governmentController section .statistics {
+    font-size: 1.4em; }
+    .governmentController section .statistics .f-nam {
+      min-width: 540px;
+      display: inline-block;
+      color: #666;
+      text-align: left;
+      margin-right: 5px;
+      vertical-align: top;
+      font-size: 120%; }
+    .governmentController section .statistics .f-nam__bold {
+      font-weight: bold; }
+    .governmentController section .statistics .f-nam__italic {
+      font-style: italic; }
+    .governmentController section .statistics .f-nam__underline {
+      text-decoration: underline; }
+    .governmentController section .statistics .currency-symbol {
+      padding-left: 40px; }
+    .governmentController section .statistics .statistics-table {
+      width: 100%; }
+      .governmentController section .statistics .statistics-table > tbody > tr > td {
+        border-bottom: 1px dotted #ddd;
+        white-space: nowrap; }
+        .governmentController section .statistics .statistics-table > tbody > tr > td:nth-child(1) {
+          color: #666; }
+        .governmentController section .statistics .statistics-table > tbody > tr > td:nth-child(2) {
+          color: #000;
+          text-align: right;
+          border: none; }
+        .governmentController section .statistics .statistics-table > tbody > tr > td a.rank {
+          font-style: italic;
+          font-size: 75%;
+          cursor: pointer; }
+  .governmentController section .person {
+    width: 100%;
+    margin-top: 20px;
+    border-bottom: 1px dotted #ddd; }
+    .governmentController section .person-info {
+      width: 79%;
+      vertical-align: top;
+      font-size: 1.4em;
+      display: inline-block;
+      min-width: 79%; }
+      .governmentController section .person-info p {
+        margin-bottom: 0; }
+    .governmentController section .person-photo {
+      width: 20%;
+      display: inline-block; }
+      .governmentController section .person-photo img {
+        width: 100%;
+        float: right; }
+  .governmentController section .rankPopover {
+    width: 280px; }
+    .governmentController section .rankPopover .popover-title {
+      padding: 0;
+      border-bottom: none;
+      border-radius: 0; }
+    .governmentController section .rankPopover .popover-btn {
+      width: 48%;
+      display: inline-block;
+      text-align: right; }
+    .governmentController section .rankPopover .popover-btn a {
+      background-color: #fff;
+      border: 1px solid #074d71;
+      color: #074d71;
+      border-radius: 3px;
+      padding: 5px 10px; }
+    .governmentController section .rankPopover .popover-btn a:hover {
+      background-color: #074d71;
+      color: #fff;
+      text-decoration: none; }
+    .governmentController section .rankPopover .popover-title-custom {
+      margin: 0;
+      padding: 8px 14px;
+      font-size: 13px;
+      background-color: #f7f7f7;
+      border-bottom: 1px solid #ebebeb;
+      border-radius: 2px 2px 0 0; }
+    .governmentController section .rankPopover .popover-content {
+      overflow-y: scroll;
+      height: 300px; }
+    .governmentController section .rankPopover .popover-content table tr th {
+      cursor: pointer; }
+    .governmentController section .rankPopover .popover-content table tr th:first-child {
+      width: 80%; }
+    .governmentController section .rankPopover .popover-content table tr th:last-child {
+      width: 19%; }
+    .governmentController section .rankPopover .popover-content table tr th,
+    .governmentController section .rankPopover .popover-content table tr td {
+      padding-right: inherit;
+      font-size: 80%;
+      color: black; }
+  .governmentController section .nav-pills__puerto .active a {
+    background-color: #f15a29;
+    color: white; }
+  .governmentController section .nav-pills__puerto a {
+    background-color: white;
+    color: #f15a29; }
+    .governmentController section .nav-pills__puerto a:hover {
+      background-color: #f15a29;
+      color: white; }

@@ -120,10 +120,45 @@
                                         </h4>
                                     </form>
                                     <br>
-
-                                    {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
-                                        'financialStatements': government.financialStatements
-                                    } %}
+                                    {# Compare form #}
+                                    <form action="" method="post" name="municipality-compare" class="row form-group municipality-compare">
+                                        <div class="col-md-2 form-group">
+                                            <input data-id="" id="first-municipality" type="text" name="municipality-compare[first-municipality]" placeholder="Municipality" class="form-control municipality-compare__goverments" />
+                                            <div class="municipality-search"></div>
+                                        </div>
+                                        <div class="col-md-1 form-group">
+                                            <select name="municipality-compare[first-municipality-year]" class="form-control">
+                                                <option value="">Year</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-1 text-center form-group" style="font-size: 12px; padding-top: 10px;">to</div>
+                                        <div class="col-md-2 form-group">
+                                            <input data-id="" id="second-municipality" type="text" name="municipality-compare[second-municipality]" placeholder="Municipality" class="form-control municipality-compare__goverments" />
+                                            <div class="municipality-search"></div>
+                                        </div>
+                                        <div class="col-md-1 form-group">
+                                            <select name="municipality-compare[second-municipality-year]" class="form-control">
+                                                <option value="">Year</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 form-group">
+                                            <select name="municipality-compare[category]" class="form-control">
+                                                <option value="">All categories</option>
+                                                {% for category in categoriesRevenuesAndExpenditures %}
+                                                    <option value="{{ category.id }}">{{ category.caption }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 form-group">
+                                            <input type="submit" value="Compare" class="btn">
+                                        </div>
+                                    </form>
+                                    {# Statistics #}
+                                    <div class="statistics fin-values-block">
+                                        {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
+                                            'financialStatements': government.financialStatements
+                                        } %}
+                                    </div>
                                 </div>
                             {% endif %}
 
@@ -174,7 +209,118 @@
 
     {{parent()}}
 
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        var compareGovernments = {
+            init: function() {
+                var obj = this;
+
+                // search goverments
+                $('.municipality-compare__goverments').keyup(function() {
+                    var el = $(this);
+                    el.parent().find('.municipality-search').html('');
+                    if (el.val().length > 2) {
+                        $.ajax({
+                            url: '{{ govwiki_path('govwiki_api_v1_government_search') }}',
+                            type: 'GET',
+                            data: 'search='+el.val(),
+                            success: function (data) {
+                                if (data.length > 0) {
+                                    for (i=0;i<data.length;i++) {
+                                        el.parent().find('.municipality-search').append('<div onclick="compareGovernments.setYear('+data[i].id+', \''+el.attr('id')+'\', \''+data[i].name+'\')">'+data[i].state+' '+data[i].name+'</div>');
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // submit form
+                $('.municipality-compare').submit(function(e) {
+                    e.preventDefault();
+                    obj.submitForm();
+                });
+            },
+            setYear: function(govId, elId, name) {
+                var el = $('#'+elId);
+                var yearEl = el.parent().next().find('select');
+
+                // get goverments years
+                $.ajax({
+                    url: location.href,
+                    type: 'POST',
+                    data: 'yearByGovId=' + govId,
+                    success: function (data) {
+                        if (data.length > 0) {
+                            yearEl.html('<option value="">Year</option>');
+                            for (i=0;i<data.length;i++) {
+                                el.parent().next().find('select').append('<option value="'+data[i].id+'">'+data[i].year+'</option>');
+                            }
+                        } else {
+                            yearEl.html('<option value="">Year</option>');
+                        }
+
+                        el.val(name);
+                        el.attr('data-id', govId);
+                        el.parent().find('.municipality-search').html('');
+                    }
+                });
+            },
+            submitForm: function() {
+                var data = {
+                    firstMunicipality: {
+                        id: $(this).find('input[name="municipality-compare[first-municipality]"]').attr('data-id'),
+                        name: $(this).find('input[name="municipality-compare[first-municipality]"]').val(),
+                        year: {
+                            id: $(this).find('select[name="municipality-compare[first-municipality-year]"]').val(),
+                            name: $(this).find('select[name="municipality-compare[first-municipality-year]"] option:selected').text()
+                        }
+                    },
+                    secondMunicipality: {
+                        id: $(this).find('input[name="municipality-compare[second-municipality]"]').attr('data-id'),
+                        name: $(this).find('input[name="municipality-compare[second-municipality]"]').val(),
+                        year: {
+                            id: $(this).find('select[name="municipality-compare[second-municipality-year]"]').val(),
+                            name: $(this).find('select[name="municipality-compare[second-municipality-year]"] option:selected').text()
+                        }
+                    },
+                    category: {
+                        id: $(this).find('select[name="municipality-compare[category]"]').val(),
+                        name: $(this).find('select[name="municipality-compare[category]"] option:selected').text()
+                    }
+                }
+
+                console.log(data);
+            }
+        }
+
+        compareGovernments.init();
+
+        /*
+var data = {
+    firstMunicipality: {
+        id: '##goverment_id##',
+        name: '##goverment_name##',
+        year: {
+            id: '##year_id##',
+            name: '##year_name##'
+        }
+    },
+    secondMunicipality: {
+        id: '##goverment_id##',
+        name: '##goverment_name##',
+        year: {
+            id: '##year_id##',
+            name: '##year_name##'
+        }
+    },
+    category: {
+        id: '##category_id##',
+        name: '##category_name##'
+    }
+}
+        */
+    </script>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
     <script src='http://www.google.com/jsapi'></script>
 
@@ -192,12 +338,8 @@
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.runtime.js'
                     '@GovWikiFrontendBundle/Resources/public/js/script.js'
                     '@GovWikiFrontendBundle/Resources/public/js/government/rank-popover.js'
+                    '@GovWikiFrontendBundle/Resources/public/js/government/index.js'
                     output='js/governemnt.js' %}
-        <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-
-    {% javascripts '@GovWikiFrontendBundle/Resources/public/js/common.js'
-                   '@GovWikiFrontendBundle/Resources/public/js/government/bundle/index.js' %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 

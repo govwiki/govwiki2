@@ -6,6 +6,7 @@ use GovWiki\ApiBundle\GovWikiApiServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -25,6 +26,14 @@ class GovernmentController extends Controller
      */
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
+        // get request years for government
+        if ($request->request->get('yearByGovId')) {
+            return new JsonResponse(
+                $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+                ->getYearsByGovernment($request->request->get('yearByGovId'))
+            );
+        }
+
         return $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
             ->getGovernment(
                 $altTypeSlug,
