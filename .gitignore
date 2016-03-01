@@ -1,5 +1,4 @@
 .idea
-/web/legacy/node_modules
 /app/bootstrap.php.cache
 /app/cache/*
 !app/cache/.gitkeep
@@ -10,10 +9,13 @@
 /bin/
 /composer.phar
 /vendor/
-/web/bundles/
+
+/node_modules/
+/bower_components/
+
+/web/js/
 /web/img/
-/web/uploads
-/bower_components/*
-/node_modules/*
-src/GovWiki/FrontendBundle/Resources/public/css/
-src/GovWiki/FrontendBundle/Resources/public/js/
+/web/bundles/
+/web/uploads/
+/web/legacy/node_modules/
+
