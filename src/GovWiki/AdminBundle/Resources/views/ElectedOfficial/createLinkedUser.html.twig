@@ -27,8 +27,8 @@
                 <div class="col-md-4">
                     {{ form_row(form.username) }}
                     {{ form_row(form.email) }}
-                    {{ form_row(form.password) }}
-                    {{ form_row(form.send_notification_email) }}
+                    {{ form_row(form.plainPassword, {'label': 'Password'}) }}
+                    {{ form_row(form.send_notification_email, {'label': 'Send notification email to Elected Official'}) }}
                 </div>
             </div>
             <div class="row">
