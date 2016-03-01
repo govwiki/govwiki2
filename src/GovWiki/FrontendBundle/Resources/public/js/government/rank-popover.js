@@ -50,6 +50,7 @@ RankPopover.prototype.init = function init() {
             $('.rank').not(e.target).popover('destroy');
         } else {
             $('.rank').popover('destroy');
+            return true;
         }
 
         $popover = $element.hasClass('rank') ? $element : $element.closest('.rank');
