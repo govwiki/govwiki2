@@ -7,6 +7,8 @@
 
 .governmentController {
 
+   @import "partials/typeahead/typeahead_government";
+
    nav a {
       display: inline-block;
       margin-top: 10px;
@@ -30,6 +32,30 @@
    section {
 
       @import "partials/loader/loader";
+
+      .divider {
+         color: #DBDBDB;
+         margin-top: 30px;
+      }
+
+      #Financial_Statements {
+
+         .table {
+            th, td {
+               border: none;
+            }
+         }
+
+         .government-compare {
+
+            select {
+               font-size: 12px;
+               padding: 10px;
+            }
+
+         }
+
+      }
 
       nav {
          margin-bottom: 30px;
@@ -159,24 +185,6 @@
             }
          }
       }
-
-     .municipality-search {
-        position: absolute;
-        background: #fff;
-        z-index: 5;
-        max-height: 200px;
-        overflow-y: auto;
-        box-shadow: 0 0 4px #ccc;
-
-          div {
-            cursor: pointer;
-            padding: 2px 6px;
-          }
-
-          div:hover {
-            background: #F9F9F9;
-          }
-     }
 
    }
 

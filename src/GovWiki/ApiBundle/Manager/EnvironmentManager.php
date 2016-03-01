@@ -481,20 +481,27 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getCategoriesRevenuesAndExpendituresByGoverment($governmentsIds)
     {
-        $governments = $this->em->createQueryBuilder()
-            ->select('FinData.id, FinData.caption, IDENTITY(FinData.captionCategory) as captionCategory')
-            ->from('GovWikiDbBundle:FinData', 'FinData')
-            ->where('FinData.government IN (:governmentsIds)')
-            ->andWhere('FinData.captionCategory IN (:capId)')
-            ->setParameters(
-                [
-                    'governmentsIds' => $governmentsIds,
-                    'capId' => [2, 3],
-                ]
-            )
-            ->groupBy('FinData.caption')
-            ->getQuery()
-            ->getResult();
+        $con = $this->em->getConnection();
+
+        $governments = $con->fetchAll("
+            SELECT f.caption, f.id, f.caption_category_id
+            FROM (
+                    SELECT caption, id, caption_category_id
+                    FROM findata
+                    WHERE
+                      government_id = {$governmentsIds[0]} AND
+                      caption_category_id in (2, 3)
+                    GROUP BY caption
+                ) f
+            INNER JOIN (
+                SELECT caption
+                FROM findata
+                WHERE
+                  government_id = {$governmentsIds[1]} AND
+                  caption_category_id in (2, 3)
+                GROUP BY caption
+            ) s ON f.caption = s.caption
+        ");
 
         return $governments;
     }
@@ -517,7 +524,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         $category = ($data['category']['id']) ? $data['category']['name'] : null;
 
         $governments = $this->em->createQueryBuilder()
-            ->select('FinData.id, IDENTITY(FinData.captionCategory) as captionCategory, IDENTITY(FinData.government) as governmentId, FinData.caption, FinData.dollarAmount, FinData.year')
+            ->select('FinData.id, IDENTITY(FinData.captionCategory) as captionCategory, IDENTITY(FinData.government) as governmentId, FinData.caption, FinData.dollarAmount as totalfunds, FinData.year')
             ->from('GovWikiDbBundle:FinData', 'FinData')
             ->where('FinData.government IN (:municipalitysId)')
             ->andWhere('FinData.year IN (:years)');

@@ -1,4 +1,3 @@
-require('jquery');
 require('../vendor/bootstrap.js');
 
 require('./search_elected.js');
