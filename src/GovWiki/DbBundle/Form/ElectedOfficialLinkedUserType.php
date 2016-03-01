@@ -13,23 +13,41 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class ElectedOfficialLinkedUserType extends AbstractType
 {
     /**
+     * @var string $offered_username Offered username
+     */
+    private $offered_username;
+
+    /**
+     * @var string $offered_email Offered email
+     */
+    private $offered_email;
+
+    /**
+     * @param string $username Offered username.
+     * @param string $email Offered email.
+     */
+    public function __construct($username = '', $email = '')
+    {
+        $this->offered_username = $username;
+        $this->offered_email = $email;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $offered_username = $options['data']['offered_username'];
-        $offered_email = $options['data']['offered_email'];
         $builder
             ->add('username', null, array(
-                'data' => $offered_username
+                'data' => $this->offered_username
             ))
             ->add('email', 'email', array(
-                'data' => $offered_email
+                'data' => $this->offered_email
             ))
-            ->add('password', null)
+            ->add('plainPassword')
             ->add('send_notification_email', 'checkbox', array(
                 'required' => false,
-                'label' => 'Send notification email to Elected Official'
+                'mapped' => false
             ))
         ;
     }
@@ -40,7 +58,7 @@ class ElectedOfficialLinkedUserType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => null,
+            'data_class' => 'GovWiki\UserBundle\Entity\User'
         ]);
     }
 

@@ -1,3 +1,5 @@
+var Handlebars = require('../vendor/handlebars.js');
+
 /**
  * Typeahead search
  */

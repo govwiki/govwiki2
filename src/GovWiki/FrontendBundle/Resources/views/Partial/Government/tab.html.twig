@@ -8,6 +8,7 @@
 
         {% if categoryName != '' %}
             {% set element = fields|first %}
+            {#<div class="f-nam f-nam__{{- element.category_decoration -}}">{{- ('env.groups.group_id_'~fields|first.category_id)|trans -}}</div>#}
             <div class="f-nam f-nam__{{- element.category_decoration -}}">{{- categoryName -}}</div>
             {{ include('@GovWikiFrontend/Partial/Government/category.html.twig') }}
             <br>

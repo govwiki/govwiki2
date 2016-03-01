@@ -1,7 +1,7 @@
 $(function() {
 
     require('./graphs.js');
-
+    var RankPopover = require('./rank-popover.js');
     var rankPopover = new RankPopover();
 
     /**

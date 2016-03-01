@@ -58,6 +58,9 @@ class CommentController extends Controller
             $em->flush();
 
             $manager->remove($key);
+
+            return $this
+                ->render('@GovWikiComment/Comment/add_complete.html.twig');
         }
 
         return [

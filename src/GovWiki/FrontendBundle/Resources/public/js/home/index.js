@@ -1,3 +1,8 @@
+require('../vendor/bootstrap.js');
+
+require('./search_elected.js');
+require('./search_government.js');
+
 /**
  * Extend CartoDB Tooltip
  * Get Layer position

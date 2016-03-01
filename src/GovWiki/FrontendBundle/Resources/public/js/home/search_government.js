@@ -1,3 +1,5 @@
+var Handlebars = require('../vendor/handlebars.js');
+
 /**
  * Typeahead search
  */
@@ -52,7 +54,7 @@ $(function() {
         searchValue = $(event.target).val();
     });
 
-    $typeahead.attr('placeholder', 'GOVERNMENT NAME');
+    //$typeahead.attr('placeholder', 'GOVERNMENT NAME');
     $typeahead.attr('disabled', false);
 
     //var substringMatcher = function(strs) {

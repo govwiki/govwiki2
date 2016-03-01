@@ -1,0 +1,85 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% block title %}{{ parent() }} - Localizations{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+    macro.breadcrumbElement(
+    admin_environment|capitalize ~' environment',
+    'govwiki_admin_main_show',
+    { 'environment': admin_environment }
+    )
+    }}
+    {{ macro.breadcrumbElement('Localization') }}
+{% endblock breadcrumb %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-8 col-md-offset-2">
+
+            {# Panel #}
+            <div class="panel panel-primary">
+
+                {# Header #}
+                <div class="panel-heading">
+                    <h3 class="panel-title">Localization list</h3>
+                </div>
+
+                {# Body #}
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3>Localizations</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            {{ knp_pagination_render(locale_names_list) }}
+
+                            <table class="table table-bordered text-center">
+                                <tr>
+                                    <th>Name</th>
+                                    <th class="actions">Actions</th>
+                                </tr>
+                                {%- for locale in locale_names_list -%}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ path('govwiki_admin_localization_showlocale',
+                                                { locale_name: locale.shortName}) }}">
+                                                {{ locale.shortName|upper }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {% if is_granted('ROLE_ADMIN') and locale.shortName != 'en' %}
+                                                <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_localization_removelocale', { locale_name: locale.shortName }) -}}" data-description="Delete localization?">
+                                                    Delete
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {%- endfor -%}
+                            </table>
+
+                            {{ knp_pagination_render(locale_names_list) }}
+
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a class="btn btn-primary" href="{{ path('govwiki_admin_localization_createlocale') }}">
+                                    Add localization
+                                </a>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

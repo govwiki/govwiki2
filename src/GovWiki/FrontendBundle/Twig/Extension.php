@@ -6,7 +6,9 @@ use GovWiki\AdminBundle\Manager\AdminStyleManager;
 use GovWiki\ApiBundle\Manager\EnvironmentManager;
 use JMS\Serializer\Serializer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * Class Extension
@@ -35,18 +37,25 @@ class Extension extends \Twig_Extension
     private $container;
 
     /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
      * @param EnvironmentManager $manager A EnvironmentManager instance.
      */
     public function __construct(
         EnvironmentManager $manager,
         Serializer $serializer,
         $determinatorType,
-        ContainerInterface $container
+        ContainerInterface $container,
+        TranslatorInterface $translator
     ) {
         $this->manager = $manager;
         $this->serializer = $serializer;
         $this->determinatorType = $determinatorType;
         $this->container = $container;
+        $this->translator = $translator;
     }
 
     /**
@@ -98,6 +107,15 @@ class Extension extends \Twig_Extension
             $styles = $this->manager->getStyle();
             $styles = json_encode($styles);
 
+            /** @var MessageCatalogue $catalogue */
+            $catalogue = $this->translator->getCatalogue();
+            $transKey = 'general.bottom_text';
+            if ($catalogue->has($transKey)) {
+                $bottomText = $this->translator->trans($transKey);
+            } else {
+                $bottomText = '';
+            }
+
             return [
                 'styles' => $styles,
                 'environment' => $this->manager->getEnvironment(),
@@ -105,7 +123,7 @@ class Extension extends \Twig_Extension
                 'hasElectedOfficials' => $this->manager
                         ->countElectedOfficials() > 0,
                 'title' => $this->manager->getTitle(),
-                'bottomText' => $this->manager->getBottomText(),
+                'bottomText' => $bottomText
             ];
         }
 

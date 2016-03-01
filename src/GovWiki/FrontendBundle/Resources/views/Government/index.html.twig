@@ -20,6 +20,7 @@
 
                     {% if government.latestAuditUrl %}
                         <a target="_blank" href="{{government.latestAuditUrl}}" style="margin-left:20px;">
+                            {#{{ 'gov.links.latest_audit'|trans }}#}
                             Latest Audit
                             <img src="data:image/png;base64,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" style="">
                         </a>
@@ -57,18 +58,25 @@
                             nav-pills__puerto
                         {%- endif -%}">
 
-                            {% for tab in tabs %}
-                                <li class="{{ loop.first ? 'active' : '' }}">
-                                    {# TODO: Hardcoded, for new db, must be replaced #}
-                                    <a href="#{{ tab | replace(' ', '_') | replace('+', 'a') }}"
-                                       aria-controls="{{ tab | replace(' ', '_') | replace('+', 'a') }}"
-                                       role="tab" data-toggle="tab" data-tabname="{{ tab }}">
-                                        {{ tab }}
-                                    </a>
-                                </li>
+                            {% if (formats is defined) and (formats is not empty) %}
+                                {% for tabName, categories in formats %}
+                                    {% if categories[""] is defined %}
+                                        {% set tab_id = categories[""]|first.tab_id %}
+                                    {% else %}
+                                        {% set tab_id = categories|first|first.tab_id %}
+                                    {% endif %}
 
-                            {% endfor %}
-
+                                    <li class="{{ loop.first ? 'active' : '' }}">
+                                        {# TODO: Hardcoded, for new db, must be replaced #}
+                                        <a href="#{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
+                                           aria-controls="{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
+                                           role="tab" data-toggle="tab" data-tabname="{{ tabName }}">
+                                            {#{{ ('env.groups.group_id_'~tab_id)|trans }}#}
+                                            {{ tabName }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
 
                             {% if showFinStmt %}
                                 <li><a href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">Financial Statements</a></li>
@@ -79,13 +87,19 @@
 
                     {# Tab content #}
                     <div class="tab-content">
-
+                        {% set tab_id_list = [] %}
                         {% if (formats is defined) and (formats is not empty) %}
 
                             {% for tabName, categories in formats %}
+                                {% if categories[""] is defined %}
+                                    {% set tab_id = categories[""]|first.tab_id %}
+                                {% else %}
+                                    {% set tab_id = categories|first|first.tab_id %}
+                                {% endif %}
 
                                 <div class="tab-pane {{ loop.first ? 'active' : '' }}" id="{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
 
+                                    {#<h4>{{ ('env.groups.group_id_'~tab_id)|trans }}</h4>#}
                                     <h4>{{ tabName }}</h4>
                                     <br>
                                     <div class="row">
@@ -120,10 +134,42 @@
                                         </h4>
                                     </form>
                                     <br>
-
-                                    {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
-                                        'financialStatements': government.financialStatements
-                                    } %}
+                                    {# Compare form #}
+                                    <form action="" method="post" name="municipality-compare" class="row form-group municipality-compare">
+                                        <div class="col-md-2 form-group">
+                                            <input data-id="" id="first-municipality" type="text" name="municipality-compare[first-municipality]" placeholder="Municipality" class="form-control municipality-compare__goverments" />
+                                            <div class="municipality-search"></div>
+                                        </div>
+                                        <div class="col-md-1 form-group">
+                                            <select id="first-year" name="municipality-compare[first-municipality-year]" class="form-control municipality-year-select">
+                                                <option value="">Year</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-1 text-center form-group" style="font-size: 12px; padding-top: 10px;">to</div>
+                                        <div class="col-md-2 form-group">
+                                            <input data-id="" id="second-municipality" type="text" name="municipality-compare[second-municipality]" placeholder="Municipality" class="form-control municipality-compare__goverments" />
+                                            <div class="municipality-search"></div>
+                                        </div>
+                                        <div class="col-md-1 form-group">
+                                            <select id="second-year" name="municipality-compare[second-municipality-year]" class="form-control municipality-year-select">
+                                                <option value="">Year</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 form-group">
+                                            <select id="municipality-categories" name="municipality-compare[category]" class="form-control">
+                                                <option value="">All categories</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 form-group">
+                                            <input type="submit" value="Compare" class="btn">
+                                        </div>
+                                    </form>
+                                    {# Statistics #}
+                                    <div class="statistics fin-values-block">
+                                        {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
+                                            'financialStatements': government.financialStatements
+                                        } %}
+                                    </div>
                                 </div>
                             {% endif %}
 
@@ -174,7 +220,219 @@
 
     {{parent()}}
 
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        var compareGovernments = {
+            data: null,
+            init: function() {
+                var obj = this;
+
+                // search goverments
+                $('.municipality-compare__goverments').keyup(function(event) {
+                    if (event.keyCode >= 9 && event.keyCode <= 46) {
+                    } else {
+                        var el = $(this);
+                        el.parent().find('.municipality-search').html('');
+                        if (el.val().length > 2) {
+                            $.ajax({
+                                url: '{{ govwiki_path('govwiki_api_v1_government_search') }}',
+                                type: 'GET',
+                                data: 'search=' + el.val(),
+                                success: function (data) {
+                                    if (data.length > 0) {
+                                        for (i = 0; i < data.length; i++) {
+                                            el.parent().find('.municipality-search').append('<div onclick="compareGovernments.setYear(' + data[i].id + ', \'' + el.attr('id') + '\', \'' + data[i].name + '\')">' + data[i].state + ' ' + data[i].name + '</div>');
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
+                // submit form
+                $('.municipality-compare').submit(function(e) {
+                    e.preventDefault();
+                    obj.submitForm($(this));
+                });
+
+                // check years for get category
+                $('.municipality-year-select').change(function() {
+                    if ($('#first-year').val() != '' && $('#second-year').val() != '') {
+                        obj.getCategories();
+                    } else {
+                        $('#municipality-categories').html('<option value="">All categories</option>');
+                    }
+                });
+
+            },
+            setYear: function(govId, elId, name) {
+                var el = $('#'+elId);
+                var yearEl = el.parent().next().find('select');
+
+                // get goverments years
+                $.ajax({
+                    url: location.href,
+                    type: 'POST',
+                    data: 'yearByGovId=' + govId,
+                    success: function (data) {
+                        if (data.length > 0) {
+                            yearEl.html('<option value="">Year</option>');
+                            for (i=0;i<data.length;i++) {
+                                el.parent().next().find('select').append('<option value="'+data[i].id+'">'+data[i].year+'</option>');
+                            }
+
+                            el.val(name);
+                            el.attr('data-id', govId);
+                            el.parent().find('.municipality-search').html('');
+                        } else {
+                            yearEl.html('<option value="">Year</option>');
+                            alert('"'+name+'" has no data, please choose another municipality');
+                        }
+                    }
+                });
+            },
+            getCategories: function() {
+                var data = {
+                    governmentsId:
+                            [
+                                $('#first-municipality').attr('data-id'),
+                                $('#second-municipality').attr('data-id')
+                            ]
+                };
+
+                var el = $('#municipality-categories');
+
+                // get categories
+                $.ajax({
+                    url: location.href,
+                    type: 'POST',
+                    data: data,
+                    success: function (data) {
+                        if (data.length > 0) {
+                            el.html('<option value="">All categories</option>');
+                            for (i=0;i<data.length;i++) {
+                                el.append('<option value="'+data[i].id+'">'+data[i].caption+'</option>');
+                            }
+                        } else {
+                            el.html('<option value="">All categories</option>');
+                        }
+                    }
+                });
+            },
+            submitForm: function($form) {
+                // validation form
+                var error = false;
+                $('.municipality-compare').find('input, select').each(function() {
+                    if ($(this).val() == '' && $(this).attr('name') != 'municipality-compare[category]') {
+                        $(this).focus();
+                        error = true;
+                        return false;
+                    }
+                });
+
+                if (error) {
+                    return false;
+                }
+
+                var obj = this;
+                var data = {
+                    comparedData: {
+                        firstMunicipality: {
+                            id: $form.find('input[name="municipality-compare[first-municipality]"]').attr('data-id'),
+                            name: $form.find('input[name="municipality-compare[first-municipality]"]').val(),
+                            year: {
+                                id: $form.find('select[name="municipality-compare[first-municipality-year]"]').val(),
+                                name: $form.find('select[name="municipality-compare[first-municipality-year]"] option:selected').text()
+                            },
+                            data: {}
+                        },
+                        secondMunicipality: {
+                            id: $form.find('input[name="municipality-compare[second-municipality]"]').attr('data-id'),
+                            name: $form.find('input[name="municipality-compare[second-municipality]"]').val(),
+                            year: {
+                                id: $form.find('select[name="municipality-compare[second-municipality-year]"]').val(),
+                                name: $form.find('select[name="municipality-compare[second-municipality-year]"] option:selected').text()
+                            },
+                            data: {}
+                        },
+                        category: {
+                            id: $form.find('select[name="municipality-compare[category]"]').val(),
+                            name: $form.find('select[name="municipality-compare[category]"] option:selected').text()
+                        }
+                    }
+                }
+
+                data.comparedData.firstMunicipality['data'] = {};
+                data.comparedData.secondMunicipality['data'] = {};
+
+                $.ajax({
+                    url: location.href,
+                    type: 'POST',
+                    data: data,
+                    success: function (comparedData) {
+                        if (comparedData.length > 0) {
+                            for (i = 0; i < comparedData.length; i++) {
+                                if (comparedData[i].governmentId == data.comparedData.firstMunicipality.id) {
+                                    data.comparedData.firstMunicipality['data'][comparedData[i].id] = comparedData[i];
+                                }
+                                if (comparedData[i].governmentId == data.comparedData.secondMunicipality.id) {
+                                    data.comparedData.secondMunicipality['data'][comparedData[i].id] = comparedData[i];
+                                }
+                            }
+                        }
+                        obj.data = data.comparedData;
+
+                        console.log(obj.data);
+                        obj.drawDiagramm(obj.data.firstMunicipality.data, 'total-revenue-pie', 'Total Revenues');
+                        obj.drawDiagramm(obj.data.secondMunicipality.data, 'total-expenditures-pie', 'Total Expenditures');
+                    }
+                });
+            },
+            drawDiagramm: function(data, blockId, title) {
+                var obj = this;
+                var chart, item, len3, options, p, r, ref1, rows, vis_data;
+                vis_data = new google.visualization.DataTable();
+                vis_data.addColumn('string', 'Total Gov. Expenditures');
+                vis_data.addColumn('number', 'Total');
+                rows = [];
+
+                var revenues = data;
+                for(var key in revenues){
+                    if(revenues.hasOwnProperty(key) && (revenues[key].caption != title)) {
+                        r = [revenues[key].caption, parseInt(revenues[key].dollarAmount)];
+                        rows.push(r);
+                    }
+                }
+
+                vis_data.addRows(rows);
+                options = {
+                    'title': title,
+                    'titleTextStyle': {
+                        'fontSize': 16
+                    },
+                    'tooltip': {
+                        'textStyle': {
+                            'fontSize': 12
+                        }
+                    },
+                    'width': 470,
+                    'height': 350,
+                    'pieStartAngle': 60,
+                    'sliceVisibilityThreshold': .05,
+                    'forceIFrame': true,
+                    'chartArea': {
+                        width: '90%',
+                        height: '75%'
+                    }
+                };
+                chart = new google.visualization.PieChart(document.getElementById(blockId));
+                chart.draw(vis_data, options);
+            }
+        }
+
+        compareGovernments.init();
+    </script>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
     <script src='http://www.google.com/jsapi'></script>
 
@@ -189,16 +447,7 @@
         </script>
     {% endif %}
 
-    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.runtime.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/script.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/government/rank-popover.js'
-                    output='js/governemnt.js' %}
-        <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-
-    {% javascripts '@GovWikiFrontendBundle/Resources/public/js/common.js'
-                   '@GovWikiFrontendBundle/Resources/public/js/government/index.js' %}
-        <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+    <script src="/js/common.js"></script>
+    <script src="/js/government.js"></script>
 
 {% endblock %}

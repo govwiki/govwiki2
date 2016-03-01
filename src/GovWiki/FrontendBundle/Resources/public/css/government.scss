@@ -160,6 +160,24 @@
          }
       }
 
+     .municipality-search {
+        position: absolute;
+        background: #fff;
+        z-index: 5;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0 0 4px #ccc;
+
+          div {
+            cursor: pointer;
+            padding: 2px 6px;
+          }
+
+          div:hover {
+            background: #F9F9F9;
+          }
+     }
+
    }
 
 

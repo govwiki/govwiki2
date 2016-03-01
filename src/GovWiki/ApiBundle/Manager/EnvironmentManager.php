@@ -119,54 +119,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * @return string
-     */
-    public function getGreetingText()
-    {
-        $qb = $this->em->getRepository('GovWikiDbBundle:Environment')
-            ->createQueryBuilder('Environment');
-        $expr = $qb->expr();
-
-        try {
-            return $qb
-                ->select('Environment.greetingText')
-                ->where($expr->eq('Environment.slug', $expr->literal($this->environment)))
-                ->getQuery()
-                ->getSingleScalarResult();
-        } catch (ORMException $e) {
-            return '';
-        }
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getBottomText()
-    {
-        $qb = $this->em->getRepository('GovWikiDbBundle:Environment')
-            ->createQueryBuilder('Environment');
-        $expr = $qb->expr();
-
-        try {
-            return $qb
-                ->select('Environment.bottomText')
-                ->where(
-                    $expr->andX(
-                        $expr->eq(
-                            'Environment.slug',
-                            $expr->literal($this->environment)
-                        ),
-                        $expr->eq('Environment.showBottomText', 1)
-                    )
-                )
-                ->getQuery()
-                ->getSingleScalarResult();
-        } catch (ORMException $e) {
-            return '';
-        }
-    }
-
-    /**
      * @return array
      */
     public function getRankedFields()
@@ -285,6 +237,26 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                     m.alt_type_slug = '{$altTypeSlug}'
             ");
         }
+
+        /*
+        $distinctGovermentsCity = $this->em->createQueryBuilder()
+            ->select('Government.id, Government.city, Government.slug')
+            ->from('GovWikiDbBundle:Government', 'Government')
+            ->where('Government.environment = :id')
+            ->setParameters(
+                [
+                    'id' => $data['environment_id'],
+                ]
+            )
+            ->groupBy('Government.slug')
+            ->getQuery()
+            ->getResult();
+
+        var_dump($distinctGovermentsCity);
+        die;
+        */
+
+        $environmentId = $data['environment_id'];
 
         if (count($data) > 0) {
             unset($data['alt_type_slug'], $data['environment_id']);
@@ -473,5 +445,97 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             $this->em->getRepository('GovWikiDbBundle:Environment')
                 ->getReferenceByName($this->environment)
         );
+    }
+
+    /**
+     * Get years by government
+     *
+     * @param int $id
+     * @return array
+     */
+    public function getYearsByGovernment($id)
+    {
+        $governments = $this->em->createQueryBuilder()
+            ->select('FinData.id, FinData.year')
+            ->from('GovWikiDbBundle:FinData', 'FinData')
+            ->where('FinData.government = :id')
+            ->andWhere('FinData.captionCategory IN (:capId)')
+            ->setParameters(
+                [
+                    'id'    => $id,
+                    'capId' => [2, 3],
+                ]
+            )
+            ->groupBy('FinData.year')
+            ->getQuery()
+            ->getResult();
+
+        return $governments;
+    }
+
+    /**
+     * Get revenues and expenditures by government
+     *
+     * @param array $governmentsIds
+     * @return array
+     */
+    public function getCategoriesRevenuesAndExpendituresByGoverment($governmentsIds)
+    {
+        $governments = $this->em->createQueryBuilder()
+            ->select('FinData.id, FinData.caption, IDENTITY(FinData.captionCategory) as captionCategory')
+            ->from('GovWikiDbBundle:FinData', 'FinData')
+            ->where('FinData.government IN (:governmentsIds)')
+            ->andWhere('FinData.captionCategory IN (:capId)')
+            ->setParameters(
+                [
+                    'governmentsIds' => $governmentsIds,
+                    'capId' => [2, 3],
+                ]
+            )
+            ->groupBy('FinData.caption')
+            ->getQuery()
+            ->getResult();
+
+        return $governments;
+    }
+
+    /**
+     * Get compare data governments
+     *
+     * @param array $data
+     * @return array
+     */
+    public function getComparedGovernments($data)
+    {
+        $parameters = [
+            'municipalitysId' => [$data['firstMunicipality']['id'], $data['secondMunicipality']['id']],
+            'years' => [$data['firstMunicipality']['year']['name'], $data['secondMunicipality']['year']['name']],
+            'capId' => [2, 3],
+            'fund' => 99,
+        ];
+
+        $category = ($data['category']['id']) ? $data['category']['name'] : null;
+
+        $governments = $this->em->createQueryBuilder()
+            ->select('FinData.id, IDENTITY(FinData.captionCategory) as captionCategory, IDENTITY(FinData.government) as governmentId, FinData.caption, FinData.dollarAmount, FinData.year')
+            ->from('GovWikiDbBundle:FinData', 'FinData')
+            ->where('FinData.government IN (:municipalitysId)')
+            ->andWhere('FinData.year IN (:years)');
+
+        if ($category) {
+            $governments->andWhere('FinData.caption = :caption');
+            $parameters['caption'] = $category;
+        }
+
+        $governments
+            ->andWhere('FinData.captionCategory IN (:capId)')
+            ->andWhere('FinData.fund = :fund')
+            ->setParameters($parameters);
+
+        $sql = $governments
+            ->getQuery()
+            ->getArrayResult();
+
+        return $sql;
     }
 }

@@ -1,0 +1,36 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% block title %}{{ parent() }} - Create localization{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+    macro.breadcrumbElement(
+    admin_environment|capitalize ~' environment',
+    'govwiki_admin_main_show',
+    { 'environment': admin_environment }
+    )
+    }}
+    {{ macro.breadcrumbElement('Localization', 'govwiki_admin_localization_index') }}
+    {{ macro.breadcrumbElement('Create localization') }}
+{% endblock breadcrumb %}
+
+{% block body %}
+    <div class="container-fluid">
+        {{ form_start(form) }}
+
+        <div class="col-md-6">
+            {{ form_label(form.locale_name) }}
+            {% for flash_message in app.session.flashbag.get('error') %}
+                <h6>{{ flash_message }}</h6>
+            {% endfor %}
+            {{ form_widget(form.locale_name) }}
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <input type="submit" class="btn btn-primary">
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

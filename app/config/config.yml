@@ -40,11 +40,12 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     form:
-        resources: ['bootstrap_3_layout.html.twig']
+        resources: ['GovWikiDbBundle:Form:govwiki_form_theme.html.twig']
     form_themes:
         - GovWikiDbBundle:Form:theme.html.twig
     globals:
         carto_username: %carto_db.account%
+        adverting: @govwiki.frontend_bundle.adverting
 
 #    exception_controller:  GovWikiApiBundle:Exception:showException
 
@@ -129,4 +130,3 @@ ivory_ck_editor:
     configs:
         elected_official_comment_config:
             toolbar: [ [ 'Cut','Copy','Paste','Undo','Redo' ], [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ], [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ], [ 'Styles','Format','Font','FontSize' ], [ 'TextColor','BGColor' ] ]
-

@@ -4,13 +4,7 @@
     <div class="copyright-wrapper col-xs-12 col-sm-6 col-md-8">
 
         <div class="copyright">
-            <p>
-                The California Policy Center is a 501c3 non-profit public charity. CA Corp. # 3295222. Federal EIN 27-2870463.
-            </p>
-
-            <p>
-                Copyright © California Policy Center 2015. All rights reserved
-            </p>
+            {#{{ 'footer.copyright'|trans|raw }}#}
         </div>
 
     </div>
@@ -21,6 +15,8 @@
         <div class="site-links">
             <a href="http://californiapolicycenter.org">HOME</a>
             <a href="http://californiapolicycenter.org/contact/">CONTACT US</a>
+            {#<a href="http://californiapolicycenter.org">{{ 'footer.links.home'|trans|upper }}</a>
+            <a href="http://californiapolicycenter.org/contact/">{{ 'footer.links.contact_us'|trans|upper }}</a>#}
         </div>
 
     </div>
@@ -29,6 +25,7 @@
     <div class="col-xs-6 col-sm-3 col-md-2">
 
         <ul class="social">
+            {#{{ 'footer.socials'|trans|raw }}#}
             <li>
                 <a target="_blank" href="https://www.facebook.com/CalPolicyCenter" aria-hidden="true" data-av_icon="" data-av_iconfont="entypo-fontello" title="Facebook">
                     Facebook
