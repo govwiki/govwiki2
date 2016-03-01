@@ -476,11 +476,7 @@ $(function(){
         function initTooltip(altType) {
             var tooltipTpl = '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"></p>';
 
-            if (window.gw.map.debug) {
-                tooltipTpl += '<p>{{data}}</p><p>{{name}}</p>';
-            } else {
-                tooltipTpl += '<p>{{name}}</p>';
-            }
+            tooltipTpl += '<p>{{name}} ({{data}})</p>';
 
             tooltipTpl += '</div></div>';
 
