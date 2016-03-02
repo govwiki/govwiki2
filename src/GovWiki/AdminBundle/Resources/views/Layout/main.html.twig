@@ -162,7 +162,9 @@
     {% stylesheets 'bundles/govwikiadmin/css/main.scss' filter='scss, cssrewrite' %}
         <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
-
+    {% if admin_environment is defined and admin_environment != '' %}
+        <link rel="stylesheet" href="{{ asset('/css/'~admin_environment~'.css') }}" />
+    {% endif %}
 {% endblock %}
 
 {# Javascripts #}
@@ -170,10 +172,6 @@
     {{ parent() }}
 
     <script>
-        window.gw = {
-            styles: '{{ admin_styles|escape('js') }}'
-        };
-
         $(function(){
             $('.btn-delete').click(function() {
                 var $this = $(this);

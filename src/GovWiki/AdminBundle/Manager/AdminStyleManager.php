@@ -52,6 +52,58 @@ class AdminStyleManager
     }
 
     /**
+     * Add new style
+     *
+     * @param object $stylesObject
+     * @return array
+     */
+    public function createStyles($stylesObject)
+    {
+        $styles = array_filter(explode(';', $stylesObject->getProperties(true)));
+        $styleList = [];
+        foreach ($styles as $style) {
+            $param = explode(':', $style);
+            $styleList[] = [trim($param[0]), trim($param[1])];
+        }
+
+        return json_encode($styleList);
+    }
+
+    /**
+     * Genearate styles of Environment
+     *
+     * @param string $environment
+     * @param object $styles
+     */
+    public function generateAndSaveStyles($environment, $styles)
+    {
+        $styleList = null;
+        foreach ($styles as $style) {
+            $styleList .= $style->getClassName().' { ';
+            foreach ($style->getProperties() as $prop) {
+                $styleList .= $prop[0].': '.$prop[1].'; ';
+            }
+            $styleList .= ' } ';
+        }
+
+        file_put_contents(__DIR__.'/../../../../web/css/'.$environment.'.css', $styleList);
+    }
+
+    /**
+     * Update styles of Environment
+     *
+     * @param array $styles
+     * @return array
+     */
+    public function updateStyles($styles)
+    {
+        foreach ($styles['properties'] as $propName => $propValue) {
+            var_dump($prop);
+            die;
+        }
+    }
+
+    /**
      * Create new style manage form.
      *
      * @return \Symfony\Component\Form\Form

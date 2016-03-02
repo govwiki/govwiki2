@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use GovWiki\AdminBundle\Form\AddStyleForm;
+use GovWiki\DbBundle\Entity\EnvironmentStyles;
 
 /**
  * Class MainController
@@ -136,17 +138,67 @@ class MainController extends AbstractGovWikiAdminController
      */
     public function styleAction(Request $request)
     {
-        $manager = $this->get(GovWikiAdminServices::ADMIN_STYLE_MANAGER);
+        $em = $this->getDoctrine()->getManager();
+        $styleManager = $this->get(GovWikiAdminServices::ADMIN_STYLE_MANAGER);
+        $environmentSlug = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)->getSlug();
+        $currentEnvironment = $em->getRepository("GovWikiDbBundle:Environment")->findOneBySlug($environmentSlug);
 
-        $form = $manager->createForm();
+        // delete action
+        if ($request->request->get('deleteId')) {
+            $styleEntity = $em->getRepository("GovWikiDbBundle:EnvironmentStyles")
+                ->findOneById($request->request->get('deleteId'));
+            $em->remove($styleEntity);
+            $em->flush();
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $styles = $manager->processForm($form);
-            $this->adminEnvironmentManager()->setStyle($styles);
+            $styleManager->generateAndSaveStyles(
+                $environmentSlug,
+                $em->getRepository("GovWikiDbBundle:EnvironmentStyles")->findByEnvironment($currentEnvironment)
+            );
+
+            return new JsonResponse(['status' => 'Deleted']);
         }
 
-        return [ 'form' => $form->createView() ];
+        // update action
+        if ($request->request->get('update')) {
+            $data = $request->request->get('update');
+            $styleEntity = $em->getRepository("GovWikiDbBundle:EnvironmentStyles")->findOneById($data['id']);
+            $styleEntity->setProperties(json_encode($data['properties']));
+            $em->persist($styleEntity);
+            $em->flush();
+
+            $styleManager->generateAndSaveStyles(
+                $environmentSlug,
+                $em->getRepository("GovWikiDbBundle:EnvironmentStyles")->findByEnvironment($currentEnvironment)
+            );
+
+            return new JsonResponse(['status' => 'Updated']);
+        }
+
+        $createStyle = new EnvironmentStyles();
+        $form = $this->createForm(new AddStyleForm($currentEnvironment), $createStyle);
+        $styles = $em->getRepository("GovWikiDbBundle:EnvironmentStyles")->findByEnvironment($currentEnvironment);
+
+        // create action
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $styleJson = $styleManager->createStyles($createStyle);
+
+            $createStyle->setProperties($styleJson);
+            $em->persist($createStyle);
+            $em->flush();
+
+            $styleManager->generateAndSaveStyles(
+                $environmentSlug,
+                $em->getRepository("GovWikiDbBundle:EnvironmentStyles")->findByEnvironment($currentEnvironment)
+            );
+
+            return $this->redirect($this->generateUrl('govwiki_admin_main_style'));
+        }
+
+        return [
+            'form'    => $form->createView(),
+            'styles'  => $styles,
+        ];
     }
 
     /**

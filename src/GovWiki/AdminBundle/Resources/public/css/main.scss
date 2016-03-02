@@ -95,3 +95,47 @@
    }
 
 }
+
+/* ===================================================== */
+/* =============== Environment styles ================== */
+/* ===================================================== */
+
+#environment-styles {
+  .style__data-param {
+    display: inline-block;
+    width: 120px;
+    text-align: left;
+  }
+  .environment-styles__delete {
+    color: #ff0000;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .data-value-default {
+    margin-left: 26px;
+  }
+  .color-picker {
+    & span {
+      padding: 0;
+      padding-right: 8px;
+    }
+  }
+  div {
+    padding-bottom: 10px;
+  }
+  & h5 {
+    display: inline-block;
+  }
+
+  & input {
+    font-size: 12px;
+    box-shadow: none;
+    outline: none;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+  }
+}
+
+#govwiki_admin_form_styles_properties {
+  min-height: 100px;
+}
