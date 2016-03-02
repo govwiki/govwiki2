@@ -35,6 +35,17 @@ main {
 
 /* Temporary (start) */
 
+.btn-group {
+   .btn {
+      box-shadow: none;
+
+      &:hover {
+         box-shadow: none;
+      }
+   }
+}
+
+
 /* Temporary (end) */
 
 

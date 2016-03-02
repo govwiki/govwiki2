@@ -133,59 +133,10 @@
                                             {% include '@GovWikiFrontend/Partial/Government/year_select.html.twig' %}
                                         </h4>
                                     </form>
-                                    <br>
 
-                                    {# Compare form #}
-                                    <div class="row">
-                                        <div class="col-md-12">
-
-                                            <form class="government-compare">
-
-                                                {# First condition #}
-                                                <div class="col-md-3 first-condition">
-                                                    <div class="typeahead_wrap">
-                                                        <input type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" />
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <select class="form-control disabled">
-                                                            <option value="">YEAR</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                {# Divider #}
-                                                <div class="col-md-1 form-group text-center divider">TO</div>
-
-                                                {# Second condition #}
-                                                <div class="col-md-3 second-condition">
-                                                    <div class="typeahead_wrap">
-                                                        <input type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" />
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <select class="form-control disabled">
-                                                            <option value="">YEAR</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                {# Category Selector #}
-                                                <div class="col-md-3 form-group government-categories">
-                                                    <select class="form-control disabled">
-                                                        <option value="">ALL CATEGORIES</option>
-                                                    </select>
-                                                </div>
-
-                                            </form>
-
-                                        </div>
-                                    </div>
-
-                                    {# Statistics #}
-                                    <div class="statistics fin-values-block">
-                                        {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
-                                            'financialStatements': government.financialStatements
-                                        } %}
-                                    </div>
+                                    {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
+                                        'financialStatements': government.financialStatements
+                                    } %}
 
                                 </div>
                             {% endif %}

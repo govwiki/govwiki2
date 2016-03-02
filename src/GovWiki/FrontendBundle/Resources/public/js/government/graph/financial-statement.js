@@ -7,113 +7,14 @@ var chart = require('./config.js').chart;
 function init() {
 
     handler_switchChart();
-    financialStatements_compare().init();
+    //financialStatements_compare();
     financialStatements_revenue();
     financialStatements_expenditures();
-    financialStatementsTree_expenditures();
-    financialStatementsTree_revenues();
 
 }
 
 function financialStatements_compare() {
 
-    var compareGovernments = {
-        data: null,
-        init: function() {
-            var obj = this;
-
-            // submit form
-            $('.municipality-compare').submit(function(e) {
-                e.preventDefault();
-                obj.submitForm($(this));
-            });
-
-            // check years for get category
-            $('.municipality-year-select').change(function() {
-                if ($('#first-year').val() != '' && $('#second-year').val() != '') {
-                    obj.getCategories();
-                } else {
-                    $('#municipality-categories').html('<option value="">All categories</option>');
-                }
-            });
-
-        },
-        getCategories: function() {
-
-        },
-        submitForm: function($form) {
-            // validation form
-            var error = false;
-            $('.municipality-compare').find('input, select').each(function() {
-                if ($(this).val() == '' && $(this).attr('name') != 'municipality-compare[category]') {
-                    $(this).focus();
-                    error = true;
-                    return false;
-                }
-            });
-
-            if (error) {
-                return false;
-            }
-
-            var obj = this;
-            var data = {
-                comparedData: {
-                    firstMunicipality: {
-                        id: $form.find('input[name="municipality-compare[first-municipality]"]').attr('data-id'),
-                        name: $form.find('input[name="municipality-compare[first-municipality]"]').val(),
-                        year: {
-                            id: $form.find('select[name="municipality-compare[first-municipality-year]"]').val(),
-                            name: $form.find('select[name="municipality-compare[first-municipality-year]"] option:selected').text()
-                        },
-                        data: {}
-                    },
-                    secondMunicipality: {
-                        id: $form.find('input[name="municipality-compare[second-municipality]"]').attr('data-id'),
-                        name: $form.find('input[name="municipality-compare[second-municipality]"]').val(),
-                        year: {
-                            id: $form.find('select[name="municipality-compare[second-municipality-year]"]').val(),
-                            name: $form.find('select[name="municipality-compare[second-municipality-year]"] option:selected').text()
-                        },
-                        data: {}
-                    },
-                    category: {
-                        id: $form.find('select[name="municipality-compare[category]"]').val(),
-                        name: $form.find('select[name="municipality-compare[category]"] option:selected').text()
-                    }
-                }
-            }
-
-            data.comparedData.firstMunicipality['data'] = {};
-            data.comparedData.secondMunicipality['data'] = {};
-
-            $.ajax({
-                url: location.href,
-                type: 'POST',
-                data: data,
-                success: function (comparedData) {
-                    if (comparedData.length > 0) {
-                        for (i = 0; i < comparedData.length; i++) {
-                            if (comparedData[i].governmentId == data.comparedData.firstMunicipality.id) {
-                                data.comparedData.firstMunicipality['data'][comparedData[i].id] = comparedData[i];
-                            }
-                            if (comparedData[i].governmentId == data.comparedData.secondMunicipality.id) {
-                                data.comparedData.secondMunicipality['data'][comparedData[i].id] = comparedData[i];
-                            }
-                        }
-                    }
-                    obj.data = data.comparedData;
-
-                    console.log(obj.data);
-                    obj.drawDiagramm(obj.data.firstMunicipality.data, 'total-revenue-pie', 'Total Revenues');
-                    obj.drawDiagramm(obj.data.secondMunicipality.data, 'total-expenditures-pie', 'Total Expenditures');
-                }
-            });
-        }
-
-    };
-
-    return compareGovernments;
 }
 
 /**
@@ -363,13 +264,18 @@ function financialStatementsTree_expenditures() {
  * #Financial_Statements (.chart-controls .btn)
  */
 function handler_switchChart() {
+
+    hideChartGroup('pie-charts', false);
+    hideChartGroup('compare-charts', true);
+    hideChartGroup('tree-charts', true);
+
     $('#Financial_Statements').on('click', '.chart-controls .btn', function() {
 
         var chartType = this.getElementsByTagName('input')[0].id;
 
         if (chartType == 'chart'){
             hideChartGroup('pie-charts', false);
-            hideChartGroup('tree-chart', true);
+            hideChartGroup('compare-charts', true);
             hideChartGroup('tree-charts', true);
             if (!chart.financialStatements_revenues.init || !chart.financialStatements_expenditures.init) {
                 financialStatements_revenue();
@@ -378,36 +284,45 @@ function handler_switchChart() {
 
         } else if (chartType == 'tree-charts') {
             hideChartGroup('pie-charts', true);
-            hideChartGroup('tree-chart', true);
+            hideChartGroup('compare-charts', true);
             hideChartGroup('tree-charts', false);
+            if (!chart.financialStatementsTree_expenditures.init || !chart.financialStatementsTree_revenues.init) {
+                financialStatementsTree_expenditures();
+                financialStatementsTree_revenues();
+            }
+        } else if (chartType == 'compare-charts') {
+            hideChartGroup('pie-charts', true);
+            hideChartGroup('compare-charts', false);
+            hideChartGroup('tree-charts', true);
             if (!chart.financialStatementsTree_expenditures.init || !chart.financialStatementsTree_revenues.init) {
                 financialStatementsTree_expenditures();
                 financialStatementsTree_revenues();
             }
         }
 
-        /**
-         * Hide chart group. Group may contain few charts
-         */
-        function hideChartGroup(chartGroup, hide) {
+    });
 
-            var display = hide ? {display: 'none'} : {display: 'block'};
+    /**
+     * Hide chart group. Group may contain few charts
+     */
+    function hideChartGroup(chartGroup, hide) {
 
-            if (chartGroup == 'pie-charts') {
-                $('#total-expenditures-pie').css(display);
-                $('#total-revenue-pie').css(display);
+        var display = hide ? {display: 'none'} : {display: 'block'};
 
-            } else if (chartGroup == 'tree-chart') {
-                $('#total-tree').css(display);
+        if (chartGroup == 'pie-charts') {
+            $('#total-expenditures-pie').css(display);
+            $('#total-revenue-pie').css(display);
 
-            } else if (chartGroup == 'tree-charts') {
-                $('#total-expenditures-tree').css(display);
-                $('#total-revenue-tree').css(display);
-            }
+        } else if (chartGroup == 'compare-charts') {
+            $('#total-compare-pie').css(display);
 
+        } else if (chartGroup == 'tree-charts') {
+            $('#total-expenditures-tree').css(display);
+            $('#total-revenue-tree').css(display);
         }
 
-    });
+    }
+
 }
 
 module.exports = {
