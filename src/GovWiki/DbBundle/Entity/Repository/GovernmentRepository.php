@@ -353,6 +353,78 @@ class GovernmentRepository extends EntityRepository
             ->getQuery()
             ->getArrayResult();
     }
+    /**
+     * Search government with name like given in partOfName parameter and
+     * return object with id, name and available governments years.
+     *
+     * @param string $environment Environment name.
+     * @param string $partOfName  Part of government name.
+     *
+     * @return array
+     */
+    public function searchForComparison($environment, $partOfName)
+    {
+        $qb = $this->createQueryBuilder('Government');
+        $expr = $qb->expr();
+
+        $result = $qb
+            ->select('Government.id, Government.name, FinData.year')
+            ->leftJoin('Government.environment', 'Environment')
+            ->innerJoin('Government.finData', 'FinData')
+            ->where(
+                $expr->andX(
+                    $expr->eq('Environment.slug', $expr->literal($environment)),
+                    $expr->like(
+                        'Government.name',
+                        $expr->literal('%'.$partOfName.'%')
+                    )
+                )
+            )
+            ->groupBy('FinData.year, Government.id')
+            ->orderBy($expr->asc('Government.id'))
+            ->addOrderBy($expr->desc('FinData.year'))
+            ->getQuery()
+            ->getArrayResult();
+
+        /*
+         * Collect all government years;
+         */
+        $governmentList = [];
+        $governmentListLength = 0;
+        foreach ($result as $current) {
+            if (0 === $governmentListLength) {
+                /*
+                 * Get first government.
+                 */
+
+                $governmentList[] = [
+                    'id' => $current['id'],
+                    'name' => $current['name'],
+                    'years' => [ $current['year'] ],
+                ];
+                $governmentListLength = 1;
+            } elseif ($governmentList[$governmentListLength - 1]['id']
+                === $current['id']) {
+                /*
+                 * Add new government comparison year.
+                 */
+                $governmentList[$governmentListLength - 1]['years'][] =
+                    $current['year'];
+            } else {
+                /*
+                 * Create new government row in list.
+                 */
+                $governmentList[] = [
+                    'id' => $current['id'],
+                    'name' => $current['name'],
+                    'years' => [ $current['year'] ],
+                ];
+                ++$governmentListLength;
+            }
+        }
+
+        return $governmentList;
+    }
 
     /**
      * Get markers for map.
