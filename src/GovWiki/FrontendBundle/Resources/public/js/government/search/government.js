@@ -15,8 +15,7 @@ function typeahead(container) {
     var self = this;
     self.governmentData = {};
     self.$typeahead = $(container + ' .typeahead_government');
-
-    var searchValue = '';
+    self.searchValue = '';
 
     // Init typeahead
     self.$typeahead.typeahead({
@@ -44,19 +43,12 @@ function typeahead(container) {
 
     // Move cursor via arrows keys
     self.$typeahead.bind("typeahead:cursorchange", function(obj) {
-        self.$typeahead.typeahead('val', searchValue);
+        self.$typeahead.typeahead('val', self.searchValue);
     });
 
     // Store search value on typing
     self.$typeahead.keyup(function(event) {
-        searchValue = $(event.target).val();
-    });
-
-    self.$typeahead.attr('disabled', false);
-
-    // Pressed mouse or enter button
-    self.$typeahead.bind("typeahead:selected", function(obj, selectedGovernment) {
-        self.$typeahead.typeahead('val', selectedGovernment.name);
+        self.searchValue = $(event.target).val();
     });
 
     /**

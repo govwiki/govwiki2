@@ -45,13 +45,26 @@ Step.prototype.lock = function() {
 Step.prototype.loadMatchedCategories = function() {
 
     var self = this;
+    var captions = {
+        captions : [
+            {
+                id: self.firstStep.data.id,
+                year: self.firstStep.data.year
+            },
+            {
+                id: self.secondStep.data.id,
+                year: self.secondStep.data.year
+            }
+        ]
+    };
+
+    var captionsJson = JSON.stringify(captions);
 
     $.ajax({
-        url: location.href,
+        url: window.gw.urls.captions,
         type: 'POST',
-        data: {
-            governmentsId: [self.firstStep.data.id, self.firstStep.data.id]
-        },
+        contentType: 'application/json',
+        data: captionsJson,
         success: function (data) {
 
             if (!data || data.length == 0) {
@@ -64,13 +77,44 @@ Step.prototype.loadMatchedCategories = function() {
             self.$governmentCategories.toggleClass('disabled', false);
             self.$governmentCategories.html('');
 
-            data.forEach(function (financial) {
-                self.$governmentCategories.append('<option value="' + financial.id + '">' + financial.caption + '</option>');
+            /**
+             * Create revenues group
+             */
+            var revenues = data.filter(function(item) {
+                return item.category == 'Revenues';
             });
+
+            if (revenues.length > 0) {
+                self.$governmentCategories.append('<optgroup label="Revenues"></optgroup>');
+
+                revenues.forEach(function (revenue) {
+                    var $revenueGroup = self.$governmentCategories.find('[label="Revenues"]');
+                    $revenueGroup.append('<option value="' + revenue.name + '">' + revenue.name + '</option>');
+                });
+
+            }
+
+            /**
+             * Create expenditures group
+             */
+            var expenditures = data.filter(function(item) {
+                return item.category == 'Expenditures';
+            });
+
+            if (expenditures.length > 0) {
+                self.$governmentCategories.append('<optgroup label="Expenditures"></optgroup>');
+
+                expenditures.forEach(function (expenditure) {
+                    var $expenditureGroup = self.$governmentCategories.find('[label="Expenditures"]');
+                    $expenditureGroup.append('<option value="' + expenditure.name + '">' + expenditure.name + '</option>');
+                });
+
+            }
 
         },
         error: function () {
             alert('Something wrong, please try another government');
+            self.$governmentCategories.toggleClass('disabled', true);
         }
     });
 
@@ -137,55 +181,34 @@ Step.prototype.handler_onChangeSelect = function() {
         var $el = $(e.target);
         var $selected = $el.find('option:selected');
 
-        var id = $selected.val();
-        var category = $selected.text();
+        var caption = $selected.text();
+        var category = $selected.parent('optgroup').attr('label');
 
         var data = {
-            comparedData: {
-                firstMunicipality: {
-                    id: self.firstStep.data.id,
-                    name: self.firstStep.data.name,
-                    year: {
-                        id: self.firstStep.data.year.id,
-                        name: self.firstStep.data.year.year
-                    },
-                    data: {}
-                },
-                secondMunicipality: {
-                    id: self.secondStep.data.id,
-                    name: self.secondStep.data.name,
-                    year: {
-                        id: self.secondStep.data.year.id,
-                        name: self.secondStep.data.year.year
-                    },
-                    data: {}
-                },
-                category: {
-                    id: id,
-                    name: category
-                }
-            }
+            firstGovernment: {
+                id: self.firstStep.data.id,
+                name: self.firstStep.data.name,
+                year: self.firstStep.data.year
+            },
+            secondGovernment: {
+                id: self.secondStep.data.id,
+                name: self.secondStep.data.name,
+                year: self.firstStep.data.year
+            },
+            caption: caption,
+            category: category
         };
 
+        data = JSON.stringify(data);
+
         $.ajax({
-            url: location.href,
+            url: window.gw.urls.compare,
             type: 'POST',
             data: data,
+            contentType: 'application/json',
             success: function (comparedData) {
-
-                if (comparedData.length > 0) {
-                    for (i = 0; i < comparedData.length; i++) {
-                        if (comparedData[i].governmentId == data.comparedData.firstMunicipality.id) {
-                            data.comparedData.firstMunicipality['data'][comparedData[i].id] = comparedData[i];
-                        }
-                        if (comparedData[i].governmentId == data.comparedData.secondMunicipality.id) {
-                            data.comparedData.secondMunicipality['data'][comparedData[i].id] = comparedData[i];
-                        }
-                    }
-                }
-
-                self.drawDiagramm(data.comparedData.firstMunicipality['data'], 'total-compare-first-pie');
-                self.drawDiagramm(data.comparedData.secondMunicipality['data'], 'total-compare-second-pie');
+                self.drawDiagramm(comparedData.firstMunicipality.data, 'total-compare-first-pie');
+                self.drawDiagramm(comparedData.secondMunicipality.data, 'total-compare-second-pie');
             }
         });
 

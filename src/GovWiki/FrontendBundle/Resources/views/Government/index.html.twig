@@ -199,7 +199,9 @@
                 'altTypeSlug': government.altTypeSlug,
                 'slug': government.slug,
             }) }}';
-            window.gw.urls.search = '{{ govwiki_path('govwiki_api_v1_government_search') }}';
+            window.gw.urls.search = '{{ govwiki_path('govwiki_api_v1_comparison_search') }}';
+            window.gw.urls.captions = '{{ govwiki_path('govwiki_api_v1_comparison_captions') }}';
+            window.gw.urls.compare = '{{ govwiki_path('govwiki_api_v1_comparison_compare') }}';
         </script>
     {% endif %}
 

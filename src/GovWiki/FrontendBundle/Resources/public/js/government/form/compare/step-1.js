@@ -31,8 +31,10 @@ Step.prototype.init = function () {
 
     // Pressed mouse or enter button
     self.search.$typeahead.bind("typeahead:selected", function (obj, selectedGovernment) {
+
         self.CurrentFormState.data = selectedGovernment;
-        self.loadFinancialYears(selectedGovernment.id);
+        self.createYearOptions(selectedGovernment);
+
     });
 
 };
@@ -59,58 +61,32 @@ Step.prototype.lock = function() {
 
 
 /**
- * (Ajax, DOM)
+ * (DOM)
  *
- * @param governmentId
+ * @param data
+ * @returns {boolean}
  */
-Step.prototype.loadFinancialYears = function(governmentId) {
-
-    if (!governmentId) {
-        throw new Error('Please pass governmentId');
-    }
+Step.prototype.createYearOptions = function(government) {
 
     var self = this;
 
-    $.ajax({
-        url: location.href,
-        type: 'POST',
-        data: 'yearByGovId=' + governmentId,
-        success: createYearOptions,
-        error: function () {
-            alert('Something wrong, please try another government');
-        }
+    if (!government) {
+        console.error('First argument not passed in createYearOptions() ');
+        return true;
+    }
+
+    if (government.years.length == 1) {
+        console.log(self.CurrentFormState.data);
+        self.CurrentFormState.data.year = government.years[0];
+    }
+
+    disableSelect(false);
+
+    government.years.forEach(function (year) {
+        self.$select.append('<option value="' + government.id + '">' + year + '</option>');
     });
 
-    /**
-     * (DOM)
-     *
-     * @param data
-     * @returns {boolean}
-     */
-    function createYearOptions(data) {
-
-        if (!data || data.length == 0) {
-            alert('Government has no data, please choose another');
-            self.search.$typeahead.typeahead('val', '');
-            disableSelect(true);
-            correctForm(false);
-            return true;
-        }
-
-        disableSelect(false);
-        correctForm(true);
-
-        if (data.length === 1) {
-            self.CurrentFormState.data.year = {};
-            self.CurrentFormState.data.year.id = data[0].id;
-            self.CurrentFormState.data.year.year = data[0].year;
-        }
-
-        data.forEach(function (government) {
-            self.$select.append('<option value="' + government.id + '">' + government.year + '</option>');
-        });
-
-    }
+    correctForm(true);
 
     /**
      * Disable select
