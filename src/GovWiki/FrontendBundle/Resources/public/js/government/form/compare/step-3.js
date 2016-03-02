@@ -6,6 +6,7 @@
  */
 function Step (FormState, container) {
 
+    this.container = container;
     this.$governmentCategories = $(container);
     this.firstStep = FormState.firstStep;
     this.secondStep = FormState.secondStep;
@@ -178,13 +179,17 @@ Step.prototype.handler_onChangeSelect = function() {
 
     var self = this;
 
-    $('.government-categories').on('change', function (e) {
+    $(self.container).on('change', function (e) {
 
         var $el = $(e.target);
         var $selected = $el.find('option:selected');
 
         var caption = $selected.text();
         var category = $selected.parent('optgroup').attr('label');
+
+        $('#total-compare-column').show();
+        $('#total-compare-first-pie').hide();
+        $('#total-compare-second-pie').hide();
 
         var data = {
             firstGovernment: {
@@ -209,9 +214,8 @@ Step.prototype.handler_onChangeSelect = function() {
             data: data,
             contentType: 'application/json',
             success: function (comparedData) {
-                debugger;
-                self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData.category);
-                self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData.category);
+                self.drawColumnChart(comparedData, 'total-compare-column');
+                //self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData.category);
             }
         });
 
@@ -242,6 +246,46 @@ Step.prototype.handler_onClickSelect = function() {
         }
 
     });
+
+};
+
+Step.prototype.drawColumnChart = function(comparedData, blockId) {
+
+    var chart, item, len3, options, p, r, ref1, rows, vis_data;
+
+    var firstGovernment = comparedData.firstGovernment;
+    var secondGovernment = comparedData.secondGovernment;
+
+    rows = [
+        ['City', 'Amount']
+    ];
+
+    rows.push([firstGovernment.name, parseInt(firstGovernment.data[0].amount)]);
+    rows.push([secondGovernment.name, parseInt(secondGovernment.data[0].amount)]);
+
+    options = {
+        'title': 'Total ' + comparedData.category + ': ' + comparedData.caption,
+        'titleTextStyle': {
+            'fontSize': 16
+        },
+        'tooltip': {
+            'textStyle': {
+                'fontSize': 12
+            }
+        },
+        'width': 500,
+        'height': 350,
+        'pieStartAngle': 60,
+        'sliceVisibilityThreshold': .05,
+        'forceIFrame': true,
+        'chartArea': {
+            width: '90%',
+            height: '75%'
+        }
+    };
+    vis_data = new google.visualization.arrayToDataTable(rows);
+    chart = new google.visualization.ColumnChart(document.getElementById(blockId));
+    chart.draw(vis_data, options);
 
 };
 

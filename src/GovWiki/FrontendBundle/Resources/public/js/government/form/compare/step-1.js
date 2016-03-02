@@ -83,7 +83,8 @@ Step.prototype.createYearOptions = function(government) {
     disableSelect(false);
 
     government.years.forEach(function (year) {
-        self.$select.append('<option value="' + government.id + '">' + year + '</option>');
+        var selected = government.years.length == 1 ? 'selected' : '';
+        self.$select.append('<option value="' + government.id + '" ' + selected + '>' + year + '</option>');
     });
 
     correctForm(true);
@@ -95,11 +96,6 @@ Step.prototype.createYearOptions = function(government) {
     function disableSelect(disabled) {
 
         self.$select.toggleClass('disabled', !!disabled);
-        if (!!disabled) {
-            self.$select.html('<option>YEAR</option>');
-        } else {
-            self.$select.html('');
-        }
 
     }
 
@@ -130,6 +126,13 @@ Step.prototype.handler_onChangeSelect = function () {
         var $selected = $el.find('option:selected');
         var value = $selected.attr('value');
         var text = $selected.text();
+
+        if (!value) {
+            alert('Please choose correct year');
+            self.CurrentFormState.incomplete();
+        } else {
+            self.CurrentFormState.complete();
+        }
 
         if (value) {
             self.CurrentFormState.data.year = {};

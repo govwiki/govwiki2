@@ -6,6 +6,7 @@
  */
 function Step (FormState, container) {
 
+    this.container = container;
     this.$governmentCategories = $(container);
     this.firstStep = FormState.firstStep;
     this.secondStep = FormState.secondStep;
@@ -42,7 +43,7 @@ Step.prototype.lock = function() {
  * @param data
  * @param blockId
  */
-Step.prototype.drawDiagramm = function(government, blockId, captionCategory) {
+Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
 
     var chart, options, r, rows, vis_data;
 
@@ -52,17 +53,14 @@ Step.prototype.drawDiagramm = function(government, blockId, captionCategory) {
     vis_data.addColumn('number', 'Total Funds');
     rows = [];
 
-    rows.push(['Total ' + captionCategory, parseInt(government.total)]);
-
     var captions = government.data;
     captions.forEach(function(item) {
         rows.push([item.caption, parseInt(item.amount)]);
     });
-    console.log(rows);
 
     vis_data.addRows(rows);
     options = {
-        'title': 'Compare',
+        'title': 'Total ' + comparedData.category + ': ' + government.name,
         'titleTextStyle': {
             'fontSize': 16
         },
@@ -95,12 +93,19 @@ Step.prototype.handler_onChangeSelect = function() {
 
     var self = this;
 
-    $('.government-categories').on('change', function (e) {
+
+    $(self.container).on('change', function (e) {
 
         var $el = $(e.target);
         var $selected = $el.find('option:selected');
 
-        var category = $selected.text();
+        var category = $selected.val();
+
+        if (category) {
+            $('#total-compare-column').hide();
+            $('#total-compare-first-pie').show();
+            $('#total-compare-second-pie').show();
+        }
 
         var data = {
             firstGovernment: {
@@ -124,9 +129,8 @@ Step.prototype.handler_onChangeSelect = function() {
             data: data,
             contentType: 'application/json',
             success: function (comparedData) {
-                debugger;
-                self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData.category);
-                self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData.category);
+                self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
+                self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
             }
         });
 

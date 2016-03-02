@@ -31,9 +31,9 @@ $(function() {
             incomplete: function() {
                 this.completed = false;
 
-                console.log(FormState.firstStep.completed);
                 step2.lock();
                 step3.lock();
+                step31.lock();
             }
         },
         secondStep: {
@@ -50,6 +50,7 @@ $(function() {
             incomplete: function() {
                 this.completed = false;
 
+                step31.lock();
                 step3.lock();
             }
         },
@@ -58,13 +59,19 @@ $(function() {
             data: {},
             complete: function() {
                 this.completed = false;
-
-                console.log('third step completed');
             },
             incomplete: function() {
                 this.completed = true;
-
-                console.log('third step rejected');
+            }
+        },
+        thirdOneStep: {
+            completed: false,
+            data: {},
+            complete: function() {
+                this.completed = false;
+            },
+            incomplete: function() {
+                this.completed = true;
             }
         }
     };
