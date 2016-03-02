@@ -6,6 +6,9 @@ var chart = require('./config.js').chart;
  */
 function init() {
 
+    hideChartGroup('pie-charts', false);
+    hideChartGroup('tree-chart', true);
+    hideChartGroup('tree-charts', true);
     handler_switchChart();
     //financialStatements_compare().init();
     financialStatements_revenue();
@@ -499,28 +502,30 @@ function handler_switchChart() {
             }
         }
 
-        /**
-         * Hide chart group. Group may contain few charts
-         */
-        function hideChartGroup(chartGroup, hide) {
 
-            var display = hide ? {display: 'none'} : {display: 'block'};
-
-            if (chartGroup == 'pie-charts') {
-                $('#total-expenditures-pie').css(display);
-                $('#total-revenue-pie').css(display);
-
-            } else if (chartGroup == 'tree-chart') {
-                $('#total-tree').css(display);
-
-            } else if (chartGroup == 'tree-charts') {
-                $('#total-expenditures-tree').css(display);
-                $('#total-revenue-tree').css(display);
-            }
-
-        }
 
     });
+}
+
+/**
+ * Hide chart group. Group may contain few charts
+ */
+function hideChartGroup(chartGroup, hide) {
+
+    var display = hide ? {display: 'none'} : {display: 'block'};
+
+    if (chartGroup == 'pie-charts') {
+        $('#total-expenditures-pie').css(display);
+        $('#total-revenue-pie').css(display);
+
+    } else if (chartGroup == 'tree-chart') {
+        $('#total-tree').css(display);
+
+    } else if (chartGroup == 'tree-charts') {
+        $('#total-expenditures-tree').css(display);
+        $('#total-revenue-tree').css(display);
+    }
+
 }
 
 module.exports = {

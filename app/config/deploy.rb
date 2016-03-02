@@ -115,6 +115,7 @@ before "deploy:update_code", "govwiki:backup:remote"
 before "symfony:composer:install", "govwiki:update_code:rewrite_params"
 #after  "deploy:update_code", "govwiki:update_code:rewrite_params"
 after  "deploy",             "deploy:cleanup"
+before "symfony:cache:warmup", "symfony:doctrine:migrations:migrate"
 
 # Logging
 logger.level = Logger::MAX_LEVEL

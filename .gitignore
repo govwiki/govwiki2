@@ -1,10 +1,10 @@
 .idea
 /app/bootstrap.php.cache
 /app/cache/*
-!app/cache/.gitkeep
+!/app/cache/.gitkeep
 /app/config/parameters.yml
 /app/logs/*
-!app/logs/.gitkeep
+!/app/logs/.gitkeep
 /app/phpunit.xml
 /bin/
 /composer.phar
@@ -13,9 +13,15 @@
 /node_modules/
 /bower_components/
 
-/web/js/
-/web/img/
-/web/bundles/
-/web/uploads/
+/web/img/*
+
+!/web/img/.gitkeep
+!/web/img/upload/.gitkeep
+!/web/img/upload/shape/.gitkeep
+
+/web/css/*
+!/web/css/.gitkeep
+
 /web/legacy/node_modules/
+/web/bundles/
 

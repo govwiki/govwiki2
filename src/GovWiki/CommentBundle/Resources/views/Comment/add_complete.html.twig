@@ -1,0 +1,24 @@
+{% extends 'GovWikiFrontendBundle:Layout:main.html.twig' %}
+
+{% block main %}
+    <h3>Thank you for the comment.</h3>
+
+    <p>Your comment has successfully added</p>
+{% endblock main %}
+
+{% block stylesheets %}
+
+    {{parent()}}
+
+    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/main.scss' filter='scss' %}
+    <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@GovWikiFrontendBundle/Resources/public/js/script.js' output='js/comment.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock javascripts %}

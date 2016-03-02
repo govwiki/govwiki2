@@ -9,10 +9,19 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class RobotsController
+ * @package GovWiki\FrontendBundle\Controller
+ */
 class RobotsController extends Controller
 {
     /**
      * @Route("/robots.txt")
+     *
+     * @return Response
+     *
+     * @throws \InvalidArgumentException Invalid HTTP status code.
+     * @throws \UnexpectedValueException Invalid response content.
      */
     public function robotsAction()
     {
