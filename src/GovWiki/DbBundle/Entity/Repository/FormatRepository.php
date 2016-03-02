@@ -77,12 +77,49 @@ class FormatRepository extends EntityRepository
      */
     public function get($environment, $plain = false)
     {
-        $result = $this->getListQuery($environment, true)
-            ->getArrayResult();
+        $result = $this->getListQuery($environment, true);
 
         if ($plain) {
             return $result;
         }
         return Functions::groupBy($result, [ 'tab_name', 'field' ]);
+    }
+
+    /**
+     * @param string $environment Environment name.
+     * @param string $name        Field name.
+     *
+     * @return array|null
+     */
+    public function getOne($environment, $name)
+    {
+        $qb = $this->createQueryBuilder('Format');
+        $expr = $qb->expr();
+
+        $qb->select(
+            'Format.helpText, Format.dataOrFormula, Format.name',
+            'Format.mask, Format.field, Format.ranked, Format.showIn',
+            'Format.type'
+        );
+        $result = $qb
+            ->addSelect(
+                'Tab.id AS tab_id, Tab.name AS tab_name, Category.id AS category_id, Category.name AS category_name',
+                'Category.decoration as category_decoration'
+            )
+            ->leftJoin('Format.environment', 'Environment')
+            ->leftJoin('Format.category', 'Category')
+            ->leftJoin('Format.tab', 'Tab')
+            ->where($expr->andX(
+                $expr->eq('Environment.slug', $expr->literal($environment)),
+                $expr->eq('Format.field', $expr->literal($name))
+            ))
+            ->getQuery()
+            ->getArrayResult();
+
+        if (is_array($result)) {
+            return $result[0];
+        }
+
+        return null;
     }
 }
