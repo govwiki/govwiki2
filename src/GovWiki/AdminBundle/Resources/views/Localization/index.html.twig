@@ -55,10 +55,15 @@
                                             </a>
                                         </td>
                                         <td>
-                                            {% if is_granted('ROLE_ADMIN') and locale.shortName != 'en' %}
-                                                <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_localization_removelocale', { locale_name: locale.shortName }) -}}" data-description="Delete localization?">
-                                                    Delete
-                                                </button>
+                                            {% if is_granted('ROLE_ADMIN') %}
+                                                {% if locale.shortName != 'en' %}
+                                                    <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_localization_removelocale', { locale_name: locale.shortName }) -}}" data-description="Delete localization?">
+                                                        Delete
+                                                    </button>
+                                                {% endif %}
+                                                <a class="btn btn-sm btn-default" href="{{-
+                                                path('govwiki_admin_localization_exportlocale', {'locale_name': locale.shortName})
+                                                -}}">Export</a>
                                             {% endif %}
                                         </td>
                                     </tr>

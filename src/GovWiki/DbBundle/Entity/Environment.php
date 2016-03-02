@@ -135,12 +135,20 @@ class Environment
     private $groups;
 
     /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Locale", mappedBy="environment", cascade={"remove"})
+     */
+    private $locales;
+
+    /**
      *
      */
     public function __construct()
     {
         $this->governments = new ArrayCollection();
         $this->formats = new ArrayCollection();
+        $this->locales = new ArrayCollection();
     }
 
     /**
@@ -226,26 +234,6 @@ class Environment
     public function setDomain($domain)
     {
         $this->domain = $domain;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGreetingText()
-    {
-        return $this->greetingText;
-    }
-
-    /**
-     * @param string $greetingText
-     *
-     * @return Environment
-     */
-    public function setGreetingText($greetingText)
-    {
-        $this->greetingText = $greetingText;
 
         return $this;
     }
@@ -474,45 +462,5 @@ class Environment
     public function getSlug()
     {
         return $this->slug;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBottomText()
-    {
-        return $this->bottomText;
-    }
-
-    /**
-     * @param string $bottomText
-     *
-     * @return Environment
-     */
-    public function setBottomText($bottomText)
-    {
-        $this->bottomText = $bottomText;
-
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isShowBottomText()
-    {
-        return $this->showBottomText;
-    }
-
-    /**
-     * @param boolean $showBottomText
-     *
-     * @return Environment
-     */
-    public function setShowBottomText($showBottomText)
-    {
-        $this->showBottomText = $showBottomText;
-
-        return $this;
     }
 }

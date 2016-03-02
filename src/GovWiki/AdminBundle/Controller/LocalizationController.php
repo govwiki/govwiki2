@@ -46,6 +46,14 @@ class LocalizationController extends AbstractGovWikiAdminController
             20
         );
 
+        $em = $this->getDoctrine()->getManager();
+        $env_slug = $this->adminEnvironmentManager()->getEnvironment();
+        $environment = $em->getRepository('GovWikiDbBundle:Environment')->findOneBy(array(
+            'slug' => $env_slug
+        ));
+        $env_styles = $environment->getStyle();
+        var_dump($env_styles[0]['content'][1]['content']);
+
         return [ 'locale_names_list' => $locale_names_pagination ];
     }
 
@@ -143,7 +151,6 @@ class LocalizationController extends AbstractGovWikiAdminController
                     $translation->setTransTextareaType($trans_info['transTextareaType']);
                     $em->persist($translation);
                 }
-                $em->flush();
 
                 /**
                  * @var Filesystem $fs
@@ -161,6 +168,8 @@ class LocalizationController extends AbstractGovWikiAdminController
                     }
                 }
                 $fs->chmod($translationPath, 0555);
+
+                $em->flush();
 
                 return $this->redirectToRoute('govwiki_admin_localization_index');
             } else {
@@ -205,7 +214,8 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function exportLocaleAction($locale_name)
     {
-        $filePath = $this->getParameter('kernel.logs_dir') . '/locale.' . $locale_name . '.yml';
+        $env_name = $this->adminEnvironmentManager()->getEnvironment();
+        $filePath = $this->getParameter('kernel.logs_dir') . '/' . $env_name . '.locale.' . $locale_name . '.yml';
 
         $data = $this->getTranslationManager()->getTransInfoByLocale($locale_name);
 
@@ -223,7 +233,7 @@ class LocalizationController extends AbstractGovWikiAdminController
         $response->headers->set('Cache-Control', 'public');
         $response->headers->set(
             'Content-Disposition',
-            'attachment; filename=locale.' . $locale_name . '.yml'
+            'attachment; filename=' . $env_name . '.locale.' . $locale_name . '.yml'
         );
 
         unlink($filePath);

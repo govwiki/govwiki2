@@ -161,7 +161,7 @@ class TabController extends AbstractGovWikiAdminController
         $em = $this->getDoctrine()->getManager();
 
         $locale = $this->getLocaleManager()->getOneLocaleByShortName('en');
-        $transKey = 'env.groups.group_id_' . $tab_id;
+        $transKey = 'groups.group_id_' . $tab_id;
         $needOneResult = true;
         $trans_key_settings = null;
         if (!empty($transKey)) {

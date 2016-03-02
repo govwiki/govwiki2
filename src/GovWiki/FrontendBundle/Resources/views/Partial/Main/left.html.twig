@@ -17,8 +17,8 @@
 
             {% if 'altTypes' in mapEntity.legendTypes %}
                 <li class="legend-header">
-                    {#<span>{{ 'map.select.types'|trans }}:</span>#}
-                    <span>Select type(s):</span>
+                    <span>{{ 'map.select.types'|trans }}:</span>
+                    {#<span>Select type(s):</span>#}
                 </li>
             {% endif %}
         </ul>
@@ -34,7 +34,7 @@
 <div class="col-sm-12 col-md-6 col-lg-7">
 
     <div class="intro-text">
-        {{- greetingText|trans|raw -}}
+        {{- greetingText|raw -}}
     </div>
 
 </div>
