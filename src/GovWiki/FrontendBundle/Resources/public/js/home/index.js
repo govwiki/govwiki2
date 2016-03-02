@@ -13,6 +13,39 @@ cdb.geo.ui.Tooltip.prototype.getLayerIndex = function () {
     return this.options.layer._position;
 };
 
+/**
+ * Extend CartoDB Tooltip
+ * Set data mask for formating 'data' field before displaying.
+ *
+ * @param {string} mask
+ *
+ * @returns {cdb.geo.ui.Tooltip}
+ */
+cdb.geo.ui.Tooltip.prototype.setMask = function (mask) {
+    this.options.gw = {
+        mask: mask
+    };
+
+    return this;
+};
+
+/**
+ * Override carto db tooltip render method in order to format data before
+ * displaying.
+ */
+cdb.geo.ui.Tooltip.prototype.render = function(data) {
+    // Add by Shemin Dmitry
+    var tmp = $.extend({}, data);
+
+    if (this.options.gw.mask && tmp && tmp.data ) {
+        tmp.data = numeral(tmp.data).format(this.options.gw.mask);
+    }
+    // END
+    var sanitizedOutput = cdb.core.sanitize.html(this.template(tmp));
+    this.$el.html( sanitizedOutput );
+    return this;
+};
+
 $(function(){
 
     /**
@@ -479,13 +512,13 @@ $(function(){
             tooltipTpl += '<p>{{name}} ({{data}})</p>';
 
             tooltipTpl += '</div></div>';
-
             tooltips[altType] = new cdb.geo.ui.Tooltip({
                 layer: subLayers[altType],
                 template: tooltipTpl,
                 width: 200,
                 position: 'bottom|right'
             });
+            tooltips[altType].setMask(gw.map.county.field_mask);
         }
 
 
