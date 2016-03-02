@@ -128,6 +128,19 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * Get format information for given field.
+     *
+     * @param string $fieldName Field name.
+     *
+     * @return array|null
+     */
+    public function getFieldFormat($fieldName)
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Format')
+            ->getOne($this->environment, $fieldName);
+    }
+
+    /**
      * @param string  $altTypeSlug Slugged government alt type.
      * @param string  $slug        Slugged government name.
      * @param integer $year        For fetching fin data.

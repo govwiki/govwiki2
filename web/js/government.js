@@ -884,22 +884,28 @@ webpackJsonp([1],[
 	        template: '<div class="popover rankPopover" role="tooltip"><div class="arrow"></div><div class="popover-title-custom"><h3 class="popover-title"></h3></div><div class="popover-content"></div></div>'
 	    });
 	
-	    $(document).on('click', function(e) {
+	    $governmentController.on('click', function(e) {
+	        // Close other popovers
+	        if (!$(e.target).closest('.popover')[0]) {
+	            $('.rank').not(e.target).popover('destroy');
+	        }
+	    });
+	
+	    $statistics.on('click', function(e) {
+	        e.preventDefault();
+	        e.stopPropagation();
 	
 	        $element = $(e.target);
 	
 	        // Close other popovers
-	        if (/\brank\b/.test(e.target.className)) {
+	        if (!$(e.target).closest('.popover')[0]) {
 	            $('.rank').not(e.target).popover('destroy');
-	        } else {
-	            $('.rank').popover('destroy');
-	            return true;
 	        }
 	
 	        $popover = $element.hasClass('rank') ? $element : $element.closest('.rank');
 	
 	        if ($popover.length == 0) {
-	            return true;
+	            return false;
 	        }
 	
 	        self.$popover = $element;

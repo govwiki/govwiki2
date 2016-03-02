@@ -1,10 +1,18 @@
 {{ knp_pagination_render(list) }}
-<table class="table" data-entity-type="Legislation">
+<table class="table" width="100%" data-entity-type="Legislation">
     <tr>
-        <th class="column__date sortable">{{ knp_pagination_sortable(list, 'Data', 'Legislation.dateConsidered') }}<i class="icon"></i></th>
-        <th class="sortable">{{ knp_pagination_sortable(list, 'Category', 'IssueCategory.name') }}<i class="icon"></i></th>
-        <th>Bill Number</th>
-        <th>Title of Measure</th>
+        <th class="column__date">
+            <div class="sortable">
+                {{- knp_pagination_sortable(list, 'Date', 'Legislation.dateConsidered') -}}<i class="icon"></i>
+            </div>
+
+            <div class="sortable">
+                {{- knp_pagination_sortable(list, 'Category', 'IssueCategory.name') -}}<i class="icon"></i>
+            </div>
+
+            <div>Bill Number</div>
+        </th>
+        <th class="column__title">Title of Measure</th>
         <th>Summary of Measure</th>
         <th class="column__vote">How official voted</th>
         <th>Did official sponsor?</th>
@@ -19,20 +27,22 @@
         {%- endif -%}{%- if hasComment %} class="row__has_comment"{%- endif -%}
             >
 
-            <td data-date-considered="{{vote.legislation.dateConsidered | date("m/d/Y") }}">
-                <a href="javascript:void(0);" data-type="date" data-pk="1"  data-format="mm/dd/yyyy"
-                   data-placeholder="Please edit" data-title="Please edit"
-                   class="editable editable-pre-wrapped editable-click" data-original-title=""
-                   title="">{{vote.legislation.dateConsidered | date("m/d/Y") }}</a>
-                <span class="glyphicon glyphicon-pencil edit"></span>
-            </td>
-            <td data-issue-category="{{vote.legislation.issueCategory.name}}" data-no-editable>{{vote.legislation.issueCategory.name}}</td>
-            <td data-gov-assigned-number="{{ vote.legislation.govAssignedNumber }}">
-                <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-                   data-placeholder="Please edit" data-title="Please edit"
-                   class="editable editable-pre-wrapped editable-click" data-original-title=""
-                   title="">{{ vote.legislation.govAssignedNumber }}</a>
-                <span class="glyphicon glyphicon-pencil edit"></span>
+            <td>
+                <div data-date-considered="{{vote.legislation.dateConsidered | date("m/d/Y") }}">
+                    <a href="javascript:void(0);" data-type="date" data-pk="1"  data-format="mm/dd/yyyy"
+                       data-placeholder="Please edit" data-title="Please edit"
+                       class="editable editable-pre-wrapped editable-click" data-original-title=""
+                       title="">{{vote.legislation.dateConsidered | date("m/d/Y") }}</a>
+                    <span class="glyphicon glyphicon-pencil edit"></span>
+                </div>
+                <div data-issue-category="{{vote.legislation.issueCategory.name}}" data-no-editable>{{vote.legislation.issueCategory.name}}</div>
+                <div data-gov-assigned-number="{{ vote.legislation.govAssignedNumber }}">
+                    <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+                       data-placeholder="Please edit" data-title="Please edit"
+                       class="editable editable-pre-wrapped editable-click" data-original-title=""
+                       title="">{{ vote.legislation.govAssignedNumber }}</a>
+                    <span class="glyphicon glyphicon-pencil edit"></span>
+                </div>
             </td>
 
             <td data-name="{{vote.legislation.name}}">
@@ -71,21 +81,21 @@
 
         {% if hasComment %}
             <tr>
-                <td colspan="8">
+                <td colspan="6">
                     {{ vote.comments|first.body|raw }}
                 </td>
             </tr>
         {% endif %}
     {% else %}
         <tr>
-            <td colspan="8" align="center">
+            <td colspan="6" align="center">
                 <p style="font-size:18px; margin: 0;">No information at this time. Please check back later.</p>
             </td>
         </tr>
     {% endfor %}
 
     <tr class="add_action">
-        <td colspan="8" class="add">
+        <td colspan="6" class="add">
             Add new Vote
             <span class="glyphicon glyphicon-plus"></span>
         </td>

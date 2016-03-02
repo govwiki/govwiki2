@@ -323,9 +323,10 @@ $(function() {
 
         var id = $element.attr('id');
 
+        var electedName = $('.electedController').attr('data-elected-name');
         var name = $element.attr('data-legislation-name');
 
-        $('#myModalLabel').text(name + ' (In development)');
+        $('#myModalLabel').text(electedName + ' - ' + name);
         $('#conversation').modal('show');
 
         refresh_disqus(id, 'http://govwiki.us' + '/' + id, name);
