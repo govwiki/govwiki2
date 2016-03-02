@@ -10,7 +10,6 @@ function Step (FormState, container) {
     this.firstStep = FormState.firstStep;
     this.secondStep = FormState.secondStep;
     this.init();
-
 }
 
 /**
@@ -29,7 +28,6 @@ Step.prototype.init = function () {
  * Unlock step
  */
 Step.prototype.unlock = function() {
-    this.loadMatchedCategories();
     this.$governmentCategories.toggleClass('disabled', false);
 };
 
@@ -38,87 +36,6 @@ Step.prototype.unlock = function() {
  */
 Step.prototype.lock = function() {
     this.$governmentCategories.toggleClass('disabled', true);
-};
-
-/**
- * (Ajax, DOM)
- */
-Step.prototype.loadMatchedCategories = function() {
-
-    var self = this;
-    var captions = {
-        captions : [
-            {
-                id: self.firstStep.data.id,
-                year: self.firstStep.data.year
-            },
-            {
-                id: self.secondStep.data.id,
-                year: self.secondStep.data.year
-            }
-        ]
-    };
-
-    var captionsJson = JSON.stringify(captions);
-
-    $.ajax({
-        url: window.gw.urls.captions,
-        type: 'POST',
-        contentType: 'application/json',
-        data: captionsJson,
-        success: function (data) {
-
-            if (!data || data.length == 0) {
-                alert('Not can find categories for current comparison');
-                self.$governmentCategories.html('<option>ALL CATEGORIES</option>');
-                self.$governmentCategories.toggleClass('disabled', true);
-                return true;
-            }
-
-            self.$governmentCategories.toggleClass('disabled', false);
-            self.$governmentCategories.html('');
-
-            /**
-             * Create revenues group
-             */
-            var revenues = data.filter(function(item) {
-                return item.category == 'Revenues';
-            });
-
-            if (revenues.length > 0) {
-                self.$governmentCategories.append('<optgroup label="Revenues"></optgroup>');
-
-                revenues.forEach(function (revenue) {
-                    var $revenueGroup = self.$governmentCategories.find('[label="Revenues"]');
-                    $revenueGroup.append('<option value="' + revenue.name + '">' + revenue.name + '</option>');
-                });
-
-            }
-
-            /**
-             * Create expenditures group
-             */
-            var expenditures = data.filter(function(item) {
-                return item.category == 'Expenditures';
-            });
-
-            if (expenditures.length > 0) {
-                self.$governmentCategories.append('<optgroup label="Expenditures"></optgroup>');
-
-                expenditures.forEach(function (expenditure) {
-                    var $expenditureGroup = self.$governmentCategories.find('[label="Expenditures"]');
-                    $expenditureGroup.append('<option value="' + expenditure.name + '">' + expenditure.name + '</option>');
-                });
-
-            }
-
-        },
-        error: function () {
-            alert('Something wrong, please try another government');
-            self.$governmentCategories.toggleClass('disabled', true);
-        }
-    });
-
 };
 
 /**
@@ -183,8 +100,7 @@ Step.prototype.handler_onChangeSelect = function() {
         var $el = $(e.target);
         var $selected = $el.find('option:selected');
 
-        var caption = $selected.text();
-        var category = $selected.parent('optgroup').attr('label');
+        var category = $selected.text();
 
         var data = {
             firstGovernment: {
@@ -197,7 +113,6 @@ Step.prototype.handler_onChangeSelect = function() {
                 name: self.secondStep.data.name,
                 year: self.firstStep.data.year
             },
-            caption: caption,
             category: category
         };
 

@@ -6,6 +6,7 @@ $(function() {
     var Step1 = require('./form/compare/step-1.js');
     var Step2 = require('./form/compare/step-2.js');
     var Step3 = require('./form/compare/step-3.js');
+    var Step31 = require('./form/compare/step-3-1.js');
 
     /**
      * Status of form steps
@@ -23,6 +24,7 @@ $(function() {
 
                 step2.unlock();
                 if (FormState.firstStep.completed && FormState.secondStep.completed) {
+                    step31.unlock();
                     step3.unlock();
                 }
             },
@@ -41,6 +43,7 @@ $(function() {
                 this.completed = true;
 
                 if (FormState.firstStep.completed && FormState.secondStep.completed) {
+                    step31.unlock();
                     step3.unlock();
                 }
             },
@@ -66,15 +69,18 @@ $(function() {
         }
     };
 
-    var step1, step2, step3;
+    var step1, step2, step3, step31;
     step1 = new Step1(FormState, '.first-condition');
     step1.unlock();
 
     step2 = new Step2(FormState, '.second-condition');
     step2.lock();
 
-    step3 = new Step3(FormState, '.government-categories');
+    step3 = new Step3(FormState, '.government-categories .caption');
     step3.lock();
+
+    step31 = new Step31(FormState, '.government-categories .category');
+    step31.lock();
 
 
     /**
