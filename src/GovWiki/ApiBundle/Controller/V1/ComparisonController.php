@@ -94,9 +94,11 @@ class ComparisonController extends AbstractGovWikiApiController
      * Require 'application/json' Content-Type. Request must contains object
      * with four fields: 'firstGovernment', 'secondGovernment', 'caption'
      * and 'category'. Government fileds is object with two required field:
-     * 'id' and 'year'. Caption field is 'name' field of one of the returned
+     * 'id' and 'year'. Category id 'category' field from caption object.
+     *
+     * Optional: caption field is 'name' field of one of the returned
      * objects by {@see ComparisonController::captionsAction} for specified
-     * governments. Category id 'category' field from caption object.
+     * governments.
      *
      * Example:
      * {
@@ -108,7 +110,7 @@ class ComparisonController extends AbstractGovWikiApiController
      *      "id": 4087,
      *      "year": 2014
      *  },
-     *  "caption": "Capital Outlay",
+     *  "caption": "Capital Outlay", [optional]
      *  "category": "Expenditures"
      * }
      *

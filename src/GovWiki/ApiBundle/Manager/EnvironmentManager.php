@@ -545,10 +545,15 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             ->from('GovWikiDbBundle:FinData', 'FinData')
             ->join('FinData.captionCategory', 'CaptionCategory')
             ->where($expr->andX(
-                $expr->eq('FinData.caption', $expr->literal($data['caption'])),
                 $expr->eq('CaptionCategory.name', $expr->literal($data['category'])),
                 $expr->eq('FinData.fund', 99) // Only total funds.
             ));
+
+        if (array_key_exists('caption', $data) & ! empty($data['caption'])) {
+            $qb->andWhere(
+                $expr->eq('FinData.caption', $expr->literal($data['caption']))
+            );
+        }
 
         /*
          * Get data for first government.
@@ -559,10 +564,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             $expr->eq('FinData.year', $data['firstGovernment']['year'])
         ));
 
-        $firstGovernment = $firstQb->getQuery()->getArrayResult();
-        if (is_array($firstGovernment)) {
-            $firstGovernment = $firstGovernment[0];
-        }
+        $firstGovernmentData = $firstQb->getQuery()->getArrayResult();
 
         /*
          * Compute total for specified caption category for first government.
@@ -586,10 +588,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             $expr->eq('FinData.year', $data['secondGovernment']['year'])
         ));
 
-        $secondGovernment = $qb->getQuery()->getArrayResult();
-        if (is_array($secondGovernment)) {
-            $secondGovernment = $secondGovernment[0];
-        }
+        $secondGovernmentData = $qb->getQuery()->getArrayResult();
 
         /*
          * Compute total for specified caption category for second government.
@@ -605,9 +604,9 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             ->getQuery()
             ->getSingleScalarResult();
 
-        $data['firstGovernment']['data'] = [ $firstGovernment ];
+        $data['firstGovernment']['data'] = $firstGovernmentData;
         $data['firstGovernment']['total'] = $firstGovernmentTotal;
-        $data['secondGovernment']['data'] = [ $secondGovernment ];
+        $data['secondGovernment']['data'] = $secondGovernmentData;
         $data['secondGovernment']['total'] = $secondGovernmentTotal;
 
         return $data;
