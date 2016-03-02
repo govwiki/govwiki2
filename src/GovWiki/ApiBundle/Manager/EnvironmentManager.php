@@ -540,8 +540,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         $expr = $this->em->getExpressionBuilder();
         $qb = $this->em->createQueryBuilder()
             ->select(
-                'FinData.caption, FinData.dollarAmount AS part',
-                'CaptionCategory.name AS category'
+                'FinData.caption, FinData.dollarAmount AS amount'
             )
             ->from('GovWikiDbBundle:FinData', 'FinData')
             ->join('FinData.captionCategory', 'CaptionCategory')
@@ -568,7 +567,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         /*
          * Compute total for specified caption category for first government.
          */
-        $firstGovernment['total'] = $this->em->createQueryBuilder()
+        $firstGovernmentTotal = $this->em->createQueryBuilder()
             ->select('SUM(FinData.dollarAmount)')
             ->from('GovWikiDbBundle:FinData', 'FinData')
             ->join('FinData.captionCategory', 'CaptionCategory')
@@ -595,7 +594,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         /*
          * Compute total for specified caption category for second government.
          */
-        $secondGovernment['total'] = $this->em->createQueryBuilder()
+        $secondGovernmentTotal = $this->em->createQueryBuilder()
             ->select('SUM(FinData.dollarAmount)')
             ->from('GovWikiDbBundle:FinData', 'FinData')
             ->join('FinData.captionCategory', 'CaptionCategory')
@@ -606,8 +605,10 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             ->getQuery()
             ->getSingleScalarResult();
 
-        $data['firstGovernment']['data'] = $firstGovernment;
-        $data['secondGovernment']['data'] = $secondGovernment;
+        $data['firstGovernment']['data'] = [ $firstGovernment ];
+        $data['firstGovernment']['total'] = $firstGovernmentTotal;
+        $data['secondGovernment']['data'] = [ $secondGovernment ];
+        $data['secondGovernment']['total'] = $secondGovernmentTotal;
 
         return $data;
     }
