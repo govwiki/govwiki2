@@ -35,11 +35,11 @@ module.exports = {
         }),
         new webpack.optimize.DedupePlugin(),
         new webpack.NoErrorsPlugin(),
-        //new webpack.optimize.UglifyJsPlugin({
-        //    compress: {
-        //        warnings: false
-        //    }
-        //}),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            }
+        }),
         new webpack.optimize.CommonsChunkPlugin({
             names: ['common'],
             filename: 'common.js'

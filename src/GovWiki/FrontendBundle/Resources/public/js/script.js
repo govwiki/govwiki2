@@ -101,4 +101,3 @@ function parseStyles(element) {
     }
 
 }
-module.exports = parseStyles;
