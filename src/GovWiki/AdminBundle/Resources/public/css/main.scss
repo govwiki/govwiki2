@@ -121,7 +121,7 @@
     }
   }
   div {
-    padding-bottom: 10px;
+    padding: 10px 0;
   }
   & h5 {
     display: inline-block;
@@ -138,4 +138,12 @@
 
 #govwiki_admin_form_styles_properties {
   min-height: 100px;
+}
+
+#environment-styles__tabs {
+  padding-bottom: 20px;
+
+  & li {
+    margin-right: 6px;
+  }
 }

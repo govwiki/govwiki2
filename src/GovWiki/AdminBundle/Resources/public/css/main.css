@@ -274,7 +274,7 @@ body > header {
   padding: 0;
   padding-right: 8px; }
 #environment-styles div {
-  padding-bottom: 10px; }
+  padding: 10px 0; }
 #environment-styles h5 {
   display: inline-block; }
 #environment-styles input {
@@ -286,3 +286,8 @@ body > header {
 
 #govwiki_admin_form_styles_properties {
   min-height: 100px; }
+
+#environment-styles__tabs {
+  padding-bottom: 20px; }
+  #environment-styles__tabs li {
+    margin-right: 6px; }

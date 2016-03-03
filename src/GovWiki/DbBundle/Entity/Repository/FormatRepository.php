@@ -77,7 +77,8 @@ class FormatRepository extends EntityRepository
      */
     public function get($environment, $plain = false)
     {
-        $result = $this->getListQuery($environment, true);
+        $result = $this->getListQuery($environment, true)
+            ->getArrayResult();
 
         if ($plain) {
             return $result;
