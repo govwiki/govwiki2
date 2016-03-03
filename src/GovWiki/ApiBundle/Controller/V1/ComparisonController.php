@@ -18,8 +18,19 @@ class ComparisonController extends AbstractGovWikiApiController
 
     /**
      * Require 'search' parameter in query string.
-     * Return array of appropriate governments as array of its id, name and
-     * array of available years.
+     * Return array of appropriate governments as array of its id, name, alt
+     * type and array of available years.
+     *
+     * Return array fo matched governments as object, for example:
+     * {
+     *  "id": 4104,
+     *  "name": "CITY OF TUSTIN",
+     *  "altType": "City",
+     *  "years": [
+     *      2014
+     *      2013
+     *   ]
+     *  }
      *
      * @Route("/search")
      *
@@ -56,11 +67,13 @@ class ComparisonController extends AbstractGovWikiApiController
      *  "captions": [
      *      {
      *          "id": 4104,
-     *          "year": 2014
+     *          "year": 2014,
+     *          "altType": "City"
      *      },
      *      {
      *          "id": 4087,
-     *          "year": 2014
+     *          "year": 2014,
+     *          "altType": "City"
      *      },
      *  ]
      * }
@@ -80,7 +93,7 @@ class ComparisonController extends AbstractGovWikiApiController
 
         $data = json_decode($request->getContent(), true);
         $captions = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-            ->getCategoriesRevenuesAndExpendituresByGovernment($data['captions']);
+            ->getCategoriesForComparisonByGovernment($data['captions']);
 
         return new JsonResponse($captions);
     }
@@ -90,17 +103,9 @@ class ComparisonController extends AbstractGovWikiApiController
      * @Route("/compare", methods={"POST"})
      *
      * Compare given governments.
+     * Require 'application/json' Content-Type.
      *
-     * Require 'application/json' Content-Type. Request must contains object
-     * with four fields: 'firstGovernment', 'secondGovernment', 'caption'
-     * and 'category'. Government fileds is object with two required field:
-     * 'id' and 'year'. Category id 'category' field from caption object.
-     *
-     * Optional: caption field is 'name' field of one of the returned
-     * objects by {@see ComparisonController::captionsAction} for specified
-     * governments.
-     *
-     * Example:
+     * Example for financial statement:
      * {
      *  "firstGovernment": {
      *      "id": 4104,
@@ -110,8 +115,24 @@ class ComparisonController extends AbstractGovWikiApiController
      *      "id": 4087,
      *      "year": 2014
      *  },
-     *  "caption": "Capital Outlay", [optional]
-     *  "category": "Expenditures"
+     *  "caption": "Capital Outlay",
+     *  "category": "Expenditures",
+     *  "tab": "Financial Statements"
+     * }
+     *
+     * Example for over tab:
+     * {
+     *  "firstGovernment": {
+     *      "id": 4104,
+     *      "year": 2014
+     *  },
+     *  "secondGovernment": {
+     *      "id": 4087,
+     *      "year": 2014
+     *  },
+     *  "caption": "Median Benefits for Full Time Employees",
+     *  "fieldName": "median_benefits_for_full_time_employees",
+     *  "tab": "Employee Compensation"
      * }
      *
      * @param Request $request A Request instance.

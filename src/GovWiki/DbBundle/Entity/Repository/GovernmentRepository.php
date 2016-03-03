@@ -368,7 +368,10 @@ class GovernmentRepository extends EntityRepository
         $expr = $qb->expr();
 
         $result = $qb
-            ->select('Government.id, Government.name, FinData.year')
+            ->select(
+                'Government.id, Government.name, Government.altType',
+                'FinData.year'
+            )
             ->leftJoin('Government.environment', 'Environment')
             ->innerJoin('Government.finData', 'FinData')
             ->where(
@@ -400,6 +403,7 @@ class GovernmentRepository extends EntityRepository
                 $governmentList[] = [
                     'id' => $current['id'],
                     'name' => $current['name'],
+                    'altType' => $current['altType'],
                     'years' => [ $current['year'] ],
                 ];
                 $governmentListLength = 1;
@@ -417,6 +421,7 @@ class GovernmentRepository extends EntityRepository
                 $governmentList[] = [
                     'id' => $current['id'],
                     'name' => $current['name'],
+                    'altType' => $current['altType'],
                     'years' => [ $current['year'] ],
                 ];
                 ++$governmentListLength;
