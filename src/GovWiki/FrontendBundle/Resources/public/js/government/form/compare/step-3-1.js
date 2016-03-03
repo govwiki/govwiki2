@@ -55,6 +55,9 @@ Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
 
     var captions = government.data;
     captions.forEach(function(item) {
+        if (item.amount < 0) {
+            item.amount = -parseInt(item.amount)
+        }
         rows.push([item.caption, parseInt(item.amount)]);
     });
 
@@ -98,6 +101,7 @@ Step.prototype.handler_onChangeSelect = function() {
 
         var $el = $(e.target);
         var $selected = $el.find('option:selected');
+        var tab = $selected.parent('optgroup').attr('label');
 
         var category = $selected.val();
 
@@ -105,6 +109,11 @@ Step.prototype.handler_onChangeSelect = function() {
             $('#total-compare-column').hide();
             $('#total-compare-first-pie').show();
             $('#total-compare-second-pie').show();
+            $('.government-categories .category').addClass('selected');
+            $('.government-categories .caption').removeClass('selected');
+        } else {
+            alert('Please select one of category');
+            return true;
         }
 
         var data = {
@@ -118,7 +127,8 @@ Step.prototype.handler_onChangeSelect = function() {
                 name: self.secondStep.data.name,
                 year: self.firstStep.data.year
             },
-            category: category
+            category: category,
+            tab: tab
         };
 
         data = JSON.stringify(data);

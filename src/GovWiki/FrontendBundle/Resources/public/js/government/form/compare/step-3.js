@@ -51,11 +51,13 @@ Step.prototype.loadMatchedCategories = function() {
         captions : [
             {
                 id: self.firstStep.data.id,
-                year: self.firstStep.data.year
+                year: self.firstStep.data.year,
+                altType: self.firstStep.data.altType
             },
             {
                 id: self.secondStep.data.id,
-                year: self.secondStep.data.year
+                year: self.secondStep.data.year,
+                altType: self.secondStep.data.altType
             }
         ]
     };
@@ -77,24 +79,6 @@ Step.prototype.loadMatchedCategories = function() {
             }
 
             self.$governmentCategories.toggleClass('disabled', false);
-            self.$governmentCategories.html('');
-
-            /**
-             * Create revenues group
-             */
-            var revenues = data.filter(function(item) {
-                return item.category == 'Revenues';
-            });
-
-            if (revenues.length > 0) {
-                self.$governmentCategories.append('<optgroup label="Revenues"></optgroup>');
-
-                revenues.forEach(function (revenue) {
-                    var $revenueGroup = self.$governmentCategories.find('[label="Revenues"]');
-                    $revenueGroup.append('<option value="' + revenue.name + '">' + revenue.name + '</option>');
-                });
-
-            }
 
             /**
              * Create expenditures group
@@ -103,15 +87,20 @@ Step.prototype.loadMatchedCategories = function() {
                 return item.category == 'Expenditures';
             });
 
-            if (expenditures.length > 0) {
-                self.$governmentCategories.append('<optgroup label="Expenditures"></optgroup>');
+            var availableTabs = [];
+            data.forEach(function(item) {
+                availableTabs.indexOf(item.tab) != -1 ? false : availableTabs.push(item.tab);
+            });
 
-                expenditures.forEach(function (expenditure) {
-                    var $expenditureGroup = self.$governmentCategories.find('[label="Expenditures"]');
-                    $expenditureGroup.append('<option value="' + expenditure.name + '">' + expenditure.name + '</option>');
-                });
+            availableTabs.forEach(function(tab){
+                self.$governmentCategories.append('<optgroup label="' + tab + '"></optgroup>');
+            });
 
-            }
+            data.forEach(function (caption) {
+                var value = caption.fieldName || caption.name;
+                var $expenditureGroup = self.$governmentCategories.find('[label="' + caption.tab + '"]');
+                $expenditureGroup.append('<option value="' + value + '">' + caption.name + '</option>');
+            });
 
         },
         error: function () {
@@ -185,11 +174,19 @@ Step.prototype.handler_onChangeSelect = function() {
         var $selected = $el.find('option:selected');
 
         var caption = $selected.text();
-        var category = $selected.parent('optgroup').attr('label');
+
+        var tab = $selected.parent('optgroup').attr('label');
+
+        if (!caption) {
+            alert('Please select one of captions');
+            return true;
+        }
 
         $('#total-compare-column').show();
         $('#total-compare-first-pie').hide();
         $('#total-compare-second-pie').hide();
+        $('.government-categories .category').removeClass('selected');
+        $('.government-categories .caption').addClass('selected');
 
         var data = {
             firstGovernment: {
@@ -203,8 +200,13 @@ Step.prototype.handler_onChangeSelect = function() {
                 year: self.firstStep.data.year
             },
             caption: caption,
-            category: category
+            tab: tab
         };
+
+        if (tab != 'Financial Statement') {
+            data.fieldName = $selected.val();
+        }
+
 
         data = JSON.stringify(data);
 

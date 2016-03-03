@@ -75,15 +75,16 @@ Step.prototype.createYearOptions = function(government) {
         return true;
     }
 
-    if (government.years.length == 1) {
-        console.log(self.CurrentFormState.data);
-        self.CurrentFormState.data.year = government.years[0];
-    }
+    var sortedYears = government.years.sort(function(a, b) {
+        return a < b;
+    });
+
+    self.CurrentFormState.data.year = government.years.pop();
 
     disableSelect(false);
 
-    government.years.forEach(function (year) {
-        var selected = government.years.length == 1 ? 'selected' : '';
+    sortedYears.forEach(function (year, index) {
+        var selected = index == 0 ? 'selected' : '';
         self.$select.append('<option value="' + government.id + '" ' + selected + '>' + year + '</option>');
     });
 
@@ -127,17 +128,12 @@ Step.prototype.handler_onChangeSelect = function () {
         var value = $selected.attr('value');
         var text = $selected.text();
 
-        if (!value) {
+        if (value) {
+            self.CurrentFormState.data.year = value;
+            self.CurrentFormState.complete();
+        } else {
             alert('Please choose correct year');
             self.CurrentFormState.incomplete();
-        } else {
-            self.CurrentFormState.complete();
-        }
-
-        if (value) {
-            self.CurrentFormState.data.year = {};
-            self.CurrentFormState.data.year.id = value;
-            self.CurrentFormState.data.year.year = text;
         }
 
     });

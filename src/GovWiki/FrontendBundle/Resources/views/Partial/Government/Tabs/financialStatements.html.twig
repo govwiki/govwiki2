@@ -34,8 +34,11 @@
 
                     {# First condition #}
                     <div class="col-md-3 first-condition">
-                        <div class="typeahead_wrap">
-                            <input type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" />
+                        <h4 class="text-center">Step 1</h4>
+                        <div class="form-group">
+                            <div class="typeahead_wrap">
+                                <input type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" />
+                            </div>
                         </div>
                         <div class="form-group">
                             <select class="form-control disabled">
@@ -49,8 +52,11 @@
 
                     {# Second condition #}
                     <div class="col-md-3 second-condition">
-                        <div class="typeahead_wrap">
-                            <input type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" />
+                        <h4 class="text-center">Step 2</h4>
+                        <div class="form-group">
+                            <div class="typeahead_wrap">
+                                <input type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" />
+                            </div>
                         </div>
                         <div class="form-group">
                             <select class="form-control disabled">
@@ -59,16 +65,25 @@
                         </div>
                     </div>
 
+                    {# Divider #}
+                    <div class="col-md-1 form-group text-center divider">BY</div>
+
                     {# Caption Selector #}
                     <div class="col-md-3 form-group government-categories">
+                        <h4 class="text-center">Step 3</h4>
                         <select class="form-control disabled category">
                             <option value="">CATEGORY</option>
-                            <option value="Revenues">Revenues</option>
-                            <option value="Expenditures">Expenditures</option>
+                            <optgroup label="Financial Statement">
+                                <option value="Revenues">Revenues</option>
+                                <option value="Expenditures">Expenditures</option>
+                            </optgroup>
                         </select>
-                        <select class="form-control disabled caption">
-                            <option value="">CAPTION</option>
-                        </select>
+                        <div class="text-center" style="font-size:12px; margin-top: 5px;color: #DBDBDB;">OR</div>
+                        <div class="form-group">
+                            <select class="form-control disabled caption">
+                                <option value="">CAPTION</option>
+                            </select>
+                        </div>
                     </div>
 
                 </form>
