@@ -77,7 +77,6 @@ Step.prototype.loadMatchedCategories = function() {
             }
 
             self.$governmentCategories.toggleClass('disabled', false);
-            self.$governmentCategories.html('');
 
             /**
              * Create revenues group
@@ -184,12 +183,19 @@ Step.prototype.handler_onChangeSelect = function() {
         var $el = $(e.target);
         var $selected = $el.find('option:selected');
 
-        var caption = $selected.text();
+        var caption = $selected.val();
         var category = $selected.parent('optgroup').attr('label');
+
+        if (!caption) {
+            alert('Please select one of captions');
+            return true;
+        }
 
         $('#total-compare-column').show();
         $('#total-compare-first-pie').hide();
         $('#total-compare-second-pie').hide();
+        $('.government-categories .category').removeClass('selected');
+        $('.government-categories .caption').addClass('selected');
 
         var data = {
             firstGovernment: {

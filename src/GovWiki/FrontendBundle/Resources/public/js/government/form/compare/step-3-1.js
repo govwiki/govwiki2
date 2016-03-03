@@ -105,6 +105,11 @@ Step.prototype.handler_onChangeSelect = function() {
             $('#total-compare-column').hide();
             $('#total-compare-first-pie').show();
             $('#total-compare-second-pie').show();
+            $('.government-categories .category').addClass('selected');
+            $('.government-categories .caption').removeClass('selected');
+        } else {
+            alert('Please select one of category');
+            return true;
         }
 
         var data = {

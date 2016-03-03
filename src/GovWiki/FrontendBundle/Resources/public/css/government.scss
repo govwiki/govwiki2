@@ -35,7 +35,11 @@
 
       .divider {
          color: #DBDBDB;
-         margin-top: 30px;
+         margin-top: 7%;
+      }
+
+      .selected {
+         background-color: #DDE7FF;
       }
 
       #Financial_Statements {
@@ -49,13 +53,42 @@
          .government-compare {
             padding-top: 15px;
 
+            h4 {
+               color: #0d87e9;
+            }
+
             select {
                font-size: 12px;
                padding: 10px;
             }
 
+            .first-condition {
+               border: 1px solid #0d87e9;
+               border-radius: 10px;
+            }
+
+            .second-condition {
+               border: 1px solid #0d87e9;
+               border-radius: 10px;
+            }
+
+            .government-categories {
+               border: 1px solid #0d87e9;
+               border-radius: 10px;
+
+               .category {
+
+               }
+
+               .caption {
+
+               }
+
+            }
+
          }
 
+         // Charts
          #total-compare-first-pie, #total-compare-second-pie {
             p {
                padding: 150px 0;
