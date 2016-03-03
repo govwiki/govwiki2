@@ -1,8 +1,1199 @@
-webpackJsonp([2],{0:function(t,e,i){i(26),i(27),i(28),cdb.geo.ui.Tooltip.prototype.getLayerIndex=function(){return this.options.layer._position},cdb.geo.ui.Tooltip.prototype.setMask=function(t){return this.options.gw={mask:t},this},cdb.geo.ui.Tooltip.prototype.render=function(t){var e=$.extend({},t);this.options.gw.mask&&e&&e.data&&(e.data=numeral(e.data).format(this.options.gw.mask));var i=cdb.core.sanitize.html(this.template(e));return this.$el.html(i),this},$(function(){window.gw.map=JSON.parse(window.gw.map);window.gw.map.county=window.gw.map.colorizedCountyConditions,window.gw.map.legend=window.gw.map.legend||[],window.gw.map.legendTypes=window.gw.map.legendTypes||[];var t=window.gw.map.legend.sort(function(t,e){return t.order>e.order}),e={fillColor:"white"},i=L.map("map",{zoomControl:!0,center:[window.gw.map.centerLatitude,window.gw.map.centerLongitude],zoom:window.gw.map.zoom});L.tileLayer("http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",{attribution:"GovWiki"}).addTo(i);cartodb.createLayer(i,{user_name:window.gw.map.username,type:"cartodb",sublayers:[]}).addTo(i).done(function(o){function n(t){$(".loader").hide();var e=$(".mapOnProcessing");e.find("h5").eq(0).text("Something went wrong, please contact with us (contact@californiapolicycenter.org) "),e.css({opacity:1}),e.show(),console.log(t)}function s(t){var e=t.filter(function(t){return"MULTIPOLYGON"===t.geometrytype||"POLYGON"===t.geometrytype}),i=t.filter(function(t){return"MULTIPOLYGON"!==t.geometrytype&&"POLYGON"!==t.geometrytype});e.forEach(function(t){p(t.alt_type_slug)}),i.forEach(function(t){u(t.alt_type_slug)}),v(),w()}function r(t,e){return t.filter(function(t){return t.type===e})}function a(e,i){i=i||!1;var o=t.filter(function(t){return t.altType==e})[0];if(!o)return!1;var n=window.location.href.substr(0,window.location.href.length-1),s=o?o.shape:!1,r=s?"marker-file: url("+n+s+");":"",a=o?o.color:!1,l="marker-line-color: "+a+"; ";return i&&(l="marker-fill: "+a+"; "),{markerFileCss:r,markerLineColorColorCss:l}}function l(t){return window.gw.map.legendTypes.filter(function(e){return e===t})[0]}function c(t,e,i){if(!t)return console.warn("You don't pass condition array into getPeriodConditionsAsCss() function"),"";i=i||{};var o="",n=r(t,"period");return 0!==n.length&&n.forEach(function(t){var n=i.isMarkerLayer?"marker-fill":"polygon-fill",s=i.isMarkerLayer?t.color:t.color,r=i.markerFileCss?i.markerFileCss:"",a=n+": "+s+";"+r,l=i.isMarkerLayer?"marker-line-color":"line-color",c=i.isMarkerLayer?e:"#FFFFFF",d=l+": "+c+";";i.markerLineColorColorCss&&(d=i.markerLineColorColorCss);var h=i.isMarkerLayer?"marker-line-width: 1;":"line-width: 0.5;",p="[data >= "+t.min+"]",u="[data <= "+t.max+"]",f="{ "+a+d+h+" line-opacity: 1; polygon-opacity: 0.3; } ";o+="#layer"+p+u+f}),o?o:""}function d(t,e,i){if(!t)return console.warn("You don't pass condition array into getSimpleConditionsAssCss() function"),"";i=i||{};var o="",n=r(t,"simple");return 0!==n.length&&(n.sort(function(t,e){return t.value<e.value}),n.forEach(function(t){var n=i.isMarkerLayer?"marker-fill":"polygon-fill",s=i.isMarkerLayer?t.color:t.color,r=i.markerFileCss?i.markerFileCss:"",a=n+": "+s+"; "+r,l=i.isMarkerLayer?"marker-line-color":"line-color",c=i.isMarkerLayer?e:"#FFFFFF",d=l+": "+c+";";i.markerLineColorColorCss&&(d=i.markerLineColorColorCss);var h=i.isMarkerLayer?"marker-line-width: 1;":"line-width: 0.5;",p="[data "+t.operation+" "+t.value+"]",u="{ "+a+d+h+" line-opacity: 1; polygon-opacity: 0.3; } ";o+="#layer"+p+u})),o?o:""}function h(t,e,i){if(!t)return console.warn("You don't pass condition array into getNullConditionAsCss() function"),"";i=i||{};var o="",n=r(t,"null");if(0!==n.length){var s=i.isMarkerLayer?"marker-fill":"polygon-fill",a=i.isMarkerLayer?n[0].color:n[0].color,l=i.markerFileCss?i.markerFileCss:"",c=s+": "+a+";"+l,d=i.isMarkerLayer?"marker-line-color":"line-color",h=i.isMarkerLayer?e:"#FFFFFF",p=d+": "+h+";";i.markerLineColorColorCss&&(p=i.markerLineColorColorCss);var u=i.isMarkerLayer?"marker-line-width: 1;":"line-width: 0.5;",f="{ "+c+p+u+" line-opacity: 1; polygon-opacity: 0.3; } ";o+="#layer[data = null]"+f}return o?o:""}function p(t){var e="",i=window.gw.map.county.colorized;if(i){var n=window.gw.map.county.conditions;e+="#layer { polygon-fill: #DDDDDD; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ",e+=c(n),e+=d(n),e+=h(n),""===e&&(console.warn("Can't find any condition, please verify your window.gw.map.county.conditions data"),console.warn("or check getPeriodConditionsAsCss, getSimpleConditionsAsCss, getNullConditionAsCss functions"))}else e="#layer { polygon-fill: #DDDDDD; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ";var s={cartocss:e,sql:"SELECT *, ST_AsGeoJSON(the_geom) AS geometry FROM "+window.gw.environment+" WHERE  alt_type_slug = '"+t+"'",interactivity:["cartodb_id","slug","alt_type_slug","geometry","data","name"]};k=o.createSubLayer(s);var r=t.toLowerCase();E[r]=k,f(r)}function u(t){var e=t.toLowerCase(),i="",n=window.gw.map.county.colorized,s=x.shift(),r={};if(n){var l=window.gw.map.county.conditions,p={isMarkerLayer:!0};r=a(t),r&&(p.markerFileCss=r.markerFileCss,p.markerLineColorColorCss=r.markerLineColorColorCss),i+="#layer { "+r.markerFileCss+r.markerLineColorColorCss+" line-color: #FFF; line-width: 0.5; line-opacity: 1; } ",i+=c(l,s,p),i+=d(l,s,p),i+=h(l,s,p),""===i&&(console.warn("Can't find any condition, please verify your window.gw.map.county.conditions data"),console.warn("or check getPeriodConditionsAsCss, getSimpleConditionsAsCss, getNullConditionAsCss functions"))}else r=a(t,!0),i="#layer { "+r.markerFileCss+r.markerLineColorColorCss+" line-color: #FFF; line-width: 0.5; line-opacity: 1; } ";E[e]=o.createSubLayer({sql:"SELECT *, GeometryType(the_geom) AS geometrytype FROM "+window.gw.environment+" WHERE alt_type_slug = '"+t+"'",cartocss:i,interactivity:["cartodb_id","slug","alt_type_slug","geometrytype","data","name"]}),f(e)}function f(t){var e='<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"></p>';e+="<p>{{name}} ({{data}})</p>",e+="</div></div>",S[t]=new cdb.geo.ui.Tooltip({layer:E[t],template:e,width:200,position:"bottom|right"}),S[t].setMask(gw.map.county.field_mask)}function g(){for(var t in S)if(S.hasOwnProperty(t)){var e=S[t];null!=e&&$("#map_wrap").append(e.render().el)}}function m(){var t=$(".leaflet-objects-pane"),e=$(".leaflet-tile-pane");t.appendTo(e),t.css({"z-index":"100"})}function v(){var t=[];for(var e in E)if(E.hasOwnProperty(e)){var i=E[e];i.setInteraction(!0),i.bind("mouseover",function(e,i,o,n,s){if(n.slug=n.slug.replace(/_/g," "),t[s]=1,_.some(t)){$("#map").css("cursor","pointer"),s==k._position?C(n):T();for(var r in S)if(S.hasOwnProperty(r)){var a=S[r];null!=a&&(a.getLayerIndex()==s?a.enable():a.disable())}}}),i.bind("mouseout",function(e){if(t[e]=0,!_.some(t)){$("#map").css("cursor","auto"),T();for(var i in S)if(S.hasOwnProperty(i)){var o=S[i];null!=o&&o.getLayerIndex()==e&&o.disable()}}}),i.on("featureClick",function(t,e,i,o,n){if(!o.alt_type_slug||!o.slug)return alert("Please verify your data, altTypeSlug or governmentSlug may can not defined, more info in console.log"),console.log(o),!1;o.slug=o.slug.replace(/ /g,"_");var s=window.location.pathname;"/"!==s[s.length-1]&&(s+="/"),window.location.pathname=s+o.alt_type_slug+"/"+o.slug})}}function y(t){if(!window.gw.map.county.colorized)return!1;var e="",i=window.gw.map.county.fieldName.replace(/_/g," "),o=window.gw.map.county.conditions,n=r(o,"period"),s=r(o,"simple"),a=r(o,"null");if(0!==n.length&&n.forEach(function(t){var i="background: "+t.color,o=t.min+" - "+t.max;e+='<li><div class="bullet" style="'+i+'"></div>'+o+"</li>"}),0!==s.length&&s.forEach(function(t){var i="background: "+t.color,o=t.operation+" "+t.value;e+='<li><div class="bullet" style="'+i+'"></div>'+o+"</li>"}),0!==a.length){var l="background: "+a[0].color;e+='<li><div class="bullet" style="'+l+'"></div>null</li>'}var c="cartodb-legend-stack";t&&(c+=" cartodb-legend-stack__top");var d='<div class="'+c+'" style=""><div class="cartodb-legend custom" style="display: block;"><div class="legend-title">'+i+"</div><ul>"+e+"</ul></div></div>";$("#map").append(d)}function b(i){var o=$("#menu"),n="";t.forEach(function(t){var o=(i.filter(function(e){return e.alt_type_slug===t.altType})[0],t.altType.replace(/_/g," "),t.altType.toLowerCase()),s="",r="",a="",l="";window.gw.map.county.colorized?t.shape?(a='fillColor="'+e.fillColor+'" ',l='strokeColor="'+t.color+'" ',r='<img src="'+t.shape+'" class="svg" '+l+a+"/>"):s='<i class="grey-line"></i>':t.shape?(a='fillColor="'+t.color+'" ',l='strokeColor="'+t.color+'" ',r='<img src="'+t.shape+'" class="svg" '+l+a+"/>"):s='<i class="grey-line"></i>',n+="<li id="+o+' class="'+o+' legend-item selected"><span class="glyphicon glyphicon-ok"></span>'+s+r+'<a href="javascript:void(0)">'+t.title+"</a></li>"}),o.append(n),jQuery("img.svg").each(function(){var t=jQuery(this),e=t.attr("id"),i=t.attr("class"),o=t.attr("src"),n=t.attr("fillColor"),s=t.attr("strokeColor");jQuery.get(o,function(o){var r=jQuery(o).find("svg"),a=r.find("rect"),l=r.find("path");null==a[0]||a.css({fill:n,stroke:s}),null==l[0]||l.css({fill:n,stroke:s}),"undefined"!=typeof e&&(r=r.attr("id",e)),"undefined"!=typeof i&&(r=r.attr("class",i+" replaced-svg")),r=r.removeAttr("xmlns:a"),t.replaceWith(r)},"xml")}),o.on("click",".legend-item",function(){$(this).toggleClass("selected");var t=$(this).attr("id");E[t].toggle()})}function w(){$("#map").css({opacity:1}),$("#menu").css({opacity:1}),$(".loader").hide()}function C(t){T(),O=new L.GeoJSON(JSON.parse(t.geometry),{style:D}),i.addLayer(O),O.cartodb_id=t.cartodb_id}function T(){i.removeLayer(O),O.cartodb_id=null}var k,E={},x=["#f00","#800080","#add8e6"],S={},I=new cartodb.SQL({user:window.gw.map.username});I.execute("SELECT GeometryType(the_geom), alt_type_slug FROM "+window.gw.environment+" WHERE the_geom IS NOT NULL GROUP BY GeometryType(the_geom), alt_type_slug ORDER BY alt_type_slug").done(function(t){var e=t.rows.filter(function(t){return!!t.alt_type_slug});s(e);var i=!1;l("altTypes")&&(b(e),i=!0),l("range")&&y(!i),g(),v(),m(),w()}).error(function(t){return n(t)});var O={},D={color:"#808080",weight:1,opacity:1,fillOpacity:.6,fillColor:"#000000",clickable:!1}})})},26:function(t,e){/*!
+webpackJsonp([2],{
+
+/***/ 0:
+/***/ function(module, exports, __webpack_require__) {
+
+	__webpack_require__(26);
+	
+	__webpack_require__(27);
+	__webpack_require__(28);
+	
+	/**
+	 * Extend CartoDB Tooltip
+	 * Get Layer position
+	 *
+	 * @returns {number} Layer Position
+	 */
+	cdb.geo.ui.Tooltip.prototype.getLayerIndex = function () {
+	    return this.options.layer._position;
+	};
+	
+	/**
+	 * Extend CartoDB Tooltip
+	 * Set data mask for formating 'data' field before displaying.
+	 *
+	 * @param {string} mask
+	 *
+	 * @returns {cdb.geo.ui.Tooltip}
+	 */
+	cdb.geo.ui.Tooltip.prototype.setMask = function (mask) {
+	    this.options.gw = {
+	        mask: mask
+	    };
+	
+	    return this;
+	};
+	
+	/**
+	 * Override carto db tooltip render method in order to format data before
+	 * displaying.
+	 */
+	cdb.geo.ui.Tooltip.prototype.render = function(data) {
+	    // Add by Shemin Dmitry
+	    var tmp = $.extend({}, data);
+	
+	    if (this.options.gw.mask && tmp && tmp.data ) {
+	        tmp.data = numeral(tmp.data).format(this.options.gw.mask);
+	    }
+	    // END
+	    var sanitizedOutput = cdb.core.sanitize.html(this.template(tmp));
+	    this.$el.html( sanitizedOutput );
+	    return this;
+	};
+	
+	$(function(){
+	
+	    /**
+	     * window.gw.map = {
+	     *  centerLatitude: Number
+	     *  centerLongitude: Number
+	     *  zoom: Number
+	     *  username: String
+	     * }
+	     */
+	    window.gw.map = JSON.parse(window.gw.map);
+	
+	    var color = '';
+	
+	    // TODO: Hardcoded
+	    window.gw.map.county = window.gw.map.colorizedCountyConditions;
+	
+	    window.gw.map.legend = window.gw.map.legend || [];
+	    window.gw.map.legendTypes = window.gw.map.legendTypes || [];
+	    var legend = window.gw.map.legend.sort(function (a, b) {
+	        return a.order > b.order;
+	    });
+	    var legendConfig = {
+	        fillColor: 'white'
+	    };
+	
+	    //Create the leaflet map
+	    var map = L.map('map', {
+	        zoomControl: true,
+	        center: [window.gw.map.centerLatitude, window.gw.map.centerLongitude],
+	        zoom: window.gw.map.zoom
+	    });
+	
+	    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+	        attribution: 'GovWiki'
+	    }).addTo(map);
+	
+	    // Empty layer
+	    cartodb.createLayer(map,{
+	        user_name: window.gw.map.username,
+	        type: 'cartodb',
+	        sublayers: []
+	    })
+	    .addTo(map)
+	    .done(function(layer){
+	
+	        var subLayers = {};
+	        // todo remove if it's not need anymore
+	        var markerColors = ['#f00', '#800080', '#add8e6'];
+	
+	        /**
+	         * Available layers
+	         */
+	        var countySubLayer;
+	        var tooltips = {};
+	
+	        /**
+	         * Create new SQL request
+	         */
+	        var sql = new cartodb.SQL({ user: window.gw.map.username });
+	
+	        /**
+	         * SubLayers & tooltips initialization
+	         * Get unique altTypes and render new subLayers by them
+	         */
+	        sql.execute("SELECT GeometryType(the_geom), alt_type_slug FROM " + window.gw.environment + " WHERE the_geom IS NOT NULL GROUP BY GeometryType(the_geom), alt_type_slug ORDER BY alt_type_slug")
+	            .done(function(data) {
+	
+	                var altTypes = data.rows.filter(function (alt) {
+	                    return !!alt.alt_type_slug
+	                });
+	
+	                initSubLayers(altTypes);
+	
+	                var isAltTypeLegendUsed = false;
+	                if (findLegendType('altTypes')) {
+	                    initLegend(altTypes);
+	                    isAltTypeLegendUsed = true
+	                }
+	
+	                if (findLegendType('range')) {
+	                    initRangeLegend(! isAltTypeLegendUsed);
+	                }
+	
+	                initTooltips();
+	
+	                initSublayerHandlers();
+	
+	                fixCartodbConstrain();
+	
+	                loadFinished();
+	
+	            })
+	            .error(function(errors) {
+	                return cartodbError(errors);
+	            });
+	
+	        function cartodbError(errors)
+	        {
+	            $('.loader').hide();
+	            var $mapProcessing = $('.mapOnProcessing');
+	            $mapProcessing.find('h5').eq(0).text('Something went wrong, please contact with us (contact@californiapolicycenter.org) ');
+	            $mapProcessing.css({"opacity":1});
+	            $mapProcessing.show();
+	
+	            console.log(errors);
+	        }
+	
+	        /**
+	         * Create additional subLayers by altType
+	         *
+	         * @param altTypes Unique altTypes from MySQL
+	         */
+	        function initSubLayers(altTypes) {
+	
+	            var countySubLayers = altTypes.filter(function(altType) {
+	                return (altType.geometrytype === "MULTIPOLYGON" || altType.geometrytype === "POLYGON")
+	            });
+	
+	            var markerSubLayers = altTypes.filter(function(altType) {
+	                return (altType.geometrytype !== "MULTIPOLYGON" && altType.geometrytype !== "POLYGON")
+	            });
+	
+	            countySubLayers.forEach(function(altType) {
+	                initCountySubLayer(altType.alt_type_slug);
+	            });
+	
+	            markerSubLayers.forEach(function(altType) {
+	                initMarkerSubLayer(altType.alt_type_slug);
+	            });
+	
+	            initSublayerHandlers();
+	            loadFinished();
+	
+	        }
+	
+	        /**
+	         * Get condition filtered by conditionType
+	         * @param {Array} conditions
+	         * @param {String} conditionType - period, simple, null
+	         * @returns {*}
+	         */
+	        function getConditionsByType(conditions, conditionType) {
+	            return conditions.filter(function(condition) {
+	                return condition.type === conditionType;
+	            });
+	        }
+	
+	        /**
+	         * CartoCSS !!!
+	         *
+	         * @param altType
+	         * @param {boolean?} useFill
+	         * @returns {*}
+	         */
+	        function getLegendItemAsCss (altType, useFill) {
+	
+	            useFill = useFill || false;
+	
+	            // Search current altType in legend (window.gw.map.legend = [Object, Object, ...])
+	            var foundLegend = legend.filter(function(item){
+	                return item.altType == altType
+	            })[0];
+	
+	            if (!foundLegend) {
+	                return false;
+	            }
+	
+	            var url = window.location.href.substr(0, window.location.href.length-1);
+	
+	            // If url to marker exist, create new css rule (path to marker icon)
+	            var markerIconUrl = foundLegend ? foundLegend["shape"] : false;
+	            var markerFileCss = markerIconUrl ? "marker-file: url(" + url + markerIconUrl + ");" : '';
+	
+	            var markerStrokeColor = foundLegend ? foundLegend['color'] : false;
+	
+	            var markerLineColorColorCss = "marker-line-color: " + markerStrokeColor + "; ";
+	            if (useFill) {
+	                markerLineColorColorCss = "marker-fill: " + markerStrokeColor + "; ";
+	            }
+	
+	            return {
+	                markerFileCss: markerFileCss,
+	                markerLineColorColorCss: markerLineColorColorCss
+	            };
+	
+	        }
+	
+	        function findLegendType (legendType) {
+	            return window.gw.map.legendTypes.filter(function(legend) {
+	                return legend === legendType;
+	            })[0];
+	        }
+	
+	        /**
+	         * Get period conditions as css string
+	         *
+	         * @param conditions - window.gw.map.county.conditions
+	         * @param color
+	         * @param options
+	         * @returns {string} CSS String || ''
+	         */
+	        function getPeriodConditionsAsCss(conditions, color, options) {
+	
+	            if (!conditions) {
+	                console.warn('You don\'t pass condition array into getPeriodConditionsAsCss() function');
+	                return '';
+	            }
+	
+	            options = options || {};
+	
+	            var cssConditions = '';
+	
+	            var periodConditions = getConditionsByType(conditions, 'period');
+	
+	            // If simple conditions found
+	            if (periodConditions.length !== 0) {
+	
+	                periodConditions.forEach(function (condition) {
+	
+	                    // Fill polygon or marker
+	                    var fillRule = options.isMarkerLayer ? 'marker-fill' : 'polygon-fill';
+	                    var fillColor = options.isMarkerLayer ? condition.color : condition.color;
+	                    var markerTypeCss = options.markerFileCss ? options.markerFileCss : '';
+	                    var fill = fillRule + ': ' + fillColor + ';' + markerTypeCss;
+	
+	                    // Stroke polygon or marker
+	                    var lineColorRule = options.isMarkerLayer ? 'marker-line-color' : 'line-color';
+	                    var lineColor = options.isMarkerLayer ? color : '#FFFFFF';
+	                    var line = lineColorRule + ': ' + lineColor + ';';
+	                    if (options.markerLineColorColorCss) {
+	                        line = options.markerLineColorColorCss;
+	                    }
+	                    var stroke = options.isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
+	
+	                    var min = '[data >= ' + condition.min + ']';
+	                    var max = '[data <= ' + condition.max + ']';
+	                    var style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
+	
+	                    cssConditions += '#layer' + min + max + style;
+	                });
+	
+	            }
+	
+	            return cssConditions ? cssConditions : '';
+	        }
+	
+	        /**
+	         * Get simple conditions as css string
+	         *
+	         * @param conditions - window.gw.map.county.conditions
+	         * @param color
+	         * @param options
+	         * @returns {string} CSS String || ''
+	         */
+	        function getSimpleConditionsAsCss(conditions, color, options) {
+	
+	            if (!conditions) {
+	                console.warn('You don\'t pass condition array into getSimpleConditionsAssCss() function');
+	                return '';
+	            }
+	
+	            options = options || {};
+	
+	            var cssConditions = '';
+	
+	            var simpleConditions = getConditionsByType(conditions, 'simple');
+	
+	            // If simple conditions found
+	            if (simpleConditions.length !== 0) {
+	
+	                // Sort by desc, because cartodb specifically processes css rules
+	                simpleConditions.sort(function(cur, next){
+	                    return cur.value < next.value;
+	                });
+	
+	                simpleConditions.forEach(function(condition) {
+	                    // Fill polygon or marker
+	                    var fillRule = options.isMarkerLayer ? 'marker-fill' : 'polygon-fill';
+	                    var fillColor = options.isMarkerLayer ? condition.color : condition.color;
+	                    var markerTypeCss = options.markerFileCss ? options.markerFileCss : '';
+	                    var fill = fillRule + ': ' + fillColor + '; ' + markerTypeCss;
+	
+	                    // Stroke polygon or marker
+	                    var lineColorRule = options.isMarkerLayer ? 'marker-line-color' : 'line-color';
+	                    var lineColor = options.isMarkerLayer ? color : '#FFFFFF';
+	                    var line = lineColorRule + ': ' + lineColor + ';';
+	                    if (options.markerLineColorColorCss) {
+	                        line = options.markerLineColorColorCss;
+	                    }
+	                    var stroke = options.isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
+	
+	                    var value = '[data ' + condition.operation + ' ' + condition.value + ']';
+	                    var style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
+	                    cssConditions += '#layer' + value + style;
+	                });
+	
+	            }
+	
+	            return cssConditions ? cssConditions : '';
+	        }
+	
+	        /**
+	         * Get Null condition as css string
+	         *
+	         * @param conditions - window.gw.map.county.conditions
+	         * @param color
+	         * @param options
+	         * @returns {string} CSS String || ''
+	         */
+	        function getNullConditionAsCss(conditions, color, options) {
+	
+	            if (!conditions) {
+	                console.warn('You don\'t pass condition array into getNullConditionAsCss() function');
+	                return '';
+	            }
+	
+	            options = options || {};
+	
+	            var cssConditions = '';
+	
+	            var nullCondition = getConditionsByType(conditions, 'null');
+	
+	            // If null condition found
+	            if (nullCondition.length !== 0) {
+	                // Fill polygon or marker
+	                var fillRule = options.isMarkerLayer ? 'marker-fill' : 'polygon-fill';
+	                var fillColor = options.isMarkerLayer ? nullCondition[0].color : nullCondition[0].color;
+	                var markerTypeCss = options.markerFileCss ? options.markerFileCss : '';
+	                var fill = fillRule + ': ' + fillColor + ';' + markerTypeCss;
+	
+	                // Stroke polygon or marker
+	                var lineColorRule = options.isMarkerLayer ? 'marker-line-color' : 'line-color';
+	                var lineColor = options.isMarkerLayer ? color : '#FFFFFF';
+	                var line = lineColorRule + ': ' + lineColor + ';';
+	                if (options.markerLineColorColorCss) {
+	                    line = options.markerLineColorColorCss;
+	                }
+	                var stroke = options.isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
+	
+	                var style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
+	                cssConditions += '#layer[data = null]' + style;
+	            }
+	
+	            return cssConditions ? cssConditions : '';
+	        }
+	
+	        /**
+	         * Initialization County SubLayer
+	         *
+	         * Tooltip window
+	         * Tooltip work with 3.11-13 version, 3.15 is buggy
+	         */
+	        function initCountySubLayer(altType) {
+	
+	            var cartocss = '';
+	            var colorized = window.gw.map.county.colorized;
+	
+	            if (colorized) {
+	                var conditions = window.gw.map.county.conditions;
+	
+	                // Default county color
+	                cartocss += '#layer { polygon-fill: #DDDDDD; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+	
+	                cartocss += getPeriodConditionsAsCss(conditions);
+	
+	                cartocss += getSimpleConditionsAsCss(conditions);
+	
+	                cartocss += getNullConditionAsCss(conditions);
+	
+	                if (cartocss === '') {
+	                    console.warn('Can\'t find any condition, please verify your window.gw.map.county.conditions data');
+	                    console.warn('or check getPeriodConditionsAsCss, getSimpleConditionsAsCss, getNullConditionAsCss functions');
+	                }
+	
+	            } else {
+	                // Default county color if colorized disabled (flag in admin panel)
+	                cartocss = '#layer { polygon-fill: #DDDDDD; polygon-opacity: 0.7; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+	            }
+	
+	            var cLayer = {
+	                'cartocss': cartocss,
+	                'sql': 'SELECT *, ST_AsGeoJSON(the_geom) AS geometry FROM ' + window.gw.environment + ' WHERE  alt_type_slug = \''+ altType +'\'',
+	                'interactivity': ['cartodb_id', 'slug', 'alt_type_slug', 'geometry', 'data', 'name']
+	            };
+	
+	            countySubLayer = layer.createSubLayer(cLayer);
+	
+	            var _altType = altType.toLowerCase();
+	
+	            subLayers[_altType] = countySubLayer;
+	
+	            initTooltip(_altType);
+	        }
+	
+	        /**
+	         * Initialization Marker SubLayer
+	         *
+	         * Tooltip window
+	         * Tooltip work with 3.11-13 version, 3.15 is buggy
+	         */
+	        function initMarkerSubLayer(altType) {
+	
+	            var _altType = altType.toLowerCase();
+	
+	            var cartocss = '';
+	            var colorized = window.gw.map.county.colorized;
+	
+	            var color = markerColors.shift();
+	            var legendItemCss = {};
+	
+	            if (colorized) {
+	
+	                var conditions = window.gw.map.county.conditions,
+	                    options = {
+	                        isMarkerLayer: true
+	                    };
+	
+	                legendItemCss = getLegendItemAsCss(altType);
+	                if (legendItemCss) {
+	                    options.markerFileCss = legendItemCss.markerFileCss;
+	                    options.markerLineColorColorCss = legendItemCss.markerLineColorColorCss;
+	                }
+	
+	                // Default marker color
+	                //cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+	                cartocss += '#layer { '+ legendItemCss.markerFileCss + legendItemCss.markerLineColorColorCss +' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+	
+	                cartocss += getPeriodConditionsAsCss(conditions, color, options);
+	
+	                cartocss += getSimpleConditionsAsCss(conditions, color, options);
+	
+	                cartocss += getNullConditionAsCss(conditions, color, options);
+	
+	                if (cartocss === '') {
+	                    console.warn('Can\'t find any condition, please verify your window.gw.map.county.conditions data');
+	                    console.warn('or check getPeriodConditionsAsCss, getSimpleConditionsAsCss, getNullConditionAsCss functions');
+	                }
+	
+	            } else {
+	
+	                legendItemCss = getLegendItemAsCss(altType, true);
+	                cartocss = '#layer { '+ legendItemCss.markerFileCss + legendItemCss.markerLineColorColorCss +' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+	            }
+	
+	            subLayers[_altType] = layer.createSubLayer({
+	                sql: "SELECT *, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
+	                cartocss: cartocss,
+	                interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype', 'data', 'name']
+	            });
+	
+	            initTooltip(_altType);
+	
+	        }
+	
+	
+	            /**
+	         * Init tooltip
+	         * @param altType
+	         */
+	        function initTooltip(altType) {
+	            var tooltipTpl = '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"></p>';
+	
+	            tooltipTpl += '<p>{{name}} ({{data}})</p>';
+	
+	            tooltipTpl += '</div></div>';
+	            tooltips[altType] = new cdb.geo.ui.Tooltip({
+	                layer: subLayers[altType],
+	                template: tooltipTpl,
+	                width: 200,
+	                position: 'bottom|right'
+	            });
+	            tooltips[altType].setMask(gw.map.county.field_mask);
+	        }
+	
+	
+	        /**
+	         * Add tooltips on page
+	         * @type {*[]}
+	         */
+	        function initTooltips() {
+	
+	            for (var key in tooltips){
+	                if(tooltips.hasOwnProperty(key)){
+	
+	                    var tooltip = tooltips[key];
+	                    if (tooltip != null){
+	                        $('#map_wrap').append(tooltip.render().el);
+	                    }
+	
+	                }
+	            }
+	
+	        }
+	
+	        /**
+	         * Move objectsPane above tilePane
+	         * It's necessary, otherwise county hover will not work
+	         */
+	        function fixCartodbConstrain() {
+	
+	            var $objectsPane = $('.leaflet-objects-pane');
+	            var $tilePane = $('.leaflet-tile-pane');
+	
+	            $objectsPane.appendTo($tilePane);
+	            $objectsPane.css({"z-index":"100"});
+	        }
+	
+	        /**
+	         * Set handlers on SubLayers
+	         */
+	        function initSublayerHandlers() {
+	
+	            var hovers = [];
+	
+	            for (var key in subLayers) {
+	
+	                if (subLayers.hasOwnProperty(key)) {
+	
+	                    var layer = subLayers[key];
+	
+	                    // Allow events on layer
+	                    layer.setInteraction(true);
+	
+	                    /**
+	                     * Show tooltip on hover
+	                     * Or highlight current county
+	                     * It depends on the current Layer position
+	                     */
+	                    layer.bind('mouseover', function (e, latlon, pxPos, data, layerIndex) {
+	
+	                        // TODO: Must be deleted, when data will be replaced, now it's hardcoded
+	                        data.slug = data.slug.replace(/_/g, ' ');
+	
+	                        hovers[layerIndex] = 1;
+	
+	                        /**
+	                         * If hover active
+	                         */
+	                        if (_.some(hovers)) {
+	
+	                            $('#map').css('cursor', 'pointer');
+	
+	                            /**
+	                             * If hover on county layer
+	                             */
+	                            if (layerIndex == countySubLayer._position) {
+	                                drawAppropriatePolygon(data);
+	                            } else {
+	                                removeAllHoverShapes();
+	                            }
+	
+	                            /**
+	                             * Open current tooltip, close another
+	                             */
+	                            for (var key in tooltips){
+	                                if (tooltips.hasOwnProperty(key)) {
+	
+	                                    var tooltip = tooltips[key];
+	
+	                                    if (tooltip != null) {
+	
+	                                        if (tooltip.getLayerIndex() == layerIndex) {
+	                                            tooltip.enable();
+	                                        } else {
+	                                            tooltip.disable();
+	                                        }
+	
+	                                    }
+	
+	                                }
+	                            }
+	
+	                        }
+	
+	                    });
+	
+	                    /**
+	                     * Hide tooltip on hover
+	                     * Or remove highlight on current county
+	                     * It depends on the current Layer position
+	                     */
+	                    layer.bind('mouseout', function (layerIndex) {
+	
+	                        hovers[layerIndex] = 0;
+	
+	                        /**
+	                         * If hover not active
+	                         */
+	                        if (!_.some(hovers)) {
+	                            $('#map').css('cursor', 'auto');
+	
+	                            removeAllHoverShapes();
+	
+	                            /**
+	                             *  Close all tooltips, if cursor outside of layers
+	                             */
+	                            for (var key in tooltips){
+	                                if (tooltips.hasOwnProperty(key)) {
+	
+	                                    var tooltip = tooltips[key];
+	
+	                                    if (tooltip != null) {
+	
+	                                        if (tooltip.getLayerIndex() == layerIndex) {
+	                                            tooltip.disable();
+	                                        }
+	
+	                                    }
+	
+	                                }
+	                            }
+	
+	                        }
+	                    });
+	
+	                    /**
+	                     * Change window location after click on marker or county
+	                     */
+	                    layer.on('featureClick', function (event, latlng, pos, data, layerIndex) {
+	
+	                        if (!data.alt_type_slug || !data.slug) {
+	                            alert('Please verify your data, altTypeSlug or governmentSlug may can not defined, more info in console.log');
+	                            console.log(data);
+	                            return false;
+	                        }
+	
+	                        /**
+	                         * TODO: Hardcoded, data must be in underscore style
+	                         */
+	                        data.slug = data.slug.replace(/ /g, '_');
+	
+	                        var pathname = window.location.pathname;
+	
+	                        if (pathname[pathname.length - 1] !== '/') {
+	                            pathname += '/';
+	                        }
+	
+	                        window.location.pathname = pathname + data.alt_type_slug + '/' + data.slug;
+	                    });
+	
+	                }
+	
+	            }
+	
+	        }
+	
+	        function initRangeLegend(showOnTop) {
+	
+	            if (!window.gw.map.county.colorized) { return false; }
+	
+	            var legendItems = '';
+	            var fieldName = window.gw.map.county.fieldName.replace(/_/g, ' ');
+	            var conditions = window.gw.map.county.conditions;
+	
+	            var periodConditions = getConditionsByType(conditions, 'period');
+	
+	            var simpleConditions = getConditionsByType(conditions, 'simple');
+	
+	            var nullCondition = getConditionsByType(conditions, 'null');
+	
+	            // Build legend items for period conditions
+	            if (periodConditions.length !== 0) {
+	
+	                periodConditions.forEach(function(condition) {
+	                    var conditionColor = 'background: ' + condition.color;
+	                    var conditionText = condition.min + ' - ' + condition.max;
+	
+	                    legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>' +
+	                                        conditionText +
+	                                   '</li>';
+	                });
+	
+	            }
+	
+	            // Build legend items for simple conditions
+	            if (simpleConditions.length !== 0) {
+	
+	                simpleConditions.forEach(function(condition) {
+	                    var conditionColor = 'background: ' + condition.color;
+	                    var conditionText = condition.operation + ' ' + condition.value;
+	
+	                    legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>' +
+	                                        conditionText +
+	                                    '</li>';
+	                });
+	
+	            }
+	
+	
+	            // Build legend items for null conditions
+	            if (nullCondition.length !== 0) {
+	
+	                var conditionColor = 'background: ' + nullCondition[0].color;
+	
+	                legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>null</li>';
+	
+	            }
+	
+	            var legendClass = 'cartodb-legend-stack';
+	            if (showOnTop) {
+	                legendClass += ' cartodb-legend-stack__top';
+	            }
+	
+	            var legend = '<div class="'+ legendClass +'" style=""><div class="cartodb-legend custom" style="display: block;"><div class="legend-title">' +
+	                            fieldName +
+	                         '</div><ul>' +
+	                            legendItems +
+	                         '</ul></div></div>';
+	
+	            $('#map').append(legend);
+	
+	        }
+	
+	        /**
+	         * Init legend
+	         */
+	        //function initLegend(altTypes) {
+	        //    // TODO generate legend on fly from given altTypes
+	        //
+	        //    var $legendContainer = $('#menu');
+	        //
+	        //    /*
+	        //     Add new elements.
+	        //     */
+	        //    var compiledLegendItems = '';
+	        //
+	        //    var markerIcons = {
+	        //        "stroke": ['red-stroke', 'purple-stroke', 'blue-stroke'],
+	        //        "fill": ['red-fill', 'purple-fill', 'blue-fill']
+	        //    };
+	        //
+	        //    altTypes.forEach(function(altType) {
+	        //
+	        //        var altTypeSlug = altType.alt_type_slug.replace(/_/g, ' ');
+	        //        var _altTypeSlug = altType.alt_type_slug.toLowerCase();
+	        //
+	        //        var iconClass = '';
+	        //        if (window.gw.map.county.colorized) {
+	        //            iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
+	        //                ? 'grey-line'
+	        //                : 'marker-circle ' + markerIcons['stroke'].shift();
+	        //        } else {
+	        //            iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
+	        //                ? 'grey-line'
+	        //                : 'marker-circle ' + markerIcons['fill'].shift();
+	        //        }
+	        //
+	        //        compiledLegendItems += '<li id=' + _altTypeSlug + ' class="' + _altTypeSlug + ' legend-item selected">' +
+	        //            '<span class="glyphicon glyphicon-ok"></span>' +
+	        //            '<i class="' + iconClass + '"></i>' +
+	        //            '<a href="javascript:void(0)">' + altTypeSlug + '</a>' +
+	        //            '</li>';
+	        //
+	        //    });
+	        //
+	        //    $legendContainer.append(compiledLegendItems);
+	        //
+	        //    $legendContainer.on('click', '.legend-item', function() {
+	        //        $(this).toggleClass('selected');
+	        //        var countyName = $(this).attr('id');
+	        //        subLayers[countyName].toggle();
+	        //    });
+	        //
+	        //}
+	
+	        /**
+	         * TODO: Replace when legend will be ready
+	         * Init legend (NEW)
+	         */
+	        function initLegend(altTypes) {
+	            // TODO generate legend on fly from given altTypes
+	
+	            //var markerIcons = {
+	            //    "stroke": ['red-stroke', 'purple-stroke', 'blue-stroke'],
+	            //    "fill": ['red-fill', 'purple-fill', 'blue-fill']
+	            //};
+	
+	            var $legendContainer = $('#menu');
+	
+	            /*
+	                Add new elements.
+	             */
+	            var compiledLegendItems = '';
+	
+	            legend.forEach(function(menu_item) {
+	
+	                var altType = altTypes.filter(function(altType) {
+	                    return (altType.alt_type_slug === menu_item.altType)
+	                })[0];
+	
+	                var altTypeSlug = menu_item.altType.replace(/_/g, ' ');
+	                var _altTypeSlug = menu_item.altType.toLowerCase();
+	
+	                var iconCounty = '',
+	                    iconMarker = '';
+	
+	                var fillColor = '',
+	                    strokeColor = '';
+	
+	                // Colorize markers & counties by range number
+	                if (window.gw.map.county.colorized) {
+	
+	                    // If url to shape exist - show marker
+	                    if (menu_item.shape) {
+	                        fillColor = 'fillColor="' + legendConfig.fillColor + '" ';
+	                        strokeColor = 'strokeColor="' + menu_item['color'] + '" ';
+	                        iconMarker = '<img src="' + menu_item['shape'] + '" class="svg" ' + strokeColor + fillColor + '/>';
+	
+	                    // Else - show county line
+	                    } else {
+	                        iconCounty = '<i class="grey-line"></i>';
+	                    }
+	
+	                // Use default styles (hardcoded in this file)
+	                } else {
+	
+	                    // If url to shape exist - show marker
+	                    if (menu_item.shape) {
+	                        fillColor = 'fillColor="' + menu_item['color'] + '" ';
+	                        strokeColor = 'strokeColor="' + menu_item['color'] + '" ';
+	                        iconMarker = '<img src="' + menu_item['shape'] + '" class="svg" ' + strokeColor + fillColor + '/>';
+	
+	                        // Else - show county line
+	                    } else {
+	                        iconCounty = '<i class="grey-line"></i>';
+	                    }
+	
+	                    //iconMarker = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
+	                    //    ? '<i class="grey-line"></i>'
+	                    //    : '<i class="marker-circle ' + markerIcons['fill'].shift() + '"></i>';
+	                }
+	
+	                compiledLegendItems += '<li id=' + _altTypeSlug + ' class="' + _altTypeSlug + ' legend-item selected">' +
+	                                         '<span class="glyphicon glyphicon-ok"></span>' +
+	                                          iconCounty + iconMarker +
+	                                         '<a href="javascript:void(0)">' + menu_item.title + '</a>' +
+	                                      '</li>';
+	
+	            });
+	
+	            $legendContainer.append(compiledLegendItems);
+	
+	            /*
+	             * Replace all SVG images with inline SVG
+	             */
+	            jQuery('img.svg').each(function(){
+	                var $img = jQuery(this);
+	                var imgID = $img.attr('id');
+	                var imgClass = $img.attr('class');
+	                var imgURL = $img.attr('src');
+	
+	                var fillColor = $img.attr('fillColor');
+	                var strokeColor = $img.attr('strokeColor');
+	
+	                jQuery.get(imgURL, function(data) {
+	                    // Get the SVG tag, ignore the rest
+	                    var $svg = jQuery(data).find('svg');
+	                    var $rect = $svg.find('rect');
+	                    var $path = $svg.find('path');
+	
+	                    $rect[0] == null || $rect.css({'fill': fillColor, 'stroke': strokeColor});
+	                    $path[0] == null || $path.css({'fill': fillColor, 'stroke': strokeColor});
+	
+	                    // Add replaced image's ID to the new SVG
+	                    if(typeof imgID !== 'undefined') {
+	                        $svg = $svg.attr('id', imgID);
+	                    }
+	                    // Add replaced image's classes to the new SVG
+	                    if(typeof imgClass !== 'undefined') {
+	                        $svg = $svg.attr('class', imgClass+' replaced-svg');
+	                    }
+	
+	                    // Remove any invalid XML tags as per http://validator.w3.org
+	                    $svg = $svg.removeAttr('xmlns:a');
+	
+	                    // Replace image with new SVG
+	                    $img.replaceWith($svg);
+	
+	                }, 'xml');
+	
+	            });
+	
+	            $legendContainer.on('click', '.legend-item', function() {
+	                $(this).toggleClass('selected');
+	                var countyName = $(this).attr('id');
+	                subLayers[countyName].toggle();
+	            });
+	
+	        }
+	
+	        /**
+	         * Show map, legend, hide loader
+	         */
+	        function loadFinished() {
+	            $('#map').css({"opacity": 1});
+	            $('#menu').css({"opacity": 1});
+	            $('.loader').hide();
+	        }
+	
+	        // Polygon variables and functions
+	        var polygon = {};
+	        // What should our polygon hover style look like?
+	        var polygon_style = {
+	            color: "#808080",
+	            weight: 1,
+	            opacity: 1,
+	            fillOpacity: .6,
+	            fillColor: "#000000",
+	            clickable: false
+	        };
+	
+	        function drawAppropriatePolygon(data){
+	            removeAllHoverShapes();
+	            polygon = new L.GeoJSON(JSON.parse(data.geometry), {
+	                style: polygon_style
+	            });
+	            map.addLayer(polygon);
+	            polygon.cartodb_id = data.cartodb_id;
+	        }
+	        function removeAllHoverShapes(){
+	            map.removeLayer(polygon);
+	            polygon.cartodb_id = null;
+	        }
+	
+	    });
+	
+	});
+
+/***/ },
+
+/***/ 26:
+/***/ function(module, exports) {
+
+	/*!
 	 * Bootstrap v3.3.6 (http://getbootstrap.com)
 	 * Copyright 2011-2015 Twitter, Inc.
 	 * Licensed under the MIT license
 	 */
-if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires jQuery");+function(t){"use strict";var e=t.fn.jquery.split(" ")[0].split(".");if(e[0]<2&&e[1]<9||1==e[0]&&9==e[1]&&e[2]<1||e[0]>2)throw new Error("Bootstrap's JavaScript requires jQuery version 1.9.1 or higher, but lower than version 3")}(jQuery),+function(t){"use strict";function e(){var t=document.createElement("bootstrap"),e={WebkitTransition:"webkitTransitionEnd",MozTransition:"transitionend",OTransition:"oTransitionEnd otransitionend",transition:"transitionend"};for(var i in e)if(void 0!==t.style[i])return{end:e[i]};return!1}t.fn.emulateTransitionEnd=function(e){var i=!1,o=this;t(this).one("bsTransitionEnd",function(){i=!0});var n=function(){i||t(o).trigger(t.support.transition.end)};return setTimeout(n,e),this},t(function(){t.support.transition=e(),t.support.transition&&(t.event.special.bsTransitionEnd={bindType:t.support.transition.end,delegateType:t.support.transition.end,handle:function(e){return t(e.target).is(this)?e.handleObj.handler.apply(this,arguments):void 0}})})}(jQuery),+function(t){"use strict";function e(e){return this.each(function(){var i=t(this),n=i.data("bs.alert");n||i.data("bs.alert",n=new o(this)),"string"==typeof e&&n[e].call(i)})}var i='[data-dismiss="alert"]',o=function(e){t(e).on("click",i,this.close)};o.VERSION="3.3.6",o.TRANSITION_DURATION=150,o.prototype.close=function(e){function i(){r.detach().trigger("closed.bs.alert").remove()}var n=t(this),s=n.attr("data-target");s||(s=n.attr("href"),s=s&&s.replace(/.*(?=#[^\s]*$)/,""));var r=t(s);e&&e.preventDefault(),r.length||(r=n.closest(".alert")),r.trigger(e=t.Event("close.bs.alert")),e.isDefaultPrevented()||(r.removeClass("in"),t.support.transition&&r.hasClass("fade")?r.one("bsTransitionEnd",i).emulateTransitionEnd(o.TRANSITION_DURATION):i())};var n=t.fn.alert;t.fn.alert=e,t.fn.alert.Constructor=o,t.fn.alert.noConflict=function(){return t.fn.alert=n,this},t(document).on("click.bs.alert.data-api",i,o.prototype.close)}(jQuery),+function(t){"use strict";function e(e){return this.each(function(){var o=t(this),n=o.data("bs.button"),s="object"==typeof e&&e;n||o.data("bs.button",n=new i(this,s)),"toggle"==e?n.toggle():e&&n.setState(e)})}var i=function(e,o){this.$element=t(e),this.options=t.extend({},i.DEFAULTS,o),this.isLoading=!1};i.VERSION="3.3.6",i.DEFAULTS={loadingText:"loading..."},i.prototype.setState=function(e){var i="disabled",o=this.$element,n=o.is("input")?"val":"html",s=o.data();e+="Text",null==s.resetText&&o.data("resetText",o[n]()),setTimeout(t.proxy(function(){o[n](null==s[e]?this.options[e]:s[e]),"loadingText"==e?(this.isLoading=!0,o.addClass(i).attr(i,i)):this.isLoading&&(this.isLoading=!1,o.removeClass(i).removeAttr(i))},this),0)},i.prototype.toggle=function(){var t=!0,e=this.$element.closest('[data-toggle="buttons"]');if(e.length){var i=this.$element.find("input");"radio"==i.prop("type")?(i.prop("checked")&&(t=!1),e.find(".active").removeClass("active"),this.$element.addClass("active")):"checkbox"==i.prop("type")&&(i.prop("checked")!==this.$element.hasClass("active")&&(t=!1),this.$element.toggleClass("active")),i.prop("checked",this.$element.hasClass("active")),t&&i.trigger("change")}else this.$element.attr("aria-pressed",!this.$element.hasClass("active")),this.$element.toggleClass("active")};var o=t.fn.button;t.fn.button=e,t.fn.button.Constructor=i,t.fn.button.noConflict=function(){return t.fn.button=o,this},t(document).on("click.bs.button.data-api",'[data-toggle^="button"]',function(i){var o=t(i.target);o.hasClass("btn")||(o=o.closest(".btn")),e.call(o,"toggle"),t(i.target).is('input[type="radio"]')||t(i.target).is('input[type="checkbox"]')||i.preventDefault()}).on("focus.bs.button.data-api blur.bs.button.data-api",'[data-toggle^="button"]',function(e){t(e.target).closest(".btn").toggleClass("focus",/^focus(in)?$/.test(e.type))})}(jQuery),+function(t){"use strict";function e(e){return this.each(function(){var o=t(this),n=o.data("bs.carousel"),s=t.extend({},i.DEFAULTS,o.data(),"object"==typeof e&&e),r="string"==typeof e?e:s.slide;n||o.data("bs.carousel",n=new i(this,s)),"number"==typeof e?n.to(e):r?n[r]():s.interval&&n.pause().cycle()})}var i=function(e,i){this.$element=t(e),this.$indicators=this.$element.find(".carousel-indicators"),this.options=i,this.paused=null,this.sliding=null,this.interval=null,this.$active=null,this.$items=null,this.options.keyboard&&this.$element.on("keydown.bs.carousel",t.proxy(this.keydown,this)),"hover"==this.options.pause&&!("ontouchstart"in document.documentElement)&&this.$element.on("mouseenter.bs.carousel",t.proxy(this.pause,this)).on("mouseleave.bs.carousel",t.proxy(this.cycle,this))};i.VERSION="3.3.6",i.TRANSITION_DURATION=600,i.DEFAULTS={interval:5e3,pause:"hover",wrap:!0,keyboard:!0},i.prototype.keydown=function(t){if(!/input|textarea/i.test(t.target.tagName)){switch(t.which){case 37:this.prev();break;case 39:this.next();break;default:return}t.preventDefault()}},i.prototype.cycle=function(e){return e||(this.paused=!1),this.interval&&clearInterval(this.interval),this.options.interval&&!this.paused&&(this.interval=setInterval(t.proxy(this.next,this),this.options.interval)),this},i.prototype.getItemIndex=function(t){return this.$items=t.parent().children(".item"),this.$items.index(t||this.$active)},i.prototype.getItemForDirection=function(t,e){var i=this.getItemIndex(e),o="prev"==t&&0===i||"next"==t&&i==this.$items.length-1;if(o&&!this.options.wrap)return e;var n="prev"==t?-1:1,s=(i+n)%this.$items.length;return this.$items.eq(s)},i.prototype.to=function(t){var e=this,i=this.getItemIndex(this.$active=this.$element.find(".item.active"));return t>this.$items.length-1||0>t?void 0:this.sliding?this.$element.one("slid.bs.carousel",function(){e.to(t)}):i==t?this.pause().cycle():this.slide(t>i?"next":"prev",this.$items.eq(t))},i.prototype.pause=function(e){return e||(this.paused=!0),this.$element.find(".next, .prev").length&&t.support.transition&&(this.$element.trigger(t.support.transition.end),this.cycle(!0)),this.interval=clearInterval(this.interval),this},i.prototype.next=function(){return this.sliding?void 0:this.slide("next")},i.prototype.prev=function(){return this.sliding?void 0:this.slide("prev")},i.prototype.slide=function(e,o){var n=this.$element.find(".item.active"),s=o||this.getItemForDirection(e,n),r=this.interval,a="next"==e?"left":"right",l=this;if(s.hasClass("active"))return this.sliding=!1;var c=s[0],d=t.Event("slide.bs.carousel",{relatedTarget:c,direction:a});if(this.$element.trigger(d),!d.isDefaultPrevented()){if(this.sliding=!0,r&&this.pause(),this.$indicators.length){this.$indicators.find(".active").removeClass("active");var h=t(this.$indicators.children()[this.getItemIndex(s)]);h&&h.addClass("active")}var p=t.Event("slid.bs.carousel",{relatedTarget:c,direction:a});return t.support.transition&&this.$element.hasClass("slide")?(s.addClass(e),s[0].offsetWidth,n.addClass(a),s.addClass(a),n.one("bsTransitionEnd",function(){s.removeClass([e,a].join(" ")).addClass("active"),n.removeClass(["active",a].join(" ")),l.sliding=!1,setTimeout(function(){l.$element.trigger(p)},0)}).emulateTransitionEnd(i.TRANSITION_DURATION)):(n.removeClass("active"),s.addClass("active"),this.sliding=!1,this.$element.trigger(p)),r&&this.cycle(),this}};var o=t.fn.carousel;t.fn.carousel=e,t.fn.carousel.Constructor=i,t.fn.carousel.noConflict=function(){return t.fn.carousel=o,this};var n=function(i){var o,n=t(this),s=t(n.attr("data-target")||(o=n.attr("href"))&&o.replace(/.*(?=#[^\s]+$)/,""));if(s.hasClass("carousel")){var r=t.extend({},s.data(),n.data()),a=n.attr("data-slide-to");a&&(r.interval=!1),e.call(s,r),a&&s.data("bs.carousel").to(a),i.preventDefault()}};t(document).on("click.bs.carousel.data-api","[data-slide]",n).on("click.bs.carousel.data-api","[data-slide-to]",n),t(window).on("load",function(){t('[data-ride="carousel"]').each(function(){var i=t(this);e.call(i,i.data())})})}(jQuery),+function(t){"use strict";function e(e){var i,o=e.attr("data-target")||(i=e.attr("href"))&&i.replace(/.*(?=#[^\s]+$)/,"");return t(o)}function i(e){return this.each(function(){var i=t(this),n=i.data("bs.collapse"),s=t.extend({},o.DEFAULTS,i.data(),"object"==typeof e&&e);!n&&s.toggle&&/show|hide/.test(e)&&(s.toggle=!1),n||i.data("bs.collapse",n=new o(this,s)),"string"==typeof e&&n[e]()})}var o=function(e,i){this.$element=t(e),this.options=t.extend({},o.DEFAULTS,i),this.$trigger=t('[data-toggle="collapse"][href="#'+e.id+'"],[data-toggle="collapse"][data-target="#'+e.id+'"]'),this.transitioning=null,this.options.parent?this.$parent=this.getParent():this.addAriaAndCollapsedClass(this.$element,this.$trigger),this.options.toggle&&this.toggle()};o.VERSION="3.3.6",o.TRANSITION_DURATION=350,o.DEFAULTS={toggle:!0},o.prototype.dimension=function(){var t=this.$element.hasClass("width");return t?"width":"height"},o.prototype.show=function(){if(!this.transitioning&&!this.$element.hasClass("in")){var e,n=this.$parent&&this.$parent.children(".panel").children(".in, .collapsing");if(!(n&&n.length&&(e=n.data("bs.collapse"),e&&e.transitioning))){var s=t.Event("show.bs.collapse");if(this.$element.trigger(s),!s.isDefaultPrevented()){n&&n.length&&(i.call(n,"hide"),e||n.data("bs.collapse",null));var r=this.dimension();this.$element.removeClass("collapse").addClass("collapsing")[r](0).attr("aria-expanded",!0),this.$trigger.removeClass("collapsed").attr("aria-expanded",!0),this.transitioning=1;var a=function(){this.$element.removeClass("collapsing").addClass("collapse in")[r](""),this.transitioning=0,this.$element.trigger("shown.bs.collapse")};if(!t.support.transition)return a.call(this);var l=t.camelCase(["scroll",r].join("-"));this.$element.one("bsTransitionEnd",t.proxy(a,this)).emulateTransitionEnd(o.TRANSITION_DURATION)[r](this.$element[0][l])}}}},o.prototype.hide=function(){if(!this.transitioning&&this.$element.hasClass("in")){var e=t.Event("hide.bs.collapse");if(this.$element.trigger(e),!e.isDefaultPrevented()){var i=this.dimension();this.$element[i](this.$element[i]())[0].offsetHeight,this.$element.addClass("collapsing").removeClass("collapse in").attr("aria-expanded",!1),this.$trigger.addClass("collapsed").attr("aria-expanded",!1),this.transitioning=1;var n=function(){this.transitioning=0,this.$element.removeClass("collapsing").addClass("collapse").trigger("hidden.bs.collapse")};return t.support.transition?void this.$element[i](0).one("bsTransitionEnd",t.proxy(n,this)).emulateTransitionEnd(o.TRANSITION_DURATION):n.call(this)}}},o.prototype.toggle=function(){this[this.$element.hasClass("in")?"hide":"show"]()},o.prototype.getParent=function(){return t(this.options.parent).find('[data-toggle="collapse"][data-parent="'+this.options.parent+'"]').each(t.proxy(function(i,o){var n=t(o);this.addAriaAndCollapsedClass(e(n),n)},this)).end()},o.prototype.addAriaAndCollapsedClass=function(t,e){var i=t.hasClass("in");t.attr("aria-expanded",i),e.toggleClass("collapsed",!i).attr("aria-expanded",i)};var n=t.fn.collapse;t.fn.collapse=i,t.fn.collapse.Constructor=o,t.fn.collapse.noConflict=function(){return t.fn.collapse=n,this},t(document).on("click.bs.collapse.data-api",'[data-toggle="collapse"]',function(o){var n=t(this);n.attr("data-target")||o.preventDefault();var s=e(n),r=s.data("bs.collapse"),a=r?"toggle":n.data();i.call(s,a)})}(jQuery),+function(t){"use strict";function e(e){var i=e.attr("data-target");i||(i=e.attr("href"),i=i&&/#[A-Za-z]/.test(i)&&i.replace(/.*(?=#[^\s]*$)/,""));var o=i&&t(i);return o&&o.length?o:e.parent()}function i(i){i&&3===i.which||(t(n).remove(),t(s).each(function(){var o=t(this),n=e(o),s={relatedTarget:this};n.hasClass("open")&&(i&&"click"==i.type&&/input|textarea/i.test(i.target.tagName)&&t.contains(n[0],i.target)||(n.trigger(i=t.Event("hide.bs.dropdown",s)),i.isDefaultPrevented()||(o.attr("aria-expanded","false"),n.removeClass("open").trigger(t.Event("hidden.bs.dropdown",s)))))}))}function o(e){return this.each(function(){var i=t(this),o=i.data("bs.dropdown");o||i.data("bs.dropdown",o=new r(this)),"string"==typeof e&&o[e].call(i)})}var n=".dropdown-backdrop",s='[data-toggle="dropdown"]',r=function(e){t(e).on("click.bs.dropdown",this.toggle)};r.VERSION="3.3.6",r.prototype.toggle=function(o){var n=t(this);if(!n.is(".disabled, :disabled")){var s=e(n),r=s.hasClass("open");if(i(),!r){"ontouchstart"in document.documentElement&&!s.closest(".navbar-nav").length&&t(document.createElement("div")).addClass("dropdown-backdrop").insertAfter(t(this)).on("click",i);var a={relatedTarget:this};if(s.trigger(o=t.Event("show.bs.dropdown",a)),o.isDefaultPrevented())return;n.trigger("focus").attr("aria-expanded","true"),s.toggleClass("open").trigger(t.Event("shown.bs.dropdown",a))}return!1}},r.prototype.keydown=function(i){if(/(38|40|27|32)/.test(i.which)&&!/input|textarea/i.test(i.target.tagName)){var o=t(this);if(i.preventDefault(),i.stopPropagation(),!o.is(".disabled, :disabled")){var n=e(o),r=n.hasClass("open");if(!r&&27!=i.which||r&&27==i.which)return 27==i.which&&n.find(s).trigger("focus"),o.trigger("click");var a=" li:not(.disabled):visible a",l=n.find(".dropdown-menu"+a);if(l.length){var c=l.index(i.target);38==i.which&&c>0&&c--,40==i.which&&c<l.length-1&&c++,~c||(c=0),l.eq(c).trigger("focus")}}}};var a=t.fn.dropdown;t.fn.dropdown=o,t.fn.dropdown.Constructor=r,t.fn.dropdown.noConflict=function(){return t.fn.dropdown=a,this},t(document).on("click.bs.dropdown.data-api",i).on("click.bs.dropdown.data-api",".dropdown form",function(t){t.stopPropagation()}).on("click.bs.dropdown.data-api",s,r.prototype.toggle).on("keydown.bs.dropdown.data-api",s,r.prototype.keydown).on("keydown.bs.dropdown.data-api",".dropdown-menu",r.prototype.keydown)}(jQuery),+function(t){"use strict";function e(e,o){return this.each(function(){var n=t(this),s=n.data("bs.modal"),r=t.extend({},i.DEFAULTS,n.data(),"object"==typeof e&&e);s||n.data("bs.modal",s=new i(this,r)),"string"==typeof e?s[e](o):r.show&&s.show(o)})}var i=function(e,i){this.options=i,this.$body=t(document.body),this.$element=t(e),this.$dialog=this.$element.find(".modal-dialog"),this.$backdrop=null,this.isShown=null,this.originalBodyPad=null,this.scrollbarWidth=0,this.ignoreBackdropClick=!1,this.options.remote&&this.$element.find(".modal-content").load(this.options.remote,t.proxy(function(){this.$element.trigger("loaded.bs.modal")},this))};i.VERSION="3.3.6",i.TRANSITION_DURATION=300,i.BACKDROP_TRANSITION_DURATION=150,i.DEFAULTS={backdrop:!0,keyboard:!0,show:!0},i.prototype.toggle=function(t){return this.isShown?this.hide():this.show(t)},i.prototype.show=function(e){var o=this,n=t.Event("show.bs.modal",{relatedTarget:e});this.$element.trigger(n),this.isShown||n.isDefaultPrevented()||(this.isShown=!0,this.checkScrollbar(),this.setScrollbar(),this.$body.addClass("modal-open"),this.escape(),this.resize(),this.$element.on("click.dismiss.bs.modal",'[data-dismiss="modal"]',t.proxy(this.hide,this)),this.$dialog.on("mousedown.dismiss.bs.modal",function(){o.$element.one("mouseup.dismiss.bs.modal",function(e){t(e.target).is(o.$element)&&(o.ignoreBackdropClick=!0)})}),this.backdrop(function(){var n=t.support.transition&&o.$element.hasClass("fade");o.$element.parent().length||o.$element.appendTo(o.$body),o.$element.show().scrollTop(0),o.adjustDialog(),n&&o.$element[0].offsetWidth,o.$element.addClass("in"),o.enforceFocus();var s=t.Event("shown.bs.modal",{relatedTarget:e});n?o.$dialog.one("bsTransitionEnd",function(){o.$element.trigger("focus").trigger(s)}).emulateTransitionEnd(i.TRANSITION_DURATION):o.$element.trigger("focus").trigger(s)}))},i.prototype.hide=function(e){e&&e.preventDefault(),e=t.Event("hide.bs.modal"),this.$element.trigger(e),this.isShown&&!e.isDefaultPrevented()&&(this.isShown=!1,this.escape(),this.resize(),t(document).off("focusin.bs.modal"),this.$element.removeClass("in").off("click.dismiss.bs.modal").off("mouseup.dismiss.bs.modal"),this.$dialog.off("mousedown.dismiss.bs.modal"),t.support.transition&&this.$element.hasClass("fade")?this.$element.one("bsTransitionEnd",t.proxy(this.hideModal,this)).emulateTransitionEnd(i.TRANSITION_DURATION):this.hideModal())},i.prototype.enforceFocus=function(){t(document).off("focusin.bs.modal").on("focusin.bs.modal",t.proxy(function(t){this.$element[0]===t.target||this.$element.has(t.target).length||this.$element.trigger("focus")},this))},i.prototype.escape=function(){this.isShown&&this.options.keyboard?this.$element.on("keydown.dismiss.bs.modal",t.proxy(function(t){27==t.which&&this.hide()},this)):this.isShown||this.$element.off("keydown.dismiss.bs.modal")},i.prototype.resize=function(){this.isShown?t(window).on("resize.bs.modal",t.proxy(this.handleUpdate,this)):t(window).off("resize.bs.modal")},i.prototype.hideModal=function(){var t=this;this.$element.hide(),this.backdrop(function(){t.$body.removeClass("modal-open"),t.resetAdjustments(),t.resetScrollbar(),t.$element.trigger("hidden.bs.modal")})},i.prototype.removeBackdrop=function(){this.$backdrop&&this.$backdrop.remove(),this.$backdrop=null},i.prototype.backdrop=function(e){var o=this,n=this.$element.hasClass("fade")?"fade":"";if(this.isShown&&this.options.backdrop){var s=t.support.transition&&n;if(this.$backdrop=t(document.createElement("div")).addClass("modal-backdrop "+n).appendTo(this.$body),this.$element.on("click.dismiss.bs.modal",t.proxy(function(t){return this.ignoreBackdropClick?void(this.ignoreBackdropClick=!1):void(t.target===t.currentTarget&&("static"==this.options.backdrop?this.$element[0].focus():this.hide()))},this)),s&&this.$backdrop[0].offsetWidth,this.$backdrop.addClass("in"),!e)return;s?this.$backdrop.one("bsTransitionEnd",e).emulateTransitionEnd(i.BACKDROP_TRANSITION_DURATION):e()}else if(!this.isShown&&this.$backdrop){this.$backdrop.removeClass("in");var r=function(){o.removeBackdrop(),e&&e()};t.support.transition&&this.$element.hasClass("fade")?this.$backdrop.one("bsTransitionEnd",r).emulateTransitionEnd(i.BACKDROP_TRANSITION_DURATION):r()}else e&&e()},i.prototype.handleUpdate=function(){this.adjustDialog()},i.prototype.adjustDialog=function(){var t=this.$element[0].scrollHeight>document.documentElement.clientHeight;this.$element.css({paddingLeft:!this.bodyIsOverflowing&&t?this.scrollbarWidth:"",paddingRight:this.bodyIsOverflowing&&!t?this.scrollbarWidth:""})},i.prototype.resetAdjustments=function(){this.$element.css({paddingLeft:"",paddingRight:""})},i.prototype.checkScrollbar=function(){var t=window.innerWidth;if(!t){var e=document.documentElement.getBoundingClientRect();t=e.right-Math.abs(e.left)}this.bodyIsOverflowing=document.body.clientWidth<t,this.scrollbarWidth=this.measureScrollbar()},i.prototype.setScrollbar=function(){var t=parseInt(this.$body.css("padding-right")||0,10);this.originalBodyPad=document.body.style.paddingRight||"",this.bodyIsOverflowing&&this.$body.css("padding-right",t+this.scrollbarWidth)},i.prototype.resetScrollbar=function(){this.$body.css("padding-right",this.originalBodyPad)},i.prototype.measureScrollbar=function(){var t=document.createElement("div");t.className="modal-scrollbar-measure",this.$body.append(t);var e=t.offsetWidth-t.clientWidth;return this.$body[0].removeChild(t),e};var o=t.fn.modal;t.fn.modal=e,t.fn.modal.Constructor=i,t.fn.modal.noConflict=function(){return t.fn.modal=o,this},t(document).on("click.bs.modal.data-api",'[data-toggle="modal"]',function(i){var o=t(this),n=o.attr("href"),s=t(o.attr("data-target")||n&&n.replace(/.*(?=#[^\s]+$)/,"")),r=s.data("bs.modal")?"toggle":t.extend({remote:!/#/.test(n)&&n},s.data(),o.data());o.is("a")&&i.preventDefault(),s.one("show.bs.modal",function(t){t.isDefaultPrevented()||s.one("hidden.bs.modal",function(){o.is(":visible")&&o.trigger("focus")})}),e.call(s,r,this)})}(jQuery),+function(t){"use strict";function e(e){return this.each(function(){var o=t(this),n=o.data("bs.tooltip"),s="object"==typeof e&&e;(n||!/destroy|hide/.test(e))&&(n||o.data("bs.tooltip",n=new i(this,s)),"string"==typeof e&&n[e]())})}var i=function(t,e){this.type=null,this.options=null,this.enabled=null,this.timeout=null,this.hoverState=null,this.$element=null,this.inState=null,this.init("tooltip",t,e)};i.VERSION="3.3.6",i.TRANSITION_DURATION=150,i.DEFAULTS={animation:!0,placement:"top",selector:!1,template:'<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',trigger:"hover focus",title:"",delay:0,html:!1,container:!1,viewport:{selector:"body",padding:0}},i.prototype.init=function(e,i,o){if(this.enabled=!0,this.type=e,this.$element=t(i),this.options=this.getOptions(o),this.$viewport=this.options.viewport&&t(t.isFunction(this.options.viewport)?this.options.viewport.call(this,this.$element):this.options.viewport.selector||this.options.viewport),this.inState={click:!1,hover:!1,focus:!1},this.$element[0]instanceof document.constructor&&!this.options.selector)throw new Error("`selector` option must be specified when initializing "+this.type+" on the window.document object!");for(var n=this.options.trigger.split(" "),s=n.length;s--;){var r=n[s];if("click"==r)this.$element.on("click."+this.type,this.options.selector,t.proxy(this.toggle,this));else if("manual"!=r){var a="hover"==r?"mouseenter":"focusin",l="hover"==r?"mouseleave":"focusout";this.$element.on(a+"."+this.type,this.options.selector,t.proxy(this.enter,this)),this.$element.on(l+"."+this.type,this.options.selector,t.proxy(this.leave,this))}}this.options.selector?this._options=t.extend({},this.options,{trigger:"manual",selector:""}):this.fixTitle()},i.prototype.getDefaults=function(){return i.DEFAULTS},i.prototype.getOptions=function(e){return e=t.extend({},this.getDefaults(),this.$element.data(),e),e.delay&&"number"==typeof e.delay&&(e.delay={show:e.delay,hide:e.delay}),e},i.prototype.getDelegateOptions=function(){var e={},i=this.getDefaults();return this._options&&t.each(this._options,function(t,o){i[t]!=o&&(e[t]=o)}),e},i.prototype.enter=function(e){var i=e instanceof this.constructor?e:t(e.currentTarget).data("bs."+this.type);return i||(i=new this.constructor(e.currentTarget,this.getDelegateOptions()),t(e.currentTarget).data("bs."+this.type,i)),e instanceof t.Event&&(i.inState["focusin"==e.type?"focus":"hover"]=!0),i.tip().hasClass("in")||"in"==i.hoverState?void(i.hoverState="in"):(clearTimeout(i.timeout),i.hoverState="in",i.options.delay&&i.options.delay.show?void(i.timeout=setTimeout(function(){"in"==i.hoverState&&i.show()},i.options.delay.show)):i.show())},i.prototype.isInStateTrue=function(){for(var t in this.inState)if(this.inState[t])return!0;return!1},i.prototype.leave=function(e){var i=e instanceof this.constructor?e:t(e.currentTarget).data("bs."+this.type);return i||(i=new this.constructor(e.currentTarget,this.getDelegateOptions()),t(e.currentTarget).data("bs."+this.type,i)),e instanceof t.Event&&(i.inState["focusout"==e.type?"focus":"hover"]=!1),i.isInStateTrue()?void 0:(clearTimeout(i.timeout),i.hoverState="out",i.options.delay&&i.options.delay.hide?void(i.timeout=setTimeout(function(){"out"==i.hoverState&&i.hide()},i.options.delay.hide)):i.hide())},i.prototype.show=function(){var e=t.Event("show.bs."+this.type);if(this.hasContent()&&this.enabled){this.$element.trigger(e);var o=t.contains(this.$element[0].ownerDocument.documentElement,this.$element[0]);if(e.isDefaultPrevented()||!o)return;var n=this,s=this.tip(),r=this.getUID(this.type);this.setContent(),s.attr("id",r),this.$element.attr("aria-describedby",r),this.options.animation&&s.addClass("fade");var a="function"==typeof this.options.placement?this.options.placement.call(this,s[0],this.$element[0]):this.options.placement,l=/\s?auto?\s?/i,c=l.test(a);c&&(a=a.replace(l,"")||"top"),s.detach().css({top:0,left:0,display:"block"}).addClass(a).data("bs."+this.type,this),this.options.container?s.appendTo(this.options.container):s.insertAfter(this.$element),this.$element.trigger("inserted.bs."+this.type);var d=this.getPosition(),h=s[0].offsetWidth,p=s[0].offsetHeight;if(c){var u=a,f=this.getPosition(this.$viewport);a="bottom"==a&&d.bottom+p>f.bottom?"top":"top"==a&&d.top-p<f.top?"bottom":"right"==a&&d.right+h>f.width?"left":"left"==a&&d.left-h<f.left?"right":a,s.removeClass(u).addClass(a)}var g=this.getCalculatedOffset(a,d,h,p);this.applyPlacement(g,a);var m=function(){var t=n.hoverState;n.$element.trigger("shown.bs."+n.type),n.hoverState=null,"out"==t&&n.leave(n)};t.support.transition&&this.$tip.hasClass("fade")?s.one("bsTransitionEnd",m).emulateTransitionEnd(i.TRANSITION_DURATION):m()}},i.prototype.applyPlacement=function(e,i){var o=this.tip(),n=o[0].offsetWidth,s=o[0].offsetHeight,r=parseInt(o.css("margin-top"),10),a=parseInt(o.css("margin-left"),10);isNaN(r)&&(r=0),isNaN(a)&&(a=0),e.top+=r,e.left+=a,t.offset.setOffset(o[0],t.extend({using:function(t){o.css({top:Math.round(t.top),left:Math.round(t.left)})}},e),0),o.addClass("in");var l=o[0].offsetWidth,c=o[0].offsetHeight;"top"==i&&c!=s&&(e.top=e.top+s-c);var d=this.getViewportAdjustedDelta(i,e,l,c);d.left?e.left+=d.left:e.top+=d.top;var h=/top|bottom/.test(i),p=h?2*d.left-n+l:2*d.top-s+c,u=h?"offsetWidth":"offsetHeight";o.offset(e),this.replaceArrow(p,o[0][u],h)},i.prototype.replaceArrow=function(t,e,i){this.arrow().css(i?"left":"top",50*(1-t/e)+"%").css(i?"top":"left","")},i.prototype.setContent=function(){var t=this.tip(),e=this.getTitle();t.find(".tooltip-inner")[this.options.html?"html":"text"](e),t.removeClass("fade in top bottom left right")},i.prototype.hide=function(e){function o(){"in"!=n.hoverState&&s.detach(),n.$element.removeAttr("aria-describedby").trigger("hidden.bs."+n.type),e&&e()}var n=this,s=t(this.$tip),r=t.Event("hide.bs."+this.type);return this.$element.trigger(r),r.isDefaultPrevented()?void 0:(s.removeClass("in"),t.support.transition&&s.hasClass("fade")?s.one("bsTransitionEnd",o).emulateTransitionEnd(i.TRANSITION_DURATION):o(),this.hoverState=null,this)},i.prototype.fixTitle=function(){var t=this.$element;(t.attr("title")||"string"!=typeof t.attr("data-original-title"))&&t.attr("data-original-title",t.attr("title")||"").attr("title","")},i.prototype.hasContent=function(){return this.getTitle()},i.prototype.getPosition=function(e){e=e||this.$element;var i=e[0],o="BODY"==i.tagName,n=i.getBoundingClientRect();null==n.width&&(n=t.extend({},n,{width:n.right-n.left,height:n.bottom-n.top}));var s=o?{top:0,left:0}:e.offset(),r={scroll:o?document.documentElement.scrollTop||document.body.scrollTop:e.scrollTop()},a=o?{width:t(window).width(),height:t(window).height()}:null;return t.extend({},n,r,a,s)},i.prototype.getCalculatedOffset=function(t,e,i,o){return"bottom"==t?{top:e.top+e.height,left:e.left+e.width/2-i/2}:"top"==t?{top:e.top-o,left:e.left+e.width/2-i/2}:"left"==t?{top:e.top+e.height/2-o/2,left:e.left-i}:{top:e.top+e.height/2-o/2,left:e.left+e.width}},i.prototype.getViewportAdjustedDelta=function(t,e,i,o){var n={top:0,left:0};if(!this.$viewport)return n;var s=this.options.viewport&&this.options.viewport.padding||0,r=this.getPosition(this.$viewport);if(/right|left/.test(t)){var a=e.top-s-r.scroll,l=e.top+s-r.scroll+o;a<r.top?n.top=r.top-a:l>r.top+r.height&&(n.top=r.top+r.height-l)}else{var c=e.left-s,d=e.left+s+i;c<r.left?n.left=r.left-c:d>r.right&&(n.left=r.left+r.width-d)}return n},i.prototype.getTitle=function(){var t,e=this.$element,i=this.options;return t=e.attr("data-original-title")||("function"==typeof i.title?i.title.call(e[0]):i.title)},i.prototype.getUID=function(t){do t+=~~(1e6*Math.random());while(document.getElementById(t));return t},i.prototype.tip=function(){if(!this.$tip&&(this.$tip=t(this.options.template),1!=this.$tip.length))throw new Error(this.type+" `template` option must consist of exactly 1 top-level element!");return this.$tip},i.prototype.arrow=function(){return this.$arrow=this.$arrow||this.tip().find(".tooltip-arrow")},i.prototype.enable=function(){this.enabled=!0},i.prototype.disable=function(){this.enabled=!1},i.prototype.toggleEnabled=function(){this.enabled=!this.enabled},i.prototype.toggle=function(e){var i=this;e&&(i=t(e.currentTarget).data("bs."+this.type),i||(i=new this.constructor(e.currentTarget,this.getDelegateOptions()),t(e.currentTarget).data("bs."+this.type,i))),e?(i.inState.click=!i.inState.click,i.isInStateTrue()?i.enter(i):i.leave(i)):i.tip().hasClass("in")?i.leave(i):i.enter(i)},i.prototype.destroy=function(){var t=this;clearTimeout(this.timeout),this.hide(function(){t.$element.off("."+t.type).removeData("bs."+t.type),t.$tip&&t.$tip.detach(),t.$tip=null,t.$arrow=null,t.$viewport=null})};var o=t.fn.tooltip;t.fn.tooltip=e,t.fn.tooltip.Constructor=i,t.fn.tooltip.noConflict=function(){return t.fn.tooltip=o,this}}(jQuery),+function(t){"use strict";function e(e){return this.each(function(){var o=t(this),n=o.data("bs.popover"),s="object"==typeof e&&e;(n||!/destroy|hide/.test(e))&&(n||o.data("bs.popover",n=new i(this,s)),"string"==typeof e&&n[e]())})}var i=function(t,e){this.init("popover",t,e)};if(!t.fn.tooltip)throw new Error("Popover requires tooltip.js");i.VERSION="3.3.6",i.DEFAULTS=t.extend({},t.fn.tooltip.Constructor.DEFAULTS,{placement:"right",trigger:"click",content:"",template:'<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'}),i.prototype=t.extend({},t.fn.tooltip.Constructor.prototype),i.prototype.constructor=i,i.prototype.getDefaults=function(){return i.DEFAULTS},i.prototype.setContent=function(){var t=this.tip(),e=this.getTitle(),i=this.getContent();t.find(".popover-title")[this.options.html?"html":"text"](e),t.find(".popover-content").children().detach().end()[this.options.html?"string"==typeof i?"html":"append":"text"](i),t.removeClass("fade top bottom left right in"),t.find(".popover-title").html()||t.find(".popover-title").hide()},i.prototype.hasContent=function(){return this.getTitle()||this.getContent()},i.prototype.getContent=function(){var t=this.$element,e=this.options;return t.attr("data-content")||("function"==typeof e.content?e.content.call(t[0]):e.content)},i.prototype.arrow=function(){return this.$arrow=this.$arrow||this.tip().find(".arrow")};var o=t.fn.popover;t.fn.popover=e,t.fn.popover.Constructor=i,t.fn.popover.noConflict=function(){return t.fn.popover=o,this}}(jQuery),+function(t){"use strict";function e(i,o){this.$body=t(document.body),this.$scrollElement=t(t(i).is(document.body)?window:i),this.options=t.extend({},e.DEFAULTS,o),this.selector=(this.options.target||"")+" .nav li > a",this.offsets=[],this.targets=[],this.activeTarget=null,this.scrollHeight=0,this.$scrollElement.on("scroll.bs.scrollspy",t.proxy(this.process,this)),this.refresh(),this.process()}function i(i){return this.each(function(){var o=t(this),n=o.data("bs.scrollspy"),s="object"==typeof i&&i;n||o.data("bs.scrollspy",n=new e(this,s)),"string"==typeof i&&n[i]()})}e.VERSION="3.3.6",e.DEFAULTS={offset:10},e.prototype.getScrollHeight=function(){return this.$scrollElement[0].scrollHeight||Math.max(this.$body[0].scrollHeight,document.documentElement.scrollHeight)},e.prototype.refresh=function(){var e=this,i="offset",o=0;this.offsets=[],this.targets=[],this.scrollHeight=this.getScrollHeight(),t.isWindow(this.$scrollElement[0])||(i="position",o=this.$scrollElement.scrollTop()),this.$body.find(this.selector).map(function(){var e=t(this),n=e.data("target")||e.attr("href"),s=/^#./.test(n)&&t(n);return s&&s.length&&s.is(":visible")&&[[s[i]().top+o,n]]||null}).sort(function(t,e){return t[0]-e[0]}).each(function(){e.offsets.push(this[0]),e.targets.push(this[1])})},e.prototype.process=function(){var t,e=this.$scrollElement.scrollTop()+this.options.offset,i=this.getScrollHeight(),o=this.options.offset+i-this.$scrollElement.height(),n=this.offsets,s=this.targets,r=this.activeTarget;if(this.scrollHeight!=i&&this.refresh(),e>=o)return r!=(t=s[s.length-1])&&this.activate(t);if(r&&e<n[0])return this.activeTarget=null,this.clear();for(t=n.length;t--;)r!=s[t]&&e>=n[t]&&(void 0===n[t+1]||e<n[t+1])&&this.activate(s[t])},e.prototype.activate=function(e){this.activeTarget=e,this.clear();var i=this.selector+'[data-target="'+e+'"],'+this.selector+'[href="'+e+'"]',o=t(i).parents("li").addClass("active");
-o.parent(".dropdown-menu").length&&(o=o.closest("li.dropdown").addClass("active")),o.trigger("activate.bs.scrollspy")},e.prototype.clear=function(){t(this.selector).parentsUntil(this.options.target,".active").removeClass("active")};var o=t.fn.scrollspy;t.fn.scrollspy=i,t.fn.scrollspy.Constructor=e,t.fn.scrollspy.noConflict=function(){return t.fn.scrollspy=o,this},t(window).on("load.bs.scrollspy.data-api",function(){t('[data-spy="scroll"]').each(function(){var e=t(this);i.call(e,e.data())})})}(jQuery),+function(t){"use strict";function e(e){return this.each(function(){var o=t(this),n=o.data("bs.tab");n||o.data("bs.tab",n=new i(this)),"string"==typeof e&&n[e]()})}var i=function(e){this.element=t(e)};i.VERSION="3.3.6",i.TRANSITION_DURATION=150,i.prototype.show=function(){var e=this.element,i=e.closest("ul:not(.dropdown-menu)"),o=e.data("target");if(o||(o=e.attr("href"),o=o&&o.replace(/.*(?=#[^\s]*$)/,"")),!e.parent("li").hasClass("active")){var n=i.find(".active:last a"),s=t.Event("hide.bs.tab",{relatedTarget:e[0]}),r=t.Event("show.bs.tab",{relatedTarget:n[0]});if(n.trigger(s),e.trigger(r),!r.isDefaultPrevented()&&!s.isDefaultPrevented()){var a=t(o);this.activate(e.closest("li"),i),this.activate(a,a.parent(),function(){n.trigger({type:"hidden.bs.tab",relatedTarget:e[0]}),e.trigger({type:"shown.bs.tab",relatedTarget:n[0]})})}}},i.prototype.activate=function(e,o,n){function s(){r.removeClass("active").find("> .dropdown-menu > .active").removeClass("active").end().find('[data-toggle="tab"]').attr("aria-expanded",!1),e.addClass("active").find('[data-toggle="tab"]').attr("aria-expanded",!0),a?(e[0].offsetWidth,e.addClass("in")):e.removeClass("fade"),e.parent(".dropdown-menu").length&&e.closest("li.dropdown").addClass("active").end().find('[data-toggle="tab"]').attr("aria-expanded",!0),n&&n()}var r=o.find("> .active"),a=n&&t.support.transition&&(r.length&&r.hasClass("fade")||!!o.find("> .fade").length);r.length&&a?r.one("bsTransitionEnd",s).emulateTransitionEnd(i.TRANSITION_DURATION):s(),r.removeClass("in")};var o=t.fn.tab;t.fn.tab=e,t.fn.tab.Constructor=i,t.fn.tab.noConflict=function(){return t.fn.tab=o,this};var n=function(i){i.preventDefault(),e.call(t(this),"show")};t(document).on("click.bs.tab.data-api",'[data-toggle="tab"]',n).on("click.bs.tab.data-api",'[data-toggle="pill"]',n)}(jQuery),+function(t){"use strict";function e(e){return this.each(function(){var o=t(this),n=o.data("bs.affix"),s="object"==typeof e&&e;n||o.data("bs.affix",n=new i(this,s)),"string"==typeof e&&n[e]()})}var i=function(e,o){this.options=t.extend({},i.DEFAULTS,o),this.$target=t(this.options.target).on("scroll.bs.affix.data-api",t.proxy(this.checkPosition,this)).on("click.bs.affix.data-api",t.proxy(this.checkPositionWithEventLoop,this)),this.$element=t(e),this.affixed=null,this.unpin=null,this.pinnedOffset=null,this.checkPosition()};i.VERSION="3.3.6",i.RESET="affix affix-top affix-bottom",i.DEFAULTS={offset:0,target:window},i.prototype.getState=function(t,e,i,o){var n=this.$target.scrollTop(),s=this.$element.offset(),r=this.$target.height();if(null!=i&&"top"==this.affixed)return i>n?"top":!1;if("bottom"==this.affixed)return null!=i?n+this.unpin<=s.top?!1:"bottom":t-o>=n+r?!1:"bottom";var a=null==this.affixed,l=a?n:s.top,c=a?r:e;return null!=i&&i>=n?"top":null!=o&&l+c>=t-o?"bottom":!1},i.prototype.getPinnedOffset=function(){if(this.pinnedOffset)return this.pinnedOffset;this.$element.removeClass(i.RESET).addClass("affix");var t=this.$target.scrollTop(),e=this.$element.offset();return this.pinnedOffset=e.top-t},i.prototype.checkPositionWithEventLoop=function(){setTimeout(t.proxy(this.checkPosition,this),1)},i.prototype.checkPosition=function(){if(this.$element.is(":visible")){var e=this.$element.height(),o=this.options.offset,n=o.top,s=o.bottom,r=Math.max(t(document).height(),t(document.body).height());"object"!=typeof o&&(s=n=o),"function"==typeof n&&(n=o.top(this.$element)),"function"==typeof s&&(s=o.bottom(this.$element));var a=this.getState(r,e,n,s);if(this.affixed!=a){null!=this.unpin&&this.$element.css("top","");var l="affix"+(a?"-"+a:""),c=t.Event(l+".bs.affix");if(this.$element.trigger(c),c.isDefaultPrevented())return;this.affixed=a,this.unpin="bottom"==a?this.getPinnedOffset():null,this.$element.removeClass(i.RESET).addClass(l).trigger(l.replace("affix","affixed")+".bs.affix")}"bottom"==a&&this.$element.offset({top:r-e-s})}};var o=t.fn.affix;t.fn.affix=e,t.fn.affix.Constructor=i,t.fn.affix.noConflict=function(){return t.fn.affix=o,this},t(window).on("load",function(){t('[data-spy="affix"]').each(function(){var i=t(this),o=i.data();o.offset=o.offset||{},null!=o.offsetBottom&&(o.offset.bottom=o.offsetBottom),null!=o.offsetTop&&(o.offset.top=o.offsetTop),e.call(i,o)})})}(jQuery)},27:function(t,e,i){var o=i(11);$(function(){var t=function(t,e,i){$.ajax({method:"GET",url:window.gw.urls.search_elected+"?search="+t}).success(function(t){console.log(t),i(t)})},e="",i=$(".typeahead_elected").typeahead({hint:!0,highlight:!0,minLength:3},{name:"elected_officials",source:t,templates:{empty:'<div class="tt-suggestion">Not found. Please retype your query </div>',suggestion:o.compile('<div class="sugg-box"><div class="sugg-name">{{fullName}}</div><div class="sugg-govname">{{government.name}}</div></div>')},updater:function(t){alert(t)}});i.bind("typeahead:selected",function(t,e){i.typeahead("val",e.fullName),window.location.pathname+=[e.government.altTypeSlug,e.government.slug,e.slug].join("/")}),i.bind("typeahead:cursorchange",function(t){i.typeahead("val",e)}),i.keyup(function(t){e=$(t.target).val()}),i.attr("placeholder","ELECTED OFFICIAL NAME"),i.attr("disabled",!1)})},28:function(t,e,i){var o=i(11);$(function(){var t=function(t,e,i){$.ajax({method:"GET",url:window.gw.urls.search_government+"?search="+t}).success(function(t){i(t)})},e="",i=$(".typeahead_government").typeahead({hint:!0,highlight:!0,minLength:3},{name:"countries",source:t,templates:{empty:'<div class="tt-suggestion">Not found. Please retype your query </div>',suggestion:o.compile('<div class="sugg-box"><div class="sugg-state">{{state}}</div><div class="sugg-name">{{name}}</div><div class="sugg-type">{{type}}</div></div>')},updater:function(t){alert(t)}});i.bind("typeahead:selected",function(t,e){i.typeahead("val",e.name),window.location.pathname+=[e.altTypeSlug,e.slug].join("/")}),i.bind("typeahead:cursorchange",function(t){i.typeahead("val",e)}),i.keyup(function(t){e=$(t.target).val()}),i.attr("disabled",!1)})}});
+	if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires jQuery");+function(a){"use strict";var b=a.fn.jquery.split(" ")[0].split(".");if(b[0]<2&&b[1]<9||1==b[0]&&9==b[1]&&b[2]<1||b[0]>2)throw new Error("Bootstrap's JavaScript requires jQuery version 1.9.1 or higher, but lower than version 3")}(jQuery),+function(a){"use strict";function b(){var a=document.createElement("bootstrap"),b={WebkitTransition:"webkitTransitionEnd",MozTransition:"transitionend",OTransition:"oTransitionEnd otransitionend",transition:"transitionend"};for(var c in b)if(void 0!==a.style[c])return{end:b[c]};return!1}a.fn.emulateTransitionEnd=function(b){var c=!1,d=this;a(this).one("bsTransitionEnd",function(){c=!0});var e=function(){c||a(d).trigger(a.support.transition.end)};return setTimeout(e,b),this},a(function(){a.support.transition=b(),a.support.transition&&(a.event.special.bsTransitionEnd={bindType:a.support.transition.end,delegateType:a.support.transition.end,handle:function(b){return a(b.target).is(this)?b.handleObj.handler.apply(this,arguments):void 0}})})}(jQuery),+function(a){"use strict";function b(b){return this.each(function(){var c=a(this),e=c.data("bs.alert");e||c.data("bs.alert",e=new d(this)),"string"==typeof b&&e[b].call(c)})}var c='[data-dismiss="alert"]',d=function(b){a(b).on("click",c,this.close)};d.VERSION="3.3.6",d.TRANSITION_DURATION=150,d.prototype.close=function(b){function c(){g.detach().trigger("closed.bs.alert").remove()}var e=a(this),f=e.attr("data-target");f||(f=e.attr("href"),f=f&&f.replace(/.*(?=#[^\s]*$)/,""));var g=a(f);b&&b.preventDefault(),g.length||(g=e.closest(".alert")),g.trigger(b=a.Event("close.bs.alert")),b.isDefaultPrevented()||(g.removeClass("in"),a.support.transition&&g.hasClass("fade")?g.one("bsTransitionEnd",c).emulateTransitionEnd(d.TRANSITION_DURATION):c())};var e=a.fn.alert;a.fn.alert=b,a.fn.alert.Constructor=d,a.fn.alert.noConflict=function(){return a.fn.alert=e,this},a(document).on("click.bs.alert.data-api",c,d.prototype.close)}(jQuery),+function(a){"use strict";function b(b){return this.each(function(){var d=a(this),e=d.data("bs.button"),f="object"==typeof b&&b;e||d.data("bs.button",e=new c(this,f)),"toggle"==b?e.toggle():b&&e.setState(b)})}var c=function(b,d){this.$element=a(b),this.options=a.extend({},c.DEFAULTS,d),this.isLoading=!1};c.VERSION="3.3.6",c.DEFAULTS={loadingText:"loading..."},c.prototype.setState=function(b){var c="disabled",d=this.$element,e=d.is("input")?"val":"html",f=d.data();b+="Text",null==f.resetText&&d.data("resetText",d[e]()),setTimeout(a.proxy(function(){d[e](null==f[b]?this.options[b]:f[b]),"loadingText"==b?(this.isLoading=!0,d.addClass(c).attr(c,c)):this.isLoading&&(this.isLoading=!1,d.removeClass(c).removeAttr(c))},this),0)},c.prototype.toggle=function(){var a=!0,b=this.$element.closest('[data-toggle="buttons"]');if(b.length){var c=this.$element.find("input");"radio"==c.prop("type")?(c.prop("checked")&&(a=!1),b.find(".active").removeClass("active"),this.$element.addClass("active")):"checkbox"==c.prop("type")&&(c.prop("checked")!==this.$element.hasClass("active")&&(a=!1),this.$element.toggleClass("active")),c.prop("checked",this.$element.hasClass("active")),a&&c.trigger("change")}else this.$element.attr("aria-pressed",!this.$element.hasClass("active")),this.$element.toggleClass("active")};var d=a.fn.button;a.fn.button=b,a.fn.button.Constructor=c,a.fn.button.noConflict=function(){return a.fn.button=d,this},a(document).on("click.bs.button.data-api",'[data-toggle^="button"]',function(c){var d=a(c.target);d.hasClass("btn")||(d=d.closest(".btn")),b.call(d,"toggle"),a(c.target).is('input[type="radio"]')||a(c.target).is('input[type="checkbox"]')||c.preventDefault()}).on("focus.bs.button.data-api blur.bs.button.data-api",'[data-toggle^="button"]',function(b){a(b.target).closest(".btn").toggleClass("focus",/^focus(in)?$/.test(b.type))})}(jQuery),+function(a){"use strict";function b(b){return this.each(function(){var d=a(this),e=d.data("bs.carousel"),f=a.extend({},c.DEFAULTS,d.data(),"object"==typeof b&&b),g="string"==typeof b?b:f.slide;e||d.data("bs.carousel",e=new c(this,f)),"number"==typeof b?e.to(b):g?e[g]():f.interval&&e.pause().cycle()})}var c=function(b,c){this.$element=a(b),this.$indicators=this.$element.find(".carousel-indicators"),this.options=c,this.paused=null,this.sliding=null,this.interval=null,this.$active=null,this.$items=null,this.options.keyboard&&this.$element.on("keydown.bs.carousel",a.proxy(this.keydown,this)),"hover"==this.options.pause&&!("ontouchstart"in document.documentElement)&&this.$element.on("mouseenter.bs.carousel",a.proxy(this.pause,this)).on("mouseleave.bs.carousel",a.proxy(this.cycle,this))};c.VERSION="3.3.6",c.TRANSITION_DURATION=600,c.DEFAULTS={interval:5e3,pause:"hover",wrap:!0,keyboard:!0},c.prototype.keydown=function(a){if(!/input|textarea/i.test(a.target.tagName)){switch(a.which){case 37:this.prev();break;case 39:this.next();break;default:return}a.preventDefault()}},c.prototype.cycle=function(b){return b||(this.paused=!1),this.interval&&clearInterval(this.interval),this.options.interval&&!this.paused&&(this.interval=setInterval(a.proxy(this.next,this),this.options.interval)),this},c.prototype.getItemIndex=function(a){return this.$items=a.parent().children(".item"),this.$items.index(a||this.$active)},c.prototype.getItemForDirection=function(a,b){var c=this.getItemIndex(b),d="prev"==a&&0===c||"next"==a&&c==this.$items.length-1;if(d&&!this.options.wrap)return b;var e="prev"==a?-1:1,f=(c+e)%this.$items.length;return this.$items.eq(f)},c.prototype.to=function(a){var b=this,c=this.getItemIndex(this.$active=this.$element.find(".item.active"));return a>this.$items.length-1||0>a?void 0:this.sliding?this.$element.one("slid.bs.carousel",function(){b.to(a)}):c==a?this.pause().cycle():this.slide(a>c?"next":"prev",this.$items.eq(a))},c.prototype.pause=function(b){return b||(this.paused=!0),this.$element.find(".next, .prev").length&&a.support.transition&&(this.$element.trigger(a.support.transition.end),this.cycle(!0)),this.interval=clearInterval(this.interval),this},c.prototype.next=function(){return this.sliding?void 0:this.slide("next")},c.prototype.prev=function(){return this.sliding?void 0:this.slide("prev")},c.prototype.slide=function(b,d){var e=this.$element.find(".item.active"),f=d||this.getItemForDirection(b,e),g=this.interval,h="next"==b?"left":"right",i=this;if(f.hasClass("active"))return this.sliding=!1;var j=f[0],k=a.Event("slide.bs.carousel",{relatedTarget:j,direction:h});if(this.$element.trigger(k),!k.isDefaultPrevented()){if(this.sliding=!0,g&&this.pause(),this.$indicators.length){this.$indicators.find(".active").removeClass("active");var l=a(this.$indicators.children()[this.getItemIndex(f)]);l&&l.addClass("active")}var m=a.Event("slid.bs.carousel",{relatedTarget:j,direction:h});return a.support.transition&&this.$element.hasClass("slide")?(f.addClass(b),f[0].offsetWidth,e.addClass(h),f.addClass(h),e.one("bsTransitionEnd",function(){f.removeClass([b,h].join(" ")).addClass("active"),e.removeClass(["active",h].join(" ")),i.sliding=!1,setTimeout(function(){i.$element.trigger(m)},0)}).emulateTransitionEnd(c.TRANSITION_DURATION)):(e.removeClass("active"),f.addClass("active"),this.sliding=!1,this.$element.trigger(m)),g&&this.cycle(),this}};var d=a.fn.carousel;a.fn.carousel=b,a.fn.carousel.Constructor=c,a.fn.carousel.noConflict=function(){return a.fn.carousel=d,this};var e=function(c){var d,e=a(this),f=a(e.attr("data-target")||(d=e.attr("href"))&&d.replace(/.*(?=#[^\s]+$)/,""));if(f.hasClass("carousel")){var g=a.extend({},f.data(),e.data()),h=e.attr("data-slide-to");h&&(g.interval=!1),b.call(f,g),h&&f.data("bs.carousel").to(h),c.preventDefault()}};a(document).on("click.bs.carousel.data-api","[data-slide]",e).on("click.bs.carousel.data-api","[data-slide-to]",e),a(window).on("load",function(){a('[data-ride="carousel"]').each(function(){var c=a(this);b.call(c,c.data())})})}(jQuery),+function(a){"use strict";function b(b){var c,d=b.attr("data-target")||(c=b.attr("href"))&&c.replace(/.*(?=#[^\s]+$)/,"");return a(d)}function c(b){return this.each(function(){var c=a(this),e=c.data("bs.collapse"),f=a.extend({},d.DEFAULTS,c.data(),"object"==typeof b&&b);!e&&f.toggle&&/show|hide/.test(b)&&(f.toggle=!1),e||c.data("bs.collapse",e=new d(this,f)),"string"==typeof b&&e[b]()})}var d=function(b,c){this.$element=a(b),this.options=a.extend({},d.DEFAULTS,c),this.$trigger=a('[data-toggle="collapse"][href="#'+b.id+'"],[data-toggle="collapse"][data-target="#'+b.id+'"]'),this.transitioning=null,this.options.parent?this.$parent=this.getParent():this.addAriaAndCollapsedClass(this.$element,this.$trigger),this.options.toggle&&this.toggle()};d.VERSION="3.3.6",d.TRANSITION_DURATION=350,d.DEFAULTS={toggle:!0},d.prototype.dimension=function(){var a=this.$element.hasClass("width");return a?"width":"height"},d.prototype.show=function(){if(!this.transitioning&&!this.$element.hasClass("in")){var b,e=this.$parent&&this.$parent.children(".panel").children(".in, .collapsing");if(!(e&&e.length&&(b=e.data("bs.collapse"),b&&b.transitioning))){var f=a.Event("show.bs.collapse");if(this.$element.trigger(f),!f.isDefaultPrevented()){e&&e.length&&(c.call(e,"hide"),b||e.data("bs.collapse",null));var g=this.dimension();this.$element.removeClass("collapse").addClass("collapsing")[g](0).attr("aria-expanded",!0),this.$trigger.removeClass("collapsed").attr("aria-expanded",!0),this.transitioning=1;var h=function(){this.$element.removeClass("collapsing").addClass("collapse in")[g](""),this.transitioning=0,this.$element.trigger("shown.bs.collapse")};if(!a.support.transition)return h.call(this);var i=a.camelCase(["scroll",g].join("-"));this.$element.one("bsTransitionEnd",a.proxy(h,this)).emulateTransitionEnd(d.TRANSITION_DURATION)[g](this.$element[0][i])}}}},d.prototype.hide=function(){if(!this.transitioning&&this.$element.hasClass("in")){var b=a.Event("hide.bs.collapse");if(this.$element.trigger(b),!b.isDefaultPrevented()){var c=this.dimension();this.$element[c](this.$element[c]())[0].offsetHeight,this.$element.addClass("collapsing").removeClass("collapse in").attr("aria-expanded",!1),this.$trigger.addClass("collapsed").attr("aria-expanded",!1),this.transitioning=1;var e=function(){this.transitioning=0,this.$element.removeClass("collapsing").addClass("collapse").trigger("hidden.bs.collapse")};return a.support.transition?void this.$element[c](0).one("bsTransitionEnd",a.proxy(e,this)).emulateTransitionEnd(d.TRANSITION_DURATION):e.call(this)}}},d.prototype.toggle=function(){this[this.$element.hasClass("in")?"hide":"show"]()},d.prototype.getParent=function(){return a(this.options.parent).find('[data-toggle="collapse"][data-parent="'+this.options.parent+'"]').each(a.proxy(function(c,d){var e=a(d);this.addAriaAndCollapsedClass(b(e),e)},this)).end()},d.prototype.addAriaAndCollapsedClass=function(a,b){var c=a.hasClass("in");a.attr("aria-expanded",c),b.toggleClass("collapsed",!c).attr("aria-expanded",c)};var e=a.fn.collapse;a.fn.collapse=c,a.fn.collapse.Constructor=d,a.fn.collapse.noConflict=function(){return a.fn.collapse=e,this},a(document).on("click.bs.collapse.data-api",'[data-toggle="collapse"]',function(d){var e=a(this);e.attr("data-target")||d.preventDefault();var f=b(e),g=f.data("bs.collapse"),h=g?"toggle":e.data();c.call(f,h)})}(jQuery),+function(a){"use strict";function b(b){var c=b.attr("data-target");c||(c=b.attr("href"),c=c&&/#[A-Za-z]/.test(c)&&c.replace(/.*(?=#[^\s]*$)/,""));var d=c&&a(c);return d&&d.length?d:b.parent()}function c(c){c&&3===c.which||(a(e).remove(),a(f).each(function(){var d=a(this),e=b(d),f={relatedTarget:this};e.hasClass("open")&&(c&&"click"==c.type&&/input|textarea/i.test(c.target.tagName)&&a.contains(e[0],c.target)||(e.trigger(c=a.Event("hide.bs.dropdown",f)),c.isDefaultPrevented()||(d.attr("aria-expanded","false"),e.removeClass("open").trigger(a.Event("hidden.bs.dropdown",f)))))}))}function d(b){return this.each(function(){var c=a(this),d=c.data("bs.dropdown");d||c.data("bs.dropdown",d=new g(this)),"string"==typeof b&&d[b].call(c)})}var e=".dropdown-backdrop",f='[data-toggle="dropdown"]',g=function(b){a(b).on("click.bs.dropdown",this.toggle)};g.VERSION="3.3.6",g.prototype.toggle=function(d){var e=a(this);if(!e.is(".disabled, :disabled")){var f=b(e),g=f.hasClass("open");if(c(),!g){"ontouchstart"in document.documentElement&&!f.closest(".navbar-nav").length&&a(document.createElement("div")).addClass("dropdown-backdrop").insertAfter(a(this)).on("click",c);var h={relatedTarget:this};if(f.trigger(d=a.Event("show.bs.dropdown",h)),d.isDefaultPrevented())return;e.trigger("focus").attr("aria-expanded","true"),f.toggleClass("open").trigger(a.Event("shown.bs.dropdown",h))}return!1}},g.prototype.keydown=function(c){if(/(38|40|27|32)/.test(c.which)&&!/input|textarea/i.test(c.target.tagName)){var d=a(this);if(c.preventDefault(),c.stopPropagation(),!d.is(".disabled, :disabled")){var e=b(d),g=e.hasClass("open");if(!g&&27!=c.which||g&&27==c.which)return 27==c.which&&e.find(f).trigger("focus"),d.trigger("click");var h=" li:not(.disabled):visible a",i=e.find(".dropdown-menu"+h);if(i.length){var j=i.index(c.target);38==c.which&&j>0&&j--,40==c.which&&j<i.length-1&&j++,~j||(j=0),i.eq(j).trigger("focus")}}}};var h=a.fn.dropdown;a.fn.dropdown=d,a.fn.dropdown.Constructor=g,a.fn.dropdown.noConflict=function(){return a.fn.dropdown=h,this},a(document).on("click.bs.dropdown.data-api",c).on("click.bs.dropdown.data-api",".dropdown form",function(a){a.stopPropagation()}).on("click.bs.dropdown.data-api",f,g.prototype.toggle).on("keydown.bs.dropdown.data-api",f,g.prototype.keydown).on("keydown.bs.dropdown.data-api",".dropdown-menu",g.prototype.keydown)}(jQuery),+function(a){"use strict";function b(b,d){return this.each(function(){var e=a(this),f=e.data("bs.modal"),g=a.extend({},c.DEFAULTS,e.data(),"object"==typeof b&&b);f||e.data("bs.modal",f=new c(this,g)),"string"==typeof b?f[b](d):g.show&&f.show(d)})}var c=function(b,c){this.options=c,this.$body=a(document.body),this.$element=a(b),this.$dialog=this.$element.find(".modal-dialog"),this.$backdrop=null,this.isShown=null,this.originalBodyPad=null,this.scrollbarWidth=0,this.ignoreBackdropClick=!1,this.options.remote&&this.$element.find(".modal-content").load(this.options.remote,a.proxy(function(){this.$element.trigger("loaded.bs.modal")},this))};c.VERSION="3.3.6",c.TRANSITION_DURATION=300,c.BACKDROP_TRANSITION_DURATION=150,c.DEFAULTS={backdrop:!0,keyboard:!0,show:!0},c.prototype.toggle=function(a){return this.isShown?this.hide():this.show(a)},c.prototype.show=function(b){var d=this,e=a.Event("show.bs.modal",{relatedTarget:b});this.$element.trigger(e),this.isShown||e.isDefaultPrevented()||(this.isShown=!0,this.checkScrollbar(),this.setScrollbar(),this.$body.addClass("modal-open"),this.escape(),this.resize(),this.$element.on("click.dismiss.bs.modal",'[data-dismiss="modal"]',a.proxy(this.hide,this)),this.$dialog.on("mousedown.dismiss.bs.modal",function(){d.$element.one("mouseup.dismiss.bs.modal",function(b){a(b.target).is(d.$element)&&(d.ignoreBackdropClick=!0)})}),this.backdrop(function(){var e=a.support.transition&&d.$element.hasClass("fade");d.$element.parent().length||d.$element.appendTo(d.$body),d.$element.show().scrollTop(0),d.adjustDialog(),e&&d.$element[0].offsetWidth,d.$element.addClass("in"),d.enforceFocus();var f=a.Event("shown.bs.modal",{relatedTarget:b});e?d.$dialog.one("bsTransitionEnd",function(){d.$element.trigger("focus").trigger(f)}).emulateTransitionEnd(c.TRANSITION_DURATION):d.$element.trigger("focus").trigger(f)}))},c.prototype.hide=function(b){b&&b.preventDefault(),b=a.Event("hide.bs.modal"),this.$element.trigger(b),this.isShown&&!b.isDefaultPrevented()&&(this.isShown=!1,this.escape(),this.resize(),a(document).off("focusin.bs.modal"),this.$element.removeClass("in").off("click.dismiss.bs.modal").off("mouseup.dismiss.bs.modal"),this.$dialog.off("mousedown.dismiss.bs.modal"),a.support.transition&&this.$element.hasClass("fade")?this.$element.one("bsTransitionEnd",a.proxy(this.hideModal,this)).emulateTransitionEnd(c.TRANSITION_DURATION):this.hideModal())},c.prototype.enforceFocus=function(){a(document).off("focusin.bs.modal").on("focusin.bs.modal",a.proxy(function(a){this.$element[0]===a.target||this.$element.has(a.target).length||this.$element.trigger("focus")},this))},c.prototype.escape=function(){this.isShown&&this.options.keyboard?this.$element.on("keydown.dismiss.bs.modal",a.proxy(function(a){27==a.which&&this.hide()},this)):this.isShown||this.$element.off("keydown.dismiss.bs.modal")},c.prototype.resize=function(){this.isShown?a(window).on("resize.bs.modal",a.proxy(this.handleUpdate,this)):a(window).off("resize.bs.modal")},c.prototype.hideModal=function(){var a=this;this.$element.hide(),this.backdrop(function(){a.$body.removeClass("modal-open"),a.resetAdjustments(),a.resetScrollbar(),a.$element.trigger("hidden.bs.modal")})},c.prototype.removeBackdrop=function(){this.$backdrop&&this.$backdrop.remove(),this.$backdrop=null},c.prototype.backdrop=function(b){var d=this,e=this.$element.hasClass("fade")?"fade":"";if(this.isShown&&this.options.backdrop){var f=a.support.transition&&e;if(this.$backdrop=a(document.createElement("div")).addClass("modal-backdrop "+e).appendTo(this.$body),this.$element.on("click.dismiss.bs.modal",a.proxy(function(a){return this.ignoreBackdropClick?void(this.ignoreBackdropClick=!1):void(a.target===a.currentTarget&&("static"==this.options.backdrop?this.$element[0].focus():this.hide()))},this)),f&&this.$backdrop[0].offsetWidth,this.$backdrop.addClass("in"),!b)return;f?this.$backdrop.one("bsTransitionEnd",b).emulateTransitionEnd(c.BACKDROP_TRANSITION_DURATION):b()}else if(!this.isShown&&this.$backdrop){this.$backdrop.removeClass("in");var g=function(){d.removeBackdrop(),b&&b()};a.support.transition&&this.$element.hasClass("fade")?this.$backdrop.one("bsTransitionEnd",g).emulateTransitionEnd(c.BACKDROP_TRANSITION_DURATION):g()}else b&&b()},c.prototype.handleUpdate=function(){this.adjustDialog()},c.prototype.adjustDialog=function(){var a=this.$element[0].scrollHeight>document.documentElement.clientHeight;this.$element.css({paddingLeft:!this.bodyIsOverflowing&&a?this.scrollbarWidth:"",paddingRight:this.bodyIsOverflowing&&!a?this.scrollbarWidth:""})},c.prototype.resetAdjustments=function(){this.$element.css({paddingLeft:"",paddingRight:""})},c.prototype.checkScrollbar=function(){var a=window.innerWidth;if(!a){var b=document.documentElement.getBoundingClientRect();a=b.right-Math.abs(b.left)}this.bodyIsOverflowing=document.body.clientWidth<a,this.scrollbarWidth=this.measureScrollbar()},c.prototype.setScrollbar=function(){var a=parseInt(this.$body.css("padding-right")||0,10);this.originalBodyPad=document.body.style.paddingRight||"",this.bodyIsOverflowing&&this.$body.css("padding-right",a+this.scrollbarWidth)},c.prototype.resetScrollbar=function(){this.$body.css("padding-right",this.originalBodyPad)},c.prototype.measureScrollbar=function(){var a=document.createElement("div");a.className="modal-scrollbar-measure",this.$body.append(a);var b=a.offsetWidth-a.clientWidth;return this.$body[0].removeChild(a),b};var d=a.fn.modal;a.fn.modal=b,a.fn.modal.Constructor=c,a.fn.modal.noConflict=function(){return a.fn.modal=d,this},a(document).on("click.bs.modal.data-api",'[data-toggle="modal"]',function(c){var d=a(this),e=d.attr("href"),f=a(d.attr("data-target")||e&&e.replace(/.*(?=#[^\s]+$)/,"")),g=f.data("bs.modal")?"toggle":a.extend({remote:!/#/.test(e)&&e},f.data(),d.data());d.is("a")&&c.preventDefault(),f.one("show.bs.modal",function(a){a.isDefaultPrevented()||f.one("hidden.bs.modal",function(){d.is(":visible")&&d.trigger("focus")})}),b.call(f,g,this)})}(jQuery),+function(a){"use strict";function b(b){return this.each(function(){var d=a(this),e=d.data("bs.tooltip"),f="object"==typeof b&&b;(e||!/destroy|hide/.test(b))&&(e||d.data("bs.tooltip",e=new c(this,f)),"string"==typeof b&&e[b]())})}var c=function(a,b){this.type=null,this.options=null,this.enabled=null,this.timeout=null,this.hoverState=null,this.$element=null,this.inState=null,this.init("tooltip",a,b)};c.VERSION="3.3.6",c.TRANSITION_DURATION=150,c.DEFAULTS={animation:!0,placement:"top",selector:!1,template:'<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',trigger:"hover focus",title:"",delay:0,html:!1,container:!1,viewport:{selector:"body",padding:0}},c.prototype.init=function(b,c,d){if(this.enabled=!0,this.type=b,this.$element=a(c),this.options=this.getOptions(d),this.$viewport=this.options.viewport&&a(a.isFunction(this.options.viewport)?this.options.viewport.call(this,this.$element):this.options.viewport.selector||this.options.viewport),this.inState={click:!1,hover:!1,focus:!1},this.$element[0]instanceof document.constructor&&!this.options.selector)throw new Error("`selector` option must be specified when initializing "+this.type+" on the window.document object!");for(var e=this.options.trigger.split(" "),f=e.length;f--;){var g=e[f];if("click"==g)this.$element.on("click."+this.type,this.options.selector,a.proxy(this.toggle,this));else if("manual"!=g){var h="hover"==g?"mouseenter":"focusin",i="hover"==g?"mouseleave":"focusout";this.$element.on(h+"."+this.type,this.options.selector,a.proxy(this.enter,this)),this.$element.on(i+"."+this.type,this.options.selector,a.proxy(this.leave,this))}}this.options.selector?this._options=a.extend({},this.options,{trigger:"manual",selector:""}):this.fixTitle()},c.prototype.getDefaults=function(){return c.DEFAULTS},c.prototype.getOptions=function(b){return b=a.extend({},this.getDefaults(),this.$element.data(),b),b.delay&&"number"==typeof b.delay&&(b.delay={show:b.delay,hide:b.delay}),b},c.prototype.getDelegateOptions=function(){var b={},c=this.getDefaults();return this._options&&a.each(this._options,function(a,d){c[a]!=d&&(b[a]=d)}),b},c.prototype.enter=function(b){var c=b instanceof this.constructor?b:a(b.currentTarget).data("bs."+this.type);return c||(c=new this.constructor(b.currentTarget,this.getDelegateOptions()),a(b.currentTarget).data("bs."+this.type,c)),b instanceof a.Event&&(c.inState["focusin"==b.type?"focus":"hover"]=!0),c.tip().hasClass("in")||"in"==c.hoverState?void(c.hoverState="in"):(clearTimeout(c.timeout),c.hoverState="in",c.options.delay&&c.options.delay.show?void(c.timeout=setTimeout(function(){"in"==c.hoverState&&c.show()},c.options.delay.show)):c.show())},c.prototype.isInStateTrue=function(){for(var a in this.inState)if(this.inState[a])return!0;return!1},c.prototype.leave=function(b){var c=b instanceof this.constructor?b:a(b.currentTarget).data("bs."+this.type);return c||(c=new this.constructor(b.currentTarget,this.getDelegateOptions()),a(b.currentTarget).data("bs."+this.type,c)),b instanceof a.Event&&(c.inState["focusout"==b.type?"focus":"hover"]=!1),c.isInStateTrue()?void 0:(clearTimeout(c.timeout),c.hoverState="out",c.options.delay&&c.options.delay.hide?void(c.timeout=setTimeout(function(){"out"==c.hoverState&&c.hide()},c.options.delay.hide)):c.hide())},c.prototype.show=function(){var b=a.Event("show.bs."+this.type);if(this.hasContent()&&this.enabled){this.$element.trigger(b);var d=a.contains(this.$element[0].ownerDocument.documentElement,this.$element[0]);if(b.isDefaultPrevented()||!d)return;var e=this,f=this.tip(),g=this.getUID(this.type);this.setContent(),f.attr("id",g),this.$element.attr("aria-describedby",g),this.options.animation&&f.addClass("fade");var h="function"==typeof this.options.placement?this.options.placement.call(this,f[0],this.$element[0]):this.options.placement,i=/\s?auto?\s?/i,j=i.test(h);j&&(h=h.replace(i,"")||"top"),f.detach().css({top:0,left:0,display:"block"}).addClass(h).data("bs."+this.type,this),this.options.container?f.appendTo(this.options.container):f.insertAfter(this.$element),this.$element.trigger("inserted.bs."+this.type);var k=this.getPosition(),l=f[0].offsetWidth,m=f[0].offsetHeight;if(j){var n=h,o=this.getPosition(this.$viewport);h="bottom"==h&&k.bottom+m>o.bottom?"top":"top"==h&&k.top-m<o.top?"bottom":"right"==h&&k.right+l>o.width?"left":"left"==h&&k.left-l<o.left?"right":h,f.removeClass(n).addClass(h)}var p=this.getCalculatedOffset(h,k,l,m);this.applyPlacement(p,h);var q=function(){var a=e.hoverState;e.$element.trigger("shown.bs."+e.type),e.hoverState=null,"out"==a&&e.leave(e)};a.support.transition&&this.$tip.hasClass("fade")?f.one("bsTransitionEnd",q).emulateTransitionEnd(c.TRANSITION_DURATION):q()}},c.prototype.applyPlacement=function(b,c){var d=this.tip(),e=d[0].offsetWidth,f=d[0].offsetHeight,g=parseInt(d.css("margin-top"),10),h=parseInt(d.css("margin-left"),10);isNaN(g)&&(g=0),isNaN(h)&&(h=0),b.top+=g,b.left+=h,a.offset.setOffset(d[0],a.extend({using:function(a){d.css({top:Math.round(a.top),left:Math.round(a.left)})}},b),0),d.addClass("in");var i=d[0].offsetWidth,j=d[0].offsetHeight;"top"==c&&j!=f&&(b.top=b.top+f-j);var k=this.getViewportAdjustedDelta(c,b,i,j);k.left?b.left+=k.left:b.top+=k.top;var l=/top|bottom/.test(c),m=l?2*k.left-e+i:2*k.top-f+j,n=l?"offsetWidth":"offsetHeight";d.offset(b),this.replaceArrow(m,d[0][n],l)},c.prototype.replaceArrow=function(a,b,c){this.arrow().css(c?"left":"top",50*(1-a/b)+"%").css(c?"top":"left","")},c.prototype.setContent=function(){var a=this.tip(),b=this.getTitle();a.find(".tooltip-inner")[this.options.html?"html":"text"](b),a.removeClass("fade in top bottom left right")},c.prototype.hide=function(b){function d(){"in"!=e.hoverState&&f.detach(),e.$element.removeAttr("aria-describedby").trigger("hidden.bs."+e.type),b&&b()}var e=this,f=a(this.$tip),g=a.Event("hide.bs."+this.type);return this.$element.trigger(g),g.isDefaultPrevented()?void 0:(f.removeClass("in"),a.support.transition&&f.hasClass("fade")?f.one("bsTransitionEnd",d).emulateTransitionEnd(c.TRANSITION_DURATION):d(),this.hoverState=null,this)},c.prototype.fixTitle=function(){var a=this.$element;(a.attr("title")||"string"!=typeof a.attr("data-original-title"))&&a.attr("data-original-title",a.attr("title")||"").attr("title","")},c.prototype.hasContent=function(){return this.getTitle()},c.prototype.getPosition=function(b){b=b||this.$element;var c=b[0],d="BODY"==c.tagName,e=c.getBoundingClientRect();null==e.width&&(e=a.extend({},e,{width:e.right-e.left,height:e.bottom-e.top}));var f=d?{top:0,left:0}:b.offset(),g={scroll:d?document.documentElement.scrollTop||document.body.scrollTop:b.scrollTop()},h=d?{width:a(window).width(),height:a(window).height()}:null;return a.extend({},e,g,h,f)},c.prototype.getCalculatedOffset=function(a,b,c,d){return"bottom"==a?{top:b.top+b.height,left:b.left+b.width/2-c/2}:"top"==a?{top:b.top-d,left:b.left+b.width/2-c/2}:"left"==a?{top:b.top+b.height/2-d/2,left:b.left-c}:{top:b.top+b.height/2-d/2,left:b.left+b.width}},c.prototype.getViewportAdjustedDelta=function(a,b,c,d){var e={top:0,left:0};if(!this.$viewport)return e;var f=this.options.viewport&&this.options.viewport.padding||0,g=this.getPosition(this.$viewport);if(/right|left/.test(a)){var h=b.top-f-g.scroll,i=b.top+f-g.scroll+d;h<g.top?e.top=g.top-h:i>g.top+g.height&&(e.top=g.top+g.height-i)}else{var j=b.left-f,k=b.left+f+c;j<g.left?e.left=g.left-j:k>g.right&&(e.left=g.left+g.width-k)}return e},c.prototype.getTitle=function(){var a,b=this.$element,c=this.options;return a=b.attr("data-original-title")||("function"==typeof c.title?c.title.call(b[0]):c.title)},c.prototype.getUID=function(a){do a+=~~(1e6*Math.random());while(document.getElementById(a));return a},c.prototype.tip=function(){if(!this.$tip&&(this.$tip=a(this.options.template),1!=this.$tip.length))throw new Error(this.type+" `template` option must consist of exactly 1 top-level element!");return this.$tip},c.prototype.arrow=function(){return this.$arrow=this.$arrow||this.tip().find(".tooltip-arrow")},c.prototype.enable=function(){this.enabled=!0},c.prototype.disable=function(){this.enabled=!1},c.prototype.toggleEnabled=function(){this.enabled=!this.enabled},c.prototype.toggle=function(b){var c=this;b&&(c=a(b.currentTarget).data("bs."+this.type),c||(c=new this.constructor(b.currentTarget,this.getDelegateOptions()),a(b.currentTarget).data("bs."+this.type,c))),b?(c.inState.click=!c.inState.click,c.isInStateTrue()?c.enter(c):c.leave(c)):c.tip().hasClass("in")?c.leave(c):c.enter(c)},c.prototype.destroy=function(){var a=this;clearTimeout(this.timeout),this.hide(function(){a.$element.off("."+a.type).removeData("bs."+a.type),a.$tip&&a.$tip.detach(),a.$tip=null,a.$arrow=null,a.$viewport=null})};var d=a.fn.tooltip;a.fn.tooltip=b,a.fn.tooltip.Constructor=c,a.fn.tooltip.noConflict=function(){return a.fn.tooltip=d,this}}(jQuery),+function(a){"use strict";function b(b){return this.each(function(){var d=a(this),e=d.data("bs.popover"),f="object"==typeof b&&b;(e||!/destroy|hide/.test(b))&&(e||d.data("bs.popover",e=new c(this,f)),"string"==typeof b&&e[b]())})}var c=function(a,b){this.init("popover",a,b)};if(!a.fn.tooltip)throw new Error("Popover requires tooltip.js");c.VERSION="3.3.6",c.DEFAULTS=a.extend({},a.fn.tooltip.Constructor.DEFAULTS,{placement:"right",trigger:"click",content:"",template:'<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'}),c.prototype=a.extend({},a.fn.tooltip.Constructor.prototype),c.prototype.constructor=c,c.prototype.getDefaults=function(){return c.DEFAULTS},c.prototype.setContent=function(){var a=this.tip(),b=this.getTitle(),c=this.getContent();a.find(".popover-title")[this.options.html?"html":"text"](b),a.find(".popover-content").children().detach().end()[this.options.html?"string"==typeof c?"html":"append":"text"](c),a.removeClass("fade top bottom left right in"),a.find(".popover-title").html()||a.find(".popover-title").hide()},c.prototype.hasContent=function(){return this.getTitle()||this.getContent()},c.prototype.getContent=function(){var a=this.$element,b=this.options;return a.attr("data-content")||("function"==typeof b.content?b.content.call(a[0]):b.content)},c.prototype.arrow=function(){return this.$arrow=this.$arrow||this.tip().find(".arrow")};var d=a.fn.popover;a.fn.popover=b,a.fn.popover.Constructor=c,a.fn.popover.noConflict=function(){return a.fn.popover=d,this}}(jQuery),+function(a){"use strict";function b(c,d){this.$body=a(document.body),this.$scrollElement=a(a(c).is(document.body)?window:c),this.options=a.extend({},b.DEFAULTS,d),this.selector=(this.options.target||"")+" .nav li > a",this.offsets=[],this.targets=[],this.activeTarget=null,this.scrollHeight=0,this.$scrollElement.on("scroll.bs.scrollspy",a.proxy(this.process,this)),this.refresh(),this.process()}function c(c){return this.each(function(){var d=a(this),e=d.data("bs.scrollspy"),f="object"==typeof c&&c;e||d.data("bs.scrollspy",e=new b(this,f)),"string"==typeof c&&e[c]()})}b.VERSION="3.3.6",b.DEFAULTS={offset:10},b.prototype.getScrollHeight=function(){return this.$scrollElement[0].scrollHeight||Math.max(this.$body[0].scrollHeight,document.documentElement.scrollHeight)},b.prototype.refresh=function(){var b=this,c="offset",d=0;this.offsets=[],this.targets=[],this.scrollHeight=this.getScrollHeight(),a.isWindow(this.$scrollElement[0])||(c="position",d=this.$scrollElement.scrollTop()),this.$body.find(this.selector).map(function(){var b=a(this),e=b.data("target")||b.attr("href"),f=/^#./.test(e)&&a(e);return f&&f.length&&f.is(":visible")&&[[f[c]().top+d,e]]||null}).sort(function(a,b){return a[0]-b[0]}).each(function(){b.offsets.push(this[0]),b.targets.push(this[1])})},b.prototype.process=function(){var a,b=this.$scrollElement.scrollTop()+this.options.offset,c=this.getScrollHeight(),d=this.options.offset+c-this.$scrollElement.height(),e=this.offsets,f=this.targets,g=this.activeTarget;if(this.scrollHeight!=c&&this.refresh(),b>=d)return g!=(a=f[f.length-1])&&this.activate(a);if(g&&b<e[0])return this.activeTarget=null,this.clear();for(a=e.length;a--;)g!=f[a]&&b>=e[a]&&(void 0===e[a+1]||b<e[a+1])&&this.activate(f[a])},b.prototype.activate=function(b){this.activeTarget=b,this.clear();var c=this.selector+'[data-target="'+b+'"],'+this.selector+'[href="'+b+'"]',d=a(c).parents("li").addClass("active");
+	    d.parent(".dropdown-menu").length&&(d=d.closest("li.dropdown").addClass("active")),d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector).parentsUntil(this.options.target,".active").removeClass("active")};var d=a.fn.scrollspy;a.fn.scrollspy=c,a.fn.scrollspy.Constructor=b,a.fn.scrollspy.noConflict=function(){return a.fn.scrollspy=d,this},a(window).on("load.bs.scrollspy.data-api",function(){a('[data-spy="scroll"]').each(function(){var b=a(this);c.call(b,b.data())})})}(jQuery),+function(a){"use strict";function b(b){return this.each(function(){var d=a(this),e=d.data("bs.tab");e||d.data("bs.tab",e=new c(this)),"string"==typeof b&&e[b]()})}var c=function(b){this.element=a(b)};c.VERSION="3.3.6",c.TRANSITION_DURATION=150,c.prototype.show=function(){var b=this.element,c=b.closest("ul:not(.dropdown-menu)"),d=b.data("target");if(d||(d=b.attr("href"),d=d&&d.replace(/.*(?=#[^\s]*$)/,"")),!b.parent("li").hasClass("active")){var e=c.find(".active:last a"),f=a.Event("hide.bs.tab",{relatedTarget:b[0]}),g=a.Event("show.bs.tab",{relatedTarget:e[0]});if(e.trigger(f),b.trigger(g),!g.isDefaultPrevented()&&!f.isDefaultPrevented()){var h=a(d);this.activate(b.closest("li"),c),this.activate(h,h.parent(),function(){e.trigger({type:"hidden.bs.tab",relatedTarget:b[0]}),b.trigger({type:"shown.bs.tab",relatedTarget:e[0]})})}}},c.prototype.activate=function(b,d,e){function f(){g.removeClass("active").find("> .dropdown-menu > .active").removeClass("active").end().find('[data-toggle="tab"]').attr("aria-expanded",!1),b.addClass("active").find('[data-toggle="tab"]').attr("aria-expanded",!0),h?(b[0].offsetWidth,b.addClass("in")):b.removeClass("fade"),b.parent(".dropdown-menu").length&&b.closest("li.dropdown").addClass("active").end().find('[data-toggle="tab"]').attr("aria-expanded",!0),e&&e()}var g=d.find("> .active"),h=e&&a.support.transition&&(g.length&&g.hasClass("fade")||!!d.find("> .fade").length);g.length&&h?g.one("bsTransitionEnd",f).emulateTransitionEnd(c.TRANSITION_DURATION):f(),g.removeClass("in")};var d=a.fn.tab;a.fn.tab=b,a.fn.tab.Constructor=c,a.fn.tab.noConflict=function(){return a.fn.tab=d,this};var e=function(c){c.preventDefault(),b.call(a(this),"show")};a(document).on("click.bs.tab.data-api",'[data-toggle="tab"]',e).on("click.bs.tab.data-api",'[data-toggle="pill"]',e)}(jQuery),+function(a){"use strict";function b(b){return this.each(function(){var d=a(this),e=d.data("bs.affix"),f="object"==typeof b&&b;e||d.data("bs.affix",e=new c(this,f)),"string"==typeof b&&e[b]()})}var c=function(b,d){this.options=a.extend({},c.DEFAULTS,d),this.$target=a(this.options.target).on("scroll.bs.affix.data-api",a.proxy(this.checkPosition,this)).on("click.bs.affix.data-api",a.proxy(this.checkPositionWithEventLoop,this)),this.$element=a(b),this.affixed=null,this.unpin=null,this.pinnedOffset=null,this.checkPosition()};c.VERSION="3.3.6",c.RESET="affix affix-top affix-bottom",c.DEFAULTS={offset:0,target:window},c.prototype.getState=function(a,b,c,d){var e=this.$target.scrollTop(),f=this.$element.offset(),g=this.$target.height();if(null!=c&&"top"==this.affixed)return c>e?"top":!1;if("bottom"==this.affixed)return null!=c?e+this.unpin<=f.top?!1:"bottom":a-d>=e+g?!1:"bottom";var h=null==this.affixed,i=h?e:f.top,j=h?g:b;return null!=c&&c>=e?"top":null!=d&&i+j>=a-d?"bottom":!1},c.prototype.getPinnedOffset=function(){if(this.pinnedOffset)return this.pinnedOffset;this.$element.removeClass(c.RESET).addClass("affix");var a=this.$target.scrollTop(),b=this.$element.offset();return this.pinnedOffset=b.top-a},c.prototype.checkPositionWithEventLoop=function(){setTimeout(a.proxy(this.checkPosition,this),1)},c.prototype.checkPosition=function(){if(this.$element.is(":visible")){var b=this.$element.height(),d=this.options.offset,e=d.top,f=d.bottom,g=Math.max(a(document).height(),a(document.body).height());"object"!=typeof d&&(f=e=d),"function"==typeof e&&(e=d.top(this.$element)),"function"==typeof f&&(f=d.bottom(this.$element));var h=this.getState(g,b,e,f);if(this.affixed!=h){null!=this.unpin&&this.$element.css("top","");var i="affix"+(h?"-"+h:""),j=a.Event(i+".bs.affix");if(this.$element.trigger(j),j.isDefaultPrevented())return;this.affixed=h,this.unpin="bottom"==h?this.getPinnedOffset():null,this.$element.removeClass(c.RESET).addClass(i).trigger(i.replace("affix","affixed")+".bs.affix")}"bottom"==h&&this.$element.offset({top:g-b-f})}};var d=a.fn.affix;a.fn.affix=b,a.fn.affix.Constructor=c,a.fn.affix.noConflict=function(){return a.fn.affix=d,this},a(window).on("load",function(){a('[data-spy="affix"]').each(function(){var c=a(this),d=c.data();d.offset=d.offset||{},null!=d.offsetBottom&&(d.offset.bottom=d.offsetBottom),null!=d.offsetTop&&(d.offset.top=d.offsetTop),b.call(c,d)})})}(jQuery);
+
+/***/ },
+
+/***/ 27:
+/***/ function(module, exports, __webpack_require__) {
+
+	var Handlebars = __webpack_require__(11);
+	
+	/**
+	 * Typeahead search
+	 */
+	
+	$(function() {
+	
+	    var findMatches = function findMatches(query, syncCallback, asyncCallback) {
+	        $.ajax({
+	            method: 'GET',
+	            url: window.gw.urls.search_elected +'?search='+ query
+	        }).success(function(data) {
+	            console.log(data);
+	            asyncCallback(data);
+	        });
+	    };
+	
+	    var searchValue = '';
+	
+	    // Init typeahead
+	    var $typeahead = $('.typeahead_elected').typeahead({
+	        hint: true,
+	        highlight: true,
+	        minLength: 3
+	    }, {
+	        name: 'elected_officials',
+	        source: findMatches,
+	        templates: {
+	            empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
+	            suggestion: Handlebars.compile('<div class="sugg-box">'+
+	                '<div class="sugg-name">{{fullName}}</div>' +
+	                '<div class="sugg-govname">{{government.name}}</div>' +
+	                '</div>')
+	        },
+	        updater: function (item) {
+	            alert(item);
+	        }
+	    });
+	
+	    // Pressed mouse or enter button
+	    $typeahead.bind("typeahead:selected", function(obj, selectedItemData) {
+	        $typeahead.typeahead('val', selectedItemData.fullName);
+	        window.location.pathname += [selectedItemData.government.altTypeSlug, selectedItemData.government.slug, selectedItemData.slug].join('/');
+	    });
+	
+	    // Move cursor via arrows keys
+	    $typeahead.bind("typeahead:cursorchange", function(obj) {
+	        $typeahead.typeahead('val', searchValue);
+	    });
+	
+	    // Store search value on typing
+	    $typeahead.keyup(function(event) {
+	        searchValue = $(event.target).val();
+	    });
+	
+	    $typeahead.attr('placeholder', 'ELECTED OFFICIAL NAME');
+	    $typeahead.attr('disabled', false);
+	
+	    //var substringMatcher = function(strs) {
+	    //    return function findMatches(q, cb) {
+	    //        var matches, substringRegex;
+	    //
+	    //        // an array that will be populated with substring matches
+	    //        matches = [];
+	    //
+	    //        // regex used to determine if a string contains the substring `q`
+	    //        substrRegex = new RegExp('('+q+')', 'gi');
+	    //
+	    //        // iterate through the pool of strings and for any string that
+	    //        // contains the substring `q`, add it to the `matches` array
+	    //        $.each(strs, function(i, str) {
+	    //            if (substrRegex.test(str.gov_name)) {
+	    //                matches.push(str);
+	    //            }
+	    //        });
+	    //
+	    //        cb(matches);
+	    //    };
+	    //};
+	    //
+	    //$.get('/data/search/california.json', function (data){
+	    //
+	    //    var searchValue = '';
+	    //
+	    //    // Init typeahead
+	    //    var $typeahead = $('.typeahead').typeahead({
+	    //        hint: true,
+	    //        highlight: true,
+	    //        minLength: 1
+	    //    }, {
+	    //        name: 'countries',
+	    //        source: substringMatcher(data.record),
+	    //        templates: {
+	    //            empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
+	    //            suggestion: Handlebars.compile('<div class="sugg-box">'+
+	    //                '<div class="sugg-state">{{state}}</div>' +
+	    //                '<div class="sugg-name">{{gov_name}}</div>' +
+	    //                '<div class="sugg-type">{{gov_type}}</div>' +
+	    //                '</div>')
+	    //        },
+	    //        updater: function (item) {
+	    //            alert(item);
+	    //        }
+	    //    });
+	    //
+	    //    // Pressed mouse or enter button
+	    //    $typeahead.bind("typeahead:selected", function(obj, selectedItemData) {
+	    //        $typeahead.typeahead('val', selectedItemData.gov_name);
+	    //        window.location.pathname += [selectedItemData.altTypeSlug, selectedItemData.slug].join('/');
+	    //    });
+	    //
+	    //    // Move cursor via arrows keys
+	    //    $typeahead.bind("typeahead:cursorchange", function(obj) {
+	    //        $typeahead.typeahead('val', searchValue);
+	    //    });
+	    //
+	    //    // Store search value on typing
+	    //    $typeahead.keyup(function(event) {
+	    //        searchValue = $(event.target).val();
+	    //    });
+	    //
+	    //    $typeahead.attr('placeholder', 'GOVERNMENT NAME');
+	    //    $typeahead.attr('disabled', false);
+	    //
+	    //});
+	
+	});
+
+/***/ },
+
+/***/ 28:
+/***/ function(module, exports, __webpack_require__) {
+
+	var Handlebars = __webpack_require__(11);
+	
+	/**
+	 * Typeahead search
+	 */
+	
+	$(function() {
+	
+	    var findMatches = function findMatches(query, syncCallback, asyncCallback) {
+	        $.ajax({
+	            method: 'GET',
+	            url: window.gw.urls.search_government +'?search='+ query
+	        }).success(function(data) {
+	            asyncCallback(data);
+	        });
+	    };
+	
+	    var searchValue = '';
+	
+	    // Init typeahead
+	    var $typeahead = $('.typeahead_government').typeahead({
+	        hint: true,
+	        highlight: true,
+	        minLength: 3
+	    }, {
+	        name: 'countries',
+	        source: findMatches,
+	        templates: {
+	            empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
+	            suggestion: Handlebars.compile('<div class="sugg-box">'+
+	                '<div class="sugg-state">{{state}}</div>' +
+	                '<div class="sugg-name">{{name}}</div>' +
+	                '<div class="sugg-type">{{type}}</div>' +
+	                '</div>')
+	        },
+	        updater: function (item) {
+	            alert(item);
+	        }
+	    });
+	
+	    // Pressed mouse or enter button
+	    $typeahead.bind("typeahead:selected", function(obj, selectedItemData) {
+	        $typeahead.typeahead('val', selectedItemData.name);
+	        window.location.pathname += [selectedItemData.altTypeSlug, selectedItemData.slug].join('/');
+	    });
+	
+	    // Move cursor via arrows keys
+	    $typeahead.bind("typeahead:cursorchange", function(obj) {
+	        $typeahead.typeahead('val', searchValue);
+	    });
+	
+	    // Store search value on typing
+	    $typeahead.keyup(function(event) {
+	        searchValue = $(event.target).val();
+	    });
+	
+	    //$typeahead.attr('placeholder', 'GOVERNMENT NAME');
+	    $typeahead.attr('disabled', false);
+	
+	});
+
+/***/ }
+
+});
 //# sourceMappingURL=map.js.map
