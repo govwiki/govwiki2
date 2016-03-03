@@ -21,8 +21,8 @@
 
             <ul class="nav nav-tabs" id="environment-styles__tabs">
                 <li class="active"><a data-toggle="tab" href="#home">CSS styles</a></li>
-                <li><a data-toggle="tab" href="#menu1">Images</a></li>
                 <li><a data-toggle="tab" href="#menu2">Content</a></li>
+                <li><a data-toggle="tab" href="#menu1">Images</a></li>
             </ul>
 
             <div class="tab-content">
@@ -63,7 +63,7 @@
                         <div class="panel-body">
                             {{ form_start(form) }}
                             {{ form_widget(form) }}
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary">Add</button>
                             <a class="btn btn-default" href="{{ path('govwiki_admin_main_show') }}">
                                 Back
                             </a>
@@ -77,11 +77,18 @@
                             <h3 class="panel-title">Environment images</h3>
                         </div>
                         <div class="panel-body">
-                            <h5>Header logo</h5>
-                            <form class="upload-favicon-form" enctype="multipart/form-data">
-                                <input type="hidden" name="environment" value="{{ admin_environment }}">
-                                <input class="upload-logo" type="file" name="upload-logo">
-                            </form>
+                            {% for content in contents %}
+                                {% if content.type == 'image' %}
+                                    <h5>{{ content.name }}</h5>
+                                    <img src="{{ content.value }}" />
+
+                                    <form action="{{ path('govwiki_admin_main_loadimage') }}" class="upload-logo-form" enctype="multipart/form-data">
+                                        <input type="hidden" name="id" value="{{ content.id }}" />
+                                        <input type="hidden" name="environment" value="{{ admin_environment }}" />
+                                        <input class="upload-logo" type="file" name="upload-image" />
+                                    </form>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -91,7 +98,12 @@
                             <h3 class="panel-title">Environment content</h3>
                         </div>
                         <div class="panel-body">
-                            text
+                            {% for content in contents %}
+                                {% if content.type == 'content' %}
+                                    <h5>{{ content.name }}</h5>
+                                    <textarea id="content__{{ content.id }}" class="environment-content">{{ content.value }}</textarea>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -110,8 +122,54 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script type="application/javascript">
+    <script type="text/javascript" src="/bundles/ivoryckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
         $(function() {
+            {% for content in contents %}
+                {% if content.type == 'content' %}
+                    CKEDITOR.replace('content__{{ content.id }}').on('blur', submitContent);
+                {% endif %}
+            {% endfor %}
+
+            $('.upload-logo-form').submit(function(e) {
+                e.preventDefault();
+
+                $form = $(this);
+                $formData = new FormData($form.get(0));
+
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: 'POST',
+                    contentType: false,
+                    processData: false,
+                    data: $formData,
+                    dataType: 'json',
+                    success: function (data) {
+                        location.reload();
+                    }
+                });
+            });
+
+            $('.upload-logo-form').change(function() {
+                $(this).submit();
+            });
+
+            function submitContent() {
+                var data = {
+                    id: this.name.split('__')[1],
+                    value: this.getData()
+                }
+
+                $.ajax({
+                    url: '{{ path('govwiki_admin_main_savecontant') }}',
+                    data: data,
+                    method: 'POST',
+                    success: function (response) {
+                        console.log(response);
+                    }
+                });
+            }
+
             var environmentStyles = {
                 init: function() {
                     var obj = this;

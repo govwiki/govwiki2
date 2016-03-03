@@ -42,11 +42,9 @@
 
         {# Logo #}
         <div class="col-xs-6 col-sm-6 col-md-3">
-
-            <a href="http://californiapolicycenter.org/">
-                <img src="" alt="California Policy Center" class="logo">
-            </a>
-
+            {% if environment_content.get('header_logo') != null %}
+            <img src="{{ environment_content.get('header_logo')|raw }}" alt="California Policy Center" class="logo">
+            {% endif %}
         </div>
 
         {# Menu button (hamburger) for mobile devices #}

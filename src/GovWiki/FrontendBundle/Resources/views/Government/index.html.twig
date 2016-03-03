@@ -68,7 +68,7 @@
 
                                     <li class="{{ loop.first ? 'active' : '' }}">
                                         {# TODO: Hardcoded, for new db, must be replaced #}
-                                        <a href="#{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
+                                        <a class="tabs tab_{{ tabName | replace(' ', '_') | replace('+', 'a')|lower }}" href="#{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
                                            aria-controls="{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
                                            role="tab" data-toggle="tab" data-tabname="{{ tabName }}">
                                             {#{{ ('env.groups.group_id_'~tab_id)|trans }}#}
@@ -79,7 +79,7 @@
                             {% endif %}
 
                             {% if showFinStmt %}
-                                <li><a href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">Financial Statements</a></li>
+                                <li><a tab_financial_statements" href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">Financial Statements</a></li>
                             {% endif %}
 
                         </ul>

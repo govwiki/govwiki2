@@ -195,10 +195,36 @@ class MainController extends AbstractGovWikiAdminController
             return $this->redirect($this->generateUrl('govwiki_admin_main_style'));
         }
 
+        $contents = $em->getRepository("GovWikiDbBundle:EnvironmentContents")->findByEnvironment($currentEnvironment);
+
         return [
-            'form'    => $form->createView(),
-            'styles'  => $styles,
+            'form'     => $form->createView(),
+            'styles'   => $styles,
+            'contents' => $contents,
         ];
+    }
+
+    /**
+     * @Configuration\Route("/style/content")
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return array
+     */
+    public function saveContantAction(Request $request)
+    {
+        if ($request->isXmlHttpRequest()) {
+            $data = $request->request->all();
+
+            $em = $this->getDoctrine()->getManager();
+            $content = $em->getRepository("GovWikiDbBundle:EnvironmentContents")->find($data['id']);
+            $content->setValue($data['value']);
+            $em->flush();
+
+            return new JsonResponse(['status' => 'Success save']);
+        } else {
+            throw $this->createNotFoundException();
+        }
     }
 
     /**
@@ -333,6 +359,48 @@ class MainController extends AbstractGovWikiAdminController
                     ]
                 );
             }
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    /**
+     * Load logo
+     *
+     * @Configuration\Route("/load-logo")
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function loadImageAction(Request $request)
+    {
+        if ($request->isXmlHttpRequest()) {
+            $environment = $request->request->get('environment');
+            $image       = $request->files->get('upload-image');
+            $id          = $request->request->get('id');
+
+            if ($environment) {
+                // get environment name
+                $folderName = $request->request->get('environment');
+
+                // favicon dir
+                $dir = $this->get('kernel')->getRootDir().'/../web/img/'.$folderName;
+                if (!file_exists($dir)) {
+                    mkdir($dir);
+                }
+
+                $fileName = $image->getClientOriginalName();
+                $extension = explode('.', $fileName);
+                $extension = array_pop($extension);
+
+                $em = $this->getDoctrine()->getManager();
+                $content = $em->getRepository("GovWikiDbBundle:EnvironmentContents")->find($id);
+                $image->move($dir, $content->getSlug().'.'.$extension);
+                $content->setValue('/img/'.$folderName.'/'.$content->getSlug().'.'.$extension);
+                $em->flush();
+            }
+
+            return new JsonResponse(['status' => 'Image success upload']);
         }
 
         throw $this->createNotFoundException();

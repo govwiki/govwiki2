@@ -13,3 +13,7 @@ services:
     govwiki.frontend_bundle.adverting:
         class: GovWiki\FrontendBundle\Service\GetAdverting
         arguments: ["@doctrine", "@templating"]
+
+    govwiki.frontend_bundle.environment_content:
+        class: GovWiki\FrontendBundle\Service\EnvironmentContent
+        arguments: ["@doctrine", "@templating"]

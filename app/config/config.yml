@@ -46,6 +46,7 @@ twig:
     globals:
         carto_username: %carto_db.account%
         adverting: @govwiki.frontend_bundle.adverting
+        environment_content: @govwiki.frontend_bundle.environment_content
 
 #    exception_controller:  GovWikiApiBundle:Exception:showException
 
