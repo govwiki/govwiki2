@@ -136,6 +136,8 @@ class CreateRequestController extends AbstractGovWikiAdminController
      */
     private function sendEmails(array $electedList, AbstractCreateRequest $createRequest)
     {
+        $domain = $this->adminEnvironmentManager()->getEntity()->getDomain();
+
         $commentKeyManager = $this
             ->get(GovWikiCommentServices::COMMENT_KEY_MANAGER);
         $govwikiRouter = $this
@@ -170,14 +172,13 @@ class CreateRequestController extends AbstractGovWikiAdminController
                 'type' => $type,
                 'email' => $this->getParameter('admin_email'),
                 'government_name' => $row['name'],
-                'profileUrl' => $govwikiRouter->generate(
+                'profileUrl' => "http://{$domain}".$govwikiRouter->generate(
                     'elected',
                     [
                         'altTypeSlug' => $row['altTypeSlug'],
                         'slug' => $row['government_slug'],
                         'electedSlug' => $row['elected_slug'],
-                    ],
-                    RouterInterface::ABSOLUTE_URL
+                    ]
                 ),
             ];
 
@@ -188,11 +189,9 @@ class CreateRequestController extends AbstractGovWikiAdminController
                 $key = $commentKeyManager->create($vote);
                 $parameters['vote'] = $vote;
                 $parameters['key'] = $key->getKey();
-                $parameters['addCommentUrl'] = $govwikiRouter
+                $parameters['addCommentUrl'] = "http://{$domain}".$govwikiRouter
                     ->generate(
-                        'govwiki_comment_comment_add',
-                        [ ],
-                        RouterInterface::ABSOLUTE_URL
+                        'govwiki_comment_comment_add'
                     );
 
                 $this->getDoctrine()->getManager()->persist($key);

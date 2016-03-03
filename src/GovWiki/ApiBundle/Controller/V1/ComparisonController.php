@@ -29,8 +29,8 @@ class ComparisonController extends AbstractGovWikiApiController
      *  "years": [
      *      2014
      *      2013
-     *   ]
-     *  }
+     *  ]
+     * }
      *
      * @Route("/search")
      *
@@ -116,7 +116,6 @@ class ComparisonController extends AbstractGovWikiApiController
      *      "year": 2014
      *  },
      *  "caption": "Capital Outlay",
-     *  "category": "Expenditures",
      *  "tab": "Financial Statements"
      * }
      *
