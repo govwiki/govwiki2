@@ -29,8 +29,8 @@ class ComparisonController extends AbstractGovWikiApiController
      *  "years": [
      *      2014
      *      2013
-     *   ]
-     *  }
+     *  ]
+     * }
      *
      * @Route("/search")
      *
