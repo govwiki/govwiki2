@@ -133,11 +133,11 @@
                                             {% include '@GovWikiFrontend/Partial/Government/year_select.html.twig' %}
                                         </h4>
                                     </form>
-                                    <br>
-                                    {# Statistics #}
+
                                     {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
                                         'financialStatements': government.financialStatements
                                     } %}
+
                                 </div>
                             {% endif %}
 
@@ -185,6 +185,7 @@
 
 {# Javascripts #}
 {% block javascripts %}
+
     {{parent()}}
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
@@ -198,9 +199,13 @@
                 'altTypeSlug': government.altTypeSlug,
                 'slug': government.slug,
             }) }}';
+            window.gw.urls.search = '{{ govwiki_path('govwiki_api_v1_comparison_search') }}';
+            window.gw.urls.captions = '{{ govwiki_path('govwiki_api_v1_comparison_captions') }}';
+            window.gw.urls.compare = '{{ govwiki_path('govwiki_api_v1_comparison_compare') }}';
         </script>
     {% endif %}
 
+    <script src="/js/vendor/typeahead.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/government.js"></script>
 

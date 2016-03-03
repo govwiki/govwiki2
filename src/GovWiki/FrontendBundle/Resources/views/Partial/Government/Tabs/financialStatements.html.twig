@@ -13,6 +13,9 @@
         <label class="btn btn-primary">
             <input type="radio" name="options" id="tree-charts" autocomplete="off"> Tree Charts
         </label>
+        <label class="btn btn-primary">
+            <input type="radio" name="options" id="compare-charts" autocomplete="off"> Compare
+        </label>
     </div>
 </div>
 
@@ -22,6 +25,67 @@
     <div class="customGraph col-md-6" id="total-expenditures-pie"></div>
     <div class="customGraph col-md-6" id="total-revenue-tree"></div>
     <div class="customGraph col-md-6" id="total-expenditures-tree"></div>
+    <div class="customGraph col-md-12" id="total-compare-pie">
+        {# Compare form #}
+        <div class="row">
+            <div class="col-md-12">
+
+                <form class="government-compare">
+
+                    {# First condition #}
+                    <div class="col-md-3 first-condition">
+                        <div class="typeahead_wrap">
+                            <input type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" />
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control disabled">
+                                <option value="">YEAR</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {# Divider #}
+                    <div class="col-md-1 form-group text-center divider">TO</div>
+
+                    {# Second condition #}
+                    <div class="col-md-3 second-condition">
+                        <div class="typeahead_wrap">
+                            <input type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" />
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control disabled">
+                                <option value="">YEAR</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {# Caption Selector #}
+                    <div class="col-md-3 form-group government-categories">
+                        <select class="form-control disabled category">
+                            <option value="">CATEGORY</option>
+                            <option value="Revenues">Revenues</option>
+                            <option value="Expenditures">Expenditures</option>
+                        </select>
+                        <select class="form-control disabled caption">
+                            <option value="">CAPTION</option>
+                        </select>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+        {# Charts #}
+        <div class="row">
+            <div class="customGraph col-md-6 text-center" id="total-compare-first-pie">
+                <p>To see graph, please fill out the form</p>
+            </div>
+            <div class="customGraph col-md-6 text-center" id="total-compare-second-pie">
+                <p>To see graph, please fill out the form</p>
+            </div>
+        </div>
+    </div>
+    <div class="customGraph col-md-12 text-center" id="total-compare-column">
 </div>
 
 {# Statistics #}

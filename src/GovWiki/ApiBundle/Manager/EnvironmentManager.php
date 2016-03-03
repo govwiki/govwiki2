@@ -4,8 +4,8 @@ namespace GovWiki\ApiBundle\Manager;
 
 use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\DBAL\DBALException;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMException;
 use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
@@ -315,6 +315,18 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * @param string $partOfName Part of government name.
+     *
+     * @return array
+     */
+    public function searchGovernmentForComparison($partOfName)
+    {
+        /** @var GovernmentRepository $repository */
+        $repository = $this->em->getRepository('GovWikiDbBundle:Government');
+        return $repository->searchForComparison($this->environment, $partOfName);
+    }
+
+    /**
      * @param string $partOfName Part of elected official name.
      *
      * @return array
@@ -487,68 +499,129 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
-     * Get revenues and expenditures by government
+     * Get revenues and expenditures by government.
      *
-     * @param array $governmentsIds
+     * @param array $governments Array of object, each contains id and year.
+     *
      * @return array
      */
-    public function getCategoriesRevenuesAndExpendituresByGoverment($governmentsIds)
-    {
-        $governments = $this->em->createQueryBuilder()
-            ->select('FinData.id, FinData.caption, IDENTITY(FinData.captionCategory) as captionCategory')
-            ->from('GovWikiDbBundle:FinData', 'FinData')
-            ->where('FinData.government IN (:governmentsIds)')
-            ->andWhere('FinData.captionCategory IN (:capId)')
-            ->setParameters(
-                [
-                    'governmentsIds' => $governmentsIds,
-                    'capId' => [2, 3],
-                ]
-            )
-            ->groupBy('FinData.caption')
-            ->getQuery()
-            ->getResult();
+    public function getCategoriesRevenuesAndExpendituresByGovernment(
+        array $governments
+    ) {
+        $con = $this->em->getConnection();
+
+        $governments = $con->fetchAll("
+            SELECT f.caption AS name, f.name AS category
+            FROM (
+                    SELECT f2.caption, cc.name
+                    FROM findata f2
+                    INNER JOIN caption_categories cc
+                        ON cc.id = f2.caption_category_id
+                    WHERE
+                      f2.government_id = {$governments[0]['id']} AND
+                      f2.caption_category_id in (2, 3) AND
+                      f2.year = {$governments[0]['year']}
+                    GROUP BY caption
+                ) f
+            INNER JOIN (
+                SELECT caption
+                FROM findata
+                WHERE
+                  government_id = {$governments[1]['id']} AND
+                  caption_category_id in (2, 3) AND
+                      year = {$governments[1]['year']}
+                GROUP BY caption
+            ) s ON f.caption = s.caption
+        ");
 
         return $governments;
     }
 
     /**
-     * Get compare data governments
+     * Add to each governments 'data' field with specified findata caption
+     * dollar amount and total for fund category.
      *
-     * @param array $data
+     * @param array $data Request in form described in
+     *                    {@see ComparisonController::compareAction}.
+     *
      * @return array
+     *
+     * @throws QueryException Query result is not unique.
      */
-    public function getComparedGovernments($data)
+    public function getComparedGovernments(array $data)
     {
-        $parameters = [
-            'municipalitysId' => [$data['firstMunicipality']['id'], $data['secondMunicipality']['id']],
-            'years' => [$data['firstMunicipality']['year']['name'], $data['secondMunicipality']['year']['name']],
-            'capId' => [2, 3],
-            'fund' => 99,
-        ];
-
-        $category = ($data['category']['id']) ? $data['category']['name'] : null;
-
-        $governments = $this->em->createQueryBuilder()
-            ->select('FinData.id, IDENTITY(FinData.captionCategory) as captionCategory, IDENTITY(FinData.government) as governmentId, FinData.caption, FinData.dollarAmount, FinData.year')
+        $expr = $this->em->getExpressionBuilder();
+        $qb = $this->em->createQueryBuilder()
+            ->select(
+                'FinData.caption, FinData.dollarAmount AS amount'
+            )
             ->from('GovWikiDbBundle:FinData', 'FinData')
-            ->where('FinData.government IN (:municipalitysId)')
-            ->andWhere('FinData.year IN (:years)');
+            ->join('FinData.captionCategory', 'CaptionCategory')
+            ->where($expr->andX(
+                $expr->eq('CaptionCategory.name', $expr->literal($data['category'])),
+                $expr->eq('FinData.fund', 99) // Only total funds.
+            ));
 
-        if ($category) {
-            $governments->andWhere('FinData.caption = :caption');
-            $parameters['caption'] = $category;
+        if (array_key_exists('caption', $data) & ! empty($data['caption'])) {
+            $qb->andWhere(
+                $expr->eq('FinData.caption', $expr->literal($data['caption']))
+            );
         }
 
-        $governments
-            ->andWhere('FinData.captionCategory IN (:capId)')
-            ->andWhere('FinData.fund = :fund')
-            ->setParameters($parameters);
+        /*
+         * Get data for first government.
+         */
+        $firstQb = clone $qb;
+        $firstQb->andWhere($expr->andX(
+            $expr->eq('FinData.government', $data['firstGovernment']['id']),
+            $expr->eq('FinData.year', $data['firstGovernment']['year'])
+        ));
 
-        $sql = $governments
+        $firstGovernmentData = $firstQb->getQuery()->getArrayResult();
+
+        /*
+         * Compute total for specified caption category for first government.
+         */
+        $firstGovernmentTotal = $this->em->createQueryBuilder()
+            ->select('SUM(FinData.dollarAmount)')
+            ->from('GovWikiDbBundle:FinData', 'FinData')
+            ->join('FinData.captionCategory', 'CaptionCategory')
+            ->where($expr->andX(
+                $expr->eq('CaptionCategory.name', $expr->literal($data['category'])),
+                $expr->eq('FinData.fund', 99) // Only total funds.
+            ))
             ->getQuery()
-            ->getArrayResult();
+            ->getSingleScalarResult();
 
-        return $sql;
+        /*
+         * Get data for second government.
+         */
+        $qb->andWhere($expr->andX(
+            $expr->eq('FinData.government', $data['secondGovernment']['id']),
+            $expr->eq('FinData.year', $data['secondGovernment']['year'])
+        ));
+
+        $secondGovernmentData = $qb->getQuery()->getArrayResult();
+
+        /*
+         * Compute total for specified caption category for second government.
+         */
+        $secondGovernmentTotal = $this->em->createQueryBuilder()
+            ->select('SUM(FinData.dollarAmount)')
+            ->from('GovWikiDbBundle:FinData', 'FinData')
+            ->join('FinData.captionCategory', 'CaptionCategory')
+            ->where($expr->andX(
+                $expr->eq('CaptionCategory.name', $expr->literal($data['category'])),
+                $expr->eq('FinData.fund', 99) // Only total funds.
+            ))
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $data['firstGovernment']['data'] = $firstGovernmentData;
+        $data['firstGovernment']['total'] = $firstGovernmentTotal;
+        $data['secondGovernment']['data'] = $secondGovernmentData;
+        $data['secondGovernment']['total'] = $secondGovernmentTotal;
+
+        return $data;
     }
 }

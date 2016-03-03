@@ -2,11 +2,97 @@ webpackJsonp([1],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	
 	$(function() {
 	
 	    __webpack_require__(1);
-	    var RankPopover = __webpack_require__(7);
-	    var rankPopover = new RankPopover();
+	    new (__webpack_require__(7))();
+	    var Step1 = __webpack_require__(9);
+	    var Step2 = __webpack_require__(23);
+	    var Step3 = __webpack_require__(24);
+	    var Step31 = __webpack_require__(25);
+	
+	    /**
+	     * Status of form steps
+	     * If step isn't completed - dependency fields will be .disabled
+	     *
+	     * @typedef FormState
+	     * @type {{firstStep: boolean, secondStep: boolean, thirdStep: boolean}}
+	     */
+	    var FormState = {
+	        firstStep: {
+	            completed: true,
+	            data: {},
+	            complete: function() {
+	                this.completed = true;
+	
+	                step2.unlock();
+	                if (FormState.firstStep.completed && FormState.secondStep.completed) {
+	                    step31.unlock();
+	                    step3.unlock();
+	                }
+	            },
+	            incomplete: function() {
+	                this.completed = false;
+	
+	                step2.lock();
+	                step3.lock();
+	                step31.lock();
+	            }
+	        },
+	        secondStep: {
+	            completed: false,
+	            data: {},
+	            complete: function() {
+	                this.completed = true;
+	
+	                if (FormState.firstStep.completed && FormState.secondStep.completed) {
+	                    step31.unlock();
+	                    step3.unlock();
+	                }
+	            },
+	            incomplete: function() {
+	                this.completed = false;
+	
+	                step31.lock();
+	                step3.lock();
+	            }
+	        },
+	        thirdStep: {
+	            completed: false,
+	            data: {},
+	            complete: function() {
+	                this.completed = false;
+	            },
+	            incomplete: function() {
+	                this.completed = true;
+	            }
+	        },
+	        thirdOneStep: {
+	            completed: false,
+	            data: {},
+	            complete: function() {
+	                this.completed = false;
+	            },
+	            incomplete: function() {
+	                this.completed = true;
+	            }
+	        }
+	    };
+	
+	    var step1, step2, step3, step31;
+	    step1 = new Step1(FormState, '.first-condition');
+	    step1.unlock();
+	
+	    step2 = new Step2(FormState, '.second-condition');
+	    step2.lock();
+	
+	    step3 = new Step3(FormState, '.government-categories .caption');
+	    step3.lock();
+	
+	    step31 = new Step31(FormState, '.government-categories .category');
+	    step31.lock();
+	
 	
 	    /**
 	     * Change fin statement year.
@@ -427,230 +513,15 @@ webpackJsonp([1],[
 	 */
 	function init() {
 	
-	    hideChartGroup('pie-charts', false);
-	    hideChartGroup('tree-chart', true);
-	    hideChartGroup('tree-charts', true);
 	    handler_switchChart();
-	    //financialStatements_compare().init();
+	    //financialStatements_compare();
 	    financialStatements_revenue();
 	    financialStatements_expenditures();
-	    financialStatementsTree_expenditures();
-	    financialStatementsTree_revenues();
 	
 	}
 	
 	function financialStatements_compare() {
 	
-	    //var compareGovernments = {
-	    //    data: null,
-	    //    init: function() {
-	    //        var obj = this;
-	    //
-	    //        // search goverments
-	    //        $('.municipality-compare__goverments').keyup(function(event) {
-	    //            if (event.keyCode >= 9 && event.keyCode <= 46) {
-	    //            } else {
-	    //                var el = $(this);
-	    //                el.parent().find('.municipality-search').html('');
-	    //                if (el.val().length > 2) {
-	    //                    $.ajax({
-	    //                        url: '{{ govwiki_path('govwiki_api_v1_government_search') }}',
-	    //                        type: 'GET',
-	    //                        data: 'search=' + el.val(),
-	    //                        success: function (data) {
-	    //                            if (data.length > 0) {
-	    //                                for (i = 0; i < data.length; i++) {
-	    //                                    el.parent().find('.municipality-search').append('<div onclick="compareGovernments.setYear(' + data[i].id + ', \'' + el.attr('id') + '\', \'' + data[i].name + '\')">' + data[i].state + ' ' + data[i].name + '</div>');
-	    //                                }
-	    //                            }
-	    //                        }
-	    //                    });
-	    //                }
-	    //            }
-	    //        });
-	    //
-	    //        // submit form
-	    //        $('.municipality-compare').submit(function(e) {
-	    //            e.preventDefault();
-	    //            obj.submitForm($(this));
-	    //        });
-	    //
-	    //        // check years for get category
-	    //        $('.municipality-year-select').change(function() {
-	    //            if ($('#first-year').val() != '' && $('#second-year').val() != '') {
-	    //                obj.getCategories();
-	    //            } else {
-	    //                $('#municipality-categories').html('<option value="">All categories</option>');
-	    //            }
-	    //        });
-	    //
-	    //    },
-	    //    setYear: function(govId, elId, name) {
-	    //        var el = $('#'+elId);
-	    //        var yearEl = el.parent().next().find('select');
-	    //
-	    //        // get goverments years
-	    //        $.ajax({
-	    //            url: location.href,
-	    //            type: 'POST',
-	    //            data: 'yearByGovId=' + govId,
-	    //            success: function (data) {
-	    //                if (data.length > 0) {
-	    //                    yearEl.html('<option value="">Year</option>');
-	    //                    for (i=0;i<data.length;i++) {
-	    //                        el.parent().next().find('select').append('<option value="'+data[i].id+'">'+data[i].year+'</option>');
-	    //                    }
-	    //
-	    //                    el.val(name);
-	    //                    el.attr('data-id', govId);
-	    //                    el.parent().find('.municipality-search').html('');
-	    //                } else {
-	    //                    yearEl.html('<option value="">Year</option>');
-	    //                    alert('"'+name+'" has no data, please choose another municipality');
-	    //                }
-	    //            }
-	    //        });
-	    //    },
-	    //    getCategories: function() {
-	    //        var data = {
-	    //            governmentsId:
-	    //                [
-	    //                    $('#first-municipality').attr('data-id'),
-	    //                    $('#second-municipality').attr('data-id')
-	    //                ]
-	    //        };
-	    //
-	    //        var el = $('#municipality-categories');
-	    //
-	    //        // get categories
-	    //        $.ajax({
-	    //            url: location.href,
-	    //            type: 'POST',
-	    //            data: data,
-	    //            success: function (data) {
-	    //                if (data.length > 0) {
-	    //                    el.html('<option value="">All categories</option>');
-	    //                    for (i=0;i<data.length;i++) {
-	    //                        el.append('<option value="'+data[i].id+'">'+data[i].caption+'</option>');
-	    //                    }
-	    //                } else {
-	    //                    el.html('<option value="">All categories</option>');
-	    //                }
-	    //            }
-	    //        });
-	    //    },
-	    //    submitForm: function($form) {
-	    //        // validation form
-	    //        var error = false;
-	    //        $('.municipality-compare').find('input, select').each(function() {
-	    //            if ($(this).val() == '' && $(this).attr('name') != 'municipality-compare[category]') {
-	    //                $(this).focus();
-	    //                error = true;
-	    //                return false;
-	    //            }
-	    //        });
-	    //
-	    //        if (error) {
-	    //            return false;
-	    //        }
-	    //
-	    //        var obj = this;
-	    //        var data = {
-	    //            comparedData: {
-	    //                firstMunicipality: {
-	    //                    id: $form.find('input[name="municipality-compare[first-municipality]"]').attr('data-id'),
-	    //                    name: $form.find('input[name="municipality-compare[first-municipality]"]').val(),
-	    //                    year: {
-	    //                        id: $form.find('select[name="municipality-compare[first-municipality-year]"]').val(),
-	    //                        name: $form.find('select[name="municipality-compare[first-municipality-year]"] option:selected').text()
-	    //                    },
-	    //                    data: {}
-	    //                },
-	    //                secondMunicipality: {
-	    //                    id: $form.find('input[name="municipality-compare[second-municipality]"]').attr('data-id'),
-	    //                    name: $form.find('input[name="municipality-compare[second-municipality]"]').val(),
-	    //                    year: {
-	    //                        id: $form.find('select[name="municipality-compare[second-municipality-year]"]').val(),
-	    //                        name: $form.find('select[name="municipality-compare[second-municipality-year]"] option:selected').text()
-	    //                    },
-	    //                    data: {}
-	    //                },
-	    //                category: {
-	    //                    id: $form.find('select[name="municipality-compare[category]"]').val(),
-	    //                    name: $form.find('select[name="municipality-compare[category]"] option:selected').text()
-	    //                }
-	    //            }
-	    //        }
-	    //
-	    //        data.comparedData.firstMunicipality['data'] = {};
-	    //        data.comparedData.secondMunicipality['data'] = {};
-	    //
-	    //        $.ajax({
-	    //            url: location.href,
-	    //            type: 'POST',
-	    //            data: data,
-	    //            success: function (comparedData) {
-	    //                if (comparedData.length > 0) {
-	    //                    for (i = 0; i < comparedData.length; i++) {
-	    //                        if (comparedData[i].governmentId == data.comparedData.firstMunicipality.id) {
-	    //                            data.comparedData.firstMunicipality['data'][comparedData[i].id] = comparedData[i];
-	    //                        }
-	    //                        if (comparedData[i].governmentId == data.comparedData.secondMunicipality.id) {
-	    //                            data.comparedData.secondMunicipality['data'][comparedData[i].id] = comparedData[i];
-	    //                        }
-	    //                    }
-	    //                }
-	    //                obj.data = data.comparedData;
-	    //
-	    //                console.log(obj.data);
-	    //                obj.drawDiagramm(obj.data.firstMunicipality.data, 'total-revenue-pie', 'Total Revenues');
-	    //                obj.drawDiagramm(obj.data.secondMunicipality.data, 'total-expenditures-pie', 'Total Expenditures');
-	    //            }
-	    //        });
-	    //    },
-	    //    drawDiagramm: function(data, blockId, title) {
-	    //        var obj = this;
-	    //        var chart, item, len3, options, p, r, ref1, rows, vis_data;
-	    //        vis_data = new google.visualization.DataTable();
-	    //        vis_data.addColumn('string', 'Total Gov. Expenditures');
-	    //        vis_data.addColumn('number', 'Total');
-	    //        rows = [];
-	    //
-	    //        var revenues = data;
-	    //        for(var key in revenues){
-	    //            if(revenues.hasOwnProperty(key) && (revenues[key].caption != title)) {
-	    //                r = [revenues[key].caption, parseInt(revenues[key].dollarAmount)];
-	    //                rows.push(r);
-	    //            }
-	    //        }
-	    //
-	    //        vis_data.addRows(rows);
-	    //        options = {
-	    //            'title': title,
-	    //            'titleTextStyle': {
-	    //                'fontSize': 16
-	    //            },
-	    //            'tooltip': {
-	    //                'textStyle': {
-	    //                    'fontSize': 12
-	    //                }
-	    //            },
-	    //            'width': 470,
-	    //            'height': 350,
-	    //            'pieStartAngle': 60,
-	    //            'sliceVisibilityThreshold': .05,
-	    //            'forceIFrame': true,
-	    //            'chartArea': {
-	    //                width: '90%',
-	    //                height: '75%'
-	    //            }
-	    //        };
-	    //        chart = new google.visualization.PieChart(document.getElementById(blockId));
-	    //        chart.draw(vis_data, options);
-	    //    }
-	    //};
-	    //
-	    //return compareGovernments;
 	}
 	
 	/**
@@ -900,13 +771,18 @@ webpackJsonp([1],[
 	 * #Financial_Statements (.chart-controls .btn)
 	 */
 	function handler_switchChart() {
+	
+	    hideChartGroup('pie-charts', false);
+	    hideChartGroup('compare-charts', true);
+	    hideChartGroup('tree-charts', true);
+	
 	    $('#Financial_Statements').on('click', '.chart-controls .btn', function() {
 	
 	        var chartType = this.getElementsByTagName('input')[0].id;
 	
 	        if (chartType == 'chart'){
 	            hideChartGroup('pie-charts', false);
-	            hideChartGroup('tree-chart', true);
+	            hideChartGroup('compare-charts', true);
 	            hideChartGroup('tree-charts', true);
 	            if (!chart.financialStatements_revenues.init || !chart.financialStatements_expenditures.init) {
 	                financialStatements_revenue();
@@ -915,36 +791,43 @@ webpackJsonp([1],[
 	
 	        } else if (chartType == 'tree-charts') {
 	            hideChartGroup('pie-charts', true);
-	            hideChartGroup('tree-chart', true);
+	            hideChartGroup('compare-charts', true);
 	            hideChartGroup('tree-charts', false);
+	            if (!chart.financialStatementsTree_expenditures.init || !chart.financialStatementsTree_revenues.init) {
+	                financialStatementsTree_expenditures();
+	                financialStatementsTree_revenues();
+	            }
+	        } else if (chartType == 'compare-charts') {
+	            hideChartGroup('pie-charts', true);
+	            hideChartGroup('compare-charts', false);
+	            hideChartGroup('tree-charts', true);
 	            if (!chart.financialStatementsTree_expenditures.init || !chart.financialStatementsTree_revenues.init) {
 	                financialStatementsTree_expenditures();
 	                financialStatementsTree_revenues();
 	            }
 	        }
 	
-	
-	
 	    });
-	}
 	
-	/**
-	 * Hide chart group. Group may contain few charts
-	 */
-	function hideChartGroup(chartGroup, hide) {
+	    /**
+	     * Hide chart group. Group may contain few charts
+	     */
+	    function hideChartGroup(chartGroup, hide) {
 	
-	    var display = hide ? {display: 'none'} : {display: 'block'};
+	        var display = hide ? {display: 'none'} : {display: 'block'};
 	
-	    if (chartGroup == 'pie-charts') {
-	        $('#total-expenditures-pie').css(display);
-	        $('#total-revenue-pie').css(display);
+	        if (chartGroup == 'pie-charts') {
+	            $('#total-expenditures-pie').css(display);
+	            $('#total-revenue-pie').css(display);
 	
-	    } else if (chartGroup == 'tree-chart') {
-	        $('#total-tree').css(display);
+	        } else if (chartGroup == 'compare-charts') {
+	            $('#total-compare-pie').css(display);
 	
-	    } else if (chartGroup == 'tree-charts') {
-	        $('#total-expenditures-tree').css(display);
-	        $('#total-revenue-tree').css(display);
+	        } else if (chartGroup == 'tree-charts') {
+	            $('#total-expenditures-tree').css(display);
+	            $('#total-revenue-tree').css(display);
+	        }
+	
 	    }
 	
 	}
@@ -1143,6 +1026,7 @@ webpackJsonp([1],[
 	    var order = self.order;
 	
 	    $popoverContent.on('click', 'th', function(e) {
+	        e.stopPropagation();
 	
 	        self.$popoverContent.find('h3').remove();
 	
@@ -2550,6 +2434,760 @@ webpackJsonp([1],[
 	/******/ ])
 	});
 	;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Search = __webpack_require__(10);
+	
+	/**
+	 * Constructor
+	 *
+	 * @param FormState
+	 * @param container
+	 * @constructor
+	 */
+	function Step (FormState, container) {
+	
+	    this.container = container;
+	    this.CurrentFormState = container == '.first-condition' ? FormState.firstStep : FormState.secondStep;
+	    this.$select = $(container + ' select');
+	    this.init();
+	
+	}
+	
+	/**
+	 * Init step
+	 */
+	Step.prototype.init = function () {
+	
+	    var self = this;
+	
+	    self.handler_onMouseDownSelect();
+	    self.handler_onChangeSelect();
+	
+	    //Typeahead initialization
+	    self.search = new Search(self.container);
+	
+	    // Pressed mouse or enter button
+	    self.search.$typeahead.bind("typeahead:selected", function (obj, selectedGovernment) {
+	
+	        self.CurrentFormState.data = selectedGovernment;
+	        self.createYearOptions(selectedGovernment);
+	
+	    });
+	
+	};
+	
+	
+	/**
+	 * (DOM)
+	 *
+	 * Unlock step
+	 */
+	Step.prototype.unlock = function() {
+	    this.search.$typeahead.toggleClass('disabled', false);
+	};
+	
+	
+	/**
+	 * (DOM)
+	 *
+	 * Lock step
+	 */
+	Step.prototype.lock = function() {
+	    this.search.$typeahead.toggleClass('disabled', true);
+	};
+	
+	
+	/**
+	 * (DOM)
+	 *
+	 * @param data
+	 * @returns {boolean}
+	 */
+	Step.prototype.createYearOptions = function(government) {
+	
+	    var self = this;
+	
+	    if (!government) {
+	        console.error('First argument not passed in createYearOptions() ');
+	        return true;
+	    }
+	
+	    if (government.years.length == 1) {
+	        console.log(self.CurrentFormState.data);
+	        self.CurrentFormState.data.year = government.years[0];
+	    }
+	
+	    disableSelect(false);
+	
+	    government.years.forEach(function (year) {
+	        var selected = government.years.length == 1 ? 'selected' : '';
+	        self.$select.append('<option value="' + government.id + '" ' + selected + '>' + year + '</option>');
+	    });
+	
+	    correctForm(true);
+	
+	    /**
+	     * Disable select
+	     * @param {Boolean} disabled
+	     */
+	    function disableSelect(disabled) {
+	
+	        self.$select.toggleClass('disabled', !!disabled);
+	
+	    }
+	
+	    /**
+	     *
+	     * @param isCorrect
+	     */
+	    function correctForm(isCorrect) {
+	        isCorrect ? self.CurrentFormState.complete() : self.CurrentFormState.incomplete();
+	    }
+	
+	};
+	
+	
+	/**
+	 * (Handler)
+	 *
+	 * On change select
+	 */
+	Step.prototype.handler_onChangeSelect = function () {
+	
+	    var self = this;
+	
+	    self.$select.on('change', function (e) {
+	
+	        var $el = $(e.target);
+	
+	        var $selected = $el.find('option:selected');
+	        var value = $selected.attr('value');
+	        var text = $selected.text();
+	
+	        if (!value) {
+	            alert('Please choose correct year');
+	            self.CurrentFormState.incomplete();
+	        } else {
+	            self.CurrentFormState.complete();
+	        }
+	
+	        if (value) {
+	            self.CurrentFormState.data.year = {};
+	            self.CurrentFormState.data.year.id = value;
+	            self.CurrentFormState.data.year.year = text;
+	        }
+	
+	    });
+	
+	};
+	
+	
+	/**
+	 * Show error message if government not selected
+	 */
+	Step.prototype.handler_onMouseDownSelect = function () {
+	
+	    var self = this;
+	
+	    self.$select.on('mousedown', function (e) {
+	
+	        var $el = $(e.target);
+	
+	        if ($el.hasClass('disabled')) {
+	            alert('Please, first select government');
+	            return false;
+	        }
+	
+	    });
+	
+	};
+	
+	module.exports = Step;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Handlebars = __webpack_require__(11);
+	
+	/**
+	 * Typeahead search
+	 *
+	 * @param {Selector} container - May be .first-condition or .second-condition
+	 */
+	function typeahead(container) {
+	
+	    if (!container) {
+	        alert('Please pass container selector');
+	        return true;
+	    }
+	
+	    var self = this;
+	    self.governmentData = {};
+	    self.$typeahead = $(container + ' .typeahead_government');
+	    self.searchValue = '';
+	
+	    // Init typeahead
+	    self.$typeahead.typeahead({
+	        hint: true,
+	        highlight: true,
+	        minLength: 3
+	    }, {
+	        name: 'countries',
+	        source: findMatches,
+	        templates: {
+	            empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
+	            suggestion: Handlebars.compile('<div class="sugg-box">'+
+	                '<div class="sugg-name">{{name}}</div>' +
+	                '</div>')
+	        },
+	        updater: function (item) {
+	            alert(item);
+	        }
+	    });
+	
+	    // Pressed mouse or enter button
+	    self.$typeahead.bind("typeahead:selected", function(obj, selectedGovernment) {
+	        self.$typeahead.typeahead('val', selectedGovernment.name);
+	    });
+	
+	    // Move cursor via arrows keys
+	    self.$typeahead.bind("typeahead:cursorchange", function(obj) {
+	        self.$typeahead.typeahead('val', self.searchValue);
+	    });
+	
+	    // Store search value on typing
+	    self.$typeahead.keyup(function(event) {
+	        self.searchValue = $(event.target).val();
+	    });
+	
+	    /**
+	     * (Ajax)
+	     *
+	     * Matcher for typeahead
+	     * @param query
+	     * @param syncCallback
+	     * @param asyncCallback
+	     **/
+	    function findMatches(query, syncCallback, asyncCallback) {
+	        $.ajax({
+	            method: 'GET',
+	            url: window.gw.urls.search +'?search='+ query
+	        }).success(function(data) {
+	            asyncCallback(data);
+	        });
+	    }
+	
+	    return self;
+	
+	}
+	
+	module.exports = typeahead;
+
+
+/***/ },
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *
+	 * @param FormState
+	 * @param container
+	 * @returns {*}
+	 */
+	function init (FormState, container) {
+	    var Step1 = __webpack_require__(9);
+	    return new Step1(FormState, container);
+	}
+	
+	module.exports = init;
+
+/***/ },
+/* 24 */
+/***/ function(module, exports) {
+
+	/**
+	 * Constructor
+	 * @param FormState
+	 * @param container
+	 * @constructor
+	 */
+	function Step (FormState, container) {
+	
+	    this.container = container;
+	    this.$governmentCategories = $(container);
+	    this.firstStep = FormState.firstStep;
+	    this.secondStep = FormState.secondStep;
+	    this.init();
+	
+	}
+	
+	/**
+	 * Init step
+	 */
+	Step.prototype.init = function () {
+	
+	    this.handler_onChangeSelect();
+	    this.handler_onClickSelect();
+	
+	};
+	
+	/**
+	 * (Ajax, DOM)
+	 *
+	 * Unlock step
+	 */
+	Step.prototype.unlock = function() {
+	    this.loadMatchedCategories();
+	    this.$governmentCategories.toggleClass('disabled', false);
+	};
+	
+	/**
+	 * Lock step
+	 */
+	Step.prototype.lock = function() {
+	    this.$governmentCategories.toggleClass('disabled', true);
+	};
+	
+	/**
+	 * (Ajax, DOM)
+	 */
+	Step.prototype.loadMatchedCategories = function() {
+	
+	    var self = this;
+	    var captions = {
+	        captions : [
+	            {
+	                id: self.firstStep.data.id,
+	                year: self.firstStep.data.year
+	            },
+	            {
+	                id: self.secondStep.data.id,
+	                year: self.secondStep.data.year
+	            }
+	        ]
+	    };
+	
+	    var captionsJson = JSON.stringify(captions);
+	
+	    $.ajax({
+	        url: window.gw.urls.captions,
+	        type: 'POST',
+	        contentType: 'application/json',
+	        data: captionsJson,
+	        success: function (data) {
+	
+	            if (!data || data.length == 0) {
+	                alert('Not can find categories for current comparison');
+	                self.$governmentCategories.html('<option>ALL CATEGORIES</option>');
+	                self.$governmentCategories.toggleClass('disabled', true);
+	                return true;
+	            }
+	
+	            self.$governmentCategories.toggleClass('disabled', false);
+	            self.$governmentCategories.html('');
+	
+	            /**
+	             * Create revenues group
+	             */
+	            var revenues = data.filter(function(item) {
+	                return item.category == 'Revenues';
+	            });
+	
+	            if (revenues.length > 0) {
+	                self.$governmentCategories.append('<optgroup label="Revenues"></optgroup>');
+	
+	                revenues.forEach(function (revenue) {
+	                    var $revenueGroup = self.$governmentCategories.find('[label="Revenues"]');
+	                    $revenueGroup.append('<option value="' + revenue.name + '">' + revenue.name + '</option>');
+	                });
+	
+	            }
+	
+	            /**
+	             * Create expenditures group
+	             */
+	            var expenditures = data.filter(function(item) {
+	                return item.category == 'Expenditures';
+	            });
+	
+	            if (expenditures.length > 0) {
+	                self.$governmentCategories.append('<optgroup label="Expenditures"></optgroup>');
+	
+	                expenditures.forEach(function (expenditure) {
+	                    var $expenditureGroup = self.$governmentCategories.find('[label="Expenditures"]');
+	                    $expenditureGroup.append('<option value="' + expenditure.name + '">' + expenditure.name + '</option>');
+	                });
+	
+	            }
+	
+	        },
+	        error: function () {
+	            alert('Something wrong, please try another government');
+	            self.$governmentCategories.toggleClass('disabled', true);
+	        }
+	    });
+	
+	};
+	
+	/**
+	 * @param data
+	 * @param blockId
+	 */
+	Step.prototype.drawDiagramm = function(government, blockId, captionCategory) {
+	
+	    var chart, options, r, rows, vis_data;
+	
+	    vis_data = new google.visualization.DataTable();
+	
+	    vis_data.addColumn('string', 'Caption');
+	    vis_data.addColumn('number', 'Total Funds');
+	    rows = [];
+	
+	    rows.push(['Total ' + captionCategory, parseInt(government.total)]);
+	
+	    var captions = government.data;
+	    captions.forEach(function(item) {
+	        rows.push([item.caption, parseInt(item.amount)]);
+	    });
+	    console.log(rows);
+	
+	    vis_data.addRows(rows);
+	    options = {
+	        'title': 'Compare',
+	        'titleTextStyle': {
+	            'fontSize': 16
+	        },
+	        'tooltip': {
+	            'textStyle': {
+	                'fontSize': 12
+	            }
+	        },
+	        'width': 470,
+	        'height': 350,
+	        'pieStartAngle': 60,
+	        'sliceVisibilityThreshold': 0,
+	        'forceIFrame': true,
+	        'chartArea': {
+	            width: '90%',
+	            height: '75%'
+	        }
+	    };
+	    chart = new google.visualization.PieChart(document.getElementById(blockId));
+	    chart.draw(vis_data, options);
+	
+	};
+	
+	/**
+	 * (Ajax, DOM)
+	 * TODO: Draft
+	 * If option selected, draw chart
+	 */
+	Step.prototype.handler_onChangeSelect = function() {
+	
+	    var self = this;
+	
+	    $(self.container).on('change', function (e) {
+	
+	        var $el = $(e.target);
+	        var $selected = $el.find('option:selected');
+	
+	        var caption = $selected.text();
+	        var category = $selected.parent('optgroup').attr('label');
+	
+	        $('#total-compare-column').show();
+	        $('#total-compare-first-pie').hide();
+	        $('#total-compare-second-pie').hide();
+	
+	        var data = {
+	            firstGovernment: {
+	                id: self.firstStep.data.id,
+	                name: self.firstStep.data.name,
+	                year: self.firstStep.data.year
+	            },
+	            secondGovernment: {
+	                id: self.secondStep.data.id,
+	                name: self.secondStep.data.name,
+	                year: self.firstStep.data.year
+	            },
+	            caption: caption,
+	            category: category
+	        };
+	
+	        data = JSON.stringify(data);
+	
+	        $.ajax({
+	            url: window.gw.urls.compare,
+	            type: 'POST',
+	            data: data,
+	            contentType: 'application/json',
+	            success: function (comparedData) {
+	                self.drawColumnChart(comparedData, 'total-compare-column');
+	                //self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData.category);
+	            }
+	        });
+	
+	    });
+	
+	};
+	
+	
+	/**
+	 * (Ajax, DOM)
+	 *
+	 * Check third input, if previous form items filled correct - load governments categories
+	 */
+	Step.prototype.handler_onClickSelect = function() {
+	
+	    var self = this;
+	
+	    $('.government-categories').on('mousedown', function (e) {
+	
+	        var $el = $(e.target);
+	
+	        if ($el.hasClass('disabled')) {
+	            alert('Please, first select governments');
+	            return false;
+	        } else if (!self.firstStep.completed || !self.secondStep.completed) {
+	            alert('Please, first enter all fields');
+	            return false;
+	        }
+	
+	    });
+	
+	};
+	
+	Step.prototype.drawColumnChart = function(comparedData, blockId) {
+	
+	    var chart, item, len3, options, p, r, ref1, rows, vis_data;
+	
+	    var firstGovernment = comparedData.firstGovernment;
+	    var secondGovernment = comparedData.secondGovernment;
+	
+	    rows = [
+	        ['City', 'Amount']
+	    ];
+	
+	    rows.push([firstGovernment.name, parseInt(firstGovernment.data[0].amount)]);
+	    rows.push([secondGovernment.name, parseInt(secondGovernment.data[0].amount)]);
+	
+	    options = {
+	        'title': 'Total ' + comparedData.category + ': ' + comparedData.caption,
+	        'titleTextStyle': {
+	            'fontSize': 16
+	        },
+	        'tooltip': {
+	            'textStyle': {
+	                'fontSize': 12
+	            }
+	        },
+	        'width': 500,
+	        'height': 350,
+	        'pieStartAngle': 60,
+	        'sliceVisibilityThreshold': .05,
+	        'forceIFrame': true,
+	        'chartArea': {
+	            width: '90%',
+	            height: '75%'
+	        }
+	    };
+	    vis_data = new google.visualization.arrayToDataTable(rows);
+	    chart = new google.visualization.ColumnChart(document.getElementById(blockId));
+	    chart.draw(vis_data, options);
+	
+	};
+	
+	module.exports = Step;
+
+
+/***/ },
+/* 25 */
+/***/ function(module, exports) {
+
+	/**
+	 * Constructor
+	 * @param FormState
+	 * @param container
+	 * @constructor
+	 */
+	function Step (FormState, container) {
+	
+	    this.container = container;
+	    this.$governmentCategories = $(container);
+	    this.firstStep = FormState.firstStep;
+	    this.secondStep = FormState.secondStep;
+	    this.init();
+	}
+	
+	/**
+	 * Init step
+	 */
+	Step.prototype.init = function () {
+	
+	    this.handler_onChangeSelect();
+	    this.handler_onClickSelect();
+	
+	};
+	
+	/**
+	 * (Ajax, DOM)
+	 *
+	 * Unlock step
+	 */
+	Step.prototype.unlock = function() {
+	    this.$governmentCategories.toggleClass('disabled', false);
+	};
+	
+	/**
+	 * Lock step
+	 */
+	Step.prototype.lock = function() {
+	    this.$governmentCategories.toggleClass('disabled', true);
+	};
+	
+	/**
+	 * @param data
+	 * @param blockId
+	 */
+	Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
+	
+	    var chart, options, r, rows, vis_data;
+	
+	    vis_data = new google.visualization.DataTable();
+	
+	    vis_data.addColumn('string', 'Caption');
+	    vis_data.addColumn('number', 'Total Funds');
+	    rows = [];
+	
+	    var captions = government.data;
+	    captions.forEach(function(item) {
+	        rows.push([item.caption, parseInt(item.amount)]);
+	    });
+	
+	    vis_data.addRows(rows);
+	    options = {
+	        'title': 'Total ' + comparedData.category + ': ' + government.name,
+	        'titleTextStyle': {
+	            'fontSize': 16
+	        },
+	        'tooltip': {
+	            'textStyle': {
+	                'fontSize': 12
+	            }
+	        },
+	        'width': 470,
+	        'height': 350,
+	        'pieStartAngle': 60,
+	        'sliceVisibilityThreshold': 0,
+	        'forceIFrame': true,
+	        'chartArea': {
+	            width: '90%',
+	            height: '75%'
+	        }
+	    };
+	    chart = new google.visualization.PieChart(document.getElementById(blockId));
+	    chart.draw(vis_data, options);
+	
+	};
+	
+	/**
+	 * (Ajax, DOM)
+	 * TODO: Draft
+	 * If option selected, draw chart
+	 */
+	Step.prototype.handler_onChangeSelect = function() {
+	
+	    var self = this;
+	
+	
+	    $(self.container).on('change', function (e) {
+	
+	        var $el = $(e.target);
+	        var $selected = $el.find('option:selected');
+	
+	        var category = $selected.val();
+	
+	        if (category) {
+	            $('#total-compare-column').hide();
+	            $('#total-compare-first-pie').show();
+	            $('#total-compare-second-pie').show();
+	        }
+	
+	        var data = {
+	            firstGovernment: {
+	                id: self.firstStep.data.id,
+	                name: self.firstStep.data.name,
+	                year: self.firstStep.data.year
+	            },
+	            secondGovernment: {
+	                id: self.secondStep.data.id,
+	                name: self.secondStep.data.name,
+	                year: self.firstStep.data.year
+	            },
+	            category: category
+	        };
+	
+	        data = JSON.stringify(data);
+	
+	        $.ajax({
+	            url: window.gw.urls.compare,
+	            type: 'POST',
+	            data: data,
+	            contentType: 'application/json',
+	            success: function (comparedData) {
+	                self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
+	                self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
+	            }
+	        });
+	
+	    });
+	
+	};
+	
+	
+	/**
+	 * (Ajax, DOM)
+	 *
+	 * Check third input, if previous form items filled correct - load governments categories
+	 */
+	Step.prototype.handler_onClickSelect = function() {
+	
+	    var self = this;
+	
+	    $('.government-categories').on('mousedown', function (e) {
+	
+	        var $el = $(e.target);
+	
+	        if ($el.hasClass('disabled')) {
+	            alert('Please, first select governments');
+	            return false;
+	        } else if (!self.firstStep.completed || !self.secondStep.completed) {
+	            alert('Please, first enter all fields');
+	            return false;
+	        }
+	
+	    });
+	
+	};
+	
+	module.exports = Step;
+
 
 /***/ }
 ]);
