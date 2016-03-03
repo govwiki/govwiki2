@@ -601,7 +601,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         $firstGovernmentId = $data['firstGovernment']['id'];
         $secondGovernmentId = $data['secondGovernment']['id'];
 
-        if ('Financial Statements' === $data['tab']) {
+        if ('Financial Statement' === $data['tab']) {
             /*
              * Compare by financial statements.
              */
@@ -612,11 +612,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                     'FinData.caption, FinData.dollarAmount AS amount'
                 )
                 ->from('GovWikiDbBundle:FinData', 'FinData')
-                ->join('FinData.captionCategory', 'CaptionCategory')
-                ->where($expr->andX(
-                    $expr->eq('CaptionCategory.name', $expr->literal($data['category'])),
-                    $expr->eq('FinData.fund', 99) // Only total funds.
-                ));
+                ->where($expr->eq('FinData.fund', 99)); // Only total funds.
 
             if (array_key_exists('caption', $data) & !empty($data['caption'])) {
                 $qb->andWhere(
@@ -636,20 +632,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             $firstGovernmentData = $firstQb->getQuery()->getArrayResult();
 
             /*
-             * Compute total for specified caption category for first government.
-             */
-            $firstGovernmentTotal = $this->em->createQueryBuilder()
-                ->select('SUM(FinData.dollarAmount)')
-                ->from('GovWikiDbBundle:FinData', 'FinData')
-                ->join('FinData.captionCategory', 'CaptionCategory')
-                ->where($expr->andX(
-                    $expr->eq('CaptionCategory.name', $expr->literal($data['category'])),
-                    $expr->eq('FinData.fund', 99) // Only total funds.
-                ))
-                ->getQuery()
-                ->getSingleScalarResult();
-
-            /*
              * Get data for second government.
              */
             $qb->andWhere($expr->andX(
@@ -659,24 +641,8 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
             $secondGovernmentData = $qb->getQuery()->getArrayResult();
 
-            /*
-             * Compute total for specified caption category for second government.
-             */
-            $secondGovernmentTotal = $this->em->createQueryBuilder()
-                ->select('SUM(FinData.dollarAmount)')
-                ->from('GovWikiDbBundle:FinData', 'FinData')
-                ->join('FinData.captionCategory', 'CaptionCategory')
-                ->where($expr->andX(
-                    $expr->eq('CaptionCategory.name', $expr->literal($data['category'])),
-                    $expr->eq('FinData.fund', 99) // Only total funds.
-                ))
-                ->getQuery()
-                ->getSingleScalarResult();
-
             $data['firstGovernment']['data'] = $firstGovernmentData;
-            $data['firstGovernment']['total'] = $firstGovernmentTotal;
             $data['secondGovernment']['data'] = $secondGovernmentData;
-            $data['secondGovernment']['total'] = $secondGovernmentTotal;
         } else {
             /*
              * Compare by over tabs.

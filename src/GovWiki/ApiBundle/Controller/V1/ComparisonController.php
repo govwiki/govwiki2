@@ -116,7 +116,6 @@ class ComparisonController extends AbstractGovWikiApiController
      *      "year": 2014
      *  },
      *  "caption": "Capital Outlay",
-     *  "category": "Expenditures",
      *  "tab": "Financial Statements"
      * }
      *
