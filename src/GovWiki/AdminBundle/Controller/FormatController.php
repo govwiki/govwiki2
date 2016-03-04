@@ -178,7 +178,7 @@ class FormatController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $locale = $this->getLocaleManager()->getOneLocaleByShortName('en');
-        $transKey = 'env.format.' . $format_field;
+        $transKey = 'format.' . $format_field;
         $needOneResult = true;
         $trans_key_settings = null;
         if (!empty($transKey)) {

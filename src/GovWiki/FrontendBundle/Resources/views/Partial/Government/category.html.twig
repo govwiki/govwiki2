@@ -12,8 +12,8 @@
             <tr>
                 {# Field name #}
                 <td>
-                    {#{{- ('env.format.'~format.field)|trans -}}#}
-                    {{- format.name -}}
+                    {{- ('format.'~format.field)|trans -}}
+                    {#{{- format.name -}}#}
                     {% if format.helpText %}
                         <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}" title="{{- format.helpText -}}">
                     {% endif %}
@@ -27,8 +27,8 @@
                            data-field='{{- rankName -}}'
                            data-mask='{{- format.mask -}}'
                            title='{{- format.name }} Ranks'>
-                            {#({{- government.ranks[rankName][0] }} {{ 'preposition.of'|trans }} {{ government.ranks[rankName][1] -}})#}
-                            ({{- government.ranks[rankName][0] }} of {{ government.ranks[rankName][1] -}})
+                            ({{- government.ranks[rankName][0] }} {{ 'preposition.of'|trans }} {{ government.ranks[rankName][1] -}})
+                            {#({{- government.ranks[rankName][0] }} of {{ government.ranks[rankName][1] -}})#}
                         </a>
                     {%- endif -%}
 

@@ -13,8 +13,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use GovWiki\DbBundle\Entity\Translation;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\Filesystem\Filesystem;
-use GovWiki\DbBundle\Reader\CsvReader;
-use GovWiki\DbBundle\Writer\CsvWriter;
 
 /**
  * Class LocalizationController
@@ -116,8 +114,18 @@ class LocalizationController extends AbstractGovWikiAdminController
 
         $trans_info_list_en = $this->getTranslationManager()->getTransInfoByLocale('en');
 
+        $language_list = array(
+            'en' => 'English',
+            'es' => 'Spanish',
+            'fr' => 'French',
+            'de' => 'German',
+            'it' => 'Italian'
+        );
+
         $form = $this->createFormBuilder()
-            ->add('locale_name')
+            ->add('locale_name', 'choice', array(
+                'choices' => $language_list
+            ))
             ->getForm();
 
         $form->handleRequest($request);
@@ -143,12 +151,11 @@ class LocalizationController extends AbstractGovWikiAdminController
                     $translation->setTransTextareaType($trans_info['transTextareaType']);
                     $em->persist($translation);
                 }
-                $em->flush();
 
                 /**
                  * @var Filesystem $fs
                  */
-                $translationPath = $this->container->get('kernel')->getRootDir() . '/Resources/translations/';
+                /*$translationPath = $this->container->get('kernel')->getRootDir() . '/Resources/translations/';
                 $fs = $this->container->get('filesystem');
                 $fs->chmod($translationPath, 0755);
                 $em = $this->getDoctrine()->getManager();
@@ -160,7 +167,9 @@ class LocalizationController extends AbstractGovWikiAdminController
                         $fs->chmod($translationPath . $filename, 0444);
                     }
                 }
-                $fs->chmod($translationPath, 0555);
+                $fs->chmod($translationPath, 0555);*/
+
+                $em->flush();
 
                 return $this->redirectToRoute('govwiki_admin_localization_index');
             } else {
@@ -205,7 +214,8 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function exportLocaleAction($locale_name)
     {
-        $filePath = $this->getParameter('kernel.logs_dir') . '/locale.' . $locale_name . '.yml';
+        $env_name = $this->adminEnvironmentManager()->getEnvironment();
+        $filePath = $this->getParameter('kernel.logs_dir') . '/' . $env_name . '.locale.' . $locale_name . '.yml';
 
         $data = $this->getTranslationManager()->getTransInfoByLocale($locale_name);
 
@@ -223,7 +233,7 @@ class LocalizationController extends AbstractGovWikiAdminController
         $response->headers->set('Cache-Control', 'public');
         $response->headers->set(
             'Content-Disposition',
-            'attachment; filename=locale.' . $locale_name . '.yml'
+            'attachment; filename=' . $env_name . '.locale.' . $locale_name . '.yml'
         );
 
         unlink($filePath);
@@ -428,6 +438,17 @@ class LocalizationController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $footer_slug_list = array('footer.copyright', 'footer.links', 'footer.social');
+            if (in_array($transKey, $footer_slug_list)) {
+                $environment_name = $this->adminEnvironmentManager()->getEnvironment();
+                $environment = $em->getRepository('GovWikiDbBundle:Environment')->findOneBySlug($environment_name);
+                $env_content = $em->getRepository('GovWikiDbBundle:EnvironmentContents')->findOneBy(array(
+                    'environment' => $environment,
+                    'slug' => $transKey
+                ));
+                $env_content->setValue($translation->getTranslation());
+            }
+
             $em->flush();
 
             return $this->redirectToRoute('govwiki_admin_localization_showlocale', array('locale_name' => $locale_name));
