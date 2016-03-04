@@ -4,15 +4,15 @@ var pathUtil = require('path');
 var webpack = require('webpack');
 
 var path = {
-    base: './src/GovWiki/FrontendBundle/Resources/public/js',
+    base: 'src/GovWiki/FrontendBundle/Resources/public/js',
     web: './web/js'
 };
 
 module.exports = {
     entry: {
-        map: path.base + '/home/index.js',
-        government: path.base + '/government/index.js',
-        common: path.base + '/common.js'
+        map: './' + path.base + '/home/index.js',
+        government: './' + path.base + '/government/index.js',
+        common: './' + path.base + '/common.js'
     },
     output: {
         path: __dirname + '/web/js',
@@ -21,7 +21,10 @@ module.exports = {
     },
     devtool: 'source-map',
     resolve: {
-        root: [pathUtil.join(__dirname, 'bower_components')]
+        root: [pathUtil.join(__dirname, 'bower_components')],
+        alias: {
+            handlebars: pathUtil.join(__dirname, path.base, '/vendor/handlebars.js')
+        }
     },
     plugins: [
         new webpack.DefinePlugin({

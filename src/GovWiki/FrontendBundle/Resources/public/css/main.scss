@@ -35,6 +35,17 @@ main {
 
 /* Temporary (start) */
 
+.btn-group {
+   .btn {
+      box-shadow: none;
+
+      &:hover {
+         box-shadow: none;
+      }
+   }
+}
+
+
 /* Temporary (end) */
 
 
@@ -83,12 +94,10 @@ i.icon {
    z-index: 10000 !important;
 }
 
-/*
-   Remove border from table in financial statement tab at government page.
-*/
-#Financial_Statements .table th,
-#Financial_Statements .table td {
-   border: none;
+.disabled {
+   cursor: not-allowed !important;
+   color: #BBBBBB !important;
+   background-color: #F3F3F3 !important;
 }
 
 /* ========================= */

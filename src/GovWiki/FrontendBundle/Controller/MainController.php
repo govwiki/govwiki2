@@ -57,9 +57,8 @@ class MainController extends Controller
         $colorizedCountyConditions = $map['colorizedCountyConditions'];
         $map['colorizedCountyConditions'] = $colorizedCountyConditions
             ->toArray();
-        $map['colorizedCountyConditions']['field_mask'] = '0.00%';
-//        $map['colorizedCountyConditions']['field_mask'] = $environmentManager
-//                ->getFieldFormat($colorizedCountyConditions->getFieldName())['mask'];
+        $map['colorizedCountyConditions']['field_mask'] = $environmentManager
+                ->getFieldFormat($colorizedCountyConditions->getFieldName())['mask'];
 
         $mapEntity = $map;
         if (null === $map) {

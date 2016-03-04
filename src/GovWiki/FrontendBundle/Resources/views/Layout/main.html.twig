@@ -7,19 +7,20 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        {% if environment is defined %}
-        <link rel="icon" href="{{ asset('/img/'~environment~'/favicon.ico') }}" type="image/x-icon" />
-        {% else %}
-        <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
-        {% endif %}
         <link href="https://bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
-
         {% block stylesheets %}{% endblock %}
-
+    {% if environment is defined %}
+        <link rel="icon" href="{{ asset('/img/'~environment~'/favicon.ico') }}" type="image/x-icon" />
+        <link rel="stylesheet" href="{{ asset('/css/'~environment~'.css') }}" />
+    {% else %}
+        <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
+    {% endif %}
     </head>
 
     <body>
+        {# get environment contents #}
+        {{ environment_content.init(environment) }}
         {# Header #}
         <header class="container {% if environment == 'puerto_rico' %}puerto{% endif %}">
             {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
@@ -98,7 +99,6 @@
                 {% set username = app.user.username %}
             {% endif %}
             <script> window.gw.username = "{{ username }}"; </script>
-            <script> window.gw.styles = '{{ styles |escape('js') }}' </script>
         {% endblock %}
 
     </body>

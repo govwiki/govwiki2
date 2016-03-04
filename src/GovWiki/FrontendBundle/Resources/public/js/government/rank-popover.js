@@ -183,6 +183,7 @@ RankPopover.prototype.sortHandler = function sortHandler() {
     var order = self.order;
 
     $popoverContent.on('click', 'th', function(e) {
+        e.stopPropagation();
 
         self.$popoverContent.find('h3').remove();
 

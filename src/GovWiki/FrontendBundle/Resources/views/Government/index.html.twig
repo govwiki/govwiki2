@@ -68,7 +68,7 @@
 
                                     <li class="{{ loop.first ? 'active' : '' }}">
                                         {# TODO: Hardcoded, for new db, must be replaced #}
-                                        <a href="#{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
+                                        <a class="tabs tab_{{ tabName | replace(' ', '_') | replace('+', 'a')|lower }}" href="#{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
                                            aria-controls="{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
                                            role="tab" data-toggle="tab" data-tabname="{{ tabName }}">
                                             {{ ('groups.group_id_'~tab_id)|trans }}
@@ -79,8 +79,7 @@
                             {% endif %}
 
                             {% if showFinStmt %}
-                                {#<li><a href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">Financial Statements</a></li>#}
-                                <li><a href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">{{ 'gov.financial_statements'|trans }}</a></li>
+                                <li><a tab_financial_statements" href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">{{ 'gov.financial_statements'|trans }}</a></li>
                             {% endif %}
 
                         </ul>
@@ -134,11 +133,11 @@
                                             {% include '@GovWikiFrontend/Partial/Government/year_select.html.twig' %}
                                         </h4>
                                     </form>
-                                    <br>
-                                    {# Statistics #}
+
                                     {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
                                         'financialStatements': government.financialStatements
                                     } %}
+
                                 </div>
                             {% endif %}
 
@@ -186,6 +185,7 @@
 
 {# Javascripts #}
 {% block javascripts %}
+
     {{parent()}}
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
@@ -199,9 +199,13 @@
                 'altTypeSlug': government.altTypeSlug,
                 'slug': government.slug,
             }) }}';
+            window.gw.urls.search = '{{ govwiki_path('govwiki_api_v1_comparison_search') }}';
+            window.gw.urls.captions = '{{ govwiki_path('govwiki_api_v1_comparison_captions') }}';
+            window.gw.urls.compare = '{{ govwiki_path('govwiki_api_v1_comparison_compare') }}';
         </script>
     {% endif %}
 
+    <script src="/js/vendor/typeahead.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/government.js"></script>
 

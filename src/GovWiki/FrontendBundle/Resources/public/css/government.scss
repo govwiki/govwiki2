@@ -7,6 +7,8 @@
 
 .governmentController {
 
+   @import "partials/typeahead/typeahead_government";
+
    nav a {
       display: inline-block;
       margin-top: 10px;
@@ -30,6 +32,71 @@
    section {
 
       @import "partials/loader/loader";
+
+      .divider {
+         color: #DBDBDB;
+         margin-top: 7%;
+      }
+
+      .selected {
+         background-color: #DDE7FF;
+      }
+
+      #Financial_Statements {
+
+         .table {
+            th, td {
+               border: none;
+            }
+         }
+
+         .government-compare {
+            padding-top: 15px;
+
+            h4 {
+               color: #0d87e9;
+            }
+
+            select {
+               font-size: 12px;
+               padding: 10px;
+            }
+
+            .first-condition {
+               border: 1px solid #0d87e9;
+               border-radius: 10px;
+            }
+
+            .second-condition {
+               border: 1px solid #0d87e9;
+               border-radius: 10px;
+            }
+
+            .government-categories {
+               border: 1px solid #0d87e9;
+               border-radius: 10px;
+
+               .category {
+
+               }
+
+               .caption {
+
+               }
+
+            }
+
+         }
+
+         // Charts
+         #total-compare-first-pie, #total-compare-second-pie {
+            p {
+               padding: 150px 0;
+               background-color: #f3f3f3;
+            }
+         }
+
+      }
 
       nav {
          margin-bottom: 30px;
@@ -159,24 +226,6 @@
             }
          }
       }
-
-     .municipality-search {
-        position: absolute;
-        background: #fff;
-        z-index: 5;
-        max-height: 200px;
-        overflow-y: auto;
-        box-shadow: 0 0 4px #ccc;
-
-          div {
-            cursor: pointer;
-            padding: 2px 6px;
-          }
-
-          div:hover {
-            background: #F9F9F9;
-          }
-     }
 
    }
 

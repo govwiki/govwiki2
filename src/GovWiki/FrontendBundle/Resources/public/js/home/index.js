@@ -494,7 +494,7 @@ $(function(){
             subLayers[_altType] = layer.createSubLayer({
                 sql: "SELECT *, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
                 cartocss: cartocss,
-                interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype', 'name']
+                interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype', 'data', 'name']
             });
 
             initTooltip(_altType);

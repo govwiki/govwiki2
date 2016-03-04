@@ -31,3 +31,7 @@ url:
 map:
     resource: "@GovWikiApiBundle/Controller/V1/MapController.php"
     type:     govwiki
+
+comparison:
+    resource: "@GovWikiApiBundle/Controller/V1/ComparisonController.php"
+    type:     govwiki
