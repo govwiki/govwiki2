@@ -28,7 +28,7 @@
 
         {# Main content #}
         <main class="container">
-            {{ adverting.getAdverting('google_adsense')|raw }}
+            {{ advertising.getAdvertising(environment, 'google_adsense')|raw }}
             {% block main %}{% endblock %}
         </main>
 

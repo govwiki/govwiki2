@@ -80,11 +80,6 @@
                         <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_user_index' ? 'active' }}">
                             <a class="link" href="{{ path('govwiki_admin_user_index') }}"> Users </a>
                         </li>
-
-                        <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_adverting_index' ? 'active' }}">
-                            <a class="link" href="{{ path('govwiki_admin_adverting_index') }}"> Adverting </a>
-                        </li>
-
                     </ul>
                 </li>
 
@@ -96,10 +91,6 @@
                 {# Visibility: sm or less #}
                 <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_user_index' ? 'active' }} visible-xs visible-sm">
                     <a class="link" href="{{ path('govwiki_admin_user_index') }}"> Users </a>
-                </li>
-
-                <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_adverting_index' ? 'active' }} visible-xs visible-sm">
-                    <a class="link" href="{{ path('govwiki_admin_adverting_index') }}"> Adverting </a>
                 </li>
 
                 {# Logout icon #}

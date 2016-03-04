@@ -10,8 +10,8 @@ services:
         tags:
             - { name: twig.extension }
 
-    govwiki.frontend_bundle.adverting:
-        class: GovWiki\FrontendBundle\Service\GetAdverting
+    govwiki.frontend_bundle.advertising:
+        class: GovWiki\FrontendBundle\Service\GetAdvertising
         arguments: ["@doctrine", "@templating"]
 
     govwiki.frontend_bundle.environment_content:
