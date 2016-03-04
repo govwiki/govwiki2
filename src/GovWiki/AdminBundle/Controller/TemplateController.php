@@ -2,8 +2,11 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\AdminBundle\Form\TemplateForm;
+use GovWiki\AdminBundle\GovWikiAdminServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class TemplateController
@@ -18,35 +21,27 @@ class TemplateController extends Controller
      * @Configuration\Route("/")
      * @Configuration\Template()
      *
+     * @param Request $request A Request instance.
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        $emailTemplate = $this
-            ->getTemplateFile('GovWikiAdminBundle::email.html.twig');
+        $manager = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
 
-        $data = [
-            'voteEmail' => file_get_contents($emailTemplate),
-        ];
+        $template = $this->getDoctrine()
+            ->getRepository('GovWikiAdminBundle:Template')
+            ->getVoteEmailTemplate($manager->getEnvironment());
 
-        $form = $this->createFormBuilder($data)
-            ->add('voteEmail', 'ckeditor')
-            ->getForm();
+        $form = $this->createForm(new TemplateForm(), $template);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($template);
+            $em->flush();
+        }
 
         return [ 'form' => $form->createView() ];
-    }
-
-    /**
-     * @param string $templateName Template name in 'bundle:directory:template'
-     *                             notation.
-     *
-     * @return string
-     */
-    private function getTemplateFile($templateName)
-    {
-        $templateNameParser = $this->get('templating.name_parser');
-        $locator = $this->get('templating.locator');
-
-        return $locator->locate($templateNameParser->parse($templateName));
     }
 }

@@ -4,6 +4,13 @@
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+        macro.breadcrumbElement(
+        admin_environment|capitalize ~' environment',
+            'govwiki_admin_main_show',
+            { 'environment': admin_environment }
+        )
+    }}
     {{ macro.breadcrumbElement('Templates') }}
 {% endblock breadcrumb %}
 
@@ -22,9 +29,36 @@
 
                 {# Body #}
                 <div class="panel-body">
+                    <div>
+                        <h4>Available parameters:</h4>
+                        <ul>
+                            <li>
+                                vote:
+                                <ul>
+                                    <li>vote</li>
+                                    <li>didElectedOfficialProposeThis</li>
+                                    <li>
+                                        legislation
+                                        <ul>
+                                            <li>name</li>
+                                            <li>issueCategory</li>
+                                            <li>summary</li>
+                                            <li>govAssignedNumber</li>
+                                            <li>dateConsidered</li>
+                                            <li>government</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>profileUrl</li>
+                            <li>addCommentUrl</li>
+                        </ul>
+                    </div>
+
 
                     {{ form_start(form) }}
                     {{ form_widget(form) }}
+                    <button type="submit" class="btn btn-success">Update</button>
                     {{ form_end(form) }}
 
 
