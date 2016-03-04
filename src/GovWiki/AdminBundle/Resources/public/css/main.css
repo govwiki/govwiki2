@@ -291,3 +291,7 @@ body > header {
   padding-bottom: 20px; }
   #environment-styles__tabs li {
     margin-right: 6px; }
+
+body .container a.btn-primary,
+body .container a.btn-primary:hover {
+  color: #fff; }

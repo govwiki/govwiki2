@@ -1,0 +1,31 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block title %}Adverting{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+    macro.breadcrumbElement(
+    admin_environment|capitalize ~' environment',
+    'govwiki_admin_main_show',
+    { 'environment': admin_environment }
+    )
+    }}
+    {{ macro.breadcrumbElement('Advertising') }}
+{% endblock breadcrumb %}
+
+{% block body %}
+<div class="col-md-6">
+    <h3>Advertising</h3>
+    <br>
+    {{ form_start(form) }}
+        <div class="row">
+            <div class="hidden">{{ form_row(form.environment) }}</div>
+            <div class="col-md-6">{{ form_row(form.advertingType) }}</div>
+            <div class="col-md-6">{{ form_row(form.advertingEnable) }}</div>
+        </div>
+        {{ form_row(form.advertingCode) }}
+        {{ form_row(form.submit, { 'label': 'Save' }) }}
+    {{ form_end(form) }}
+    </div>
+{% endblock body %}

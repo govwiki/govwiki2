@@ -6,12 +6,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Adverting
+ * Advertising
  *
- * @ORM\Table(name="adverting")
+ * @ORM\Table(name="advertising")
  * @ORM\Entity()
  */
-class Adverting
+class Advertising
 {
     /**
      * @var integer
@@ -21,6 +21,13 @@ class Adverting
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
+    /**
+     * @var Environment
+     *
+     * @ORM\ManyToOne(targetEntity="Environment")
+     */
+    private $environment;
 
     /**
      * @var string
@@ -52,6 +59,26 @@ class Adverting
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return Environment
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
+
+    /**
+     * @param Environment $environment A Environment instance.
+     *
+     * @return Government
+     */
+    public function setEnvironment(Environment $environment)
+    {
+        $this->environment = $environment;
+
+        return $this;
     }
 
     /**
