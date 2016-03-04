@@ -13,6 +13,11 @@ use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Map;
+use GovWiki\DbBundle\Entity\Locale;
+use GovWiki\DbBundle\Entity\Translation;
+use GovWiki\DbBundle\Entity\Format;
+use GovWiki\DbBundle\Entity\Fund;
+use GovWiki\DbBundle\Entity\CaptionCategory;
 use GovWiki\DbBundle\Form\EnvironmentType;
 use GovWiki\DbBundle\Form\MapType;
 use GovWiki\DbBundle\GovWikiDbServices;
@@ -33,6 +38,8 @@ class WizardController extends AbstractGovWikiAdminController
 {
     const ENVIRONMENT_PARAMETER = 'wizard_environment';
     const WIZARD_STEP = 'wizard_step';
+    const WIZARD_GREETING_TEXT = 'wizard_greeting_text';
+    const WIZARD_BOTTOM_TEXT = 'wizard_bottom_text';
 
     /**
      * List of wizards step's, need for simplify methods next/prev step.
@@ -68,6 +75,8 @@ class WizardController extends AbstractGovWikiAdminController
                  * Start new wizard.
                  */
                 $this->storeEnvironmentEntity(null);
+                $this->setGreetingText(null);
+                $this->setBottomText(null);
                 $this->setStep(0);
             } else {
                 /*
@@ -98,6 +107,8 @@ class WizardController extends AbstractGovWikiAdminController
     {
         $this->setStep(0);
         $this->storeEnvironmentEntity(null);
+        $this->setGreetingText(null);
+        $this->setBottomText(null);
 
         return $this->redirectToRoute('govwiki_admin_main_home');
     }
@@ -126,6 +137,9 @@ class WizardController extends AbstractGovWikiAdminController
              * Proceed to next step.
              */
             $this->storeEnvironmentEntity($environment);
+            $this->setGreetingText($form->get('greetingText')->getData());
+            $this->setBottomText($form->get('bottomText')->getData());
+
             return $this->nextStep();
         }
         return [ 'form' => $form->createView() ];
@@ -294,6 +308,8 @@ class WizardController extends AbstractGovWikiAdminController
                 $parser->parse();
             }
 
+            $this->createLocale();
+
             return $this->nextStep();
         }
 
@@ -314,6 +330,8 @@ class WizardController extends AbstractGovWikiAdminController
 
         $this->setStep(0);
         $this->storeEnvironmentEntity(null);
+        $this->setGreetingText(null);
+        $this->setBottomText(null);
 
         return $this->redirectToRoute('govwiki_admin_main_show', [
             'environment' => $environment->getSlug(),
@@ -374,6 +392,42 @@ class WizardController extends AbstractGovWikiAdminController
     }
 
     /**
+     * @return string
+     */
+    private function getGreetingText()
+    {
+        return $this->get('session')->get(self::WIZARD_GREETING_TEXT, 0);
+    }
+
+    /**
+     * @param string $greeting_text Greeting text.
+     *
+     * @return void
+     */
+    private function setGreetingText($greeting_text)
+    {
+        $this->get('session')->set(self::WIZARD_GREETING_TEXT, $greeting_text);
+    }
+
+    /**
+     * @return string
+     */
+    private function getBottomText()
+    {
+        return $this->get('session')->get(self::WIZARD_BOTTOM_TEXT, 0);
+    }
+
+    /**
+     * @param string $bottom_text Bottom text.
+     *
+     * @return void
+     */
+    private function setBottomText($bottom_text)
+    {
+        $this->get('session')->set(self::WIZARD_BOTTOM_TEXT, $bottom_text);
+    }
+
+    /**
      * Redirect to next step.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -407,5 +461,125 @@ class WizardController extends AbstractGovWikiAdminController
         $this->setStep($step);
 
         return $this->generateUrl(self::$wizardSteps[$step]);
+    }
+
+    /**
+     * Create locale for new environment
+     *
+     * @var Environment $environment Environment object
+     *
+     * @return void
+     */
+    private function createLocale()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $session_env_id = $this->getEnvironmentEntity()->getId();
+        $environment = $em->getRepository('GovWikiDbBundle:Environment')->find($session_env_id);
+        $greeting_text = $this->getGreetingText();
+        $bottom_text = $this->getBottomText();
+
+        $locale = new Locale();
+        $locale->setShortName('en');
+        $locale->setEnvironment($environment);
+        $em->persist($locale);
+
+        // Translations for Greeting text and Bottom text are initially set into '' and can be changed in ckeditor
+        $texts_list = array(
+            'map.greeting_text' => $greeting_text,
+            'general.bottom_text' => $bottom_text
+        );
+        foreach ($texts_list as $transKey => $transText) {
+            $this->newTranslation($locale, $transKey, $transText, 'ckeditor');
+        }
+
+        // Translations for footer copyright and socials
+        $env_styles = $environment->getStyle();
+        foreach ($env_styles[0]['content'] as $outer_key => $item) {
+            if ($item['block'] == 'footer') {
+                foreach ($item['content'] as $content) {
+                    $this->newTranslation($locale, 'footer.' . $content['block'], $content['content'], 'ckeditor');
+                }
+                unset($env_styles[0]['content'][$outer_key]['content']);
+                break;
+            }
+        }
+        $environment->setStyle($env_styles);
+
+        // General translations
+        $general_trans_list = array(
+            'map.government.name' => 'Government Name',
+            'map.select.types' => 'Select type(s)',
+            'map.type_part_agency_name' => 'Type part of the agency’s name',
+            'map.click_on_map' => 'or click it on the map',
+            'footer.links.home' => 'Home',
+            'footer.links.contact_us' => 'Contact Us',
+            'header.links.return_to_map' => 'Return to Map',
+            'gov.links.latest_audit' => 'Latest Audit',
+            'gov.financial_statements' => 'Financial Statements',
+            'preposition.of' => 'of'
+        );
+        foreach ($general_trans_list as $transKey => $transText) {
+            $this->newTranslation($locale, $transKey, $transText);
+        }
+
+        /** @var Fund $fund */
+        $fund_list = array(
+            'funds.general_fund' => 'General Fund',
+            'funds.other' => 'Other Funds',
+            'funds.total' => 'Total Gov. Funds'
+        );
+        foreach ($fund_list as $transKey => $transText) {
+            $this->preSaveTranslation($locale, $transKey, $transText);
+        }
+
+        $search  = array(' ', '-'  , '&'  , ','  , '(' , ')' , '/' , '%'   , "'");
+        $replace = array('_', '_d_', 'amp', '_c_', 'lb', 'rb', 'sl', 'proc', "_apos_");
+        /** @var CaptionCategory $captionCategory */
+        $captionCategories = $em->getRepository('GovWikiDbBundle:CaptionCategory')->findAll();
+        foreach ($captionCategories as $captionCategory) {
+            $captionCategoryName = $captionCategory->getName();
+            $captionCategoryName_slug = str_replace($search, $replace, $captionCategoryName);
+            $captionCategoryName_slug = strtolower($captionCategoryName_slug);
+
+            $this->preSaveTranslation($locale, 'caption_categories.' . $captionCategoryName_slug, $captionCategoryName);
+        }
+
+        /** @var Format $format */
+        $formats = $environment->getFormats();
+        foreach ($formats as $format) {
+            $this->preSaveTranslation($locale, 'format.' . $format->getField(), $format->getName());
+        }
+
+        $em->flush();
+    }
+
+    private function preSaveTranslation($locale, $transKey, $transText)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $exist_translation = $em->getRepository('GovWikiDbBundle:Translation')->findOneBy(array(
+            'locale' => $locale,
+            'transKey' => $transKey
+        ));
+
+        if (!empty($exist_translation)) {
+            $exist_translation->setTranslation($transText);
+        } else {
+            $this->newTranslation($locale, $transKey, $transText);
+        }
+    }
+
+    private function newTranslation($locale, $transKey, $transText, $transTextareaType = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $translation = new Translation();
+        $translation->setLocale($locale);
+        $translation->setTransKey($transKey);
+        $translation->setTranslation($transText);
+        if (null !== $transTextareaType) {
+            $translation->setTransTextareaType($transTextareaType);
+        }
+        $em->persist($translation);
     }
 }

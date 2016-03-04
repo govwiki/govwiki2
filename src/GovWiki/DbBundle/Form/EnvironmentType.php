@@ -23,6 +23,12 @@ class EnvironmentType extends AbstractType
             ->add('name')
             ->add('domain')
             ->add('title')
+            ->add('greetingText', 'ckeditor', array(
+                'mapped' => false
+            ))
+            ->add('bottomText', 'ckeditor', array(
+                'mapped' => false
+            ))
         ;
     }
 

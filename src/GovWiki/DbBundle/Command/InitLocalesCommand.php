@@ -50,40 +50,53 @@ class InitLocalesCommand extends ContainerAwareCommand
 
         /** @var Environment $environment */
         foreach ($environments as $environment) {
-            //$env_styles = $environment->getStyle();
-
 
             $exist_locale = $em->getRepository('GovWikiDbBundle:Locale')->findOneBy(array(
                 'shortName' => 'en',
                 'environment' => $environment
             ));
-            if (empty($exist_locale)) {
+            if (!empty($exist_locale)) {
+                $locale = $exist_locale;
+            } else {
                 $output->writeln("Create EN locale for environment '{$environment->getName()}'");
                 $locale = new Locale();
                 $locale->setShortName('en');
                 $locale->setEnvironment($environment);
                 $em->persist($locale);
 
-                $texts_transKey_list = array(
-                    'map.greeting_text',
-                    'footer.copyright',
-                    'footer.socials',
-                    'general.bottom_text'
-                );
+                // Translations for Greeting text and Bottom text are initially set into '' and can be changed in ckeditor
+                $texts_transKey_list = array('map.greeting_text', 'general.bottom_text');
                 foreach ($texts_transKey_list as $texts_transKey) {
-                    $translation = new Translation();
-                    $translation->setLocale($locale);
-                    $translation->setTransKey($texts_transKey);
-                    $translation->setTransTextareaType('ckeditor');
-                    $em->persist($translation);
+                    $this->newTranslation($locale, $texts_transKey, '', 'ckeditor');
                 }
 
-                // Translation for 'Financial Statements' text
-                $translation = new Translation();
-                $translation->setLocale($locale);
-                $translation->setTransKey('gov.financial_statements');
-                $translation->setTranslation('Financial Statements');
-                $em->persist($translation);
+                // Translations for footer copyright and socials
+                $env_styles = $environment->getStyle();
+                foreach ($env_styles[0]['content'] as $item) {
+                    if ($item['block'] == 'footer') {
+                        foreach ($item['content'] as $content) {
+                            $this->newTranslation($locale, 'footer.' . $content['block'], $content['content'], 'ckeditor');
+                        }
+                        break;
+                    }
+                }
+
+                // General translations
+                $general_trans_list = array(
+                    'map.government.name' => 'Government Name',
+                    'map.select.types' => 'Select type(s)',
+                    'map.type_part_agency_name' => 'Type part of the agency’s name',
+                    'map.click_on_map' => 'or click it on the map',
+                    'footer.links.home' => 'Home',
+                    'footer.links.contact_us' => 'Contact Us',
+                    'header.links.return_to_map' => 'Return to Map',
+                    'gov.links.latest_audit' => 'Latest Audit',
+                    'gov.financial_statements' => 'Financial Statements',
+                    'preposition.of' => 'of'
+                );
+                foreach ($general_trans_list as $transKey => $transText) {
+                    $this->newTranslation($locale, $transKey, $transText);
+                }
 
                 /** @var Fund $fund */
                 $fund_list = array(
@@ -104,8 +117,6 @@ class InitLocalesCommand extends ContainerAwareCommand
 
                     $this->preSaveTranslation($locale, 'caption_categories.' . $captionCategoryName_slug, $captionCategoryName);
                 }
-            } else {
-                $locale = $exist_locale;
             }
 
             /** @var Translation $exist_translation */
@@ -121,6 +132,7 @@ class InitLocalesCommand extends ContainerAwareCommand
                 $this->preSaveTranslation($locale, 'format.' . $format->getField(), $format->getName());
             }
 
+            // Translations for FinData captions
             $finData_unique_caption_list = $em->getRepository('GovWikiDbBundle:FinData')->getUniqueCaptions($environment);
             foreach ($finData_unique_caption_list as $finData_unique_caption) {
                 $caption = $finData_unique_caption['caption'];
@@ -149,11 +161,22 @@ class InitLocalesCommand extends ContainerAwareCommand
         if (!empty($exist_translation)) {
             $exist_translation->setTranslation($transText);
         } else {
-            $finData_caption_translation = new Translation();
-            $finData_caption_translation->setLocale($locale);
-            $finData_caption_translation->setTransKey($transKey);
-            $finData_caption_translation->setTranslation($transText);
-            $em->persist($finData_caption_translation);
+            $this->newTranslation($locale, $transKey, $transText);
         }
+    }
+
+    private function newTranslation($locale, $transKey, $transText, $transTextareaType = null)
+    {
+        /** @var EntityManager $em */
+        $em = $this->getContainer()->get('doctrine')->getManager();
+
+        $translation = new Translation();
+        $translation->setLocale($locale);
+        $translation->setTransKey($transKey);
+        $translation->setTranslation($transText);
+        if (null !== $transTextareaType) {
+            $translation->setTransTextareaType($transTextareaType);
+        }
+        $em->persist($translation);
     }
 }

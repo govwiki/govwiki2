@@ -46,14 +46,6 @@ class LocalizationController extends AbstractGovWikiAdminController
             20
         );
 
-        $em = $this->getDoctrine()->getManager();
-        $env_slug = $this->adminEnvironmentManager()->getEnvironment();
-        $environment = $em->getRepository('GovWikiDbBundle:Environment')->findOneBy(array(
-            'slug' => $env_slug
-        ));
-        $env_styles = $environment->getStyle();
-        var_dump($env_styles[0]['content'][1]['content']);
-
         return [ 'locale_names_list' => $locale_names_pagination ];
     }
 

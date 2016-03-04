@@ -463,4 +463,37 @@ class Environment
     {
         return $this->slug;
     }
+
+    /**
+     * Add locales
+     *
+     * @param \GovWiki\DbBundle\Entity\Locale $locales
+     * @return Environment
+     */
+    public function addLocale(\GovWiki\DbBundle\Entity\Locale $locales)
+    {
+        $this->locales[] = $locales;
+
+        return $this;
+    }
+
+    /**
+     * Remove locales
+     *
+     * @param \GovWiki\DbBundle\Entity\Locale $locales
+     */
+    public function removeLocale(\GovWiki\DbBundle\Entity\Locale $locales)
+    {
+        $this->locales->removeElement($locales);
+    }
+
+    /**
+     * Get locales
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getLocales()
+    {
+        return $this->locales;
+    }
 }
