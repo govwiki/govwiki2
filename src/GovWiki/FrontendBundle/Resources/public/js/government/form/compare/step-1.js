@@ -50,7 +50,6 @@ Step.prototype.init = function () {
     self.search.$typeahead.bind('typeahead:asynccancel', function(e) {
         self.loading(false);
         self.lockSelect();
-        alert('Sorry, search isn\'t completed please try again')
     });
 
     self.search.$typeahead.bind('typeahead:open', function(e) {
@@ -129,7 +128,7 @@ Step.prototype.createYearOptions = function(government) {
         return a < b;
     });
 
-    self.CurrentFormState.data.year = government.years.pop();
+    self.CurrentFormState.data.year = government.years[0];
 
     disableSelect(false);
 

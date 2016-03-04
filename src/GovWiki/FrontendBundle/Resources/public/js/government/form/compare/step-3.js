@@ -263,7 +263,6 @@ Step.prototype.handler_onChangeSelect = function() {
             data: data,
             contentType: 'application/json',
             success: function (comparedData) {
-                self.drawTable(comparedData);
                 self.drawColumnChart(comparedData, 'total-compare-column');
             }
         });
