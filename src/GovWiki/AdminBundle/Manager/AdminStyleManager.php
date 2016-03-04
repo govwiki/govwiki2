@@ -310,6 +310,10 @@ class AdminStyleManager
                                 'content' => 'Site copyright (c)',
                             ],
                             [
+                                'block' => 'links',
+                                'content' => '',
+                            ],
+                            [
                                 'block' => 'social',
                                 'content' => '',
                             ],

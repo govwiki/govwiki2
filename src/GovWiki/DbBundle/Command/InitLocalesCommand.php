@@ -9,6 +9,7 @@ use GovWiki\DbBundle\Entity\AbstractGroup;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Fund;
 use GovWiki\DbBundle\Entity\CaptionCategory;
+use GovWiki\DbBundle\Entity\EnvironmentContents;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -71,15 +72,31 @@ class InitLocalesCommand extends ContainerAwareCommand
                 }
 
                 // Translations for footer copyright and socials
+                /** @var EnvironmentContents $env_footer_part_content */
+                $footer_part_list = array('copyright', 'links', 'social');
+                foreach ($footer_part_list as $footer_part) {
+                    $env_footer_part_content = $em->getRepository('GovWikiDbBundle:EnvironmentContents')->findOneBy(array(
+                        'environment' => $environment,
+                        'slug' => 'footer_' . $footer_part
+                    ));
+                    $footer_part_transText = $env_footer_part_content->getValue();
+                    if (empty($footer_part_transText)) {
+                        $footer_part_transText = '';
+                    }
+                    $this->newTranslation($locale, 'footer.' . $footer_part, $footer_part_transText, 'ckeditor');
+                }
+
+                // Delete footer content from styles of Environment
                 $env_styles = $environment->getStyle();
-                foreach ($env_styles[0]['content'] as $item) {
-                    if ($item['block'] == 'footer') {
-                        foreach ($item['content'] as $content) {
-                            $this->newTranslation($locale, 'footer.' . $content['block'], $content['content'], 'ckeditor');
+                foreach ($env_styles[0]['content'] as $key => $item) {
+                    if ($item['block'] == 'footer' && isset($item['content']) && !empty($item['content'])) {
+                        foreach ($item['content'] as $inner_key => $content) {
+                            unset($env_styles[0]['content'][$key]['content'][$inner_key]);
                         }
                         break;
                     }
                 }
+                $environment->setStyle($env_styles);
 
                 // General translations
                 $general_trans_list = array(
@@ -87,8 +104,6 @@ class InitLocalesCommand extends ContainerAwareCommand
                     'map.select.types' => 'Select type(s)',
                     'map.type_part_agency_name' => 'Type part of the agency’s name',
                     'map.click_on_map' => 'or click it on the map',
-                    'footer.links.home' => 'Home',
-                    'footer.links.contact_us' => 'Contact Us',
                     'header.links.return_to_map' => 'Return to Map',
                     'gov.links.latest_audit' => 'Latest Audit',
                     'gov.financial_statements' => 'Financial Statements',

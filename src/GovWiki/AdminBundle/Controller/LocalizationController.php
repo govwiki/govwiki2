@@ -13,8 +13,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use GovWiki\DbBundle\Entity\Translation;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\Filesystem\Filesystem;
-use GovWiki\DbBundle\Reader\CsvReader;
-use GovWiki\DbBundle\Writer\CsvWriter;
 
 /**
  * Class LocalizationController
@@ -430,6 +428,17 @@ class LocalizationController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $footer_slug_list = array('footer.copyright', 'footer.links', 'footer.social');
+            if (in_array($transKey, $footer_slug_list)) {
+                $environment_name = $this->adminEnvironmentManager()->getEnvironment();
+                $environment = $em->getRepository('GovWikiDbBundle:Environment')->findOneBySlug($environment_name);
+                $env_content = $em->getRepository('GovWikiDbBundle:EnvironmentContents')->findOneBy(array(
+                    'environment' => $environment,
+                    'slug' => $transKey
+                ));
+                $env_content->setValue($translation->getTranslation());
+            }
+
             $em->flush();
 
             return $this->redirectToRoute('govwiki_admin_localization_showlocale', array('locale_name' => $locale_name));

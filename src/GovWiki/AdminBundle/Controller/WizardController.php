@@ -137,8 +137,8 @@ class WizardController extends AbstractGovWikiAdminController
              * Proceed to next step.
              */
             $this->storeEnvironmentEntity($environment);
-            $this->setGreetingText($form->get('greetingText')->getData());
-            $this->setBottomText($form->get('bottomText')->getData());
+            $this->setGreetingText($request->request->get('greetingText'));
+            $this->setBottomText($request->request->get('bottomText'));
 
             return $this->nextStep();
         }
@@ -309,6 +309,7 @@ class WizardController extends AbstractGovWikiAdminController
             }
 
             $this->createLocale();
+
 
             return $this->nextStep();
         }
@@ -495,11 +496,11 @@ class WizardController extends AbstractGovWikiAdminController
         // Translations for footer copyright and socials
         $env_styles = $environment->getStyle();
         foreach ($env_styles[0]['content'] as $outer_key => $item) {
-            if ($item['block'] == 'footer') {
-                foreach ($item['content'] as $content) {
+            if ($item['block'] == 'footer' && isset($item['content']) && !empty($item['content'])) {
+                foreach ($item['content'] as $inner_key => $content) {
                     $this->newTranslation($locale, 'footer.' . $content['block'], $content['content'], 'ckeditor');
+                    unset($env_styles[0]['content'][$outer_key]['content'][$inner_key]);
                 }
-                unset($env_styles[0]['content'][$outer_key]['content']);
                 break;
             }
         }
@@ -511,8 +512,6 @@ class WizardController extends AbstractGovWikiAdminController
             'map.select.types' => 'Select type(s)',
             'map.type_part_agency_name' => 'Type part of the agency’s name',
             'map.click_on_map' => 'or click it on the map',
-            'footer.links.home' => 'Home',
-            'footer.links.contact_us' => 'Contact Us',
             'header.links.return_to_map' => 'Return to Map',
             'gov.links.latest_audit' => 'Latest Audit',
             'gov.financial_statements' => 'Financial Statements',
@@ -581,5 +580,10 @@ class WizardController extends AbstractGovWikiAdminController
             $translation->setTransTextareaType($transTextareaType);
         }
         $em->persist($translation);
+    }
+
+    private function createEnvContent()
+    {
+
     }
 }
