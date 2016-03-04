@@ -42,11 +42,9 @@
 
         {# Logo #}
         <div class="col-xs-6 col-sm-6 col-md-3">
-
-            <a href="http://californiapolicycenter.org/">
-                <img src="" alt="California Policy Center" class="logo">
-            </a>
-
+            {% if environment_content.get('header_logo') != null %}
+            <img src="{{ environment_content.get('header_logo')|raw }}" alt="California Policy Center" class="logo">
+            {% endif %}
         </div>
 
         {# Menu button (hamburger) for mobile devices #}
@@ -82,11 +80,6 @@
                         <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_user_index' ? 'active' }}">
                             <a class="link" href="{{ path('govwiki_admin_user_index') }}"> Users </a>
                         </li>
-
-                        <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_adverting_index' ? 'active' }}">
-                            <a class="link" href="{{ path('govwiki_admin_adverting_index') }}"> Adverting </a>
-                        </li>
-
                     </ul>
                 </li>
 
@@ -98,10 +91,6 @@
                 {# Visibility: sm or less #}
                 <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_user_index' ? 'active' }} visible-xs visible-sm">
                     <a class="link" href="{{ path('govwiki_admin_user_index') }}"> Users </a>
-                </li>
-
-                <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_adverting_index' ? 'active' }} visible-xs visible-sm">
-                    <a class="link" href="{{ path('govwiki_admin_adverting_index') }}"> Adverting </a>
                 </li>
 
                 {# Logout icon #}
@@ -162,7 +151,9 @@
     {% stylesheets 'bundles/govwikiadmin/css/main.scss' filter='scss, cssrewrite' %}
         <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
-
+    {% if admin_environment is defined and admin_environment != '' %}
+        <link rel="stylesheet" href="{{ asset('/css/'~admin_environment~'.css') }}" />
+    {% endif %}
 {% endblock %}
 
 {# Javascripts #}
@@ -170,10 +161,6 @@
     {{ parent() }}
 
     <script>
-        window.gw = {
-            styles: '{{ admin_styles|escape('js') }}'
-        };
-
         $(function(){
             $('.btn-delete').click(function() {
                 var $this = $(this);

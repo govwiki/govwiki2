@@ -7,11 +7,24 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class AdvertingForm
+ * Class AdvertisingForm
  * @package GovWiki\AdminBundle\Form
  */
-class AdvertingForm extends AbstractType
+class AdvertisingForm extends AbstractType
 {
+    /**
+     * @var string
+     */
+    private $currentEnvironment;
+
+    /**
+     * @param string $currentEnvironment
+     */
+    public function __construct($currentEnvironment)
+    {
+        $this->currentEnvironment = $currentEnvironment;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -19,12 +32,22 @@ class AdvertingForm extends AbstractType
     {
         $builder
             ->add(
+                'environment',
+                'entity',
+                [
+                    'class' => 'GovWikiDbBundle:Environment',
+                    'property' => 'name',
+                    'data' => $this->currentEnvironment,
+                ]
+            )
+            ->add(
                 'advertingType',
                 'choice',
                 [
                     'choices' => [
                         'google_adsense' => 'Google adsense',
                     ],
+                    'label' => 'Type',
                     'expanded' => false,
                 ]
             )
@@ -36,6 +59,7 @@ class AdvertingForm extends AbstractType
                         '0' => 'Disabled',
                         '1' => 'Enabled',
                     ],
+                    'label' => 'Enable/disable',
                     'expanded' => false,
                 ]
             )
@@ -44,6 +68,7 @@ class AdvertingForm extends AbstractType
                 'textarea',
                 [
                     'required' => true,
+                    'label' => 'Code',
                 ]
             )
             ->add('submit', 'submit');
@@ -54,7 +79,7 @@ class AdvertingForm extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefault('data_class', 'GovWiki\DbBundle\Entity\Adverting');
+        $resolver->setDefault('data_class', 'GovWiki\DbBundle\Entity\Advertising');
     }
 
     /**
@@ -62,6 +87,6 @@ class AdvertingForm extends AbstractType
      */
     public function getName()
     {
-        return 'govwiki_admin_form_adverting';
+        return 'govwiki_admin_form_advertising';
     }
 }

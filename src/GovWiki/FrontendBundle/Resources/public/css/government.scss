@@ -144,7 +144,6 @@
 
                   & > td {
                      border-bottom: 1px dotted #ddd;
-                     white-space: nowrap;
 
                      &:nth-child(1) {
                         color: #666;
@@ -154,6 +153,7 @@
                         color: #000;
                         text-align: right;
                         border: none;
+                        white-space: nowrap;
                      }
 
                      a.rank {

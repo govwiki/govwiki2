@@ -78,8 +78,8 @@ shape:
     resource: "@GovWikiAdminBundle/Controller/ShapeController.php"
     type:      annotation
 
-adverting:
-    resource: "@GovWikiAdminBundle/Controller/AdvertingController.php"
+advertising:
+    resource: "@GovWikiAdminBundle/Controller/AdvertisingController.php"
     type:     annotation
 
 locale:

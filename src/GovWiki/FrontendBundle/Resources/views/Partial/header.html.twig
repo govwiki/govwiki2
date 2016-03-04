@@ -4,8 +4,8 @@
     <div class="col-xs-6 col-sm-6 col-md-3">
 
         {% if government is defined and government.secondaryLogoPath %}
-            <a class="anchor" href="http://californiapolicycenter.org/">
-                <img src="" alt="California Policy Center" class="logo" width="70%">
+            <a class="anchor" href="/">
+                <img src="{{ environment_content.get('header_logo')|raw }}" class="logo" width="70%">
             </a>
             {% if government.secondaryLogoUrl %}
                 <a class="anchor" href="{{ government.secondaryLogoUrl }}">
@@ -15,8 +15,8 @@
                 <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
             {% endif %}
         {% elseif elected.government is defined and elected.government.secondaryLogoPath %}
-            <a class="anchor" href="http://californiapolicycenter.org/">
-                <img src="" alt="California Policy Center" class="logo" width="70%">
+            <a class="anchor" href="/">
+                <img src="{{ environment_content.get('header_logo')|raw }}" class="logo" width="70%">
             </a>
             {% if elected.government.secondaryLogoUrl %}
                 <a class="anchor" href="{{ elected.government.secondaryLogoUrl }}">
@@ -26,10 +26,10 @@
                 <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
             {% endif %}
         {% else %}
-                <img src="" alt="California Policy Center" class="logo">
+                <img src="{{ environment_content.get('header_logo')|raw }}" class="logo">
         {% endif %}
 
-        {#{{- render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader')) -}}#}
+        {{- render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader')) -}}
     </div>
 
     {# Menu button (hamburger) for mobile devices #}
@@ -81,8 +81,8 @@
             {% if app.request.attributes.get('_route') != "map" %}
                 <li>
                     <a href="{{ govwiki_path('map') }}" class="link">
-                        {#{{ 'header.links.return_to_map'|trans }}#}
-                        Return to Map
+                        {{ 'header.links.return_to_map'|trans }}
+                        {#Return to Map#}
                     </a>
                 </li>
             {% endif %}

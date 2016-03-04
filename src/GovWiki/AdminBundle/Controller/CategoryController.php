@@ -148,7 +148,7 @@ class CategoryController extends AbstractGovWikiAdminController
         $em = $this->getDoctrine()->getManager();
 
         $locale = $this->getLocaleManager()->getOneLocaleByShortName('en');
-        $transKey = 'env.groups.group_id_' . $cat_id;
+        $transKey = 'groups.group_id_' . $cat_id;
         $needOneResult = true;
         $trans_key_settings = null;
         if (!empty($transKey)) {

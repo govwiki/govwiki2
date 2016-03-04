@@ -105,25 +105,43 @@
 
 {# Statistics #}
 <div class="statistics fin-values-block">
+    {% set finDataReplacements = {
+    ' ': '_',
+    '-': '_d_',
+    '&': 'amp',
+    ',': '_c_',
+    '(': 'lb',
+    ')': 'rb',
+    '/': 'sl',
+    '%': 'proc',
+    "'": "_apos_"
+    }
+    %}
+
     {% for categoryName, fields in financialStatements %}
     <div>
         {% set showTotalAndOver = (fields|first).otherfunds is defined %}
         {# Category caption. #}
         <div class="row">
 
-            <div class="col-md-5"><b>{{ categoryName }}</b></div>
+            {#<div class="col-md-5"><b>{{ categoryName }}</b></div>#}
+            <div class="col-md-5"><b>{{ ('caption_categories.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></div>
 
             {% if showTotalAndOver %}
-                <div class="col-md-2 text-right"><b>General Fund</b></div>
+                {#<div class="col-md-2 text-right"><b>General Fund</b></div>
                 <div class="col-md-2 text-right"><b>Other Funds</b></div>
-                <div class="col-md-2 text-right"><b>Total Gov. Funds</b></div>
+                <div class="col-md-2 text-right"><b>Total Gov. Funds</b></div>#}
+                <div class="col-md-2 text-right"><b>{{ 'funds.general_fund'|trans }}</b></div>
+                <div class="col-md-2 text-right"><b>{{ 'funds.other'|trans }}</b></div>
+                <div class="col-md-2 text-right"><b>{{ 'funds.total'|trans }}</b></div>
             {% endif %}
         </div>
 
         {# Category fields. #}
         {% for name, data in fields %}
             <div class="row">
-                <div class="col-md-5">{{ name }}</div>
+                {#<div class="col-md-5">{{ name }}</div>#}
+                <div class="col-md-5">{{ ('findata.' ~ name | replace(finDataReplacements) | lower)|trans }}</div>
                 <div class="col-md-2 text-right">
                     {%- if not showTotalAndOver or loop.first -%}
                         $&nbsp;

@@ -1,3 +1,3 @@
 {% for locale in locale_names_list %}
-    <a href="{{ govwiki_path('govwiki_frontend_localization_changelocale', {'locale_name': locale.shortName}) }}" style="color: white; padding: 0 2px">{{ locale.shortName|upper }}</a>
+    <a href="{{ govwiki_path('govwiki_frontend_localization_changelocale', {'locale_name': locale.shortName}) }}" style="color: black; padding: 0 2px">{{ locale.shortName|upper }}</a>
 {% endfor %}

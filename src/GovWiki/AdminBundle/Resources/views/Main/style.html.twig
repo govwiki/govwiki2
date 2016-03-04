@@ -19,28 +19,95 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-8 col-md-offset-2">
 
-            {# Panel #}
-            <div class="panel panel-primary">
+            <ul class="nav nav-tabs" id="environment-styles__tabs">
+                <li class="active"><a data-toggle="tab" href="#home">CSS styles</a></li>
+                <li><a data-toggle="tab" href="#menu2">Content</a></li>
+                <li><a data-toggle="tab" href="#menu1">Images</a></li>
+            </ul>
 
-                {# Header #}
-                <div class="panel-heading">
-                    <h3 class="panel-title">Environment list</h3>
+            <div class="tab-content">
+                <div id="home" class="tab-pane fade in active">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Environment CSS styles</h3>
+                        </div>
+                        <div class="panel-body" id="environment-styles">
+                            {% if styles %}
+                                {% for style in styles %}
+                                    <div class="style__data-id" data-id="{{ style.id }}">
+                                        <h5>{{ style.name }}</h5> <span class="environment-styles__classname">({{ style.className }})</span> <span data-id="{{ style.id }}" data-name="{{ style.name }}" class="environment-styles__delete">x</span><br>
+                                        {% for prop in style.properties %}
+                                            {% if prop[0] in ['color', 'background'] %}
+                                                <div class="input-group color-picker">
+                                                    <span class="input-group-addon"><span class="style__data-param">{{ prop[0] }}</span> <i></i></span>
+                                                    <input class="style__data-value" type="text" value="{{ prop[1] }}" />
+                                                </div>
+                                            {% else %}
+                                                <div class="input-group">
+                                                    <span><span class="style__data-param">{{ prop[0] }}</span></span>
+                                                    <input value="{{ prop[1] }}" class="style__data-value data-value-default" type="text">
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                No styles
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Add new style</h3>
+                        </div>
+                        <div class="panel-body">
+                            {{ form_start(form) }}
+                            {{ form_widget(form) }}
+                            <button type="submit" class="btn btn-primary">Add</button>
+                            <a class="btn btn-default" href="{{ path('govwiki_admin_main_show') }}">
+                                Back
+                            </a>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
                 </div>
+                <div id="menu1" class="tab-pane fade">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Environment images</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% for content in contents %}
+                                {% if content.type == 'image' %}
+                                    <h5>{{ content.name }}</h5>
+                                    <img src="{{ content.value }}" />
 
-                {# Body #}
-                <div class="panel-body">
-
-                    {{ form_start(form) }}
-                    {{ form_widget(form) }}
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    <a class="btn btn-default" href="{{ path('govwiki_admin_main_show') }}">
-                        Back
-                    </a>
-                    {{ form_end(form) }}
+                                    <form action="{{ path('govwiki_admin_main_loadimage') }}" class="upload-logo-form" enctype="multipart/form-data">
+                                        <input type="hidden" name="id" value="{{ content.id }}" />
+                                        <input type="hidden" name="environment" value="{{ admin_environment }}" />
+                                        <input class="upload-logo" type="file" name="upload-image" />
+                                    </form>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
-
+                <div id="menu2" class="tab-pane fade">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Environment content</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% for content in contents %}
+                                {% if content.type == 'content' %}
+                                    <h5>{{ content.name }}</h5>
+                                    <textarea id="content__{{ content.id }}" class="environment-content">{{ content.value }}</textarea>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
-
         </div>
     </div>
 
@@ -55,12 +122,133 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script type="application/javascript">
+    <script type="text/javascript" src="/bundles/ivoryckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
         $(function() {
-            $('.color-picker').colorpicker({
-                format: 'hex',
-                align: 'left'
+            {% for content in contents %}
+                {% if content.type == 'content' %}
+                    CKEDITOR.replace('content__{{ content.id }}').on('blur', submitContent);
+                {% endif %}
+            {% endfor %}
+
+            $('.upload-logo-form').submit(function(e) {
+                e.preventDefault();
+
+                $form = $(this);
+                $formData = new FormData($form.get(0));
+
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: 'POST',
+                    contentType: false,
+                    processData: false,
+                    data: $formData,
+                    dataType: 'json',
+                    success: function (data) {
+                        location.reload();
+                    }
+                });
             });
+
+            $('.upload-logo-form').change(function() {
+                $(this).submit();
+            });
+
+            function submitContent() {
+                var data = {
+                    id: this.name.split('__')[1],
+                    value: this.getData()
+                }
+
+                $.ajax({
+                    url: '{{ path('govwiki_admin_main_savecontant') }}',
+                    data: data,
+                    method: 'POST',
+                    success: function (response) {
+                        console.log(response);
+                    }
+                });
+            }
+
+            var environmentStyles = {
+                init: function() {
+                    var obj = this;
+                    $('#environment-styles input').change(function() {
+                        var parent = $(this).parent().parent();
+                        obj.changeAction(parent);
+                    });
+
+                    $('.color-picker').colorpicker({
+                        format: 'hex',
+                        align: 'left'
+                    }).on('hidePicker', function(event){
+                        obj.changeAction($(event.target).parent());
+                    });
+
+                    $('.environment-styles__delete').click(function() {
+                        var el = $(this);
+                        if (confirm('Delete "'+$(this).attr('data-name')+'" style?')) {
+                            obj.deleteStyle($(this).attr('data-id'), el.parent())
+                        }
+                    });
+
+                    $('form[name="govwiki_admin_form_styles"]').submit(function() {
+                        var val = $('#govwiki_admin_form_styles_properties').val();
+
+                        if (val.replace(/\s+/gi, '').length == 0) {
+                            alert('Empty CSS');
+                            return false;
+                        }
+
+                        if (val.split(';').length-1 == 0 || val.split(':').length-1 == 0) {
+                            alert('Invalid CSS');
+                            return false;
+                        }
+
+                        if (val.split(';').length-1 != val.split(':').length-1) {
+                            alert('Invalid CSS');
+                            return false;
+                        }
+                    });
+                },
+                changeAction: function(parent) {
+                    var data = {
+                        update: {
+                            id: parent.attr('data-id'),
+                            properties: {}
+                        }
+                    }
+
+                    parent.find('.style__data-param').each(function(i) {
+                        data.update.properties[i] = [
+                            $(this).text(),
+                            $(this).parent().parent().parent().find('.style__data-value').eq(i).val()
+                        ];
+                    });
+
+                    $.ajax({
+                        url: location.href,
+                        data: data,
+                        method: 'POST',
+                        success: function (response) {
+                            console.log(response);
+                        }
+                    });
+                },
+                deleteStyle: function(id, el) {
+                    $.ajax({
+                        url: location.href,
+                        data: 'deleteId='+id,
+                        method: 'POST',
+                        success: function (response) {
+                            console.log(response);
+                            el.remove();
+                        }
+                    });
+                }
+            }
+
+            environmentStyles.init();
         })
     </script>
 {% endblock javascripts %}
