@@ -114,8 +114,18 @@ class LocalizationController extends AbstractGovWikiAdminController
 
         $trans_info_list_en = $this->getTranslationManager()->getTransInfoByLocale('en');
 
+        $language_list = array(
+            'en' => 'English',
+            'es' => 'Spanish',
+            'fr' => 'French',
+            'de' => 'German',
+            'it' => 'Italian'
+        );
+
         $form = $this->createFormBuilder()
-            ->add('locale_name')
+            ->add('locale_name', 'choice', array(
+                'choices' => $language_list
+            ))
             ->getForm();
 
         $form->handleRequest($request);
