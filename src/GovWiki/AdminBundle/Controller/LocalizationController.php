@@ -155,7 +155,7 @@ class LocalizationController extends AbstractGovWikiAdminController
                 /**
                  * @var Filesystem $fs
                  */
-                $translationPath = $this->container->get('kernel')->getRootDir() . '/Resources/translations/';
+                /*$translationPath = $this->container->get('kernel')->getRootDir() . '/Resources/translations/';
                 $fs = $this->container->get('filesystem');
                 $fs->chmod($translationPath, 0755);
                 $em = $this->getDoctrine()->getManager();
@@ -167,7 +167,7 @@ class LocalizationController extends AbstractGovWikiAdminController
                         $fs->chmod($translationPath . $filename, 0444);
                     }
                 }
-                $fs->chmod($translationPath, 0555);
+                $fs->chmod($translationPath, 0555);*/
 
                 $em->flush();
 
