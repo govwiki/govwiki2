@@ -310,7 +310,6 @@ class WizardController extends AbstractGovWikiAdminController
 
             $this->createLocale();
 
-
             return $this->nextStep();
         }
 
@@ -580,10 +579,5 @@ class WizardController extends AbstractGovWikiAdminController
             $translation->setTransTextareaType($transTextareaType);
         }
         $em->persist($translation);
-    }
-
-    private function createEnvContent()
-    {
-
     }
 }
