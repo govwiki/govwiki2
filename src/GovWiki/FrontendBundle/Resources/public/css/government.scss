@@ -1,233 +1,272 @@
-
 /* ==================================== */
 /* ====== Government Controller ======= */
 /* ==================================== */
-
 @import "main";
 
 .governmentController {
 
-   @import "partials/typeahead/typeahead_government";
+    @import "partials/typeahead/typeahead_government";
 
-   nav a {
-      display: inline-block;
-      margin-top: 10px;
-   }
+    nav a {
+        display: inline-block;
+        margin-top: 10px;
+    }
 
-   header {
+    header {
 
-      h3 {
-         color: $main-text;
+        h3 {
+            color: $main-text;
 
-         /*
-            todo hardcode for puerto.
-         */
-         &.puerto {
-            color: #f15a29;
-         }
-      }
-
-   }
-
-   section {
-
-      @import "partials/loader/loader";
-
-      .divider {
-         color: #DBDBDB;
-         margin-top: 7%;
-      }
-
-      .selected {
-         background-color: #DDE7FF;
-      }
-
-      #Financial_Statements {
-
-         .table {
-            th, td {
-               border: none;
+            /*
+               todo hardcode for puerto.
+            */
+            &.puerto {
+                color: #f15a29;
             }
-         }
-
-         .government-compare {
-            padding-top: 15px;
-
-            h4 {
-               color: #0d87e9;
-            }
-
-            select {
-               font-size: 12px;
-               padding: 10px;
-            }
-
-            .first-condition {
-               border: 1px solid #0d87e9;
-               border-radius: 10px;
-            }
-
-            .second-condition {
-               border: 1px solid #0d87e9;
-               border-radius: 10px;
-            }
-
-            .government-categories {
-               border: 1px solid #0d87e9;
-               border-radius: 10px;
-
-               .category {
-
-               }
-
-               .caption {
-
-               }
-
-            }
-
-         }
-
-         // Charts
-         #total-compare-first-pie, #total-compare-second-pie {
-            p {
-               padding: 150px 0;
-               background-color: #f3f3f3;
-            }
-         }
-
-      }
-
-      nav {
-         margin-bottom: 30px;
-
-         a {
-            font-size: 1.4em;
-         }
-      }
-
-      .statistics {
-         font-size: 1.4em;
-
-         .f-nam {
-            min-width: 540px;
-            display: inline-block;
-            color: #666;
-            text-align: left;
-            margin-right: 5px;
-            vertical-align: top;
-            font-size: 120%;
-         }
-
-         .f-nam__bold {
-            font-weight: bold;
-         }
-
-         .f-nam__italic {
-            font-style: italic;
-         }
-
-         .f-nam__underline {
-            text-decoration: underline;
-         }
-
-        .currency-symbol {
-          padding-left: 40px;
         }
 
-         .statistics-table {
+    }
+
+    section {
+
+        .loader {
+            margin: 0 auto;
+            margin-bottom: 12px;
+        }
+
+        .divider {
+            color: #DBDBDB;
+            margin-top: 7%;
+        }
+
+        .selected {
+            background-color: #DDE7FF;
+        }
+
+        nav {
+            margin-bottom: 30px;
+
+            a {
+                font-size: 1.4em;
+            }
+        }
+
+        #Financial_Statements {
+
+            .government-compare {
+                padding-top: 15px;
+
+                h4 {
+                    color: #0d87e9;
+                }
+
+                select {
+                    font-size: 12px;
+                    padding: 10px;
+                }
+
+                .first-condition {
+                    border: 1px solid #0d87e9;
+                    border-radius: 10px;
+                }
+
+                .second-condition {
+                    border: 1px solid #0d87e9;
+                    border-radius: 10px;
+                }
+
+                .government-categories {
+                    border: 1px solid #0d87e9;
+                    border-radius: 10px;
+
+                    .category {
+
+                    }
+
+                    .caption {
+
+                    }
+
+                }
+
+            }
+
+            // Charts
+            #total-compare-first-pie, #total-compare-second-pie, #total-compare-column {
+                p {
+                    padding: 150px 0;
+                    background-color: #f3f3f3;
+                }
+            }
+
+        }
+
+        // Statistics (All pages)
+        .statistics {
+            font-size: 1.4em;
+
+            .f-nam {
+                min-width: 540px;
+                display: inline-block;
+                color: #666;
+                text-align: left;
+                margin-right: 5px;
+                vertical-align: top;
+                font-size: 120%;
+            }
+
+            .f-nam__bold {
+                font-weight: bold;
+            }
+
+            .f-nam__italic {
+                font-style: italic;
+            }
+
+            .f-nam__underline {
+                text-decoration: underline;
+            }
+
+            .currency-symbol {
+                padding-left: 40px;
+            }
+        }
+
+        // Statistics table (All tabs, except financial statement tab)
+        .statistics-table {
             width: 100%;
+            thead, tbody {
 
-            & > tbody {
+                & > tr {
 
-               & > tr {
+                    & > td {
+                        padding: 0;
+                        white-space: nowrap;
 
-                  & > td {
-                     border-bottom: 1px dotted #ddd;
+                        &:nth-child(1) {
+                            color: #666;
+                            border-bottom: 1px dotted #ddd;
+                        }
 
-                     &:nth-child(1) {
-                        color: #666;
-                     }
+                        &:nth-child(2) {
+                            color: #000;
+                            text-align: right;
+                        }
 
-                     &:nth-child(2) {
-                        color: #000;
-                        text-align: right;
+                        a.rank {
+                            font-style: italic;
+                            font-size: 75%;
+                            cursor: pointer;
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+
+        // Dynamic tables on financial statement tab
+        .compare-first-table, .compare-second-table {
+            width: 49% !important;
+        }
+
+        // Default financial table on financial statement tab
+        .financial-table, .compare-first-table, .compare-second-table {
+            width: 100%;
+            thead, tbody {
+
+                & > tr {
+
+                    & > th, td {
+                        font-size: 1.4em;
+                        padding: 0;
                         border: none;
                         white-space: nowrap;
-                     }
+                        text-align: right;
 
-                     a.rank {
-                        font-style: italic;
-                        font-size: 75%;
-                        cursor: pointer;
-                     }
+                        &:nth-child(1) {
+                            color: #666;
+                            width: 30%;
+                            text-align: left;
+                        }
 
-                  }
+                        &:nth-child(2) {
+                            color: #666;
+                            width: 20%;
+                        }
 
-               }
+                        &:nth-child(3) {
+                            color: #666;
+                            width: 20%;
+                        }
+
+                        &:nth-child(4) {
+                            color: #666;
+                            width: 20%;
+                        }
+
+                    }
+
+                }
 
             }
-         }
+        }
 
-      }
+        .person {
+            width: 100%;
+            margin-top: 20px;
+            border-bottom: 1px dotted #ddd;
 
-      .person {
-         width: 100%;
-         margin-top: 20px;
-         border-bottom: 1px dotted #ddd;
+            &-info {
+                width: 79%;
+                vertical-align: top;
+                font-size: 1.4em;
+                display: inline-block;
+                min-width: 79%;
 
-         &-info {
-            width: 79%;
-            vertical-align: top;
-            font-size: 1.4em;
-            display: inline-block;
-            min-width: 79%;
+                p {
+                    margin-bottom: 0;
+                }
 
-            p {
-               margin-bottom: 0;
             }
 
-         }
+            &-photo {
+                width: 20%;
+                display: inline-block;
 
-         &-photo {
-            width: 20%;
-            display: inline-block;
+                img {
+                    width: 100%;
+                    float: right;
+                }
 
-            img {
-               width: 100%;
-               float: right;
             }
+        }
 
-         }
-      }
-
-      @import "partials/rank-popover/rank-popover";
-
-      /*
+        @import "partials/rank-popover/rank-popover"; /*
          todo hardcode for puerto
       */
-      .nav-pills__puerto {
+        .nav-pills__puerto {
 
-         .active {
+            .active {
+                a {
+                    background-color: #f15a29;
+                    color: white;
+                }
+            }
+
             a {
-               background-color: #f15a29;
-               color: white;
+
+                background-color: white;
+                color: #f15a29;
+
+                &:hover {
+                    background-color: #f15a29;
+                    color: white;
+                }
             }
-         }
+        }
 
-         a {
-
-            background-color: white;
-            color: #f15a29;
-
-            &:hover {
-               background-color: #f15a29;
-               color: white;
-            }
-         }
-      }
-
-   }
-
+    }
 
 }

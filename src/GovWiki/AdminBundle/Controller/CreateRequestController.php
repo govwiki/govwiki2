@@ -181,9 +181,15 @@ class CreateRequestController extends AbstractGovWikiAdminController
                     ]
                 ),
             ];
+            $engine = $this->get('twig');
 
             if ('vote' === $type) {
-                $template = 'GovWikiAdminBundle:Template/Email:vote.html.twig';
+                $template = $this->getDoctrine()
+                    ->getRepository('GovWikiAdminBundle:Template')
+                    ->getVoteEmailTemplate(
+                        $this->adminEnvironmentManager()
+                            ->getEnvironment()
+                    );
                 $vote =
                     $this->getVote($createRequest->getSubject(), $row['id']);
                 $key = $commentKeyManager->create($vote);
@@ -195,14 +201,17 @@ class CreateRequestController extends AbstractGovWikiAdminController
                     );
 
                 $this->getDoctrine()->getManager()->persist($key);
+
+                $engine = clone $engine;
+                $engine->setLoader(new \Twig_Loader_String());
             }
 
             $message
                 ->setSubject($this->getParameter('email_subject'))
                 ->setFrom($this->getParameter('admin_email'))
                 ->setBody(
-                    $this->renderView(
-                        $template,
+                    $engine->render(
+                        $template->getContent(),
                         $parameters
                     ),
                     'text/html'

@@ -10,6 +10,7 @@ function Step (FormState, container) {
     this.$governmentCategories = $(container);
     this.firstStep = FormState.firstStep;
     this.secondStep = FormState.secondStep;
+    this.$loader = $('<div class="loader"></div>');
     this.init();
 
 }
@@ -30,6 +31,7 @@ Step.prototype.init = function () {
  * Unlock step
  */
 Step.prototype.unlock = function() {
+    this.loading(true);
     this.loadMatchedCategories();
     this.$governmentCategories.toggleClass('disabled', false);
 };
@@ -40,6 +42,53 @@ Step.prototype.unlock = function() {
 Step.prototype.lock = function() {
     this.$governmentCategories.toggleClass('disabled', true);
 };
+
+
+/**
+ * (DOM)
+ *
+ * Loading state
+ * @param isLoading
+ */
+Step.prototype.loading = function(isLoading) {
+
+    var display = isLoading ? 'none' : 'block';
+    this.$governmentCategories.css({display: display});
+
+    if (isLoading) {
+        this.$governmentCategories.parent().append(this.$loader);
+    } else {
+        this.$loader.remove();
+    }
+
+};
+
+/**
+ * (DOM)
+ * 
+ * Manipulate tab state
+ */
+Step.prototype.switchGraphs = function() {
+    
+    var $preloader = $('<div class="loader"></div>');
+    var $firstPie = $('#total-compare-first-pie');
+    var $secondPie = $('#total-compare-second-pie');
+    var $compareColumn = $('#total-compare-column');
+
+    // Add background on selected items
+    $('.government-categories .category').removeClass('selected');
+    $('.government-categories .caption').addClass('selected');
+
+    // View state
+    $compareColumn.show();
+    $firstPie.hide();
+    $secondPie.hide();
+
+    // Show preloaders
+    $compareColumn.find('p').append($preloader);
+    
+};
+
 
 /**
  * (Ajax, DOM)
@@ -70,6 +119,8 @@ Step.prototype.loadMatchedCategories = function() {
         contentType: 'application/json',
         data: captionsJson,
         success: function (data) {
+
+            self.loading(false);
 
             if (!data || data.length == 0) {
                 alert('Not can find categories for current comparison');
@@ -104,6 +155,7 @@ Step.prototype.loadMatchedCategories = function() {
 
         },
         error: function () {
+            self.loading(false);
             alert('Something wrong, please try another government');
             self.$governmentCategories.toggleClass('disabled', true);
         }
@@ -131,7 +183,6 @@ Step.prototype.drawDiagramm = function(government, blockId, captionCategory) {
     captions.forEach(function(item) {
         rows.push([item.caption, parseInt(item.amount)]);
     });
-    console.log(rows);
 
     vis_data.addRows(rows);
     options = {
@@ -182,11 +233,7 @@ Step.prototype.handler_onChangeSelect = function() {
             return true;
         }
 
-        $('#total-compare-column').show();
-        $('#total-compare-first-pie').hide();
-        $('#total-compare-second-pie').hide();
-        $('.government-categories .category').removeClass('selected');
-        $('.government-categories .caption').addClass('selected');
+        self.switchGraphs();
 
         var data = {
             firstGovernment: {
@@ -216,8 +263,8 @@ Step.prototype.handler_onChangeSelect = function() {
             data: data,
             contentType: 'application/json',
             success: function (comparedData) {
+                self.drawTable(comparedData);
                 self.drawColumnChart(comparedData, 'total-compare-column');
-                //self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData.category);
             }
         });
 
@@ -253,7 +300,7 @@ Step.prototype.handler_onClickSelect = function() {
 
 Step.prototype.drawColumnChart = function(comparedData, blockId) {
 
-    var chart, item, len3, options, p, r, ref1, rows, vis_data;
+    var chart, options, rows, vis_data;
 
     var firstGovernment = comparedData.firstGovernment;
     var secondGovernment = comparedData.secondGovernment;
@@ -266,7 +313,7 @@ Step.prototype.drawColumnChart = function(comparedData, blockId) {
     rows.push([secondGovernment.name, parseInt(secondGovernment.data[0].amount)]);
 
     options = {
-        'title': 'Total ' + comparedData.category + ': ' + comparedData.caption,
+        'title': comparedData.caption,
         'titleTextStyle': {
             'fontSize': 16
         },
@@ -285,6 +332,7 @@ Step.prototype.drawColumnChart = function(comparedData, blockId) {
             height: '75%'
         }
     };
+
     vis_data = new google.visualization.arrayToDataTable(rows);
     chart = new google.visualization.ColumnChart(document.getElementById(blockId));
     chart.draw(vis_data, options);

@@ -2451,8 +2451,10 @@ webpackJsonp([1],[
 	function Step (FormState, container) {
 	
 	    this.container = container;
+	    this.$container = $(container);
 	    this.CurrentFormState = container == '.first-condition' ? FormState.firstStep : FormState.secondStep;
 	    this.$select = $(container + ' select');
+	    this.$loader = $('<div class="loader"></div>');
 	    this.init();
 	
 	}
@@ -2468,14 +2470,33 @@ webpackJsonp([1],[
 	    self.handler_onChangeSelect();
 	
 	    //Typeahead initialization
-	    self.search = new Search(self.container);
+	    self.search = new Search(self.container, self.searchResponseCallback);
 	
 	    // Pressed mouse or enter button
-	    self.search.$typeahead.bind("typeahead:selected", function (obj, selectedGovernment) {
-	
+	    self.search.$typeahead.bind("typeahead:selected", function (e, selectedGovernment) {
 	        self.CurrentFormState.data = selectedGovernment;
 	        self.createYearOptions(selectedGovernment);
+	    });
 	
+	    // Start typing, triggered after select item
+	    self.search.$typeahead.bind('typeahead:asyncrequest', function(e) {
+	        self.loading(true);
+	    });
+	
+	
+	    self.search.$typeahead.bind('typeahead:asyncreceive', function(e) {
+	        self.loading(false);
+	    });
+	
+	    self.search.$typeahead.bind('typeahead:asynccancel', function(e) {
+	        self.loading(false);
+	        self.lockSelect();
+	        alert('Sorry, search isn\'t completed please try again')
+	    });
+	
+	    self.search.$typeahead.bind('typeahead:open', function(e) {
+	        self.lockSelect();
+	        self.CurrentFormState.incomplete();
 	    });
 	
 	};
@@ -2498,8 +2519,37 @@ webpackJsonp([1],[
 	 */
 	Step.prototype.lock = function() {
 	    this.search.$typeahead.toggleClass('disabled', true);
+	    this.$select.toggleClass('disabled', true);
 	};
 	
+	
+	/**
+	 * (DOM)
+	 *
+	 * Lock step
+	 */
+	Step.prototype.lockSelect = function() {
+	    this.$select.toggleClass('disabled', true);
+	};
+	
+	/**
+	 * (DOM)
+	 *
+	 * Loading state
+	 * @param isLoading
+	 */
+	Step.prototype.loading = function(isLoading) {
+	
+	    var display = isLoading ? 'none' : 'block';
+	    this.$select.css({display: display});
+	
+	    if (isLoading) {
+	        this.$container.append(this.$loader);
+	    } else {
+	        this.$loader.remove();
+	    }
+	
+	};
 	
 	/**
 	 * (DOM)
@@ -2730,6 +2780,7 @@ webpackJsonp([1],[
 	    this.$governmentCategories = $(container);
 	    this.firstStep = FormState.firstStep;
 	    this.secondStep = FormState.secondStep;
+	    this.$loader = $('<div class="loader"></div>');
 	    this.init();
 	
 	}
@@ -2750,6 +2801,7 @@ webpackJsonp([1],[
 	 * Unlock step
 	 */
 	Step.prototype.unlock = function() {
+	    this.loading(true);
 	    this.loadMatchedCategories();
 	    this.$governmentCategories.toggleClass('disabled', false);
 	};
@@ -2760,6 +2812,53 @@ webpackJsonp([1],[
 	Step.prototype.lock = function() {
 	    this.$governmentCategories.toggleClass('disabled', true);
 	};
+	
+	
+	/**
+	 * (DOM)
+	 *
+	 * Loading state
+	 * @param isLoading
+	 */
+	Step.prototype.loading = function(isLoading) {
+	
+	    var display = isLoading ? 'none' : 'block';
+	    this.$governmentCategories.css({display: display});
+	
+	    if (isLoading) {
+	        this.$governmentCategories.parent().append(this.$loader);
+	    } else {
+	        this.$loader.remove();
+	    }
+	
+	};
+	
+	/**
+	 * (DOM)
+	 * 
+	 * Manipulate tab state
+	 */
+	Step.prototype.switchGraphs = function() {
+	    
+	    var $preloader = $('<div class="loader"></div>');
+	    var $firstPie = $('#total-compare-first-pie');
+	    var $secondPie = $('#total-compare-second-pie');
+	    var $compareColumn = $('#total-compare-column');
+	
+	    // Add background on selected items
+	    $('.government-categories .category').removeClass('selected');
+	    $('.government-categories .caption').addClass('selected');
+	
+	    // View state
+	    $compareColumn.show();
+	    $firstPie.hide();
+	    $secondPie.hide();
+	
+	    // Show preloaders
+	    $compareColumn.find('p').append($preloader);
+	    
+	};
+	
 	
 	/**
 	 * (Ajax, DOM)
@@ -2790,6 +2889,8 @@ webpackJsonp([1],[
 	        contentType: 'application/json',
 	        data: captionsJson,
 	        success: function (data) {
+	
+	            self.loading(false);
 	
 	            if (!data || data.length == 0) {
 	                alert('Not can find categories for current comparison');
@@ -2824,6 +2925,7 @@ webpackJsonp([1],[
 	
 	        },
 	        error: function () {
+	            self.loading(false);
 	            alert('Something wrong, please try another government');
 	            self.$governmentCategories.toggleClass('disabled', true);
 	        }
@@ -2851,7 +2953,6 @@ webpackJsonp([1],[
 	    captions.forEach(function(item) {
 	        rows.push([item.caption, parseInt(item.amount)]);
 	    });
-	    console.log(rows);
 	
 	    vis_data.addRows(rows);
 	    options = {
@@ -2902,11 +3003,7 @@ webpackJsonp([1],[
 	            return true;
 	        }
 	
-	        $('#total-compare-column').show();
-	        $('#total-compare-first-pie').hide();
-	        $('#total-compare-second-pie').hide();
-	        $('.government-categories .category').removeClass('selected');
-	        $('.government-categories .caption').addClass('selected');
+	        self.switchGraphs();
 	
 	        var data = {
 	            firstGovernment: {
@@ -2936,8 +3033,8 @@ webpackJsonp([1],[
 	            data: data,
 	            contentType: 'application/json',
 	            success: function (comparedData) {
+	                self.drawTable(comparedData);
 	                self.drawColumnChart(comparedData, 'total-compare-column');
-	                //self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData.category);
 	            }
 	        });
 	
@@ -2973,7 +3070,7 @@ webpackJsonp([1],[
 	
 	Step.prototype.drawColumnChart = function(comparedData, blockId) {
 	
-	    var chart, item, len3, options, p, r, ref1, rows, vis_data;
+	    var chart, options, rows, vis_data;
 	
 	    var firstGovernment = comparedData.firstGovernment;
 	    var secondGovernment = comparedData.secondGovernment;
@@ -2986,7 +3083,7 @@ webpackJsonp([1],[
 	    rows.push([secondGovernment.name, parseInt(secondGovernment.data[0].amount)]);
 	
 	    options = {
-	        'title': 'Total ' + comparedData.category + ': ' + comparedData.caption,
+	        'title': comparedData.caption,
 	        'titleTextStyle': {
 	            'fontSize': 16
 	        },
@@ -3005,6 +3102,7 @@ webpackJsonp([1],[
 	            height: '75%'
 	        }
 	    };
+	
 	    vis_data = new google.visualization.arrayToDataTable(rows);
 	    chart = new google.visualization.ColumnChart(document.getElementById(blockId));
 	    chart.draw(vis_data, options);
@@ -3065,7 +3163,7 @@ webpackJsonp([1],[
 	 */
 	Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
 	
-	    var chart, options, r, rows, vis_data;
+	    var chart, options, rows, vis_data;
 	
 	    vis_data = new google.visualization.DataTable();
 	
@@ -3107,6 +3205,63 @@ webpackJsonp([1],[
 	
 	};
 	
+	
+	/**
+	 * (DOM)
+	 *
+	 * Manipulate tab state
+	 */
+	Step.prototype.switchGraphs = function() {
+	
+	    var $firstPie = $('#total-compare-first-pie');
+	    var $secondPie = $('#total-compare-second-pie');
+	    var $compareColumn = $('#total-compare-column');
+	    var $firstPreloader = $('<div class="loader"></div>');
+	    var $secondPreloader = $('<div class="loader"></div>');
+	
+	    // Add background on selected items
+	    $('.government-categories .category').addClass('selected');
+	    $('.government-categories .caption').removeClass('selected');
+	
+	    // View state
+	    $compareColumn.hide();
+	    $firstPie.show();
+	    $secondPie.show();
+	
+	    // Show preloaders
+	    $firstPie.find('p').append($firstPreloader);
+	    $secondPie.find('p').append($secondPreloader);
+	
+	};
+	
+	/**
+	 *
+	 * @param container
+	 * @param comparedData
+	 */
+	Step.prototype.drawTable = function(container, comparedData) {
+	
+	    var $container = $(container);
+	    var governmentNumber = (container == '.compare-first-table') ? 'firstGovernment' : 'secondGovernment';
+	
+	    var category = comparedData.category;
+	    var governmentName = comparedData[governmentNumber].name;
+	
+	    var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + '</th></tr><tr><th>' + category + '</th><th> Total Gov. Funds </th></tr>></thead>';
+	    var tbody = '<tbody>';
+	
+	    comparedData[governmentNumber].data.forEach(function(row){
+	        tbody += '<tr><td>' + row.caption + '</td><td>' + row.amount + '</td></tr>';
+	    });
+	
+	    tbody += '</tbody>';
+	
+	    $container.append(thead);
+	    $container.append(tbody);
+	
+	};
+	
+	
 	/**
 	 * (Ajax, DOM)
 	 * TODO: Draft
@@ -3125,16 +3280,12 @@ webpackJsonp([1],[
 	
 	        var category = $selected.val();
 	
-	        if (category) {
-	            $('#total-compare-column').hide();
-	            $('#total-compare-first-pie').show();
-	            $('#total-compare-second-pie').show();
-	            $('.government-categories .category').addClass('selected');
-	            $('.government-categories .caption').removeClass('selected');
-	        } else {
+	        if (!category) {
 	            alert('Please select one of category');
 	            return true;
 	        }
+	
+	        self.switchGraphs();
 	
 	        var data = {
 	            firstGovernment: {
@@ -3159,8 +3310,11 @@ webpackJsonp([1],[
 	            data: data,
 	            contentType: 'application/json',
 	            success: function (comparedData) {
+	                self.drawTable('.compare-first-table', comparedData);
+	                self.drawTable('.compare-second-table', comparedData);
 	                self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
 	                self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
+	                $('.financial-table').hide();
 	            }
 	        });
 	
