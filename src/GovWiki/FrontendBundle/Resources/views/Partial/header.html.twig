@@ -29,7 +29,7 @@
                 <img src="{{ environment_content.get('header_logo')|raw }}" class="logo">
         {% endif %}
 
-        {#{{- render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader')) -}}#}
+        {{- render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader')) -}}
     </div>
 
     {# Menu button (hamburger) for mobile devices #}
@@ -81,8 +81,8 @@
             {% if app.request.attributes.get('_route') != "map" %}
                 <li>
                     <a href="{{ govwiki_path('map') }}" class="link">
-                        {#{{ 'header.links.return_to_map'|trans }}#}
-                        Return to Map
+                        {{ 'header.links.return_to_map'|trans }}
+                        {#Return to Map#}
                     </a>
                 </li>
             {% endif %}

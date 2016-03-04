@@ -11,7 +11,7 @@
     { 'environment': admin_environment }
     )
     }}
-    {{ macro.breadcrumbElement('Localization', 'govwiki_admin_localization_index') }}
+    {{ macro.breadcrumbElement('Localizations', 'govwiki_admin_localization_index') }}
     {{ macro.breadcrumbElement(locale_name|upper~' Translations', 'govwiki_admin_localization_showlocale', {'locale_name': locale_name}) }}
     {{ macro.breadcrumbElement('Edit translation') }}
 {% endblock breadcrumb %}

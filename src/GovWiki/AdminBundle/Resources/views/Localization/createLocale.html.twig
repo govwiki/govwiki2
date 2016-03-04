@@ -11,7 +11,7 @@
     { 'environment': admin_environment }
     )
     }}
-    {{ macro.breadcrumbElement('Localization', 'govwiki_admin_localization_index') }}
+    {{ macro.breadcrumbElement('Localizations', 'govwiki_admin_localization_index') }}
     {{ macro.breadcrumbElement('Create localization') }}
 {% endblock breadcrumb %}
 
@@ -20,17 +20,18 @@
         {{ form_start(form) }}
 
         <div class="col-md-6">
-            {{ form_label(form.locale_name) }}
-            {% for flash_message in app.session.flashbag.get('error') %}
-                <h6>{{ flash_message }}</h6>
-            {% endfor %}
-            {{ form_widget(form.locale_name) }}
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <input type="submit" class="btn btn-primary">
+            <div class="form-group">
+                {{ form_label(form.locale_name) }}
+                {% for flash_message in app.session.flashbag.get('error') %}
+                    <h6>{{ flash_message }}</h6>
+                {% endfor %}
+                {{ form_widget(form.locale_name) }}
             </div>
         </div>
+        <div class="col-md-12">
+            <input type="submit" class="btn btn-primary">
+        </div>
+        
         {{ form_end(form) }}
     </div>
 {% endblock %}

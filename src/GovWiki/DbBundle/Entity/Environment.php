@@ -135,12 +135,20 @@ class Environment
     private $groups;
 
     /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Locale", mappedBy="environment", cascade={"remove"})
+     */
+    private $locales;
+
+    /**
      *
      */
     public function __construct()
     {
         $this->governments = new ArrayCollection();
         $this->formats = new ArrayCollection();
+        $this->locales = new ArrayCollection();
     }
 
     /**
@@ -226,26 +234,6 @@ class Environment
     public function setDomain($domain)
     {
         $this->domain = $domain;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGreetingText()
-    {
-        return $this->greetingText;
-    }
-
-    /**
-     * @param string $greetingText
-     *
-     * @return Environment
-     */
-    public function setGreetingText($greetingText)
-    {
-        $this->greetingText = $greetingText;
 
         return $this;
     }
@@ -477,42 +465,35 @@ class Environment
     }
 
     /**
-     * @return string
-     */
-    public function getBottomText()
-    {
-        return $this->bottomText;
-    }
-
-    /**
-     * @param string $bottomText
+     * Add locales
      *
+     * @param \GovWiki\DbBundle\Entity\Locale $locales
      * @return Environment
      */
-    public function setBottomText($bottomText)
+    public function addLocale(\GovWiki\DbBundle\Entity\Locale $locales)
     {
-        $this->bottomText = $bottomText;
+        $this->locales[] = $locales;
 
         return $this;
     }
 
     /**
-     * @return boolean
+     * Remove locales
+     *
+     * @param \GovWiki\DbBundle\Entity\Locale $locales
      */
-    public function isShowBottomText()
+    public function removeLocale(\GovWiki\DbBundle\Entity\Locale $locales)
     {
-        return $this->showBottomText;
+        $this->locales->removeElement($locales);
     }
 
     /**
-     * @param boolean $showBottomText
+     * Get locales
      *
-     * @return Environment
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function setShowBottomText($showBottomText)
+    public function getLocales()
     {
-        $this->showBottomText = $showBottomText;
-
-        return $this;
+        return $this->locales;
     }
 }

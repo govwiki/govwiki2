@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use GovWiki\DbBundle\Entity\FinData;
+use GovWiki\DbBundle\Entity\Environment;
 
 /**
  * FinDataRepository
@@ -54,5 +55,26 @@ class FinDataRepository extends EntityRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @param Environment $env Environment.
+     *
+     * @return array
+     */
+    public function getUniqueCaptions($env = null)
+    {
+        $qb = $this->createQueryBuilder('FinData')
+            ->select('FinData.caption')
+            ->groupBy('FinData.caption');
+
+        if (null !== $env) {
+            $qb->leftJoin('FinData.government', 'Government')
+                ->leftJoin('Government.environment', 'Environment')
+                ->where('Environment = :env')
+                ->setParameter('env', $env);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

@@ -217,8 +217,29 @@ class MainController extends AbstractGovWikiAdminController
             $data = $request->request->all();
 
             $em = $this->getDoctrine()->getManager();
+
             $content = $em->getRepository("GovWikiDbBundle:EnvironmentContents")->find($data['id']);
             $content->setValue($data['value']);
+
+            $content_slug = $content->getSlug();
+            if (strpos($content_slug, 'footer') !== false) {
+                $content_slug_type = explode('_', $content_slug, 2);
+
+
+                $needOneResult = true;
+                $trans_key_settings = null;
+                if (isset($content_slug_type[1]) && !empty($content_slug_type[1])) {
+                    $trans_key_settings = array(
+                        'matching' => 'eq',
+                        'transKeys' => array('footer' . $content_slug_type[1])
+                    );
+                }
+                $content_translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
+                if ($content_translation) {
+                    $content_translation->setTranslation($data['value']);
+                }
+            }
+
             $em->flush();
 
             return new JsonResponse(['status' => 'Success save']);
@@ -404,5 +425,13 @@ class MainController extends AbstractGovWikiAdminController
         }
 
         throw $this->createNotFoundException();
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\Entity\AdminTranslationManager
+     */
+    private function getTranslationManager()
+    {
+        return $this->get(GovWikiAdminServices::TRANSLATION_MANAGER);
     }
 }

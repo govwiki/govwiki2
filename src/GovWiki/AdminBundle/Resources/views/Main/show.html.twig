@@ -25,82 +25,99 @@
                 {# Body #}
                 <div class="panel-body">
 
-                    {# Navigation controls #}
                     <div class="row">
-                        <div class="col-md-12">
-
-                            <div class="btn-group pull-right">
-                                <a class="btn btn-default" href="{{-
-                                    path('govwiki_admin_main_sitemap') -}}">
-                                    Generate sitemap
-                                </a>
-                                <a class="btn btn-primary" href="{{-
-                                path('govwiki_admin_localization_index') -}}">
-                                    Localizations
-                                </a>
-                                <a class="btn btn-primary" href="{{-
-                                path('govwiki_admin_main_style') -}}">
-                                    Edit styles
-                                </a>
-                                <a class="btn btn-primary" href="{{-
-                                path('govwiki_admin_map_edit') -}}">
-                                    Edit map
-                                </a>
-                                <a class="btn btn-primary" href="{{-
-                                path('govwiki_admin_format_list') -}}">
-                                    Edit formats
-                                </a>
-                                <a class="btn btn-primary" href="{{-
-                                    path('govwiki_admin_main_ranks')
-                                -}}">
-                                    Compute max ranks
-                                </a>
-                                <a class="btn btn-default" href="{{-
-                                path('govwiki_admin_main_update') -}}">
-                                    Update CartoDB
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    {# Main content #}
-                    <div class="row">
-
-                        <div class="col-md-12">
-                            <h3>{{ environment.name|capitalize }} environment</h3>
-                        </div>
 
                         <div class="col-md-3">
+                            <ul class="nav nav-pills nav-stacked">
+                                <li>
+                                    <a href="{{-
+                                    path('govwiki_admin_template_index')
+                                    -}}">
+                                        Edit templates
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="{{-
+                                    path('govwiki_admin_localization_index') -}}">
+                                        Localizations
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="{{-
+                                    path('govwiki_admin_main_style') -}}">
+                                        Edit styles
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="{{-
+                                    path('govwiki_admin_map_edit') -}}">
+                                        Edit map
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="{{-
+                                    path('govwiki_admin_format_list') -}}">
+                                        Edit formats
+                                    </a>
+                                </li>
+
+                                {#<li>
+                                    <a class="btn btn-default" href="{{-
+                                    path('govwiki_admin_main_update') -}}">
+                                        Update CartoDB
+                                    </a>
+                                </li>#}
+                            </ul>
+                        </div>
+
+                        <div class="col-md-9">
+                            <h3>{{ environment.name|capitalize }} environment</h3>
 
                             <div>
-                                <div>
-                                    <b>Status:</b>&nbsp;
-                                    {%- if environment.enabled -%}
-                                        <a href="{{- path('govwiki_admin_main_disable',
-                                            { environment: environment.slug }) -}}"
-                                           class="text-success">Enabled</a>
-                                    {%- else -%}
-                                        <a href="{{- path('govwiki_admin_main_enable',
-                                        { environment: environment.slug }) -}}"
-                                           class="text-danger">Disabled</a>
-                                    {%- endif -%}
-                                </div>
-                                <div>
-                                    <b>Map:</b>&nbsp;
-                                    {%- if map and map.isCreated -%}
-                                        <span class="text-success">Created</span>&nbsp;
-                                    {%- else -%}
-                                        <span class="text-danger">Not created</span>
-                                    {% endif %}
-                                </div>
-                                <div>
-                                    <b>Formats:</b>&nbsp;
-                                    {%- if environment.formats -%}
-                                        <span class="text-success">Exists</span>
-                                    {%- else -%}
-                                        <span class="text-danger">Not exists</span>
-                                    {%- endif -%}
+                                <b>Status:</b>&nbsp;
+                                {%- if environment.enabled -%}
+                                    <a href="{{- path('govwiki_admin_main_disable',
+                                    { environment: environment.slug }) -}}"
+                                       class="text-success">Enabled</a>
+                                {%- else -%}
+                                    <a href="{{- path('govwiki_admin_main_enable',
+                                    { environment: environment.slug }) -}}"
+                                       class="text-danger">Disabled</a>
+                                {%- endif -%}
+                            </div>
+                            <div>
+                                <b>Map:</b>&nbsp;
+                                {%- if map and map.isCreated -%}
+                                    <span class="text-success">Created</span>&nbsp;
+                                {%- else -%}
+                                    <span class="text-danger">Not created</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <b>Formats:</b>&nbsp;
+                                {%- if environment.formats -%}
+                                    <span class="text-success">Exists</span>
+                                {%- else -%}
+                                    <span class="text-danger">Not exists</span>
+                                {%- endif -%}
+                            </div>
+                            <div>
+                                {{ form_start(form) }}
+                                <div role="tabpanel" class="tab-pane active" id="general">
+                                    {{ form_row(form.name) }}
+                                    {{ form_row(form.domain) }}
+                                    {{ form_row(form.title) }}
+                                    <div class="btn-group pull-left">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                        <button type="button" data-description="Delete environment with all governments?" class="btn btn-danger btn-delete" data-url="{{ path('govwiki_admin_main_remove', {environment: environment.name}) }}">
+                                            Delete
+                                        </button>
+                                    </div>
+                                    {{ form_end(form) }}
                                 </div>
                             </div>
                         </div>
@@ -108,7 +125,7 @@
                             {{ form_start(form) }}
                             {# Nav tabs #}
                             <ul class="nav nav-pills" role="tablist">
-                                <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">Greneral</a></li>
+                                <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
                             </ul>
 
                             {# Tab panes #}
@@ -121,21 +138,6 @@
                                 </div>
 
                             </div>
-                        </div>
-                    </div>
-
-                    {# Update and Delete buttons#}
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            <div class="btn-group pull-left">
-                                <button type="submit" class="btn btn-primary">Update</button>
-                                <button type="button" data-description="Delete environment with all governments?" class="btn btn-danger btn-delete" data-url="{{ path('govwiki_admin_main_remove', {environment: environment.name}) }}">
-                                    Delete
-                                </button>
-                            </div>
-                            {{ form_end(form) }}
-
                         </div>
                     </div>
 
