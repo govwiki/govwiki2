@@ -45,7 +45,7 @@ Step.prototype.lock = function() {
  */
 Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
 
-    var chart, options, r, rows, vis_data;
+    var chart, options, rows, vis_data;
 
     vis_data = new google.visualization.DataTable();
 
@@ -87,6 +87,63 @@ Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
 
 };
 
+
+/**
+ * (DOM)
+ *
+ * Manipulate tab state
+ */
+Step.prototype.switchGraphs = function() {
+
+    var $firstPie = $('#total-compare-first-pie');
+    var $secondPie = $('#total-compare-second-pie');
+    var $compareColumn = $('#total-compare-column');
+    var $firstPreloader = $('<div class="loader"></div>');
+    var $secondPreloader = $('<div class="loader"></div>');
+
+    // Add background on selected items
+    $('.government-categories .category').addClass('selected');
+    $('.government-categories .caption').removeClass('selected');
+
+    // View state
+    $compareColumn.hide();
+    $firstPie.show();
+    $secondPie.show();
+
+    // Show preloaders
+    $firstPie.find('p').append($firstPreloader);
+    $secondPie.find('p').append($secondPreloader);
+
+};
+
+/**
+ *
+ * @param container
+ * @param comparedData
+ */
+Step.prototype.drawTable = function(container, comparedData) {
+
+    var $container = $(container);
+    var governmentNumber = (container == '.compare-first-table') ? 'firstGovernment' : 'secondGovernment';
+
+    var category = comparedData.category;
+    var governmentName = comparedData[governmentNumber].name;
+
+    var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + '</th></tr><tr><th>' + category + '</th><th> Total Gov. Funds </th></tr>></thead>';
+    var tbody = '<tbody>';
+
+    comparedData[governmentNumber].data.forEach(function(row){
+        tbody += '<tr><td>' + row.caption + '</td><td>' + row.amount + '</td></tr>';
+    });
+
+    tbody += '</tbody>';
+
+    $container.append(thead);
+    $container.append(tbody);
+
+};
+
+
 /**
  * (Ajax, DOM)
  * TODO: Draft
@@ -105,16 +162,12 @@ Step.prototype.handler_onChangeSelect = function() {
 
         var category = $selected.val();
 
-        if (category) {
-            $('#total-compare-column').hide();
-            $('#total-compare-first-pie').show();
-            $('#total-compare-second-pie').show();
-            $('.government-categories .category').addClass('selected');
-            $('.government-categories .caption').removeClass('selected');
-        } else {
+        if (!category) {
             alert('Please select one of category');
             return true;
         }
+
+        self.switchGraphs();
 
         var data = {
             firstGovernment: {
@@ -139,8 +192,11 @@ Step.prototype.handler_onChangeSelect = function() {
             data: data,
             contentType: 'application/json',
             success: function (comparedData) {
+                self.drawTable('.compare-first-table', comparedData);
+                self.drawTable('.compare-second-table', comparedData);
                 self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
                 self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
+                $('.financial-table').hide();
             }
         });
 

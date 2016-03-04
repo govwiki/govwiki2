@@ -10,8 +10,10 @@ var Search = require('../../search/government.js');
 function Step (FormState, container) {
 
     this.container = container;
+    this.$container = $(container);
     this.CurrentFormState = container == '.first-condition' ? FormState.firstStep : FormState.secondStep;
     this.$select = $(container + ' select');
+    this.$loader = $('<div class="loader"></div>');
     this.init();
 
 }
@@ -27,14 +29,33 @@ Step.prototype.init = function () {
     self.handler_onChangeSelect();
 
     //Typeahead initialization
-    self.search = new Search(self.container);
+    self.search = new Search(self.container, self.searchResponseCallback);
 
     // Pressed mouse or enter button
-    self.search.$typeahead.bind("typeahead:selected", function (obj, selectedGovernment) {
-
+    self.search.$typeahead.bind("typeahead:selected", function (e, selectedGovernment) {
         self.CurrentFormState.data = selectedGovernment;
         self.createYearOptions(selectedGovernment);
+    });
 
+    // Start typing, triggered after select item
+    self.search.$typeahead.bind('typeahead:asyncrequest', function(e) {
+        self.loading(true);
+    });
+
+
+    self.search.$typeahead.bind('typeahead:asyncreceive', function(e) {
+        self.loading(false);
+    });
+
+    self.search.$typeahead.bind('typeahead:asynccancel', function(e) {
+        self.loading(false);
+        self.lockSelect();
+        alert('Sorry, search isn\'t completed please try again')
+    });
+
+    self.search.$typeahead.bind('typeahead:open', function(e) {
+        self.lockSelect();
+        self.CurrentFormState.incomplete();
     });
 
 };
@@ -57,8 +78,37 @@ Step.prototype.unlock = function() {
  */
 Step.prototype.lock = function() {
     this.search.$typeahead.toggleClass('disabled', true);
+    this.$select.toggleClass('disabled', true);
 };
 
+
+/**
+ * (DOM)
+ *
+ * Lock step
+ */
+Step.prototype.lockSelect = function() {
+    this.$select.toggleClass('disabled', true);
+};
+
+/**
+ * (DOM)
+ *
+ * Loading state
+ * @param isLoading
+ */
+Step.prototype.loading = function(isLoading) {
+
+    var display = isLoading ? 'none' : 'block';
+    this.$select.css({display: display});
+
+    if (isLoading) {
+        this.$container.append(this.$loader);
+    } else {
+        this.$loader.remove();
+    }
+
+};
 
 /**
  * (DOM)
