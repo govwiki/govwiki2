@@ -9,6 +9,7 @@ var path = {
 };
 
 module.exports = {
+    cache:false,
     entry: {
         map: './' + path.base + '/home/index.js',
         government: './' + path.base + '/government/index.js',
