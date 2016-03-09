@@ -70,7 +70,6 @@ class GovernmentImporter extends AbstractImporter
         }
 
         while (($row = $reader->read()) !== null) {
-            dump($row);
         }
     }
 

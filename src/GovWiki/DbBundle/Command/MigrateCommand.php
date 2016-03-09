@@ -53,7 +53,7 @@ class MigrateCommand extends ContainerAwareCommand
         /** @var CreateRequest $row */
         foreach ($data as $row) {
             $fields = $row->getFields();
-            dump($fields);
+
             try {
                 /** @var  $entity */
                 $entity = $manager->process([
