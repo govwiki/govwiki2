@@ -7,7 +7,7 @@
 function Step (FormState, container) {
 
     this.container = container;
-    this.$governmentCategories = $(container);
+    this.$select = $(container);
     this.firstStep = FormState.firstStep;
     this.secondStep = FormState.secondStep;
     this.$loader = $('<div class="loader"></div>');
@@ -33,14 +33,15 @@ Step.prototype.init = function () {
 Step.prototype.unlock = function() {
     this.loading(true);
     this.loadMatchedCategories();
-    this.$governmentCategories.toggleClass('disabled', false);
+    this.$select.toggleClass('disabled', false);
 };
 
 /**
  * Lock step
  */
 Step.prototype.lock = function() {
-    this.$governmentCategories.toggleClass('disabled', true);
+    this.$select.html('<option>CAPTION</option>');
+    this.$select.toggleClass('disabled', true);
 };
 
 
@@ -53,10 +54,10 @@ Step.prototype.lock = function() {
 Step.prototype.loading = function(isLoading) {
 
     var display = isLoading ? 'none' : 'block';
-    this.$governmentCategories.css({display: display});
+    this.$select.css({display: display});
 
     if (isLoading) {
-        this.$governmentCategories.parent().append(this.$loader);
+        this.$select.parent().append(this.$loader);
     } else {
         this.$loader.remove();
     }
@@ -124,12 +125,11 @@ Step.prototype.loadMatchedCategories = function() {
 
             if (!data || data.length == 0) {
                 alert('Not can find categories for current comparison');
-                self.$governmentCategories.html('<option>ALL CATEGORIES</option>');
-                self.$governmentCategories.toggleClass('disabled', true);
+                self.lock();
                 return true;
             }
 
-            self.$governmentCategories.toggleClass('disabled', false);
+            self.$select.toggleClass('disabled', false);
 
             /**
              * Create expenditures group
@@ -144,12 +144,12 @@ Step.prototype.loadMatchedCategories = function() {
             });
 
             availableTabs.forEach(function(tab){
-                self.$governmentCategories.append('<optgroup label="' + tab + '"></optgroup>');
+                self.$select.append('<optgroup label="' + tab + '"></optgroup>');
             });
 
             data.forEach(function (caption) {
                 var value = caption.fieldName || caption.name;
-                var $expenditureGroup = self.$governmentCategories.find('[label="' + caption.tab + '"]');
+                var $expenditureGroup = self.$select.find('[label="' + caption.tab + '"]');
                 $expenditureGroup.append('<option value="' + value + '">' + caption.name + '</option>');
             });
 
@@ -157,7 +157,7 @@ Step.prototype.loadMatchedCategories = function() {
         error: function () {
             self.loading(false);
             alert('Something wrong, please try another government');
-            self.$governmentCategories.toggleClass('disabled', true);
+            self.$select.toggleClass('disabled', true);
         }
     });
 
@@ -281,7 +281,7 @@ Step.prototype.handler_onClickSelect = function() {
 
     var self = this;
 
-    $('.government-categories').on('mousedown', function (e) {
+    self.$select.on('mousedown', function (e) {
 
         var $el = $(e.target);
 

@@ -7,13 +7,8 @@ var chart = require('./config.js').chart;
 function init() {
 
     handler_switchChart();
-    //financialStatements_compare();
     financialStatements_revenue();
     financialStatements_expenditures();
-
-}
-
-function financialStatements_compare() {
 
 }
 
@@ -274,6 +269,8 @@ function handler_switchChart() {
         var chartType = this.getElementsByTagName('input')[0].id;
 
         if (chartType == 'chart'){
+            hideTableGroup('financialTable', true);
+            hideTableGroup('compareTables', false);
             hideChartGroup('pie-charts', false);
             hideChartGroup('compare-charts', true);
             hideChartGroup('tree-charts', true);
@@ -283,6 +280,8 @@ function handler_switchChart() {
             }
 
         } else if (chartType == 'tree-charts') {
+            hideTableGroup('financialTable', true);
+            hideTableGroup('compareTables', false);
             hideChartGroup('pie-charts', true);
             hideChartGroup('compare-charts', true);
             hideChartGroup('tree-charts', false);
@@ -291,6 +290,8 @@ function handler_switchChart() {
                 financialStatementsTree_revenues();
             }
         } else if (chartType == 'compare-charts') {
+            hideTableGroup('financialTable', false);
+            hideTableGroup('compareTables', true);
             hideChartGroup('pie-charts', true);
             hideChartGroup('compare-charts', false);
             hideChartGroup('tree-charts', true);
@@ -301,6 +302,20 @@ function handler_switchChart() {
         }
 
     });
+
+    function hideTableGroup(tableGroup, hide) {
+
+        var display = hide ? {display: 'none'} : {display: 'table'};
+
+        if (tableGroup == 'financialTable') {
+            $('.compare-first-table').css(display);
+            $('.compare-second-table').css(display);
+
+        } else if (tableGroup == 'compareTables') {
+            $('.financial-table').css(display);
+        }
+
+    }
 
     /**
      * Hide chart group. Group may contain few charts
