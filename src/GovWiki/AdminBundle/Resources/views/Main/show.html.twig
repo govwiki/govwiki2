@@ -111,6 +111,7 @@
                                     {{ form_row(form.name) }}
                                     {{ form_row(form.domain) }}
                                     {{ form_row(form.title) }}
+                                    {{ form_row(form.adminEmail) }}
                                     <div class="btn-group pull-left">
                                         <button type="submit" class="btn btn-primary">Update</button>
                                         <button type="button" data-description="Delete environment with all governments?" class="btn btn-danger btn-delete" data-url="{{ path('govwiki_admin_main_remove', {environment: environment.name}) }}">
@@ -135,6 +136,7 @@
                                     {{ form_row(form.name) }}
                                     {{ form_row(form.domain) }}
                                     {{ form_row(form.title) }}
+                                    {{ form_row(form.adminEmail) }}
                                 </div>
 
                             </div>
