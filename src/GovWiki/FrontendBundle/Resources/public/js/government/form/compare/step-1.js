@@ -132,6 +132,8 @@ Step.prototype.createYearOptions = function(government) {
 
     disableSelect(false);
 
+    self.$select.html('<option>YEAR</option>');
+
     sortedYears.forEach(function (year, index) {
         var selected = index == 0 ? 'selected' : '';
         self.$select.append('<option value="' + government.id + '" ' + selected + '>' + year + '</option>');

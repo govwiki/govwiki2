@@ -7,7 +7,7 @@
 function Step (FormState, container) {
 
     this.container = container;
-    this.$governmentCategories = $(container);
+    this.$select = $(container);
     this.firstStep = FormState.firstStep;
     this.secondStep = FormState.secondStep;
     this.init();
@@ -29,14 +29,14 @@ Step.prototype.init = function () {
  * Unlock step
  */
 Step.prototype.unlock = function() {
-    this.$governmentCategories.toggleClass('disabled', false);
+    this.$select.toggleClass('disabled', false);
 };
 
 /**
  * Lock step
  */
 Step.prototype.lock = function() {
-    this.$governmentCategories.toggleClass('disabled', true);
+    this.$select.toggleClass('disabled', true);
 };
 
 /**
@@ -167,39 +167,70 @@ Step.prototype.handler_onChangeSelect = function() {
             return true;
         }
 
-        self.switchGraphs();
+        self.loadComparedData(tab, category);
 
-        var data = {
-            firstGovernment: {
-                id: self.firstStep.data.id,
-                name: self.firstStep.data.name,
-                year: self.firstStep.data.year
-            },
-            secondGovernment: {
-                id: self.secondStep.data.id,
-                name: self.secondStep.data.name,
-                year: self.firstStep.data.year
-            },
-            category: category,
-            tab: tab
-        };
+    });
 
-        data = JSON.stringify(data);
+};
 
-        $.ajax({
-            url: window.gw.urls.compare,
-            type: 'POST',
-            data: data,
-            contentType: 'application/json',
-            success: function (comparedData) {
-                self.drawTable('.compare-first-table', comparedData);
-                self.drawTable('.compare-second-table', comparedData);
-                self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
-                self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
-                $('.financial-table').hide();
-            }
-        });
+/**
+ * (Ajax, DOM)
+ *
+ * Load compared data for two governments
+ * Draw table, and charts
+ *
+ * @param {String} tab - example: 'Financial Statement', 'General Information', 'Financial Highlights', ...
+ * @param {String} category - only two: 'Revenues', 'Expenditures'
+ * @param {Boolean} select - true(mark category in select as active/selected), false(not mark)
+ */
+Step.prototype.loadComparedData = function (tab, category, select) {
 
+    var self = this;
+
+    if (!tab || !category) {
+        alert('Something went wrong, please contact with us');
+        console.error('Please pass all required arguments into loadComparedData() function');
+        return false;
+    }
+
+    if (select) {
+        self.$select.find('[value="' + category + '"]').attr('selected', true);
+    }
+
+    var data = {
+        firstGovernment: {
+            id: self.firstStep.data.id,
+            name: self.firstStep.data.name,
+            year: self.firstStep.data.year
+        },
+        secondGovernment: {
+            id: self.secondStep.data.id,
+            name: self.secondStep.data.name,
+            year: self.firstStep.data.year
+        },
+        category: category,
+        tab: tab
+    };
+
+    data = JSON.stringify(data);
+
+    $.ajax({
+        url: window.gw.urls.compare,
+        type: 'POST',
+        data: data,
+        contentType: 'application/json',
+        success: function (comparedData) {
+            self.switchGraphs();
+            self.drawTable('.compare-first-table', comparedData);
+            self.drawTable('.compare-second-table', comparedData);
+            self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
+            self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
+            $('.financial-table').hide();
+        },
+        error: function (error) {
+            alert('Cant load data for this governments, please try later');
+            return true;
+        }
     });
 
 };
@@ -214,7 +245,7 @@ Step.prototype.handler_onClickSelect = function() {
 
     var self = this;
 
-    $('.government-categories').on('mousedown', function (e) {
+    self.$select.on('mousedown', function (e) {
 
         var $el = $(e.target);
 

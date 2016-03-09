@@ -23,7 +23,15 @@ $(function() {
                 this.completed = true;
 
                 step2.unlock();
+
+                // If first step
                 if (FormState.firstStep.completed && FormState.secondStep.completed) {
+                    // Default action if thirdSteps not initialized
+                    if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
+                        step31.loadComparedData('Financial Statement', 'Revenues', true);
+                    } else {
+
+                    }
                     step31.unlock();
                     step3.unlock();
                 }
@@ -45,6 +53,7 @@ $(function() {
                 if (FormState.firstStep.completed && FormState.secondStep.completed) {
                     step31.unlock();
                     step3.unlock();
+                    step31.loadComparedData('Financial Statement', 'Revenues', true);
                 }
             },
             incomplete: function() {
