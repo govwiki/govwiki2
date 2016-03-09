@@ -703,7 +703,8 @@ webpackJsonp([2],{
 	            if (!window.gw.map.county.colorized) { return false; }
 	
 	            var legendItems = '';
-	            var fieldName = window.gw.map.county.fieldName.replace(/_/g, ' ');
+	            //var fieldName = window.gw.map.county.fieldName.replace(/_/g, ' ');
+	            var fieldName = window.gw.map.county.localized_name;
 	            var conditions = window.gw.map.county.conditions;
 	
 	            var periodConditions = getConditionsByType(conditions, 'period');
