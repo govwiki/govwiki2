@@ -27,7 +27,13 @@ webpackJsonp([1],[
 	                this.completed = true;
 	
 	                step2.unlock();
+	
+	                // If first step
 	                if (FormState.firstStep.completed && FormState.secondStep.completed) {
+	                    // Default action if thirdSteps not initialized
+	                    if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
+	                        step31.loadComparedData('Financial Statement', 'Revenues', true);
+	                    }
 	                    step31.unlock();
 	                    step3.unlock();
 	                }
@@ -47,6 +53,10 @@ webpackJsonp([1],[
 	                this.completed = true;
 	
 	                if (FormState.firstStep.completed && FormState.secondStep.completed) {
+	                    // Default action if thirdSteps not initialized
+	                    if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
+	                        step31.loadComparedData('Financial Statement', 'Revenues', true);
+	                    }
 	                    step31.unlock();
 	                    step3.unlock();
 	                }
@@ -514,13 +524,8 @@ webpackJsonp([1],[
 	function init() {
 	
 	    handler_switchChart();
-	    //financialStatements_compare();
 	    financialStatements_revenue();
 	    financialStatements_expenditures();
-	
-	}
-	
-	function financialStatements_compare() {
 	
 	}
 	
@@ -781,6 +786,8 @@ webpackJsonp([1],[
 	        var chartType = this.getElementsByTagName('input')[0].id;
 	
 	        if (chartType == 'chart'){
+	            hideTableGroup('financialTable', true);
+	            hideTableGroup('compareTables', false);
 	            hideChartGroup('pie-charts', false);
 	            hideChartGroup('compare-charts', true);
 	            hideChartGroup('tree-charts', true);
@@ -790,6 +797,8 @@ webpackJsonp([1],[
 	            }
 	
 	        } else if (chartType == 'tree-charts') {
+	            hideTableGroup('financialTable', true);
+	            hideTableGroup('compareTables', false);
 	            hideChartGroup('pie-charts', true);
 	            hideChartGroup('compare-charts', true);
 	            hideChartGroup('tree-charts', false);
@@ -798,6 +807,8 @@ webpackJsonp([1],[
 	                financialStatementsTree_revenues();
 	            }
 	        } else if (chartType == 'compare-charts') {
+	            hideTableGroup('financialTable', false);
+	            hideTableGroup('compareTables', true);
 	            hideChartGroup('pie-charts', true);
 	            hideChartGroup('compare-charts', false);
 	            hideChartGroup('tree-charts', true);
@@ -808,6 +819,20 @@ webpackJsonp([1],[
 	        }
 	
 	    });
+	
+	    function hideTableGroup(tableGroup, hide) {
+	
+	        var display = hide ? {display: 'none'} : {display: 'table'};
+	
+	        if (tableGroup == 'financialTable') {
+	            $('.compare-first-table').css(display);
+	            $('.compare-second-table').css(display);
+	
+	        } else if (tableGroup == 'compareTables') {
+	            $('.financial-table').css(display);
+	        }
+	
+	    }
 	
 	    /**
 	     * Hide chart group. Group may contain few charts
@@ -2573,6 +2598,8 @@ webpackJsonp([1],[
 	
 	    disableSelect(false);
 	
+	    self.$select.html('<option>YEAR</option>');
+	
 	    sortedYears.forEach(function (year, index) {
 	        var selected = index == 0 ? 'selected' : '';
 	        self.$select.append('<option value="' + government.id + '" ' + selected + '>' + year + '</option>');
@@ -2615,11 +2642,11 @@ webpackJsonp([1],[
 	        var $el = $(e.target);
 	
 	        var $selected = $el.find('option:selected');
-	        var value = $selected.attr('value');
-	        var text = $selected.text();
+	        var governmentId = $selected.attr('value');
+	        var year = $selected.text();
 	
-	        if (value) {
-	            self.CurrentFormState.data.year = value;
+	        if (year) {
+	            self.CurrentFormState.data.year = parseInt(year);
 	            self.CurrentFormState.complete();
 	        } else {
 	            alert('Please choose correct year');
@@ -2776,7 +2803,7 @@ webpackJsonp([1],[
 	function Step (FormState, container) {
 	
 	    this.container = container;
-	    this.$governmentCategories = $(container);
+	    this.$select = $(container);
 	    this.firstStep = FormState.firstStep;
 	    this.secondStep = FormState.secondStep;
 	    this.$loader = $('<div class="loader"></div>');
@@ -2802,14 +2829,15 @@ webpackJsonp([1],[
 	Step.prototype.unlock = function() {
 	    this.loading(true);
 	    this.loadMatchedCategories();
-	    this.$governmentCategories.toggleClass('disabled', false);
+	    this.$select.toggleClass('disabled', false);
 	};
 	
 	/**
 	 * Lock step
 	 */
 	Step.prototype.lock = function() {
-	    this.$governmentCategories.toggleClass('disabled', true);
+	    this.$select.html('<option>CAPTION</option>');
+	    this.$select.toggleClass('disabled', true);
 	};
 	
 	
@@ -2822,10 +2850,10 @@ webpackJsonp([1],[
 	Step.prototype.loading = function(isLoading) {
 	
 	    var display = isLoading ? 'none' : 'block';
-	    this.$governmentCategories.css({display: display});
+	    this.$select.css({display: display});
 	
 	    if (isLoading) {
-	        this.$governmentCategories.parent().append(this.$loader);
+	        this.$select.parent().append(this.$loader);
 	    } else {
 	        this.$loader.remove();
 	    }
@@ -2893,12 +2921,11 @@ webpackJsonp([1],[
 	
 	            if (!data || data.length == 0) {
 	                alert('Not can find categories for current comparison');
-	                self.$governmentCategories.html('<option>ALL CATEGORIES</option>');
-	                self.$governmentCategories.toggleClass('disabled', true);
+	                self.lock();
 	                return true;
 	            }
 	
-	            self.$governmentCategories.toggleClass('disabled', false);
+	            self.$select.toggleClass('disabled', false);
 	
 	            /**
 	             * Create expenditures group
@@ -2913,12 +2940,12 @@ webpackJsonp([1],[
 	            });
 	
 	            availableTabs.forEach(function(tab){
-	                self.$governmentCategories.append('<optgroup label="' + tab + '"></optgroup>');
+	                self.$select.append('<optgroup label="' + tab + '"></optgroup>');
 	            });
 	
 	            data.forEach(function (caption) {
 	                var value = caption.fieldName || caption.name;
-	                var $expenditureGroup = self.$governmentCategories.find('[label="' + caption.tab + '"]');
+	                var $expenditureGroup = self.$select.find('[label="' + caption.tab + '"]');
 	                $expenditureGroup.append('<option value="' + value + '">' + caption.name + '</option>');
 	            });
 	
@@ -2926,7 +2953,7 @@ webpackJsonp([1],[
 	        error: function () {
 	            self.loading(false);
 	            alert('Something wrong, please try another government');
-	            self.$governmentCategories.toggleClass('disabled', true);
+	            self.$select.toggleClass('disabled', true);
 	        }
 	    });
 	
@@ -3050,7 +3077,7 @@ webpackJsonp([1],[
 	
 	    var self = this;
 	
-	    $('.government-categories').on('mousedown', function (e) {
+	    self.$select.on('mousedown', function (e) {
 	
 	        var $el = $(e.target);
 	
@@ -3123,7 +3150,7 @@ webpackJsonp([1],[
 	function Step (FormState, container) {
 	
 	    this.container = container;
-	    this.$governmentCategories = $(container);
+	    this.$select = $(container);
 	    this.firstStep = FormState.firstStep;
 	    this.secondStep = FormState.secondStep;
 	    this.init();
@@ -3145,14 +3172,14 @@ webpackJsonp([1],[
 	 * Unlock step
 	 */
 	Step.prototype.unlock = function() {
-	    this.$governmentCategories.toggleClass('disabled', false);
+	    this.$select.toggleClass('disabled', false);
 	};
 	
 	/**
 	 * Lock step
 	 */
 	Step.prototype.lock = function() {
-	    this.$governmentCategories.toggleClass('disabled', true);
+	    this.$select.toggleClass('disabled', true);
 	};
 	
 	/**
@@ -3240,16 +3267,18 @@ webpackJsonp([1],[
 	Step.prototype.drawTable = function(container, comparedData) {
 	
 	    var $container = $(container);
+	    $container.html('');
 	    var governmentNumber = (container == '.compare-first-table') ? 'firstGovernment' : 'secondGovernment';
 	
 	    var category = comparedData.category;
 	    var governmentName = comparedData[governmentNumber].name;
+	    var year = comparedData[governmentNumber].year;
 	
-	    var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + '</th></tr><tr><th>' + category + '</th><th> Total Gov. Funds </th></tr>></thead>';
+	    var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + ' (' + year + ')</th></tr><tr><th>' + category + '</th><th> Total Gov. Funds </th></tr>></thead>';
 	    var tbody = '<tbody>';
 	
 	    comparedData[governmentNumber].data.forEach(function(row){
-	        tbody += '<tr><td>' + row.caption + '</td><td>' + row.amount + '</td></tr>';
+	        tbody += '<tr><td>' + row.caption + '</td><td>' + numeral(row.amount).format('$0,0') + '</td></tr>';
 	    });
 	
 	    tbody += '</tbody>';
@@ -3283,39 +3312,69 @@ webpackJsonp([1],[
 	            return true;
 	        }
 	
-	        self.switchGraphs();
+	        self.loadComparedData(tab, category);
 	
-	        var data = {
-	            firstGovernment: {
-	                id: self.firstStep.data.id,
-	                name: self.firstStep.data.name,
-	                year: self.firstStep.data.year
-	            },
-	            secondGovernment: {
-	                id: self.secondStep.data.id,
-	                name: self.secondStep.data.name,
-	                year: self.firstStep.data.year
-	            },
-	            category: category,
-	            tab: tab
-	        };
+	    });
 	
-	        data = JSON.stringify(data);
+	};
 	
-	        $.ajax({
-	            url: window.gw.urls.compare,
-	            type: 'POST',
-	            data: data,
-	            contentType: 'application/json',
-	            success: function (comparedData) {
-	                self.drawTable('.compare-first-table', comparedData);
-	                self.drawTable('.compare-second-table', comparedData);
-	                self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
-	                self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
-	                $('.financial-table').hide();
-	            }
-	        });
+	/**
+	 * (Ajax, DOM)
+	 *
+	 * Load compared data for two governments
+	 * Draw table, and charts
+	 *
+	 * @param {String} tab - example: 'Financial Statement', 'General Information', 'Financial Highlights', ...
+	 * @param {String} category - only two: 'Revenues', 'Expenditures'
+	 * @param {Boolean} select - true(mark category in select as active/selected), false(not mark)
+	 */
+	Step.prototype.loadComparedData = function (tab, category, select) {
 	
+	    var self = this;
+	
+	    if (!tab || !category) {
+	        alert('Something went wrong, please contact with us');
+	        console.error('Please pass all required arguments into loadComparedData() function');
+	        return false;
+	    }
+	
+	    if (select) {
+	        self.$select.find('[value="' + category + '"]').attr('selected', true);
+	    }
+	
+	    var data = {
+	        firstGovernment: {
+	            id: self.firstStep.data.id,
+	            name: self.firstStep.data.name,
+	            year: self.firstStep.data.year
+	        },
+	        secondGovernment: {
+	            id: self.secondStep.data.id,
+	            name: self.secondStep.data.name,
+	            year: self.secondStep.data.year
+	        },
+	        category: category,
+	        tab: tab
+	    };
+	
+	    data = JSON.stringify(data);
+	
+	    $.ajax({
+	        url: window.gw.urls.compare,
+	        type: 'POST',
+	        data: data,
+	        contentType: 'application/json',
+	        success: function (comparedData) {
+	            self.switchGraphs();
+	            self.drawTable('.compare-first-table', comparedData);
+	            self.drawTable('.compare-second-table', comparedData);
+	            self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
+	            self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
+	        },
+	        error: function (error) {
+	            alert('Cant load data for this governments, please try later');
+	            return true;
+	        }
 	    });
 	
 	};
@@ -3330,7 +3389,7 @@ webpackJsonp([1],[
 	
 	    var self = this;
 	
-	    $('.government-categories').on('mousedown', function (e) {
+	    self.$select.on('mousedown', function (e) {
 	
 	        var $el = $(e.target);
 	
