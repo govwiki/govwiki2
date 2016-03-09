@@ -201,7 +201,7 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
                 }
                 $messageToElectedOfficial
                     ->setSubject($this->getParameter('email_subject'))
-                    ->setFrom($this->getParameter('admin_email'))
+                    ->setFrom($this->adminEnvironmentManager()->getEntity()->getAdminEmail())
                     ->setBody(
                         $this->renderView(
                             'GovWikiAdminBundle:ElectedOfficial:emailToNewLinkedUser.html.twig',
