@@ -55,24 +55,7 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
             $user = $token->getUser();
 
             if (strpos($referer, 'login')) {
-                if ($user->hasRole('ROLE_ELECTED_OFFICIAL')) {
-                    /*
-                     * Elected official.
-                     * todo hardcoded for path determinator.
-                     */
-                    $data = $this->em
-                        ->getRepository('GovWikiDbBundle:ElectedOfficial')
-                        ->getRouteParameters($user->getId());
-
-                    return new RedirectResponse(
-                        $this->router->generate('elected', [
-                            'environment' => $data['env_slug'],
-                            'altTypeSlug' => $data['gov_alt_type_slug'],
-                            'slug' => $data['gov_slug'],
-                            'electedSlug' =>  $data['eo_slug']
-                        ]));
-
-                } elseif ($user->hasRole('ROLE_ADMIN')) {
+                if ($user->hasRole('ROLE_ADMIN')) {
                     /*
                      * Admin.
                      */

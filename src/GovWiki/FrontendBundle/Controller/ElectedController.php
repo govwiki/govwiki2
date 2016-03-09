@@ -90,41 +90,6 @@ class ElectedController extends Controller
         ]);
     }
 
-    /**
-     * @Route("/elected_official_comments_edit", name="elected_official_comments_edit")
-     *
-     * @param Request $request A Request instance.
-     */
-    public function editElectedOfficialCommentAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $form = new ElectedOfficialCommentType();
-        $request_data = $request->get($form->getName());
-
-        $elected_official_id = $request_data['electedOfficialId'];
-        $elected_official_comment = $request_data['comment'];
-        $elected_official = $em->getRepository('GovWikiDbBundle:ElectedOfficial')->find($elected_official_id);
-        $elected_official->setElectedOfficialComments($elected_official_comment);
-        $em->persist($elected_official);
-        $em->flush();
-
-        $environment = $this
-            ->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-            ->getEnvironment();
-        $government = $elected_official->getGovernment();
-        $gov_alt_type_slug = $government->getAltTypeSlug();
-        $gov_slug = $government->getSlug();
-        $elected_official_slug = $elected_official->getSlug();
-
-        return $this->redirectToRoute('elected', array(
-            'environment' => $environment,
-            'altTypeSlug' => $gov_alt_type_slug,
-            'slug' => $gov_slug,
-            'electedSlug' => $elected_official_slug
-        ));
-    }
-
     private function clearTranslationsCache()
     {
         $cacheDir = __DIR__ . "/../../../../app/cache";
