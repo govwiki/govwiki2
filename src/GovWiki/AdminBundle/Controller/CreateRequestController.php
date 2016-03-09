@@ -10,6 +10,7 @@ use GovWiki\DbBundle\Entity\ElectedOfficialVote;
 use GovWiki\DbBundle\Entity\Legislation;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
 use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
+use GovWiki\RequestBundle\Entity\LegislationCreateRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -85,8 +86,33 @@ class CreateRequestController extends AbstractGovWikiAdminController
                 /*
                  * Apply current create request.
                  */
+
                 $createRequest
                     ->setStatus(AbstractCreateRequest::STATE_APPLIED);
+
+                if ($createRequest instanceof LegislationCreateRequest) {
+                    /*
+                     * Set display time for applied legislation.
+                     */
+                    $delay = $request->request->get('delay', null);
+
+                    if (null !== $delay) {
+                        /** @var Legislation $subject */
+                        $subject = $createRequest->getSubject();
+
+                        $hours = $delay['hours'];
+                        $minutes = $delay['minutes'];
+                        $interval = new \DateInterval("PT{$hours}H{$minutes}M");
+
+                        $displayTime = new \DateTime();
+                        $displayTime = $displayTime->add($interval);
+                        $subject->setDisplayTime($displayTime);
+
+                        $createRequest->setSubject($subject);
+                        $em->persist($subject);
+                    }
+                }
+
                 $em->persist($createRequest);
 
                 $electedIds = $request->request->get('send_email', []);

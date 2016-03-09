@@ -3,7 +3,6 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\QueryBuilder;
 use GovWiki\RequestBundle\Entity\AbstractCreatable;
 use GovWiki\RequestBundle\Entity\LegislationCreateRequest;
 use JMS\Serializer\Annotation\ExclusionPolicy;
@@ -88,6 +87,14 @@ class Legislation extends AbstractCreatable
     private $notes;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime")
+     * @Groups({"elected_official"})
+     */
+    private $displayTime;
+
+    /**
      * @ORM\OneToMany(
      *  targetEntity="ElectedOfficialVote",
      *  mappedBy="legislation",
@@ -135,6 +142,7 @@ class Legislation extends AbstractCreatable
     public function __construct()
     {
         $this->electedOfficialVotes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->displayTime = new \DateTime();
     }
 
     /**
@@ -386,5 +394,25 @@ class Legislation extends AbstractCreatable
     public function getGovernment()
     {
         return $this->government;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDisplayTime()
+    {
+        return $this->displayTime;
+    }
+
+    /**
+     * @param \DateTime $displayTime A DateTime instance.
+     *
+     * @return Legislation
+     */
+    public function setDisplayTime(\DateTime $displayTime)
+    {
+        $this->displayTime = $displayTime;
+
+        return $this;
     }
 }

@@ -98,10 +98,8 @@ class ElectedOfficialRepository extends EntityRepository
 
         $result = $qb
             ->addSelect(
-                'LinkedUser',
                 'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}'
             )
-            ->leftJoin('ElectedOfficial.linkedUser', 'LinkedUser')
             ->join('ElectedOfficial.government', 'Government')
             ->join('Government.environment', 'Environment')
             ->where(

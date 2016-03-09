@@ -152,3 +152,21 @@ body .container a.btn-primary,
 body .container a.btn-primary:hover {
   color: #fff;
 }
+
+.delay-input {
+   box-shadow: inset 0px 0 -1px 0 #dddddd;
+   -webkit-box-shadow: inset 1px 0 -1px 0 #dddddd;
+
+   input {
+      border: none;
+      background-color: transparent;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+
+      &:focus {
+         outline: none !important;
+         -webkit-box-shadow: none;
+         box-shadow: none;
+      }
+   }
+}
