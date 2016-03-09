@@ -47,13 +47,14 @@
     .legend-title {
       padding: 10px 15px;
       margin: 0;
-      width: 100px;
       text-align: center;
     }
 
     li {
       display: block;
+      float: left;
       padding: 10px 15px;
+      margin: 0;
       text-align: center;
       height: auto;
       background-color: #dff0d8;
@@ -61,6 +62,10 @@
       &:hover {
         background-color: #dff0d8;
         cursor: pointer;
+      }
+
+      &:not(:last-child) {
+        border-right: 1px solid rgba(0, 0, 0, 0.08);
       }
 
       .bullet {
