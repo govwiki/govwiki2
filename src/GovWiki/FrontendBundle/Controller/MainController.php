@@ -62,8 +62,6 @@ class MainController extends Controller
         $map['colorizedCountyConditions']['localized_name'] = $this->get('translator.default')
             ->trans('format.'. $colorizedCountyConditions->getFieldName());
 
-        dump($this->get('translator.default')->getLocale());
-
         $mapEntity = $map;
         if (null === $map) {
             throw new NotFoundHttpException();
