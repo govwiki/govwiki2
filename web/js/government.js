@@ -847,6 +847,7 @@ webpackJsonp([1],[
 	
 	        } else if (chartGroup == 'compare-charts') {
 	            $('#total-compare-pie').css(display);
+	            $('#total-compare-column').css(display);
 	
 	        } else if (chartGroup == 'tree-charts') {
 	            $('#total-expenditures-tree').css(display);
