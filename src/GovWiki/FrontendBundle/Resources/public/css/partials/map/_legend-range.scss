@@ -1,0 +1,76 @@
+
+/* ================================== */
+/* ========== Range Legend ========== */
+/* ================================== */
+
+
+.cartodb-legend {
+
+  // Vertical legend
+  &.custom.vertical {
+    padding: 0;
+
+    .legend-title {
+      padding: 10px 15px;
+      margin: 0;
+      width: 100px;
+      text-align: center;
+    }
+
+    li {
+      display: block;
+      padding: 10px 15px;
+      text-align: center;
+      height: auto;
+      background-color: #dff0d8;
+      margin: 0;
+
+      &:hover {
+        background-color: #dff0d8;
+        cursor: pointer;
+      }
+
+      .bullet {
+        float: none;
+        display: inline-block;
+      }
+
+    }
+
+
+  }
+
+  // Horizontal legend
+  &.custom.horizontal {
+    padding: 0;
+
+    .legend-title {
+      padding: 10px 15px;
+      margin: 0;
+      width: 100px;
+      text-align: center;
+    }
+
+    li {
+      display: block;
+      padding: 10px 15px;
+      text-align: center;
+      height: auto;
+      background-color: #dff0d8;
+
+      &:hover {
+        background-color: #dff0d8;
+        cursor: pointer;
+      }
+
+      .bullet {
+        float: none;
+        display: inline-block;
+      }
+
+    }
+
+
+  }
+
+}

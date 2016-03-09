@@ -750,13 +750,13 @@ $(function(){
                 legendClass += ' cartodb-legend-stack__top';
             }
 
-            var legend = '<div class="'+ legendClass +'" style=""><div class="cartodb-legend custom" style="display: block;"><div class="legend-title">' +
+            var legend = '<div class="'+ legendClass +'" style=""><div class="cartodb-legend custom vertical" style="display: block;"><div class="legend-title">' +
                             fieldName +
                          '</div><ul>' +
                             legendItems +
                          '</ul></div></div>';
 
-            $('#map').append(legend);
+            $('#menu').after(legend);
 
         }
 
