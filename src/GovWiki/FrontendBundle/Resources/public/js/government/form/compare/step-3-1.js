@@ -128,12 +128,14 @@ Step.prototype.drawTable = function(container, comparedData) {
 
     var category = comparedData.category;
     var governmentName = comparedData[governmentNumber].name;
+    var year = comparedData[governmentNumber].year;
+    console.log(year);
 
-    var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + '</th></tr><tr><th>' + category + '</th><th> Total Gov. Funds </th></tr>></thead>';
+    var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + ' (' + year + ')</th></tr><tr><th>' + category + '</th><th> Total Gov. Funds </th></tr>></thead>';
     var tbody = '<tbody>';
 
     comparedData[governmentNumber].data.forEach(function(row){
-        tbody += '<tr><td>' + row.caption + '</td><td>' + row.amount + '</td></tr>';
+        tbody += '<tr><td>' + row.caption + '</td><td>' + numeral(row.amount).format('$0,0') + '</td></tr>';
     });
 
     tbody += '</tbody>';
@@ -206,11 +208,12 @@ Step.prototype.loadComparedData = function (tab, category, select) {
         secondGovernment: {
             id: self.secondStep.data.id,
             name: self.secondStep.data.name,
-            year: self.firstStep.data.year
+            year: self.secondStep.data.year
         },
         category: category,
         tab: tab
     };
+    console.log(data);
 
     data = JSON.stringify(data);
 

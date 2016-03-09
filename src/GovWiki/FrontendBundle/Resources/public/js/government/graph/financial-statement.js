@@ -7,13 +7,8 @@ var chart = require('./config.js').chart;
 function init() {
 
     handler_switchChart();
-    //financialStatements_compare();
     financialStatements_revenue();
     financialStatements_expenditures();
-
-}
-
-function financialStatements_compare() {
 
 }
 

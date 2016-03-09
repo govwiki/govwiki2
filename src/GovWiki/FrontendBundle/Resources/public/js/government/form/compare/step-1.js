@@ -176,11 +176,11 @@ Step.prototype.handler_onChangeSelect = function () {
         var $el = $(e.target);
 
         var $selected = $el.find('option:selected');
-        var value = $selected.attr('value');
-        var text = $selected.text();
+        var governmentId = $selected.attr('value');
+        var year = $selected.text();
 
-        if (value) {
-            self.CurrentFormState.data.year = value;
+        if (year) {
+            self.CurrentFormState.data.year = parseInt(year);
             self.CurrentFormState.complete();
         } else {
             alert('Please choose correct year');
