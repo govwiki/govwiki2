@@ -45,13 +45,9 @@ class CreateRequestRepository extends EntityRepository
         $repository = $this->_em->getRepository(get_class($reference));
 
         $qb = $repository->getQueryBuilder('CR');
-        $data = $qb
+        return $qb
             ->where($qb->expr()->eq('CR.id', $id))
             ->getQuery()
             ->getOneOrNullResult();
-
-        $s = $qb->getQuery()->getSQL();
-
-        return $data;
     }
 }

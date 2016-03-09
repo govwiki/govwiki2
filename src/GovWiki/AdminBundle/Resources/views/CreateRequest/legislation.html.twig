@@ -16,6 +16,16 @@
     {{ show_macro.addFormRow(form.issueCategory) }}
 {% endblock associations %}
 
+{% block information_buttons %}
+    <div class="form-group clearfix">
+        <label class="control-label" for="delay">Display delay (hours.minutes)</label>
+        <div class="delay-input">
+            <input type='number' value="0" min="0" name="delay[hours]" id="hours"><b>:</b>
+            <input type='number' value="0" min="0" name="delay[minutes]" id="minutes">
+        </div>
+    </div>
+{% endblock information_buttons %}
+
 {% block childs %}
     <table class="table table-bordered table-striped">
         <thead>
@@ -48,3 +58,14 @@
         </tbody>
     </table>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts
+        '@GovWikiAdminBundle/Resources/public/js/jquery.formatter.min.js'
+        '@GovWikiAdminBundle/Resources/public/js/CreateRequest/legislation.js'
+        output='js/legislation.js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock javascripts %}

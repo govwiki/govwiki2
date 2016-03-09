@@ -28,8 +28,7 @@ class LocaleRepository extends EntityRepository
             ->select('loc.shortName')
             ->leftJoin('loc.environment', 'Environment')
             ->where('Environment.slug = :env')
-            ->setParameter('env', $environment)
-        ;
+            ->setParameter('env', $environment);
 
         return $qb->getQuery()->getResult();
     }

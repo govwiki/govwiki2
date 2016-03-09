@@ -22,6 +22,8 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
         $qb = $this->createQueryBuilder('Vote');
         $expr = $qb->expr();
 
+        $now = (new \DateTime())->format('Y-m-d H:i:s');
+
         return $qb
             ->addSelect('Legislation, Comment, Request, Creator, IssueCategory')
             ->join('Vote.legislation', 'Legislation')
@@ -30,6 +32,7 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
             ->leftJoin('Request.creator', 'Creator')
             ->leftJoin('Vote.comments', 'Comment')
             ->where($expr->andX(
+                $expr->lte('Legislation.displayTime', $expr->literal($now)),
                 $expr->eq('Vote.electedOfficial', $electedOfficial),
                 $expr->orX(
                     $expr->isNull('Legislation.request'),
@@ -49,6 +52,8 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
         $qb = $this->createQueryBuilder('Vote');
         $expr = $qb->expr();
 
+        $now = (new \DateTime())->format('Y-m-d H:i:s');
+
         return $qb
             ->addSelect('Legislation, Comment, Request, Creator, IssueCategory')
             ->join('Vote.legislation', 'Legislation')
@@ -59,6 +64,7 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
             ->join('Vote.electedOfficial', 'ElectedOfficial')
             ->join('ElectedOfficial.government', 'Government')
             ->where($expr->andX(
+                $expr->lte('Legislation.displayTime', $expr->literal($now)),
                 $expr->andX(
                     $expr->eq('Government.altTypeSlug', $expr->literal($govAltTypeSlug)),
                     $expr->eq('Government.slug', $expr->literal($govSlug)),

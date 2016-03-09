@@ -59,6 +59,10 @@ class MainController extends Controller
             ->toArray();
         $map['colorizedCountyConditions']['field_mask'] = $environmentManager
                 ->getFieldFormat($colorizedCountyConditions->getFieldName())['mask'];
+        $map['colorizedCountyConditions']['localized_name'] = $this->get('translator.default')
+            ->trans('format.'. $colorizedCountyConditions->getFieldName());
+
+        dump($this->get('translator.default')->getLocale());
 
         $mapEntity = $map;
         if (null === $map) {
