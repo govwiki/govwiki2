@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use GovWiki\AdminBundle\GovWikiAdminServices;
 
 /**
  * Class CommentController
@@ -59,6 +60,40 @@ class CommentController extends Controller
 
             $manager->remove($key);
 
+            // send admin notification
+            $mailer = $this->get('swiftmailer.mailer');
+            $message = \Swift_Message::newInstance();
+
+            if ($this->getParameter('debug')) {
+                $message->setTo('user1@mail1.dev');
+                $setFrom = explode('@', 'user1@mail1.dev');
+                $setFrom = 'robot@'.$setFrom[1];
+            } else {
+                $adminEmail = $this->adminEnvironmentManager()->getEntity()->getAdminEmail();
+                $message->setTo($adminEmail);
+                $setFrom = explode('@', $adminEmail);
+                $setFrom = 'robot@'.$setFrom[1];
+            }
+
+            $message
+                ->setSubject('Elected official added a comment')
+                ->setFrom($setFrom)
+                ->setBody(
+                    $this->renderView(
+                        '@GovWikiComment/Email/admin_notification.html.twig',
+                        [
+                            'electedName'        => $vote->getElectedOfficial()->getFullName(),
+                            'government'         => $vote->getElectedOfficial()->getGovernment()->getName(),
+                            'electedTitle'       => $vote->getElectedOfficial()->getTitle(),
+                            'summaryLegislation' => $vote->getLegislation()->getSummary(),
+                            'commentText'        => $comment->getBody(),
+                        ]
+                    ),
+                    'text/html'
+                );
+
+            $mailer->send($message);
+
             return $this
                 ->render('@GovWikiComment/Comment/add_complete.html.twig');
         }
@@ -67,5 +102,13 @@ class CommentController extends Controller
             'form' => $form->createView(),
             'vote' => $vote,
         ];
+    }
+
+    /**
+     * @return \GovWiki\AdminBundle\Manager\AdminEnvironmentManager
+     */
+    protected function adminEnvironmentManager()
+    {
+        return $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
     }
 }

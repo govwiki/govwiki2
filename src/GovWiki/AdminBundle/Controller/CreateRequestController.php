@@ -196,7 +196,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
                 'full_name' => $row['fullName'],
                 'title' => $row['title'],
                 'type' => $type,
-                'email' => $this->getParameter('admin_email'),
+                'email' => $this->adminEnvironmentManager()->getEntity()->getAdminEmail(),
                 'government_name' => $row['name'],
                 'profileUrl' => "http://{$domain}".$govwikiRouter->generate(
                     'elected',
@@ -234,7 +234,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
 
             $message
                 ->setSubject($this->getParameter('email_subject'))
-                ->setFrom($this->getParameter('admin_email'))
+                ->setFrom($this->adminEnvironmentManager()->getEntity()->getAdminEmail())
                 ->setBody(
                     $engine->render(
                         $template->getContent(),

@@ -142,6 +142,13 @@ class Environment
     private $locales;
 
     /**
+     * @var string
+     *
+     * @ORM\Column()
+     */
+    private $adminEmail;
+
+    /**
      *
      */
     public function __construct()
@@ -495,5 +502,27 @@ class Environment
     public function getLocales()
     {
         return $this->locales;
+    }
+
+
+
+    /**
+     * @return string
+     */
+    public function getAdminEmail()
+    {
+        return $this->adminEmail;
+    }
+
+    /**
+     * @param string $adminEmail
+     *
+     * @return Environment
+     */
+    public function setAdminEmail($adminEmail)
+    {
+        $this->adminEmail = $adminEmail;
+
+        return $this;
     }
 }

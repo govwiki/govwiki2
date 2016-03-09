@@ -23,6 +23,7 @@ class EnvironmentType extends AbstractType
             ->add('name')
             ->add('domain')
             ->add('title')
+            ->add('adminEmail')
         ;
     }
 
