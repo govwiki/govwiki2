@@ -124,12 +124,12 @@ Step.prototype.switchGraphs = function() {
 Step.prototype.drawTable = function(container, comparedData) {
 
     var $container = $(container);
+    $container.html('');
     var governmentNumber = (container == '.compare-first-table') ? 'firstGovernment' : 'secondGovernment';
 
     var category = comparedData.category;
     var governmentName = comparedData[governmentNumber].name;
     var year = comparedData[governmentNumber].year;
-    console.log(year);
 
     var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + ' (' + year + ')</th></tr><tr><th>' + category + '</th><th> Total Gov. Funds </th></tr>></thead>';
     var tbody = '<tbody>';
@@ -213,7 +213,6 @@ Step.prototype.loadComparedData = function (tab, category, select) {
         category: category,
         tab: tab
     };
-    console.log(data);
 
     data = JSON.stringify(data);
 
@@ -228,7 +227,6 @@ Step.prototype.loadComparedData = function (tab, category, select) {
             self.drawTable('.compare-second-table', comparedData);
             self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
             self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
-            $('.financial-table').hide();
         },
         error: function (error) {
             alert('Cant load data for this governments, please try later');
