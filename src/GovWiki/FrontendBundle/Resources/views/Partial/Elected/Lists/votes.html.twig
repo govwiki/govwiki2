@@ -80,9 +80,9 @@
         </tr>
 
         {% if hasComment %}
-            <tr>
+            <tr class="vote-comment">
                 <td colspan="6">
-                    {{ vote.comments|first.body|raw }}
+                    <b>Elected Official Comment:</b>{{ vote.comments|first.body|raw }}
                 </td>
             </tr>
         {% endif %}
