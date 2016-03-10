@@ -9,12 +9,15 @@ use Doctrine\ORM\Mapping as ORM;
 use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Government;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints\Email;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\UserBundle\Entity\Repository\UserRepository"
+ * )
  * @ORM\Table(name="users")
  * @UniqueEntity(fields="username")
  * @UniqueEntity(fields="email")
@@ -70,6 +73,16 @@ class User extends BaseUser
      * @ORM\JoinTable(name="cross_users_environments")
      */
     private $environments;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\ManyToMany(
+     *  targetEntity="GovWiki\DbBundle\Entity\Government",
+     *  mappedBy="subscribers"
+     * )
+     */
+    private $subscribedTo;
 
     /**
      * Constructor
@@ -194,5 +207,37 @@ class User extends BaseUser
     public function getEnvironments()
     {
         return $this->environments;
+    }
+
+    /**
+     * @param Government $government A User instance.
+     *
+     * @return User
+     */
+    public function addSubscribers(Government $government)
+    {
+        $this->subscribedTo[] = $government;
+
+        return $this;
+    }
+
+    /**
+     * @param Government $government A User instance.
+     *
+     * @return User
+     */
+    public function removeSubscribers(Government $government)
+    {
+        $this->subscribedTo->remove($government);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getSubscribers()
+    {
+        return $this->subscribedTo;
     }
 }
