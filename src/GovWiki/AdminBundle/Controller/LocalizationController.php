@@ -83,14 +83,33 @@ class LocalizationController extends AbstractGovWikiAdminController
         }
         $trans_list = $this->getTranslationManager()->getTranslationsBySettings($locale_name, $trans_key_settings, $filter_translation);
 
-        $trans_pagination = $this->get('knp_paginator')->paginate(
+        $without_transText = array();
+        /** @var Translation $translation */
+        foreach ($trans_list as $key => $translation) {
+            if ($translation->getTransKey() == $translation->getTranslation() || $translation->getTranslation() == '') {
+                $without_transText[] = $translation;
+                unset($trans_list[$key]);
+            }
+        }
+
+        $with_transText_pagination = $this->get('knp_paginator')->paginate(
             $trans_list,
-            $request->query->getInt('page', 1),
-            50
+            $request->query->getInt('with_translation_page', 1),
+            50,
+            array('pageParameterName' => 'with_translation_page')
+        );
+        $without_transText_pagination = $this->get('knp_paginator')->paginate(
+            $without_transText,
+            $request->query->getInt('without_translation_page', 1),
+            50,
+            array('pageParameterName' => 'without_translation_page')
         );
 
         return [
-            'translations' => $trans_pagination,
+            'with_transText' => $with_transText_pagination,
+            'count_with_transText' => count($trans_list),
+            'without_transText' => $without_transText_pagination,
+            'count_without_transText' => count($without_transText),
             'locale_name' => $locale_name
         ];
     }

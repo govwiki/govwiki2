@@ -34,9 +34,28 @@
                     {# Navigation #}
                     <div class="row">
 
+                        {# Tabs #}
+                        <ul class="nav nav-pills" role="tablist">
+                            <li role="presentation" class="active">
+                                <a href="#with_transText" aria-controls="with_transText" role="tab" data-toggle="tab" id="with_transText_btn">
+                                    <span class="badge pull-right">{{ count_with_transText }}</span>
+                                    With translation
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a href="#without_transText" aria-controls="without_transText" role="tab" data-toggle="tab" id="without_transText_btn">
+                                    <span class="badge pull-right">{{ count_without_transText }}</span>
+                                    Without translation
+                                </a>
+                            </li>
+                        </ul>
+
                         {# Pagination #}
-                        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center">
-                            {{ knp_pagination_render(translations) }}
+                        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center" id="with_transText_pagination">
+                            {{ knp_pagination_render(with_transText) }}
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center" id="without_transText_pagination" style="display: none">
+                            {{ knp_pagination_render(without_transText) }}
                         </div>
 
                         {# Filter #}
@@ -77,60 +96,13 @@
                         </div>
                     </div>
 
-                    {# Table #}
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            <div class="table-responsive">
-
-                                <table class="table table-bordered table-hover text-center">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ knp_pagination_sortable(translations, 'Key',        'Translation.transKey') }}</th>
-                                            <th>{{ knp_pagination_sortable(translations, 'Translation','Translation.translation') }}</th>
-                                            <th class="actions">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for translation in translations %}
-                                            <tr>
-                                                <td>{{ translation.transKey }}</td>
-                                                <td>{{ translation.translation }}</td>
-                                                <td>
-                                                    <div class="btn-group">
-                                                        <a href="{{- path('govwiki_admin_localization_edittranslation',
-                                                            { transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-default">
-                                                                <span class="glyphicon glyphicon-pencil"></span>
-                                                                Edit
-                                                        </a>
-                                                        {% if translation.transTextareaType != 'ckeditor' %}
-                                                            <button data-url="{{- path('govwiki_admin_localization_removetranslation',
-                                                                { transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete this translation? Remember that translations with key &quot{{ translation.transKey }}&quot will be removed from all localizations.">
-                                                                <span class="glyphicon glyphicon-remove"></span> Remove
-                                                            </button>
-                                                        {% endif %}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-
-                            </div>
-
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="with_transText">
+                            {{ _self.translationTable(with_transText) }}
                         </div>
-                    </div>
 
-
-                    {# Navigation #}
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-
-                            {# Pagination #}
-                            <div class="navigation">
-                                {{ knp_pagination_render(translations) }}
-                            </div>
-
+                        <div role="tabpanel" class="tab-pane" id="without_transText">
+                            {{ _self.translationTable(without_transText) }}
                         </div>
                     </div>
 
@@ -171,6 +143,75 @@
             $('#import-confirm').click(function () {
                 $('form', '#modal-import').submit();
             });
+
+            $('#with_transText_btn').click(function () {
+                $('#without_transText_pagination').hide();
+                $('#with_transText_pagination').show();
+            });
+
+            $('#without_transText_btn').click(function () {
+                $('#with_transText_pagination').hide();
+                $('#without_transText_pagination').show();
+            });
         });
     </script>
 {% endblock javascripts %}
+
+{% macro translationTable(translation_list) %}
+    {# Table #}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover text-center">
+                    <thead>
+                    <tr>
+                        <th>{{ knp_pagination_sortable(translation_list, 'Key',        'Translation.transKey') }}</th>
+                        <th>{{ knp_pagination_sortable(translation_list, 'Translation','Translation.translation') }}</th>
+                        <th class="actions">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for translation in translation_list %}
+                        <tr>
+                            <td>{{ translation.transKey }}</td>
+                            <td>{{ translation.translation }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{- path('govwiki_admin_localization_edittranslation',
+                                    { transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-default">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                        Edit
+                                    </a>
+                                    {% if translation.transTextareaType != 'ckeditor' %}
+                                        <button data-url="{{- path('govwiki_admin_localization_removetranslation',
+                                        { transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete this translation? Remember that translations with key &quot{{ translation.transKey }}&quot will be removed from all localizations.">
+                                            <span class="glyphicon glyphicon-remove"></span> Remove
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    {# Navigation #}
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            {# Pagination #}
+            <div class="navigation">
+                {{ knp_pagination_render(translation_list) }}
+            </div>
+
+        </div>
+    </div>
+{% endmacro %}

@@ -109,13 +109,13 @@
                                 {{ form_start(form) }}
 
                                 {# Nav tabs #}
-                                <ul class="nav nav-pills" role="tablist">
-                                    <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
-                                    {% if environment.locales|length == 1 %}
+                                {% if environment.locales|length == 1 %}
+                                    <ul class="nav nav-pills" role="tablist">
+                                        <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
                                         <li role="presentation"><a href="#greeting-text" aria-controls="greeting-text" role="tab" data-toggle="tab">Greeting text</a></li>
                                         <li role="presentation"><a href="#bottom-text" aria-controls="bottom-text" role="tab" data-toggle="tab">Bottom text</a></li>
-                                    {% endif %}
-                                </ul>
+                                    </ul>
+                                {% endif %}
 
                                 <div class="tab-content">
                                     <div role="tabpanel" class="tab-pane active" id="general">
