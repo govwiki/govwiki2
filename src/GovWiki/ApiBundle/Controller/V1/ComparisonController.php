@@ -105,6 +105,19 @@ class ComparisonController extends AbstractGovWikiApiController
      * Compare given governments.
      * Require 'application/json' Content-Type.
      *
+     * Example for financial statement category:
+     * {
+     *  "firstGovernment": {
+     *      "id": 4104,
+     *      "year": 2014
+     *  },
+     *  "secondGovernment": {
+     *      "id": 4087,
+     *      "year": 2014
+     *  },
+     *  "category": "Revenue"
+     * }
+     *
      * Example for financial statement:
      * {
      *  "firstGovernment": {
