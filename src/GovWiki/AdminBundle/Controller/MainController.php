@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use GovWiki\AdminBundle\Form\AddStyleForm;
 use GovWiki\DbBundle\Entity\EnvironmentStyles;
+use GovWiki\DbBundle\Entity\Translation;
 
 /**
  * Class MainController
@@ -87,6 +88,25 @@ class MainController extends AbstractGovWikiAdminController
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $manager->changeEnvironment($entity->getSlug());
+
+            if (count($entity->getLocales()) == 1) {
+                $texts = array(
+                    'map.greeting_text' => $request->request->get('greetingText'),
+                    'general.bottom_text' => $request->request->get('bottomText')
+                );
+
+                $locale = $entity->getLocales()[0];
+                $trans_key_settings = array(
+                    'matching' => 'eq',
+                    'transKeys' => array('map.greeting_text', 'general.bottom_text')
+                );
+                /** @var Translation $translation */
+                $translations = $this->getTranslationManager()->getTranslationsBySettings($locale, $trans_key_settings);
+                foreach ($translations as $translation) {
+                    $translation->setTranslation($texts[$translation->getTransKey()]);
+                }
+            }
+
             $em->flush();
         }
 

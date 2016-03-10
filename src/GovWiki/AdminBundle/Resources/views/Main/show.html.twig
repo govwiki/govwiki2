@@ -127,6 +127,10 @@
                             {# Nav tabs #}
                             <ul class="nav nav-pills" role="tablist">
                                 <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
+                                {% if environment.locales|length == 1 %}
+                                    <li role="presentation"><a href="#greeting-text" aria-controls="greeting-text" role="tab" data-toggle="tab">Greeting text</a></li>
+                                    <li role="presentation"><a href="#bottom-text" aria-controls="bottom-text" role="tab" data-toggle="tab">Bottom text</a></li>
+                                {% endif %}
                             </ul>
 
                             {# Tab panes #}
@@ -139,6 +143,30 @@
                                     {{ form_row(form.adminEmail) }}
                                 </div>
 
+                                {% if environment.locales|length == 1 %}
+                                    <div role="tabpanel" class="tab-pane" id="greeting-text">
+                                        <div class="form-group">
+                                            <label class="control-label required" for="greetingText">
+                                                Greeting text
+                                            </label>
+                                            <textarea id="content_greetingText" name="greetingText" class="environment-content">
+                                                {{ 'map.greeting_text'|trans }}
+                                            </textarea>
+                                        </div>
+                                    </div>
+
+                                    <div role="tabpanel" class="tab-pane" id="bottom-text">
+                                        <div class="form-group">
+                                            <label class="control-label required" for="bottomText">
+                                                Bottom text
+                                            </label>
+                                            <textarea id="content_bottomText" name="bottomText" class="environment-content">
+                                                {{ 'general.bottom_text'|trans }}
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
                             </div>
                         </div>
                     </div>
@@ -150,3 +178,12 @@
     </div>
 
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="/bundles/ivoryckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
+        CKEDITOR.replace('content_greetingText');
+        CKEDITOR.replace('content_bottomText');
+    </script>
+{% endblock javascripts %}
