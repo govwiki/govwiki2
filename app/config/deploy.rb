@@ -27,7 +27,7 @@ set :branch,            fetch(:branch, '').sub!(/^.*\//, "") # remove origin/ pr
 # Directories
 set :writable_dirs,         [app_path + "/cache", app_path + "/logs"]
 set :shared_files,          ["app/config/parameters.yml"]
-set :shared_children,       [app_path + "/logs", web_path + "/img/upload", web_path + '/css']
+set :shared_children,       [app_path + "/logs", web_path + "/img/upload", web_path + "/css"]
 set :remote_backup_dir,     "/tmp"
 
 # Permissions

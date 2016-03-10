@@ -4,6 +4,7 @@ namespace GovWiki\ApiBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\ApiBundle\Determinator\AbstractEnvironmentDeterminator;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -20,12 +21,26 @@ class EnvironmentManagerConfigurator
     private $determinator;
 
     /**
-     * @param AbstractEnvironmentDeterminator $determinator A AbstractEnvironmentDeterminator
-     *                                                      instance.
+     * @var string
+     */
+    private $slug;
+
+    /**
+     * @param AbstractEnvironmentDeterminator $determinator A AbstractEnvironmentDeterminator instance.
      */
     public function __construct(AbstractEnvironmentDeterminator $determinator)
     {
         $this->determinator = $determinator;
+    }
+
+    /**
+     * @param GetResponseEvent $event A GetResponseEvent instance.
+     *
+     * @return void
+     */
+    public function onKernelRequest(GetResponseEvent $event)
+    {
+        $this->slug = $this->determinator->getSlug($event->getRequest());
     }
 
     /**
@@ -37,6 +52,6 @@ class EnvironmentManagerConfigurator
      */
     public function configure(EnvironmentManagerAwareInterface $manager)
     {
-        $manager->setEnvironment($this->determinator->getSlug());
+        $manager->setEnvironment($this->slug);
     }
 }

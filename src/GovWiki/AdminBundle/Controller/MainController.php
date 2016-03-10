@@ -82,6 +82,26 @@ class MainController extends AbstractGovWikiAdminController
         /** @var Environment $entity */
         $entity = $manager->getEntity();
 
+        $locale = $entity->getLocales()[0];
+        $trans_key_settings = array(
+            'matching' => 'eq',
+            'transKeys' => array('map.greeting_text', 'general.bottom_text')
+        );
+        /** @var Translation $translation */
+        $translations = $this->getTranslationManager()->getTranslationsBySettings($locale->getShortName(), $trans_key_settings);
+        $greetingText = '';
+        $bottomText = '';
+        foreach ($translations as $translation) {
+            switch ($translation->getTransKey()) {
+                case 'map.greeting_text':
+                    $greetingText = $translation->getTranslation();
+                    break;
+                case 'general.bottom_text':
+                    $bottomText = $translation->getTranslation();
+                    break;
+            }
+        }
+
         $form = $this->createForm(new EnvironmentType(), $entity);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -90,18 +110,13 @@ class MainController extends AbstractGovWikiAdminController
             $manager->changeEnvironment($entity->getSlug());
 
             if (count($entity->getLocales()) == 1) {
+                $greetingText = $request->request->get('greetingText');
+                $bottomText = $request->request->get('bottomText');
                 $texts = array(
-                    'map.greeting_text' => $request->request->get('greetingText'),
-                    'general.bottom_text' => $request->request->get('bottomText')
+                    'map.greeting_text' => $greetingText,
+                    'general.bottom_text' => $bottomText
                 );
 
-                $locale = $entity->getLocales()[0];
-                $trans_key_settings = array(
-                    'matching' => 'eq',
-                    'transKeys' => array('map.greeting_text', 'general.bottom_text')
-                );
-                /** @var Translation $translation */
-                $translations = $this->getTranslationManager()->getTranslationsBySettings($locale, $trans_key_settings);
                 foreach ($translations as $translation) {
                     $translation->setTranslation($texts[$translation->getTransKey()]);
                 }
@@ -113,6 +128,8 @@ class MainController extends AbstractGovWikiAdminController
         return [
             'form' => $form->createView(),
             'environment' => $entity,
+            'greetingText' => $greetingText,
+            'bottomText' => $bottomText
         ];
     }
 

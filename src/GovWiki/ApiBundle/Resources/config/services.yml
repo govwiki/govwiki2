@@ -17,10 +17,14 @@ services:
         class: GovWiki\ApiBundle\Manager\EnvironmentManagerConfigurator
         arguments:
             - @govwiki_api.environment.determinator.host
+        tags:
+            -
+                name: kernel.event_listener
+                event: kernel.request
+                priority: 100
 
     govwiki_api.environment.determinator.path:
         class: GovWiki\ApiBundle\Determinator\PathDeterminator
-        arguments: [ @request_stack ]
         tags:
             - { name: environment.determinator, alias: path }
 
@@ -28,7 +32,6 @@ services:
         class: GovWiki\ApiBundle\Determinator\HostDeterminator
         arguments:
             - @doctrine.orm.default_entity_manager
-            - @router
         tags:
             - { name: environment.determinator, alias: host }
 

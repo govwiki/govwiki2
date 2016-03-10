@@ -40,6 +40,13 @@ class Locale
      */
     private $environment;
 
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->shortName;
+    }
 
     /**
      * Constructor

@@ -74,10 +74,10 @@ class MainController extends Controller
         $translator = $this->get('translator');
         $catalogue = $translator->getCatalogue();
         $transKey = 'map.greeting_text';
+
+        $greetingText = '';
         if ($catalogue->has($transKey)) {
             $greetingText = $translator->trans($transKey);
-        } else {
-            $greetingText = '';
         }
 
         return [

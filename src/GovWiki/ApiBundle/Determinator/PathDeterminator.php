@@ -2,8 +2,7 @@
 
 namespace GovWiki\ApiBundle\Determinator;
 
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class PathDeterminator
@@ -12,21 +11,21 @@ use Symfony\Component\Routing\RouterInterface;
 class PathDeterminator extends AbstractEnvironmentDeterminator
 {
     /**
-     * @param RequestStack $stack  A RequestStack instance.
+     * {@inheritdoc}
      */
-    public function __construct(RequestStack $stack)
+    public function getSlug(Request $request)
     {
-        $request = $stack->getMasterRequest();
-        $this->slug = '';
+        $slug = '';
         if (null !== $request) {
             $controller = $request->attributes->get('_controller');
             if ((strpos($controller, 'Frontend') !== false) ||
                 (strpos($controller, 'Api') !== false) ||
                 (strpos($controller, 'Comment') !== false)
             ) {
-                $this->slug = $request->attributes->get('environment', '');
-//                $this->slug = explode('/', $path)[1];
+                $slug = $request->attributes->get('environment', '');
             }
         }
+
+        return $slug;
     }
 }
