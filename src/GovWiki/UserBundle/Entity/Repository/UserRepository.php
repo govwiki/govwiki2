@@ -21,7 +21,8 @@ class UserRepository extends EntityRepository
         $expr = $this->_em->getExpressionBuilder();
 
         return $this->createQueryBuilder('User')
-            ->where($expr->in('User.subscribedTo', [ $government ]));
+            ->innerJoin('User.subscribedTo', 'Government')
+            ->where($expr->in('Government.id', [ $government ]));
     }
 
     /**
@@ -32,7 +33,7 @@ class UserRepository extends EntityRepository
     public function getGovernmentSubscribersEmailData($government)
     {
         return $this->getGovernmentSubscribersQuery($government)
-            ->select('User.email')
+            ->select('User.email, User.username')
             ->getQuery()
             ->getResult();
     }

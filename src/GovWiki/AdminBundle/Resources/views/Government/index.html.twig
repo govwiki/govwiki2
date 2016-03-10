@@ -106,6 +106,9 @@
                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                 Edit
                                                         </a>
+                                                        <a href="{{-
+                                                            path('govwiki_admin_subscribe_index', { 'government': government.id })
+                                                        -}}" class="btn btn-sm btn-primary">Message</a>
                                                         <button data-url="{{- path('govwiki_admin_government_remove',
                                                         { id: government.id }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete government '{{ government.name }}'?">
                                                             <span class="glyphicon glyphicon-remove"></span> Remove

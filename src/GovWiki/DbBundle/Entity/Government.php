@@ -946,7 +946,7 @@ class Government
      */
     public function removeSubscribers(User $subscriber)
     {
-        $this->subscribers->remove($subscriber);
+        $this->subscribers->removeElement($subscriber);
 
         return $this;
     }
@@ -957,5 +957,15 @@ class Government
     public function getSubscribers()
     {
         return $this->subscribers;
+    }
+
+    /**
+     * @param User $user A User entity.
+     *
+     * @return boolean
+     */
+    public function isSubscriber(User $user)
+    {
+        return $this->subscribers->contains($user);
     }
 }

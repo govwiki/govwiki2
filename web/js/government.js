@@ -119,6 +119,37 @@ webpackJsonp([1],[
 	        $('.nav-pills a[href="#' + tab + '"]').tab('show');
 	    }
 	
+	    /*
+	        Subscribe to government
+	     */
+	    var $subscribeBtn = $('#subscribe');
+	
+	    $subscribeBtn.click(function(event) {
+	        event.preventDefault();
+	        event.stopPropagation();
+	
+	        $.ajax({
+	            url: $subscribeBtn.attr('href')
+	        }).done(function() {
+	
+	            if ($subscribeBtn.hasClass('subscribe')) {
+	                $subscribeBtn
+	                    .text('Unsubscribe')
+	                    .removeClass('subscribe')
+	                    .removeClass('btn-success')
+	                    .addClass('unsubscribe')
+	                    .addClass('btn-danger')
+	            } else {
+	                $subscribeBtn
+	                    .text('Subscribe')
+	                    .removeClass('unsubscribe')
+	                    .removeClass('btn-danger')
+	                    .addClass('subscribe')
+	                    .addClass('btn-success')
+	            }
+	        });
+	    });
+	
 	});
 
 

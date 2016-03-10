@@ -3,6 +3,9 @@
 namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\DbBundle\Entity\Government;
+use GovWiki\UserBundle\Entity\User;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -14,6 +17,40 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class GovernmentController extends Controller
 {
+
+    /**
+     * Toggle government subscribe.
+     *
+     * @Route("/{government}/subscribe")
+     * @ParamConverter(
+     *  class="\GovWiki\DbBundle\Entity\Government",
+     *  options={
+     *      "repository_method": "getWithSubscribers"
+     *  }
+     * )
+     *
+     * @param Government $government A Government instance.
+     *
+     * @return JsonResponse
+     */
+    public function subscribeAction(Government $government)
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+
+        if ($government->isSubscriber($user)) {
+            $government->removeSubscribers($user);
+        } else {
+            $government->addSubscribers($user);
+        }
+
+        $em->persist($government);
+        $em->flush();
+
+        return new JsonResponse();
+    }
+
     /**
      * @Route("/{altTypeSlug}/{slug}", name="government")
      * @Template("GovWikiFrontendBundle:Government:index.html.twig")
@@ -28,19 +65,30 @@ class GovernmentController extends Controller
     {
         $this->clearTranslationsCache();
 
-        return $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+        $user = $this->getUser();
+
+        $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
             ->getGovernment(
                 $altTypeSlug,
                 $slug,
                 $request->query->get('year', null)
             );
+
+        $data['isSubscriber'] = false;
+        if ($user instanceof User) {
+            $data['isSubscriber'] = $this->getDoctrine()
+                ->getRepository('GovWikiDbBundle:Government')
+                ->isSubscriber($data['government']['id'], $user->getId());
+        }
+
+        return $data;
     }
 
     private function clearTranslationsCache()
     {
         $cacheDir = __DIR__ . "/../../../../app/cache";
         $finder = new \Symfony\Component\Finder\Finder();
-        $finder->in(array($cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"))->files();
+        $finder->in([$cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"])->files();
         foreach($finder as $file){
             unlink($file->getRealpath());
         }

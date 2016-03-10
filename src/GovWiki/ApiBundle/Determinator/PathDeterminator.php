@@ -3,7 +3,6 @@
 namespace GovWiki\ApiBundle\Determinator;
 
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class PathDeterminator

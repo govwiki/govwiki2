@@ -13,8 +13,8 @@
     -}}
     {{- macro.breadcrumbElement('Governments', 'govwiki_admin_government_index') -}}
     {{-
-        macro.breadcrumbElement('Edit ' ~ form.government.vars.data.name, 'govwiki_admin_government_edit',
-        { 'id': form.government.vars.data.id })
+        macro.breadcrumbElement('Edit ' ~ government.name, 'govwiki_admin_government_edit',
+        { 'id': government.id })
     -}}
     {{- macro.breadcrumbElement('Subscribers') -}}
 {% endblock breadcrumb %}
@@ -28,19 +28,33 @@
 
             {# Header #}
             <div class="panel-heading">
-                <h3 class="panel-title">Edit format field</h3>
+                <h3 class="panel-title">Subscribers</h3>
             </div>
 
             {# Body #}
             <div class="panel-body">
 
                 {# Navigation controls #}
-                {#<div class="row">#}
-                    {#<div class="col-md-12">#}
-                        {##}
+                <div class="row">
+                    <div class="col-md-12">
 
-                    {#</div>#}
-                {#</div>#}
+                        <a class="btn btn-primary" href="{{-
+                        path('govwiki_admin_subscribe_index', {
+                            'government': government.id
+                        })
+                        -}}">Subscribers</a>
+
+                    </div>
+                </div>
+
+                {{ form_start(form) }}
+                {{ form_errors(form.message) }}
+                {{ form_widget(form.message) }}
+                <div>
+                    <button type="submit" class="btn btn-success">Send</button>
+                </div>
+                {{ form_end(form) }}
+
 
                 {{- knp_pagination_render(subscribers) -}}
 
