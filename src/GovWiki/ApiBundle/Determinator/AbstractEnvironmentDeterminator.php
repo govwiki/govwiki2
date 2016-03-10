@@ -2,19 +2,19 @@
 
 namespace GovWiki\ApiBundle\Determinator;
 
+use Symfony\Component\HttpFoundation\Request;
+
 /**
  * Interface AbstractEnvironmentDeterminator
  * @package GovWiki\ApiBundle\Determinator
  */
 abstract class AbstractEnvironmentDeterminator
 {
-    protected $slug;
 
     /**
-     * @return mixed
+     * @param Request $request A Request instance.
+     *
+     * @return string
      */
-    public function getSlug()
-    {
-        return $this->slug;
-    }
+    abstract public function getSlug(Request $request);
 }

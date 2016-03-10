@@ -31,6 +31,7 @@ class GovWikiApiExtension extends Extension
 
         $configurator = $container
             ->getDefinition('govwiki_api.environment_manager.configurator');
+
         foreach ($determinators as $id => $tag) {
             if ($alias === $tag[0]['alias']) {
                 $configurator->setArguments([

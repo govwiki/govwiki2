@@ -142,6 +142,13 @@ class Environment
     private $locales;
 
     /**
+     * @var Locale
+     *
+     * @ORM\OneToOne(targetEntity="Locale")
+     */
+    private $defaultLocale;
+
+    /**
      * @var string
      *
      * @ORM\Column()
@@ -522,6 +529,26 @@ class Environment
     public function setAdminEmail($adminEmail)
     {
         $this->adminEmail = $adminEmail;
+
+        return $this;
+    }
+
+    /**
+     * @return Locale
+     */
+    public function getDefaultLocale()
+    {
+        return $this->defaultLocale;
+    }
+
+    /**
+     * @param Locale $defaultLocale A Locale instance.
+     *
+     * @return Environment
+     */
+    public function setDefaultLocale(Locale $defaultLocale)
+    {
+        $this->defaultLocale = $defaultLocale;
 
         return $this;
     }

@@ -269,8 +269,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         die;
         */
 
-        $environmentId = $data['environment_id'];
-
         if (count($data) > 0) {
             unset($data['alt_type_slug'], $data['environment_id']);
             foreach ($data as $field => $value) {
@@ -442,20 +440,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             )))
             ->getQuery()
             ->getSingleScalarResult();
-    }
-
-    /**
-     * Create new create request and sets it environment.
-     *
-     * @return CreateRequest
-     */
-    public function createCreateRequest() // Sorry :-)
-    {
-        $createRequest = new CreateRequest();
-        return $createRequest->setEnvironment(
-            $this->em->getRepository('GovWikiDbBundle:Environment')
-                ->getReferenceByName($this->environment)
-        );
     }
 
     /**
@@ -672,5 +656,24 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         }
 
         return $data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultLocale()
+    {
+        $expr = $this->em->getExpressionBuilder();
+        return $this->em->getRepository('GovWikiDbBundle:Locale')
+            ->createQueryBuilder('Locale')
+            ->select('Locale.shortName')
+            ->innerJoin('Locale.environment', 'Environment')
+            ->where($expr->andX(
+                $expr->eq('Environment.slug', ':slug'),
+                $expr->eq('Locale.id', 'Environment.defaultLocale')
+            ))
+            ->setParameter('slug', $this->environment)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

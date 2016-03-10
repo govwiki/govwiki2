@@ -112,6 +112,7 @@
                                     {{ form_row(form.domain) }}
                                     {{ form_row(form.title) }}
                                     {{ form_row(form.adminEmail) }}
+                                    {{ form_row(form.defaultLocale) }}
                                     <div class="btn-group pull-left">
                                         <button type="submit" class="btn btn-primary">Update</button>
                                         <button type="button" data-description="Delete environment with all governments?" class="btn btn-danger btn-delete" data-url="{{ path('govwiki_admin_main_remove', {environment: environment.name}) }}">
@@ -120,25 +121,6 @@
                                     </div>
                                     {{ form_end(form) }}
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-9">
-                            {{ form_start(form) }}
-                            {# Nav tabs #}
-                            <ul class="nav nav-pills" role="tablist">
-                                <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
-                            </ul>
-
-                            {# Tab panes #}
-                            <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
-
-                                <div role="tabpanel" class="tab-pane active" id="general">
-                                    {{ form_row(form.name) }}
-                                    {{ form_row(form.domain) }}
-                                    {{ form_row(form.title) }}
-                                    {{ form_row(form.adminEmail) }}
-                                </div>
-
                             </div>
                         </div>
                     </div>

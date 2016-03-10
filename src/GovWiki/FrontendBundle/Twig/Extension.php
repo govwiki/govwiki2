@@ -2,12 +2,10 @@
 
 namespace GovWiki\FrontendBundle\Twig;
 
-use GovWiki\AdminBundle\Manager\AdminStyleManager;
 use GovWiki\ApiBundle\Manager\EnvironmentManager;
 use JMS\Serializer\Serializer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
 /**
@@ -16,10 +14,6 @@ use Symfony\Component\Translation\MessageCatalogue;
  */
 class Extension extends \Twig_Extension
 {
-    /**
-     * @var EnvironmentManager
-     */
-    private $manager;
 
     /**
      * @var Serializer
@@ -45,13 +39,11 @@ class Extension extends \Twig_Extension
      * @param EnvironmentManager $manager A EnvironmentManager instance.
      */
     public function __construct(
-        EnvironmentManager $manager,
         Serializer $serializer,
         $determinatorType,
         ContainerInterface $container,
         TranslatorInterface $translator
     ) {
-        $this->manager = $manager;
         $this->serializer = $serializer;
         $this->determinatorType = $determinatorType;
         $this->container = $container;
@@ -103,8 +95,10 @@ class Extension extends \Twig_Extension
      */
     public function getGlobals()
     {
-        if ($this->manager->getEnvironment()) {
-            $styles = $this->manager->getStyle();
+        $manager = $this->container->get('govwiki_api.manager.environment');
+
+        if ($manager->getEnvironment()) {
+            $styles = $manager->getStyle();
             $styles = json_encode($styles);
 
             /** @var MessageCatalogue $catalogue */
@@ -118,11 +112,11 @@ class Extension extends \Twig_Extension
 
             return [
                 'styles' => $styles,
-                'environment' => $this->manager->getEnvironment(),
-                'environment_slug' => $this->manager->getSlug(),
-                'hasElectedOfficials' => $this->manager
+                'environment' => $manager->getEnvironment(),
+                'environment_slug' => $manager->getSlug(),
+                'hasElectedOfficials' => $manager
                         ->countElectedOfficials() > 0,
-                'title' => $this->manager->getTitle(),
+                'title' => $manager->getTitle(),
                 'bottomText' => $bottomText
             ];
         }
@@ -254,9 +248,11 @@ class Extension extends \Twig_Extension
      */
     public function generateGovWikiPath($route, array $parameters = [])
     {
+        $manager = $this->container->get('govwiki_api.manager.environment');
+
         if ('path' === $this->determinatorType) {
             $parameters = array_merge($parameters, [
-                'environment' => $this->manager->getSlug(),
+                'environment' => $manager->getSlug(),
             ]);
         }
 
