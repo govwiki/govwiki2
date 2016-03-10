@@ -22,6 +22,16 @@ class AdminLocaleManager extends AbstractAdminEntityManager
     /**
      * @return array
      */
+    public function getListLocales()
+    {
+        /** @var LocaleRepository $repository */
+        $repository = $this->getRepository();
+        return $repository->getListLocales($this->environment);
+    }
+
+    /**
+     * @return array
+     */
     public function getListLocaleNames()
     {
         /** @var LocaleRepository $repository */
