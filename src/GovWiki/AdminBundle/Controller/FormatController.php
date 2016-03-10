@@ -4,6 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Format;
+use GovWiki\DbBundle\Entity\Locale;
 use GovWiki\DbBundle\Entity\Translation;
 use GovWiki\DbBundle\Form\AbstractGroupType;
 use GovWiki\DbBundle\Form\FormatType;
@@ -93,6 +94,7 @@ class FormatController extends Controller
             );
 
             $this->changeFormatTranslation('edit', $format->getField(), $format->getName());
+            $this->changeFormatTranslation('edit', $format->getField() . '.help_text', $format->getHelpText());
         }
 
         return [ 'form' => $form->createView() ];
@@ -122,6 +124,7 @@ class FormatController extends Controller
             );
 
             $this->changeFormatTranslation('new', $format->getField(), $format->getName());
+            $this->changeFormatTranslation('new', $format->getField() . '.help_text', $format->getHelpText());
 
             return $this->redirectToRoute('govwiki_admin_format_edit', [
                 'id' => $format->getId(),
@@ -146,6 +149,7 @@ class FormatController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $this->changeFormatTranslation('remove', $format->getField());
+        $this->changeFormatTranslation('remove', $format->getField() . '.help_text');
 
         $em->remove($format);
         $em->flush();
@@ -177,7 +181,6 @@ class FormatController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $locale = $this->getLocaleManager()->getOneLocaleByShortName('en');
         $transKey = 'format.' . $format_field;
         $needOneResult = true;
         $trans_key_settings = null;
@@ -188,28 +191,33 @@ class FormatController extends Controller
             );
         }
 
-        /** @var Translation $translation */
-        if ('new' == $action) {
-            $translation = new Translation();
-            $translation->setTransKey($transKey);
-            $translation->setTranslation($format_name);
-            $translation->setLocale($locale);
-            $em->persist($translation);
-        } elseif ('edit' == $action) {
-            $translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
-            if (!empty($translation)) {
-                $translation->setTranslation($format_name);
-            } else {
+        $locale_list = $this->getLocaleManager()->getListLocales();
+
+        /** @var Locale $locale */
+        foreach ($locale_list as $locale) {
+            /** @var Translation $translation */
+            if ('new' == $action) {
                 $translation = new Translation();
                 $translation->setTransKey($transKey);
                 $translation->setTranslation($format_name);
                 $translation->setLocale($locale);
                 $em->persist($translation);
-            }
-        } elseif ('remove' == $action) {
-            $translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
-            if (!empty($translation)) {
-                $em->remove($translation);
+            } elseif ('edit' == $action) {
+                $translation = $this->getTranslationManager()->getTranslationsBySettings($locale->getShortName(), $trans_key_settings, null, $needOneResult);
+                if (!empty($translation)) {
+                    $translation->setTranslation($format_name);
+                } else {
+                    $translation = new Translation();
+                    $translation->setTransKey($transKey);
+                    $translation->setTranslation($format_name);
+                    $translation->setLocale($locale);
+                    $em->persist($translation);
+                }
+            } elseif ('remove' == $action) {
+                $translation = $this->getTranslationManager()->getTranslationsBySettings($locale->getShortName(), $trans_key_settings, null, $needOneResult);
+                if (!empty($translation)) {
+                    $em->remove($translation);
+                }
             }
         }
         $em->flush();

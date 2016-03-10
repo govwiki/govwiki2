@@ -145,6 +145,7 @@ class InitLocalesCommand extends ContainerAwareCommand
             $formats = $environment->getFormats();
             foreach ($formats as $format) {
                 $this->preSaveTranslation($locale, 'format.' . $format->getField(), $format->getName());
+                $this->preSaveTranslation($locale, 'format.' . $format->getField() . '.help_text', $format->getHelpText());
             }
 
             // Translations for FinData captions

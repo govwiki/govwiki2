@@ -22,6 +22,22 @@ class LocaleRepository extends EntityRepository
      *
      * @return array
      */
+    public function getListLocales($environment)
+    {
+        $qb = $this->createQueryBuilder('loc')
+            ->select('loc')
+            ->leftJoin('loc.environment', 'Environment')
+            ->where('Environment.slug = :env')
+            ->setParameter('env', $environment);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param string $environment Environment name.
+     *
+     * @return array
+     */
     public function getListLocaleNames($environment)
     {
         $qb = $this->createQueryBuilder('loc')
