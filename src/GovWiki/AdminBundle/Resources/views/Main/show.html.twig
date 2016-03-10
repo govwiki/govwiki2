@@ -107,20 +107,58 @@
                             </div>
                             <div>
                                 {{ form_start(form) }}
-                                <div role="tabpanel" class="tab-pane active" id="general">
-                                    {{ form_row(form.name) }}
-                                    {{ form_row(form.domain) }}
-                                    {{ form_row(form.title) }}
-                                    {{ form_row(form.adminEmail) }}
-                                    {{ form_row(form.defaultLocale) }}
-                                    <div class="btn-group pull-left">
-                                        <button type="submit" class="btn btn-primary">Update</button>
-                                        <button type="button" data-description="Delete environment with all governments?" class="btn btn-danger btn-delete" data-url="{{ path('govwiki_admin_main_remove', {environment: environment.name}) }}">
-                                            Delete
-                                        </button>
+
+                                {# Nav tabs #}
+                                <ul class="nav nav-pills" role="tablist">
+                                    <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
+                                    {% if environment.locales|length == 1 %}
+                                        <li role="presentation"><a href="#greeting-text" aria-controls="greeting-text" role="tab" data-toggle="tab">Greeting text</a></li>
+                                        <li role="presentation"><a href="#bottom-text" aria-controls="bottom-text" role="tab" data-toggle="tab">Bottom text</a></li>
+                                    {% endif %}
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane active" id="general">
+                                        {{ form_row(form.name) }}
+                                        {{ form_row(form.domain) }}
+                                        {{ form_row(form.title) }}
+                                        {{ form_row(form.adminEmail) }}
+                                        {{ form_row(form.defaultLocale) }}
                                     </div>
-                                    {{ form_end(form) }}
+
+                                    {% if environment.locales|length == 1 %}
+                                        <div role="tabpanel" class="tab-pane" id="greeting-text">
+                                            <div class="form-group">
+                                                <label class="control-label required" for="greetingText">
+                                                    Greeting text
+                                                </label>
+                                                <textarea id="content_greetingText" name="greetingText" class="environment-content">
+                                                    {{ greetingText }}
+                                                </textarea>
+                                            </div>
+                                        </div>
+
+                                        <div role="tabpanel" class="tab-pane" id="bottom-text">
+                                            <div class="form-group">
+                                                <label class="control-label required" for="bottomText">
+                                                    Bottom text
+                                                </label>
+                                                <textarea id="content_bottomText" name="bottomText" class="environment-content">
+                                                    {{ bottomText }}
+                                                </textarea>
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 </div>
+
+                                <div class="btn-group pull-left">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    <button type="button" data-description="Delete environment with all governments?" class="btn btn-danger btn-delete" data-url="{{ path('govwiki_admin_main_remove', {environment: environment.name}) }}">
+                                        Delete
+                                    </button>
+                                </div>
+
+                                {{ form_end(form) }}
                             </div>
                         </div>
                     </div>
@@ -132,3 +170,12 @@
     </div>
 
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="/bundles/ivoryckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
+        CKEDITOR.replace('content_greetingText');
+        CKEDITOR.replace('content_bottomText');
+    </script>
+{% endblock javascripts %}
