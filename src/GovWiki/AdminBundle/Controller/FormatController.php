@@ -124,7 +124,9 @@ class FormatController extends Controller
             );
 
             $this->changeFormatTranslation('new', $format->getField(), $format->getName());
-            $this->changeFormatTranslation('new', $format->getField() . '.help_text', $format->getHelpText());
+            if (!is_null($format->getHelpText())) {
+                $this->changeFormatTranslation('new', $format->getField() . '.help_text', $format->getHelpText());
+            }
 
             return $this->redirectToRoute('govwiki_admin_format_edit', [
                 'id' => $format->getId(),
