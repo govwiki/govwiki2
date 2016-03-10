@@ -846,8 +846,28 @@ webpackJsonp([1],[
 	            $('#total-revenue-pie').css(display);
 	
 	        } else if (chartGroup == 'compare-charts') {
-	            $('#total-compare-pie').css(display);
-	            $('#total-compare-column').css(display);
+	            if (hide) {
+	                $('#total-compare-pie').css(display);
+	                $('#total-compare-first-pie').css(display);
+	                $('#total-compare-second-pie').css(display);
+	                $('#total-compare-column').css(display);
+	            } else {
+	                var $selected = $('.government-categories .selected');
+	                var category = $selected.hasClass('category');
+	                var caption = $selected.hasClass('caption');
+	                if (category) {
+	                    $('#total-compare-first-pie').css(display);
+	                    $('#total-compare-second-pie').css(display);
+	                } else if (caption) {
+	                    $('#total-compare-column').css(display);
+	                } else {
+	                    $('#total-compare-first-pie').css(display);
+	                    $('#total-compare-second-pie').css(display);
+	                }
+	
+	                $('#total-compare-pie').css(display);
+	
+	            }
 	
 	        } else if (chartGroup == 'tree-charts') {
 	            $('#total-expenditures-tree').css(display);
