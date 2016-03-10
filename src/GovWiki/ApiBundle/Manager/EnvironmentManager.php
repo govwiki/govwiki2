@@ -751,8 +751,9 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                 $data[$i]['caption'] = $caption;
                 $data[$i]['category'] = $finDataItem['captionCategory']['name'];
 
-                $data[$i]['amount'] +=
-                    $finDataItem['dollarAmount'];
+                if ('Total' === $finDataItem['fund']['name']) {
+                    $data[$i]['amount'] = $finDataItem['dollarAmount'];
+                }
             }
             $i++;
         }

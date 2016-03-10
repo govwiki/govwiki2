@@ -21,7 +21,7 @@ services:
             -
                 name: kernel.event_listener
                 event: kernel.request
-                priority: 100
+                priority: 20
 
     govwiki_api.environment.determinator.path:
         class: GovWiki\ApiBundle\Determinator\PathDeterminator
