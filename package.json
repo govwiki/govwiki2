@@ -18,7 +18,9 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gutil": "^1.6.4",
+    "node-notifier": "^4.5.0",
     "path": "^0.12.7",
+    "run-sequence": "^1.1.5",
     "webpack": "^1.12.14",
     "webpack-load-plugins": "^0.1.2"
   }

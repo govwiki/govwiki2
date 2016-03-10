@@ -17,9 +17,9 @@ function init() {
  */
 function financialStatements_revenue() {
 
-    var chart, item, len3, options, p, r, ref1, rows, vis_data;
+    var chart, options, r, rows, vis_data;
     vis_data = new google.visualization.DataTable();
-    vis_data.addColumn('string', 'Total Gov. Expenditures');
+    vis_data.addColumn('string', 'Total Gov. Revenues');
     vis_data.addColumn('number', 'Total');
     rows = [];
 
@@ -45,7 +45,7 @@ function financialStatements_revenue() {
         'width': 470,
         'height': 350,
         'pieStartAngle': 60,
-        'sliceVisibilityThreshold': .05,
+        'sliceVisibilityThreshold': 0,
         'forceIFrame': true,
         'chartArea': {
             width: '90%',
@@ -62,7 +62,7 @@ function financialStatements_revenue() {
  */
 function financialStatements_expenditures() {
 
-    var chart, item, len3, options, p, r, ref1, rows, vis_data;
+    var chart, options, r, rows, vis_data;
     vis_data = new google.visualization.DataTable();
     vis_data.addColumn('string', 'Total Gov. Expenditures');
     vis_data.addColumn('number', 'Total');
@@ -90,7 +90,7 @@ function financialStatements_expenditures() {
         'width': 470,
         'height': 350,
         'pieStartAngle': 60,
-        'sliceVisibilityThreshold': .05,
+        'sliceVisibilityThreshold': 0,
         'forceIFrame': true,
         'chartArea': {
             width: '90%',
@@ -109,7 +109,7 @@ function financialStatements_expenditures() {
  */
 function financialStatementsTree_revenues() {
 
-    var chart, item, len3, options, p, r, ref1, RevenuesDataTable, vis_data;
+    var chart, RevenuesDataTable, vis_data, total_amount = 0;
 
     RevenuesDataTable = [
         ['Location', 'Parent', 'FinData', 'Heat'],
@@ -120,7 +120,7 @@ function financialStatementsTree_revenues() {
 
     // Prepare Revenues data to Google Tree Chart
     for(var rKey in RevenuesData) {
-        if (RevenuesData.hasOwnProperty(rKey)){
+        if (RevenuesData.hasOwnProperty(rKey) && (RevenuesData[rKey].caption != 'Total Revenues')){
 
             var subCategory = RevenuesData[rKey];
             var subCatValue = getSubCatValue(subCategory);
@@ -132,9 +132,11 @@ function financialStatementsTree_revenues() {
                 [subCategory.caption, 'Total Revenues', parseInt(subCatValue), parseInt(subCatValue)]
             );
 
+            total_amount += parseInt(subCatValue);
+
         }
     }
-
+    console.log(total_amount);
 
     /**
      * TODO: Hardcoded!! Please ask the question to client, which field must be there?
@@ -170,9 +172,12 @@ function financialStatementsTree_revenues() {
     };
 
     function revenuesTooltip(row, size, value) {
+        var caption = vis_data.getValue(row, 0);
         var val = vis_data.getValue(row, 2);
-        return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
-            numeral(val).format('$0,0'); + '</div>';
+        var percent = val * 100 / total_amount;
+        percent = percent.toFixed(2);
+        return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">' + caption + ': ' +
+            numeral(val).format('$0,0') + ' (' + percent + '%)</div>';
     }
 
 
@@ -187,7 +192,7 @@ function financialStatementsTree_revenues() {
  */
 function financialStatementsTree_expenditures() {
 
-    var chart, item, len3, options, p, r, ref1, ExpendituresDataTable, RevenuesDataTable, vis_data;
+    var chart, ExpendituresDataTable, vis_data, total_amount = 0;
 
     ExpendituresDataTable = [
         ['Location', 'Parent', 'FinData', 'Heat'],
@@ -198,7 +203,7 @@ function financialStatementsTree_expenditures() {
 
     // Prepare ExpendituresData data to Google Tree Chart
     for(var eKey in ExpendituresData) {
-        if (ExpendituresData.hasOwnProperty(eKey)){
+        if (ExpendituresData.hasOwnProperty(eKey)  && (ExpendituresData[eKey].caption != 'Total Expenditures')){
 
             var subCategory = ExpendituresData[eKey];
             var subCatValue = getSubCatValue(subCategory);
@@ -210,8 +215,11 @@ function financialStatementsTree_expenditures() {
                 [subCategory.caption, 'Total Expenditures', parseInt(subCatValue), parseInt(subCatValue)]
             );
 
+            total_amount += parseInt(subCatValue);
+
         }
     }
+    console.log(total_amount);
 
     function getSubCatValue(subCategory) {
 
@@ -244,9 +252,12 @@ function financialStatementsTree_expenditures() {
     };
 
     function expendituresTooltip(row, size, value) {
+        var caption = vis_data.getValue(row, 0);
         var val = vis_data.getValue(row, 2);
-        return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">Total Funds: ' +
-            numeral(val).format('$0,0'); + '</div>';
+        var percent = val * 100 / total_amount;
+        percent = percent.toFixed(2);
+        return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">' + caption + ': ' +
+            numeral(val).format('$0,0') + ' (' + percent + '%)</div>';
     }
 
     vis_data = new google.visualization.arrayToDataTable(ExpendituresDataTable);

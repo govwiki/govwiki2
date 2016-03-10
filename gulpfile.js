@@ -3,7 +3,10 @@ var path = require('./gulp/config.js').path;
 var gulp = require('gulp');
 var webpack = require('webpack');
 var webpackConfig = require('./webpack.config.js');
+
 var gutil = require('gulp-util');
+var runSequence = require('run-sequence');
+var notifier = require("node-notifier");
 
 gulp.task('build:vendor', function() {
     gulp.src(path.base + '/vendor/*').pipe(gulp.dest('./web/js/vendor/'));
@@ -21,6 +24,8 @@ gulp.task('build:js', ['build:vendor'], function(callback) {
             colors: true
         }));
 
+        notifier.notify({ title: 'Build finished', message: 'with webpack...'});
+
         callback();
     }
 
@@ -35,4 +40,4 @@ gulp.task('watch', function() {
     );
 });
 
-gulp.task('default', ['build:js']);
+gulp.task('default', runSequence('build:js', 'watch'));
