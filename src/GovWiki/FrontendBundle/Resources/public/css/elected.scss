@@ -61,6 +61,10 @@
 
          &.vote-comment {
             color: black;
+
+            & td > p {
+               display: inline;
+            }
          }
       }
    }

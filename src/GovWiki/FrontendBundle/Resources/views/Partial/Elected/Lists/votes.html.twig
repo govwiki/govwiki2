@@ -1,5 +1,6 @@
 {{ knp_pagination_render(list) }}
-<table class="table" width="100%" data-entity-type="Legislation">
+<table class="table" width="100%" data-entity-type="Legislation"
+       xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
     <tr>
         <th class="column__date">
             <div class="sortable">
@@ -81,10 +82,8 @@
 
         {% if hasComment %}
             <tr class="vote-comment">
-                <td>
-                    <b>Elected Official Comment</b>
-                </td>
-                <td colspan="5">
+                <td colspan="6">
+                    <strong class="vote-comment-static">Elected Official Comment:</strong>
                     {{ vote.comments|first.body|raw }}
                 </td>
             </tr>

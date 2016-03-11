@@ -498,81 +498,55 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
-     * Return all available government alt types in given environment.
+     * @param integer $id A Government entity id.
      *
-     * @param $environment
+     * @return Government
      *
-     * @return array
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
-    public function getAvailableAltTypes($environment)
+    public function getWithSubscribers($id)
     {
-        $qb = $this->createQueryBuilder('Government');
-        $expr = $qb->expr();
+        $expr = $this->_em->getExpressionBuilder();
 
-        return $qb
-            ->select('Government.altTypeSlug')
-            ->join('Government.environment', 'Environment')
-            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
-            ->groupBy('Government.altTypeSlug')
+        return $this->createQueryBuilder('Government')
+            ->addSelect('User')
+            ->leftJoin('Government.subscribers', 'User')
+            ->where($expr->eq('Government.id', ':id'))
+            ->setParameter('id', $id)
             ->getQuery()
-            ->getArrayResult();
+            ->getSingleResult();
     }
 
     /**
-     * Compute max ranks for given alt type.
+     * @param integer $government A Government entity id.
+     * @param integer $user       A User entity id.
      *
-     * @param string $altType One of the government alt type.
+     * @return boolean
      *
-     * @return array
+     * @throws NonUniqueResultException
      */
-    public function computeMaxRanks($altType, $ranked)
+    public function isSubscriber($government, $user)
     {
-        $qb = $this->createQueryBuilder('Government');
+        $expr = $this->_em->getExpressionBuilder();
 
-        /*
-         * Get all class property with 'Rank' postfix.
-         */
-        $fields = [];
-        foreach ($this->getClassMetadata()->columnNames as $key => $value) {
-            $pos = strpos($key, 'Rank');
-            if (false !== $pos) {
-                $fields[] = $qb->expr()->max("Government.$key") .
-                    ' AS ' . substr($key, 0, $pos) . 'MaxRank';
-            }
+        try {
+            return $this->createQueryBuilder('Government')
+                ->addSelect('User')
+                ->leftJoin('Government.subscribers', 'User')
+                ->where($expr->andX(
+                    $expr->eq('Government.id', ':government'),
+                    $expr->eq('User.id', ':user')
+                ))
+                ->setParameters([
+                    'government' => $government,
+                    'user'       => $user,
+                ])
+                ->getQuery()
+                ->getSingleResult() !== null;
+        } catch (NoResultException $e) {
+            return false;
         }
-
-        $qb
-            ->select($fields)
-            ->where(
-                $qb->expr()->eq(
-                    'Government.altType',
-                    $qb->expr()->literal($altType)
-                )
-            );
-
-        return $qb
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
-
-    /**
-     * @param string $map Map name.
-     *
-     * @return array
-     */
-    public function exportGovernments($map)
-    {
-        $qb = $this->createQueryBuilder('Government');
-        $expr = $qb->expr();
-
-        return $qb
-            ->select(
-                'partial Government.{id,latitude,longitude,slug,altTypeSlug}'
-            )
-            ->leftJoin('Government.map', 'Map')
-            ->where($expr->eq('Map.name', $expr->literal($map)))
-            ->getQuery()
-            ->getArrayResult();
     }
 
     /**

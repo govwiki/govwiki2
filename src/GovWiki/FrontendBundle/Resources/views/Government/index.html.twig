@@ -154,6 +154,22 @@
             <h3 class="text-center">No data</h3>
         {% endif %}
 
+        {% if app.user %}
+            <div class="subscribe-row">
+                <a href="{{-
+                    path('govwiki_frontend_government_subscribe', {
+                        'government': government.id
+                    })
+                -}}" class="btn {% if isSubscriber -%}btn-danger unsubscribe{%- else -%}btn-success subscribe{%- endif -%}" id="subscribe">
+                    {%- if isSubscriber -%}
+                        Unsubscribe
+                    {%- else -%}
+                        Subscribe
+                    {%- endif -%}
+                </a>
+            </div>
+        {% endif %}
+
         <br>
         <br>
 
