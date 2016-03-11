@@ -331,7 +331,7 @@ class MainController extends AbstractGovWikiAdminController
     {
         if ($request->isXmlHttpRequest()) {
             $user = $this->getUser();
-            if ($user->hasRole('ROLE_ADMIN')) {
+            if ($user->hasRole('ROLE_ADMIN') || $user->hasRole('ROLE_MANAGER')) {
 
                 // validate extension
                 $extensionValues = [

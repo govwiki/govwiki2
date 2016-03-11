@@ -55,7 +55,7 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
             $user = $token->getUser();
 
             if (strpos($referer, 'login')) {
-                if ($user->hasRole('ROLE_ADMIN')) {
+                if ($user->hasRole('ROLE_ADMIN') || $user->hasRole('ROLE_MANAGER')) {
                     /*
                      * Admin.
                      */

@@ -29,7 +29,8 @@ class EnvironmentRepository extends EntityRepository
         $expr = $qb->expr();
 
         if (null !== $id) {
-            $qb->where($expr->eq('Environment.users', $id));
+            $qb->leftJoin('Environment.users', 'EnvUser');
+            $qb->where($expr->eq('EnvUser.id', $id));
         }
 
         return $qb
