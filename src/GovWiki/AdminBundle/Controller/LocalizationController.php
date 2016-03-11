@@ -457,13 +457,15 @@ class LocalizationController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $footer_slug_list = array('footer.copyright', 'footer.links', 'footer.social');
-            if (in_array($transKey, $footer_slug_list)) {
+            $footer_transKey_list = array('footer.copyright', 'footer.links', 'footer.social');
+            if (in_array($transKey, $footer_transKey_list)) {
+                $footer_slug_parts = explode('.', $transKey);
+
                 $environment_name = $this->adminEnvironmentManager()->getEnvironment();
                 $environment = $em->getRepository('GovWikiDbBundle:Environment')->findOneBySlug($environment_name);
                 $env_content = $em->getRepository('GovWikiDbBundle:EnvironmentContents')->findOneBy(array(
                     'environment' => $environment,
-                    'slug' => $transKey
+                    'slug' => $footer_slug_parts[0] . '_' . $footer_slug_parts[1]
                 ));
                 $env_content->setValue($translation->getTranslation());
             }
