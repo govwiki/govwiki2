@@ -3,6 +3,14 @@
 /* ========== Range Legend ========== */
 /* ================================== */
 
+/**
+ * Move CartoDB color range legend on top
+ */
+.cartodb-legend-stack__top {
+  top: 5px;
+  right: 5px;
+  bottom: inherit;
+}
 
 .cartodb-legend {
 
@@ -11,19 +19,25 @@
     padding: 0;
 
     .legend-title {
-      padding: 10px 15px;
+      padding: 6px 15px;
       margin: 0;
+      font-size: 10px;
       width: 100px;
       text-align: center;
+      background-color: #E6E6E6;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
     }
 
     li {
       display: block;
-      padding: 10px 15px;
       text-align: center;
       height: auto;
       background-color: #dff0d8;
-      margin: 0;
+      padding: 6px 15px;
+      margin: 5px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
 
       &:hover {
         background-color: #dff0d8;
@@ -37,7 +51,6 @@
 
     }
 
-
   }
 
   // Horizontal legend
@@ -45,27 +58,46 @@
     padding: 0;
 
     .legend-title {
-      padding: 10px 15px;
+      padding: 6px 15px;
       margin: 0;
       text-align: center;
+      font-size: 10px;
+      background-color: #E6E6E6;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+    }
+
+    ul {
+      display: inline-block;
+      vertical-align: middle;
+      text-align: center;
+      width: 100%;
+      padding: 0 5px;
     }
 
     li {
-      display: block;
-      float: left;
-      padding: 10px 15px;
-      margin: 0;
+      display: inline-block;
+      padding: 5px 15px;
       text-align: center;
       height: auto;
       background-color: #dff0d8;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-top: 3px;
+      margin-bottom: 3px;
 
       &:hover {
         background-color: #dff0d8;
         cursor: pointer;
       }
 
+      &:last-child {
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+
       &:not(:last-child) {
-        border-right: 1px solid rgba(0, 0, 0, 0.08);
+        margin-left: 5px;
       }
 
       .bullet {
