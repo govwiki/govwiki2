@@ -34,19 +34,6 @@
             {# Body #}
             <div class="panel-body">
 
-                {# Navigation controls #}
-                <div class="row">
-                    <div class="col-md-12">
-
-                        <a class="btn btn-primary" href="{{-
-                        path('govwiki_admin_subscribe_index', {
-                            'government': government.id
-                        })
-                        -}}">Subscribers</a>
-
-                    </div>
-                </div>
-
                 {{ form_start(form) }}
                 {{ form_errors(form.message) }}
                 {{ form_widget(form.message) }}

@@ -37,11 +37,32 @@ class SubscribeController extends AbstractGovWikiAdminController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $message = $form->getData()['message'];
+            $body = $form->getData()['message'];
 
             $subscribers = $this->getDoctrine()
                 ->getRepository('GovWikiUserBundle:User')
                 ->getGovernmentSubscribersEmailData($government->getId());
+
+            /*
+             * Prepare addresses.
+             */
+            $recipients = [];
+            foreach ($subscribers as $subscriber) {
+                $recipients[$subscriber['email']] = $subscriber['username'];
+            }
+
+            $message = \Swift_Message::newInstance(
+                'New in '. $government->getName(),
+                $body,
+                'text/html'
+            );
+            $message
+                ->setSender($this->adminEnvironmentManager()
+                    ->getEntity()->getAdminEmail())
+                ->setTo($recipients);
+
+            $failed = [];
+            $this->get('mailer')->send($message, $failed);
 
             $this->successMessage('Message sent to subscribers');
 
