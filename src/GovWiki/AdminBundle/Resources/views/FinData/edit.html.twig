@@ -16,9 +16,7 @@
         macro.breadcrumbElement('Edit ' ~ form.government.vars.data.name, 'govwiki_admin_government_edit',
         { 'id': form.government.vars.data.id })
     -}}
-    {{- macro.breadcrumbElement('Financial Statements', 'govwiki_admin_findata_index',
-        { 'government': form.government.vars.data.id })
-    -}}
+    {{- macro.breadcrumbElement('Financial Statements') -}}
 {% endblock breadcrumb %}
 
 {% block body %}

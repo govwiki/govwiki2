@@ -85,3 +85,7 @@ advertising:
 locale:
     resource: @GovWikiAdminBundle/Controller/LocalizationController.php
     type:     annotation
+
+subscriber:
+    resource: @GovWikiAdminBundle/Controller/SubscribeController.php
+    type:     annotation

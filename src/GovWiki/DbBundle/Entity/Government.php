@@ -3,8 +3,10 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation\Slug;
+use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\Groups;
@@ -205,6 +207,17 @@ class Government
     private $finDataYear;
 
     /**
+     * @var Collection
+     *
+     * @ORM\ManyToMany(
+     *  targetEntity="GovWiki\UserBundle\Entity\User",
+     *  inversedBy="subscribedTo"
+     * )
+     * @ORM\JoinTable(name="cross_governments_users")
+     */
+    private $subscribers;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -212,6 +225,7 @@ class Government
         $this->electedOfficials = new ArrayCollection();
         $this->finData          = new ArrayCollection();
         $this->legislations     = new ArrayCollection();
+        $this->subscribers      = new ArrayCollection();
     }
 
     /**
@@ -911,5 +925,47 @@ class Government
     public function getSecondaryLogoPath()
     {
         return $this->secondaryLogoPath;
+    }
+
+    /**
+     * @param User $subscriber A User instance.
+     *
+     * @return Government
+     */
+    public function addSubscribers(User $subscriber)
+    {
+        $this->subscribers[] = $subscriber;
+
+        return $this;
+    }
+
+    /**
+     * @param User $subscriber A User instance.
+     *
+     * @return Government
+     */
+    public function removeSubscribers(User $subscriber)
+    {
+        $this->subscribers->removeElement($subscriber);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getSubscribers()
+    {
+        return $this->subscribers;
+    }
+
+    /**
+     * @param User $user A User entity.
+     *
+     * @return boolean
+     */
+    public function isSubscriber(User $user)
+    {
+        return $this->subscribers->contains($user);
     }
 }

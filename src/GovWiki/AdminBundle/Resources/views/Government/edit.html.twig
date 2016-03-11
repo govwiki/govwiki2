@@ -18,13 +18,18 @@
 {% block body %}
     <div class="container-fluid">
 
-        <nav>
-            <a class="pull-right btn btn-primary" href="{{-
+        <div class="btn-group pull-right">
+            <a class="btn btn-primary" href="{{-
                 path('govwiki_admin_findata_index', {
                     'government': id
                 })
             -}}">Financial Statements</a>
-        </nav>
+            <a class="btn btn-primary" href="{{-
+                path('govwiki_admin_subscribe_index', {
+                    'government': id
+                })
+            -}}">Subscribers</a>
+        </div>
 
         {{ form_start(form) }}
         {# Nav tabs #}
