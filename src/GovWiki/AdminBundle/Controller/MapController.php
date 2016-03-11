@@ -51,10 +51,10 @@ class MapController extends AbstractGovWikiAdminController
             $em = $this->getDoctrine()->getManager();
 
             $data = $request->request->get('ccc');
-            $data['colorized'] = $data['colorized'] === 'on';
-            $conditions = ColorizedCountyConditions::fromArray($data);
 
-            if ($data['colorized']) {
+            if (array_key_exists('colorized', $data)) {
+                $data['colorized'] = true;
+                $conditions = ColorizedCountyConditions::fromArray($data);
                 $values = $this->adminEnvironmentManager()
                     ->getGovernmentsFiledValues($conditions->getFieldName());
                 $environment = $this->adminEnvironmentManager()
@@ -102,7 +102,11 @@ class MapController extends AbstractGovWikiAdminController
                 ");
                     // Remove temporary dataset.
                 $api->dropDataset($environment.'_temporary');
+            } else {
+                $data['colorized'] = false;
+                $conditions = ColorizedCountyConditions::fromArray($data);
             }
+
 
             $map->setColorizedCountyConditions($conditions);
             $em->persist($map);

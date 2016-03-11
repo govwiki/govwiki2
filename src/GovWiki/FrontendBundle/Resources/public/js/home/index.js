@@ -58,10 +58,16 @@ $(function(){
      */
     window.gw.map = JSON.parse(window.gw.map);
 
-    var color = '';
+    var debug = window.localStorage.getItem('debug');
+    var color, layersData, defaultConditions;
 
     // TODO: Hardcoded
     window.gw.map.county = window.gw.map.colorizedCountyConditions;
+
+    // For restore map to init state
+    if (window.gw.map.county.conditions) {
+        defaultConditions = $.extend([], window.gw.map.county.conditions);
+    }
 
     window.gw.map.legend = window.gw.map.legend || [];
     window.gw.map.legendTypes = window.gw.map.legendTypes || [];
@@ -93,8 +99,6 @@ $(function(){
     .done(function(layer){
 
         var subLayers = {};
-        // todo remove if it's not need anymore
-        var markerColors = ['#f00', '#800080', '#add8e6'];
 
         /**
          * Available layers
@@ -113,38 +117,14 @@ $(function(){
          */
         sql.execute("SELECT GeometryType(the_geom), alt_type_slug FROM " + window.gw.environment + " WHERE the_geom IS NOT NULL GROUP BY GeometryType(the_geom), alt_type_slug ORDER BY alt_type_slug")
             .done(function(data) {
-
-                var altTypes = data.rows.filter(function (alt) {
-                    return !!alt.alt_type_slug
-                });
-
-                initSubLayers(altTypes);
-
-                var isAltTypeLegendUsed = false;
-                if (findLegendType('altTypes')) {
-                    initLegend(altTypes);
-                    isAltTypeLegendUsed = true
-                }
-
-                if (findLegendType('range')) {
-                    initRangeLegend(! isAltTypeLegendUsed);
-                }
-
-                initTooltips();
-
-                initSublayerHandlers();
-
-                fixCartodbConstrain();
-
-                loadFinished();
-
+                layersData = data;
+                init(data);
             })
             .error(function(errors) {
                 return cartodbError(errors);
             });
 
-        function cartodbError(errors)
-        {
+        function cartodbError(errors) {
             $('.loader').hide();
             var $mapProcessing = $('.mapOnProcessing');
             $mapProcessing.find('h5').eq(0).text('Something went wrong, please contact with us (contact@californiapolicycenter.org) ');
@@ -152,6 +132,67 @@ $(function(){
             $mapProcessing.show();
 
             console.log(errors);
+        }
+
+        /**
+         * Init
+         */
+        function init (data) {
+
+            var altTypes = data.rows.filter(function (alt) {
+                return !!alt.alt_type_slug
+            });
+
+            initSubLayers(altTypes);
+
+            var isAltTypeLegendUsed = false;
+            if (findLegendType('altTypes')) {
+                initLegend(altTypes);
+                isAltTypeLegendUsed = true
+            }
+
+            if (findLegendType('range')) {
+                initRangeLegend(!isAltTypeLegendUsed);
+            }
+
+            initTooltips();
+
+            initSublayerHandlers();
+
+            fixCartodbConstrain();
+
+            loadFinished();
+        }
+
+        /**
+         * Reinitialize map with new settings
+         */
+        function reInit (settings) {
+
+            if (!settings) {
+                console.error('Pass settings argument into reInit() function');
+                return false;
+            }
+
+            if (settings.conditions.length > 0) {
+                window.gw.map.county.conditions = settings.conditions;
+            } else {
+                window.gw.map.county.conditions = defaultConditions;
+            }
+
+            var altTypes = layersData.rows.filter(function (alt) {
+                return !!alt.alt_type_slug
+            });
+
+            initSubLayers(altTypes);
+
+            initTooltips();
+
+            initSublayerHandlers();
+
+            fixCartodbConstrain();
+
+            loadFinished();
         }
 
         /**
@@ -195,7 +236,7 @@ $(function(){
         }
 
         /**
-         * CartoCSS !!!
+         * Get colors for map layer FROM legend by altType !!!
          *
          * @param altType
          * @param {boolean?} useFill
@@ -218,6 +259,10 @@ $(function(){
 
             // If url to marker exist, create new css rule (path to marker icon)
             var markerIconUrl = foundLegend ? foundLegend["shape"] : false;
+            if (debug) {
+                url = 'http://california.govwiki.freedemster.com';
+            }
+
             var markerFileCss = markerIconUrl ? "marker-file: url(" + url + markerIconUrl + ");" : '';
 
             var markerStrokeColor = foundLegend ? foundLegend['color'] : false;
@@ -244,11 +289,10 @@ $(function(){
          * Get period conditions as css string
          *
          * @param conditions - window.gw.map.county.conditions
-         * @param color
          * @param options
          * @returns {string} CSS String || ''
          */
-        function getPeriodConditionsAsCss(conditions, color, options) {
+        function getPeriodConditionsAsCss(conditions, options) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getPeriodConditionsAsCss() function');
@@ -297,11 +341,10 @@ $(function(){
          * Get simple conditions as css string
          *
          * @param conditions - window.gw.map.county.conditions
-         * @param color
          * @param options
          * @returns {string} CSS String || ''
          */
-        function getSimpleConditionsAsCss(conditions, color, options) {
+        function getSimpleConditionsAsCss(conditions, options) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getSimpleConditionsAssCss() function');
@@ -352,11 +395,10 @@ $(function(){
          * Get Null condition as css string
          *
          * @param conditions - window.gw.map.county.conditions
-         * @param color
          * @param options
          * @returns {string} CSS String || ''
          */
-        function getNullConditionAsCss(conditions, color, options) {
+        function getNullConditionAsCss(conditions, options) {
 
             if (!conditions) {
                 console.warn('You don\'t pass condition array into getNullConditionAsCss() function');
@@ -454,7 +496,6 @@ $(function(){
             var cartocss = '';
             var colorized = window.gw.map.county.colorized;
 
-            var color = markerColors.shift();
             var legendItemCss = {};
 
             if (colorized) {
@@ -471,14 +512,13 @@ $(function(){
                 }
 
                 // Default marker color
-                //cartocss += '#layer { marker-fill: #DDDDDD; line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
                 cartocss += '#layer { '+ legendItemCss.markerFileCss + legendItemCss.markerLineColorColorCss +' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
 
-                cartocss += getPeriodConditionsAsCss(conditions, color, options);
+                cartocss += getPeriodConditionsAsCss(conditions, options);
 
-                cartocss += getSimpleConditionsAsCss(conditions, color, options);
+                cartocss += getSimpleConditionsAsCss(conditions, options);
 
-                cartocss += getNullConditionAsCss(conditions, color, options);
+                cartocss += getNullConditionAsCss(conditions, options);
 
                 if (cartocss === '') {
                     console.warn('Can\'t find any condition, please verify your window.gw.map.county.conditions data');
@@ -509,7 +549,7 @@ $(function(){
         function initTooltip(altType) {
             var tooltipTpl = '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"></p>';
 
-            tooltipTpl += '<p>{{name}} ({{data}})</p>';
+            tooltipTpl += '<p>{{name}} {{#data}} ({{data}}) {{/data}} </p>';
 
             tooltipTpl += '</div></div>';
             tooltips[altType] = new cdb.geo.ui.Tooltip({
@@ -693,8 +733,57 @@ $(function(){
 
         }
 
-        function initRangeLegend(showOnTop) {
+        /**
+         * Remove all sub:ayers
+         */
+        function removeAllSubLayers () {
+            for (var key in subLayers) {
+                if (subLayers.hasOwnProperty(key)){
+                    subLayers[key].remove();
+                }
+            }
+        }
 
+        /**
+         * Search one condition in conditions
+         * @param conditions
+         * @param oneCondition
+         * @return {Number}
+         */
+        function findCondition (conditions, oneCondition) {
+            if (!conditions) {
+                return false;
+            }
+
+            var findIndex, filteredConditionsByType;
+            var conditionType = oneCondition.type;
+
+            filteredConditionsByType = conditions.filter(function(condition) {
+                return condition.type == conditionType;
+            });
+
+            if (filteredConditionsByType.length > 0) {
+
+                filteredConditionsByType.forEach(function(condition, index) {
+                    switch (conditionType) {
+                        case 'simple':
+                            if (condition.operation == oneCondition.operation && condition.value == oneCondition.value) findIndex = index;
+                            break;
+                        case 'period':
+                            if (condition.min == oneCondition.min && condition.max == oneCondition.max) findIndex = index;
+                            break;
+                        case 'null':
+                            if (condition.color == oneCondition.color) findIndex = index;
+                            break;
+                    }
+                })
+
+            }
+
+            return findIndex != null ? findIndex : -1;
+        }
+
+        function initRangeLegend(showOnTop) {
             if (!window.gw.map.county.colorized) { return false; }
 
             var legendItems = '';
@@ -715,7 +804,7 @@ $(function(){
                     var conditionColor = 'background: ' + condition.color;
                     var conditionText = condition.min + ' - ' + condition.max;
 
-                    legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>' +
+                    legendItems += '<li data-condition="' + JSON.stringify(condition).replace(/\"/g,'&quot;') + '"><div class="bullet" style="' + conditionColor + '"></div>' +
                                         conditionText +
                                    '</li>';
                 });
@@ -729,7 +818,7 @@ $(function(){
                     var conditionColor = 'background: ' + condition.color;
                     var conditionText = condition.operation + ' ' + condition.value;
 
-                    legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>' +
+                    legendItems += '<li data-condition="' + JSON.stringify(condition).replace(/\"/g,'&quot;') + '"><div class="bullet" style="' + conditionColor + '"></div>' +
                                         conditionText +
                                     '</li>';
                 });
@@ -742,7 +831,7 @@ $(function(){
 
                 var conditionColor = 'background: ' + nullCondition[0].color;
 
-                legendItems += '<li><div class="bullet" style="' + conditionColor + '"></div>null</li>';
+                legendItems += '<li data-condition="' + JSON.stringify(nullCondition[0]).replace(/\"/g,'&quot;') + '"><div class="bullet" style="' + conditionColor + '"></div>null</li>';
 
             }
 
@@ -751,67 +840,48 @@ $(function(){
                 legendClass += ' cartodb-legend-stack__top';
             }
 
-            var legend = '<div class="'+ legendClass +'" style=""><div class="cartodb-legend custom horizontal" style="display: block;"><div class="legend-title">' +
+            var $legend = $('<div class="'+ legendClass +'" style=""><div class="cartodb-legend custom horizontal" style="display: block;"><div class="legend-title">' +
                             fieldName +
                          '</div><ul>' +
                             legendItems +
-                         '</ul></div></div>';
+                         '</ul></div></div>');
 
-            $('#menu').after(legend);
+            $('#menu').after($legend);
+
+            var activeConditionsInRangeLegend = [];
+
+            $legend.on('click', 'li', function() {
+
+                var $el = $(this);
+                var $ul = $legend.closest('ul');
+                var $liTags = $ul.find('li');
+                var conditionData = JSON.parse($(this).attr('data-condition'));
+
+                if ($el.hasClass('active')) {
+                    $el.removeClass('active');
+
+                    if (conditions.length > 0) {
+                        var index = findCondition(activeConditionsInRangeLegend, conditionData);
+                        if (index != -1) {
+                            activeConditionsInRangeLegend.splice(index, 1);
+                        }
+                    } else {
+                        conditions = defaultConditions;
+                    }
+
+                } else {
+                    $el.addClass('active');
+                    activeConditionsInRangeLegend.push(conditionData);
+                }
+
+                removeAllSubLayers();
+                reInit({conditions: activeConditionsInRangeLegend});
+
+                $liTags.not($el).removeClass('active');
+
+            });
 
         }
-
-        /**
-         * Init legend
-         */
-        //function initLegend(altTypes) {
-        //    // TODO generate legend on fly from given altTypes
-        //
-        //    var $legendContainer = $('#menu');
-        //
-        //    /*
-        //     Add new elements.
-        //     */
-        //    var compiledLegendItems = '';
-        //
-        //    var markerIcons = {
-        //        "stroke": ['red-stroke', 'purple-stroke', 'blue-stroke'],
-        //        "fill": ['red-fill', 'purple-fill', 'blue-fill']
-        //    };
-        //
-        //    altTypes.forEach(function(altType) {
-        //
-        //        var altTypeSlug = altType.alt_type_slug.replace(/_/g, ' ');
-        //        var _altTypeSlug = altType.alt_type_slug.toLowerCase();
-        //
-        //        var iconClass = '';
-        //        if (window.gw.map.county.colorized) {
-        //            iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
-        //                ? 'grey-line'
-        //                : 'marker-circle ' + markerIcons['stroke'].shift();
-        //        } else {
-        //            iconClass = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
-        //                ? 'grey-line'
-        //                : 'marker-circle ' + markerIcons['fill'].shift();
-        //        }
-        //
-        //        compiledLegendItems += '<li id=' + _altTypeSlug + ' class="' + _altTypeSlug + ' legend-item selected">' +
-        //            '<span class="glyphicon glyphicon-ok"></span>' +
-        //            '<i class="' + iconClass + '"></i>' +
-        //            '<a href="javascript:void(0)">' + altTypeSlug + '</a>' +
-        //            '</li>';
-        //
-        //    });
-        //
-        //    $legendContainer.append(compiledLegendItems);
-        //
-        //    $legendContainer.on('click', '.legend-item', function() {
-        //        $(this).toggleClass('selected');
-        //        var countyName = $(this).attr('id');
-        //        subLayers[countyName].toggle();
-        //    });
-        //
-        //}
 
         /**
          * TODO: Replace when legend will be ready
@@ -820,16 +890,9 @@ $(function(){
         function initLegend(altTypes) {
             // TODO generate legend on fly from given altTypes
 
-            //var markerIcons = {
-            //    "stroke": ['red-stroke', 'purple-stroke', 'blue-stroke'],
-            //    "fill": ['red-fill', 'purple-fill', 'blue-fill']
-            //};
-
             var $legendContainer = $('#menu');
 
-            /*
-                Add new elements.
-             */
+            // Add new elements.
             var compiledLegendItems = '';
 
             legend.forEach(function(menu_item) {
