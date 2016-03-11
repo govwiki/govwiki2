@@ -42,6 +42,7 @@ class UserForm extends AbstractType
             ->add('roles', 'choice', [
                 'choices' => [
                     'ROLE_ADMIN' => 'admin',
+                    'ROLE_MANAGER' => 'manager',
                     'ROLE_USER' => 'user',
                 ],
                 'expanded' => false,
