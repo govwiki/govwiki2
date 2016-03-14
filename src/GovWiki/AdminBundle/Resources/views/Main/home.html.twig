@@ -50,7 +50,7 @@
                                         </td>
                                         <td>{{ environment.domain }}</td>
                                         <td>
-                                            {% if is_granted('ROLE_ADMIN') %}
+                                            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
                                                 <form data-environment="{{ environment.slug }}" action="{{ path('govwiki_admin_main_faviconload') }}" class="upload-favicon-form" enctype="multipart/form-data">
                                                     <input type="hidden" name="environment" value="{{ environment.slug }}" />
                                                     <input class="upload-favicon" type="file" name="upload-favicon" />

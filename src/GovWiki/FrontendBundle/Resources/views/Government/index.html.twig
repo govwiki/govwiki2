@@ -157,7 +157,7 @@
         {% if app.user %}
             <div class="subscribe-row">
                 <a href="{{-
-                    path('govwiki_frontend_government_subscribe', {
+                    govwiki_path('govwiki_frontend_government_subscribe', {
                         'government': government.id
                     })
                 -}}" class="btn {% if isSubscriber -%}btn-danger unsubscribe{%- else -%}btn-success subscribe{%- endif -%}" id="subscribe">

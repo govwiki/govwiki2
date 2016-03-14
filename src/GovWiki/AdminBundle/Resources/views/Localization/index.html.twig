@@ -55,7 +55,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            {% if is_granted('ROLE_ADMIN') %}
+                                            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
                                                 {% if locale.shortName != 'en' %}
                                                     <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_localization_removelocale', { locale_name: locale.shortName }) -}}" data-description="Delete localization?">
                                                         Delete
@@ -72,7 +72,7 @@
 
                             {{ knp_pagination_render(locale_names_list) }}
 
-                            {% if is_granted('ROLE_ADMIN') %}
+                            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
                                 <a class="btn btn-primary" href="{{ path('govwiki_admin_localization_createlocale') }}">
                                     Add localization
                                 </a>
