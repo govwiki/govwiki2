@@ -17,13 +17,15 @@
 {% endblock associations %}
 
 {% block information_buttons %}
-    <div class="form-group clearfix">
-        <label class="control-label" for="delay">Display delay (hours.minutes)</label>
-        <div class="delay-input">
-            <input type='number' value="0" min="0" name="delay[hours]" id="hours"><b>:</b>
-            <input type='number' value="0" min="0" name="delay[minutes]" id="minutes">
+    {% if createRequest.status == 'pending' %}
+        <div class="form-group clearfix">
+            <label class="control-label" for="delay">Display delay (hours:minutes)</label>
+            <div class="delay-input">
+                <input type='number' value="0" min="0" name="delay[hours]" id="hours"><b>:</b>
+                <input type='number' value="0" min="0" name="delay[minutes]" id="minutes">
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock information_buttons %}
 
 {% block childs %}

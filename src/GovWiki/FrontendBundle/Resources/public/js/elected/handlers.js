@@ -287,7 +287,7 @@ $(function() {
     $editable.editable({stylesheets: false,type: 'textarea', showbuttons: 'bottom', display: true, emptytext: ' '});
     $editable.off('click');
 
-    $('table').on('click', '.glyphicon-pencil', function (e) {
+    $pane.on('click', 'table .glyphicon-pencil', function (e) {
         e.preventDefault();
         e.stopPropagation();
         if (e.currentTarget.dataset.noEditable !== undefined) return;
@@ -317,7 +317,7 @@ $(function() {
     }
 
     // Click on disqus icon
-    $('.vote').on('click', function() {
+    $pane.on('click', '.vote', function() {
 
         var $element = $(this);
 
@@ -333,7 +333,7 @@ $(function() {
     });
 
     // Save event from xEditable, after click on check icon
-    $('a').on('save', function(e, params) {
+    $pane.on('save', 'a', function(e, params) {
 
         var entityType = $(this).closest('table').attr('data-entity-type');
         var id = $(this).closest('tr').attr('data-id');
@@ -375,7 +375,7 @@ $(function() {
         });
     });
 
-    $('table').on('click', '.add', function(e) {
+    $pane.on('click', 'table .add', function(e) {
         var compiledTemplate, currentEntity, insertCategories, tabPane, tableType;
         tabPane = $(e.target).closest('.tab-pane');
         tableType = tabPane[0].id;
