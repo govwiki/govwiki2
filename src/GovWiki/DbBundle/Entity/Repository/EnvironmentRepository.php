@@ -92,6 +92,7 @@ class EnvironmentRepository extends EntityRepository
             if (null !== $user) {
                 $qb->andWhere($expr->eq('User.id', $user));
             }
+            $qb->setMaxResults(1);
 
             $id = $qb
                 ->getQuery()

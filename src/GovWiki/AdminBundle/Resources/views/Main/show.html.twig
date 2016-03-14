@@ -72,6 +72,15 @@
                                     </a>
                                 </li>#}
                             </ul>
+
+                            <h6>Managers</h6>
+                            <ul>
+                                {% for user in environment.users %}
+                                    <li>
+                                        <a href="{{ path('govwiki_admin_user_edit', {'id': user.id}) }}">{{ user }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </div>
 
                         <div class="col-md-9">

@@ -43,11 +43,19 @@ class UserForm extends AbstractType
                 'choices' => [
                     'ROLE_ADMIN' => 'admin',
                     'ROLE_MANAGER' => 'manager',
-                    'ROLE_USER' => 'user',
+                    'ROLE_USER' => 'user'
                 ],
                 'expanded' => false,
                 'multiple' => true,
-            ]);
+            ])
+            ->add('environments', 'entity', [
+                'class' => 'GovWikiDbBundle:Environment',
+                'choice_label' => 'name',
+                'expanded' => false,
+                'multiple' => true,
+                'required' => false
+            ])
+        ;
     }
 
     /**

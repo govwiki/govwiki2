@@ -16,3 +16,10 @@
         </div>
     </div>
 {% endblock body %}
+
+{% block javascripts %}
+    {% javascripts '@GovWikiAdminBundle/Resources/public/js/User/form.js'
+    output='js/form.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock javascripts %}
