@@ -20,7 +20,7 @@ module.exports = {
         filename: '[name].js',
         chunkFilename: '[id].js'
     },
-    devtool: 'source-map',
+    devtool: 'eval',
     resolve: {
         root: [pathUtil.join(__dirname, 'bower_components')],
         alias: {
