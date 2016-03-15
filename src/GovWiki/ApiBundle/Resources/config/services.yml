@@ -72,3 +72,7 @@ services:
           - @jms_serializer.object_constructor
         tags:
             - { name: jms_serializer.deserialization_visitor, format: array }
+
+    govwiki.api.twilio:
+        class: GovWiki\ApiBundle\TwilioApi\TwilioService
+        arguments: [%twilio.sid%, %twilio.token%, %twilio.from%]

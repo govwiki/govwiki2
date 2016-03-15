@@ -18,3 +18,7 @@ parameters:
     carto_db.api_key: 5ba9906f48ae95a85e27812208ceae89a52e9961
 
     determinator.name: host
+
+    twilio.sid: xxx
+    twilio.token: xxx
+    twilio.from: +123
