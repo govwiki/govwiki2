@@ -56,7 +56,20 @@ class Version20160302131226 extends AbstractMigration implements ContainerAwareI
     public function postUp(Schema $schema)
     {
         $em = $this->container->get('doctrine.orm.entity_manager');
-        $environments = $em->getRepository("GovWikiDbBundle:Environment")->findAll();
+        $environments = $em->getConnection()->fetchAll('
+            SELECT id
+            FROM environments
+        ');
+
+        $environments = array_map(
+            function (array $row) use ($em) {
+                return $em->getReference(
+                    'GovWikiDbBundle:Environment',
+                    $row['id']
+                );
+            },
+            $environments
+        );
 
         $styles = [
             [

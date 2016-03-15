@@ -56,11 +56,28 @@ class Version20160303121004 extends AbstractMigration implements ContainerAwareI
     public function postUp(Schema $schema)
     {
         $em = $this->container->get('doctrine.orm.entity_manager');
+        $environments = $em->getConnection()->fetchAll('
+            SELECT id, slug
+            FROM environments
+        ');
 
-        $environments = $em->getRepository("GovWikiDbBundle:Environment")->findAll();
+        $environments = array_map(
+            function (array $row) use ($em) {
+                $ref = $em->getReference(
+                    'GovWikiDbBundle:Environment',
+                    $row['id']
+                );
+
+                return [
+                    'ref' => $ref,
+                    'slug' => $row['slug'],
+                ];
+            },
+            $environments
+        );
 
         foreach ($environments as $environment) {
-            $name = $environment->getSlug();
+            $name = $environment['slug'];
             $footerCopyright = $footerSocial = null;
             $footerLinks = '<a href="http://californiapolicycenter.org">HOME</a><br><a href="http://californiapolicycenter.org/contact/">CONTACT US</a>';
             switch ($name) {
@@ -82,7 +99,7 @@ class Version20160303121004 extends AbstractMigration implements ContainerAwareI
             }
 
             $environmentContent = new EnvironmentContents();
-            $environmentContent->setEnvironment($environment);
+            $environmentContent->setEnvironment($environment['ref']);
             $environmentContent->setName('Footer copyright');
             $environmentContent->setSlug('footer_copyright');
             $environmentContent->setValue($footerCopyright);
@@ -90,7 +107,7 @@ class Version20160303121004 extends AbstractMigration implements ContainerAwareI
             $em->persist($environmentContent);
 
             $environmentContent2 = new EnvironmentContents();
-            $environmentContent2->setEnvironment($environment);
+            $environmentContent2->setEnvironment($environment['ref']);
             $environmentContent2->setName('Footer social');
             $environmentContent2->setSlug('footer_social');
             $environmentContent2->setValue($footerSocial);
@@ -98,15 +115,15 @@ class Version20160303121004 extends AbstractMigration implements ContainerAwareI
             $em->persist($environmentContent2);
 
             $environmentContent3 = new EnvironmentContents();
-            $environmentContent3->setEnvironment($environment);
+            $environmentContent3->setEnvironment($environment['ref']);
             $environmentContent3->setName('Header logo');
             $environmentContent3->setSlug('header_logo');
-            $environmentContent3->setValue('/img/upload/'.$environment->getSlug().'.png');
+            $environmentContent3->setValue('/img/upload/'.$environment['slug'].'.png');
             $environmentContent3->setType('image');
             $em->persist($environmentContent3);
 
             $environmentContent4 = new EnvironmentContents();
-            $environmentContent4->setEnvironment($environment);
+            $environmentContent4->setEnvironment($environment['ref']);
             $environmentContent4->setName('Footer links');
             $environmentContent4->setSlug('footer_links');
             $environmentContent4->setValue($footerLinks);
