@@ -2,6 +2,7 @@ require('../vendor/bootstrap.js');
 
 require('./search_elected.js');
 require('./search_government.js');
+require('./map.js');
 
 /**
  * Extend CartoDB Tooltip
@@ -110,6 +111,16 @@ $(function(){
          * Create new SQL request
          */
         var sql = new cartodb.SQL({ user: window.gw.map.username });
+
+        sql.execute("SELECT data::json->'2014' AS data, GeometryType(the_geom), alt_type_slug FROM " + window.gw.environment)
+                .done(function(data) {
+                    debugger;
+                    layersData = data;
+                    init(data);
+                })
+                .error(function(errors) {
+                    return cartodbError(errors);
+                });
 
         /**
          * SubLayers & tooltips initialization
@@ -470,7 +481,7 @@ $(function(){
 
             var cLayer = {
                 'cartocss': cartocss,
-                'sql': 'SELECT *, ST_AsGeoJSON(the_geom) AS geometry FROM ' + window.gw.environment + ' WHERE  alt_type_slug = \''+ altType +'\'',
+                'sql': 'SELECT cartodb_id, slug, alt_type_slug, geometry, data::json->\'2014\', ST_AsGeoJSON(the_geom) AS geometry FROM ' + window.gw.environment + ' WHERE  alt_type_slug = \''+ altType +'\'',
                 'interactivity': ['cartodb_id', 'slug', 'alt_type_slug', 'geometry', 'data', 'name']
             };
 

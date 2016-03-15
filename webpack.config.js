@@ -9,7 +9,7 @@ var path = {
 };
 
 module.exports = {
-    cache:false,
+    cache: false,
     entry: {
         map: './' + path.base + '/home/index.js',
         government: './' + path.base + '/government/index.js',
@@ -20,7 +20,7 @@ module.exports = {
         filename: '[name].js',
         chunkFilename: '[id].js'
     },
-    devtool: 'eval',
+    devtool: 'source-map',
     resolve: {
         root: [pathUtil.join(__dirname, 'bower_components')],
         alias: {
