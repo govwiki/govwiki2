@@ -3,7 +3,10 @@
 namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\DbBundle\Entity\Chat;
 use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Entity\Message;
+use GovWiki\DbBundle\Form\MessageType;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -81,7 +84,70 @@ class GovernmentController extends Controller
                 ->isSubscriber($data['government']['id'], $user->getId());
         }
 
+        $em = $this->getDoctrine()->getManager();
+        $new_message = new Message();
+        $message_form = $this->createForm(new MessageType(), $new_message);
+
+        $message_form->handleRequest($request);
+        if ($message_form->isValid()) {
+            $env_name = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)->getEnvironment();
+            /** @var Government $government */
+            $government = $em->getRepository('GovWikiDbBundle:Government')
+                ->getListQuery($env_name, $data['government']['id'])
+                ->getOneOrNullResult();
+
+            if ($government) {
+                $chat = $government->getChat();
+                if ($chat) {
+                    $new_message->setChat($chat);
+                } else {
+                    $chat = new Chat();
+                    $subscribers = $government->getSubscribers();
+                    foreach ($subscribers as $subscriber) {
+                        $chat->addMember($subscriber);
+                    }
+                    $new_message->setChat($chat);
+                    $chat->setGovernment($government);
+                    $government->setChat($chat);
+                    $em->persist($chat);
+                }
+
+                if (!$this->isMember($chat, $user->getId())) {
+                    $chat->addMember($user);
+                }
+
+                $new_message->setAuthor($user);
+
+                $em->persist($new_message);
+                $em->flush();
+
+                $this->addFlash('message_saved_success', 'Your message was sent to all subscribers of the government.');
+
+                return $this->redirectToRoute('government', array(
+                    'environment' => $env_name,
+                    'altTypeSlug' => $altTypeSlug,
+                    'slug' => $slug
+                ));
+            }
+        }
+        $data['message_form'] = $message_form->createView();
+
         return $data;
+    }
+
+    /**\
+     * @param Chat $chat Chat entity
+     * @param integer $user_id User's ID
+     */
+    private function isMember($chat, $user_id)
+    {
+        $members = $chat->getMembers();
+        foreach ($members as $member) {
+            if ($member->getId() == $user_id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function clearTranslationsCache()

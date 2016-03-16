@@ -48,6 +48,10 @@
                 </div>
             </header>
 
+            {% for flash_message in app.session.flashbag.get('message_saved_success') %}
+                <h5>{{ flash_message }}</h5>
+            {% endfor %}
+
             <section class="row">
                 <div class="col-md-12">
 
@@ -167,6 +171,13 @@
                         Subscribe
                     {%- endif -%}
                 </a>
+            </div>
+
+            <div class="message_form_container">
+                {{ form_start(message_form) }}
+                {{ form_row(message_form.text, {'label': 'Message'}) }}
+                {{ form_row(message_form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+                {{ form_end(message_form) }}
             </div>
         {% endif %}
 

@@ -218,6 +218,13 @@ class Government
     private $subscribers;
 
     /**
+     * @ORM\OneToOne(targetEntity="Chat")
+     * @ORM\JoinColumn(name="chat_id", referencedColumnName="id")
+     */
+    private $chat;
+
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -967,5 +974,51 @@ class Government
     public function isSubscriber(User $user)
     {
         return $this->subscribers->contains($user);
+    }
+
+    /**
+     * Add subscribers
+     *
+     * @param \GovWiki\UserBundle\Entity\User $subscribers
+     * @return Government
+     */
+    public function addSubscriber(\GovWiki\UserBundle\Entity\User $subscribers)
+    {
+        $this->subscribers[] = $subscribers;
+
+        return $this;
+    }
+
+    /**
+     * Remove subscribers
+     *
+     * @param \GovWiki\UserBundle\Entity\User $subscribers
+     */
+    public function removeSubscriber(\GovWiki\UserBundle\Entity\User $subscribers)
+    {
+        $this->subscribers->removeElement($subscribers);
+    }
+
+    /**
+     * Set chat
+     *
+     * @param \GovWiki\DbBundle\Entity\Chat $chat
+     * @return Government
+     */
+    public function setChat(\GovWiki\DbBundle\Entity\Chat $chat = null)
+    {
+        $this->chat = $chat;
+
+        return $this;
+    }
+
+    /**
+     * Get chat
+     *
+     * @return \GovWiki\DbBundle\Entity\Chat 
+     */
+    public function getChat()
+    {
+        return $this->chat;
     }
 }

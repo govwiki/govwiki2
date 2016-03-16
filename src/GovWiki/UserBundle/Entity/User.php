@@ -85,6 +85,27 @@ class User extends BaseUser
     private $subscribedTo;
 
     /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(
+     *  targetEntity="GovWiki\DbBundle\Entity\Message",
+     *  mappedBy="author"
+     * )
+     */
+    private $messages;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\ManyToMany(
+     *  targetEntity="GovWiki\DbBundle\Entity\Chat",
+     *  mappedBy="members"
+     * )
+     */
+    private $chats;
+
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -93,6 +114,7 @@ class User extends BaseUser
 
         $this->createRequests = new ArrayCollection();
         $this->editRequests   = new ArrayCollection();
+        $this->messages       = new ArrayCollection();
     }
 
     /**
@@ -239,5 +261,104 @@ class User extends BaseUser
     public function getSubscribers()
     {
         return $this->subscribedTo;
+    }
+
+    /**
+     * Add subscribedTo
+     *
+     * @param \GovWiki\DbBundle\Entity\Government $subscribedTo
+     * @return User
+     */
+    public function addSubscribedTo(\GovWiki\DbBundle\Entity\Government $subscribedTo)
+    {
+        $this->subscribedTo[] = $subscribedTo;
+
+        return $this;
+    }
+
+    /**
+     * Remove subscribedTo
+     *
+     * @param \GovWiki\DbBundle\Entity\Government $subscribedTo
+     */
+    public function removeSubscribedTo(\GovWiki\DbBundle\Entity\Government $subscribedTo)
+    {
+        $this->subscribedTo->removeElement($subscribedTo);
+    }
+
+    /**
+     * Get subscribedTo
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getSubscribedTo()
+    {
+        return $this->subscribedTo;
+    }
+
+    /**
+     * Add messages
+     *
+     * @param \GovWiki\DbBundle\Entity\Message $messages
+     * @return User
+     */
+    public function addMessage(\GovWiki\DbBundle\Entity\Message $messages)
+    {
+        $this->messages[] = $messages;
+
+        return $this;
+    }
+
+    /**
+     * Remove messages
+     *
+     * @param \GovWiki\DbBundle\Entity\Message $messages
+     */
+    public function removeMessage(\GovWiki\DbBundle\Entity\Message $messages)
+    {
+        $this->messages->removeElement($messages);
+    }
+
+    /**
+     * Get messages
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getMessages()
+    {
+        return $this->messages;
+    }
+
+    /**
+     * Add chats
+     *
+     * @param \GovWiki\DbBundle\Entity\Chat $chats
+     * @return User
+     */
+    public function addChat(\GovWiki\DbBundle\Entity\Chat $chats)
+    {
+        $this->chats[] = $chats;
+
+        return $this;
+    }
+
+    /**
+     * Remove chats
+     *
+     * @param \GovWiki\DbBundle\Entity\Chat $chats
+     */
+    public function removeChat(\GovWiki\DbBundle\Entity\Chat $chats)
+    {
+        $this->chats->removeElement($chats);
+    }
+
+    /**
+     * Get chats
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getChats()
+    {
+        return $this->chats;
     }
 }
