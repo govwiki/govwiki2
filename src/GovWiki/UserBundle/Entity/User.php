@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\Environment;
@@ -83,6 +84,25 @@ class User extends BaseUser
      * )
      */
     private $subscribedTo;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", nullable=true)
+     * @Assert\Regex(pattern="/^[+]{1}[0-9]{11}$/", message="Please, enter valid phone, example: +14158675309")
+     */
+    protected $phone;
+
+    /**
+     * @var string
+     * @ORM\Column(name="phone_confirmed", type="boolean")
+     */
+    protected $phoneConfirmed = false;
+
+    /**
+     * @var string
+     * @ORM\Column(name="phone_confirmed_key", type="string", nullable=true)
+     */
+    protected $phoneConfirmedKey;
 
     /**
      * @var Collection
@@ -261,6 +281,66 @@ class User extends BaseUser
     public function getSubscribers()
     {
         return $this->subscribedTo;
+    }
+
+    /**
+     * @param string $phone
+     *
+     * @return User
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param boolean $phoneConfirmed
+     *
+     * @return User
+     */
+    public function setPhoneConfirmed($phoneConfirmed)
+    {
+        $this->phoneConfirmed = $phoneConfirmed;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function getPhoneConfirmed()
+    {
+        return $this->phoneConfirmed;
+    }
+
+    /**
+     * @param string $phoneConfirmedKey
+     *
+     * @return User
+     */
+    public function setPhoneConfirmedKey($phoneConfirmedKey)
+    {
+        $this->phoneConfirmed = $phoneConfirmedKey;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function getPhoneConfirmedKey()
+    {
+        return $this->phoneConfirmedKey;
     }
 
     /**

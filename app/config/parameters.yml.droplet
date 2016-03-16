@@ -12,3 +12,7 @@ parameters:
     admin_email: contact@calpolicycenter.org
     email_subject: California Policy Center
     debug: 0
+
+    twilio.sid: xxx
+    twilio.token: xxx
+    twilio.from: +123
