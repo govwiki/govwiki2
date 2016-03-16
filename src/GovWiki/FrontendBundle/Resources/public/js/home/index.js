@@ -2,7 +2,6 @@ require('../vendor/bootstrap.js');
 
 require('./search_elected.js');
 require('./search_government.js');
-require('./map.js');
 
 /**
  * Extend CartoDB Tooltip
@@ -55,6 +54,7 @@ $(function(){
      *  centerLongitude: Number
      *  zoom: Number
      *  username: String
+     *  year: String
      * }
      */
     window.gw.map = JSON.parse(window.gw.map);
@@ -99,6 +99,25 @@ $(function(){
     .addTo(map)
     .done(function(layer){
 
+        var $map = $('#map');
+        var $loader = $('#map_wrap').find('.loader');
+
+        layer.on('load', function() {
+            console.log('LOAD');
+            $loader.hide();
+            $map.show();
+            $map.css({"opacity": 1});
+        });
+
+        $('#year-selector').change(function () {
+            $loader.show();
+            $map.hide();
+            window.gw.map.year = $(this).find(':selected').val();
+
+            removeAllSubLayers();
+            reInit();
+        });
+
         var subLayers = {};
 
         /**
@@ -111,16 +130,6 @@ $(function(){
          * Create new SQL request
          */
         var sql = new cartodb.SQL({ user: window.gw.map.username });
-
-        sql.execute("SELECT data::json->'2014' AS data, GeometryType(the_geom), alt_type_slug FROM " + window.gw.environment)
-                .done(function(data) {
-                    debugger;
-                    layersData = data;
-                    init(data);
-                })
-                .error(function(errors) {
-                    return cartodbError(errors);
-                });
 
         /**
          * SubLayers & tooltips initialization
@@ -171,24 +180,19 @@ $(function(){
             initSublayerHandlers();
 
             fixCartodbConstrain();
-
-            loadFinished();
         }
 
         /**
-         * Reinitialize map with new settings
+         * Reinitialize map with
          */
         function reInit (settings) {
 
-            if (!settings) {
-                console.error('Pass settings argument into reInit() function');
-                return false;
-            }
-
-            if (settings.conditions.length > 0) {
-                window.gw.map.county.conditions = settings.conditions;
-            } else {
-                window.gw.map.county.conditions = defaultConditions;
+            if (settings) {
+                if (settings.conditions.length > 0) {
+                    window.gw.map.county.conditions = settings.conditions;
+                } else {
+                    window.gw.map.county.conditions = defaultConditions;
+                }
             }
 
             var altTypes = layersData.rows.filter(function (alt) {
@@ -202,8 +206,6 @@ $(function(){
             initSublayerHandlers();
 
             fixCartodbConstrain();
-
-            loadFinished();
         }
 
         /**
@@ -230,8 +232,6 @@ $(function(){
             });
 
             initSublayerHandlers();
-            loadFinished();
-
         }
 
         /**
@@ -453,7 +453,6 @@ $(function(){
          * Tooltip work with 3.11-13 version, 3.15 is buggy
          */
         function initCountySubLayer(altType) {
-
             var cartocss = '';
             var colorized = window.gw.map.county.colorized;
 
@@ -481,7 +480,10 @@ $(function(){
 
             var cLayer = {
                 'cartocss': cartocss,
-                'sql': 'SELECT cartodb_id, slug, alt_type_slug, geometry, data::json->\'2014\', ST_AsGeoJSON(the_geom) AS geometry FROM ' + window.gw.environment + ' WHERE  alt_type_slug = \''+ altType +'\'',
+                'sql': "SELECT *, (data_json::json->>'"+ window.gw.map.year +
+                    "')::int AS data, ST_AsGeoJSON(the_geom) AS geometry FROM "+
+                    window.gw.environment + " WHERE  alt_type_slug = '"+
+                    altType +"'",
                 'interactivity': ['cartodb_id', 'slug', 'alt_type_slug', 'geometry', 'data', 'name']
             };
 
@@ -543,7 +545,8 @@ $(function(){
             }
 
             subLayers[_altType] = layer.createSubLayer({
-                sql: "SELECT *, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
+                sql: "SELECT *, (data_json::json->>'"+ window.gw.map.year +
+                "')::int AS data, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
                 cartocss: cartocss,
                 interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype', 'data', 'name']
             });
@@ -1010,15 +1013,6 @@ $(function(){
                 subLayers[countyName].toggle();
             });
 
-        }
-
-        /**
-         * Show map, legend, hide loader
-         */
-        function loadFinished() {
-            $('#map').css({"opacity": 1});
-            $('#menu').css({"opacity": 1});
-            $('.loader').hide();
         }
 
         // Polygon variables and functions

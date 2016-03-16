@@ -210,7 +210,7 @@ class WizardController extends AbstractGovWikiAdminController
                 ->createDataset($environment->getSlug(), [
                     'alt_type_slug' => 'VARCHAR(255)',
                     'slug' => 'VARCHAR(255)',
-                    'data_id' => 'bigint',
+                    'data_json' => 'VARCHAR(255)',
                     'name' => 'VARCHAR(255)',
                 ]);
 

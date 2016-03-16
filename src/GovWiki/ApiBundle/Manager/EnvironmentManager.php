@@ -99,6 +99,23 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             ->get($this->environment);
     }
 
+    public function getAvailableYears()
+    {
+        $con = $this->em->getConnection();
+
+        $years = $con->fetchAll("
+            SELECT year
+            FROM {$this->environment}
+            GROUP BY year
+            ORDER BY year DESC
+        ");
+
+        return array_map(
+            function (array $result) { return $result['year']; },
+            $years
+        );
+    }
+
     /**
      * @return string
      */

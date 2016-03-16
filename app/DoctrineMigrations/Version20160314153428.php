@@ -31,7 +31,12 @@ class Version20160314153428 extends AbstractMigration implements
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql("
+        $con = $this->container->get('database_connection');
+
+        /*
+         * Remove test environment.
+         */
+        $con->exec("
             DELETE FROM advertising
             WHERE environment_id = (
                 SELECT id
@@ -39,7 +44,7 @@ class Version20160314153428 extends AbstractMigration implements
                 WHERE slug = 'test'
             )
         ");
-        $this->addSql("
+        $con->exec("
             DELETE FROM translations
             WHERE locale_id = (
                 SELECT id
@@ -51,8 +56,8 @@ class Version20160314153428 extends AbstractMigration implements
                 )
             )
         ");
-        $this->addSql('SET foreign_key_checks = 0');
-        $this->addSql("
+        $con->exec('SET foreign_key_checks = 0');
+        $con->exec("
             DELETE FROM locales
             WHERE environment_id = (
                 SELECT id
@@ -60,7 +65,7 @@ class Version20160314153428 extends AbstractMigration implements
                 WHERE slug = 'test'
             )
         ");
-        $this->addSql("
+        $con->exec("
             DELETE FROM maps
             WHERE id = (
                 SELECT map_id
@@ -68,9 +73,9 @@ class Version20160314153428 extends AbstractMigration implements
                 WHERE slug = 'test'
             )
         ");
-        $this->addSql('SET foreign_key_checks = 1');
+        $con->exec('SET foreign_key_checks = 1');
 
-        $this->addSql("
+        $con->exec("
             DELETE FROM environment_contents
             WHERE environment_id = (
                 SELECT id
@@ -79,7 +84,7 @@ class Version20160314153428 extends AbstractMigration implements
             )
         ");
 
-        $this->addSql("
+        $con->exec("
             DELETE FROM environment_styles
             WHERE environment_id = (
                 SELECT id
@@ -88,7 +93,7 @@ class Version20160314153428 extends AbstractMigration implements
             )
         ");
 
-        $this->addSql("
+        $con->exec("
             DELETE FROM templates
             WHERE environment_id = (
                 SELECT id
@@ -97,7 +102,7 @@ class Version20160314153428 extends AbstractMigration implements
             )
         ");
 
-        $this->addSql("DELETE FROM environments WHERE slug = 'test'");
+        $con->exec("DELETE FROM environments WHERE slug = 'test'");
     }
 
     /**
@@ -111,23 +116,66 @@ class Version20160314153428 extends AbstractMigration implements
         $con = $this->container->get('doctrine.dbal.default_connection');
         $cartoDbApi = $this->container->get('carto_db.api');
 
+        /*
+         * Get list of all available environments.
+         */
         $environments = array_map(
             function (array $element) { return $element['name']; },
             $con->fetchAll('SELECT slug AS name FROM environments')
         );
 
+        /*
+         * Remove from environments those who have 'year' column.
+         */
         $environments = array_filter(
             $environments,
-            function ($name) { return ($name !== 'puerto_rico') && ($name !== 'test'); }
+            function ($name) use ($con) {
+                $result = $con->fetchColumn("
+                    SELECT count(*)
+                    FROM information_schema.COLUMNS
+                    WHERE
+                        TABLE_SCHEMA = 'govwiki' AND
+                        TABLE_NAME = '{$name}' AND
+                        COLUMN_NAME = 'year'
+                ");
+                return $result === '0';
+            }
         );
 
         foreach ($environments as $environment) {
+            /*
+             * Add 'year' column to environment specific government data table.
+             */
             $this->addSql("
-                ALTER TABLE {$environment} ADD year smallint DEFAULT 2014
+                ALTER IGNORE TABLE {$environment} ADD year smallint DEFAULT 2014
             ");
 
+            /*
+             * Add 'data_json' to cartodb.
+             */
             $response = $cartoDbApi->sqlRequest(
-                "ALTER TABLE {$environment} ADD year smallint DEFAULT 2014");
+                "ALTER TABLE {$environment} ADD data_json VARCHAR(255) DEFAULT NULL"
+            );
+            if (array_key_exists('error', $response)) {
+                $this->write($response['error'][0]);
+            }
+
+            /*
+             * Migrate all values into new data.
+             */
+            $response = $cartoDbApi->sqlRequest(
+                "UPDATE {$environment} SET data_json = '{\"2014\":' || data || '}'"
+            );
+            if (array_key_exists('error', $response)) {
+                $this->write($response['error'][0]);
+            }
+
+            /*
+             * Remove old 'data' column.
+             */
+            $response = $cartoDbApi->sqlRequest(
+                "ALTER  TABLE {$environment} DROP data"
+            );
             if (array_key_exists('error', $response)) {
                 $this->write($response['error'][0]);
             }
@@ -156,10 +204,24 @@ class Version20160314153428 extends AbstractMigration implements
             $this->addSql("
                 ALTER TABLE {$environment} DROP year
             ");
+            $response = $cartoDbApi->sqlRequest(
+                "ALTER TABLE {$environment} ADD data double precision DEFAULT NULL"
+            );
+            if (array_key_exists('error', $response)) {
+                $this->write($response['error'][0]);
+            }
+
+            $response = $cartoDbApi->sqlRequest("
+                UPDATE {$environment}
+                SET data = regexp_replace(data_json, E'^.*:([^,}]*).*', '\1')::int
+            ");
+            if (array_key_exists('error', $response)) {
+                $this->write($response['error'][0]);
+            }
 
             $response = $cartoDbApi->sqlRequest(
-                "ALTER TABLE {$environment} DROP year");
-
+                "ALTER TABLE {$environment} DROP data_json"
+            );
             if (array_key_exists('error', $response)) {
                 $this->write($response['error'][0]);
             }
