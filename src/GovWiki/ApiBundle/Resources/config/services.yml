@@ -75,4 +75,4 @@ services:
 
     govwiki.api.twilio:
         class: GovWiki\ApiBundle\TwilioApi\TwilioService
-        arguments: [%twilio.sid%, %twilio.token%, %twilio.from%]
+        arguments: [%twilio.sid%, %twilio.token%, %twilio.from%, @doctrine]

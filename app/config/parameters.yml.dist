@@ -29,4 +29,4 @@ parameters:
 
     twilio.sid: xxx
     twilio.token: xxx
-    twilio.from: +123
+    twilio.from: "+123"

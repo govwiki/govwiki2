@@ -2,6 +2,8 @@
 
 namespace GovWiki\ApiBundle\TwilioApi;
 
+use GovWiki\DbBundle\Entity\TwilioSmsMessages;
+
 require_once(__DIR__.'/Services/Twilio.php');
 
 /**
@@ -35,17 +37,24 @@ class TwilioService
     private $details;
 
     /**
+     * @var object
+     */
+    private $doctrine;
+
+    /**
      * Set api keys
      *
      * @param string $sid
      * @param string $token
      * @param string $from
+     * @param object $doctrine
      */
-    public function __construct($sid, $token, $from)
+    public function __construct($sid, $token, $from, $doctrine)
     {
-        $this->sid   = $sid;
-        $this->token = $token;
-        $this->from  = $from;
+        $this->sid      = $sid;
+        $this->token    = $token;
+        $this->from     = $from;
+        $this->doctrine = $doctrine;
     }
 
     /**
@@ -81,6 +90,37 @@ class TwilioService
     }
 
     /**
+     * Send message to one number by Twilio
+     *
+     * @param string $from
+     * @param string $to
+     * @param string $message
+     * @return array
+     */
+    public function sendMessageToOneNumbers($from, $to, $message)
+    {
+        $client = new \Services_Twilio($this->sid, $this->token);
+
+        try {
+            $client->account->messages->sendMessage(
+                $from,
+                $to,
+                $message
+            );
+        } catch (\Services_Twilio_RestException $e) {
+            return [
+                'error'   => true,
+                'message' => $e->getMessage(),
+            ];
+        }
+
+        return [
+            'error'   => false,
+            'message' => 'Success sent',
+        ];
+    }
+
+    /**
      * Check errors
      *
      * @return bool|string
@@ -102,5 +142,26 @@ class TwilioService
     public function getDetails()
     {
         return $this->details;
+    }
+
+    /**
+     * Save message to database for next distribution
+     *
+     * @param array  $toNumbers
+     * @param string $message
+     */
+    public function saveMessagesToBaseForDistribution($toNumbers, $message)
+    {
+        $em = $this->doctrine->getManager();
+
+        foreach ($toNumbers as $to) {
+            $smsMessage = new TwilioSmsMessages();
+            $smsMessage->setFromNumber($this->from);
+            $smsMessage->setToNumber($to);
+            $smsMessage->setMessage($message);
+            $em->persist($smsMessage);
+        }
+
+        $em->flush();
     }
 }
