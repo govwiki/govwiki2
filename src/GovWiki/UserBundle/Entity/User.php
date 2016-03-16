@@ -344,39 +344,6 @@ class User extends BaseUser
     }
 
     /**
-     * Add subscribedTo
-     *
-     * @param \GovWiki\DbBundle\Entity\Government $subscribedTo
-     * @return User
-     */
-    public function addSubscribedTo(\GovWiki\DbBundle\Entity\Government $subscribedTo)
-    {
-        $this->subscribedTo[] = $subscribedTo;
-
-        return $this;
-    }
-
-    /**
-     * Remove subscribedTo
-     *
-     * @param \GovWiki\DbBundle\Entity\Government $subscribedTo
-     */
-    public function removeSubscribedTo(\GovWiki\DbBundle\Entity\Government $subscribedTo)
-    {
-        $this->subscribedTo->removeElement($subscribedTo);
-    }
-
-    /**
-     * Get subscribedTo
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getSubscribedTo()
-    {
-        return $this->subscribedTo;
-    }
-
-    /**
      * Add messages
      *
      * @param \GovWiki\DbBundle\Entity\Message $messages
