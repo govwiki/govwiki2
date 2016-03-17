@@ -16,18 +16,6 @@
     {{ show_macro.addFormRow(form.issueCategory) }}
 {% endblock associations %}
 
-{% block information_buttons %}
-    {% if createRequest.status == 'pending' %}
-        <div class="form-group clearfix">
-            <label class="control-label" for="delay">Display delay (hours:minutes)</label>
-            <div class="delay-input">
-                <input type='number' value="0" min="0" name="delay[hours]" id="hours"><b>:</b>
-                <input type='number' value="0" min="0" name="delay[minutes]" id="minutes">
-            </div>
-        </div>
-    {% endif %}
-{% endblock information_buttons %}
-
 {% block childs %}
     <table class="table table-bordered table-striped">
         <thead>
