@@ -60,6 +60,22 @@ class MapController extends AbstractGovWikiAdminController
                 $environment = $this->adminEnvironmentManager()
                     ->getEnvironment();
 
+                $values = array_map(
+                    function (array $row) {
+                        $data = explode(',', $row['data']);
+                        $data = array_map(
+                            function ($element) { return (float) $element; },
+                            $data
+                        );
+                        $years = explode(',', $row['years']);
+
+                        unset($row['years']);
+                        $row['data'] = json_encode(array_combine($years, $data));
+                        return $row;
+                    },
+                    $values
+                );
+
                 /*
                  * Prepare sql parts for CartoDB sql request.
                  */
@@ -74,7 +90,7 @@ class MapController extends AbstractGovWikiAdminController
                     $data = $row['data'];
 
                     $sqlParts[] = "
-                        ('{$slug}', '{$altTypeSlug}', {$data})
+                        ('{$slug}', '{$altTypeSlug}', '{$data}')
                     ";
                 }
 
@@ -85,17 +101,17 @@ class MapController extends AbstractGovWikiAdminController
                     ->createDataset($environment.'_temporary', [
                         'alt_type_slug' => 'VARCHAR(255)',
                         'slug' => 'VARCHAR(255)',
-                        'data' => 'double precision',
+                        'data_json' => 'VARCHAR(255)',
                     ], true)
                     ->sqlRequest("
                         INSERT INTO {$environment}_temporary
-                            (slug, alt_type_slug, data)
+                            (slug, alt_type_slug, data_json)
                         VALUES ". implode(',', $sqlParts));
                     // Update concrete environment dataset from temporary
                     // dataset.
                 $api->sqlRequest("
                     UPDATE {$environment} e
-                    SET data = t.data
+                    SET data_json = t.data_json
                     FROM {$environment}_temporary t
                     WHERE e.slug = t.slug AND
                         e.alt_type_slug = t.alt_type_slug

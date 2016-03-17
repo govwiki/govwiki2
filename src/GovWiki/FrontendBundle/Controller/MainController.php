@@ -67,6 +67,8 @@ class MainController extends Controller
             throw new NotFoundHttpException();
         }
         $map['username'] = $this->getParameter('carto_db.account');
+        $years = $environmentManager->getAvailableYears();
+        $map['year'] = $years[0];
 
         $map = json_encode($map);
 
@@ -83,6 +85,7 @@ class MainController extends Controller
         return [
             'environment' => $environment,
             'map' => $map,
+            'years' => $years,
             'mapEntity' => $mapEntity,
             'greetingText' => $greetingText
         ];

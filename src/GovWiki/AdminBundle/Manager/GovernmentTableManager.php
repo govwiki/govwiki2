@@ -40,6 +40,7 @@ class GovernmentTableManager
             CREATE TABLE `{$name}` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `government_id` int(11) DEFAULT NULL,
+                `year` int(4) DEFAULT NULL,
                 CONSTRAINT `fk_{$name}_government` FOREIGN KEY (`government_id`) REFERENCES `governments` (`id`),
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

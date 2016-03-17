@@ -1,12 +1,19 @@
 
 $(function() {
 
-    require('./graphs.js');
-    new (require('./rank-popover.js'))();
+    var graphs = require('./graphs.js');
+    new (require('./rank-popover.js'))({
+        year: JSON.parse(window.gw.government).currentYear
+    });
     var Step1 = require('./form/compare/step-1.js');
     var Step2 = require('./form/compare/step-2.js');
     var Step3 = require('./form/compare/step-3.js');
     var Step31 = require('./form/compare/step-3-1.js');
+
+    graphs.init(function (data) {
+        console.log(data);
+        graphs.forceInit();
+    });
 
     /**
      * Status of form steps
@@ -112,7 +119,7 @@ $(function() {
     var tab = window.localStorage.getItem('tab');
     if (tab) {
         window.localStorage.removeItem('tab');
-        $('.nav-pills a[href="#' + tab + '"]').tab('show');
+        $('.nav-pills a[href="' + tab + '"]').tab('show');
     }
 
     /*
@@ -146,4 +153,14 @@ $(function() {
         });
     });
 
+    /*
+        Reload data for government by given year.
+     */
+    $('#year-selector').change(function() {
+        var selectedYear = $(this).find(':selected').val();
+        var openedTab = $('.tab-titles').find('li.active').find('a').attr('href');
+
+        window.location.search = '?year=' + selectedYear;
+        window.localStorage.setItem('tab', openedTab);
+    });
 });
