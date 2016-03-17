@@ -141,7 +141,6 @@
 
                     & > td {
                         padding: 0;
-                        white-space: nowrap;
 
                         &:nth-child(1) {
                             color: #666;
@@ -151,6 +150,7 @@
                         &:nth-child(2) {
                             color: #000;
                             text-align: right;
+                            white-space: nowrap;
                         }
 
                         a.rank {

@@ -28,8 +28,6 @@
         {% else %}
                 <img src="{{ environment_content.get('header_logo')|raw }}" class="logo">
         {% endif %}
-
-        {{- render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader')) -}}
     </div>
 
     {# Menu button (hamburger) for mobile devices #}

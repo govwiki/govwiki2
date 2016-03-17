@@ -775,16 +775,20 @@ class AdminEnvironmentManager
     }
 
     /**
-     * @param string $field Field value
+     * @param string $field Field name.
      *
      * @return array
      */
     public function getGovernmentsFiledValues($field)
     {
         return $this->em->getConnection()->fetchAll("
-            SELECT g.slug, g.alt_type_slug, g.name, eg.${field} AS data
+            SELECT
+                g.slug, g.alt_type_slug, g.name, GROUP_CONCAT(eg.year) AS years,
+                 GROUP_CONCAT(eg.{$field}) AS data
             FROM {$this->environment} eg
             JOIN governments g ON g.id = eg.government_id
+            GROUP BY g.alt_type_slug, g.slug
+            ORDER BY g.alt_type_slug, g.slug
         ");
     }
 

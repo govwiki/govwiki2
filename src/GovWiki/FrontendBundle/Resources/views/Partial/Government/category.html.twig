@@ -15,7 +15,6 @@
                     {{- ('format.'~format.field)|trans -}}
                     {#{{- format.name -}}#}
                     {% if format.helpText %}
-                        {#<img src="{{ asset('bundles/govwikifrontend/img/help.png') }}" title="{{- format.helpText -}}">#}
                         <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}" title="{{- ('format.'~format.field~'.help_text')|trans -}}">
                     {% endif %}
                 </td>
