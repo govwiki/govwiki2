@@ -124,12 +124,6 @@
                             {# Financial Statements (if exists) #}
                             {% if showFinStmt %}
                                 <div class="tab-pane" id="Financial_Statements">
-                                    <form method="get">
-                                        <h4>
-                                            Financial Statements
-                                            {% include '@GovWikiFrontend/Partial/Government/year_select.html.twig' %}
-                                        </h4>
-                                    </form>
 
                                     {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
                                         'financialStatements': government.financialStatements

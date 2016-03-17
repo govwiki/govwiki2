@@ -27,7 +27,7 @@ class MaxRankComputer implements MaxRankComputerInterface
     /**
      * {@inheritdoc}
      */
-    public function compute($environment, $year)
+    public function compute($environment, $altTypeSlug, $year)
     {
         /** @var FormatRepository $repository */
         $formatRepository = $this->em->getRepository('GovWikiDbBundle:Format');
@@ -91,7 +91,8 @@ class MaxRankComputer implements MaxRankComputerInterface
                 INNER JOIN environments env ON g.environment_id = env.id
                 WHERE
                     env.slug = '{$environment}' AND
-                    e.year = {$year}
+                    e.year = {$year} AND
+                    g.alt_type_slug = '{$altTypeSlug}'
                 GROUP BY g.alt_type_slug
             ) AS new
             ON DUPLICATE KEY UPDATE

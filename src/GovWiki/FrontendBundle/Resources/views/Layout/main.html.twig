@@ -30,7 +30,7 @@
         <menu class="container mainmenu">
             <div class="row">
                 <div class="col-md-6">
-                    {% if years|length > 1 %}
+                    {% if years is defined and years|length > 1 %}
                         <label for="year-selector" class="control-label">Year: </label>
                         <select id="year-selector" class="form-control form-control__inline">
                             {% for year in years %}
