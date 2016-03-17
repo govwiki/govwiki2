@@ -64,14 +64,17 @@ class GovernmentController extends Controller
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
         $this->clearTranslationsCache();
-
+        $manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
         $user = $this->getUser();
 
-        $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+        $years = $manager->getAvailableYears();
+        $currentYear = $request->query->getInt('year', $years[0]);
+
+        $data = $manager
             ->getGovernment(
                 $altTypeSlug,
                 $slug,
-                $request->query->get('year', null)
+                $currentYear
             );
 
         $data['isSubscriber'] = false;
@@ -80,6 +83,8 @@ class GovernmentController extends Controller
                 ->getRepository('GovWikiDbBundle:Government')
                 ->isSubscriber($data['government']['id'], $user->getId());
         }
+
+        $data['years'] = $years;
 
         return $data;
     }

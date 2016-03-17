@@ -6,7 +6,6 @@ use CartoDbBundle\Service\CartoDbApi;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\EntityManagerInterface;
-use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Environment;
@@ -204,7 +203,9 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             $fields = implode(',', $fields);
             $data = $this->em->getConnection()->fetchAssoc("
                 SELECT {$fields} FROM {$this->environment}
-                WHERE government_id = {$government['id']}
+                WHERE
+                    government_id = {$government['id']} AND
+                    year = {$year}
             ");
 
             /*
@@ -249,22 +250,29 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
         try {
             $data = $con->fetchAssoc("
-                SELECT m.*
-                FROM {$tableName} m
-                INNER JOIN environments e ON m.environment_id = e.id
+                SELECT *
+                FROM {$tableName}
                 WHERE
-                    e.slug = '{$this->environment}' AND
-                    m.alt_type_slug = '{$altTypeSlug}'
+                    alt_type_slug = '{$altTypeSlug}' AND
+                    year = {$year}
             ");
+            if (false === $data) {
+                $data = $con->fetchAssoc("
+                    SELECT *
+                    FROM {$tableName}
+                    WHERE
+                        alt_type_slug = '{$altTypeSlug}' AND
+                        year = '{$year}'
+                ");
+            }
         } catch (DBALException $e) {
-            $this->computer->compute($this->environment);
+            $this->computer->compute($this->environment, $year);
             $data = $con->fetchAssoc("
-                SELECT m.*
-                FROM {$tableName} m
-                INNER JOIN environments e ON m.environment_id = e.id
+                SELECT *
+                FROM {$tableName}
                 WHERE
-                    e.slug = '{$this->environment}' AND
-                    m.alt_type_slug = '{$altTypeSlug}'
+                    alt_type_slug = '{$altTypeSlug}' AND
+                    year = '{$year}'
             ");
         }
 
@@ -287,7 +295,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
         */
 
         if (count($data) > 0) {
-            unset($data['alt_type_slug'], $data['environment_id']);
+            unset($data['alt_type_slug'], $data['year']);
             foreach ($data as $field => $value) {
                 if (array_key_exists($field, $government)) {
                     $government['ranks'][$field .'_rank'] = [
@@ -303,6 +311,8 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             $formats,
             [ 'tab_name', 'category_name', 'field' ]
         );
+
+        $government['currentYear'] = $year;
 
         /*
          * Replace single and double quote to html special char.
@@ -369,22 +379,12 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getGovernmentRank($altTypeSlug, $slug, array $parameters)
     {
-        $rankFieldName = $parameters['field_name'];
-        $limit = $parameters['limit'];
-        $page = $parameters['page'];
-        $order = $parameters['order'];
-        $nameOrder = $parameters['name_order'];
-
         return $this->em->getRepository('GovWikiDbBundle:Government')
             ->getGovernmentRank(
                 $this->environment,
                 $altTypeSlug,
                 $slug,
-                $rankFieldName,
-                $limit,
-                $page,
-                $order,
-                $nameOrder
+                $parameters
             );
     }
 

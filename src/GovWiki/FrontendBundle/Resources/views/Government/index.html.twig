@@ -5,6 +5,7 @@
     <section class="governmentController">
 
         {% if government is defined %}
+
             {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
 
             {# Government name & wikipedia links #}
@@ -53,11 +54,7 @@
 
                     {# Tabs control #}
                     <nav>
-                        {# todo styles for puerto-rico hardcoded #}
-                        <ul class="nav nav-pills {% if environment == 'puerto_rico' -%}
-                            nav-pills__puerto
-                        {%- endif -%}">
-
+                        <ul class="nav nav-pills tab-titles">
                             {% if (formats is defined) and (formats is not empty) %}
                                 {% for tabName, categories in formats %}
                                     {% if categories[""] is defined %}

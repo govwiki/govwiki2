@@ -91,16 +91,18 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
-     * @param string  $environment    Environment name.
-     * @param string  $altTypeSlug    Slugged alt type.
-     * @param string  $governmentSlug Slugged government name.
-     * @param string  $rankFieldName  One of government rank field name.
-     * @param integer $limit          Max result per page.
-     * @param integer $page           Page index, start from 0.
-     * @param string  $order          Sorting order by $rankFieldName 'desc' or
-     *                                'asc'. If null start from given entity.
-     * @param string  $nameOrder      Sorting order by government name 'desc'
-     *                                or 'asc'. If null start from given entity.
+     * @param string $environment    Environment name.
+     * @param string $altTypeSlug    Slugged alt type.
+     * @param string $governmentSlug Slugged government name.
+     * @param array  $parameters     Array of parameters:
+     *                               <ul>
+     *                                  <li>field_name (required)</li>
+     *                                  <li>limit (required)</li>
+     *                                  <li>page</li>
+     *                                  <li>order</li>
+     *                                  <li>name_order</li>
+     *                                  <li>year</li>
+     *                               </ul>.
      *
      * @return array
      */
@@ -108,12 +110,15 @@ class GovernmentRepository extends EntityRepository
         $environment,
         $altTypeSlug,
         $governmentSlug,
-        $rankFieldName,
-        $limit,
-        $page = 0,
-        $order = null,
-        $nameOrder = null
+        array $parameters
     ) {
+        $rankFieldName = $parameters['field_name'];
+        $limit = $parameters['limit'];
+        $page = $parameters['page'];
+        $order = $parameters['order'];
+        $nameOrder = $parameters['name_order'];
+        $year = $parameters['year'];
+
         $fieldName = preg_replace('|_rank$|', '', $rankFieldName);
 
         $con = $this->_em->getConnection();
@@ -128,7 +133,10 @@ class GovernmentRepository extends EntityRepository
             INNER JOIN environments environment ON environment.id = government.environment_id
         ";
 
-        $wheres = [ "government.alt_type_slug = '{$altTypeSlug}'" ];
+        $wheres = [
+            "government.alt_type_slug = '{$altTypeSlug}'",
+            "year = {$year}",
+        ];
         $orderBys = [];
 
         /*
@@ -193,7 +201,7 @@ class GovernmentRepository extends EntityRepository
      *
      * @return array|null
      */
-    public function findGovernment($environment, $altTypeSlug, $slug, $year = null)
+    public function findGovernment($environment, $altTypeSlug, $slug, $year)
     {
         $qb = $this->createQueryBuilder('Government');
         $expr = $qb->expr();
@@ -238,9 +246,7 @@ class GovernmentRepository extends EntityRepository
 
         $government['finData'] = [];
         $government['financialStatements'] = [];
-        if (null === $year && (count($finStmtYears) > 0)) {
-            $year = $finStmtYears[0];
-
+        if ((count($finStmtYears) > 0)) {
             $finData = $this
                 ->_em->getRepository('GovWikiDbBundle:FinData')
                 ->createQueryBuilder('FinData')

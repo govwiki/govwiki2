@@ -3,10 +3,11 @@ var Handlebars = require('../vendor/handlebars.runtime.js');
 /**
  * @param {Object} options
  * @param {String} [options.selector]
+ * @param {Number} options.year
  * @constructor
  */
 var RankPopover = function(options) {
-    options = options | {};
+    options = options || {};
 
     this.$popover = null;
     this.$rankTable = null;
@@ -17,6 +18,7 @@ var RankPopover = function(options) {
     this.loading = false;
     this.rankFieldName = null;
     this.order = { altType: '', rank: ''};
+    this.year = options.year;
 
     this.init();
 };
@@ -86,7 +88,8 @@ RankPopover.prototype.init = function init() {
                 url: window.gw.urls.popover,
                 dataType: 'json',
                 data: {
-                    field_name: rankFieldName
+                    field_name: rankFieldName,
+                    year: self.year
                 },
                 success: function(data) {
                     if (data.data.length != 0) {
@@ -148,7 +151,8 @@ RankPopover.prototype.scrollHandler = function scrollHandler () {
                         page: ++self.currentPage,
                         order: order.rank,
                         name_order: order.altType,
-                        field_name: rankFieldName
+                        field_name: rankFieldName,
+                        year: self.year
                     },
                     success: function(data) {
                         if (data.data.length != 0) {
@@ -243,7 +247,8 @@ RankPopover.prototype.loadNewRows = function loadNewRows (order) {
             page: self.currentPage,
             order: order.rank,
             name_order: order.altType,
-            field_name: self.rankFieldName
+            field_name: self.rankFieldName,
+            year: self.year
         },
         success: function(data) {
             if (data.data.length != 0) {

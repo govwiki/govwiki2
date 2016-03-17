@@ -103,7 +103,6 @@ $(function(){
         var $loader = $('#map_wrap').find('.loader');
 
         layer.on('load', function() {
-            console.log('LOAD');
             $loader.hide();
             $map.show();
             $map.css({"opacity": 1});
@@ -751,6 +750,7 @@ $(function(){
          * Remove all sub:ayers
          */
         function removeAllSubLayers () {
+            removeAllHoverShapes();
             for (var key in subLayers) {
                 if (subLayers.hasOwnProperty(key)){
                     subLayers[key].remove();
@@ -888,6 +888,8 @@ $(function(){
                     activeConditionsInRangeLegend.push(conditionData);
                 }
 
+                $map.hide();
+                $loader.show();
                 removeAllSubLayers();
                 reInit({conditions: activeConditionsInRangeLegend});
 

@@ -150,6 +150,8 @@ class Version20160314153428 extends AbstractMigration implements
                 ALTER IGNORE TABLE {$environment} ADD year smallint DEFAULT 2014
             ");
 
+            $this->addSql("DROP TABLE {$environment}_max_ranks");
+
             /*
              * Add 'data_json' to cartodb.
              */

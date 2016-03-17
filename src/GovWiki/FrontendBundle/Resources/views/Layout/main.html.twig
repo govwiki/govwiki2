@@ -34,7 +34,11 @@
                         <label for="year-selector" class="control-label">Year: </label>
                         <select id="year-selector" class="form-control form-control__inline">
                             {% for year in years %}
-                                <option value="{{ year }}">
+                                <option value="{{ year }}" {%-
+                                    if (currentYear is defined and currentYear == year)
+                                -%}
+                                        selected
+                                    {%- endif -%}>
                                     {{- year -}}
                                 </option>
                             {% endfor %}
