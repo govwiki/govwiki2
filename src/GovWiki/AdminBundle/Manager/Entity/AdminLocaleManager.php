@@ -16,27 +16,39 @@ class AdminLocaleManager extends AbstractAdminEntityManager
      */
     protected function getEntityClassName()
     {
-        return 'GovWiki\DbBundle\Entity\Locale';
+        return 'GovWiki\DbBundle\Entity\AbstractLocale';
     }
 
     /**
      * @return array
      */
-    public function getListLocales()
+    public function getListLocales($global = false)
     {
         /** @var LocaleRepository $repository */
         $repository = $this->getRepository();
-        return $repository->getListLocales($this->environment);
+
+        $environment = $this->environment;
+        if ($global) {
+            $environment = null;
+        }
+
+        return $repository->getListLocales($environment);
     }
 
     /**
      * @return array
      */
-    public function getListLocaleNames()
+    public function getListLocaleNames($global = false)
     {
         /** @var LocaleRepository $repository */
         $repository = $this->getRepository();
-        return $repository->getListLocaleNames($this->environment);
+
+        $environment = $this->environment;
+        if ($global) {
+            $environment = null;
+        }
+
+        return $repository->getListLocaleNames($environment);
     }
 
     /**
@@ -44,10 +56,16 @@ class AdminLocaleManager extends AbstractAdminEntityManager
      *
      * @return \GovWiki\DbBundle\Entity\Locale
      */
-    public function getOneLocaleByShortName($shortName)
+    public function getOneLocaleByShortName($shortName, $global = false)
     {
         /** @var LocaleRepository $repository */
         $repository = $this->getRepository();
-        return $repository->getOneLocaleByShortName($this->environment, $shortName);
+
+        $environment = $this->environment;
+        if ($global) {
+            $environment = null;
+        }
+
+        return $repository->getOneLocaleByShortName($environment, $shortName);
     }
 }
