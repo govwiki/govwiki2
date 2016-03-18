@@ -21,6 +21,18 @@ class Version20160318122220 extends AbstractMigration
         $this->addSql("ALTER TABLE environments ADD legislation_display_time LONGTEXT NOT NULL COMMENT '(DC2Type:array)'");
 
         $this->addSql("UPDATE environments SET legislation_display_time = 'a:2:{s:5:\"hours\";i:72;s:7:\"minutes\";i:0;}'");
+
+        $this->addSql("
+            INSERT INTO translations
+            (
+                locale_id, trans_key, message_domain, translation, date_created,
+                date_updated
+            )
+            SELECT
+                l.id, 'general.year_selector_label', 'messages', 'Year', NOW(),
+                NOW()
+            FROM locales l
+        ");
     }
 
     /**

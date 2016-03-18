@@ -262,7 +262,7 @@ class GovernmentRepository extends EntityRepository
                         $expr->eq('FinData.year', $year)
                     )
                 )
-                ->orderBy($expr->asc('CaptionCategory.name'))
+                ->orderBy($expr->asc('CaptionCategory.id'))
                 ->getQuery()
                 ->getArrayResult();
 
