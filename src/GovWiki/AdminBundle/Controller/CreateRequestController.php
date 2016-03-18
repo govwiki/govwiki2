@@ -94,7 +94,9 @@ class CreateRequestController extends AbstractGovWikiAdminController
                     /*
                      * Set display time for applied legislation.
                      */
-                    $delay = $request->request->get('delay', null);
+
+                    $environment = $this->adminEnvironmentManager()->getEntity();
+                    $delay = $environment->getLegislationDisplayTime();
 
                     if (null !== $delay) {
                         /** @var Legislation $subject */

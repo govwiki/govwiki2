@@ -480,7 +480,7 @@ $(function(){
             var cLayer = {
                 'cartocss': cartocss,
                 'sql': "SELECT *, (data_json::json->>'"+ window.gw.map.year +
-                    "')::int AS data, ST_AsGeoJSON(the_geom) AS geometry FROM "+
+                    "')::float AS data, ST_AsGeoJSON(the_geom) AS geometry FROM "+
                     window.gw.environment + " WHERE  alt_type_slug = '"+
                     altType +"'",
                 'interactivity': ['cartodb_id', 'slug', 'alt_type_slug', 'geometry', 'data', 'name']
@@ -545,7 +545,7 @@ $(function(){
 
             subLayers[_altType] = layer.createSubLayer({
                 sql: "SELECT *, (data_json::json->>'"+ window.gw.map.year +
-                "')::int AS data, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
+                "')::float AS data, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment + " WHERE alt_type_slug = '" + altType +"'",
                 cartocss: cartocss,
                 interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype', 'data', 'name']
             });

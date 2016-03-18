@@ -9,7 +9,7 @@
     {% if format is viewed(government) %}
         {% set value = government|applay_mask(fieldName, format) %}
         {% if not value is null %}
-            <tr>
+            <tr class="statistics-row">
                 {# Field name #}
                 <td>
                     {{- ('format.'~format.field)|trans -}}
@@ -26,7 +26,7 @@
                         <a class='rank'
                            data-field='{{- rankName -}}'
                            data-mask='{{- format.mask -}}'
-                           title='{{- format.name }} Ranks'>
+                           title='{{- ('format.'~format.field)|trans }}'>
                             ({{- government.ranks[rankName][0] }} {{ 'preposition.of'|trans }} {{ government.ranks[rankName][1] -}})
                             {#({{- government.ranks[rankName][0] }} of {{ government.ranks[rankName][1] -}})#}
                         </a>

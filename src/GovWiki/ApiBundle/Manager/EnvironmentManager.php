@@ -257,6 +257,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                     year = {$year}
             ");
             if (false === $data) {
+                $this->computer->compute($this->environment, $altTypeSlug, $year);
                 $data = $con->fetchAssoc("
                     SELECT *
                     FROM {$tableName}
@@ -266,7 +267,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                 ");
             }
         } catch (DBALException $e) {
-            $this->computer->compute($this->environment, $year);
+            $this->computer->compute($this->environment, $altTypeSlug, $year);
             $data = $con->fetchAssoc("
                 SELECT *
                 FROM {$tableName}

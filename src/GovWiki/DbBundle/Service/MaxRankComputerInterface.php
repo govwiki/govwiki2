@@ -18,13 +18,14 @@ interface MaxRankComputerInterface
      * environment.
      *
      * @param string  $environment Environment slug.
+     * @param string  $altTypeSlug Government alt type slug.
      * @param integer $year        Year.
      *
      * @return void
      *
      * @throws \Doctrine\DBAL\DBALException Error while update max ranks.
      */
-    public function compute($environment, $year);
+    public function compute($environment, $altTypeSlug, $year);
 
     /**
      * Return max ranks table name for given environment.

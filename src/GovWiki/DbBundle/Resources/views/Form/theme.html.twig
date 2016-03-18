@@ -50,3 +50,13 @@
         <span class="input-group-addon"><span class="shape-add"><i class="glyphicon glyphicon-plus"></i></span></span>
     </div>
 {% endblock %}
+
+{% block delay_widget %}
+    <div class="form-group">
+        <label class="control-label">Legislation display time (hours:minutes)</label>
+        <div class="delay-input">
+            <input type='number' id="{{ id }}" value="{{ value.hours }}" min="0" name="{{ full_name }}[hours]"><b>:</b>
+            <input type='number' id="{{ id }}" value="{{ value.minutes }}" min="0" name="{{ full_name }}[minutes]">
+        </div>
+    </div>
+{% endblock delay_widget %}

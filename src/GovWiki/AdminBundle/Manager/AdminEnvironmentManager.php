@@ -58,6 +58,11 @@ class AdminEnvironmentManager
     private $api;
 
     /**
+     * @var Environment
+     */
+    private $entity;
+
+    /**
      * @param EntityManagerInterface $em           A EntityManagerInterface
      *                                             instance.
      * @param TokenStorageInterface  $storage      A TokenStorageInterface
@@ -180,23 +185,27 @@ class AdminEnvironmentManager
      */
     public function getEntity()
     {
-        $user = $this->getUser();
+        if (null === $this->entity) {
+            $user = $this->getUser();
 
-        if ($user->hasRole('ROLE_ADMIN')) {
-            /*
-             * Admin allow to manage all environment.
-             */
-            return $this->em->getRepository('GovWikiDbBundle:Environment')
-                ->getByName($this->environment);
-        } elseif ($user->hasRole('ROLE_MANAGER')) {
-            /*
-             * Manager allow manage only some part of environments.
-             */
-            return $this->em->getRepository('GovWikiDbBundle:Environment')
-                ->getByName($this->environment, $user->getId());
+            if ($user->hasRole('ROLE_ADMIN')) {
+                /*
+                 * Admin allow to manage all environment.
+                 */
+                $this->entity = $this->em->getRepository('GovWikiDbBundle:Environment')
+                    ->getByName($this->environment);
+            } elseif ($user->hasRole('ROLE_MANAGER')) {
+                /*
+                 * Manager allow manage only some of environments.
+                 */
+                $this->entity = $this->em->getRepository('GovWikiDbBundle:Environment')
+                    ->getByName($this->environment, $user->getId());
+            } else {
+                throw new AccessDeniedException();
+            }
         }
 
-        throw new AccessDeniedException();
+        return $this->entity;
     }
 
     /**
