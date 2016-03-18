@@ -184,10 +184,6 @@ class Version20160314153428 extends AbstractMigration implements
         }
 
         $this->addSql('DROP TABLE max_ranks');
-        $this->addSql('ALTER TABLE legislations DROP display_time');
-        $this->addSql("ALTER TABLE environments ADD legislation_display_time LONGTEXT NOT NULL COMMENT '(DC2Type:array)'");
-
-        $this->addSql("UPDATE environments SET legislation_display_time = 'a:2:{s:5:\"hours\";i:72;s:7:\"minutes\";i:0;}'");
     }
 
     /**

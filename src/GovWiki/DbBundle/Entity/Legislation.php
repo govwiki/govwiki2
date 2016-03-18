@@ -87,6 +87,14 @@ class Legislation extends AbstractCreatable
     private $notes;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime")
+     * @Groups({"elected_official"})
+     */
+    private $displayTime;
+
+    /**
      * @ORM\OneToMany(
      *  targetEntity="ElectedOfficialVote",
      *  mappedBy="legislation",
@@ -386,5 +394,25 @@ class Legislation extends AbstractCreatable
     public function getGovernment()
     {
         return $this->government;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDisplayTime()
+    {
+        return $this->displayTime;
+    }
+
+    /**
+     * @param \DateTime $displayTime A DateTime instance.
+     *
+     * @return Legislation
+     */
+    public function setDisplayTime(\DateTime $displayTime)
+    {
+        $this->displayTime = $displayTime;
+
+        return $this;
     }
 }
