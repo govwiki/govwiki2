@@ -46,9 +46,9 @@
 
 
                 {% for vote in votes %}
-
+                    {% set blockId = 'voteCollapse' ~ loop.index %}
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false" aria-controls="{{ blockId }}">
                             <span>Vote</span>
                             <a href="#" class="btn btn-primary btn-sm btn-custom">Comments (0)</a>
                         </div>
@@ -56,19 +56,21 @@
                             <span class="date">{{vote.legislation.dateConsidered | date("m/d/Y") }}</span>
                             <span class="taxes">Taxes: {{ vote.legislation.govAssignedNumber }}</span>
                         </div>
-                        <div class="card-block">
-                            <h4 class="card-title">{{vote.legislation.name}}</h4>
-                            <p class="card-text">{{vote.legislation.summary}}</p>
-                            <table class="table table-stripped">
-                                <tr>
-                                    <th>How official voted</th>
-                                    <td>{{vote.vote}}</td>
-                                </tr>
-                                <tr>
-                                    <th>Did official sponsor?</th>
-                                    <td>{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}</td>
-                                </tr>
-                            </table>
+                        <div class="collapse" id="{{ blockId }}">
+                            <div class="card-block">
+                                <h4 class="card-title">{{vote.legislation.name}}</h4>
+                                <p class="card-text">{{vote.legislation.summary}}</p>
+                                <table class="table table-stripped">
+                                    <tr>
+                                        <th>How official voted</th>
+                                        <td>{{vote.vote}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Did official sponsor?</th>
+                                        <td>{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}</td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
