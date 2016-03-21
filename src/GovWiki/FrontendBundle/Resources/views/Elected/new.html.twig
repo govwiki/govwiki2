@@ -1,0 +1,219 @@
+{% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
+
+{% set elected = electedOfficial %}
+{# Main #}
+{% block main %}
+
+    {# Must be unique #}
+    <section class="electedController" data-elected-name="{{elected.fullName}}">
+
+        <div class="row person-info-header">
+            <div class="col-md-10 col-md-push-1">
+                <h5>ELECTED OFFICIALS - PROFILE</h5>
+            </div>
+        </div>
+
+        <div class="row person-info-content">
+            <div class="col-xs-7 col-sm-7 col-md-7 col-md-push-1 col-lg-7 col-lg-push-1" style="font-size:16px;">
+                <p><strong>Example page</strong></p>
+                <p>Title: {{elected.title}}</p>
+                <p>Name: {{elected.fullName}} &nbsp;&nbsp;
+                    <span class="disqus-comment-count vote" id="{{elected.id}}" data-disqus-identifier="{{elected.id}}">0</span>
+                <p>Term expiries: {{elected.termExpires}}</p>
+                {% if elected.bioUrl %}
+                    <p><a target="_blank" href="{{elected.bioUrl}}">Biographical Highlights</a></p>
+                {% endif %}
+                <p>Email: <a href="mailto:{{elected.emailAddress}}">{{elected.emailAddress}}</a></p>
+            </div>
+
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <img src="{{elected.photoUrl}}" class="person-photo"/>
+            </div>
+        </div>
+
+        <hr/>
+
+        <div class="row person-info-tabs">
+            <div class="col-md-10 col-md-push-1">
+
+                <!-- Nav tabs -->
+                <ul class="nav nav-pills" role="tablist">
+                    <li role="presentation" class="active"><a href="#Votes" aria-controls="Votes" role="tab" data-toggle="tab">Votes</a></li>
+                    <li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>
+                    <li role="presentation"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
+                    <li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
+
+                    <div class="loader"></div>
+
+                    {# Votes #}
+                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:votes.html.twig') }}
+
+                    {# Contributions #}
+                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:contributions.html.twig') }}
+
+                    {# Endorsements #}
+                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:endorsements.html.twig') }}
+
+                    {# Public Statements #}
+                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}
+
+
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Disqus Modal -->
+    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:disqus.html.twig' %}
+
+    <!-- Votes Modal -->
+    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:votes.html.twig' %}
+
+    <!-- Contributions Modal -->
+    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:contributions.html.twig' %}
+
+    <!-- Endorsements Modal -->
+    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:endorsements.html.twig' %}
+
+    <!-- Public Statements Modal -->
+    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:publicStatements.html.twig' %}
+
+    {% verbatim %}
+    <script id="row-addVotes" type="text//x-handlebars-template">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
+        <td data-date-considered="{{dateConsidered}}">
+            {{dateConsidered}}
+        </td>
+        <td data-name="{{name}}" data-no-editable>
+            {{name}}
+        </td>
+        <td data-summary="{{summary}}" data-no-editable>
+            {{summary}}
+        </td>
+        <td data-vote="{{vote}}" data-no-editable>
+            {{vote}}
+        </td>
+        <td align="center" data-did-elected-official-propose-this="{{#if did_elected_official_propose_this}}Yes{{else}}No{{/if}}" data-no-editable>
+            {{#if did_elected_official_propose_this}}Yes{{else}}No{{/if}}
+        </td>
+        <td data-issue-category="{{category}}" data-no-editable>{{category}}</td>
+        <td data-no-editable>{{username}}</td>
+    </tr>
+</script>
+
+<script id="row-addContributions" type="text//x-handlebars-template">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
+        <td data-election-year="{{electionYear}}" data-no-editable>
+            {{electionYear}}
+        </td>
+        <td data-contributor-name="{{contributorName}}" data-no-editable>
+            {{contributorName}}
+        </td>
+        <td data-independent-expenditure-desc="{{independentExpenditureDesc}}" data-no-editable>
+            {{independentExpenditureDesc}}
+        </td>
+        <td data-contribution-amount="{{contributionAmount}}" data-no-editable>
+            {{contributionAmount}}
+        </td>
+        <td data-contributor-type="{{contributorType}}" data-no-editable=>
+            {{contributorType}}
+        </td>
+        <td data-no-editable>{{username}}</td>
+    </tr>
+</script>
+
+<script id="row-addEndorsements" type="text//x-handlebars-template">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
+        <td data-election-year="{{electionYear}}" data-no-editable>
+            {{electionYear}}
+        </td>
+        <td data-name-of-endorser="{{nameOfEndorser}}" data-no-editable>
+            {{nameOfEndorser}}
+        </td>
+        <td data-endorser-type="{{endorserType}}" data-no-editable>
+            {{endorserType}}
+        </td>
+        <td data-no-editable>{{username}}</td>
+    </tr>
+</script>
+
+<script id="row-addStatements" type="text//x-handlebars-template">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
+        <td data-date="{{date}}" data-no-editable>
+            {{date}}
+        </td>
+        <td data-summary="{{summary}}" data-no-editable>
+            {{summary}}
+        </td>
+        <td data-url="{{url}}" data-no-editable>
+            {{url}}
+        </td>
+        <td data-url="{{category}}" data-no-editable="">
+            {{category}}
+        </td>
+        <td data-no-editable>{{username}}</td>
+    </tr>
+</script>
+
+    {% endverbatim %}
+
+    {% if bottomText %}
+        <div class="panel panel-danger notice">
+            <div class="panel-body">
+                {{ bottomText|raw }}
+            </div>
+        </div>
+        <br>
+    {% endif %}
+
+
+{% endblock %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{parent()}}
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+
+    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/elected.scss' filter='scss' %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}
+
+
+{# Javascripts #}
+{% block javascripts %}
+
+    {{parent()}}
+
+    <script>
+        window.gw.electedOfficial = '{{ electedOfficialJSON | escape('js') }}';
+
+        window.gw.urls = {};
+        window.gw.urls.create_request = '{{ govwiki_path('govwiki_api_v1_createrequest_create') }}'
+        window.gw.urls.edit_request = '{{ govwiki_path('govwiki_api_v1_editrequest_create') }}'
+        window.gw.urls.check_url = '{{ govwiki_path('govwiki_api_v1_url_extract') }}'
+    </script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+    <script id="dsq-embed-scr" src="//cpc-civicprofiles.disqus.com/embed.js"></script>
+    <script id="dsq-count-scr" src="//cpc-civicprofiles.disqus.com/count.js"></script>
+
+    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
+                    '@GovWikiFrontendBundle/Resources/public/js/script.js'
+                    '@GovWikiFrontendBundle/Resources/public/js/elected/handlers.js'
+                    output='js/elected.js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
