@@ -967,7 +967,7 @@ $(function(){
 
             });
 
-            $legendContainer.append(compiledLegendItems);
+            $legendContainer.append(compiledLegendItems).css({opacity: 1});
 
             /*
              * Replace all SVG images with inline SVG
