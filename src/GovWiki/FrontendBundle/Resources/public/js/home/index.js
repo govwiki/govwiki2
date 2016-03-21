@@ -862,10 +862,9 @@ $(function(){
 
             $('#menu').after($legend);
 
-            var activeConditionsInRangeLegend = [];
-
             $legend.on('click', 'li', function() {
 
+                var activeConditionsInRangeLegend = [];
                 var $el = $(this);
                 var $ul = $legend.closest('ul');
                 var $liTags = $ul.find('li');
@@ -887,6 +886,22 @@ $(function(){
                     $el.addClass('active');
                     activeConditionsInRangeLegend.push(conditionData);
                 }
+
+                // Mark others with gray color
+                if (activeConditionsInRangeLegend.length > 0) {
+                    defaultConditions.forEach(function(condition) {
+                        var index = findCondition(activeConditionsInRangeLegend, condition);
+                        if (index != -1) {
+                            return false;
+                        }
+                        var $condition = $.extend({}, condition);
+                        $condition.color = '#dddddd';
+                        activeConditionsInRangeLegend.push($condition);
+                    });
+                } else {
+                    activeConditionsInRangeLegend = defaultConditions;
+                }
+
 
                 $map.hide();
                 $loader.show();
