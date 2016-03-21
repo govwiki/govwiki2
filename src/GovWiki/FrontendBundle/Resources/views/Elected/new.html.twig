@@ -48,13 +48,15 @@
                 {% for vote in votes %}
                     {% set blockId = 'voteCollapse' ~ loop.index %}
                     <div class="card">
-                        <div class="card-header" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false" aria-controls="{{ blockId }}">
-                            <span>Vote</span>
-                            <a href="#" class="btn btn-primary btn-sm btn-custom">Comments (0)</a>
+                        <div class="card-header text-justify" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false" aria-controls="{{ blockId }}">
+                            {{vote.legislation.name}}
                         </div>
                         <div class="card-sub-header">
                             <span class="date">{{vote.legislation.dateConsidered | date("m/d/Y") }}</span>
                             <span class="taxes">Taxes: {{ vote.legislation.govAssignedNumber }}</span>
+                            <span class="comments">
+                                <a href="#"><i class="glyphicon glyphicon-comment"></i> 0</a>
+                            </span>
                         </div>
                         <div class="collapse" id="{{ blockId }}">
                             <div class="card-block">
