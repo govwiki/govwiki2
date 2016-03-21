@@ -47,7 +47,7 @@ class LocalizationController extends Controller
         $environment_manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
         $environment = $environment_manager->getEnvironment();
 
-        $locale_names_list = $this->getDoctrine()->getRepository('GovWikiDbBundle:Locale')->getListLocaleNames($environment);
+        $locale_names_list = $this->getDoctrine()->getRepository('GovWikiDbBundle:AbstractLocale')->getListLocaleNames($environment);
 
         return [ 'locale_names_list' => $locale_names_list ];
     }

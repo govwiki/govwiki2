@@ -152,7 +152,7 @@
                     <tr>
 
                         <td>
-                            {{ ('findata.' ~ name | replace(finDataReplacements) | lower)|trans }}
+                            {{ ('findata.captions.' ~ name | replace(finDataReplacements) | lower)|trans }}
                         </td>
                         <td>
                             {%- if not showTotalAndOver or loop.first -%}

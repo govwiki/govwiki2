@@ -35,14 +35,21 @@ class AdminTranslationManager extends AbstractAdminEntityManager
     }
 
     /**
-     * @param string $locale_name Locale short name ('en', 'fr' etc.)
+     * @param string  $locale_name Locale short name ('en', 'fr' etc.)
+     * @param boolean $getGlobal   Flag, if set return global trans info.
      *
      * @return array
      */
-    public function getTransInfoByLocale($locale_name)
+    public function getTransInfoByLocale($locale_name, $getGlobal = false)
     {
         /** @var TranslationRepository $repository */
         $repository = $this->getRepository();
-        return $repository->getTransInfoByLocale($this->environment, $locale_name);
+
+        $environment = $this->environment;
+        if ($getGlobal) {
+            $environment = null;
+        }
+
+        return $repository->getTransInfoByLocale($environment, $locale_name);
     }
 }

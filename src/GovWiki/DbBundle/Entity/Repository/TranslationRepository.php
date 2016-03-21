@@ -26,21 +26,35 @@ class TranslationRepository extends EntityRepository
      *
      * @return array
      */
-    public function getTranslationsBySettings($environment, $locale_name = null, $trans_key_settings = null, $translation = null, $needOneResult = null)
+    public function getTranslationsBySettings($environment, $locale_name, $trans_key_settings = null, $translation = null, $needOneResult = null)
     {
+        $expr = $this->_em->getExpressionBuilder();
+        $added = false;
+
         $qb = $this->createQueryBuilder('tr')
             ->select('tr')
             ->leftJoin('tr.locale', 'Locale')
-            ->leftJoin('Locale.environment', 'Environment')
-            ->where('Environment.slug = :env')
-            ->setParameter('env', $environment)
-        ;
+            ->leftJoin('Locale.environment', 'Environment');
 
-        $expr = $qb->expr();
-
-        if (null !== $locale_name) {
-            $qb->andWhere('Locale.shortName = :locale_name')
-                ->setParameter('locale_name', $locale_name);
+        if (null !== $environment) {
+            $qb
+                ->where($expr->andX(
+                    $expr->eq('Locale.shortName', ':locale_name'),
+                    $expr->eq('Environment.slug', ':env')
+                ))
+                ->setParameters([
+                    'env' => $environment,
+                    'locale_name' => $locale_name,
+                ]);
+        } else {
+            $globalLocaleDQL = $this->_em->createQueryBuilder()
+                ->select('GlobalLocale')
+                ->from('GovWikiDbBundle:GlobalLocale', 'GlobalLocale')
+                ->where($expr->eq('GlobalLocale.shortName', ':locale_name'))
+                ->getDQL();
+            $qb->orWhere($expr->in('Locale', $globalLocaleDQL));
+            $qb->setParameter('locale_name', $locale_name);
+            $added = true;
         }
 
         if (null !== $trans_key_settings) {
@@ -48,10 +62,10 @@ class TranslationRepository extends EntityRepository
             $trans_keys = $trans_key_settings['transKeys'];
 
             if (!empty($trans_keys)) {
-                if ('eq' == $matching) {
+                if ('eq' === $matching) {
                     $qb->andWhere($expr->in('tr.transKey', ':transKeysArray'))
                         ->setParameter('transKeysArray', $trans_keys);
-                } elseif ('like' == $matching) {
+                } elseif ('like' === $matching) {
                     $orX = $expr->orX();
                     foreach ($trans_keys as $trans_key) {
                         $orX->add('tr.transKey LIKE ' . $expr->literal('%' . $trans_key . '%'));
@@ -59,6 +73,14 @@ class TranslationRepository extends EntityRepository
                     $qb->andWhere($orX);
                 }
             }
+        } elseif (false === $added) {
+            $globalLocaleDQL = $this->_em->createQueryBuilder()
+                ->select('GlobalLocale')
+                ->from('GovWikiDbBundle:GlobalLocale', 'GlobalLocale')
+                ->where($expr->eq('GlobalLocale.shortName', ':locale_name'))
+                ->setParameter('locale_name', $locale_name)
+                ->getDQL();
+            $qb->orWhere($expr->in('Locale', $globalLocaleDQL));
         }
 
         if (null !== $translation) {
@@ -84,15 +106,23 @@ class TranslationRepository extends EntityRepository
      */
     public function getTransInfoByLocale($environment, $locale_name)
     {
-        $qb = $this->createQueryBuilder('tr')
-            ->select('tr.transKey, tr.translation, tr.transTextareaType')
-            ->leftJoin('tr.locale', 'Locale')
-            ->leftJoin('Locale.environment', 'Environment')
-            ->where('Locale.shortName = :locale_name')
-            ->andWhere('Environment.slug = :env')
-            ->setParameter('locale_name', $locale_name)
-            ->setParameter('env', $environment)
-        ;
+        if (null === $environment) {
+            $qb = $this->createQueryBuilder('tr')
+                ->select('tr.transKey, tr.translation, tr.transTextareaType')
+                ->leftJoin('tr.locale', 'Locale')
+                ->where('Locale.shortName = :locale_name')
+                ->andWhere('Locale.environment is null')
+                ->setParameter('locale_name', $locale_name);
+        } else {
+            $qb = $this->createQueryBuilder('tr')
+                ->select('tr.transKey, tr.translation, tr.transTextareaType')
+                ->leftJoin('tr.locale', 'Locale')
+                ->leftJoin('Locale.environment', 'Environment')
+                ->where('Locale.shortName = :locale_name')
+                ->andWhere('Environment.slug = :env')
+                ->setParameter('locale_name', $locale_name)
+                ->setParameter('env', $environment);
+        }
 
         return $qb->getQuery()->getResult();
     }

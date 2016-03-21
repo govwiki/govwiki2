@@ -24,11 +24,17 @@ class LocaleRepository extends EntityRepository
      */
     public function getListLocales($environment)
     {
-        $qb = $this->createQueryBuilder('loc')
-            ->select('loc')
-            ->leftJoin('loc.environment', 'Environment')
-            ->where('Environment.slug = :env')
-            ->setParameter('env', $environment);
+        if (null === $environment) {
+            $qb = $this->createQueryBuilder('loc')
+                ->select('loc')
+                ->where('loc.environment IS NULL');
+        } else {
+            $qb = $this->createQueryBuilder('loc')
+                ->select('loc')
+                ->leftJoin('loc.environment', 'Environment')
+                ->where('Environment.slug = :env')
+                ->setParameter('env', $environment);
+        }
 
         return $qb->getQuery()->getResult();
     }
@@ -40,11 +46,17 @@ class LocaleRepository extends EntityRepository
      */
     public function getListLocaleNames($environment)
     {
-        $qb = $this->createQueryBuilder('loc')
-            ->select('loc.shortName')
-            ->leftJoin('loc.environment', 'Environment')
-            ->where('Environment.slug = :env')
-            ->setParameter('env', $environment);
+        if (null === $environment) {
+            $qb = $this->createQueryBuilder('loc')
+                ->select('loc.shortName')
+                ->where('loc.environment IS NULL');
+        } else {
+            $qb = $this->createQueryBuilder('loc')
+                ->select('loc.shortName')
+                ->leftJoin('loc.environment', 'Environment')
+                ->where('Environment.slug = :env')
+                ->setParameter('env', $environment);
+        }
 
         return $qb->getQuery()->getResult();
     }
@@ -57,15 +69,23 @@ class LocaleRepository extends EntityRepository
      */
     public function getOneLocaleByShortName($environment, $shortName)
     {
-        $qb = $this->createQueryBuilder('loc')
-            ->select('loc')
-            ->leftJoin('loc.environment', 'Environment')
-            ->where('loc.shortName = :shortName')
-            ->andWhere('Environment.slug = :env')
-            ->setParameter('shortName', $shortName)
-            ->setParameter('env', $environment)
-            ->setMaxResults(1);
-        ;
+        if (null === $environment) {
+            $qb = $this->createQueryBuilder('loc')
+                ->select('loc')
+                ->where('loc.shortName = :shortName')
+                ->andWhere('loc.environment is null')
+                ->setParameter('shortName', $shortName)
+                ->setMaxResults(1);
+        } else {
+            $qb = $this->createQueryBuilder('loc')
+                ->select('loc')
+                ->leftJoin('loc.environment', 'Environment')
+                ->where('loc.shortName = :shortName')
+                ->andWhere('Environment.slug = :env')
+                ->setParameter('shortName', $shortName)
+                ->setParameter('env', $environment)
+                ->setMaxResults(1);
+        }
 
         return $qb->getQuery()->getOneOrNullResult();
     }
