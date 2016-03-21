@@ -256,6 +256,9 @@ class LocalizationController extends AbstractGovWikiAdminController
     public function exportLocaleAction($locale_name)
     {
         $env_name = $this->adminEnvironmentManager()->getEnvironment();
+        if (null === $env_name) {
+            $env_name = 'global';
+        }
         $filePath = $this->getParameter('kernel.logs_dir') . '/' . $env_name . '.locale.' . $locale_name . '.yml';
 
         $data = $this->getTranslationManager()->getTransInfoByLocale($locale_name);
