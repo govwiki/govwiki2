@@ -162,6 +162,6 @@ class TwilioService
             $em->persist($smsMessage);
         }
 
-        $em->flush();
+        //$em->flush();
     }
 }

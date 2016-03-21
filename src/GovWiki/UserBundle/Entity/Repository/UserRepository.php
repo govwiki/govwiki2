@@ -37,4 +37,17 @@ class UserRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return array
+     */
+    public function getAdminsList()
+    {
+        return $this->createQueryBuilder('User')
+            ->select('User')
+            ->where('User.roles LIKE :role')
+            ->setParameter('role', '%ROLE_ADMIN%')
+            ->getQuery()
+            ->getResult();
+    }
 }

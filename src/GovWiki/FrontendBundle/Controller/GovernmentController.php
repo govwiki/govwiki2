@@ -4,6 +4,7 @@ namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Chat;
+use GovWiki\DbBundle\Entity\EmailMessage;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Message;
 use GovWiki\DbBundle\Form\MessageType;
@@ -14,6 +15,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Doctrine\ORM\EntityManager;
 
 /**
  * MainController
@@ -98,36 +100,62 @@ class GovernmentController extends Controller
 
             if ($government) {
                 $chat = $government->getChat();
-                if ($chat) {
-                    $new_message->setChat($chat);
-                } else {
+
+                if (!$chat) {
                     $chat = new Chat();
                     $subscribers = $government->getSubscribers();
                     foreach ($subscribers as $subscriber) {
                         $chat->addMember($subscriber);
                     }
-                    $new_message->setChat($chat);
                     $chat->setGovernment($government);
                     $government->setChat($chat);
                     $em->persist($chat);
                 }
 
-                if (!$this->isMember($chat, $user->getId())) {
-                    $chat->addMember($user);
+                if ($this->isMember($chat, $user->getId())) {
+                    $new_message->setChat($chat);
+                    $new_message->setAuthor($user);
+                    $em->persist($new_message);
+
+                    // Save Twilio message into base
+                    $phones = $this->getPhones($em, $chat, $government);
+                    $twilioService = $this->get('govwiki.api.twilio');
+                    $twilioService->saveMessagesToBaseForDistribution($phones, $new_message->getText());
+
+                    // Save Email messages into base
+                    $emails = $this->getEmails($em, $chat, $government);
+                    $env_admin_email = $government->getEnvironment()->getAdminEmail();
+                    foreach ($emails as $email) {
+                        $emailMessage = new EmailMessage();
+                        $emailMessage->setFromEmail($env_admin_email);
+                        $emailMessage->setToEmail($email);
+                        $emailMessage->setMessage($new_message->getText());
+                        $em->persist($emailMessage);
+                    }
+
+                    /*$message = \Swift_Message::newInstance(
+                        'New in '. $government->getName(),
+                        $body,
+                        'text/html'
+                    );
+                    $message
+                        ->setSender($this->adminEnvironmentManager()
+                            ->getEntity()->getAdminEmail())
+                        ->setTo($recipients);
+
+                    $failed = [];
+                    $this->get('mailer')->send($message, $failed);*/
+
+                    $em->flush();
+
+                    $this->addFlash('message_saved_success', 'Your message was sent to all subscribers of the government.');
+
+                    return $this->redirectToRoute('government', array(
+                        'environment' => $env_name,
+                        'altTypeSlug' => $altTypeSlug,
+                        'slug' => $slug
+                    ));
                 }
-
-                $new_message->setAuthor($user);
-
-                $em->persist($new_message);
-                $em->flush();
-
-                $this->addFlash('message_saved_success', 'Your message was sent to all subscribers of the government.');
-
-                return $this->redirectToRoute('government', array(
-                    'environment' => $env_name,
-                    'altTypeSlug' => $altTypeSlug,
-                    'slug' => $slug
-                ));
             }
         }
         $data['message_form'] = $message_form->createView();
@@ -135,9 +163,11 @@ class GovernmentController extends Controller
         return $data;
     }
 
-    /**\
+    /**
      * @param Chat $chat Chat entity
      * @param integer $user_id User's ID
+     *
+     * @return boolean
      */
     private function isMember($chat, $user_id)
     {
@@ -148,6 +178,76 @@ class GovernmentController extends Controller
             }
         }
         return false;
+    }
+
+    /**
+     * @param EntityManager $em Entity Manager
+     * @param Chat $chat Chat
+     * @param Government $government Current government
+     *
+     * @return array
+     */
+    private function getPhones($em, $chat, $government)
+    {
+        $phones = array();
+
+        $members = $chat->getMembers();
+        /** @var User $member */
+        foreach ($members as $member) {
+            $member_phone = $member->getPhone();
+            if ($member->getPhoneConfirmed() && !empty($member_phone)) {
+                $phones[] = $member_phone;
+            }
+        }
+
+        $env = $government->getEnvironment();
+        $env_users = $env->getUsers();
+        /** @var User $user */
+        foreach ($env_users as $user) {
+            $user_phone = $user->getPhone();
+            if ($user->hasRole('ROLE_MANAGER') && $user->getPhoneConfirmed() && !empty($user_phone)) {
+                $phones[] = $user_phone;
+            }
+        }
+
+        $admins_list = $em->getRepository('GovWikiUserBundle:User')->getAdminsList();
+        /** @var User $admin */
+        foreach ($admins_list as $admin) {
+            $admin_phone = $admin->getPhone();
+            if ($admin->getPhoneConfirmed() && !empty($admin_phone)) {
+                $phones[] = $admin_phone;
+            }
+        }
+
+        return $phones;
+    }
+
+    private function getEmails($em, $chat, $government)
+    {
+        $emails = array();
+
+        $members = $chat->getMembers();
+        /** @var User $member */
+        foreach ($members as $member) {
+            $emails[] = $member->getEmail();
+        }
+
+        $env = $government->getEnvironment();
+        $env_users = $env->getUsers();
+        /** @var User $user */
+        foreach ($env_users as $user) {
+            if ($user->hasRole('ROLE_MANAGER')) {
+                $emails[] = $user->getEmail();
+            }
+        }
+
+        $admins_list = $em->getRepository('GovWikiUserBundle:User')->getAdminsList();
+        /** @var User $admin */
+        foreach ($admins_list as $admin) {
+            $emails[] = $admin->getEmail();
+        }
+
+        return $emails;
     }
 
     private function clearTranslationsCache()
