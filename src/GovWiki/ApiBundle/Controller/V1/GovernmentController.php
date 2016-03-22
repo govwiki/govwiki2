@@ -62,6 +62,7 @@ class GovernmentController extends AbstractGovWikiApiController
      *               default null.
      *  name_order - sorting order by government name, 'desc' or 'asc',
      *               default null.
+     *  year       - year of desired data.
      *
      * @param Request $request     A Request instance.
      * @param string  $altTypeSlug Alt type slug.
@@ -106,6 +107,7 @@ class GovernmentController extends AbstractGovWikiApiController
                 'page' => $request->query->getInt('page', 0),
                 'order' => $request->query->get('order', null),
                 'name_order' => $request->query->get('name_order', null),
+                'year' => $request->query->getInt('year'),
             ]
         );
 

@@ -5,8 +5,11 @@ var financialStatementGraphs = require('./graph/financial-statement');
 /**
  * Initialization
  */
-function init() {
-    handler_onTabSwitch();
+function init(callback) {
+    return function() {
+        handler_onTabSwitch();
+        callback('loaded');
+    };
 }
 
 /**
@@ -40,4 +43,21 @@ function handler_onTabSwitch() {
 
 }
 
-google.load('visualization', '1.0', {'packages': ['treemap', 'corechart'], 'callback': init});
+function forceInit() {
+    employeeCompensationGraphs.initAll();
+    financialHealthGraphs.initAll();
+    financialStatementGraphs.initAll();
+}
+
+function initGoogleViz(callback) {
+
+    google.load('visualization', '1.0', {
+        'packages': ['treemap', 'corechart'],
+        'callback': init(callback)
+    });
+}
+
+module.exports = {
+    init: initGoogleViz,
+    forceInit: forceInit
+};

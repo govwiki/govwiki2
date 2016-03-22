@@ -87,6 +87,27 @@ i.icon {
    background-color: $main-background;
 }
 
+.mainmenu {
+   margin-top: 0;
+   margin-bottom: 3px;
+
+   li {
+      margin: 0 2px;
+   }
+
+   select,
+   select:focus {
+      outline: none;
+      border: none;
+      box-shadow: none;
+   }
+}
+
+.form-control__inline {
+   display: inline-block;
+   width: auto;;
+}
+
 /*
    Set z-index for date picker.
 */

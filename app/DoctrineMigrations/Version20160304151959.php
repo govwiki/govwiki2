@@ -36,7 +36,7 @@ class Version20160304151959 extends AbstractMigration implements ContainerAwareI
      */
     public function up(Schema $schema)
     {
-        $this->addSql('DROP TABLE adverting');
+        $this->addSql('DROP TABLE IF EXISTS adverting');
         $this->addSql('CREATE TABLE advertising (id INT AUTO_INCREMENT NOT NULL, environment_id INT DEFAULT NULL, adverting_type VARCHAR(255) NOT NULL, adverting_enable TINYINT(1) NOT NULL, adverting_code LONGTEXT NOT NULL, INDEX IDX_50219E78903E3A94 (environment_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
         $this->addSql('ALTER TABLE advertising ADD CONSTRAINT FK_50219E78903E3A94 FOREIGN KEY (environment_id) REFERENCES environments (id)');
     }
@@ -56,13 +56,30 @@ class Version20160304151959 extends AbstractMigration implements ContainerAwareI
     public function postUp(Schema $schema)
     {
         $em = $this->container->get('doctrine.orm.entity_manager');
+        $environments = $em->getConnection()->fetchAll('
+            SELECT id, name
+            FROM environments
+        ');
 
-        $environments = $em->getRepository("GovWikiDbBundle:Environment")->findAll();
+        $environments = array_map(
+            function (array $row) use ($em) {
+                $ref = $em->getReference(
+                    'GovWikiDbBundle:Environment',
+                    $row['id']
+                );
+
+                return [
+                    'ref' => $ref,
+                    'name' => $row['name'],
+                ];
+            },
+            $environments
+        );
 
         foreach ($environments as $environment) {
             $adverting = new Advertising();
-            $adverting->setEnvironment($environment);
-            $adverting->setAdvertingCode('-- Google code '.$environment->getName().' --');
+            $adverting->setEnvironment($environment['ref']);
+            $adverting->setAdvertingCode('-- Google code '.$environment['name'].' --');
             $adverting->setAdvertingType('google_adsense');
             $em->persist($adverting);
         }

@@ -35,3 +35,7 @@ map:
 comparison:
     resource: "@GovWikiApiBundle/Controller/V1/ComparisonController.php"
     type:     govwiki
+
+twilio_sms:
+    resource: "@GovWikiApiBundle/Controller/V1/TwilioSmsController.php"
+    type:     annotation

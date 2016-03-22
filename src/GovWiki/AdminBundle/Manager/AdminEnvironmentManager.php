@@ -58,6 +58,11 @@ class AdminEnvironmentManager
     private $api;
 
     /**
+     * @var Environment
+     */
+    private $entity;
+
+    /**
      * @param EntityManagerInterface $em           A EntityManagerInterface
      *                                             instance.
      * @param TokenStorageInterface  $storage      A TokenStorageInterface
@@ -180,23 +185,27 @@ class AdminEnvironmentManager
      */
     public function getEntity()
     {
-        $user = $this->getUser();
+        if (null === $this->entity) {
+            $user = $this->getUser();
 
-        if ($user->hasRole('ROLE_ADMIN')) {
-            /*
-             * Admin allow to manage all environment.
-             */
-            return $this->em->getRepository('GovWikiDbBundle:Environment')
-                ->getByName($this->environment);
-        } elseif ($user->hasRole('ROLE_MANAGER')) {
-            /*
-             * Manager allow manage only some part of environments.
-             */
-            return $this->em->getRepository('GovWikiDbBundle:Environment')
-                ->getByName($this->environment, $user->getId());
+            if ($user->hasRole('ROLE_ADMIN')) {
+                /*
+                 * Admin allow to manage all environment.
+                 */
+                $this->entity = $this->em->getRepository('GovWikiDbBundle:Environment')
+                    ->getByName($this->environment);
+            } elseif ($user->hasRole('ROLE_MANAGER')) {
+                /*
+                 * Manager allow manage only some of environments.
+                 */
+                $this->entity = $this->em->getRepository('GovWikiDbBundle:Environment')
+                    ->getByName($this->environment, $user->getId());
+            } else {
+                throw new AccessDeniedException();
+            }
         }
 
-        throw new AccessDeniedException();
+        return $this->entity;
     }
 
     /**
@@ -539,7 +548,9 @@ class AdminEnvironmentManager
     public function configure(AdminEntityManagerAwareInterface $entityManager)
     {
         $entityManager->setEnvironment($this->environment);
-        $entityManager->setEnvironmentId($this->getReference()->getId());
+        if ($this->getReference()) {
+            $entityManager->setEnvironmentId($this->getReference()->getId());
+        }
     }
 
     /**
@@ -775,16 +786,20 @@ class AdminEnvironmentManager
     }
 
     /**
-     * @param string $field Field value
+     * @param string $field Field name.
      *
      * @return array
      */
     public function getGovernmentsFiledValues($field)
     {
         return $this->em->getConnection()->fetchAll("
-            SELECT g.slug, g.alt_type_slug, g.name, eg.${field} AS data
+            SELECT
+                g.slug, g.alt_type_slug, g.name, GROUP_CONCAT(eg.year) AS years,
+                 GROUP_CONCAT(eg.{$field}) AS data
             FROM {$this->environment} eg
             JOIN governments g ON g.id = eg.government_id
+            GROUP BY g.alt_type_slug, g.slug
+            ORDER BY g.alt_type_slug, g.slug
         ");
     }
 

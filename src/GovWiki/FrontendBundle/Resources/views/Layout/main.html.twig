@@ -26,6 +26,39 @@
             {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
         </header>
 
+        {# Menubar #}
+        <menu class="container mainmenu">
+            <div class="row">
+                <div class="col-md-6">
+                    {% if years is defined and years|length > 1 %}
+                        <label for="year-selector" class="control-label">{{ 'general.year_selector_label'|trans }}: </label>
+                        <select id="year-selector" class="form-control form-control__inline">
+                            {% for year in years %}
+                                <option value="{{ year }}" {%-
+                                    if (government is defined and government.currentYear is defined and government.currentYear == year)
+                                -%}
+                                        selected
+                                    {%- endif -%}>
+                                    {{- year -}}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    {% endif %}
+                </div>
+                {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader')) %}
+
+                {% if _locales is defined %}
+                    <div class="col-md-6">
+                        <div class="pull-right">
+                            <ul class="nav nav-pills">
+                                {{- _locales|raw -}}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </menu>
+
         {# Main content #}
         <main class="container">
             {{ advertising.getAdvertising(environment, 'google_adsense')|raw }}

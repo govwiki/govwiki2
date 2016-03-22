@@ -70,14 +70,17 @@ class GovernmentController extends Controller
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
         $this->clearTranslationsCache();
-
+        $manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
         $user = $this->getUser();
 
-        $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+        $years = $manager->getAvailableYears();
+        $currentYear = $request->query->getInt('year', $years[0]);
+
+        $data = $manager
             ->getGovernment(
                 $altTypeSlug,
                 $slug,
-                $request->query->get('year', null)
+                $currentYear
             );
 
         $data['isSubscriber'] = false;
@@ -86,6 +89,8 @@ class GovernmentController extends Controller
                 ->getRepository('GovWikiDbBundle:Government')
                 ->isSubscriber($data['government']['id'], $user->getId());
         }
+
+        $data['years'] = $years;
 
         $em = $this->getDoctrine()->getManager();
         $new_message = new Message();
@@ -118,13 +123,13 @@ class GovernmentController extends Controller
                     $new_message->setAuthor($user);
                     $em->persist($new_message);
 
-                    // Save Twilio message into base
+                    // Save Twilio sms messages into base
                     $phones = $this->getPhones($em, $chat, $government, $user);
                     foreach ($phones as $phone) {
                         $twilioSmsMessage = new TwilioSmsMessages();
                         $twilioSmsMessage->setFromNumber($this->getParameter('twilio.from'));
                         $twilioSmsMessage->setToNumber($phone);
-                        $twilioSmsMessage->setMessage($new_message->getText());
+                        $twilioSmsMessage->setMessage($new_message->getText() . '\nFrom ' . $user->getEmail());
                         $em->persist($twilioSmsMessage);
                     }
 
@@ -183,6 +188,7 @@ class GovernmentController extends Controller
      * @param EntityManager $em Entity Manager
      * @param Chat $chat Chat
      * @param Government $government Current government
+     * @param User $author Sms author
      *
      * @return array
      */
@@ -194,7 +200,7 @@ class GovernmentController extends Controller
         /** @var User $member */
         foreach ($members as $member) {
             $member_phone = $member->getPhone();
-            if ($member->getEmail() != $author->getEmail() && $member->getPhoneConfirmed() && !empty($member_phone)) {
+            if ($member_phone != $author->getPhone() && !empty($member_phone)) {
                 $phones[] = $member_phone;
             }
         }
@@ -204,7 +210,7 @@ class GovernmentController extends Controller
         /** @var User $user */
         foreach ($env_users as $user) {
             $user_phone = $user->getPhone();
-            if ($user->getEmail() != $author->getEmail() && $user->hasRole('ROLE_MANAGER') && $user->getPhoneConfirmed() && !empty($user_phone)) {
+            if ($user_phone != $author->getPhone() && $user->hasRole('ROLE_MANAGER') && !empty($user_phone)) {
                 $phones[] = $user_phone;
             }
         }
@@ -213,7 +219,7 @@ class GovernmentController extends Controller
         /** @var User $admin */
         foreach ($admins_list as $admin) {
             $admin_phone = $admin->getPhone();
-            if ($admin->getEmail() != $author->getEmail() && $admin->getPhoneConfirmed() && !empty($admin_phone)) {
+            if ($admin_phone != $author->getPhone() && !empty($admin_phone)) {
                 $phones[] = $admin_phone;
             }
         }
@@ -221,6 +227,14 @@ class GovernmentController extends Controller
         return array_unique($phones);
     }
 
+    /**
+     * @param EntityManager $em Entity Manager
+     * @param Chat $chat Chat
+     * @param Government $government Current government
+     * @param User $author Sms author
+     *
+     * @return array
+     */
     private function getEmails($em, $chat, $government, $author)
     {
         $emails = array();

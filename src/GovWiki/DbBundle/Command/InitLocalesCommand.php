@@ -107,7 +107,8 @@ class InitLocalesCommand extends ContainerAwareCommand
                     'header.links.return_to_map' => 'Return to Map',
                     'gov.links.latest_audit' => 'Latest Audit',
                     'gov.financial_statements' => 'Financial Statements',
-                    'preposition.of' => 'of'
+                    'preposition.of' => 'of',
+                    'general.year_selector_label' => 'Year',
                 );
                 foreach ($general_trans_list as $transKey => $transText) {
                     $this->newTranslation($locale, $transKey, $transText);

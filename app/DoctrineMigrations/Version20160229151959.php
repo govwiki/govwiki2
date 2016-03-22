@@ -6,7 +6,6 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Migrations\AbstractMigration;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use GovWiki\DbBundle\Entity\Adverting;
 
 /**
  * Class Version20160229151959
@@ -54,13 +53,13 @@ class Version20160229151959 extends AbstractMigration implements ContainerAwareI
      */
     public function postUp(Schema $schema)
     {
-        $em = $this->container->get('doctrine.orm.entity_manager');
-
-        $adverting = new Adverting();
-        $adverting->setAdvertingCode('-- Google code --');
-        $adverting->setAdvertingType('google_adsense');
-        $em->persist($adverting);
-
-        $em->flush();
+//        $em = $this->container->get('doctrine.orm.entity_manager');
+//
+//        $adverting = new Advertising();
+//        $adverting->setAdvertingCode('-- Google code --');
+//        $adverting->setAdvertingType('google_adsense');
+//        $em->persist($adverting);
+//
+//        $em->flush();
     }
 }

@@ -156,6 +156,13 @@ class Environment
     private $adminEmail;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="array")
+     */
+    private $legislationDisplayTime;
+
+    /**
      *
      */
     public function __construct()
@@ -549,6 +556,29 @@ class Environment
     public function setDefaultLocale(Locale $defaultLocale)
     {
         $this->defaultLocale = $defaultLocale;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLegislationDisplayTime()
+    {
+        return $this->legislationDisplayTime;
+    }
+
+    /**
+     * @param array $legislationDisplayTime Delay between apply and display of
+     *                                      legislation:
+     *                                       - hours;
+     *                                       - minutes.
+     *
+     * @return Environment
+     */
+    public function setLegislationDisplayTime(array $legislationDisplayTime)
+    {
+        $this->legislationDisplayTime = $legislationDisplayTime;
 
         return $this;
     }

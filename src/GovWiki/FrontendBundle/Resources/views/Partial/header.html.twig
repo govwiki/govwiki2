@@ -28,8 +28,6 @@
         {% else %}
                 <img src="{{ environment_content.get('header_logo')|raw }}" class="logo">
         {% endif %}
-
-        {{- render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader')) -}}
     </div>
 
     {# Menu button (hamburger) for mobile devices #}
@@ -68,7 +66,7 @@
                 {% else %}
                     {# Login button#}
                     <li>
-                        <a href="#" class="link" data-toggle="modal" data-target="#modal-window">
+                        <a href="#" onclick="$('#modal-window').modal('show')" class="link">
                             Login / Sign Up
                         </a>
                     </li>

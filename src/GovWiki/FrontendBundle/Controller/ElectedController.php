@@ -82,12 +82,19 @@ class ElectedController extends Controller
             'electedOfficialId' => $data['electedOfficial']['id']
         ));
 
-        return array_merge($data, [
+        $data = array_merge($data, [
             'altTypeSlug' => $altTypeSlug,
             'slug' => $slug,
             'electedOfficialJSON' => $electedOfficialJSON,
             'electedOfficialCommentForm' => $electedOfficialCommentForm->createView()
         ]);
+
+        $template = $request->query->get('template', 'index');
+
+        return $this->render(
+            "GovWikiFrontendBundle:Elected:{$template}.html.twig",
+            $data
+        );
     }
 
     private function clearTranslationsCache()

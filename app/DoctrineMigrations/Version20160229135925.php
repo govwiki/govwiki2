@@ -18,7 +18,10 @@ class Version20160229135925 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('CREATE TABLE texas_temp (id int(11), name VARCHAR(255), alt_type VARCHAR(255))');
+        $this->addSql('delete from texas where government_id not in (select * from (select min(g.id) from governments g group by g.slug) x)');
+        $this->addSql('delete from governments where environment_id = 10 and id not in (select * from (select min(g.id) from governments g group by g.slug) x)');
+
+        $this->addSql('CREATE TABLE texas_temp (id int(11), name VARCHAR(255), alt_type VARCHAR(255)) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
         $this->addSql('INSERT INTO texas_temp VALUES (37255, \'Cedar Hill\', \'City\')');
         $this->addSql('INSERT INTO texas_temp VALUES (37257, \'Cedar Park\', \'City\')');
         $this->addSql('INSERT INTO texas_temp VALUES (37301, \'Cibolo\', \'City\')');

@@ -4,13 +4,15 @@
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-    macro.breadcrumbElement(
-    admin_environment|capitalize ~' environment',
-    'govwiki_admin_main_show',
-    { 'environment': admin_environment }
-    )
-    }}
+    {% if admin_environment is not null %}
+        {{
+        macro.breadcrumbElement(
+        admin_environment|capitalize ~' environment',
+        'govwiki_admin_main_show',
+        { 'environment': admin_environment }
+        )
+        }}
+    {% endif %}
     {{ macro.breadcrumbElement('Localizations', 'govwiki_admin_localization_index') }}
     {{ macro.breadcrumbElement('Create localization') }}
 {% endblock breadcrumb %}

@@ -200,13 +200,6 @@ class Government
     private $secondaryLogo;
 
     /**
-     * Used for filtering fin data collection by year.
-     *
-     * @var integer
-     */
-    private $finDataYear;
-
-    /**
      * @var Collection
      *
      * @ORM\ManyToMany(

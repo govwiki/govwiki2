@@ -270,7 +270,7 @@ function financialStatementsTree_expenditures() {
  * #Financial_Statements (.chart-controls .btn)
  */
 function handler_switchChart() {
-
+console.log('im ther');
     hideChartGroup('pie-charts', false);
     hideChartGroup('compare-charts', true);
     hideChartGroup('tree-charts', true);
@@ -374,5 +374,6 @@ function handler_switchChart() {
 
 module.exports = {
     init: init,
-    initAll: init
+    initAll: init,
+    handler_switchChart: handler_switchChart
 };

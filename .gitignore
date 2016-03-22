@@ -16,6 +16,7 @@
 /web/img/*
 
 !/web/img/.gitkeep
+!/web/img/locales/
 !/web/img/upload/.gitkeep
 !/web/img/upload/shape/.gitkeep
 
@@ -24,4 +25,6 @@
 
 /web/legacy/node_modules/
 /web/bundles/
+
+*~
 

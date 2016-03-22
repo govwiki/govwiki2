@@ -5,6 +5,7 @@
     <section class="governmentController">
 
         {% if government is defined %}
+
             {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
 
             {# Government name & wikipedia links #}
@@ -57,11 +58,7 @@
 
                     {# Tabs control #}
                     <nav>
-                        {# todo styles for puerto-rico hardcoded #}
-                        <ul class="nav nav-pills {% if environment == 'puerto_rico' -%}
-                            nav-pills__puerto
-                        {%- endif -%}">
-
+                        <ul class="nav nav-pills tab-titles">
                             {% if (formats is defined) and (formats is not empty) %}
                                 {% for tabName, categories in formats %}
                                     {% if categories[""] is defined %}
@@ -131,12 +128,6 @@
                             {# Financial Statements (if exists) #}
                             {% if showFinStmt %}
                                 <div class="tab-pane" id="Financial_Statements">
-                                    <form method="get">
-                                        <h4>
-                                            Financial Statements
-                                            {% include '@GovWikiFrontend/Partial/Government/year_select.html.twig' %}
-                                        </h4>
-                                    </form>
 
                                     {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
                                         'financialStatements': government.financialStatements
