@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * EmailMessage
  *
  * @ORM\Table(name="email_messages")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\EmailMessageRepository")
  */
 class EmailMessage
 {
@@ -34,6 +34,13 @@ class EmailMessage
      * @ORM\Column(name="toEmail", type="string", length=255)
      */
     private $toEmail;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="subject", type="string", length=255)
+     */
+    private $subject;
 
     /**
      * @var string
@@ -150,5 +157,28 @@ class EmailMessage
     public function getError()
     {
         return $this->error;
+    }
+
+    /**
+     * Set subject
+     *
+     * @param string $subject
+     * @return EmailMessage
+     */
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+
+        return $this;
+    }
+
+    /**
+     * Get subject
+     *
+     * @return string 
+     */
+    public function getSubject()
+    {
+        return $this->subject;
     }
 }

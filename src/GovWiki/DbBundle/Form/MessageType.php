@@ -18,9 +18,7 @@ class MessageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('text', 'ckeditor', array(
-                'config_name' => 'message_config'
-            ))
+            ->add('text', 'textarea')
             ->add('submit', 'submit')
         ;
     }

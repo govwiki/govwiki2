@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Twilio sms messages
  *
  * @ORM\Table(name="twilio_sms_messages")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\TwilioSmsMessagesRepository")
  */
 class TwilioSmsMessages
 {

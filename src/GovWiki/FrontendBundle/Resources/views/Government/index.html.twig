@@ -173,7 +173,7 @@
                 </a>
             </div>
 
-            <div class="message_form_container">
+            <div class="message_form_container" id="chat_message_container">
                 {{ form_start(message_form) }}
                 {{ form_row(message_form.text, {'label': 'Message'}) }}
                 {{ form_row(message_form.submit, {'attr': {'class': 'btn btn-primary'}}) }}

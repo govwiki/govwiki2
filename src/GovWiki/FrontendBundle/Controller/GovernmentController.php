@@ -7,6 +7,7 @@ use GovWiki\DbBundle\Entity\Chat;
 use GovWiki\DbBundle\Entity\EmailMessage;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Message;
+use GovWiki\DbBundle\Entity\TwilioSmsMessages;
 use GovWiki\DbBundle\Form\MessageType;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -118,33 +119,31 @@ class GovernmentController extends Controller
                     $em->persist($new_message);
 
                     // Save Twilio message into base
-                    $phones = $this->getPhones($em, $chat, $government);
-                    $twilioService = $this->get('govwiki.api.twilio');
-                    $twilioService->saveMessagesToBaseForDistribution($phones, $new_message->getText());
+                    $phones = $this->getPhones($em, $chat, $government, $user);
+                    foreach ($phones as $phone) {
+                        $twilioSmsMessage = new TwilioSmsMessages();
+                        $twilioSmsMessage->setFromNumber($this->getParameter('twilio.from'));
+                        $twilioSmsMessage->setToNumber($phone);
+                        $twilioSmsMessage->setMessage($new_message->getText());
+                        $em->persist($twilioSmsMessage);
+                    }
 
                     // Save Email messages into base
-                    $emails = $this->getEmails($em, $chat, $government);
+                    $emails = $this->getEmails($em, $chat, $government, $user);
                     $env_admin_email = $government->getEnvironment()->getAdminEmail();
                     foreach ($emails as $email) {
                         $emailMessage = new EmailMessage();
                         $emailMessage->setFromEmail($env_admin_email);
                         $emailMessage->setToEmail($email);
-                        $emailMessage->setMessage($new_message->getText());
+                        $emailMessage->setSubject('New message in ' . $government->getName());
+                        $emailMessage->setMessage($this->renderView('GovWikiFrontendBundle:Government:chatMessageEmail.html.twig', array(
+                            'recipient' => $email,
+                            'author' => $user->getEmail(),
+                            'government_name' => $government->getName(),
+                            'message_text' => $new_message->getText()
+                        )));
                         $em->persist($emailMessage);
                     }
-
-                    /*$message = \Swift_Message::newInstance(
-                        'New in '. $government->getName(),
-                        $body,
-                        'text/html'
-                    );
-                    $message
-                        ->setSender($this->adminEnvironmentManager()
-                            ->getEntity()->getAdminEmail())
-                        ->setTo($recipients);
-
-                    $failed = [];
-                    $this->get('mailer')->send($message, $failed);*/
 
                     $em->flush();
 
@@ -187,7 +186,7 @@ class GovernmentController extends Controller
      *
      * @return array
      */
-    private function getPhones($em, $chat, $government)
+    private function getPhones($em, $chat, $government, $author)
     {
         $phones = array();
 
@@ -195,7 +194,7 @@ class GovernmentController extends Controller
         /** @var User $member */
         foreach ($members as $member) {
             $member_phone = $member->getPhone();
-            if ($member->getPhoneConfirmed() && !empty($member_phone)) {
+            if ($member->getEmail() != $author->getEmail() && $member->getPhoneConfirmed() && !empty($member_phone)) {
                 $phones[] = $member_phone;
             }
         }
@@ -205,7 +204,7 @@ class GovernmentController extends Controller
         /** @var User $user */
         foreach ($env_users as $user) {
             $user_phone = $user->getPhone();
-            if ($user->hasRole('ROLE_MANAGER') && $user->getPhoneConfirmed() && !empty($user_phone)) {
+            if ($user->getEmail() != $author->getEmail() && $user->hasRole('ROLE_MANAGER') && $user->getPhoneConfirmed() && !empty($user_phone)) {
                 $phones[] = $user_phone;
             }
         }
@@ -214,29 +213,31 @@ class GovernmentController extends Controller
         /** @var User $admin */
         foreach ($admins_list as $admin) {
             $admin_phone = $admin->getPhone();
-            if ($admin->getPhoneConfirmed() && !empty($admin_phone)) {
+            if ($admin->getEmail() != $author->getEmail() && $admin->getPhoneConfirmed() && !empty($admin_phone)) {
                 $phones[] = $admin_phone;
             }
         }
 
-        return $phones;
+        return array_unique($phones);
     }
 
-    private function getEmails($em, $chat, $government)
+    private function getEmails($em, $chat, $government, $author)
     {
         $emails = array();
 
         $members = $chat->getMembers();
         /** @var User $member */
         foreach ($members as $member) {
-            $emails[] = $member->getEmail();
+            if ($member->getEmail() != $author->getEmail()) {
+                $emails[] = $member->getEmail();
+            }
         }
 
         $env = $government->getEnvironment();
         $env_users = $env->getUsers();
         /** @var User $user */
         foreach ($env_users as $user) {
-            if ($user->hasRole('ROLE_MANAGER')) {
+            if ($user->hasRole('ROLE_MANAGER') && $user->getEmail() != $author->getEmail()) {
                 $emails[] = $user->getEmail();
             }
         }
@@ -244,10 +245,12 @@ class GovernmentController extends Controller
         $admins_list = $em->getRepository('GovWikiUserBundle:User')->getAdminsList();
         /** @var User $admin */
         foreach ($admins_list as $admin) {
-            $emails[] = $admin->getEmail();
+            if ($admin->getEmail() != $author->getEmail()) {
+                $emails[] = $admin->getEmail();
+            }
         }
 
-        return $emails;
+        return array_unique($emails);
     }
 
     private function clearTranslationsCache()

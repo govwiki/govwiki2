@@ -136,3 +136,11 @@ ivory_ck_editor:
             toolbar: [ [ 'Cut','Copy','Paste','Undo','Redo' ], [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ], [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ], [ 'Styles','Format','Font','FontSize' ], [ 'TextColor','BGColor' ] ]
         message_config:
             toolbar: [ [ 'Cut','Copy','Paste','Undo','Redo' ], [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ], [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ], [ 'Styles','Format','Font','FontSize' ], [ 'TextColor','BGColor' ] ]
+
+vresh_twilio:
+    #(Required) Your Account SID from www.twilio.com/user/account
+    sid: "%twilio.sid%"
+    #(Required) Your Auth Token from www.twilio.com/user/account
+    authToken: "%twilio.token%"
+    #(Optional, default: 1) Number of times to retry failed requests
+    retryAttempts: 3
