@@ -19,6 +19,6 @@ parameters:
 
     determinator.name: host
 
-    twilio.sid: xxx
-    twilio.token: xxx
-    twilio.from: "+123"
+    twilio.sid: AC5b2f497a5a42370ed1a75306fd4e5393
+    twilio.token: 3fdce2f11d8b4826a5f6b423d5bb05e4
+    twilio.from: '+17874939277'
