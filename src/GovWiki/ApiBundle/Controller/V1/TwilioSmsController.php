@@ -72,7 +72,8 @@ class TwilioSmsController extends Controller
                 $twilioSmsMessage = new TwilioSmsMessages();
                 $twilioSmsMessage->setFromNumber($this->getParameter('twilio.from'));
                 $twilioSmsMessage->setToNumber($phone);
-                $twilioSmsMessage->setMessage($new_message->getText() . '\nFrom ' . $sms_sender->getEmail());
+                $twilioSmsMessage->setMessage($new_message->getText() . '
+From ' . $sms_sender->getEmail());
                 $em->persist($twilioSmsMessage);
             }
 

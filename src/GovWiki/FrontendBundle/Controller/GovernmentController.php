@@ -191,7 +191,8 @@ class GovernmentController extends Controller
                         $twilioSmsMessage = new TwilioSmsMessages();
                         $twilioSmsMessage->setFromNumber($this->getParameter('twilio.from'));
                         $twilioSmsMessage->setToNumber($phone);
-                        $twilioSmsMessage->setMessage($new_message->getText() . '\nFrom ' . $user->getEmail());
+                        $twilioSmsMessage->setMessage($new_message->getText() . '
+From ' . $user->getEmail());
                         $em->persist($twilioSmsMessage);
                     }
 
