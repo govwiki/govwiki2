@@ -40,11 +40,14 @@ class TwilioSmsController extends Controller
         $sms_sender = $em->getRepository('GovWikiUserBundle:User')->findOneBy(array(
             'phone' => $fromNumber
         ));
+        if (!$sms_sender) {
+            return new Response(null, 404);
+        }
 
         $government = null;
         $governments = $sms_sender->getSubscribers();
         if (!$governments) {
-            return new Response();
+            return new Response(null, 404);
         } else {
             $government = $governments[0];
         }
@@ -56,7 +59,7 @@ class TwilioSmsController extends Controller
             $chat = $government->getChat();
         }
         if (!$chat) {
-            return new Response();
+            return new Response(null, 404);
         }
 
         if ($this->isMember($chat, $sms_sender->getId())) {
@@ -72,7 +75,8 @@ class TwilioSmsController extends Controller
                 $twilioSmsMessage = new TwilioSmsMessages();
                 $twilioSmsMessage->setFromNumber($this->getParameter('twilio.from'));
                 $twilioSmsMessage->setToNumber($phone);
-                $twilioSmsMessage->setMessage($new_message->getText() . '
+                $twilioSmsMessage->setMessage('
+' . $new_message->getText() . '
 From ' . $sms_sender->getEmail());
                 $em->persist($twilioSmsMessage);
             }
