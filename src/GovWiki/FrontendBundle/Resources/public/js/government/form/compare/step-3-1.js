@@ -44,7 +44,6 @@ Step.prototype.lock = function() {
  * @param blockId
  */
 Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
-
     var chart, options, rows, vis_data;
 
     vis_data = new google.visualization.DataTable();
@@ -58,12 +57,12 @@ Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
         if (item.amount < 0) {
             item.amount = -parseInt(item.amount)
         }
-        rows.push([item.caption, parseInt(item.amount)]);
+        rows.push([item.translatedCaption, parseInt(item.amount)]);
     });
 
     vis_data.addRows(rows);
     options = {
-        'title': 'Total ' + comparedData.category + ': ' + government.name,
+        'title': 'Total ' + comparedData.translatedCategory + ': ' + government.name,
         'titleTextStyle': {
             'fontSize': 16
         },
@@ -135,7 +134,7 @@ Step.prototype.drawTable = function(container, comparedData) {
     var tbody = '<tbody>';
 
     comparedData[governmentNumber].data.forEach(function(row){
-        tbody += '<tr><td>' + row.caption + '</td><td>' + numeral(row.amount).format('$0,0') + '</td></tr>';
+        tbody += '<tr><td>' + row.translatedCaption + '</td><td>' + numeral(row.amount).format('$0,0') + '</td></tr>';
     });
 
     tbody += '</tbody>';

@@ -863,14 +863,18 @@ $(function(){
             $('#menu').after($legend);
 
             var activeConditionsInRangeLegend = [];
+            var completeConditions = [];
+            window.activeConditionsInRangeLegend = activeConditionsInRangeLegend;
 
             $legend.on('click', 'li', function() {
 
+                completeConditions = [];
                 var $el = $(this);
                 var $ul = $legend.closest('ul');
                 var $liTags = $ul.find('li');
                 var conditionData = JSON.parse($(this).attr('data-condition'));
 
+                // Toggle range button
                 if ($el.hasClass('active')) {
                     $el.removeClass('active');
 
@@ -888,10 +892,29 @@ $(function(){
                     activeConditionsInRangeLegend.push(conditionData);
                 }
 
+                // Mark others with gray color
+                if (activeConditionsInRangeLegend.length > 0) {
+                    var diffConditions = defaultConditions.filter(function(condition) {
+                        var index = findCondition(activeConditionsInRangeLegend, condition);
+                        return index === -1;
+                    });
+                    // Copy activeConditions into completeConditions array
+                    activeConditionsInRangeLegend.forEach(function(activecondition) {
+                        completeConditions.push(activecondition);
+                    });
+                    // Copy diffConditions into completeConditions array
+                    diffConditions.forEach(function(diffCondition) {
+                        diffCondition.color = '#dddddd';
+                        completeConditions.push(diffCondition);
+                    });
+                } else {
+                    completeConditions = defaultConditions;
+                }
+
                 $map.hide();
                 $loader.show();
                 removeAllSubLayers();
-                reInit({conditions: activeConditionsInRangeLegend});
+                reInit({conditions: completeConditions});
 
                 $liTags.not($el).removeClass('active');
 

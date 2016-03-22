@@ -26,14 +26,14 @@ function financialStatements_revenue() {
     var revenues = data.financialStatements.Revenues;
     for(var key in revenues){
         if(revenues.hasOwnProperty(key) && (revenues[key].caption != 'Total Revenues')) {
-            r = [revenues[key].caption, parseInt(revenues[key].totalfunds)];
+            r = [revenues[key].translatedCaption, parseInt(revenues[key].totalfunds)];
             rows.push(r);
         }
     }
 
     vis_data.addRows(rows);
     options = {
-        'title': 'Total Revenues',
+        'title': data.translations.total_revenue,
         'titleTextStyle': {
             'fontSize': 16
         },
@@ -71,14 +71,14 @@ function financialStatements_expenditures() {
     var expenditures = data.financialStatements.Expenditures;
     for(var key in expenditures){
         if(expenditures.hasOwnProperty(key) && (expenditures[key].caption != 'Total Expenditures')) {
-            r = [expenditures[key].caption, parseInt(expenditures[key].totalfunds)];
+            r = [expenditures[key].translatedCaption, parseInt(expenditures[key].totalfunds)];
             rows.push(r);
         }
     }
 
     vis_data.addRows(rows);
     options = {
-        'title': 'Total Expenditures',
+        'title': data.translations.total_expenditure,
         'titleTextStyle': {
             'fontSize': 16
         },
@@ -113,7 +113,7 @@ function financialStatementsTree_revenues() {
 
     RevenuesDataTable = [
         ['Location', 'Parent', 'FinData', 'Heat'],
-        ['Total Revenues', null, 0, 0]
+        [data.translations.total_revenue, null, 0, 0]
     ];
 
     var RevenuesData = data.financialStatements.Revenues;
@@ -129,7 +129,7 @@ function financialStatementsTree_revenues() {
             }
 
             RevenuesDataTable.push(
-                [subCategory.caption, 'Total Revenues', parseInt(subCatValue), parseInt(subCatValue)]
+                [subCategory.translatedCaption, data.translations.total_revenue, parseInt(subCatValue), parseInt(subCatValue)]
             );
 
             total_amount += parseInt(subCatValue);
@@ -196,7 +196,7 @@ function financialStatementsTree_expenditures() {
 
     ExpendituresDataTable = [
         ['Location', 'Parent', 'FinData', 'Heat'],
-        ['Total Expenditures', null, 0, 0]
+        [data.translations.total_expenditure, null, 0, 0]
     ];
 
     var ExpendituresData = data.financialStatements.Expenditures;
@@ -212,7 +212,7 @@ function financialStatementsTree_expenditures() {
             }
 
             ExpendituresDataTable.push(
-                [subCategory.caption, 'Total Expenditures', parseInt(subCatValue), parseInt(subCatValue)]
+                [subCategory.translatedCaption, data.translations.total_expenditure, parseInt(subCatValue), parseInt(subCatValue)]
             );
 
             total_amount += parseInt(subCatValue);

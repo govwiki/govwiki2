@@ -245,7 +245,6 @@ class GovernmentRepository extends EntityRepository
             ->getAvailableYears($government['id']);
 
         $government['finData'] = [];
-        $government['financialStatements'] = [];
         if ((count($finStmtYears) > 0)) {
             $finData = $this
                 ->_em->getRepository('GovWikiDbBundle:FinData')
@@ -263,6 +262,7 @@ class GovernmentRepository extends EntityRepository
                     )
                 )
                 ->orderBy($expr->asc('CaptionCategory.id'))
+                ->addOrderBy($expr->asc('FinData.caption'))
                 ->getQuery()
                 ->getArrayResult();
 
@@ -299,31 +299,6 @@ class GovernmentRepository extends EntityRepository
             }
 
             $government['finData'] = $financialStatements;
-            $government['finData']['year'] = $year;
-            $government['finData']['fin_stmt_years'] = $finStmtYears;
-
-            $financialStatements = Functions::groupBy(
-                $financialStatements,
-                [ 'category_name', 'caption' ]
-            );
-
-            /*
-             * Sort findata by display order.
-             */
-            foreach ($financialStatements as &$statement) {
-                uasort($statement, function ($a, $b) {
-                    $a = $a['display_order'];
-                    $b = $b['display_order'];
-
-                    if ($a === $b) {
-                        return 0;
-                    }
-
-                    return ($a < $b) ? -1: 1;
-                });
-            }
-
-            $government['financialStatements'] = $financialStatements;
         }
 
         return $government;

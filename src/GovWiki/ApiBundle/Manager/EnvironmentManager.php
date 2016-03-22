@@ -315,14 +315,8 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
         $government['currentYear'] = $year;
 
-        /*
-         * Replace single and double quote to html special char.
-         */
-        $governmentJson = json_encode($government);
-
         return [
             'government' => $government,
-            'government_json' => $governmentJson,
             'formats' => $formats,
             'tabs' => array_keys($formats),
         ];
@@ -529,7 +523,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             SELECT
                 f.caption AS name,
                 f.name AS category,
-                'Financial Statement' AS tab,
+                'Financial Statements' AS tab,
                 '$0.0' AS mask,
                 NULL AS fieldName
             FROM (
@@ -579,6 +573,8 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                     'fieldName' => $format['field'],
                     'category' => null,
                     'tab' => $format['tab_name'],
+                    'tab_id' => $format['tab_id'],
+                    'category_id' => $format['category_id'],
                     'mask' => $format['mask'],
                 ];
             }

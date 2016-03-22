@@ -6,6 +6,7 @@ use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Chat;
 use GovWiki\DbBundle\Entity\EmailMessage;
 use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\DbBundle\Entity\Message;
 use GovWiki\DbBundle\Entity\TwilioSmsMessages;
 use GovWiki\DbBundle\Form\MessageType;
@@ -83,6 +84,62 @@ class GovernmentController extends Controller
                 $currentYear
             );
 
+        $finData = $data['government']['finData'];
+        /*
+         * Translate.
+         */
+        $translator = $this->get('translator');
+
+        function getTransKey($caption) {
+            return strtr(strtolower($caption), [
+                ' ' => '_',
+                '-' => '_d_',
+                '&' => 'amp',
+                ',' => '_c_',
+                '(' => 'lb',
+                ')' => 'rb',
+                '/' => 'sl',
+                '%' => 'proc',
+                "'" => '_apos_',
+            ]);
+        }
+
+        $finData = array_map(
+            function (array $row) use ($translator) {
+                $captionKey = 'findata.captions.'. getTransKey($row['caption']);
+                $categoryKey = 'general.findata.main.'. getTransKey($row['category_name']);
+
+                $row['translatedCaption'] = $translator->trans($captionKey);
+                $row['translatedCategory'] = $translator->trans($categoryKey);
+
+                return $row;
+            },
+            $finData
+        );
+
+
+        $finData = Functions::groupBy(
+            $finData,
+            [ 'category_name', 'caption' ]
+        );
+        /*
+        * Sort findata by display order.
+        */
+        foreach ($finData as &$statement) {
+            uasort($statement, function ($a, $b) {
+                $a = $a['display_order'];
+                $b = $b['display_order'];
+
+                if ($a === $b) {
+                    return 0;
+                }
+
+                return ($a < $b) ? -1: 1;
+            });
+        }
+
+        $data['government']['financialStatements'] = $finData;
+
         $data['isSubscriber'] = false;
         if ($user instanceof User) {
             $data['isSubscriber'] = $this->getDoctrine()
@@ -91,7 +148,12 @@ class GovernmentController extends Controller
         }
 
         $data['years'] = $years;
+        $data['government']['translations'] = [
+            'total_revenue' => $translator->trans('general.findata.main.total_revenue'),
+            'total_expenditure' => $translator->trans('general.findata.main.total_expenditure'),
+        ];
 
+        $data['government_json'] = json_encode($data['government']);
         $em = $this->getDoctrine()->getManager();
         $new_message = new Message();
         $message_form = $this->createForm(new MessageType(), $new_message);
