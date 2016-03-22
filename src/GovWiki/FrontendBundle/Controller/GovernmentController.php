@@ -48,8 +48,10 @@ class GovernmentController extends Controller
 
         if ($government->isSubscriber($user)) {
             $government->removeSubscribers($user);
+            $government->getChat()->removeMember($user);
         } else {
             $government->addSubscribers($user);
+            $government->getChat()->addMember($user);
         }
 
         $em->persist($government);
