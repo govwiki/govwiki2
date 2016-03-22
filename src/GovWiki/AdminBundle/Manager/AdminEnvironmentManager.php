@@ -548,7 +548,9 @@ class AdminEnvironmentManager
     public function configure(AdminEntityManagerAwareInterface $entityManager)
     {
         $entityManager->setEnvironment($this->environment);
-        $entityManager->setEnvironmentId($this->getReference()->getId());
+        if ($this->getReference()) {
+            $entityManager->setEnvironmentId($this->getReference()->getId());
+        }
     }
 
     /**

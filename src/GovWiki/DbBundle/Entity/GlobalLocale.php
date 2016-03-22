@@ -6,10 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * Locale
+ * GlobalLocale
  *
  * @ORM\Entity
  */
-class Locale extends AbstractLocale
+class GlobalLocale extends AbstractLocale
 {
 }
