@@ -61,8 +61,6 @@ class Version20160318133137 extends AbstractMigration implements
 
         // Prepare values section for insert statement.
         $sqlParts = [];
-        $group = [];
-        $maxGroupCount = 200 * count($locales);
 
         foreach ($captions as $value) {
             $key = strtr(strtolower($value), [
@@ -79,28 +77,22 @@ class Version20160318133137 extends AbstractMigration implements
 
             // Add current translation to each global locale.
             foreach ($locales as $locale) {
-                $group[] = "({$locale}, 'findata.captions.{$key}', 'messages', \"$value\", NOW(), NOW())";
-            }
-
-            if (count($group) >= $maxGroupCount) {
-                $sqlParts[] = $group;
-                $group = [];
+                $sqlParts[] = "({$locale}, 'findata.captions.{$key}', 'messages', \"$value\", NOW(), NOW())";
             }
         }
 
         $this->write('Add translations for global locales');
-        foreach ($sqlParts as $part) {
-            $part = implode(',', $part);
-            $con->exec("
-                INSERT INTO translations
-                (
-                    locale_id, trans_key, message_domain, translation, date_created,
-                    date_updated
-                )
-                VALUES
-                {$part}
-            ");
-        }
+        $sqlParts = implode(',', $sqlParts);
+        $con->exec("
+            INSERT INTO translations
+            (
+                locale_id, trans_key, message_domain, translation, date_created,
+                date_updated
+            )
+            VALUES
+            {$sqlParts}
+        ");
+
     }
 
 
@@ -150,6 +142,18 @@ class Version20160318133137 extends AbstractMigration implements
                 NOW()
             FROM locales l
             WHERE type = 'global'
+        ");
+
+        // Fix 'Surplus / (Deficit)' caption.
+        $this->addSql("
+            UPDATE findata SET caption = 'Surplus / (Deficit)'
+            WHERE caption LIKE '%Surplus%/%def%'
+        ");
+
+        // Fix 'Contributions in liew of taxes' caption.
+        $this->addSql("
+            UPDATE findata SET caption = 'Contributions in liew of taxes'
+            WHERE caption LIKE '%Contributions in%of taxes%'
         ");
     }
 

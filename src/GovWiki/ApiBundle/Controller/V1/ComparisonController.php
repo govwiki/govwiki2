@@ -95,6 +95,33 @@ class ComparisonController extends AbstractGovWikiApiController
         $captions = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
             ->getCategoriesForComparisonByGovernment($data['captions']);
 
+        $translator = $this->get('translator');
+
+        $captions = array_map(
+            function (array $caption) use ($translator) {
+
+                if (null !== $caption['fieldName']) {
+                    $nameKey = 'format.'. $caption['fieldName'];
+                    $tabKey = 'groups.group_id_'. $caption['tab_id'];
+                } else {
+                    $nameKey = 'findata.captions.'. $this->getTransKey($caption['name']);
+                    $tabKey = 'gov.'. $this->getTransKey($caption['tab']);
+                }
+
+                $caption['translatedName'] = $translator->trans($nameKey);
+                $caption['translatedTab'] = $translator->trans($tabKey);
+
+                if (null !== $caption['category']) {
+                    $categoryKey = 'caption_categories.'.
+                        $this->getTransKey($caption['category']);
+                    $caption['translatedCategory'] = $translator->trans($categoryKey);
+                }
+
+                return $caption;
+            },
+            $captions
+        );
+
         return new JsonResponse($captions);
     }
 
@@ -164,6 +191,61 @@ class ComparisonController extends AbstractGovWikiApiController
         $result = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
             ->getComparedGovernments($data);
 
+        /*
+         * Translate data.
+         */
+        $translator = $this->get('translator');
+
+        // Translate governments data.
+        foreach ($result['firstGovernment']['data'] as &$row) {
+            $captionKey = 'findata.captions.'. $this->getTransKey($row['caption']);
+            $categoryKey = 'general.findata.main.'. $this->getTransKey($row['category']);
+
+            $row['translatedCaption'] = $translator->trans($captionKey);
+            $row['translatedCategory'] = $translator->trans($categoryKey);
+        }
+        foreach ($result['secondGovernment']['data'] as &$row) {
+            $captionKey = 'findata.captions.'. $this->getTransKey($row['caption']);
+            $categoryKey = 'general.findata.main.'. $this->getTransKey($row['category']);
+
+            $row['translatedCaption'] = $translator->trans($captionKey);
+            $row['translatedCategory'] = $translator->trans($categoryKey);
+        }
+
+
+        // Translate category and tab name.
+        $result['translatedCategory'] = $translator->trans(
+            'general.findata.main.'. $this->getTransKey($result['category'])
+        );
+
+        // Hardcoded, replace.
+        $tabName = $result['tab'];
+        if ('Financial Statement' === $result['tab']) {
+            $tabName .= 's';
+        }
+        $result['translatedTab'] = $translator->trans(
+            'gov.'. $this->getTransKey($tabName)
+        );
+
         return new JsonResponse($result);
+    }
+
+    /**
+     * @param $string
+     *
+     * @return string
+     */
+    private function getTransKey($string) {
+        return strtr(strtolower($string), [
+            ' ' => '_',
+            '-' => '_d_',
+            '&' => 'amp',
+            ',' => '_c_',
+            '(' => 'lb',
+            ')' => 'rb',
+            '/' => 'sl',
+            '%' => 'proc',
+            "'" => '_apos_',
+        ]);
     }
 }
