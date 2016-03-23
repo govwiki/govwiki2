@@ -38,23 +38,43 @@ class UserForm extends AbstractType
         $builder
             ->add('username', null)
             ->add('email', null)
+            ->add('phone', 'text', [ 'required' => false ])
+            ->add(
+                'phoneConfirmed',
+                'choice',
+                [
+                    'choices' => [
+                        '0' => 'false',
+                        '1' => 'true',
+                    ],
+                    'expanded' => false,
+                ]
+            )
             ->add('plainPassword', 'password', $fieldOptions)
-            ->add('roles', 'choice', [
-                'choices' => [
-                    'ROLE_ADMIN' => 'admin',
-                    'ROLE_MANAGER' => 'manager',
-                    'ROLE_USER' => 'user'
-                ],
-                'expanded' => false,
-                'multiple' => true,
-            ])
-            ->add('environments', 'entity', [
-                'class' => 'GovWikiDbBundle:Environment',
-                'choice_label' => 'name',
-                'expanded' => false,
-                'multiple' => true,
-                'required' => false
-            ])
+            ->add(
+                'roles',
+                'choice',
+                [
+                    'choices' => [
+                        'ROLE_ADMIN' => 'admin',
+                        'ROLE_MANAGER' => 'manager',
+                        'ROLE_USER' => 'user',
+                    ],
+                    'expanded' => false,
+                    'multiple' => true,
+                ]
+            )
+            ->add(
+                'environments',
+                'entity',
+                [
+                    'class' => 'GovWikiDbBundle:Environment',
+                    'choice_label' => 'name',
+                    'expanded' => false,
+                    'multiple' => true,
+                    'required' => false,
+                ]
+            )
         ;
     }
 

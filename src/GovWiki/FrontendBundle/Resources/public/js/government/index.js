@@ -127,6 +127,12 @@ $(function() {
      */
     var $subscribeBtn = $('#subscribe');
 
+    if ($subscribeBtn.hasClass('subscribe')) {
+        $('#chat_message_container').hide();
+    } else {
+        $('#chat_message_container').show();
+    }
+
     $subscribeBtn.click(function(event) {
         event.preventDefault();
         event.stopPropagation();
@@ -136,6 +142,7 @@ $(function() {
         }).done(function() {
 
             if ($subscribeBtn.hasClass('subscribe')) {
+                $('#chat_message_container').show();
                 $subscribeBtn
                     .text('Unsubscribe')
                     .removeClass('subscribe')
@@ -143,6 +150,7 @@ $(function() {
                     .addClass('unsubscribe')
                     .addClass('btn-danger')
             } else {
+                $('#chat_message_container').hide();
                 $subscribeBtn
                     .text('Subscribe')
                     .removeClass('unsubscribe')

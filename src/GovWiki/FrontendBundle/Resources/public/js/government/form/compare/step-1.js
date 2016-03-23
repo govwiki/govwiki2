@@ -132,7 +132,7 @@ Step.prototype.createYearOptions = function(government) {
 
     disableSelect(false);
 
-    self.$select.html('<option>YEAR</option>');
+    self.$select.html('');
 
     sortedYears.forEach(function (year, index) {
         var selected = index == 0 ? 'selected' : '';
