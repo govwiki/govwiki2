@@ -22,4 +22,9 @@ services:
 
     govwiki.user_bundle.chat_message:
         class: GovWiki\UserBundle\Service\ChatMessage
-        arguments: ["@doctrine.orm.entity_manager", "@templating"]
+        arguments: ["@doctrine.orm.entity_manager", "@templating"]        arguments: [@session]
+
+    govwiki.user.form.registration:
+        class: GovWiki\UserBundle\Form\RegistrationForm
+        tags:
+            - { name: form.type, alias: app_user_registration }

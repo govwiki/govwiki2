@@ -88,7 +88,7 @@ class User extends BaseUser
     /**
      * @var string
      * @ORM\Column(type="string", nullable=true)
-     * @Assert\Regex(pattern="/^[+]{1}[0-9]{11}$/", message="Please, enter valid phone, example: +14158675309")
+     * @Assert\Regex(pattern="/^(\+?[0-9]{11}|)$/", message="Please, enter valid phone, example: 4158675309")
      */
     protected $phone;
 
@@ -290,7 +290,7 @@ class User extends BaseUser
      */
     public function setPhone($phone)
     {
-        $this->phone = $phone;
+        $this->phone = '+1'. $phone;
 
         return $this;
     }
