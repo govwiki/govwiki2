@@ -4,6 +4,8 @@ namespace GovWiki\UserBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 /**
  * Class RegistrationForm
@@ -12,8 +14,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 class RegistrationForm extends AbstractType
 {
     /**
-     * @param FormBuilderInterface $builder
-     * @param array                $options
+     * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -24,7 +25,7 @@ class RegistrationForm extends AbstractType
                 [
                     'required' => false,
                     'attr' => [
-                        'placeholder' => 'optional, example: +14158675309',
+                        'placeholder' => 'optional, example: 4158675309',
                     ],
                 ]
             );
