@@ -50,7 +50,8 @@ class SendEmailsCommand extends ContainerAwareCommand
                     'text/html'
                 );
                 $swift_message
-                    ->setSender($message_entity->getFromEmail())
+                    ->setFrom($message_entity->getFromEmail())
+                    //->setSender($message_entity->getFromEmail())
                     ->setTo($message_entity->getToEmail());
 
                 $failed = [];

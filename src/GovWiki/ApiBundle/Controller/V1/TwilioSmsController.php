@@ -69,34 +69,30 @@ class TwilioSmsController extends Controller
             $new_message->setAuthor($sms_sender);
             $em->persist($new_message);
 
+            $sms_sender_email = $sms_sender->getEmail();
+            $sms_sender_phone = $sms_sender->getPhone();
+            $service_chat_message = $this->get('govwiki.user_bundle.chat_message');
+
             // Save Twilio sms messages into base
-            $phones = $this->getPhones($em, $chat, $government, $sms_sender);
-            foreach ($phones as $phone) {
-                $twilioSmsMessage = new TwilioSmsMessages();
-                $twilioSmsMessage->setFromNumber($this->getParameter('twilio.from'));
-                $twilioSmsMessage->setToNumber($phone);
-                $twilioSmsMessage->setMessage('
+            $phones = $service_chat_message->getChatMessageReceiversPhonesList($chat, $government, $sms_sender_phone);
+            $sms_body = '
 ' . $new_message->getText() . '
-From ' . $sms_sender->getEmail());
-                $em->persist($twilioSmsMessage);
-            }
+From ' . $sms_sender_email;
+            $service_chat_message->persistTwilioSmsMessages($phones, $this->getParameter('twilio.from'), $sms_body);
 
             // Save Email messages into base
-            $emails = $this->getEmails($em, $chat, $government, $sms_sender);
+            $emails = $service_chat_message->getChatMessageReceiversEmailList($chat, $government, $sms_sender_email);
             $env_admin_email = $government->getEnvironment()->getAdminEmail();
-            foreach ($emails as $email) {
-                $emailMessage = new EmailMessage();
-                $emailMessage->setFromEmail($env_admin_email);
-                $emailMessage->setToEmail($email);
-                $emailMessage->setSubject('New message in ' . $government->getName());
-                $emailMessage->setMessage($this->renderView('GovWikiFrontendBundle:Government:chatMessageEmail.html.twig', array(
-                    'recipient' => $email,
-                    'author' => $sms_sender->getEmail(),
+            $service_chat_message->persistEmailMessages(
+                $emails,
+                $env_admin_email,
+                'New message in ' . $government->getName(),
+                array(
+                    'author' => $sms_sender_email,
                     'government_name' => $government->getName(),
                     'message_text' => $new_message->getText()
-                )));
-                $em->persist($emailMessage);
-            }
+                )
+            );
 
             $em->flush();
         }
@@ -162,45 +158,5 @@ From ' . $sms_sender->getEmail());
         }
 
         return array_unique($phones);
-    }
-
-    /**
-     * @param EntityManager $em Entity Manager
-     * @param Chat $chat Chat
-     * @param Government $government Current government
-     * @param User $author Sms author
-     *
-     * @return array
-     */
-    private function getEmails($em, $chat, $government, $author)
-    {
-        $emails = array();
-
-        $members = $chat->getMembers();
-        /** @var User $member */
-        foreach ($members as $member) {
-            if ($member->getEmail() != $author->getEmail()) {
-                $emails[] = $member->getEmail();
-            }
-        }
-
-        $env = $government->getEnvironment();
-        $env_users = $env->getUsers();
-        /** @var User $user */
-        foreach ($env_users as $user) {
-            if ($user->hasRole('ROLE_MANAGER') && $user->getEmail() != $author->getEmail()) {
-                $emails[] = $user->getEmail();
-            }
-        }
-
-        $admins_list = $em->getRepository('GovWikiUserBundle:User')->getAdminsList();
-        /** @var User $admin */
-        foreach ($admins_list as $admin) {
-            if ($admin->getEmail() != $author->getEmail()) {
-                $emails[] = $admin->getEmail();
-            }
-        }
-
-        return array_unique($emails);
     }
 }

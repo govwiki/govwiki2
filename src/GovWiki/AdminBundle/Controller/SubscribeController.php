@@ -31,41 +31,45 @@ class SubscribeController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request, Government $government)
     {
+        $em = $this->getDoctrine()->getManager();
         $form = $this->createFormBuilder()
-            ->add('message', 'ckeditor', [ 'constraints' => new NotBlank() ])
+            ->add('message', 'textarea', [ 'constraints' => new NotBlank() ])
             ->getForm();
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $body = $form->getData()['message'];
 
-            $subscribers = $this->getDoctrine()
-                ->getRepository('GovWikiUserBundle:User')
-                ->getGovernmentSubscribersEmailData($government->getId());
+            $chat = $government->getChat();
+            $user = $this->getUser();
+            $service_chat_message = $this->get('govwiki.user_bundle.chat_message');
+            $user_email = $user->getEmail();
+            $user_phone = $user->getPhone();
 
-            /*
-             * Prepare addresses.
-             */
-            $recipients = [];
-            foreach ($subscribers as $subscriber) {
-                $recipients[$subscriber['email']] = $subscriber['username'];
-            }
+            // Save Twilio sms messages into base
+            $phones = $service_chat_message->getChatMessageReceiversPhonesList($chat, $government, $user_phone);
+            $sms_body = '
+' . $body . '
+From ' . $user_email;
+            $service_chat_message->persistTwilioSmsMessages($phones, $this->getParameter('twilio.from'), $sms_body);
 
-            $message = \Swift_Message::newInstance(
-                'New in '. $government->getName(),
-                $body,
-                'text/html'
+            // Save Email messages into base
+            $emails = $service_chat_message->getChatMessageReceiversEmailList($chat, $government, $user_email);
+            $env_admin_email = $government->getEnvironment()->getAdminEmail();
+            $service_chat_message->persistEmailMessages(
+                $emails,
+                $env_admin_email,
+                'New message in ' . $government->getName(),
+                array(
+                    'author' => $user_email,
+                    'government_name' => $government->getName(),
+                    'message_text' => $body
+                )
             );
-            $message
-                ->setSender($this->adminEnvironmentManager()
-                    ->getEntity()->getAdminEmail())
-                ->setTo($recipients);
 
-            $failed = [];
-            $this->get('mailer')->send($message, $failed);
+            $em->flush();
 
             $this->successMessage('Message sent to subscribers');
-
 
             return $this->redirectToRoute('govwiki_admin_subscribe_index', [
                 'government' => $government->getId(),
@@ -76,8 +80,7 @@ class SubscribeController extends AbstractGovWikiAdminController
             'form' => $form->createView(),
             'government' => $government,
             'subscribers' => $this->paginate(
-                $this->getDoctrine()
-                    ->getRepository('GovWikiUserBundle:User')
+                $em->getRepository('GovWikiUserBundle:User')
                     ->getGovernmentSubscribersQuery($government->getId()),
                 $request->query->get('page', 1),
                 self::MAX_PER_PAGE

@@ -19,3 +19,7 @@ services:
     govwiki.user_bundle.redirection.access_denied:
         class: GovWiki\UserBundle\Security\AccessDeniedHandler
         arguments: [@session]
+
+    govwiki.user_bundle.chat_message:
+        class: GovWiki\UserBundle\Service\ChatMessage
+        arguments: ["@doctrine.orm.entity_manager", "@templating"]
