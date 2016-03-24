@@ -67,7 +67,7 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
                      * Ordinary user.
                      */
                     return new RedirectResponse(
-                        $this->router->generate('main')
+                        $this->router->generate('map')
                     );
                 }
             }

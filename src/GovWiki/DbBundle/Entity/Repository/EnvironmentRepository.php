@@ -52,9 +52,10 @@ class EnvironmentRepository extends EntityRepository
 
         try {
             $qb
-                ->addSelect('Map')
+                ->addSelect('Map, Locale')
                 ->leftJoin('Environment.map', 'Map')
                 ->leftJoin('Environment.users', 'User')
+                ->leftJoin('Environment.defaultLocale', 'Locale')
                 ->where($expr->eq(
                     'Environment.slug',
                     $expr->literal($environment)

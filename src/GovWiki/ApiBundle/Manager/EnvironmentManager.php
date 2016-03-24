@@ -43,6 +43,11 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     private $computer;
 
     /**
+     * @var Environment
+     */
+    private $entity;
+
+    /**
      * @param EntityManagerInterface   $em       A EntityManagerInterface
      *                                           instance.
      * @param CartoDbApi               $api      A CartoDbApi instance.
@@ -82,6 +87,19 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * @return Environment
+     */
+    public function getEntity()
+    {
+        if (null === $this->entity) {
+            $this->entity = $this->em->getRepository('GovWikiDbBundle:Environment')
+                ->getByName($this->environment);
+        }
+
+        return $this->entity;
+    }
+
+    /**
      * @return string
      */
     public function getSlug()
@@ -94,8 +112,18 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getMap()
     {
-        return $this->em->getRepository('GovWikiDbBundle:Map')
-            ->get($this->environment);
+        $map = $this->getEntity()->getMap();
+
+        return [
+            'centerLatitude' => $map->getCenterLatitude(),
+            'centerLongitude' => $map->getCenterLongitude(),
+            'zoom' => $map->getZoom(),
+            'position' => $map->getPosition(),
+            'colorizedCountyConditions' => $map->getColorizedCountyConditions(),
+            'debug' => $map->isDebug(),
+            'legendTypes' => $map->getLegendTypes(),
+            'legend' => $map->getLegend(),
+        ];
     }
 
     public function getAvailableYears()
@@ -120,18 +148,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getTitle()
     {
-        $qb = $this->em->getRepository('GovWikiDbBundle:Environment')
-            ->createQueryBuilder('Environment');
-        $expr = $qb->expr();
-
-        return $qb
-            ->select('Environment.title')
-            ->where($expr->eq(
-                'Environment.slug',
-                $expr->literal($this->environment)
-            ))
-            ->getQuery()
-            ->getSingleScalarResult();
+        return $this->getEntity()->getTitle();
     }
 
     /**
@@ -388,8 +405,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getStyle()
     {
-        return $this->em->getRepository('GovWikiDbBundle:Environment')
-            ->getStyle($this->environment);
+        return $this->getEntity()->getStyle();
     }
 
     /**
@@ -730,18 +746,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getDefaultLocale()
     {
-        $expr = $this->em->getExpressionBuilder();
-        return $this->em->getRepository('GovWikiDbBundle:Locale')
-            ->createQueryBuilder('Locale')
-            ->select('Locale.shortName')
-            ->innerJoin('Locale.environment', 'Environment')
-            ->where($expr->andX(
-                $expr->eq('Environment.slug', ':slug'),
-                $expr->eq('Locale.id', 'Environment.defaultLocale')
-            ))
-            ->setParameter('slug', $this->environment)
-            ->getQuery()
-            ->getSingleScalarResult();
+        return $this->getEntity()->getDefaultLocale()->getShortName();
     }
 
     /**

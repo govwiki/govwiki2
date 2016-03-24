@@ -96,6 +96,24 @@
 
 }
 
+table td.button-row {
+   padding: 0 !important;
+
+   .btn {
+      width: 100%;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+   }
+}
+
+#subscribers {
+   table {
+      td, th {
+         text-align: center;
+      }
+   }
+}
+
 /* ===================================================== */
 /* =============== Environment styles ================== */
 /* ===================================================== */
