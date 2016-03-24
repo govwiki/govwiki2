@@ -49,31 +49,28 @@
 
         <ul class="navigation navbar-collapse collapse" id="bs-navigation-collapse">
 
-            {% if hasElectedOfficials %}
-                {% if app.user %}
-                    {# Show User name (Athorized) #}
-                    <li>
-                        <a href="javascript:void(0)" class="link">
-                            Logged in as {{ app.user.username }}
-                        </a>
-                    </li>
+            {% if app.user %}
+                {# Show User name (Athorized) #}
+                <li>
+                    <a href="javascript:void(0)" class="link">
+                        Logged in as {{ app.user.username }}
+                    </a>
+                </li>
 
-                    {# Logout button #}
-                    <li>
-                        <a href="{{path('fos_user_security_logout')}}" class="link">
-                            Sign Out
-                        </a>
-                    </li>
+                {# Logout button #}
+                <li>
+                    <a href="{{path('fos_user_security_logout')}}" class="link">
+                        Sign Out
+                    </a>
+                </li>
 
-                {% else %}
-                    {# Login button#}
-                    <li>
-                        <a href="#" onclick="$('#modal-window').modal('show')" class="link">
-                            Login / Sign Up
-                        </a>
-                    </li>
-
-                {% endif %}
+            {% else %}
+                {# Login button#}
+                <li>
+                    <a href="#" onclick="$('#modal-window').modal('show')" class="link">
+                        Login / Sign Up
+                    </a>
+                </li>
 
             {% endif %}
 
