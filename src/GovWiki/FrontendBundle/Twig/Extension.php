@@ -117,6 +117,7 @@ class Extension extends \Twig_Extension
                 'hasElectedOfficials' => $manager
                         ->countElectedOfficials() > 0,
                 'title' => $manager->getTitle(),
+                'environment_logo' => $manager->getEntity()->getLogoHref(),
                 'bottomText' => $bottomText
             ];
         }

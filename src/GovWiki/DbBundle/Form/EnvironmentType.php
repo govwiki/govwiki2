@@ -27,6 +27,7 @@ class EnvironmentType extends AbstractType
             ->add('name')
             ->add('domain')
             ->add('title')
+            ->add('logoHref', 'url', [ 'required' => false ])
             ->add('adminEmail')
             ->add('defaultLocale', 'entity', [
                 'class' => 'GovWiki\DbBundle\Entity\Locale',

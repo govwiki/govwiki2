@@ -163,6 +163,13 @@ class Environment
     private $legislationDisplayTime;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(nullable=true)
+     */
+    private $logoHref;
+
+    /**
      *
      */
     public function __construct()
@@ -579,6 +586,26 @@ class Environment
     public function setLegislationDisplayTime(array $legislationDisplayTime)
     {
         $this->legislationDisplayTime = $legislationDisplayTime;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogoHref()
+    {
+        return $this->logoHref;
+    }
+
+    /**
+     * @param string $logoHref A href link for logo img.
+     *
+     * @return Environment
+     */
+    public function setLogoHref($logoHref)
+    {
+        $this->logoHref = $logoHref;
 
         return $this;
     }
