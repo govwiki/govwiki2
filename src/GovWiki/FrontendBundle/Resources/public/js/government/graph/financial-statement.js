@@ -12,6 +12,17 @@ function init() {
 
 }
 
+
+function rowSortFunction(a, b) {
+    if (a[1] > b[1]) {
+        return 1;
+    } else if (a[1] < b[1]) {
+        return -1;
+    }
+
+    return 0;
+}
+
 /**
  * #total-revenue-pie
  */
@@ -30,6 +41,9 @@ function financialStatements_revenue() {
             rows.push(r);
         }
     }
+
+    // Sort all records by amount
+    rows.sort(rowSortFunction);
 
     vis_data.addRows(rows);
     options = {
@@ -75,6 +89,9 @@ function financialStatements_expenditures() {
             rows.push(r);
         }
     }
+
+    // Sort all records by amount
+    rows.sort(rowSortFunction);
 
     vis_data.addRows(rows);
     options = {
