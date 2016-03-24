@@ -45,7 +45,7 @@
                         </select>
                     {% endif %}
                 </div>
-                {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader')) %}
+                {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) %}
 
                 {% if _locales is defined %}
                     <div class="col-md-6">

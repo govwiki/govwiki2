@@ -5,6 +5,7 @@ namespace GovWiki\FrontendBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use GovWiki\ApiBundle\GovWikiApiServices;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class LocalizationController
@@ -17,39 +18,41 @@ class LocalizationController extends Controller
     /**
      * Change locale
      *
-     * @Configuration\Route("/change_locale/{locale_name}")
+     * @Configuration\Route("/change_locale")
      *
-     * @param string $locale_name Locale shortName.
+     * @param Request $request Request.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function changeLocaleAction($locale_name)
+    public function changeLocaleAction(Request $request)
     {
         $this->clearTranslationsCache();
 
+        $url = $request->get('current_url');
+        $locale_name = $request->get('locale_short_name');
+
         $this->get('session')->set('_locale', $locale_name);
 
-        $environment_manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
-        $environment = $environment_manager->getEnvironment();
-
-        return $this->redirectToRoute('map', array('environment' => $environment));
+        return $this->redirect($url);
     }
 
     /**
      * Show all environment locales in header
      *
+     * @param string $current_page_route Current page route
+     *
      * @Configuration\Template()
      *
      * @return array
      */
-    public function showLocalesInHeaderAction()
+    public function showLocalesInHeaderAction($current_page_route)
     {
         $environment_manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
         $environment = $environment_manager->getEnvironment();
 
         $locale_names_list = $this->getDoctrine()->getRepository('GovWikiDbBundle:AbstractLocale')->getListLocaleNames($environment);
 
-        return [ 'locale_names_list' => $locale_names_list ];
+        return [ 'locale_names_list' => $locale_names_list, 'current_page_route' => $current_page_route ];
     }
 
     private function clearTranslationsCache()
