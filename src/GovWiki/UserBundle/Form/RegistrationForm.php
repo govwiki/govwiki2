@@ -2,10 +2,10 @@
 
 namespace GovWiki\UserBundle\Form;
 
+use Doctrine\ORM\EntityRepository;
+use GovWiki\ApiBundle\Manager\EnvironmentManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 
 /**
  * Class RegistrationForm
@@ -13,11 +13,38 @@ use Symfony\Component\Form\FormEvents;
  */
 class RegistrationForm extends AbstractType
 {
+
+    /**
+     * @var EnvironmentManager
+     */
+    private $manager;
+
+    /**
+     * @param EnvironmentManager $manager A EnvironmentManager instance.
+     */
+    public function __construct(EnvironmentManager $manager)
+    {
+        $this->manager = $manager;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $environment = $this->manager->getEntity()->getId();
+
+        // Function for query builder generation.
+        $queryBuilderFunction =
+            function (EntityRepository $repository) use ($environment) {
+                $qb = $repository->createQueryBuilder('Government');
+                $expr = $qb->expr();
+
+                return $qb
+                    ->where($expr->eq('Government.environment', ':environment'))
+                    ->setParameter('environment', $environment);
+            };
+
         $builder
             ->add(
                 'phone',
@@ -27,6 +54,16 @@ class RegistrationForm extends AbstractType
                     'attr' => [
                         'placeholder' => 'optional, example: 4158675309',
                     ],
+                ]
+            )
+            ->add(
+                'subscribedTo',
+                'entity',
+                [
+                    'class' => 'GovWiki\DbBundle\Entity\Government',
+                    'required' => false,
+                    'label' => 'Subscribe to',
+                    'query_builder' => $queryBuilderFunction,
                 ]
             );
     }

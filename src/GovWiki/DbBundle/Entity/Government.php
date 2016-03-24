@@ -211,7 +211,7 @@ class Government
     private $subscribers;
 
     /**
-     * @ORM\OneToOne(targetEntity="Chat")
+     * @ORM\OneToOne(targetEntity="Chat", cascade={"persist"})
      * @ORM\JoinColumn(name="chat_id", referencedColumnName="id")
      */
     private $chat;

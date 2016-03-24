@@ -51,6 +51,14 @@ class GovernmentController extends Controller
             $government->getChat()->removeMember($user);
         } else {
             $government->addSubscribers($user);
+
+            // Add chat if it not exists.
+            if ($government->getChat() === null) {
+                $chat = new Chat();
+                $chat->setGovernment($government);
+                $government->setChat($chat);
+            }
+
             $government->getChat()->addMember($user);
         }
 

@@ -4,6 +4,7 @@ services:
         arguments:
             - @session
             - @security.token_storage
+            - @doctrine.orm.default_entity_manager
         tags:
             - { name: kernel.event_subscriber }
 
@@ -26,5 +27,6 @@ services:
 
     govwiki.user.form.registration:
         class: GovWiki\UserBundle\Form\RegistrationForm
+        arguments: [@govwiki_api.manager.environment]
         tags:
             - { name: form.type, alias: app_user_registration }

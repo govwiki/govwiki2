@@ -45,7 +45,7 @@ class TwilioSmsController extends Controller
         }
 
         $government = null;
-        $governments = $sms_sender->getSubscribers();
+        $governments = $sms_sender->getSubscribedTo();
         if (!$governments) {
             return new Response(null, 404);
         } else {

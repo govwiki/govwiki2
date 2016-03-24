@@ -256,9 +256,10 @@ class User extends BaseUser
      *
      * @return User
      */
-    public function addSubscribers(Government $government)
+    public function addSubscribedTo(Government $government)
     {
         $this->subscribedTo[] = $government;
+        $government->addSubscriber($this);
 
         return $this;
     }
@@ -268,7 +269,7 @@ class User extends BaseUser
      *
      * @return User
      */
-    public function removeSubscribers(Government $government)
+    public function removeSubscribedTo(Government $government)
     {
         $this->subscribedTo->remove($government);
 
@@ -276,9 +277,21 @@ class User extends BaseUser
     }
 
     /**
+     * Need for registration form.
+     *
+     * @param Government $government A Government entity instance.
+     *
+     * @return User
+     */
+    public function setSubscribedTo(Government $government)
+    {
+        return $this->addSubscribedTo($government);
+    }
+
+    /**
      * @return Collection
      */
-    public function getSubscribers()
+    public function getSubscribedTo()
     {
         return $this->subscribedTo;
     }
