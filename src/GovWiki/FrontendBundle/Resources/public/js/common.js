@@ -1,3 +1,4 @@
+window.changeLocale = require('./localization/localization.js');
 $loaderWrap = $('.loader_wrap');
 $loaderWrap.css({"opacity":0});
 window.setTimeout(function() {
