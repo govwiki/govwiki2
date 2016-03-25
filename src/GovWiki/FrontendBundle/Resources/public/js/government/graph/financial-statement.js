@@ -1,5 +1,6 @@
 var data = require('./glob.js').data;
 var chart = require('./config.js').chart;
+var rowSortFunction = require('./utils.js').rowSortFunction;
 
 /**
  * Initialization
@@ -10,17 +11,6 @@ function init() {
     financialStatements_revenue();
     financialStatements_expenditures();
 
-}
-
-
-function rowSortFunction(a, b) {
-    if (a[1] > b[1]) {
-        return -1;
-    } else if (a[1] < b[1]) {
-        return 1;
-    }
-
-    return 0;
 }
 
 /**

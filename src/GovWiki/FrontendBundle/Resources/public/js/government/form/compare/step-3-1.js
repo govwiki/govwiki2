@@ -1,3 +1,5 @@
+var rowSortFunction = require('../../graph/utils.js').rowSortFunction;
+
 /**
  * Constructor
  * @param FormState
@@ -60,6 +62,8 @@ Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
         rows.push([item.translatedCaption, parseInt(item.amount)]);
     });
 
+    rows.sort(rowSortFunction);
+
     vis_data.addRows(rows);
     options = {
         'title': 'Total ' + comparedData.translatedCategory + ': ' + government.name,
@@ -73,7 +77,6 @@ Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
         },
         'width': 470,
         'height': 350,
-        'pieStartAngle': 60,
         'sliceVisibilityThreshold': 0,
         'forceIFrame': true,
         'chartArea': {
