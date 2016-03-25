@@ -15,9 +15,9 @@ function init() {
 
 function rowSortFunction(a, b) {
     if (a[1] > b[1]) {
-        return 1;
-    } else if (a[1] < b[1]) {
         return -1;
+    } else if (a[1] < b[1]) {
+        return 1;
     }
 
     return 0;
