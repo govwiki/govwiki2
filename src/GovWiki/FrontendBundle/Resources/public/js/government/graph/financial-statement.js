@@ -15,9 +15,9 @@ function init() {
 
 function rowSortFunction(a, b) {
     if (a[1] > b[1]) {
-        return 1;
-    } else if (a[1] < b[1]) {
         return -1;
+    } else if (a[1] < b[1]) {
+        return 1;
     }
 
     return 0;
@@ -86,7 +86,6 @@ function financialStatements_revenue() {
         },
         'width': 470,
         'height': 350,
-        'pieStartAngle': 60,
         'sliceVisibilityThreshold': 0,
         'forceIFrame': true,
         'chartArea': {
@@ -161,7 +160,6 @@ function financialStatements_expenditures() {
         },
         'width': 470,
         'height': 350,
-        'pieStartAngle': 60,
         'sliceVisibilityThreshold': 0,
         'forceIFrame': true,
         'chartArea': {
