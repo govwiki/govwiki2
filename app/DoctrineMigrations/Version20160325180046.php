@@ -32,40 +32,32 @@ class Version20160325180046 extends AbstractMigration
             'findata.captions.training_and_employment' => 'Training and employment',
         ];
 
-        foreach ($es as $transKey => $translation) {
-            $this->addSql("
-                UPDATE translations
-                SET
-                    translation = '{$translation}'
-                WHERE
-                    trans_key = '{$transKey}' AND
-                    locale_id = (
-                        SELECT id
+        $locales = [
+            'en' => $en,
+            'es' => $es,
+        ];
+
+        foreach ($locales as $shortName => $translations) {
+            foreach ($translations as $transKey => $translation) {
+                $this->addSql("
+                INSERT IGNORE translations
+                (locale_id, trans_key, message_domain, translation, date_created, date_updated, trans_textarea_type) VALUES
+                (
+                    (SELECT id
                         FROM locales
                         WHERE
-                            short_name = 'es' AND
-                            type = 'global'
-                    )
+                            short_name = '{$shortName}' AND
+                            type = 'global'),
+                    '{$transKey}',
+                    'messages',
+                    '{$translation}',
+                    NOW(),
+                    NOW(),
+                    'textarea'
+                )
             ");
+            }
         }
-
-        foreach ($en as $transKey => $translation) {
-            $this->addSql("
-                UPDATE translations
-                SET
-                    translation = '{$translation}'
-                WHERE
-                    trans_key = '{$transKey}' AND
-                    locale_id = (
-                        SELECT id
-                        FROM locales
-                        WHERE
-                            short_name = 'en' AND
-                            type = 'global'
-                    )
-            ");
-        }
-
     }
 
     /**
