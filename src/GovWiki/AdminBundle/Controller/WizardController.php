@@ -49,8 +49,7 @@ class WizardController extends AbstractGovWikiAdminController
     private static $wizardSteps = [
         'step1', // Create new environment.
         'step2', // Create new map.
-        'step3', // Edit styles.
-        'step4', // Import data (Not required).
+        'step3', // Import data (Not required).
         'end',
     ];
 
@@ -171,35 +170,6 @@ class WizardController extends AbstractGovWikiAdminController
             $map->setCreated(true);
 
             $environment->setMap($map);
-            $this->storeEnvironmentEntity($environment);
-
-            return $this->nextStep();
-        }
-
-        return [
-            'form' => $form->createView(),
-            'environment' => $environment,
-            'back_url' => $this->prevUrl(),
-        ];
-    }
-
-    /**
-     * @Configuration\Route("/style", name="step3")
-     * @Configuration\Template()
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return array
-     */
-    public function styleAction(Request $request)
-    {
-        $manager = $this->get(GovWikiAdminServices::ADMIN_STYLE_MANAGER);
-        $environment = $this->getEnvironmentEntity();
-        $form = $manager->createForm(true);
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $style = $manager->processForm($form);
 
             $api = $this->get(CartoDbServices::CARTO_DB_API);
 
@@ -214,9 +184,7 @@ class WizardController extends AbstractGovWikiAdminController
                     'name' => 'VARCHAR(255)',
                 ]);
 
-            $environment
-                ->setStyle($style)
-                ->setEnabled(true);
+            $environment->setEnabled(true);
 
             $em = $this->getDoctrine()->getManager();
 
@@ -229,17 +197,19 @@ class WizardController extends AbstractGovWikiAdminController
 
             $this->adminEnvironmentManager()->changeEnvironment($environment);
 
+            $this->storeEnvironmentEntity($environment);
             return $this->nextStep();
         }
 
         return [
             'form' => $form->createView(),
+            'environment' => $environment,
             'back_url' => $this->prevUrl(),
         ];
     }
 
     /**
-     * @Configuration\Route("/data", name="step4")
+     * @Configuration\Route("/data", name="step3")
      * @Configuration\Template()
      *
      * @param Request $request A Request instance.

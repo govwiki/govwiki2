@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Form;
 
+use GovWiki\AdminBundle\Form\Type\StylePropertyType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -12,18 +13,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class AddStyleForm extends AbstractType
 {
-    /**
-     * @var string
-     */
-    private $currentEnvironment;
-
-    /**
-     * @param string $currentEnvironment
-     */
-    public function __construct($currentEnvironment)
-    {
-        $this->currentEnvironment = $currentEnvironment;
-    }
 
     /**
      * {@inheritdoc}
@@ -31,40 +20,21 @@ class AddStyleForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('name', 'hidden')
+            ->add('className', 'hidden')
             ->add(
-                'environment',
-                'entity',
-                [
-                    'class' => 'GovWikiDbBundle:Environment',
-                    'property' => 'name',
-                    'data' => $this->currentEnvironment,
-                ]
-            )
-            ->add(
-                'name',
-                'text',
-                [
-                    'attr' => [
-                        'placeholder' => 'Header links',
-                    ],
-                ]
-            )->add(
-                'className',
-                'text',
-                [
-                    'attr' => [
-                        'placeholder' => '.header .navigation a',
-                    ],
-                ]
-            )->add(
                 'properties',
-                'textarea',
-                [
-                    'attr' => [
-                        'placeholder' => "background: #ccc;\ncolor: #000;\nwidth: 200px;",
-                    ],
-                ]
+                new StylePropertyType(),
+                [ 'label' => false ]
             );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefault('data_class', 'GovWiki\DbBundle\Entity\EnvironmentStyles');
     }
 
     /**
@@ -72,6 +42,6 @@ class AddStyleForm extends AbstractType
      */
     public function getName()
     {
-        return 'govwiki_admin_form_styles';
+        return 'govwiki_admin_form_style_row';
     }
 }

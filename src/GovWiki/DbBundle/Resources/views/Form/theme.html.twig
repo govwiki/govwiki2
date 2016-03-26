@@ -1,14 +1,14 @@
 {% block color_widget %}
-    {% spaceless %}
+{% spaceless %}
         <div class="input-group color-picker">
             <span class="input-group-addon"><i></i></span>
             {{- block('form_widget_simple') -}}
         </div>
-    {% endspaceless %}
+{% endspaceless %}
 {% endblock %}
 
 {% block conditions_widget %}
-    {% spaceless %}
+{% spaceless %}
         <div class="row condition-row">
             <div class="col-md-5 col-lg-5 col-xs-12">
                 {{- form_row(form.condition) -}}
@@ -20,7 +20,7 @@
                 <button type="button" class="btn btn-danger conditions-delete">Delete</button>
             </div>
         </div>
-    {% endspaceless %}
+{% endspaceless %}
 {% endblock conditions_widget %}
 
 {#
@@ -29,14 +29,14 @@
 
 #}
 {% block colorized_county_condition_widget %}
-    {% spaceless %}
+{% spaceless %}
         <div class="conditions">
             {{- form_row(form.colorized) -}}
             {{- form_row(form.fieldName) -}}
             {{- form_row(form.conditions) -}}
             <button type="button" class=" pull-right btn btn-default" id="conditions-add">Add new conditions</button>
         </div>
-    {% endspaceless %}
+{% endspaceless %}
 {% endblock %}
 
 {#
@@ -45,13 +45,16 @@
 
 #}
 {% block shape_widget %}
+{% spaceless %}
     <div class="input-group">
         {{ block('choice_widget') }}
         <span class="input-group-addon"><span class="shape-add"><i class="glyphicon glyphicon-plus"></i></span></span>
     </div>
+{% endspaceless %}
 {% endblock %}
 
 {% block delay_widget %}
+{% spaceless %}
     <div class="form-group">
         <label class="control-label">Legislation display time (hours:minutes)</label>
         <div class="delay-input">
@@ -59,4 +62,29 @@
             <input type='number' id="{{ id }}" value="{{ value.minutes }}" min="0" name="{{ full_name }}[minutes]">
         </div>
     </div>
+{% endspaceless %}
 {% endblock delay_widget %}
+
+{#
+
+    Style form row template.
+
+#}
+{% block govwiki_admin_form_style_row_widget %}
+{% spaceless %}
+    {% set name = form.name.vars.value %}
+    <h4>
+        {%- if (name) -%}
+            {{- name -}}
+        {%- else -%}
+            __property_name__
+        {%- endif -%}
+
+        {# Remove button #}
+        <span>
+            <a class="style-remove-button"><i class="glyphicon glyphicon-remove"></i></a>
+        </span>
+    </h4>
+    {{ block('form_widget') }}
+{% endspaceless %}
+{% endblock govwiki_admin_form_style_row_widget %}

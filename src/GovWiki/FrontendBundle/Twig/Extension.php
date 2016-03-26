@@ -98,8 +98,7 @@ class Extension extends \Twig_Extension
         $manager = $this->container->get('govwiki_api.manager.environment');
 
         if ($manager->getEnvironment()) {
-            $styles = $manager->getStyle();
-            $styles = json_encode($styles);
+            $styles = $manager->getEntity()->getStyle();
 
             /** @var MessageCatalogue $catalogue */
             $catalogue = $this->translator->getCatalogue();
@@ -117,8 +116,8 @@ class Extension extends \Twig_Extension
                 'hasElectedOfficials' => $manager
                         ->countElectedOfficials() > 0,
                 'title' => $manager->getTitle(),
-                'environment_logo' => $manager->getEntity()->getLogoHref(),
-                'bottomText' => $bottomText
+                'bottomText' => $bottomText,
+                'entity' => $manager->getEntity(),
             ];
         }
 

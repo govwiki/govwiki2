@@ -119,39 +119,46 @@ table td.button-row {
 /* ===================================================== */
 
 #environment-styles {
-  .style__data-param {
-    display: inline-block;
-    width: 120px;
-    text-align: left;
-  }
-  .environment-styles__delete {
-    color: #ff0000;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  .data-value-default {
-    margin-left: 26px;
-  }
-  .color-picker {
-    & span {
-      padding: 0;
-      padding-right: 8px;
-    }
-  }
-  div {
-    padding: 10px 0;
-  }
-  & h5 {
-    display: inline-block;
-  }
+   .style__data-param {
+      display: inline-block;
+      width: 120px;
+      text-align: left;
+   }
+   .environment-styles__delete {
+      color: #ff0000;
+      font-size: 16px;
+      cursor: pointer;
+   }
+   .data-value-default {
+      margin-left: 26px;
+   }
+   .color-picker {
+      & span {
+         padding: 0;
+         padding-right: 8px;
+      }
+   }
+   & h5 {
+      display: inline-block;
+   }
+   
+   & input {
+      font-size: 12px;
+      box-shadow: none;
+      outline: none;
+      border-bottom: 1px solid #ccc;
+      text-align: center;
+   }
 
-  & input {
-    font-size: 12px;
-    box-shadow: none;
-    outline: none;
-    border-bottom: 1px solid #ccc;
-    text-align: center;
-  }
+   h4 span {
+      position: relative;
+      top: -2px;
+   }
+
+   .style-remove-button {
+      font-size: 12px;
+      color: red;
+   }
 }
 
 #govwiki_admin_form_styles_properties {
