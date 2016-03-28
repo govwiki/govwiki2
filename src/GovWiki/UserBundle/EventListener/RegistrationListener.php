@@ -70,7 +70,7 @@ class RegistrationListener implements EventSubscriberInterface
     public function registrationInitialize(UserEvent $event)
     {
         $referer = $event->getRequest()->server->get('HTTP_REFERER');
-        if (strpos($referer, 'register') !== false) {
+        if (strpos($referer, 'register') === false) {
             $this->session->set('_security.main.target_path', $referer);
         }
     }
@@ -86,7 +86,7 @@ class RegistrationListener implements EventSubscriberInterface
         $user = $event->getUser();
         $governments = $user->getSubscribedTo();
 
-        if (! $governments->isEmpty()) {
+        if ((null !== $governments) && ! $governments->isEmpty()) {
             /** @var Government $government */
             foreach ($governments as $government) {
                 $chat = new Chat();
