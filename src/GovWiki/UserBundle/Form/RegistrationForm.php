@@ -42,7 +42,8 @@ class RegistrationForm extends AbstractType
 
                 return $qb
                     ->where($expr->eq('Government.environment', ':environment'))
-                    ->setParameter('environment', $environment);
+                    ->setParameter('environment', $environment)
+                    ->orderBy($expr->asc('Government.name'));
             };
 
         $builder

@@ -156,7 +156,7 @@
         <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
     {% if admin_environment is defined and admin_environment != '' %}
-        <link rel="stylesheet" href="{{ asset('/css/'~admin_environment~'.css') }}" />
+        <style>{{ admin_styles }}</style>
     {% endif %}
 {% endblock %}
 

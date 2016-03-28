@@ -41,6 +41,9 @@
                 {{ form_start(form) }}
                 {{ form_widget(form) }}
                 <button type="submit" class="btn btn-success">Add</button>
+                <a href="{{- path('govwiki_admin_subscribe_index', {
+                    'government': government.id
+                }) -}}" class="btn btn-danger">Cancel</a>
                 {{ form_end(form) }}
 
             </div>

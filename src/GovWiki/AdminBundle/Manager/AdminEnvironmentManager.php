@@ -11,6 +11,7 @@ use GovWiki\UserBundle\Entity\User;
 use \Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Act same as {@see EnvironmentManager} but use only in admin part of
@@ -188,18 +189,22 @@ class AdminEnvironmentManager
         if (null === $this->entity) {
             $user = $this->getUser();
 
-            if ($user->hasRole('ROLE_ADMIN')) {
-                /*
-                 * Admin allow to manage all environment.
-                 */
-                $this->entity = $this->em->getRepository('GovWikiDbBundle:Environment')
-                    ->getByName($this->environment);
-            } elseif ($user->hasRole('ROLE_MANAGER')) {
-                /*
-                 * Manager allow manage only some of environments.
-                 */
-                $this->entity = $this->em->getRepository('GovWikiDbBundle:Environment')
-                    ->getByName($this->environment, $user->getId());
+            if ($user instanceof User) {
+                if ($user->hasRole('ROLE_ADMIN')) {
+                    /*
+                     * Admin allow to manage all environment.
+                     */
+                    $this->entity = $this->em->getRepository('GovWikiDbBundle:Environment')
+                        ->getByName($this->environment);
+                } elseif ($user->hasRole('ROLE_MANAGER')) {
+                    /*
+                     * Manager allow manage only some of environments.
+                     */
+                    $this->entity = $this->em->getRepository('GovWikiDbBundle:Environment')
+                        ->getByName($this->environment, $user->getId());
+                } else {
+                    throw new AccessDeniedException();
+                }
             } else {
                 throw new AccessDeniedException();
             }

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -64,11 +65,11 @@ class Environment
     private $domain;
 
     /**
-     * Use bem like syntax.
+     * CSS styles.
      *
      * @var string
      *
-     * @ORM\Column(type="json_array", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $style;
 
@@ -168,6 +169,18 @@ class Environment
      * @ORM\Column(nullable=true)
      */
     private $logoHref;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(nullable=true)
+     */
+    private $logo;
+
+    /**
+     * @var UploadedFile
+     */
+    private $file;
 
     /**
      *
@@ -606,6 +619,44 @@ class Environment
     public function setLogoHref($logoHref)
     {
         $this->logoHref = $logoHref;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogo()
+    {
+        return $this->logo;
+    }
+
+    /**
+     * @param string $logo Path to environment logo.
+     *
+     * @return Environment
+     */
+    public function setLogo($logo)
+    {
+        $this->logo = $logo;
+    }
+
+    /**
+     * @return UploadedFile
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
+     * @param UploadedFile $file A UploadedFile instance.
+     *
+     * @return Environment
+     */
+    public function setFile($file)
+    {
+        $this->file = $file;
 
         return $this;
     }

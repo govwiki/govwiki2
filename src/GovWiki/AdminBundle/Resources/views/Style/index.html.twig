@@ -1,0 +1,174 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block title %}{{ parent() }} - style{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+        macro.breadcrumbElement(
+            admin_environment|capitalize ~' environment',
+            'govwiki_admin_main_show',
+            { 'environment': admin_environment }
+        )
+    }}
+    {{ macro.breadcrumbElement('Styles') }}
+{% endblock breadcrumb %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-8 col-md-offset-2">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Environment CSS styles</h3>
+                </div>
+                <div class="panel-body" id="environment-styles">
+
+                    <div class="buttons pull-right">
+                        <a class="btn btn-default" href="{{ path('govwiki_admin_style_import') }}">
+                            Import
+                        </a>
+                        <a class="btn btn-default" href="{{ path('govwiki_admin_style_export') }}">
+                            Export
+                        </a>
+                    </div>
+
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" id="new-style" class="btn btn-success">New style</button>
+                    <a class="btn btn-default" href="{{ path('govwiki_admin_main_show') }}">
+                        Back
+                    </a>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-window" class="modal fade">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">New style</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form id="style-form">
+
+                        {# Style display name. #}
+                        <div class="form-group">
+                            <label for="name" class="control-label">
+                                Name
+                            </label>
+                            <input class="form-control" type="text" id="name" name="name" required="required">
+                        </div>
+
+                        {# CSS selector. #}
+                        <div class="form-group">
+                            <label for="class_name">CSS selector</label>
+                            <input class="form-control" type="text" id="class_name" name="class_name" required="required">
+                        </div>
+
+                        {# Foreground color. #}
+                        <div class="form-group">
+                            <label for="foreground">Color</label>
+                            <div class="input-group color-picker colorpicker-element">
+                                <span class="input-group-addon"><i></i></span>
+                                <input type="text" id="foreground" name="foreground" required="required" class="form-control" value="#000000">
+                            </div>
+                        </div>
+
+                        {# Background color. #}
+                        <div class="form-group">
+                            <label for="background">Background</label>
+                            <div class="input-group color-picker colorpicker-element">
+                                <span class="input-group-addon"><i></i></span>
+                                <input type="text" id="background" name="background" required="required" class="form-control" value="#000000">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" id="add-new-style" class="btn btn-success">Add</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# Bootstrap colorpicker #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        $(function() {
+            var $modalWindow = $('#modal-window');
+            var $collectionContainer = $('#govwiki_admin_form_styles_styles');
+            var prototype = $collectionContainer.data('prototype');
+            var count = $collectionContainer.children().length;
+
+            $('.color-picker').colorpicker({
+                format: 'hex',
+                align: 'left'
+            });
+
+            /*
+                Add new style.
+              */
+            $('#new-style').click(function () {
+                $modalWindow.modal('show');
+            });
+            $('#add-new-style').click(function (){
+                var $newStyleForm = $('#style-form');
+                var data = $newStyleForm.serializeArray();
+
+                // Convert array to object.
+                data = data.reduce(function (map, object) {
+                    map[object.name] = object.value;
+                    return map;
+                }, {});
+
+                // Add new row to collection form.
+                prototype = prototype
+                        .replace(/__property_name__/g, data.name)
+                        .replace(/__name__/g, count)
+                        // Change property display name.
+                        .replace(/(\[name\]")/, '$1 value="'+ data.name +'"')
+                        // Change property class name.
+                        .replace(/(\[className\]")/, '$1 value="'+ data.class_name +'"')
+                        // Change foreground color.
+                        .replace(/(\[color\]".*?value=")[^"]*"/, '$1'+ data.foreground + '"')
+                        // Change background color.
+                        .replace(/(\[background\]".*?value=")[^"]*"/, '$1'+ data.background + '"');
+                count++;
+                $collectionContainer.append(prototype);
+
+                $modalWindow.modal('hide');
+                $('.color-picker').colorpicker({
+                    format: 'hex',
+                    align: 'left'
+                });
+            });
+
+            /*
+                Remove styles.
+             */
+            $('.style-remove-button').click(function() {
+                $(this).closest('.form-group').remove();
+            });
+        })
+    </script>
+{% endblock javascripts %}

@@ -137,7 +137,7 @@ class EnvironmentRepository extends EntityRepository
     /**
      * @param string $environment A Environment name.
      *
-     * @return array|null
+     * @return string
      */
     public function getStyle($environment)
     {
@@ -158,7 +158,7 @@ class EnvironmentRepository extends EntityRepository
                     ->getQuery()
                     ->getSingleResult()['style'];
             } catch (ORMException $e) {
-                return [];
+                return '';
             }
         }
 

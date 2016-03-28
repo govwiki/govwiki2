@@ -24,10 +24,7 @@ services:
 
     govwiki_admin.manager.style:
         class: GovWiki\AdminBundle\Manager\AdminStyleManager
-        arguments:
-            - @form.factory
-            - @govwiki_admin.manager.environment
-            - %kernel.root_dir%/../web/img/upload
+        arguments: [ @doctrine.orm.default_entity_manager ]
 
     govwiki_admin.listener.government_sync:
         class: GovWiki\AdminBundle\Listener\GovernmentUpdateListener

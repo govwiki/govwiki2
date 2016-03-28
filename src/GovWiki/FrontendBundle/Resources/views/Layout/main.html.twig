@@ -12,15 +12,13 @@
         {% block stylesheets %}{% endblock %}
     {% if environment is defined %}
         <link rel="icon" href="{{ asset('/img/'~environment~'/favicon.ico') }}" type="image/x-icon" />
-        <link rel="stylesheet" href="{{ asset('/css/'~environment~'.css') }}" />
+        <style>{{ styles }}</style>
     {% else %}
         <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
     {% endif %}
     </head>
 
     <body>
-        {# get environment contents #}
-        {{ environment_content.init(environment) }}
         {# Header #}
         <header class="container {% if environment == 'puerto_rico' %}puerto{% endif %}">
             {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
