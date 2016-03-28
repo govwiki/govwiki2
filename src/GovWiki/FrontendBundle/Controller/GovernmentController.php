@@ -137,14 +137,19 @@ class GovernmentController extends Controller
         */
         foreach ($finData as &$statement) {
             uasort($statement, function ($a, $b) {
-                $a = $a['display_order'];
-                $b = $b['display_order'];
+                if (array_key_exists('totalfunds', $a) &&
+                    array_key_exists('totalfunds', $b)) {
+                    $a = $a['totalfunds'];
+                    $b = $b['totalfunds'];
 
-                if ($a === $b) {
-                    return 0;
+                    if ($a === $b) {
+                        return 0;
+                    }
+
+                    return ($a < $b) ? 1: -1;
                 }
 
-                return ($a < $b) ? -1: 1;
+                return 0;
             });
         }
 
