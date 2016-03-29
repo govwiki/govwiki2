@@ -8,6 +8,9 @@
 
             {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
 
+            {% set isSalariesShown = government.salaries is defined and government.salaries|length > 0 %}
+            {% set isPensionsShown = government.pensions is defined and government.pensions|length > 0 %}
+
             {# Government name & wikipedia links #}
             <nav class="row">
                 <div class="col-md-12 text-right">
@@ -79,8 +82,16 @@
                                 {% endfor %}
                             {% endif %}
 
+                            {% if isSalariesShown %}
+                                <li><a class="tabs tab_salaries" href="#Salaries" aria-controls="Salaries" role="tab" data-toggle="tab">Salaries</a></li>
+                            {% endif %}
+
+                            {% if isPensionsShown %}
+                                <li><a class="tabs tab_pensions" href="#Pensions" aria-controls="Pensions" role="tab" data-toggle="tab">Pensions</a></li>
+                            {% endif %}
+
                             {% if showFinStmt %}
-                                <li><a tab_financial_statements" href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">{{ 'gov.financial_statements'|trans }}</a></li>
+                                <li><a class="tabs tab_financial_statements" href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">{{ 'gov.financial_statements'|trans }}</a></li>
                             {% endif %}
 
                         </ul>
@@ -124,6 +135,26 @@
                                 </div>
 
                             {% endfor %}
+
+                            {% if isSalariesShown %}
+                                <div class="tab-pane" id="Salaries">
+
+                                    {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:salaries.html.twig' with {
+                                    'salaries': government.salaries
+                                    } %}
+
+                                </div>
+                            {% endif %}
+
+                            {% if isPensionsShown %}
+                                <div class="tab-pane" id="Pensions">
+
+                                {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:pensions.html.twig' with {
+                                'pensions': government.pensions
+                                } %}
+
+                                </div>
+                            {% endif %}
 
                             {# Financial Statements (if exists) #}
                             {% if showFinStmt %}

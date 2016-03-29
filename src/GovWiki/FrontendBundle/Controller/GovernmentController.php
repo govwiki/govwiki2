@@ -94,6 +94,8 @@ class GovernmentController extends Controller
                 $currentYear
             );
 
+        dump($data);
+
         $finData = $data['government']['finData'];
         /*
          * Translate.

@@ -216,6 +216,19 @@ class Government
      */
     private $chat;
 
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Salary", mappedBy="government")
+     */
+    private $salaries;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Pension", mappedBy="government")
+     */
+    private $pensions;
 
     /**
      * Constructor
@@ -226,6 +239,8 @@ class Government
         $this->finData          = new ArrayCollection();
         $this->legislations     = new ArrayCollection();
         $this->subscribers      = new ArrayCollection();
+        $this->salaries         = new ArrayCollection();
+        $this->pensions         = new ArrayCollection();
     }
 
     /**
@@ -1008,10 +1023,74 @@ class Government
     /**
      * Get chat
      *
-     * @return \GovWiki\DbBundle\Entity\Chat 
+     * @return Chat
      */
     public function getChat()
     {
         return $this->chat;
+    }
+
+    /**
+     * @param Salary $salary A Salary entity instance.
+     *
+     * @return Government
+     */
+    public function addSalaries(Salary $salary)
+    {
+        $this->salaries[] = $salary;
+
+        return $this;
+    }
+
+    /**
+     * @param Salary $salary A Salary entity instance.
+     *
+     * @return Government
+     */
+    public function removeSalaries(Salary $salary)
+    {
+        $this->salaries->removeElement($salary);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getSalaries()
+    {
+        return $this->salaries;
+    }
+
+    /**
+     * @param Pension $pension A Pension entity instance.
+     *
+     * @return Government
+     */
+    public function addPensions(Pension $pension)
+    {
+        $this->pensions[] = $pension;
+
+        return $this;
+    }
+
+    /**
+     * @param Pension $pension A Pension entity instance.
+     *
+     * @return Government
+     */
+    public function removePensions(Pension $pension)
+    {
+        $this->pensions->removeElement($pension);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getPensions()
+    {
+        return $this->pensions;
     }
 }
