@@ -137,14 +137,18 @@ class GovernmentController extends Controller
         */
         foreach ($finData as &$statement) {
             uasort($statement, function ($a, $b) {
-                $a = $a['display_order'];
-                $b = $b['display_order'];
+                if (array_key_exists('totalfunds', $a) &&
+                    array_key_exists('totalfunds', $b)) {
+                    $a = $a['totalfunds'];
+                    $b = $b['totalfunds'];
 
-                if ($a === $b) {
-                    return 0;
-                }
+                    if ($a === $b) {
+                        return 0;
+                    }
 
-                return ($a < $b) ? -1: 1;
+                    return ($a < $b) ? 1: -1; }
+
+                return 0;
             });
         }
 
@@ -213,22 +217,22 @@ From ' . $user_email;
                         $emails,
                         $env_admin_email,
                         'New message in ' . $government->getName(),
-                        array(
+                        [
                             'author' => $user_email,
                             'government_name' => $government->getName(),
                             'message_text' => $new_message->getText()
-                        )
+                        ]
                     );
 
                     $em->flush();
 
                     $this->addFlash('message_saved_success', 'Your message was sent to all subscribers of the government.');
 
-                    return $this->redirectToRoute('government', array(
+                    return $this->redirectToRoute('government', [
                         'environment' => $env_name,
                         'altTypeSlug' => $altTypeSlug,
                         'slug' => $slug
-                    ));
+                    ]);
                 }
             }
         }
@@ -264,7 +268,7 @@ From ' . $user_email;
      */
     private function getPhones($em, $chat, $government, $author)
     {
-        $phones = array();
+        $phones = [];
 
         $members = $chat->getMembers();
         /** @var User $member */
