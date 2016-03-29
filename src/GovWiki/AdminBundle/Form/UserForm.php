@@ -71,7 +71,7 @@ class UserForm extends AbstractType
                     'class' => 'GovWikiDbBundle:Environment',
                     'choice_label' => 'name',
                     'expanded' => false,
-                    'multiple' => true,
+                    'multiple' => false,
                     'required' => false,
                 ]
             )

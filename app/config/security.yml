@@ -1,5 +1,7 @@
 security:
     providers:
+        our_db_provider:
+            id: govwiki.user_bundle.own_user_provider
         fos_userbundle:
             id: fos_user.user_provider.username
 
@@ -17,7 +19,7 @@ security:
         main:
             access_denied_handler: govwiki.user_bundle.redirection.access_denied
             form_login:
-                provider: fos_userbundle
+                provider: our_db_provider
                 check_path: fos_user_security_check
                 login_path: fos_user_security_login
                 success_handler: govwiki.user_bundle.handler.login
