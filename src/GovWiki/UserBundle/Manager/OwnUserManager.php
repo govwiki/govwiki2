@@ -40,11 +40,13 @@ class OwnUserManager extends UserManager
             throw new UsernameNotFoundException(sprintf('No user with name "%s" was found.', $username));
         }
 
-        /** @var Environment $current_environment */
-        $current_environment = $this->environment_manager->getEntity();
-        $user_environment_list = $user->getEnvironments();
-        if (!$user_environment_list->contains($current_environment)) {
-            throw new UsernameNotFoundException(sprintf('No user with name "%s" was found.', $username));
+        if (!$user->hasRole('ROLE_ADMIN')) {
+            /** @var Environment $current_environment */
+            $current_environment = $this->environment_manager->getEntity();
+            $user_environment_list = $user->getEnvironments();
+            if (!$user_environment_list->contains($current_environment)) {
+                throw new UsernameNotFoundException(sprintf('No user with name "%s" was found.', $username));
+            }
         }
 
         return $user;
