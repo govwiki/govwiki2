@@ -4,8 +4,11 @@ namespace GovWiki\UserBundle\Form;
 
 use Doctrine\ORM\EntityRepository;
 use GovWiki\ApiBundle\Manager\EnvironmentManager;
+use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 /**
  * Class RegistrationForm
@@ -32,17 +35,18 @@ class RegistrationForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $environment = $this->manager->getEntity()->getId();
+        $environment = $this->manager->getEntity();
+        $environment_id = $environment->getId();
 
         // Function for query builder generation.
         $queryBuilderFunction =
-            function (EntityRepository $repository) use ($environment) {
+            function (EntityRepository $repository) use ($environment_id) {
                 $qb = $repository->createQueryBuilder('Government');
                 $expr = $qb->expr();
 
                 return $qb
                     ->where($expr->eq('Government.environment', ':environment'))
-                    ->setParameter('environment', $environment)
+                    ->setParameter('environment', $environment_id)
                     ->orderBy($expr->asc('Government.name'));
             };
 
@@ -66,7 +70,14 @@ class RegistrationForm extends AbstractType
                     'label' => 'Subscribe to',
                     'query_builder' => $queryBuilderFunction,
                 ]
-            );
+            )
+            ->addEventListener(FormEvents::POST_SUBMIT, function(FormEvent $event) use ($environment) {
+                /** @var User $user */
+                $user = $event->getData();
+                $user->addEnvironment($environment);
+                $event->setData($user);
+            })
+        ;
     }
 
     /**
