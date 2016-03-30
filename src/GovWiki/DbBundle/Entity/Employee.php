@@ -5,12 +5,12 @@ namespace GovWiki\DbBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Job
+ * Employee
  *
- * @ORM\Table("jobs")
+ * @ORM\Table("employees")
  * @ORM\Entity()
  */
-class Job
+class Employee
 {
     /**
      * @var integer
@@ -26,14 +26,14 @@ class Job
      *
      * @ORM\Column()
      */
-    private $title;
+    private $name;
 
     /**
      * @return string
      */
     public function __toString()
     {
-        return $this->title;
+        return $this->name;
     }
 
     /**
@@ -49,19 +49,19 @@ class Job
     /**
      * @return string
      */
-    public function getTitle()
+    public function getName()
     {
-        return $this->title;
+        return $this->name;
     }
 
     /**
-     * @param string $title Job title.
+     * @param string $name Job title.
      *
-     * @return Job
+     * @return Employee
      */
-    public function setTitle($title)
+    public function setName($name)
     {
-        $this->title = $title;
+        $this->name = $name;
 
         return $this;
     }

@@ -8,7 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
  * Salary
  *
  * @ORM\Table("salaries")
- * @ORM\Entity()
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\SalaryRepository"
+ * )
  */
 class Salary extends AbstractEmployeeDetails
 {

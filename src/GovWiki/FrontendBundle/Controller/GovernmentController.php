@@ -4,17 +4,15 @@ namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Chat;
-use GovWiki\DbBundle\Entity\EmailMessage;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\DbBundle\Entity\Message;
-use GovWiki\DbBundle\Entity\TwilioSmsMessages;
 use GovWiki\DbBundle\Form\MessageType;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManager;
@@ -239,6 +237,12 @@ From ' . $user_email;
             }
         }
         $data['message_form'] = $message_form->createView();
+        $data['hasSalaries'] = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Salary')
+            ->has($data['government']['id'], $data['government']['currentYear']);
+        $data['hasPensions'] = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Pension')
+            ->has($data['government']['id'], $data['government']['currentYear']);
 
         return $data;
     }

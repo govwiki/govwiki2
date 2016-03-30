@@ -212,21 +212,10 @@ class GovernmentRepository extends EntityRepository
         $data = $qb
             ->select(
                 'Government',
-                'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
-                'Salary, Pension, SalaryJob, PensionJob'
+                'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}'
             )
             ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
             ->leftJoin('Government.environment', 'Environment')
-            ->leftJoin('Government.salaries', 'Salary', Join::WITH, $expr->eq(
-                'Salary.year',
-                $year
-            ))
-            ->leftJoin('Government.pensions', 'Pension', Join::WITH, $expr->eq(
-                'Pension.year',
-                $year
-            ))
-            ->leftJoin('Salary.job', 'SalaryJob')
-            ->leftJoin('Pension.job', 'PensionJob')
             ->where(
                 $expr->andX(
                     $expr->eq(
