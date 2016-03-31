@@ -193,7 +193,7 @@ $(function() {
                 url = '/' + firstElement + '/api/v1/government/'+ government.id
                     +'/salaries?'+ query;
             } else {
-                url = '/api/v1/governments/'+ government.id +'/salaries?'+ query;
+                url = '/api/v1/government/'+ government.id +'/salaries?'+ query;
             }
         }
 
@@ -225,7 +225,7 @@ $(function() {
                 url = '/' + firstElement + '/api/v1/government/'+ government.id
                 +'/salaries?'+ query;
             } else {
-                url = '/api/v1/governments/'+ government.id +'/salaries?'+ query;
+                url = '/api/v1/government/'+ government.id +'/salaries?'+ query;
             }
         }
 
