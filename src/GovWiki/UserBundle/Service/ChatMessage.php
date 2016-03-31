@@ -7,6 +7,7 @@ use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\EmailMessage;
 use GovWiki\DbBundle\Entity\TwilioSmsMessages;
 use GovWiki\UserBundle\Entity\User;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Class ChatMessage
@@ -15,7 +16,7 @@ use GovWiki\UserBundle\Entity\User;
 class ChatMessage
 {
     /**
-     * @var object
+     * @var EntityManager
      */
     private $em;
 
@@ -25,7 +26,8 @@ class ChatMessage
     private $templating;
 
     /**
-     * @param object $em
+     * @param EntityManager $em
+     * @param object $templating
      */
     public function __construct($em, $templating)
     {
@@ -39,10 +41,11 @@ class ChatMessage
      * @param Chat $chat
      * @param Government $government
      * @param string $author_email
+     * @param boolean $is_author_admin
      *
      * @return array
      */
-    public function getChatMessageReceiversEmailList($chat, $government, $author_email)
+    public function getChatMessageReceiversEmailList($chat, $government, $author_email, $is_author_admin = false)
     {
         $emails = array();
 
@@ -56,26 +59,30 @@ class ChatMessage
             }
         }
 
+        if (!$is_author_admin) {
+            $emails[] = $government->getEnvironment()->getAdminEmail();
+        }
+
         // Add to $emails array emails of environment managers.
-        $env = $government->getEnvironment();
+        /*$env = $government->getEnvironment();
         $env_users = $env->getUsers();
         /** @var User $env_user */
-        foreach ($env_users as $env_user) {
+        /*foreach ($env_users as $env_user) {
             $env_user_email = $env_user->getEmail();
             if ($env_user->hasRole('ROLE_MANAGER') && $env_user_email != $author_email) {
                 $emails[] = $env_user_email;
             }
-        }
+        }*/
 
         // Add to $emails array emails of admins.
-        $admins_list = $this->em->getRepository('GovWikiUserBundle:User')->getAdminsList();
+        /*$admins_list = $this->em->getRepository('GovWikiUserBundle:User')->getAdminsList();*/
         /** @var User $admin */
-        foreach ($admins_list as $admin) {
+        /*foreach ($admins_list as $admin) {
             $admin_email = $admin->getEmail();
             if ($admin_email != $author_email) {
                 $emails[] = $admin_email;
             }
-        }
+        }*/
 
         return array_unique($emails);
     }
@@ -102,24 +109,24 @@ class ChatMessage
             }
         }
 
-        $env = $government->getEnvironment();
-        $env_users = $env->getUsers();
+        /*$env = $government->getEnvironment();
+        $env_users = $env->getUsers();*/
         /** @var User $user */
-        foreach ($env_users as $user) {
+        /*foreach ($env_users as $user) {
             $user_phone = $user->getPhone();
             if ($user_phone != $author_phone && $user->hasRole('ROLE_MANAGER') && !empty($user_phone)) {
                 $phones[] = $user_phone;
             }
-        }
+        }*/
 
-        $admins_list = $this->em->getRepository('GovWikiUserBundle:User')->getAdminsList();
+        /*$admins_list = $this->em->getRepository('GovWikiUserBundle:User')->getAdminsList();*/
         /** @var User $admin */
-        foreach ($admins_list as $admin) {
+        /*foreach ($admins_list as $admin) {
             $admin_phone = $admin->getPhone();
             if ($admin_phone != $author_phone && !empty($admin_phone)) {
                 $phones[] = $admin_phone;
             }
-        }
+        }*/
 
         return array_unique($phones);
     }

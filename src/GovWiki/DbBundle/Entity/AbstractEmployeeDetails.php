@@ -26,9 +26,9 @@ class AbstractEmployeeDetails
     protected $government;
 
     /**
-     * @var string
+     * @var Employee
      *
-     * @ORM\Column()
+     * @ORM\ManyToOne(targetEntity="Employee")
      */
     private $employee;
 

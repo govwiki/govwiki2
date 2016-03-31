@@ -7,6 +7,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
+use GovWiki\DbBundle\Entity\Document;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Utils\Functions;
@@ -213,20 +214,19 @@ class GovernmentRepository extends EntityRepository
             ->select(
                 'Government',
                 'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
-                'Salary, Pension, SalaryJob, PensionJob'
+                'partial Document.{id, name, link, type}'
             )
             ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
             ->leftJoin('Government.environment', 'Environment')
-            ->leftJoin('Government.salaries', 'Salary', Join::WITH, $expr->eq(
-                'Salary.year',
-                $year
-            ))
-            ->leftJoin('Government.pensions', 'Pension', Join::WITH, $expr->eq(
-                'Pension.year',
-                $year
-            ))
-            ->leftJoin('Salary.job', 'SalaryJob')
-            ->leftJoin('Pension.job', 'PensionJob')
+            ->leftJoin(
+                'Government.documents',
+                'Document',
+                JOIN::WITH,
+                $expr->andX(
+                    $expr->eq('Document.government', 'Government.id'),
+                    $expr->eq('Document.year', $year)
+                )
+            )
             ->where(
                 $expr->andX(
                     $expr->eq(
@@ -310,6 +310,18 @@ class GovernmentRepository extends EntityRepository
             }
 
             $government['finData'] = $financialStatements;
+
+            // Find latest audit url.
+            $latestAuditUrl = null;
+            foreach ($government['documents'] as $document) {
+                if (Document::LAST_AUDIT === $document['type']) {
+                    $latestAuditUrl = $document['link'];
+                    break;
+                }
+            }
+
+
+            $government['latestAuditUrl'] = $latestAuditUrl;
         }
 
         return $government;

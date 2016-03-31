@@ -1,5 +1,6 @@
 
 $(function() {
+    var government = JSON.parse(window.gw.government);
 
     var graphs = require('./graphs.js');
     new (require('./rank-popover.js'))({
@@ -170,5 +171,72 @@ $(function() {
 
         window.location.search = '?year=' + selectedYear;
         window.localStorage.setItem('tab', openedTab);
+    });
+
+    // Table pagination handler.
+    var $pane = $('.paginate');
+
+    $pane.on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $this = $(this);
+        var $pane = $this.closest('.tab-pane');
+        var url = $this.attr('href');
+
+        if (url.indexOf('api') == -1) {
+            url = url.substr(1, url.length);
+            var firstElement = url.substr(0, url.indexOf('/'));
+            var query = url.substr(url.indexOf('?') + 1, url.length);
+
+            if ('app_dev.php' == firstElement) {
+                url = '/' + firstElement + '/api/v1/government/'+ government.id
+                    +'/salaries?'+ query;
+            } else {
+                url = '/api/v1/governments/'+ government.id +'/salaries?'+ query;
+            }
+        }
+
+        var $mainContent = $pane.find('.tab-pane-main');
+        $mainContent.html('');
+
+        var $loader = $('.tab-content').find('.loader');
+        $loader.show();
+        $.ajax(url).success(function(data) {
+            $loader.hide();
+            $mainContent.html(data);
+        });
+    });
+
+    $pane.on('click', '.sortable a', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $this = $(this);
+        var $pane = $this.closest('.tab-pane');
+        var url = $this.attr('href');
+
+        if (url.indexOf('api') == -1) {
+            url = url.substr(1, url.length);
+            var firstElement = url.substr(0, url.indexOf('/'));
+            var query = url.substr(url.indexOf('?') + 1, url.length);
+
+            if ('app_dev.php' == firstElement) {
+                url = '/' + firstElement + '/api/v1/government/'+ government.id
+                +'/salaries?'+ query;
+            } else {
+                url = '/api/v1/governments/'+ government.id +'/salaries?'+ query;
+            }
+        }
+
+        var $mainContent = $pane.find('.tab-pane-main');
+        $mainContent.html('');
+
+        var $loader = $('.tab-content').find('.loader');
+        $loader.show();
+        $.ajax(url).success(function(data) {
+            $loader.hide();
+            $mainContent.html(data);
+        });
     });
 });

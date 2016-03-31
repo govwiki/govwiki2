@@ -44,7 +44,9 @@ class EnvironmentType extends AbstractType
                         ->where($expr->eq('Locale.environment', ':id'))
                         ->setParameter('id', $id);
                 },
-            ]);
+            ])
+            ->add('subscribable', 'checkbox', [ 'required' => false ])
+        ;
     }
 
     /**

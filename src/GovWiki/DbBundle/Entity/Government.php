@@ -160,13 +160,6 @@ class Government
     private $wikipediaPageName;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="latest_audit_url", nullable=true)
-     */
-    private $latestAuditUrl;
-
-    /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
@@ -229,6 +222,13 @@ class Government
      * @ORM\OneToMany(targetEntity="Pension", mappedBy="government")
      */
     private $pensions;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Document", mappedBy="government")
+     */
+    private $documents;
 
     /**
      * Constructor
@@ -696,30 +696,6 @@ class Government
     }
 
     /**
-     * Set latestAuditUrl
-     *
-     * @param string $latestAuditUrl
-     *
-     * @return Government
-     */
-    public function setLatestAuditUrl($latestAuditUrl)
-    {
-        $this->latestAuditUrl = $latestAuditUrl;
-
-        return $this;
-    }
-
-    /**
-     * Get latestAuditUrl
-     *
-     * @return string
-     */
-    public function getLatestAuditUrl()
-    {
-        return $this->latestAuditUrl;
-    }
-
-    /**
      * Set county
      *
      * @param boolean $county
@@ -1092,5 +1068,37 @@ class Government
     public function getPensions()
     {
         return $this->pensions;
+    }
+
+    /**
+     * @param Document $document A Document entity instance.
+     *
+     * @return Government
+     */
+    public function addDocuments(Document $document)
+    {
+        $this->documents[] = $document;
+
+        return $this;
+    }
+
+    /**
+     * @param Document $document A Document entity instance.
+     *
+     * @return Government
+     */
+    public function removeDocuments(Document $document)
+    {
+        $this->documents->removeElement($document);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getDocuments()
+    {
+        return $this->documents;
     }
 }

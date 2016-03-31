@@ -8,9 +8,6 @@
 
             {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
 
-            {% set isSalariesShown = government.salaries is defined and government.salaries|length > 0 %}
-            {% set isPensionsShown = government.pensions is defined and government.pensions|length > 0 %}
-
             {# Government name & wikipedia links #}
             <nav class="row">
                 <div class="col-md-12 text-right">
@@ -53,7 +50,12 @@
             </header>
 
             {% for flash_message in app.session.flashbag.get('message_saved_success') %}
-                <h5>{{ flash_message }}</h5>
+                <div class="row">
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ flash_message }}
+                    </div>
+                </div>
             {% endfor %}
 
             <section class="row">
@@ -82,11 +84,11 @@
                                 {% endfor %}
                             {% endif %}
 
-                            {% if isSalariesShown %}
+                            {% if hasSalaries %}
                                 <li><a class="tabs tab_salaries" href="#Salaries" aria-controls="Salaries" role="tab" data-toggle="tab">Salaries</a></li>
                             {% endif %}
 
-                            {% if isPensionsShown %}
+                            {% if hasPensions %}
                                 <li><a class="tabs tab_pensions" href="#Pensions" aria-controls="Pensions" role="tab" data-toggle="tab">Pensions</a></li>
                             {% endif %}
 
@@ -99,6 +101,8 @@
 
                     {# Tab content #}
                     <div class="tab-content">
+
+                        <div class="loader"></div>
                         {% set tab_id_list = [] %}
                         {% if (formats is defined) and (formats is not empty) %}
 
@@ -136,22 +140,23 @@
 
                             {% endfor %}
 
-                            {% if isSalariesShown %}
-                                <div class="tab-pane" id="Salaries">
-
-                                    {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:salaries.html.twig' with {
-                                    'salaries': government.salaries
-                                    } %}
-
+                            {% if hasSalaries %}
+                                <div class="tab-pane paginate" id="Salaries">
+                                    <div class="tab-pane-main">
+                                        {{ render(controller('GovWikiApiBundle:V1/Government:salaries', {
+                                            'government': government.id
+                                        }))}}
+                                    </div>
                                 </div>
                             {% endif %}
 
-                            {% if isPensionsShown %}
-                                <div class="tab-pane" id="Pensions">
-
-                                {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:pensions.html.twig' with {
-                                'pensions': government.pensions
-                                } %}
+                            {% if hasPensions %}
+                                <div class="tab-pane paginate" id="Pensions">
+                                    <div class="tab-pane-main">
+                                        {{ render(controller('GovWikiApiBundle:V1/Government:pensions', {
+                                            'government': government.id
+                                        }))}}
+                                    </div>
 
                                 </div>
                             {% endif %}
@@ -180,7 +185,7 @@
             <h3 class="text-center">No data</h3>
         {% endif %}
 
-        {% if app.user %}
+        {% if app.user and environment_is_subscribable %}
             <div class="subscribe-row">
                 <a href="{{-
                     govwiki_path('govwiki_frontend_government_subscribe', {

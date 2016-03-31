@@ -19,6 +19,7 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     admin_email:  ~
+    chat_email: ~
     email_subject: ~
     debug: ~
 

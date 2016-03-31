@@ -8,7 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
  * Pension
  *
  * @ORM\Table("pensions")
- * @ORM\Entity()
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\PensionRepository"
+ * )
  */
 class Pension extends AbstractEmployeeDetails
 {

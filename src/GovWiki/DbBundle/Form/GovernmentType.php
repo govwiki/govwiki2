@@ -44,8 +44,7 @@ class GovernmentType extends AbstractType
 //            ->add('city')
             ->add('wikipediaPageName')
             ->add('secondaryLogo', 'file', [ 'required' => false ])
-            ->add('secondaryLogoUrl')
-            ->add('latestAuditUrl');
+            ->add('secondaryLogoUrl');
     }
 
     /**
