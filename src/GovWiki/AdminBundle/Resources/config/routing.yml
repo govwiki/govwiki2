@@ -93,3 +93,7 @@ subscriber:
 styles:
     resource: @GovWikiAdminBundle/Controller/StyleController.php
     type:     annotation
+
+document:
+    resource: @GovWikiAdminBundle/Controller/DocumentController.php
+    type:     annotation
