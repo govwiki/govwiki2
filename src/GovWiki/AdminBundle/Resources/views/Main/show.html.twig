@@ -76,9 +76,11 @@
                             <h6>Managers</h6>
                             <ul>
                                 {% for user in environment.users %}
-                                    <li>
-                                        <a href="{{ path('govwiki_admin_user_edit', {'id': user.id}) }}">{{ user }}</a>
-                                    </li>
+                                    {% if user.hasRole('ROLE_MANAGER') %}
+                                        <li>
+                                            <a href="{{ path('govwiki_admin_user_edit', {'id': user.id}) }}">{{ user }}</a>
+                                        </li>
+                                    {% endif %}
                                 {% endfor %}
                             </ul>
                         </div>
