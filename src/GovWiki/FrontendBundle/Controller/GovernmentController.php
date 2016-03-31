@@ -92,8 +92,6 @@ class GovernmentController extends Controller
                 $currentYear
             );
 
-        dump($data);
-
         $finData = $data['government']['finData'];
         /*
          * Translate.
@@ -243,6 +241,8 @@ From ' . $user_email;
         $data['hasPensions'] = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:Pension')
             ->has($data['government']['id'], $data['government']['currentYear']);
+
+        $data['environment_is_subscribable'] = $manager->getEntity()->getSubscribable();
 
         return $data;
     }

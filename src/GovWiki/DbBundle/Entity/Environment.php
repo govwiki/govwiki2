@@ -183,6 +183,13 @@ class Environment
     private $file;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $subscribable = false;
+
+    /**
      *
      */
     public function __construct()
@@ -659,5 +666,28 @@ class Environment
         $this->file = $file;
 
         return $this;
+    }
+
+    /**
+     * Set subscribable
+     *
+     * @param boolean $subscribable
+     * @return Environment
+     */
+    public function setSubscribable($subscribable)
+    {
+        $this->subscribable = $subscribable;
+
+        return $this;
+    }
+
+    /**
+     * Get subscribable
+     *
+     * @return boolean 
+     */
+    public function getSubscribable()
+    {
+        return $this->subscribable;
     }
 }
