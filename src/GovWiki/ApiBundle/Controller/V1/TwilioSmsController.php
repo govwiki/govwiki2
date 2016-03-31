@@ -82,10 +82,11 @@ From ' . $sms_sender_email;
 
             // Save Email messages into base
             $emails = $service_chat_message->getChatMessageReceiversEmailList($chat, $government, $sms_sender_email);
-            $env_admin_email = $government->getEnvironment()->getAdminEmail();
+            //$env_admin_email = $government->getEnvironment()->getAdminEmail();
+            $chat_email = $this->getParameter('chat_email');
             $service_chat_message->persistEmailMessages(
                 $emails,
-                $env_admin_email,
+                $chat_email,
                 'New message in ' . $government->getName(),
                 array(
                     'author' => $sms_sender_email,
