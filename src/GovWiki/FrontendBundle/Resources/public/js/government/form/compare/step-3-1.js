@@ -162,7 +162,7 @@ Step.prototype.handler_onChangeSelect = function() {
 
         var $el = $(e.target);
         var $selected = $el.find('option:selected');
-        var tab = $selected.parent('optgroup').attr('label');
+        var tab = $selected.parent('optgroup').data('name');
 
         var category = $selected.val();
 
