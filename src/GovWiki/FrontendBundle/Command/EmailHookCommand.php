@@ -2,6 +2,8 @@
 
 namespace GovWiki\FrontendBundle\Command;
 
+use GovWiki\UserBundle\Entity\User;
+use GovWiki\UserBundle\Service\ChatMessage;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,6 +37,8 @@ class EmailHookCommand extends ContainerAwareCommand
         $isMessageBegin = false;
         $message = '';
 
+        $logger->addInfo('Got email message.');
+
         /*
          * Process stream and fetch email 'From:' field and email message body.
          */
@@ -67,5 +71,67 @@ class EmailHookCommand extends ContainerAwareCommand
             }
         }
         fclose($fData);
+
+        if ($from && $message) {
+            /*
+             * Persist new message.
+             */
+            $em = $this->getContainer()
+                ->get('doctrine.orm.default_entity_manager');
+            $logger->addInfo('Email from: '. $from);
+
+            // Get user with specified email.
+            /** @var User $user */
+            $user = $this->getContainer()
+                ->get('fos_user.user_manager')
+                ->findUserByEmail($from);
+
+            // Get government and chat.
+            $government = $em
+                ->getRepository('GovWikiDbBundle:Government')
+                ->getWithChatBySubscriber($user->getId());
+            $chat = $government->getChat();
+
+            /** @var ChatMessage $chatMessageService */
+            $chatMessageService = $this->getContainer()
+                ->get('govwiki.user_bundle.chat_message');
+
+            // Get all subscribers emails.
+            $emailList = $chatMessageService
+                ->getChatMessageReceiversEmailList(
+                    $chat,
+                    $government,
+                    $from,
+                    $user->isAdmin()
+                );
+
+            // Get all subscribers phones.
+            $phoneList = $chatMessageService
+                ->getChatMessageReceiversPhonesList(
+                    $chat,
+                    $government,
+                    $user->getPhone()
+                );
+
+            $chatMessageService->persistEmailMessages(
+                $emailList,
+                $from,
+                $government->getName(),
+                [
+                    'government_name' => $government->getName(),
+                    'author' => $user->getUsername(),
+                    'message_text' => $message,
+                ]
+            );
+
+            $chatMessageService->persistTwilioSmsMessages(
+                $phoneList,
+                $user->getPhone(),
+                $message
+            );
+
+            $logger->addInfo('Message persisted');
+            $em->flush();
+        }
     }
 }
