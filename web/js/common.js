@@ -104,7 +104,7 @@
 /* 1 */
 /***/ function(module, exports) {
 
-	eval("function changeLocale(localeShortName, changeLocaleUrl, current_page_route) {\n    if ('government' == current_page_route) {\n        var openedTab = $('.tab-titles').find('li.active').find('a').attr('href');\n        window.localStorage.setItem('tab', openedTab);\n    }\n\n    $.ajax({\n        url: changeLocaleUrl,\n        data: {'current_url': window.location.pathname, 'locale_short_name': localeShortName}\n    });\n}\n\nmodule.exports = changeLocale;\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/GovWiki/FrontendBundle/Resources/public/js/localization/localization.js\n ** module id = 1\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/GovWiki/FrontendBundle/Resources/public/js/localization/localization.js?");
+	eval("function changeLocale(localeShortName, changeLocaleUrl, current_page_route) {\n    var loader_wrap = $('.loader_wrap');\n    loader_wrap.css({'opacity': 1, 'visibility': 'visible'});\n\n    if ('government' == current_page_route) {\n        var openedTab = $('.tab-titles').find('li.active').find('a').attr('href');\n        window.localStorage.setItem('tab', openedTab);\n    }\n\n    $.ajax({\n        url: changeLocaleUrl,\n        data: {'current_url': window.location.pathname, 'locale_short_name': localeShortName}\n    });\n}\n\nmodule.exports = changeLocale;\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/GovWiki/FrontendBundle/Resources/public/js/localization/localization.js\n ** module id = 1\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/GovWiki/FrontendBundle/Resources/public/js/localization/localization.js?");
 
 /***/ },
 /* 2 */,
