@@ -435,4 +435,12 @@ class User extends BaseUser
     {
         return $this->chats;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isAdmin()
+    {
+        return in_array('ROLE_ADMIN', $this->roles, true);
+    }
 }
