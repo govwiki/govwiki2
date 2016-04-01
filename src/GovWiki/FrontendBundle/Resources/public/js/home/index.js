@@ -894,7 +894,8 @@ $(function(){
 
                 // Mark others with gray color
                 if (activeConditionsInRangeLegend.length > 0) {
-                    var diffConditions = defaultConditions.filter(function(condition) {
+                    var cpyDefaultConditions = JSON.parse(JSON.stringify(defaultConditions))
+                    var diffConditions = cpyDefaultConditions.filter(function(condition) {
                         var index = findCondition(activeConditionsInRangeLegend, condition);
                         return index === -1;
                     });
