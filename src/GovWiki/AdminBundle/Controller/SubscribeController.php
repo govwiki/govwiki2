@@ -5,6 +5,7 @@ namespace GovWiki\AdminBundle\Controller;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use GovWiki\DbBundle\Entity\Chat;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
@@ -45,6 +46,15 @@ class SubscribeController extends AbstractGovWikiAdminController
             $body = $form->getData()['message'];
 
             $chat = $government->getChat();
+
+            if (!$chat || ($chat && $chat->getMembers()->isEmpty())) {
+                $this->errorMessage('This government have no subscribers');
+
+                return $this->redirectToRoute('govwiki_admin_subscribe_index', [
+                    'government' => $government->getId(),
+                ]);
+            }
+
             $user = $this->getUser();
             $service_chat_message = $this->get('govwiki.user_bundle.chat_message');
             $user_email = $user->getEmail();
@@ -131,6 +141,12 @@ From ' . $user_email;
             /** @var EntityManagerInterface $em */
             $em = $this->getDoctrine()->getManager();
             $chat = $government->getChat();
+            if (!$chat) {
+                $chat = new Chat();
+                $em->persist($chat);
+                $chat->setGovernment($government);
+                $government->setChat($chat);
+            }
 
             foreach ($form->getData()['users'] as $user) {
                 $government->addSubscriber($user);
