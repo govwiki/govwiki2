@@ -554,6 +554,25 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
+     * @param integer $subscriber User entity id.
+     *
+     * @return Government
+     */
+    public function getWithChatBySubscriber($subscriber)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        return $this->createQueryBuilder('Government')
+            ->addSelect('Chat')
+            ->leftJoin('Government.chat', 'Chat')
+            ->leftJoin('Government.subscribers', 'Subscriber')
+            ->where($expr->in('Subscriber.id', ':subscriber'))
+            ->setParameter('subscriber', [ $subscriber ])
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * @return array
      */
     private function fetchSpecialDistricts()
