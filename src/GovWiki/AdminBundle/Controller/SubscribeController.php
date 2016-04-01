@@ -58,11 +58,11 @@ From ' . $user_email;
             $service_chat_message->persistTwilioSmsMessages($phones, $this->getParameter('twilio.from'), $sms_body);
 
             // Save Email messages into base
-            $emails = $service_chat_message->getChatMessageReceiversEmailList($chat, $government, $user_email);
-            $env_admin_email = $government->getEnvironment()->getAdminEmail();
+            $emails = $service_chat_message->getChatMessageReceiversEmailList($chat, $government, $user_email, true);
+            $chat_email = $this->getParameter('chat_email');
             $service_chat_message->persistEmailMessages(
                 $emails,
-                $env_admin_email,
+                $chat_email,
                 'New message in ' . $government->getName(),
                 [
                     'author' => $user_email,
@@ -130,9 +130,11 @@ From ' . $user_email;
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var EntityManagerInterface $em */
             $em = $this->getDoctrine()->getManager();
+            $chat = $government->getChat();
 
             foreach ($form->getData()['users'] as $user) {
                 $government->addSubscriber($user);
+                $chat->addMember($user);
             }
 
             $em->persist($government);
@@ -164,6 +166,7 @@ From ' . $user_email;
         $em = $this->getDoctrine()->getManager();
 
         $government->removeSubscriber($subscriber);
+        $government->getChat()->removeMember($subscriber);
 
         $em->persist($government);
         $em->flush();

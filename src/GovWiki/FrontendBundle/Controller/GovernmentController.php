@@ -92,8 +92,6 @@ class GovernmentController extends Controller
                 $currentYear
             );
 
-        dump($data);
-
         $finData = $data['government']['finData'];
         /*
          * Translate.
@@ -186,8 +184,11 @@ class GovernmentController extends Controller
                 if (!$chat) {
                     $chat = new Chat();
                     $subscribers = $government->getSubscribers();
+                    /** @var User $subscriber */
                     foreach ($subscribers as $subscriber) {
-                        $chat->addMember($subscriber);
+                        if (!$subscriber->hasRole('ROLE_MANAGER') && !$subscriber->hasRole('ROLE_ADMIN')) {
+                            $chat->addMember($subscriber);
+                        }
                     }
                     $chat->setGovernment($government);
                     $government->setChat($chat);
@@ -212,10 +213,10 @@ From ' . $user_email;
 
                     // Save Email messages into base
                     $emails = $service_chat_message->getChatMessageReceiversEmailList($chat, $government, $user_email);
-                    $env_admin_email = $government->getEnvironment()->getAdminEmail();
+                    $chat_email = $this->getParameter('chat_email');
                     $service_chat_message->persistEmailMessages(
                         $emails,
-                        $env_admin_email,
+                        $chat_email,
                         'New message in ' . $government->getName(),
                         [
                             'author' => $user_email,
@@ -244,6 +245,8 @@ From ' . $user_email;
             ->getRepository('GovWikiDbBundle:Pension')
             ->has($data['government']['id'], $data['government']['currentYear']);
 
+        $data['environment_is_subscribable'] = $manager->getEntity()->getSubscribable();
+
         return $data;
     }
 
@@ -262,49 +265,6 @@ From ' . $user_email;
             }
         }
         return false;
-    }
-
-    /**
-     * @param EntityManager $em Entity Manager
-     * @param Chat $chat Chat
-     * @param Government $government Current government
-     * @param User $author Sms author
-     *
-     * @return array
-     */
-    private function getPhones($em, $chat, $government, $author)
-    {
-        $phones = [];
-
-        $members = $chat->getMembers();
-        /** @var User $member */
-        foreach ($members as $member) {
-            $member_phone = $member->getPhone();
-            if ($member_phone != $author->getPhone() && !empty($member_phone)) {
-                $phones[] = $member_phone;
-            }
-        }
-
-        $env = $government->getEnvironment();
-        $env_users = $env->getUsers();
-        /** @var User $user */
-        foreach ($env_users as $user) {
-            $user_phone = $user->getPhone();
-            if ($user_phone != $author->getPhone() && $user->hasRole('ROLE_MANAGER') && !empty($user_phone)) {
-                $phones[] = $user_phone;
-            }
-        }
-
-        $admins_list = $em->getRepository('GovWikiUserBundle:User')->getAdminsList();
-        /** @var User $admin */
-        foreach ($admins_list as $admin) {
-            $admin_phone = $admin->getPhone();
-            if ($admin_phone != $author->getPhone() && !empty($admin_phone)) {
-                $phones[] = $admin_phone;
-            }
-        }
-
-        return array_unique($phones);
     }
 
     private function clearTranslationsCache()
