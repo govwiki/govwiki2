@@ -49,6 +49,7 @@ class EmailHookCommand extends ContainerAwareCommand
             if ((! $isMessageBegin) && (strpos($buf, 'From:') !== false)) {
                 // Fetch sender email.
                 $from = preg_replace('/.*?([\w.-]+@\w+\.[a-zA-Z]{2,}).*/', '$1', $buf);
+                $from = trim($from);
             } elseif ($from) {
                 if ($isMessageBegin) {
                     // Collect message.

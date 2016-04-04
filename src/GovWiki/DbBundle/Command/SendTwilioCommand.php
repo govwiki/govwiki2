@@ -46,7 +46,7 @@ class SendTwilioCommand extends ContainerAwareCommand
         foreach ($messages as $message) {
             try {
                 $twilio->account->messages->sendMessage(
-                    $message->getFromNumber(),
+                    $this->getContainer()->getParameter('twilio.from'),
                     $message->getToNumber(),
                     $message->getMessage()
                 );
