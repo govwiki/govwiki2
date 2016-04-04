@@ -42,6 +42,7 @@ class EmailHookCommand extends ContainerAwareCommand
         /*
          * Process stream and fetch email 'From:' field and email message body.
          */
+        $text = '';
         while (! feof($fData)) {
             // Get string from stream.
             $buf = fgets($fData);
@@ -61,8 +62,12 @@ class EmailHookCommand extends ContainerAwareCommand
                     $isMessageBegin = true;
                 }
             }
+
+            $text .= $buf;
         }
         fclose($fData);
+
+        $logger->addInfo('Receive message: '. $text);
 
         if ($from && $message) {
             /*
