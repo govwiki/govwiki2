@@ -28,6 +28,9 @@
     }
 
     .mobile-header {
+        background-image: url('/img/California.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
 
         a {
             color: white;
@@ -61,6 +64,104 @@
         }
 
     }
+
+    .mobile-nav {
+        margin-bottom: 0;
+        padding-left: 0;
+        list-style: none;
+
+        .mobile-tab {
+            display: none;
+            padding: 10px 15px;
+            text-align: center;
+            background-color: #0B4D70;
+            color: white;
+
+            a {
+                color: white;
+            }
+
+            &.active {
+                display: block;
+            }
+
+            .prev_tab {
+                position: absolute;
+                display: block;
+                top: 0;
+                left: 0;
+                padding: 10px 15px;
+            }
+
+            .next_tab {
+                position: absolute;
+                display: block;
+                top: 0;
+                right: 0;
+                padding: 10px 15px;
+            }
+
+        }
+
+    }
+
+    .mobile-tab-pane {
+
+        .mobile-tab-title {
+            background-color: #65A7D6;
+            color: white;
+        }
+
+        .mobile-tab-content {
+            padding: 0 15px;
+
+        }
+
+    }
+
+    .mobile-person {
+        width: 100%;
+        border-bottom: 1px dotted #ddd;
+        padding-bottom: 10px;
+
+        &:not(:first-child) {
+            margin-top: 15px;
+        }
+
+        &-info {
+            width: 60%;
+            vertical-align: top;
+            font-size: 1em;
+            display: inline-block;
+            padding: 0 15px;
+
+            p {
+                margin-bottom: 0;
+            }
+
+        }
+
+        &-photo {
+            width: 30%;
+            display: inline-block;
+
+            a {
+                display: inline-block;
+                width: 100%;
+                height: 100%;
+                text-align: center;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    min-height: 140px;
+                }
+            }
+
+        }
+
+    }
+
 
     section {
 
