@@ -50,16 +50,8 @@ class EmailHookCommand extends ContainerAwareCommand
             $fromIdx = strpos($buf, 'From:');
 
             if ((false !== $fromIdx) && (! $isMessageBegin)) {
-                // Fetch 'from' mail field.
-
-                $start = $fromIdx + 6; // length of 'From:' + one white space.
-                $bracketIdx = strpos($buf, ' (');
-
-                $from = substr(
-                    $buf,
-                    $start,
-                    $bracketIdx - $start
-                );
+                // Fetch sender email.
+                $from = preg_replace('/.*?(\w+@\w+\.\w+).*/', '$1', $from);
             } elseif ($from) {
                 if ($isMessageBegin) {
                     // Collect message.
@@ -86,10 +78,19 @@ class EmailHookCommand extends ContainerAwareCommand
                 ->get('fos_user.user_manager')
                 ->findUserByEmail($from);
 
+            if (! $user) {
+                $logger->addError('Can\'t find sender in database');
+                return -1;
+            }
+
             // Get government and chat.
             $government = $em
                 ->getRepository('GovWikiDbBundle:Government')
                 ->getWithChatBySubscriber($user->getId());
+            if (! $government) {
+                $logger->addError('This user has not signed to any government.');
+                return -1;
+            }
             $chat = $government->getChat();
 
             /** @var ChatMessage $chatMessageService */
@@ -132,6 +133,10 @@ class EmailHookCommand extends ContainerAwareCommand
 
             $logger->addInfo('Message persisted');
             $em->flush();
+        } else {
+            $logger->addAlert('Can\'t fetch sender email and message');
         }
+
+        return 0;
     }
 }
