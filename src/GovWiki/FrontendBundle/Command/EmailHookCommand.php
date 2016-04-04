@@ -40,19 +40,15 @@ class EmailHookCommand extends ContainerAwareCommand
         $logger->addInfo('Got email message.');
 
         /*
-         * Process stream and fetch email 'From:' field and email message body.
+         * Process stream and fetch sender email and message.
          */
-        $text = '';
         while (! feof($fData)) {
             // Get string from stream.
             $buf = fgets($fData);
 
-            // Find 'From:' in buffer.
-            $fromIdx = strpos($buf, 'From:');
-
-            if ((false !== $fromIdx) && (! $isMessageBegin)) {
+            if ((! $isMessageBegin) && (strpos($buf, 'From:') !== false)) {
                 // Fetch sender email.
-                $from = preg_replace('/.*?(\w+@\w+\.\w+).*/', '$1', $from);
+                $from = preg_replace('/.*?(\w+@\w+\.\w+).*/', '$1', $buf);
             } elseif ($from) {
                 if ($isMessageBegin) {
                     // Collect message.
@@ -62,12 +58,8 @@ class EmailHookCommand extends ContainerAwareCommand
                     $isMessageBegin = true;
                 }
             }
-
-            $text .= $buf;
         }
         fclose($fData);
-
-        $logger->addInfo('Receive message: '. $text);
 
         if ($from && $message) {
             /*
