@@ -199,24 +199,30 @@ class ComparisonController extends AbstractGovWikiApiController
         // Translate governments data.
         foreach ($result['firstGovernment']['data'] as &$row) {
             $captionKey = 'findata.captions.'. $this->getTransKey($row['caption']);
-            $categoryKey = 'general.findata.main.'. $this->getTransKey($row['category']);
-
             $row['translatedCaption'] = $translator->trans($captionKey);
-            $row['translatedCategory'] = $translator->trans($categoryKey);
+
+            if (array_key_exists('category', $row)) {
+                $categoryKey = 'general.findata.main.'. $this->getTransKey($row['category']);
+                $row['translatedCategory'] = $translator->trans($categoryKey);
+            }
         }
         foreach ($result['secondGovernment']['data'] as &$row) {
             $captionKey = 'findata.captions.'. $this->getTransKey($row['caption']);
-            $categoryKey = 'general.findata.main.'. $this->getTransKey($row['category']);
-
             $row['translatedCaption'] = $translator->trans($captionKey);
-            $row['translatedCategory'] = $translator->trans($categoryKey);
+
+            if (array_key_exists('category', $row)) {
+                $categoryKey = 'general.findata.main.'. $this->getTransKey($row['category']);
+                $row['translatedCategory'] = $translator->trans($categoryKey);
+            }
         }
 
 
         // Translate category and tab name.
-        $result['translatedCategory'] = $translator->trans(
-            'general.findata.main.'. $this->getTransKey($result['category'])
-        );
+        if (array_key_exists('category', $result)) {
+            $result['translatedCategory'] = $translator->trans(
+                'general.findata.main.' . $this->getTransKey($result['category'])
+            );
+        }
 
         // Hardcoded, replace.
         $tabName = $result['tab'];

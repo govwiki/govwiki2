@@ -139,11 +139,14 @@ Step.prototype.loadMatchedCategories = function() {
 
             var availableTabs = [];
             data.forEach(function(item) {
-                availableTabs.indexOf(item.translatedTab) != -1 ? false : availableTabs.push(item.translatedTab);
+                availableTabs.indexOf(item.translatedTab) != -1 ? false : availableTabs.push({
+                    translated: item.translatedTab,
+                    normal: item.tab
+                });
             });
 
             availableTabs.forEach(function(tab){
-                self.$select.append('<optgroup label="' + tab + '"></optgroup>');
+                self.$select.append('<optgroup data-name="'+ tab.normal +'" label="' + tab.translated + '"></optgroup>');
             });
 
             data.forEach(function (caption) {
@@ -225,7 +228,7 @@ Step.prototype.handler_onChangeSelect = function() {
 
         var caption = $selected.text();
 
-        var tab = $selected.parent('optgroup').attr('label');
+        var tab = $selected.parent('optgroup').data('name');
 
         if (!caption) {
             alert('Please select one of captions');
@@ -255,6 +258,8 @@ Step.prototype.handler_onChangeSelect = function() {
 
 
         data = JSON.stringify(data);
+
+        console.log(data);
 
         $.ajax({
             url: window.gw.urls.compare,

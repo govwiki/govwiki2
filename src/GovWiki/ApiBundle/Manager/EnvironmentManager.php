@@ -670,7 +670,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
             $data['firstGovernment']['data'] = $firstGovernmentData;
             $data['secondGovernment']['data'] = $secondGovernmentData;
-        } elseif ('Financial Statement' === $data['tab']) {
+        } elseif ('Financial Statements' === $data['tab']) {
             /*
              * Compare by financial statements.
              */
@@ -683,7 +683,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
             if (array_key_exists('caption', $data) & !empty($data['caption'])) {
                 $qb->andWhere(
-                    $expr->eq('FinData.caption', $expr->literal($data['caption']))
+                    $expr->eq('FinData.caption', $expr->literal($data['fieldName']))
                 );
             }
 
