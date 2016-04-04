@@ -73,7 +73,9 @@
                         <h4 class="text-center">{{ 'general.findata.main.step_3'|trans }}</h4>
                         <select class="form-control disabled category">
                             <option value="">{{ 'general.findata.main.category'|trans }}</option>
-                            <optgroup label="Financial Statement">
+                            <optgroup data-name="Financial Statements" label="{{-
+                                'gov.financial_statements' | trans
+                            -}}">
                                 <option value="Revenues">{{ 'general.findata.main.revenues'|trans }}</option>
                                 <option value="Expenditures">{{ 'general.findata.main.expenditures'|trans }}</option>
                             </optgroup>
@@ -136,11 +138,11 @@
             <thead>
                 <tr>
                     {# Category caption #}
-                    <th><b>{{ ('caption_categories.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></th>
+                    <th><b>{{ ('general.findata.main.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></th>
                     {% if loop.first %}
-                        <th><b>{{ 'funds.general_fund'|trans }}</b></th>
-                        <th><b>{{ 'funds.other'|trans }}</b></th>
-                        <th><b>{{ 'funds.total'|trans }}</b></th>
+                        <th><b>{{ 'general.findata.main.general_fund'|trans }}</b></th>
+                        <th><b>{{ 'general.findata.main.other_fund'|trans }}</b></th>
+                        <th><b>{{ 'general.findata.main.total_fund'|trans }}</b></th>
                     {% endif %}
                 </tr>
             </thead>

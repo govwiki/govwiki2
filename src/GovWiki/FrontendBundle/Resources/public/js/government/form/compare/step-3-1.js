@@ -129,11 +129,11 @@ Step.prototype.drawTable = function(container, comparedData) {
     $container.html('');
     var governmentNumber = (container == '.compare-first-table') ? 'firstGovernment' : 'secondGovernment';
 
-    var category = comparedData.category;
+    var category = comparedData.translatedCategory;
     var governmentName = comparedData[governmentNumber].name;
     var year = comparedData[governmentNumber].year;
 
-    var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + ' (' + year + ')</th></tr><tr><th>' + category + '</th><th> Total Gov. Funds </th></tr>></thead>';
+    var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + ' (' + year + ')</th></tr><tr><th>' + category + '</th><th> Total </th></tr>></thead>';
     var tbody = '<tbody>';
 
     comparedData[governmentNumber].data.forEach(function(row){

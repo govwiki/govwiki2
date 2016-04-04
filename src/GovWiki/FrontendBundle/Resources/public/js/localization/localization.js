@@ -11,6 +11,8 @@ function changeLocale(localeShortName, changeLocaleUrl, current_page_route) {
         url: changeLocaleUrl,
         data: {'current_url': window.location.pathname, 'locale_short_name': localeShortName}
     });
+
+    return false;
 }
 
 module.exports = changeLocale;
