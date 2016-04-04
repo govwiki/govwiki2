@@ -27,6 +27,41 @@
 
     }
 
+    .mobile-header {
+
+        a {
+            color: white;
+        }
+
+        .mobile-statistics-table {
+            margin: 0;
+
+            td {
+                color: white;
+                padding: 0 8px;
+
+                &:nth-child(1) {
+                    text-align: left;
+                }
+
+                &:nth-child(2) {
+                    text-align: right;
+                }
+
+            }
+
+        }
+
+        .mobile-header-content {
+            background-color: rgba(0, 55, 122, 0.55);
+        }
+
+        .mobile-header-icons {
+            text-align: right;
+        }
+
+    }
+
     section {
 
         .loader {
