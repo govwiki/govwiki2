@@ -3,7 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation\Timestampable;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints\Choice;
 
 /**
@@ -40,9 +40,9 @@ class Document
     /**
      * @var string
      *
-     * @ORM\Column(nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
-    private $name;
+    private $description;
 
     /**
      * @var string
@@ -62,25 +62,9 @@ class Document
     /**
      * @var \DateTime
      *
-     * @Timestampable(on="create")
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="date")
      */
-    private $createdAt;
-
-    /**
-     * @var \DateTime
-     *
-     * @Timestampable(on="update")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $updatedAt;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(type="integer")
-     */
-    private $year;
+    private $date;
 
     /**
      * Return available document types.
@@ -96,6 +80,15 @@ class Document
     }
 
     /**
+     *
+     */
+    public function __construct()
+    {
+        $this->date = new \DateTime();
+    }
+
+
+    /**
      * Get id
      *
      * @return integer
@@ -106,28 +99,27 @@ class Document
     }
 
     /**
-     * Set name
+     * Set description
      *
-     * @param string $name Document name, maybe null, but must be set for
-     *                     {@see Document::OTHER}.
+     * @param string $description Document description.
      *
      * @return Document
      */
-    public function setName($name)
+    public function setDescription($description)
     {
-        $this->name = $name;
+        $this->description = $description;
 
         return $this;
     }
 
     /**
-     * Get name
+     * Get description
      *
      * @return string
      */
-    public function getName()
+    public function getDescription()
     {
-        return $this->name;
+        return $this->description;
     }
 
     /**
@@ -180,75 +172,26 @@ class Document
     }
 
     /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt A DateTime instance.
-     *
-     * @return Document
-     */
-    public function setCreatedAt(\DateTime $createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
      * @return \DateTime
      */
-    public function getCreatedAt()
+    public function getDate()
     {
-        return $this->createdAt;
+        return $this->date;
     }
 
     /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt A DateTime instance.
+     * @param \DateTime $date A Document placement date.
      *
      * @return Document
      */
-    public function setUpdatedAt(\DateTime $updatedAt)
+    public function setDate(\DateTime $date = null)
     {
-        $this->updatedAt = $updatedAt;
+        if (null === $date) {
+            $date = new \DateTime();
+        }
+        $this->date = $date;
 
         return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * Set year
-     *
-     * @param integer $year Document placement year.
-     *
-     * @return Document
-     */
-    public function setYear($year)
-    {
-        $this->year = $year;
-
-        return $this;
-    }
-
-    /**
-     * Get year
-     *
-     * @return integer
-     */
-    public function getYear()
-    {
-        return $this->year;
     }
 
     /**

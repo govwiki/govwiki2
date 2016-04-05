@@ -75,7 +75,7 @@ class DocumentController extends AbstractGovWikiAdminController
     {
         $document = new Document();
         $document->setGovernment($government);
-        $form = $this->createForm(new DocumentType(), $document);
+        $form = $this->createForm('document', $document);
 
         $form->handleRequest($request);
         $this->manageForm($form);
@@ -107,7 +107,7 @@ class DocumentController extends AbstractGovWikiAdminController
         Government $government,
         Document $document
     ) {
-        $form = $this->createForm(new DocumentType(), $document);
+        $form = $this->createForm('document', $document);
 
         $form->handleRequest($request);
         $this->manageForm($form);

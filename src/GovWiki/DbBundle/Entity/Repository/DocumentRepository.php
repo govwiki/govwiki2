@@ -3,6 +3,8 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * DocumentRepository
@@ -37,7 +39,7 @@ class DocumentRepository extends EntityRepository
         // Filter by year.
         if ($year) {
             $qb
-                ->andWhere($expr->eq('Document.year', ':year'))
+                ->andWhere($expr->eq('YEAR(Document.date)', ':year'))
                 ->setParameter('year', $year);
         }
 

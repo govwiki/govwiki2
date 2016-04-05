@@ -88,6 +88,8 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
         dql:
+            string_functions:
+                year: GovWiki\DbBundle\Doctrine\Functions\YearFunction
             numeric_functions:
                 regexp: GovWiki\DbBundle\Doctrine\Functions\RegexpFunction
 

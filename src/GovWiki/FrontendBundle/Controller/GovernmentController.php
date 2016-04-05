@@ -251,6 +251,42 @@ From ' . $user_email;
     }
 
     /**
+     * @Route("/{altTypeSlug}/{slug}/documents", name="documents")
+     * @Template()
+     *
+     * @param Request $request     A Request instance.
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
+     *
+     * @return array
+     */
+    public function documentAction(Request $request, $altTypeSlug, $slug)
+    {
+        $manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
+
+        $years = $manager->getAvailableYears();
+        $currentYear = $request->query->getInt('year', $years[0]);
+
+        $government = $manager->getGovernmentWithoutData($altTypeSlug, $slug);
+        $government->currentYear = $currentYear;
+
+        $documentsQuery = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Document')
+            ->getListQuery($government->getId(), null, $currentYear);
+        $paginator = $this->get('knp_paginator');
+
+        return [
+            'years' => $years,
+            'government' => $government,
+            'documents' => $paginator->paginate(
+                $documentsQuery,
+                $request->query->getInt('page', 1),
+                25
+            ),
+        ];
+    }
+
+    /**
      * @param Chat $chat Chat entity
      * @param integer $user_id User's ID
      *

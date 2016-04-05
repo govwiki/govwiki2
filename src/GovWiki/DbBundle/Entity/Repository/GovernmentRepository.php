@@ -10,13 +10,45 @@ use Doctrine\ORM\Query\Expr\Join;
 use GovWiki\DbBundle\Entity\Document;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Government;
-use GovWiki\DbBundle\Utils\Functions;
 
 /**
  * GovernmentRepository
  */
 class GovernmentRepository extends EntityRepository
 {
+
+    /**
+     * @param string $environment Environment entity slug.
+     * @param string $altTypeSlug Slugged government alt type.
+     * @param string $slug        Slugged government name.
+     *
+     * @return Government
+     */
+    public function getOne(
+        $environment,
+        $altTypeSlug,
+        $slug
+    ) {
+        $expr = $this->_em->getExpressionBuilder();
+        return $this->createQueryBuilder('Government')
+            ->leftJoin('Government.environment', 'Environment')
+            ->where(
+                $expr->andX(
+                    $expr->eq(
+                        'Government.altTypeSlug',
+                        $expr->literal($altTypeSlug)
+                    ),
+                    $expr->eq(
+                        'Government.slug',
+                        $expr->literal($slug)
+                    ),
+                    $expr->eq('Environment.slug', $expr->literal($environment))
+                )
+            )
+            ->getQuery()
+            ->getSingleResult();
+    }
+
     /**
      * @param integer $government Government id.
      * @param integer $year       That year's of data to show. If null -
@@ -214,7 +246,7 @@ class GovernmentRepository extends EntityRepository
             ->select(
                 'Government',
                 'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
-                'partial Document.{id, name, link, type}'
+                'partial Document.{id, description, link, type}'
             )
             ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
             ->leftJoin('Government.environment', 'Environment')
@@ -224,7 +256,8 @@ class GovernmentRepository extends EntityRepository
                 JOIN::WITH,
                 $expr->andX(
                     $expr->eq('Document.government', 'Government.id'),
-                    $expr->eq('Document.year', $year)
+                    $expr->eq('YEAR(Document.date)', $year),
+                    $expr->eq('Document.type', $expr->literal(Document::LAST_AUDIT))
                 )
             )
             ->where(
@@ -312,16 +345,10 @@ class GovernmentRepository extends EntityRepository
             $government['finData'] = $financialStatements;
 
             // Find latest audit url.
-            $latestAuditUrl = null;
-            foreach ($government['documents'] as $document) {
-                if (Document::LAST_AUDIT === $document['type']) {
-                    $latestAuditUrl = $document['link'];
-                    break;
-                }
+            $government['latestAuditUrl'] = null;
+            if (count($government['documents'])) {
+                $government['latestAuditUrl'] = $government['documents'][0];
             }
-
-
-            $government['latestAuditUrl'] = $latestAuditUrl;
         }
 
         return $government;
@@ -436,43 +463,6 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
-     * Get markers for map.
-     *
-     * @param  array   $altTypes Ignored altTypes.
-     * @param  integer $limit    Max Markers.
-     * @return array
-     */
-    public function getMarkers($altTypes, $limit = 200)
-    {
-        $qb = $this->createQueryBuilder('g')
-            ->select('g.id', 'g.name', 'g.altType', 'g.type', 'g.city', 'g.zip', 'g.state', 'g.latitude', 'g.longitude', 'g.altTypeSlug', 'g.slug');
-//            ->where('g.altType != :altType')
-//            ->setParameter('altType', $altTypes);
-
-        if (!empty($altTypes)) {
-            $orX = $qb->expr()->orX();
-            $parameters = [];
-            foreach ($altTypes as $key => $type) {
-                if ($type != 'Special District') {
-                    $orX->add($qb->expr()->eq('g.altType', ':altType'.$key));
-                    $parameters['altType'.$key]  = $type;
-                }
-            }
-//            $parameters['altType'] = 'County';
-            $qb->andWhere($orX)->setParameters($parameters);
-        }
-
-        $result = $qb->setMaxResults($limit)->orderBy('g.rand', 'ASC')->getQuery()->getArrayResult();
-
-        if (!empty($altTypes) && in_array('Special District', $altTypes)) {
-            $specialDistricts = $this->fetchSpecialDistricts();
-            $result = array_merge($result, $specialDistricts);
-        }
-
-        return $result;
-    }
-
-    /**
      * Get list of all elected officials from government by one of
      * elected official.
      *
@@ -570,32 +560,5 @@ class GovernmentRepository extends EntityRepository
             ->setParameter('subscriber', [ $subscriber ])
             ->getQuery()
             ->getOneOrNullResult();
-    }
-
-    /**
-     * @return array
-     */
-    private function fetchSpecialDistricts()
-    {
-        $specialDistrictsList  = [
-            4378, 4387, 4416, 4427, 4532, 4750, 4917,
-            4981, 5204, 5339, 5600, 5618, 5626, 5749,
-            5752, 5791, 5871, 5874, 5963, 5983, 5993,
-            5995, 6000, 6033, 6070, 6090, 6093, 6544
-        ];
-
-        $qb = $this->createQueryBuilder('g')
-            ->select('g.id', 'g.name', 'g.altType', 'g.type', 'g.city', 'g.zip', 'g.state', 'g.latitude', 'g.longitude', 'g.altTypeSlug', 'g.slug');
-
-        $orX = $qb->expr()->orX();
-        $parameters = [];
-        foreach ($specialDistrictsList as $key => $id) {
-            $orX->add($qb->expr()->eq('g.id', ':id'.$key));
-            $parameters['id'.$key] = $id;
-        }
-
-        $qb->andWhere($orX)->setParameters($parameters);
-
-        return $qb->getQuery()->getArrayResult();
     }
 }

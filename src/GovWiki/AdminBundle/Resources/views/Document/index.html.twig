@@ -56,8 +56,8 @@
                                             <input name="filter[type]" type="text" class="form-control input-sm" placeholder="Type"
                                                    value="{{ app.request.query.get('filter') ? app.request.query.get('filter').type}}">
 
-                                            <input name="filter[year]" type="text" class="form-control input-sm" placeholder="Year"
-                                                   value="{{app.request.query.get('filter') ? app.request.query.get('filter').year}}">
+                                            <input name="filter[date]" type="text" class="form-control input-sm" placeholder="Date"
+                                                   value="{{app.request.query.get('filter') ? app.request.query.get('filter').date}}">
 
                                     </div>
 
@@ -93,9 +93,9 @@
                                         <tr>
                                             <th>{{ knp_pagination_sortable(documents, 'Id',        'Document.id') }}</th>
                                             <th>{{ knp_pagination_sortable(documents, 'Type',      'Document.type') }}</th>
-                                            <th>{{ knp_pagination_sortable(documents, 'Name',      'Document.name') }}</th>
+                                            <th>{{ knp_pagination_sortable(documents, 'Description','Document.description') }}</th>
                                             <th>{{ knp_pagination_sortable(documents, 'Link',      'Document.link') }}</th>
-                                            <th>{{ knp_pagination_sortable(documents, 'Year',      'Document.year') }}</th>
+                                            <th>{{ knp_pagination_sortable(documents, 'Date',      'Document.date') }}</th>
                                             <th class="actions">Actions</th>
                                         </tr>
                                     </thead>
@@ -104,9 +104,9 @@
                                             <tr>
                                                 <td>{{ document.id }}</td>
                                                 <td>{{ document.type|capitalize }}</td>
-                                                <td>{{ document.name }}</td>
+                                                <td>{{ document.description }}</td>
                                                 <td>{{ document.link }}</td>
-                                                <td>{{ document.year }}</td>
+                                                <td>{{ document.date|date('Y-m-d') }}</td>
                                                 <td>
                                                     <div class="btn-group">
                                                         <a href="{{- path('govwiki_admin_document_edit', { 'government': government.id, 'document': document.id }) -}}" class="btn btn-sm btn-default">

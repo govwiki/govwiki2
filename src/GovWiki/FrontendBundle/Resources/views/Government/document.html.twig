@@ -1,0 +1,56 @@
+{% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
+
+{% block main %}
+
+    <section class="documentController">
+        {{ knp_pagination_render(documents) }}
+
+        <div class="col-md-12">
+            <h3>Documents</h3>
+        </div>
+        <div class="col-md-12">
+            <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>{{ knp_pagination_sortable(documents, 'Date', 'Document.date') }}</th>
+                    <th>{{ knp_pagination_sortable(documents, 'Description', 'Document.description') }}</th>
+                    <th>Download/View</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for document in documents %}
+                    <tr>
+                        <td>{{ document.date|date('Y-m-d') }}</td>
+                        <td>{{ document.description }}</td>
+                        <td><a href="{{ document.link }}"><i class="glyphicon glyphicon-download"></i></a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+
+        {{ knp_pagination_render(documents) }}
+    </section>
+
+{% endblock %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{parent()}}
+    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/documents.scss' filter='scss' %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}
+
+
+{# Javascripts #}
+{% block javascripts %}
+
+    {{parent()}}
+    <script src="/js/common.js"></script>
+    <script src="/js/document.js"></script>
+
+{% endblock %}
