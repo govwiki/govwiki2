@@ -326,6 +326,11 @@ $(function() {
         var electedName = $('.electedController').attr('data-elected-name');
         var name = $element.attr('data-legislation-name');
 
+        var facebook_comment = $('.fb-comments')[0];
+        var facebook_comment_uri = $('.fb-comments').attr('data-uri');
+        console.log(facebook_comment_uri);
+        facebook_comment.setAttribute('data-href', facebook_comment_uri + '#' + id);
+
         $('#myModalLabel').text(electedName + ' - ' + name);
         $('#conversation').modal('show');
 
