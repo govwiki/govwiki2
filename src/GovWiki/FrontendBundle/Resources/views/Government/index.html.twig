@@ -141,7 +141,7 @@
                             {% endfor %}
 
                             {% if hasSalaries %}
-                                <div class="tab-pane paginate" id="Salaries">
+                                <div class="tab-pane paginate" data-type="salaries" id="Salaries">
                                     <div class="tab-pane-main">
                                         {{ render(controller('GovWikiApiBundle:V1/Government:salaries', {
                                             'government': government.id
@@ -151,7 +151,7 @@
                             {% endif %}
 
                             {% if hasPensions %}
-                                <div class="tab-pane paginate" id="Pensions">
+                                <div class="tab-pane paginate" data-type="pensions"  id="Pensions">
                                     <div class="tab-pane-main">
                                         {{ render(controller('GovWikiApiBundle:V1/Government:pensions', {
                                             'government': government.id

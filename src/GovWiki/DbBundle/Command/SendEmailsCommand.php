@@ -50,7 +50,7 @@ class SendEmailsCommand extends ContainerAwareCommand
                     'text/html'
                 );
                 $swift_message
-                    ->setFrom($message_entity->getFromEmail())
+                    ->setFrom($this->getContainer()->getParameter('chat_email'))
                     //->setSender($message_entity->getFromEmail())
                     ->setTo($message_entity->getToEmail());
 

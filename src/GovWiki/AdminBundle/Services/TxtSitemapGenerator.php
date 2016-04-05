@@ -110,7 +110,6 @@ class TxtSitemapGenerator implements SitemapGeneratorInterface
          */
         $sitemap = [];
         foreach ($governmentList as $government) {
-
             $parameters = [
                 'altTypeSlug' => $government['altTypeSlug'],
                 'slug' => $government['slug'],
@@ -160,6 +159,4 @@ class TxtSitemapGenerator implements SitemapGeneratorInterface
     {
         return "{$environment}_sitemap.txt";
     }
-
-
 }

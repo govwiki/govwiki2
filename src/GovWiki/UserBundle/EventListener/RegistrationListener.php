@@ -89,8 +89,13 @@ class RegistrationListener implements EventSubscriberInterface
         if ((null !== $governments) && ! $governments->isEmpty()) {
             /** @var Government $government */
             foreach ($governments as $government) {
-                $chat = new Chat();
-                $chat->setGovernment($government);
+                $chat = $government->getChat();
+                if (! $chat) {
+                    $chat = new Chat();
+                    $chat->setGovernment($government);
+                }
+                $chat->addMember($user);
+
                 $government->setChat($chat);
 
                 $this->em->persist($government);

@@ -2,9 +2,7 @@
     {% for locale in locale_names_list %}
         <li class="pull-left">
             <a onclick='changeLocale("{{ locale.shortName }}", "{{ govwiki_path('govwiki_frontend_localization_changelocale') }}", "{{ current_page_route }}")' class="btn btn-link" href="" style="color: black; padding: 0 2px">
-                <img src="
-                    {{- asset('/img/locales/'~ locale.shortName|lower ~'.png' ) -}}
-                ">
+                {{- ('general.'~ locale.shortName) | trans -}}
             </a>
         </li>
     {% endfor %}

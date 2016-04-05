@@ -40,26 +40,16 @@ class EmailHookCommand extends ContainerAwareCommand
         $logger->addInfo('Got email message.');
 
         /*
-         * Process stream and fetch email 'From:' field and email message body.
+         * Process stream and fetch sender email and message.
          */
         while (! feof($fData)) {
             // Get string from stream.
             $buf = fgets($fData);
 
-            // Find 'From:' in buffer.
-            $fromIdx = strpos($buf, 'From:');
-
-            if ((false !== $fromIdx) && (! $isMessageBegin)) {
-                // Fetch 'from' mail field.
-
-                $start = $fromIdx + 6; // length of 'From:' + one white space.
-                $bracketIdx = strpos($buf, ' (');
-
-                $from = substr(
-                    $buf,
-                    $start,
-                    $bracketIdx - $start
-                );
+            if ((! $isMessageBegin) && (strpos($buf, 'From:') !== false)) {
+                // Fetch sender email.
+                $from = preg_replace('/.*?([\w.-]+@\w+\.[a-zA-Z]{2,}).*/', '$1', $buf);
+                $from = trim($from);
             } elseif ($from) {
                 if ($isMessageBegin) {
                     // Collect message.
@@ -86,10 +76,19 @@ class EmailHookCommand extends ContainerAwareCommand
                 ->get('fos_user.user_manager')
                 ->findUserByEmail($from);
 
+            if (! $user) {
+                $logger->addError('Can\'t find sender in database');
+                return -1;
+            }
+
             // Get government and chat.
             $government = $em
                 ->getRepository('GovWikiDbBundle:Government')
                 ->getWithChatBySubscriber($user->getId());
+            if (! $government) {
+                $logger->addError('This user has not signed to any government.');
+                return -1;
+            }
             $chat = $government->getChat();
 
             /** @var ChatMessage $chatMessageService */
@@ -132,6 +131,10 @@ class EmailHookCommand extends ContainerAwareCommand
 
             $logger->addInfo('Message persisted');
             $em->flush();
+        } else {
+            $logger->addAlert('Can\'t fetch sender email and message');
         }
+
+        return 0;
     }
 }

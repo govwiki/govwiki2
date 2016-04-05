@@ -114,6 +114,38 @@ table td.button-row {
    }
 }
 
+/*
+   Pagination sortable.
+*/
+.sortable {
+
+   a {
+      i {
+         background: url("/bundles/govwikifrontend/img/bg.gif");
+         width: 21px;
+         height: 9px;
+         display: inline-block;
+      }
+
+      &.asc {
+         i {
+            height: 4px;
+            margin-bottom: 4px;
+            background: url("/bundles/govwikifrontend/img/asc.gif");
+         }
+      }
+
+      &.desc {
+         i {
+
+            height: 4px;
+            margin-bottom: 4px;
+            background: url("/bundles/govwikifrontend/img/desc.gif");
+         }
+      }
+   }
+}
+
 /* ===================================================== */
 /* =============== Environment styles ================== */
 /* ===================================================== */
@@ -175,7 +207,8 @@ table td.button-row {
 
 body .container a.btn-primary,
 body .container a.btn-primary:hover {
-  color: #fff;
+   color: #fff;
+   background-color: #2196F3;
 }
 
 .delay-input {

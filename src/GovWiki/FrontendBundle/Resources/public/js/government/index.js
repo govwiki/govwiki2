@@ -182,6 +182,7 @@ $(function() {
 
         var $this = $(this);
         var $pane = $this.closest('.tab-pane');
+        var type = $pane.data('type');
         var url = $this.attr('href');
 
         if (url.indexOf('api') == -1) {
@@ -190,10 +191,10 @@ $(function() {
             var query = url.substr(url.indexOf('?') + 1, url.length);
 
             if ('app_dev.php' == firstElement) {
-                url = '/' + firstElement + '/api/v1/government/'+ government.id
-                    +'/salaries?'+ query;
+                url = '/'+ firstElement +'/api/v1/government/'+ government.id
+                    +'/'+ type +'?'+ query;
             } else {
-                url = '/api/v1/governments/'+ government.id +'/salaries?'+ query;
+                url = '/api/v1/government/'+ government.id +'/'+ type +'?'+ query;
             }
         }
 
@@ -214,6 +215,7 @@ $(function() {
 
         var $this = $(this);
         var $pane = $this.closest('.tab-pane');
+        var type = $pane.data('type');
         var url = $this.attr('href');
 
         if (url.indexOf('api') == -1) {
@@ -223,9 +225,9 @@ $(function() {
 
             if ('app_dev.php' == firstElement) {
                 url = '/' + firstElement + '/api/v1/government/'+ government.id
-                +'/salaries?'+ query;
+                +'/'+ type +'?'+ query;
             } else {
-                url = '/api/v1/governments/'+ government.id +'/salaries?'+ query;
+                url = '/api/v1/government/'+ government.id +'/'+ type +'?'+ query;
             }
         }
 

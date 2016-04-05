@@ -143,8 +143,9 @@ From ' . $user_email;
             $chat = $government->getChat();
             if (!$chat) {
                 $chat = new Chat();
-                $em->persist($chat);
                 $chat->setGovernment($government);
+
+                $em->persist($chat);
                 $government->setChat($chat);
             }
 
