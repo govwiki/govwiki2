@@ -103,9 +103,10 @@ swiftmailer:
 
 # KnpPaginatorBundle Configuration
 knp_paginator:
-    page_range: 2
+    page_range: 4
     template:
         pagination: GovWikiFrontendBundle:Pagination:pagination.html.twig
+        sortable: GovWikiFrontendBundle:Pagination:sortable_link.html.twig
 
 # StofDoctrineExtension Configuration
 stof_doctrine_extensions:
