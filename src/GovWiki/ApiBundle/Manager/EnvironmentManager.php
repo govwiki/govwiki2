@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
@@ -171,6 +172,18 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     {
         return $this->em->getRepository('GovWikiDbBundle:Format')
             ->getOne($this->environment, $fieldName);
+    }
+
+    /**
+     * @param string $altTypeSlug Slugged government alt type.
+     * @param string $slug        Slugged government name.
+     *
+     * @return Government
+     */
+    public function getGovernmentWithoutData($altTypeSlug, $slug)
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Government')
+            ->getOne($this->getSlug(), $altTypeSlug, $slug);
     }
 
     /**

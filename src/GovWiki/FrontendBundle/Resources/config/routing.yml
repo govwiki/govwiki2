@@ -2,12 +2,12 @@ localization:
     resource: "@GovWikiFrontendBundle/Controller/LocalizationController.php"
     type:     govwiki
 
-elected:
-    resource: "@GovWikiFrontendBundle/Controller/ElectedController.php"
-    type:     govwiki
-
 government:
     resource: "@GovWikiFrontendBundle/Controller/GovernmentController.php"
+    type:     govwiki
+
+elected:
+    resource: "@GovWikiFrontendBundle/Controller/ElectedController.php"
     type:     govwiki
 
 main:
