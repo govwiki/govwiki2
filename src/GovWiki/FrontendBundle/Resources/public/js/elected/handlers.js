@@ -111,6 +111,22 @@ $(function() {
 
     }
 
+    function clearUrl(url) {
+        var result = url;
+
+        var indexOfHashTag = result.indexOf('#');
+        if (-1 != indexOfHashTag) {
+            result = result.substring(0, indexOfHashTag);
+        }
+
+        var indexOfQuestionMark = result.indexOf('?');
+        if (-1 != indexOfQuestionMark) {
+            result = result.substring(0, indexOfQuestionMark);
+        }
+
+        return result;
+    }
+
     // Click on disqus icon
     $pane.on('click', '.vote', function() {
 
@@ -121,15 +137,27 @@ $(function() {
         var electedName = $('.electedController').attr('data-elected-name');
         var name = $element.attr('data-legislation-name');
 
-        var facebook_comment = $('.fb-comments')[0];
-        var facebook_comment_uri = $('.fb-comments').attr('data-uri');
-        console.log(facebook_comment_uri);
-        facebook_comment.setAttribute('data-href', facebook_comment_uri + '#' + id);
+        // Remove existing Facebook Comment form
+        var fbCommentElemExistList = $('.fb-comments');
+        for (var i = 0; i < fbCommentElemExistList.length; i++) {
+            var fbCommentElemExist = fbCommentElemExistList[i];
+            fbCommentElemExist.parentNode.removeChild(fbCommentElemExist);
+        }
+
+        // Create new Facebook Comment form
+        var fbCommentPrevElem = $('#conversation .modal-header');
+        var fbCommentElem = document.createElement('DIV');
+        fbCommentUrl = clearUrl(window.location.href);
+        $(fbCommentElem).addClass('fb-comments');
+        fbCommentElem.setAttribute('data-href', fbCommentUrl + '#vote_' + id);
+        fbCommentElem.setAttribute('data-numposts', 5);
+        fbCommentPrevElem.after(fbCommentElem);
+        FB.XFBML.parse();
 
         $('#myModalLabel').text(electedName + ' - ' + name);
         $('#conversation').modal('show');
 
-        refresh_disqus(id, 'http://govwiki.us' + '/' + id, name);
+        //refresh_disqus(id, 'http://govwiki.us' + '/' + id, name);
     });
 
     // Save event from xEditable, after click on check icon
