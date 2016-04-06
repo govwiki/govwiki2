@@ -14,7 +14,6 @@ require "zlib"
 set :application,         "GovWiki"
 default_run_options[:pty] = true
 set :app_path,            "app"
-set :web_path,            "web"
 set :model_manager,       "doctrine"
 set :deploy_dir,          "deploy"
 
@@ -28,7 +27,7 @@ set :branch,            fetch(:branch, '').sub!(/^.*\//, "") # remove origin/ pr
 # Directories
 set :writable_dirs,         [app_path + "/cache", app_path + "/logs", web_path + "/documents"]
 set :shared_files,          ["app/config/parameters.yml"]
-set :shared_children,       [app_path + "/logs", web_path + "/img/upload", web_path + "/css", wep_path + "/documents"]
+set :shared_children,       [app_path + "/logs", web_path + "/img/upload", web_path + "/css", web_path + "/documents"]
 set :remote_backup_dir,     "/tmp"
 
 # Permissions
