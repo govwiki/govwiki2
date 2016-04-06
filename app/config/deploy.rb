@@ -14,6 +14,7 @@ require "zlib"
 set :application,         "GovWiki"
 default_run_options[:pty] = true
 set :app_path,            "app"
+set :web_path,            "web"
 set :model_manager,       "doctrine"
 set :deploy_dir,          "deploy"
 
