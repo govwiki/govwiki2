@@ -20,7 +20,7 @@
         <th></th>
     </tr>
 
-    {% for vote in list %}{% dump vote.id %}
+    {% for vote in list %}
         {% set hasComment = vote.comments is defined and vote.comments|length > 0 %}
         <tr data-id="{{vote.legislation.id}}" {%
         if (vote.legislation.request is not null) and (vote.legislation.request.status == 'pending') -%}
