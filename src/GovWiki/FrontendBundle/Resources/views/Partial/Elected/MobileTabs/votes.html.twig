@@ -1,0 +1,140 @@
+{% import _self as helper %}
+
+<div role="tabpanel" class="tab-pane active" id="Mobile-Votes">
+    <div class="tab-pane-main">
+
+        {% for vote in votes %}
+            {% set blockId = 'voteCollapse' ~ loop.index %}
+
+            {# Card #}
+            <div class="card">
+
+                {# Header #}
+                <div class="card-header text-justify" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false" aria-controls="{{ blockId }}">
+
+                    {# Legislation Name#}
+                    <p class="card-header__vote-name">{{ vote.legislation.name }}</p>
+
+                    {# How legislation vote #}
+                    <div>
+                        <span class="card-header__vote-vote">
+                            How official voted:
+                            <span>{{vote.vote}}</span>
+                        </span>
+                        <span class="card-header__vote-sponsor">
+                            Did official sponsor?
+                            <span>{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}</span>
+                        </span>
+                    </div>
+
+                    {# Expand icon #}
+                    <div class="card-expand" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false" aria-controls="{{ blockId }}">
+                        <i class="glyphicon glyphicon-chevron-down"></i>
+                    </div>
+
+                </div>
+
+                {# Content (Collapsable) #}
+                <div class="collapse" id="{{ blockId }}">
+                    <div class="card-block">
+
+                        {# Vote date & issue category #}
+                        <div>
+                            <span class="card-block__vote-date">{{ helper.legislationDate(vote) }}</span>
+                            <span class="card-block__vote-issue">{{ helper.legislationIssueCategory(vote) }}</span>
+                        </div>
+
+                        {# Legislation info #}
+                        <h4 class="card-title">{{ helper.legislationName(vote) }}</h4>
+                        <p class="card-text">{{ helper.legislationSummary(vote) }}</p>
+
+                        {# How legislation vote (as table) #}
+                        <table class="table table-stripped">
+                            <tr>
+                                <th>How official voted</th>
+                                <td>{{ helper.legislationVote(vote) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Did official sponsor?</th>
+                                <td>{{ helper.legislationSponsor(vote) }}</td>
+                            </tr>
+                        </table>
+
+                        {# Comment icon #}
+                        <p class="card-block__vote-comments">
+                            <a href="#"><i class="glyphicon glyphicon-comment"></i> 0</a>
+                        </p>
+
+                    </div>
+                </div>
+
+            </div>{# Card end #}
+
+        {% endfor %}
+
+    </div>
+</div>
+
+{% macro legislationDate (vote) %}
+    <div data-date-considered="{{vote.legislation.dateConsidered | date("m/d/Y") }}">
+        <a href="javascript:void(0);" data-type="date" data-pk="1"  data-format="mm/dd/yyyy"
+           data-placeholder="Please edit" data-title="Please edit"
+           class="editable editable-pre-wrapped editable-click" data-original-title=""
+           title="">{{vote.legislation.dateConsidered | date("m/d/Y") }}</a>
+        <span class="glyphicon glyphicon-pencil edit"></span>
+    </div>
+{% endmacro %}
+
+{% macro legislationName (vote) %}
+    <div data-name="{{vote.legislation.name}}">
+        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+           data-placeholder="Please edit" data-title="Please edit"
+           class="editable editable-pre-wrapped editable-click" data-original-title=""
+           title="">{{vote.legislation.name}}</a>
+        <span class="glyphicon glyphicon-pencil edit"></span>
+    </div>
+{% endmacro %}
+
+{% macro legislationSummary (vote) %}
+    <div data-summary="{{vote.legislation.summary}}">
+        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+           data-placeholder="Please edit" data-title="Please edit"
+           class="editable editable-pre-wrapped editable-click" data-original-title=""
+           title="">{{vote.legislation.summary}}</a>
+        <span class="glyphicon glyphicon-pencil edit"></span>
+    </div>
+{% endmacro %}
+
+{% macro legislationVote (vote) %}
+    <div data-vote="{{vote.vote}}">
+        <a href="javascript:void(0);" data-type="select" data-source="{'Yes': 'Yes', 'No': 'No', 'Abstain': 'Abstain', 'Absence': 'Absence', 'Not in Office': 'Not in Office'}" data-pk="1"
+           data-placeholder="Please edit" data-title="Please edit"
+           class="editable editable-pre-wrapped editable-click" data-original-title=""
+           title="">{{vote.vote}}</a>
+        <span data-id="{{vote.id}}" class="glyphicon glyphicon-pencil edit"></span>
+    </div>
+{% endmacro %}
+
+{% macro legislationSponsor (vote) %}
+    <div data-did-elected-official-propose-this="{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}" align="center">
+        <a href="javascript:void(0);"
+           data-type="select"
+           data-source="{'0': 'No', '1': 'Yes'}"
+           data-pk="1" data-placeholder="Please edit"
+           data-title="Please edit"
+           class="editable editable-pre-wrapped editable-click"
+           data-original-title=""
+           title="">{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}</a>
+        <span data-id="{{vote.id}}" class="glyphicon glyphicon-pencil edit"></span>
+    </div>
+{% endmacro %}
+
+{% macro legislationIssueCategory (vote) %}
+    <div data-gov-assigned-number="{{ vote.legislation.govAssignedNumber }}">
+        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+           data-placeholder="Please edit" data-title="Please edit"
+           class="editable editable-pre-wrapped editable-click" data-original-title=""
+           title="">{{vote.legislation.issueCategory.name}}: {{ vote.legislation.govAssignedNumber }}</a>
+        <span class="glyphicon glyphicon-pencil edit"></span>
+    </div>
+{% endmacro %}

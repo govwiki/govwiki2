@@ -237,7 +237,7 @@
                             {% endfor %}
 
                             {% if hasSalaries %}
-                                <div class="tab-pane paginate" id="Salaries">
+                                <div class="mobile-tab-pane paginate" id="Salaries">
                                     <div class="tab-pane-main">
                                         {{ render(controller('GovWikiApiBundle:V1/Government:salaries', {
                                         'government': government.id
@@ -247,7 +247,7 @@
                             {% endif %}
 
                             {% if hasPensions %}
-                                <div class="tab-pane paginate" id="Pensions">
+                                <div class="mobile-tab-pane paginate" id="Pensions">
                                     <div class="tab-pane-main">
                                         {{ render(controller('GovWikiApiBundle:V1/Government:pensions', {
                                         'government': government.id
@@ -259,7 +259,7 @@
 
                             {# Financial Statements (if exists) #}
                             {% if showFinStmt %}
-                                <div class="tab-pane" id="mobile-Financial_Statements">
+                                <div class="mobile-tab-pane" id="mobile-Financial_Statements">
 
                                     {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
                                     'financialStatements': government.financialStatements
