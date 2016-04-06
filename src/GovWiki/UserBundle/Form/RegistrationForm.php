@@ -57,8 +57,9 @@ class RegistrationForm extends AbstractType
                 [
                     'required' => false,
                     'attr' => [
-                        'placeholder' => 'optional, example: 4158675309',
+                        'placeholder' => 'form.phone.placeholder',
                     ],
+                    'label' => 'form.phone',
                 ]
             )
             ->add(
@@ -67,7 +68,7 @@ class RegistrationForm extends AbstractType
                 [
                     'class' => 'GovWiki\DbBundle\Entity\Government',
                     'required' => false,
-                    'label' => 'Subscribe to',
+                    'label' => 'form.subscribed_to',
                     'query_builder' => $queryBuilderFunction,
                 ]
             )
@@ -76,8 +77,20 @@ class RegistrationForm extends AbstractType
                 $user = $event->getData();
                 $user->addEnvironment($environment);
                 $event->setData($user);
-            })
-        ;
+            });
+
+        // Change translation domain for password 'repeated' form type.
+        // If anyone known how to override translation domain in another way,
+        // please do it.
+        $builder
+            ->remove('plainPassword')
+            ->add('plainPassword', 'repeated', [
+                'type' => 'password',
+                'options' => array('translation_domain' => 'messages'),
+                'first_options' => array('label' => 'form.password'),
+                'second_options' => array('label' => 'form.password_confirmation'),
+                'invalid_message' => 'form.password.mismatch',
+            ]);
     }
 
     /**

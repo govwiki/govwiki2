@@ -1,4 +1,4 @@
-{% trans_default_domain 'FOSUserBundle' %}
+{% trans_default_domain "messsages" %}
 
 <div class="col-md-5 col-md-offset-3" style="margin-top:141px;">
     <div class="panel panel-default">
@@ -7,10 +7,19 @@
         </div>
         <div class="panel-body">
             <form action="{{ path('fos_user_registration_register') }}" {{ form_enctype(form) }} method="POST" class="fos_user_registration_register">
-                {{ form_row(form.children.username) }}
-                {{ form_row(form.children.email) }}
-                {{ form_row(form.children.phone) }}
-                {{ form_row(form.children.plainPassword) }}
+                {{- form_row(form.username, {
+                    'translation_domain': 'messages'
+                }) -}}
+                {{- form_row(form.email, {
+                    'translation_domain': 'messages'
+                }) -}}
+                {{- form_row(form.phone, {
+                    'translation_domain': 'messages'
+                }) -}}
+                {{- form_row(form.plainPassword, {
+                    'first': { 'options': {'label': 'some'} },
+                    'translation_domain': 'messages'
+                }) -}}
                 {{ form_widget(form) }}
                 <div>
                     <input class="btn btn-default" type="submit" value="{{ 'registration.submit'|trans }}" />
