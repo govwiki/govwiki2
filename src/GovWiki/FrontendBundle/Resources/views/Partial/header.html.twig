@@ -71,7 +71,16 @@
                         Login / Sign Up
                     </a>
                 </li>
+            {% endif %}
 
+            {% if (app.request.attributes.get('_route') == 'government') and
+                (entity.showDocuments) %}
+                <li>
+                    <a href="{{ govwiki_path('documents', {
+                        'altTypeSlug': app.request.attributes.get('altTypeSlug'),
+                        'slug': app.request.attributes.get('slug')
+                    }) }}">Documents</a>
+                </li>
             {% endif %}
 
             {# Return to map #}

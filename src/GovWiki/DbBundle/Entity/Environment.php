@@ -190,6 +190,13 @@ class Environment
     private $subscribable = false;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $showDocuments = false;
+
+    /**
      *
      */
     public function __construct()
@@ -689,5 +696,25 @@ class Environment
     public function getSubscribable()
     {
         return $this->subscribable;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isShowDocuments()
+    {
+        return $this->showDocuments;
+    }
+
+    /**
+     * @param boolean $showDocuments Flag.
+     *
+     * @return Environment
+     */
+    public function setShowDocuments($showDocuments)
+    {
+        $this->showDocuments = $showDocuments;
+
+        return $this;
     }
 }

@@ -270,20 +270,24 @@ From ' . $user_email;
         $government = $manager->getGovernmentWithoutData($altTypeSlug, $slug);
         $government->currentYear = $currentYear;
 
-        $documentsQuery = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Document')
-            ->getListQuery($government->getId(), null, $currentYear);
-        $paginator = $this->get('knp_paginator');
-
-        return [
+        $parameters = [
             'years' => $years,
             'government' => $government,
-            'documents' => $paginator->paginate(
+        ];
+
+        if ($manager->getEntity()->isShowDocuments()) {
+            $documentsQuery = $this->getDoctrine()
+                ->getRepository('GovWikiDbBundle:Document')
+                ->getListQuery($government->getId(), null, $currentYear);
+            $paginator = $this->get('knp_paginator');
+            $parameters['documents'] = $paginator->paginate(
                 $documentsQuery,
                 $request->query->getInt('page', 1),
                 25
-            ),
-        ];
+            );
+        }
+
+        return $parameters;
     }
 
     /**
