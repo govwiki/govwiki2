@@ -4,6 +4,7 @@ set :deploy_to,      "#{deploy_root}/#{deploy_dir}"
 set :user,           "joffemd"
 set :branch,         "azure-prod"
 set :webserver_user, "www-data"
+set :deploy_via,     :rsync_with_remote_cache
 
 after "deploy:create_symlink" do
     capifony_pretty_print "--> run ./install.sh"

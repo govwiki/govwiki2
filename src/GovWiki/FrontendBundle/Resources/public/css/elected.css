@@ -2,22 +2,22 @@
 Syntax error: Invalid CSS after "      &": expected "{", was "-info {"
               
               "-info" may only be used at the beginning of a compound selector.
-        on line 90 of elected.scss
+        on line 98 of elected.scss
 
-85:    .person {
-86:       width: 70%;
-87:       margin-top: 20px;
-88:       border-bottom: 1px dotted #ddd;
-89: 
-90:       &-info {
-91:          width: 60%;
-92:          vertical-align: top;
-93:          font-size: 1.4em;
-94:          display: inline-block;
-95:          min-width: 60%;
+93:    .person {
+94:       width: 70%;
+95:       margin-top: 20px;
+96:       border-bottom: 1px dotted #ddd;
+97: 
+98:       &-info {
+99:          width: 60%;
+100:          vertical-align: top;
+101:          font-size: 1.4em;
+102:          display: inline-block;
+103:          min-width: 60%;
 
 Backtrace:
-elected.scss:90
+elected.scss:98
 /usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1146:in `expected'
 /usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1084:in `expected'
 /usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:691:in `block in simple_selector_sequence'
@@ -66,4 +66,4 @@ elected.scss:90
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Invalid CSS after \"      &\": expected \"{\", was \"-info {\"\A               \A               \"-info\" may only be used at the beginning of a compound selector.\A         on line 90 of elected.scss\A \A 85:    .person {\A 86:       width: 70%;\A 87:       margin-top: 20px;\A 88:       border-bottom: 1px dotted #ddd;\A 89: \A 90:       &-info {\A 91:          width: 60%;\A 92:          vertical-align: top;\A 93:          font-size: 1.4em;\A 94:          display: inline-block;\A 95:          min-width: 60%;"; }
+  content: "Syntax error: Invalid CSS after \"      &\": expected \"{\", was \"-info {\"\A               \A               \"-info\" may only be used at the beginning of a compound selector.\A         on line 98 of elected.scss\A \A 93:    .person {\A 94:       width: 70%;\A 95:       margin-top: 20px;\A 96:       border-bottom: 1px dotted #ddd;\A 97: \A 98:       &-info {\A 99:          width: 60%;\A 100:          vertical-align: top;\A 101:          font-size: 1.4em;\A 102:          display: inline-block;\A 103:          min-width: 60%;"; }

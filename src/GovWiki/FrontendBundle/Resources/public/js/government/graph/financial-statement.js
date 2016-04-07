@@ -1,5 +1,6 @@
 var data = require('./glob.js').data;
 var chart = require('./config.js').chart;
+var rowSortFunction = require('./utils.js').rowSortFunction;
 
 /**
  * Initialization
@@ -21,19 +22,50 @@ function financialStatements_revenue() {
     vis_data = new google.visualization.DataTable();
     vis_data.addColumn('string', 'Total Gov. Revenues');
     vis_data.addColumn('number', 'Total');
+    vis_data.addColumn({type:'string', role:'tooltip'});
     rows = [];
 
     var revenues = data.financialStatements.Revenues;
+
+    var total_amount = 0;
+
+    // Prepare Revenues data to Google Tree Chart
+    for(var rKey in revenues) {
+        if (revenues.hasOwnProperty(rKey) && (revenues[rKey].caption != 'Total Revenues')){
+
+            var subCategory = revenues[rKey];
+            var subCatValue = getSubCatValue(subCategory);
+            if (!subCatValue) {
+                continue;
+            }
+
+            total_amount += parseInt(subCatValue);
+
+        }
+    }
+
+    function renderTooltip(caption, totalfunds) {
+        var percent = totalfunds * 100 / total_amount;
+        percent = percent.toFixed(2);
+        return '' + caption + ': ' + numeral(totalfunds).format('$0,0') + ' (' + percent + '%)';
+    }
+
     for(var key in revenues){
         if(revenues.hasOwnProperty(key) && (revenues[key].caption != 'Total Revenues')) {
-            r = [revenues[key].caption, parseInt(revenues[key].totalfunds)];
+            var caption = revenues[key].translatedCaption;
+            var totalfunds = parseInt(revenues[key].totalfunds);
+            var tooltip = renderTooltip(caption, totalfunds);
+            r = [caption, totalfunds, tooltip];
             rows.push(r);
         }
     }
 
+    // Sort all records by amount
+    rows.sort(rowSortFunction);
+
     vis_data.addRows(rows);
     options = {
-        'title': 'Total Revenues',
+        'title': data.translations.total_revenue,
         'titleTextStyle': {
             'fontSize': 16
         },
@@ -44,7 +76,6 @@ function financialStatements_revenue() {
         },
         'width': 470,
         'height': 350,
-        'pieStartAngle': 60,
         'sliceVisibilityThreshold': 0,
         'forceIFrame': true,
         'chartArea': {
@@ -66,19 +97,49 @@ function financialStatements_expenditures() {
     vis_data = new google.visualization.DataTable();
     vis_data.addColumn('string', 'Total Gov. Expenditures');
     vis_data.addColumn('number', 'Total');
+    vis_data.addColumn({type:'string', role:'tooltip'});
     rows = [];
 
     var expenditures = data.financialStatements.Expenditures;
+    var total_amount = 0;
+
+    // Prepare Revenues data to Google Tree Chart
+    for(var rKey in expenditures) {
+        if (expenditures.hasOwnProperty(rKey) && (expenditures[rKey].caption != 'Total Revenues')){
+
+            var subCategory = expenditures[rKey];
+            var subCatValue = getSubCatValue(subCategory);
+            if (!subCatValue) {
+                continue;
+            }
+
+            total_amount += parseInt(subCatValue);
+
+        }
+    }
+
+    function renderTooltip(caption, totalfunds) {
+        var percent = totalfunds * 100 / total_amount;
+        percent = percent.toFixed(2);
+        return '' + caption + ': ' + numeral(totalfunds).format('$0,0') + ' (' + percent + '%)';
+    }
+
     for(var key in expenditures){
         if(expenditures.hasOwnProperty(key) && (expenditures[key].caption != 'Total Expenditures')) {
-            r = [expenditures[key].caption, parseInt(expenditures[key].totalfunds)];
+            var caption = expenditures[key].translatedCaption;
+            var totalfunds = parseInt(expenditures[key].totalfunds);
+            var tooltip = renderTooltip(caption, totalfunds);
+            r = [caption, totalfunds, tooltip];
             rows.push(r);
         }
     }
 
+    // Sort all records by amount
+    rows.sort(rowSortFunction);
+
     vis_data.addRows(rows);
     options = {
-        'title': 'Total Expenditures',
+        'title': data.translations.total_expenditure,
         'titleTextStyle': {
             'fontSize': 16
         },
@@ -89,7 +150,6 @@ function financialStatements_expenditures() {
         },
         'width': 470,
         'height': 350,
-        'pieStartAngle': 60,
         'sliceVisibilityThreshold': 0,
         'forceIFrame': true,
         'chartArea': {
@@ -113,7 +173,7 @@ function financialStatementsTree_revenues() {
 
     RevenuesDataTable = [
         ['Location', 'Parent', 'FinData', 'Heat'],
-        ['Total Revenues', null, 0, 0]
+        [data.translations.total_revenue, null, 0, 0]
     ];
 
     var RevenuesData = data.financialStatements.Revenues;
@@ -129,7 +189,7 @@ function financialStatementsTree_revenues() {
             }
 
             RevenuesDataTable.push(
-                [subCategory.caption, 'Total Revenues', parseInt(subCatValue), parseInt(subCatValue)]
+                [subCategory.translatedCaption, data.translations.total_revenue, parseInt(subCatValue), parseInt(subCatValue)]
             );
 
             total_amount += parseInt(subCatValue);
@@ -138,21 +198,7 @@ function financialStatementsTree_revenues() {
     }
     console.log(total_amount);
 
-    /**
-     * TODO: Hardcoded!! Please ask the question to client, which field must be there?
-     */
-    function getSubCatValue(subCategory) {
 
-        if (subCategory.totalfunds) {
-
-            if (subCategory.totalfunds < 0) {
-                subCategory.totalfunds = -(subCategory.totalfunds);
-            }
-
-        }
-
-        return subCategory.totalfunds || false;
-    }
 
     var options = {
         highlightOnMouseOver: true,
@@ -196,7 +242,7 @@ function financialStatementsTree_expenditures() {
 
     ExpendituresDataTable = [
         ['Location', 'Parent', 'FinData', 'Heat'],
-        ['Total Expenditures', null, 0, 0]
+        [data.translations.total_expenditure, null, 0, 0]
     ];
 
     var ExpendituresData = data.financialStatements.Expenditures;
@@ -212,26 +258,12 @@ function financialStatementsTree_expenditures() {
             }
 
             ExpendituresDataTable.push(
-                [subCategory.caption, 'Total Expenditures', parseInt(subCatValue), parseInt(subCatValue)]
+                [subCategory.translatedCaption, data.translations.total_expenditure, parseInt(subCatValue), parseInt(subCatValue)]
             );
 
             total_amount += parseInt(subCatValue);
 
         }
-    }
-    console.log(total_amount);
-
-    function getSubCatValue(subCategory) {
-
-        if (subCategory.totalfunds) {
-
-            if (subCategory.totalfunds < 0) {
-                subCategory.totalfunds = -(subCategory.totalfunds);
-            }
-
-        }
-
-        return subCategory.totalfunds || false;
     }
 
     var options = {
@@ -370,6 +402,22 @@ console.log('im ther');
 
     }
 
+}
+
+/**
+ * TODO: Hardcoded!! Please ask the question to client, which field must be there?
+ */
+function getSubCatValue(subCategory) {
+
+    if (subCategory.totalfunds) {
+
+        if (subCategory.totalfunds < 0) {
+            subCategory.totalfunds = -(subCategory.totalfunds);
+        }
+
+    }
+
+    return subCategory.totalfunds || false;
 }
 
 module.exports = {

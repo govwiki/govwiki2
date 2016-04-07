@@ -13,7 +13,8 @@ module.exports = {
     entry: {
         map: './' + path.base + '/home/index.js',
         government: './' + path.base + '/government/index.js',
-        common: './' + path.base + '/common.js'
+        common: './' + path.base + '/common.js',
+        document: './'+ path.base +'/document/document.js'
     },
     output: {
         path: __dirname + '/web/js',

@@ -6,3 +6,8 @@ parameters:
 services:
     fos_user.doctrine_registry:
         alias: doctrine
+
+    app.form.registration:
+        class: GovWiki\UserBundle\Form\RegistrationForm
+        tags:
+            - { name: form.type, alias: app_user_registration }

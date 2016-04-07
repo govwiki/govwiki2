@@ -2,6 +2,8 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use Composer\DependencyResolver\Transaction;
+use GovWiki\DbBundle\Entity\GlobalLocale;
 use GovWiki\DbBundle\Entity\Locale;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -23,6 +25,22 @@ use Symfony\Component\Filesystem\Filesystem;
 class LocalizationController extends AbstractGovWikiAdminController
 {
     const ENVIRONMENT_PARAMETER = 'environment';
+
+    /**
+     * Show list of global locales.
+     *
+     * @Configuration\Route("/global", methods={ "GET" })
+     * @Configuration\Template("GovWikiAdminBundle:Localization:index.html.twig")
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return array
+     */
+    public function globalAction(Request $request)
+    {
+        $this->adminEnvironmentManager()->clearEnvironment();
+        return $this->indexAction($request);
+    }
 
     /**
      * Show list of localizations.
@@ -76,14 +94,14 @@ class LocalizationController extends AbstractGovWikiAdminController
 
         $trans_key_settings = null;
         if (!empty($filter_trans_key)) {
-            $trans_key_settings = array(
+            $trans_key_settings = [
                 'matching' => 'like',
-                'transKeys' => array($filter_trans_key)
-            );
+                'transKeys' => [$filter_trans_key]
+            ];
         }
         $trans_list = $this->getTranslationManager()->getTranslationsBySettings($locale_name, $trans_key_settings, $filter_translation);
 
-        $without_transText = array();
+        $without_transText = [];
         /** @var Translation $translation */
         foreach ($trans_list as $key => $translation) {
             if ($translation->getTransKey() == $translation->getTranslation() || $translation->getTranslation() == '') {
@@ -96,13 +114,13 @@ class LocalizationController extends AbstractGovWikiAdminController
             $trans_list,
             $request->query->getInt('with_translation_page', 1),
             50,
-            array('pageParameterName' => 'with_translation_page')
+            ['pageParameterName' => 'with_translation_page']
         );
         $without_transText_pagination = $this->get('knp_paginator')->paginate(
             $without_transText,
             $request->query->getInt('without_translation_page', 1),
             50,
-            array('pageParameterName' => 'without_translation_page')
+            ['pageParameterName' => 'without_translation_page']
         );
 
         return [
@@ -133,18 +151,18 @@ class LocalizationController extends AbstractGovWikiAdminController
 
         $trans_info_list_en = $this->getTranslationManager()->getTransInfoByLocale('en');
 
-        $language_list = array(
+        $language_list = [
             'en' => 'English',
             'es' => 'Spanish',
             'fr' => 'French',
             'de' => 'German',
             'it' => 'Italian'
-        );
+        ];
 
         $form = $this->createFormBuilder()
-            ->add('locale_name', 'choice', array(
+            ->add('locale_name', 'choice', [
                 'choices' => $language_list
-            ))
+            ])
             ->getForm();
 
         $form->handleRequest($request);
@@ -154,6 +172,9 @@ class LocalizationController extends AbstractGovWikiAdminController
             $locale = $this->getLocaleManager()->getOneLocaleByShortName($locale_name);
 
             if (!$locale) {
+                $global_locale = $this->getLocaleManager()
+                    ->getOneLocaleByShortName($locale_name, true);
+
                 $environment_name = $this->adminEnvironmentManager()->getEnvironment();
                 $environment = $em->getRepository('GovWikiDbBundle:Environment')->findOneBySlug($environment_name);
 
@@ -171,22 +192,23 @@ class LocalizationController extends AbstractGovWikiAdminController
                     $em->persist($translation);
                 }
 
-                /**
-                 * @var Filesystem $fs
-                 */
-                /*$translationPath = $this->container->get('kernel')->getRootDir() . '/Resources/translations/';
-                $fs = $this->container->get('filesystem');
-                $fs->chmod($translationPath, 0755);
-                $em = $this->getDoctrine()->getManager();
-                $all_locales = $em->getRepository('GovWikiDbBundle:Locale')->findAll();
-                foreach ($all_locales as $one_locale) {
-                    $filename = 'messages.' . strtolower($one_locale->getShortName()) . '.db';
-                    if (!$fs->exists($translationPath . $filename)) {
-                        $fs->touch($translationPath . $filename);
-                        $fs->chmod($translationPath . $filename, 0444);
+                if (! $global_locale) {
+                    $global_trans_info_list_en = $this->getTranslationManager()
+                        ->getTransInfoByLocale('en', true);
+
+                    $new_global_locale = new GlobalLocale();
+                    $new_global_locale->setShortName($locale_name);
+                    $em->persist($new_global_locale);
+
+                    foreach ($global_trans_info_list_en as $trans_info) {
+                        $translation = new Translation();
+                        $translation->setLocale($new_global_locale);
+                        $translation->setTransKey($trans_info['transKey']);
+                        $translation->setTranslation($trans_info['translation']);
+                        $translation->setTransTextareaType($trans_info['transTextareaType']);
+                        $em->persist($translation);
                     }
                 }
-                $fs->chmod($translationPath, 0555);*/
 
                 $em->flush();
 
@@ -234,6 +256,9 @@ class LocalizationController extends AbstractGovWikiAdminController
     public function exportLocaleAction($locale_name)
     {
         $env_name = $this->adminEnvironmentManager()->getEnvironment();
+        if (null === $env_name) {
+            $env_name = 'global';
+        }
         $filePath = $this->getParameter('kernel.logs_dir') . '/' . $env_name . '.locale.' . $locale_name . '.yml';
 
         $data = $this->getTranslationManager()->getTransInfoByLocale($locale_name);
@@ -287,7 +312,7 @@ class LocalizationController extends AbstractGovWikiAdminController
             $file->move($this->getParameter('kernel.logs_dir'), $file->getFilename());
             $filePath = $this->getParameter('kernel.logs_dir').'/'.$file->getFilename();
 
-            $translation_texts = array();
+            $translation_texts = [];
             $fp = fopen($filePath, 'r');
             while(($line = fgets($fp)) !== false) {
                 $semicolon_pos = strpos($line, ':');
@@ -301,10 +326,10 @@ class LocalizationController extends AbstractGovWikiAdminController
 
             $trans_key_settings = null;
             if (!empty($translation_texts)) {
-                $trans_key_settings = array(
+                $trans_key_settings = [
                     'matching' => 'eq',
                     'transKeys' => array_keys($translation_texts)
-                );
+                ];
             }
             $db_translations = $this->getTranslationManager()->getTranslationsBySettings($locale_name, $trans_key_settings);
 
@@ -332,7 +357,7 @@ class LocalizationController extends AbstractGovWikiAdminController
 
             $em->flush();
 
-            return $this->redirectToRoute('govwiki_admin_localization_showlocale', array('locale_name' => $locale_name));
+            return $this->redirectToRoute('govwiki_admin_localization_showlocale', ['locale_name' => $locale_name]);
         }
 
         return [
@@ -367,21 +392,21 @@ class LocalizationController extends AbstractGovWikiAdminController
             $transKey = $new_translation->getTransKey();
             $transText = $new_translation->getTranslation();
 
-            $all_env_locale_names = array();
+            $all_env_locale_names = [];
             foreach ($this->getLocaleManager()->getListLocaleNames() as $row) {
                 $all_env_locale_names[] = $row['shortName'];
             }
 
             $trans_key_settings = null;
             if (!empty($transKey)) {
-                $trans_key_settings = array(
+                $trans_key_settings = [
                     'matching' => 'eq',
-                    'transKeys' => array($transKey)
-                );
+                    'transKeys' => [$transKey]
+                ];
             }
             $existing_translations = $this->getTranslationManager()->getTranslationsBySettings(null, $trans_key_settings);
 
-            $existing_translations_locale_names = array();
+            $existing_translations_locale_names = [];
             foreach ($existing_translations as $translation) {
                 $existing_translations_locale_names[] = $translation->getLocale()->getShortName();
             }
@@ -394,7 +419,7 @@ class LocalizationController extends AbstractGovWikiAdminController
                 $new_translation->setLocale($locale);
                 $em->persist($new_translation);
 
-                $create_translations_locale_names = array_diff($create_translations_locale_names, array($locale_name));
+                $create_translations_locale_names = array_diff($create_translations_locale_names, [$locale_name]);
 
                 foreach ($create_translations_locale_names as $create_translations_locale_name) {
                     $locale = $this->getLocaleManager()->getOneLocaleByShortName($create_translations_locale_name);
@@ -408,7 +433,7 @@ class LocalizationController extends AbstractGovWikiAdminController
 
                 $em->flush();
 
-                return $this->redirectToRoute('govwiki_admin_localization_showlocale', array('locale_name' => $locale_name));
+                return $this->redirectToRoute('govwiki_admin_localization_showlocale', ['locale_name' => $locale_name]);
             } else {
                 $this->addFlash('error', 'Translation with this key exists.');
             }
@@ -440,10 +465,10 @@ class LocalizationController extends AbstractGovWikiAdminController
         $needOneResult = true;
         $trans_key_settings = null;
         if (!empty($transKey)) {
-            $trans_key_settings = array(
+            $trans_key_settings = [
                 'matching' => 'eq',
-                'transKeys' => array($transKey)
-            );
+                'transKeys' => [$transKey]
+            ];
         }
         $translation = $this->getTranslationManager()->getTranslationsBySettings($locale_name, $trans_key_settings, null, $needOneResult);
 
@@ -457,22 +482,22 @@ class LocalizationController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $footer_transKey_list = array('footer.copyright', 'footer.links', 'footer.social');
+            $footer_transKey_list = ['footer.copyright', 'footer.links', 'footer.social'];
             if (in_array($transKey, $footer_transKey_list)) {
                 $footer_slug_parts = explode('.', $transKey);
 
                 $environment_name = $this->adminEnvironmentManager()->getEnvironment();
                 $environment = $em->getRepository('GovWikiDbBundle:Environment')->findOneBySlug($environment_name);
-                $env_content = $em->getRepository('GovWikiDbBundle:EnvironmentContents')->findOneBy(array(
+                $env_content = $em->getRepository('GovWikiDbBundle:EnvironmentContents')->findOneBy([
                     'environment' => $environment,
                     'slug' => $footer_slug_parts[0] . '_' . $footer_slug_parts[1]
-                ));
+                ]);
                 $env_content->setValue($translation->getTranslation());
             }
 
             $em->flush();
 
-            return $this->redirectToRoute('govwiki_admin_localization_showlocale', array('locale_name' => $locale_name));
+            return $this->redirectToRoute('govwiki_admin_localization_showlocale', ['locale_name' => $locale_name]);
         }
 
         return [
@@ -501,10 +526,10 @@ class LocalizationController extends AbstractGovWikiAdminController
 
         $trans_key_settings = null;
         if (!empty($transKey)) {
-            $trans_key_settings = array(
+            $trans_key_settings = [
                 'matching' => 'eq',
-                'transKeys' => array($transKey)
-            );
+                'transKeys' => [$transKey]
+            ];
         }
         $trans_list = $this->getTranslationManager()->getTranslationsBySettings(null, $trans_key_settings);
 
@@ -513,7 +538,7 @@ class LocalizationController extends AbstractGovWikiAdminController
         }
         $em->flush();
 
-        return $this->redirectToRoute('govwiki_admin_localization_showlocale', array('locale_name' => $locale_name));
+        return $this->redirectToRoute('govwiki_admin_localization_showlocale', ['locale_name' => $locale_name]);
     }
 
     /**
@@ -533,10 +558,10 @@ class LocalizationController extends AbstractGovWikiAdminController
 
         $trans_key_settings = null;
         if (!empty($trans_key)) {
-            $trans_key_settings = array(
+            $trans_key_settings = [
                 'matching' => 'eq',
-                'transKeys' => array($trans_key)
-            );
+                'transKeys' => [$trans_key]
+            ];
         }
         $exist_translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings);
 
@@ -549,9 +574,9 @@ class LocalizationController extends AbstractGovWikiAdminController
         }
         $em->flush();
 
-        return new JsonResponse(array(
+        return new JsonResponse([
             'result' => true
-        ));
+        ]);
     }
 
     /**

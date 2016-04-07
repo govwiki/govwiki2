@@ -19,6 +19,7 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     admin_email:  ~
+    chat_email: ~
     email_subject: ~
     debug: ~
 
@@ -26,3 +27,7 @@ parameters:
     carto_db.api_key: ~
 
     determinator.name: ~
+
+    twilio.sid: xxx
+    twilio.token: xxx
+    twilio.from: "+123"

@@ -57,7 +57,9 @@ class Translation
     private $dateUpdated;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Locale", inversedBy="translations")
+     * @var AbstractLocale
+     *
+     * @ORM\ManyToOne(targetEntity="AbstractLocale", inversedBy="translations")
      * @ORM\JoinColumn(name="locale_id", referencedColumnName="id")
      */
     private $locale;
@@ -210,10 +212,10 @@ class Translation
     /**
      * Set locale
      *
-     * @param \GovWiki\DbBundle\Entity\Locale $locale
+     * @param AbstractLocale $locale
      * @return Translation
      */
-    public function setLocale(\GovWiki\DbBundle\Entity\Locale $locale = null)
+    public function setLocale(AbstractLocale $locale = null)
     {
         $this->locale = $locale;
 
@@ -223,7 +225,7 @@ class Translation
     /**
      * Get locale
      *
-     * @return \GovWiki\DbBundle\Entity\Locale 
+     * @return AbstractLocale
      */
     public function getLocale()
     {

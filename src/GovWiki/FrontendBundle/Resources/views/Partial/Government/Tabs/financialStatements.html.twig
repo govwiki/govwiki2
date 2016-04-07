@@ -8,13 +8,13 @@
 <div class="col-md-12 text-left chart-controls">
     <div class="btn-group btn-group-xs" data-toggle="buttons">
         <label class="btn btn-primary active">
-            <input type="radio" name="options" id="chart" autocomplete="off" checked> Pie
+            <input type="radio" name="options" id="chart" autocomplete="off" checked> {{ 'general.findata.main.pie'|trans }}
         </label>
         <label class="btn btn-primary">
-            <input type="radio" name="options" id="tree-charts" autocomplete="off"> Tree Charts
+            <input type="radio" name="options" id="tree-charts" autocomplete="off"> {{ 'general.findata.main.tree_charts'|trans }}
         </label>
         <label class="btn btn-primary">
-            <input type="radio" name="options" id="compare-charts" autocomplete="off"> Compare
+            <input type="radio" name="options" id="compare-charts" autocomplete="off"> {{ 'general.findata.main.compare'|trans }}
         </label>
     </div>
 </div>
@@ -34,54 +34,55 @@
 
                     {# First condition #}
                     <div class="col-md-3 first-condition">
-                        <h4 class="text-center">Step 1</h4>
+                        <h4 class="text-center">{{ 'general.findata.main.step_1'|trans }}</h4>
                         <div class="form-group">
                             <div class="typeahead_wrap">
-                                <input type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" />
+                                <input type="text" placeholder="{{ 'general.findata.main.government_name'|trans }}" class="text-uppercase typeahead_government form-control" />
                             </div>
                         </div>
                         <div class="form-group">
                             <select class="form-control disabled">
-                                <option value="">YEAR</option>
+                                <option value="">{{ 'general.year_selector_label'|trans|upper }}</option>
                             </select>
                         </div>
                     </div>
 
                     {# Divider #}
-                    <div class="col-md-1 form-group text-center divider">TO</div>
+                    <div class="col-md-1 form-group text-center divider">{{ 'general.findata.main.to'|trans }}</div>
 
                     {# Second condition #}
                     <div class="col-md-3 second-condition">
-                        <h4 class="text-center">Step 2</h4>
+                        <h4 class="text-center">{{ 'general.findata.main.step_2'|trans }}</h4>
                         <div class="form-group">
                             <div class="typeahead_wrap">
-                                <input type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" />
+                                <input type="text" placeholder="{{ 'general.findata.main.government_name'|trans }}" class="text-uppercase typeahead_government form-control" />
                             </div>
                         </div>
                         <div class="form-group">
                             <select class="form-control disabled">
-                                <option value="">YEAR</option>
+                                <option value="">{{ 'general.year_selector_label'|trans|upper }}</option>
                             </select>
                         </div>
                     </div>
 
                     {# Divider #}
-                    <div class="col-md-1 form-group text-center divider">BY</div>
+                    <div class="col-md-1 form-group text-center divider">{{ 'general.findata.main.by'|trans }}</div>
 
                     {# Caption Selector #}
                     <div class="col-md-3 form-group government-categories">
-                        <h4 class="text-center">Step 3</h4>
+                        <h4 class="text-center">{{ 'general.findata.main.step_3'|trans }}</h4>
                         <select class="form-control disabled category">
-                            <option value="">CATEGORY</option>
-                            <optgroup label="Financial Statement">
-                                <option value="Revenues">Revenues</option>
-                                <option value="Expenditures">Expenditures</option>
+                            <option value="">{{ 'general.findata.main.category'|trans }}</option>
+                            <optgroup data-name="Financial Statements" label="{{-
+                                'gov.financial_statements' | trans
+                            -}}">
+                                <option value="Revenues">{{ 'general.findata.main.revenues'|trans }}</option>
+                                <option value="Expenditures">{{ 'general.findata.main.expenditures'|trans }}</option>
                             </optgroup>
                         </select>
                         <div class="text-center" style="font-size:12px; margin-top: 5px;color: #DBDBDB;">OR</div>
                         <div class="form-group">
-                            <select class="form-control disabled caption">
-                                <option value="">CAPTION</option>
+                            <select data-default-item="{{ 'general.findata.main.caption'|trans }}" class="form-control disabled caption">
                             </select>
                         </div>
                     </div>
@@ -93,15 +94,15 @@
         {# Charts #}
         <div class="row">
             <div class="customGraph col-md-6 text-center" id="total-compare-first-pie">
-                <p>To see graph, please fill out the form</p>
+                <p>{{ 'general.findata.main.graph_placeholder'|trans }}</p>
             </div>
             <div class="customGraph col-md-6 text-center" id="total-compare-second-pie">
-                <p>To see graph, please fill out the form</p>
+                <p>{{ 'general.findata.main.graph_placeholder'|trans }}</p>
             </div>
         </div>
     </div>
     <div class="customGraph col-md-12 text-center" id="total-compare-column" style="display: none">
-        <p>To see graph, please fill out the form</p>
+        <p>{{ 'general.findata.main.graph_placeholder'|trans }}</p>
     </div>
 </div>
 
@@ -137,11 +138,11 @@
             <thead>
                 <tr>
                     {# Category caption #}
-                    <th><b>{{ ('caption_categories.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></th>
+                    <th><b>{{ ('general.findata.main.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></th>
                     {% if loop.first %}
-                        <th><b>{{ 'funds.general_fund'|trans }}</b></th>
-                        <th><b>{{ 'funds.other'|trans }}</b></th>
-                        <th><b>{{ 'funds.total'|trans }}</b></th>
+                        <th><b>{{ 'general.findata.main.general_fund'|trans }}</b></th>
+                        <th><b>{{ 'general.findata.main.other_fund'|trans }}</b></th>
+                        <th><b>{{ 'general.findata.main.total_fund'|trans }}</b></th>
                     {% endif %}
                 </tr>
             </thead>
@@ -152,7 +153,7 @@
                     <tr>
 
                         <td>
-                            {{ ('findata.' ~ name | replace(finDataReplacements) | lower)|trans }}
+                            {{ ('findata.captions.' ~ name | replace(finDataReplacements) | lower)|trans }}
                         </td>
                         <td>
                             {%- if not showTotalAndOver or loop.first -%}

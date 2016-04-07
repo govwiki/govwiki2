@@ -24,7 +24,7 @@ class DatabaseLoader implements LoaderInterface, EnvironmentManagerAwareInterfac
      */
     public function setEnvironment($environment)
     {
-        if (('' === $environment) | ('admin' === $environment)) {
+        if (('' === $environment) || ('admin' === $environment)) {
             return $this;
         }
 

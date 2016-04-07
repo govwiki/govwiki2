@@ -1,15 +1,30 @@
-{% trans_default_domain 'FOSUserBundle' %}
-
 <div class="col-md-5 col-md-offset-3" style="margin-top:141px;">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Register</h3>
+            <h3 class="panel-title">{{ 'registration.title'|trans({}, 'messages') }}</h3>
         </div>
         <div class="panel-body">
             <form action="{{ path('fos_user_registration_register') }}" {{ form_enctype(form) }} method="POST" class="fos_user_registration_register">
+                {{- form_row(form.username, {
+                    'translation_domain': 'messages'
+                }) -}}
+                {{- form_row(form.email, {
+                    'translation_domain': 'messages'
+                }) -}}
+                {{- form_row(form.phone, {
+                    'translation_domain': 'messages'
+                }) -}}
+                {{- form_row(form.plainPassword) -}}
+                <div class="form-group">
+                    {{- form_label(form.subscribedTo) -}}&nbsp;<img src="/bundles/govwikifrontend/img/help.png" title="{{-
+                    'form.subscribe_to.help' | trans({}, 'messages')
+                    -}}">
+                    {{- form_widget(form.subscribedTo) -}}
+                    {{- form_errors(form.subscribedTo) -}}
+                </div>
                 {{ form_widget(form) }}
                 <div>
-                    <input class="btn btn-default" type="submit" value="{{ 'registration.submit'|trans }}" />
+                    <input class="btn btn-default" type="submit" value="{{ 'registration.submit'|trans({}, 'messages') }}" />
                 </div>
             </form>
         </div>

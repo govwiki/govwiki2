@@ -10,6 +10,7 @@ parameters:
     mailer_password: null
     secret: e041y4j3j3094v503409jv5fa546sf5467as01a36a659
     admin_email: contact@calpolicycenter.org
+    chat_email: chat@govwiki.cloudapp.net
     email_subject: California Policy Center
 
     debug: 0
@@ -18,3 +19,7 @@ parameters:
     carto_db.api_key: 5ba9906f48ae95a85e27812208ceae89a52e9961
 
     determinator.name: host
+
+    twilio.sid: xxx
+    twilio.token: xxx
+    twilio.from: "+123"

@@ -1,3 +1,5 @@
+var rowSortFunction = require('../../graph/utils.js').rowSortFunction;
+
 /**
  * Constructor
  * @param FormState
@@ -44,7 +46,6 @@ Step.prototype.lock = function() {
  * @param blockId
  */
 Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
-
     var chart, options, rows, vis_data;
 
     vis_data = new google.visualization.DataTable();
@@ -58,12 +59,14 @@ Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
         if (item.amount < 0) {
             item.amount = -parseInt(item.amount)
         }
-        rows.push([item.caption, parseInt(item.amount)]);
+        rows.push([item.translatedCaption, parseInt(item.amount)]);
     });
+
+    rows.sort(rowSortFunction);
 
     vis_data.addRows(rows);
     options = {
-        'title': 'Total ' + comparedData.category + ': ' + government.name,
+        'title': 'Total ' + comparedData.translatedCategory + ': ' + government.name,
         'titleTextStyle': {
             'fontSize': 16
         },
@@ -74,7 +77,6 @@ Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
         },
         'width': 470,
         'height': 350,
-        'pieStartAngle': 60,
         'sliceVisibilityThreshold': 0,
         'forceIFrame': true,
         'chartArea': {
@@ -127,15 +129,15 @@ Step.prototype.drawTable = function(container, comparedData) {
     $container.html('');
     var governmentNumber = (container == '.compare-first-table') ? 'firstGovernment' : 'secondGovernment';
 
-    var category = comparedData.category;
+    var category = comparedData.translatedCategory;
     var governmentName = comparedData[governmentNumber].name;
     var year = comparedData[governmentNumber].year;
 
-    var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + ' (' + year + ')</th></tr><tr><th>' + category + '</th><th> Total Gov. Funds </th></tr>></thead>';
+    var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + ' (' + year + ')</th></tr><tr><th>' + category + '</th><th> Total </th></tr>></thead>';
     var tbody = '<tbody>';
 
     comparedData[governmentNumber].data.forEach(function(row){
-        tbody += '<tr><td>' + row.caption + '</td><td>' + numeral(row.amount).format('$0,0') + '</td></tr>';
+        tbody += '<tr><td>' + row.translatedCaption + '</td><td>' + numeral(row.amount).format('$0,0') + '</td></tr>';
     });
 
     tbody += '</tbody>';
@@ -160,7 +162,7 @@ Step.prototype.handler_onChangeSelect = function() {
 
         var $el = $(e.target);
         var $selected = $el.find('option:selected');
-        var tab = $selected.parent('optgroup').attr('label');
+        var tab = $selected.parent('optgroup').data('name');
 
         var category = $selected.val();
 

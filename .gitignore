@@ -23,6 +23,11 @@
 /web/css/*
 !/web/css/.gitkeep
 
+/web/documents
+!/web/documents/.gitkeep
+
 /web/legacy/node_modules/
 /web/bundles/
+
+*~
 

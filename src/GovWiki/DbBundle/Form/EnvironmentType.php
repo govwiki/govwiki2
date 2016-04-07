@@ -2,10 +2,8 @@
 
 namespace GovWiki\DbBundle\Form;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use GovWiki\DbBundle\Entity\Environment;
-use GovWiki\DbBundle\Entity\Format;
-use GovWiki\DbBundle\Entity\Repository\LocaleRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -29,10 +27,15 @@ class EnvironmentType extends AbstractType
             ->add('name')
             ->add('domain')
             ->add('title')
+            ->add('logoHref', 'url', [ 'required' => false ])
+            ->add('file', 'file', [
+                'required' => false,
+                'label' => 'Logo',
+            ])
             ->add('adminEmail')
             ->add('defaultLocale', 'entity', [
                 'class' => 'GovWiki\DbBundle\Entity\Locale',
-                'query_builder' => function (LocaleRepository $repository) use ($id) {
+                'query_builder' => function (EntityRepository $repository) use ($id) {
                     $qb = $repository->createQueryBuilder('Locale');
                     $expr = $qb->expr();
 
@@ -41,7 +44,9 @@ class EnvironmentType extends AbstractType
                         ->where($expr->eq('Locale.environment', ':id'))
                         ->setParameter('id', $id);
                 },
-            ]);
+            ])
+            ->add('subscribable', 'checkbox', [ 'required' => false ])
+        ;
     }
 
     /**

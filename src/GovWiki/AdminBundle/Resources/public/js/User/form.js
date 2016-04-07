@@ -6,7 +6,8 @@ $(function() {
     // Hide Environments selection if ROLE_MANAGER is not selected
     for (var i = 0; i < optionsList.length; i++) {
         var option = optionsList[i];
-        if ('ROLE_MANAGER' == option.value && !option.selected) {
+        if ('ROLE_ADMIN' == option.value && option.selected) {
+            console.log(option.value);
             $(selectEnvs.parentNode).hide();
         }
     }
@@ -15,8 +16,9 @@ $(function() {
     $(selectRoles).on('change', function () {
         for (var i = 0; i < optionsList.length; i++) {
             var option = optionsList[i];
-            if ('ROLE_MANAGER' == option.value) {
-                if (option.selected) {
+            if ('ROLE_ADMIN' == option.value) {
+                console.log(option.value);
+                if (!option.selected) {
                     $(selectEnvs.parentNode).show();
                     break;
                 } else {

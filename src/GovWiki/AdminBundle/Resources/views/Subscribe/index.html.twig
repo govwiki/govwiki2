@@ -21,7 +21,7 @@
 
 {% block body %}
 
-    <div class="container">
+    <div class="container" id="subscribers">
 
         {# Panel #}
         <div class="panel panel-success">
@@ -54,6 +54,7 @@
                             <th>
                                 {{- knp_pagination_sortable(subscribers, 'Email', 'User.email') -}}
                             </th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,8 +62,24 @@
                             <tr>
                                 <td>{{- subscriber.username -}}</td>
                                 <td>{{- subscriber.email -}}</td>
+                                <td>
+                                    <a class="btn btn-danger" href="{{-
+                                        path('govwiki_admin_subscribe_remove', {
+                                            'government': government.id,
+                                            'subscriber': subscriber.id
+                                        })
+                                    -}}">Remove</a>
+                                </td>
                             </tr>
                         {% endfor %}
+                        <tr>
+                            <td colspan="3" class="button-row">
+                                <a class="btn btn-success" href="{{-
+                                    path('govwiki_admin_subscribe_add',
+                                    { 'government': government.id })
+                                -}}">Add new subscriber</a>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
 

@@ -20,6 +20,11 @@
 
         <div class="btn-group pull-right">
             <a class="btn btn-primary" href="{{-
+                path('govwiki_admin_document_index', {
+                    'government': id
+                })
+            -}}">Documents</a>
+            <a class="btn btn-primary" href="{{-
                 path('govwiki_admin_findata_index', {
                     'government': id
                 })

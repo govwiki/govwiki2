@@ -40,7 +40,7 @@ Step.prototype.unlock = function() {
  * Lock step
  */
 Step.prototype.lock = function() {
-    this.$select.html('<option>CAPTION</option>');
+    this.$select.html('<option>'+ this.$select.data('default-item') +'</option>');
     this.$select.toggleClass('disabled', true);
 };
 
@@ -120,7 +120,6 @@ Step.prototype.loadMatchedCategories = function() {
         contentType: 'application/json',
         data: captionsJson,
         success: function (data) {
-
             self.loading(false);
 
             if (!data || data.length == 0) {
@@ -140,17 +139,20 @@ Step.prototype.loadMatchedCategories = function() {
 
             var availableTabs = [];
             data.forEach(function(item) {
-                availableTabs.indexOf(item.tab) != -1 ? false : availableTabs.push(item.tab);
+                availableTabs.indexOf(item.translatedTab) != -1 ? false : availableTabs.push({
+                    translated: item.translatedTab,
+                    normal: item.tab
+                });
             });
 
             availableTabs.forEach(function(tab){
-                self.$select.append('<optgroup label="' + tab + '"></optgroup>');
+                self.$select.append('<optgroup data-name="'+ tab.normal +'" label="' + tab.translated + '"></optgroup>');
             });
 
             data.forEach(function (caption) {
                 var value = caption.fieldName || caption.name;
-                var $expenditureGroup = self.$select.find('[label="' + caption.tab + '"]');
-                $expenditureGroup.append('<option value="' + value + '">' + caption.name + '</option>');
+                var $expenditureGroup = self.$select.find('[label="' + caption.translatedTab + '"]');
+                $expenditureGroup.append('<option value="' + value + '">' + caption.translatedName + '</option>');
             });
 
         },
@@ -226,7 +228,7 @@ Step.prototype.handler_onChangeSelect = function() {
 
         var caption = $selected.text();
 
-        var tab = $selected.parent('optgroup').attr('label');
+        var tab = $selected.parent('optgroup').data('name');
 
         if (!caption) {
             alert('Please select one of captions');
@@ -256,6 +258,8 @@ Step.prototype.handler_onChangeSelect = function() {
 
 
         data = JSON.stringify(data);
+
+        console.log(data);
 
         $.ajax({
             url: window.gw.urls.compare,

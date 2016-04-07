@@ -12,7 +12,14 @@
     <h3>New environment</h3>
 
     {{ form_start(form) }}
-    {{ form_widget(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.domain) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.logoHref) }}
+    {{ form_row(form.file) }}
+    {{ form_row(form.adminEmail) }}
+    {{ form_row(form.defaultLocale) }}
+    {{ form_row(form.subscribable, {'label': 'Users can subscribe to governments of the environment'}) }}
 
     <div class="form-group">
         <label class="control-label required" for="greetingText">

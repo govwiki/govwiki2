@@ -18,11 +18,18 @@ class UserForm extends AbstractType
     private $new;
 
     /**
-     * @param boolean $new If set, all fields required. Otherwise, optional.
+     * @var boolean
      */
-    public function __construct($new = true)
+    private $show_roles_and_envs_field;
+
+    /**
+     * @param boolean $new If set, all fields required. Otherwise, optional.
+     * @param boolean $show_roles_and_envs_field If true, show fields for roles and environments.
+     */
+    public function __construct($new = true, $show_roles_and_envs_field = true)
     {
         $this->new = $new;
+        $this->show_roles_and_envs_field = $show_roles_and_envs_field;
     }
 
     /**
@@ -38,24 +45,47 @@ class UserForm extends AbstractType
         $builder
             ->add('username', null)
             ->add('email', null)
-            ->add('plainPassword', 'password', $fieldOptions)
-            ->add('roles', 'choice', [
-                'choices' => [
-                    'ROLE_ADMIN' => 'admin',
-                    'ROLE_MANAGER' => 'manager',
-                    'ROLE_USER' => 'user'
-                ],
-                'expanded' => false,
-                'multiple' => true,
-            ])
-            ->add('environments', 'entity', [
-                'class' => 'GovWikiDbBundle:Environment',
-                'choice_label' => 'name',
-                'expanded' => false,
-                'multiple' => true,
-                'required' => false
-            ])
-        ;
+            ->add('phone', 'text', [ 'required' => false ])
+            ->add(
+                'phoneConfirmed',
+                'choice',
+                [
+                    'choices' => [
+                        '0' => 'false',
+                        '1' => 'true',
+                    ],
+                    'expanded' => false,
+                ]
+            )
+            ->add('plainPassword', 'password', $fieldOptions);
+        if ($this->show_roles_and_envs_field) {
+            $builder
+                ->add(
+                    'roles',
+                    'choice',
+                    [
+                        'choices' => [
+                            'ROLE_ADMIN' => 'admin',
+                            'ROLE_MANAGER' => 'manager',
+                            'ROLE_USER' => 'user',
+                        ],
+                        'expanded' => false,
+                        'multiple' => true,
+                    ]
+                )
+                ->add(
+                    'environments',
+                    'entity',
+                    [
+                        'class' => 'GovWikiDbBundle:Environment',
+                        'choice_label' => 'name',
+                        'expanded' => false,
+                        'multiple' => false,
+                        'required' => false,
+                    ]
+                )
+            ;
+        }
     }
 
     /**

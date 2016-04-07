@@ -12,15 +12,27 @@
         {% block stylesheets %}{% endblock %}
     {% if environment is defined %}
         <link rel="icon" href="{{ asset('/img/'~environment~'/favicon.ico') }}" type="image/x-icon" />
-        <link rel="stylesheet" href="{{ asset('/css/'~environment~'.css') }}" />
+        <style>{{ styles }}</style>
     {% else %}
         <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
     {% endif %}
     </head>
 
     <body>
-        {# get environment contents #}
-        {{ environment_content.init(environment) }}
+        <div id="fb-root"></div>
+        <script>
+            (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            var currentLocale = 'en_US';
+            {% if app.request.locale == 'es' %}
+                currentLocale = 'es_ES';
+            {% endif %}
+            js.src = "https://connect.facebook.net/" + currentLocale + "/sdk.js#xfbml=1&version=v2.5";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));</script>
+
         {# Header #}
         <header class="container {% if environment == 'puerto_rico' %}puerto{% endif %}">
             {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
@@ -45,12 +57,12 @@
                         </select>
                     {% endif %}
                 </div>
-                {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader')) %}
+                {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) %}
 
                 {% if _locales is defined %}
                     <div class="col-md-6">
                         <div class="pull-right">
-                            <ul class="nav nav-pills">
+                            <ul class="nav">
                                 {{- _locales|raw -}}
                             </ul>
                         </div>
@@ -102,7 +114,7 @@
                             </div>
 
                             <input class="btn btn-default" type="submit" id="_submit" name="_submit" value="Log in" />
-                            <a href="/register/" class="btn btn-default pull-right">Sign up</a>
+                            <a href="{{ path('fos_user_registration_register') }}" class="btn btn-default pull-right">Sign up</a>
                         </form>
 
                     </div>

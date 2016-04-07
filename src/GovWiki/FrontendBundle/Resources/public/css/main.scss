@@ -121,6 +121,38 @@ i.icon {
    background-color: #F3F3F3 !important;
 }
 
+/*
+   Pagination sortable.
+*/
+.sortable {
+
+   a {
+      i {
+         background: url("/bundles/govwikifrontend/img/bg.gif");
+         width: 21px;
+         height: 9px;
+         display: inline-block;
+      }
+
+      &.asc {
+         i {
+            height: 4px;
+            margin-bottom: 4px;
+            background: url("/bundles/govwikifrontend/img/asc.gif");
+         }
+      }
+
+      &.desc {
+         i {
+
+            height: 4px;
+            margin-bottom: 4px;
+            background: url("/bundles/govwikifrontend/img/desc.gif");
+         }
+      }
+   }
+}
+
 /* ========================= */
 /* ======== CartoDB ======== */
 /* ========================= */
@@ -152,4 +184,8 @@ div.cartodb-tooltip-content-wrapper p {
   max-width: 728px;
   margin: 0 auto;
   overflow: hidden;
+}
+
+.message_form_container {
+   margin: 20px 50px;
 }

@@ -9,7 +9,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Environment styles
  *
  * @ORM\Table(name="environment_styles")
- * @ORM\Entity()
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\EnvironmentStylesRepository"
+ * )
  */
 class EnvironmentStyles
 {
@@ -64,6 +66,7 @@ class EnvironmentStyles
      * Set name
      *
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
@@ -123,9 +126,9 @@ class EnvironmentStyles
      * Get properties
      *
      * @param boolean $notJson
-     * @return string
+     * @return array|string
      */
-    public function getProperties($notJson = null)
+    public function getProperties($notJson = false)
     {
         if ($notJson) {
             return $this->properties;

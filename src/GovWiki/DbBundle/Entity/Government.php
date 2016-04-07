@@ -160,13 +160,6 @@ class Government
     private $wikipediaPageName;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="latest_audit_url", nullable=true)
-     */
-    private $latestAuditUrl;
-
-    /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
@@ -211,6 +204,33 @@ class Government
     private $subscribers;
 
     /**
+     * @ORM\OneToOne(targetEntity="Chat", cascade={"persist"})
+     * @ORM\JoinColumn(name="chat_id", referencedColumnName="id")
+     */
+    private $chat;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Salary", mappedBy="government")
+     */
+    private $salaries;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Pension", mappedBy="government")
+     */
+    private $pensions;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Document", mappedBy="government")
+     */
+    private $documents;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -219,6 +239,8 @@ class Government
         $this->finData          = new ArrayCollection();
         $this->legislations     = new ArrayCollection();
         $this->subscribers      = new ArrayCollection();
+        $this->salaries         = new ArrayCollection();
+        $this->pensions         = new ArrayCollection();
     }
 
     /**
@@ -674,30 +696,6 @@ class Government
     }
 
     /**
-     * Set latestAuditUrl
-     *
-     * @param string $latestAuditUrl
-     *
-     * @return Government
-     */
-    public function setLatestAuditUrl($latestAuditUrl)
-    {
-        $this->latestAuditUrl = $latestAuditUrl;
-
-        return $this;
-    }
-
-    /**
-     * Get latestAuditUrl
-     *
-     * @return string
-     */
-    public function getLatestAuditUrl()
-    {
-        return $this->latestAuditUrl;
-    }
-
-    /**
      * Set county
      *
      * @param boolean $county
@@ -960,5 +958,147 @@ class Government
     public function isSubscriber(User $user)
     {
         return $this->subscribers->contains($user);
+    }
+
+    /**
+     * Add subscribers
+     *
+     * @param \GovWiki\UserBundle\Entity\User $subscribers
+     * @return Government
+     */
+    public function addSubscriber(\GovWiki\UserBundle\Entity\User $subscribers)
+    {
+        $this->subscribers[] = $subscribers;
+
+        return $this;
+    }
+
+    /**
+     * Remove subscribers
+     *
+     * @param \GovWiki\UserBundle\Entity\User $subscribers
+     */
+    public function removeSubscriber(\GovWiki\UserBundle\Entity\User $subscribers)
+    {
+        $this->subscribers->removeElement($subscribers);
+    }
+
+    /**
+     * Set chat
+     *
+     * @param \GovWiki\DbBundle\Entity\Chat $chat
+     * @return Government
+     */
+    public function setChat(\GovWiki\DbBundle\Entity\Chat $chat = null)
+    {
+        $this->chat = $chat;
+
+        return $this;
+    }
+
+    /**
+     * Get chat
+     *
+     * @return Chat
+     */
+    public function getChat()
+    {
+        return $this->chat;
+    }
+
+    /**
+     * @param Salary $salary A Salary entity instance.
+     *
+     * @return Government
+     */
+    public function addSalaries(Salary $salary)
+    {
+        $this->salaries[] = $salary;
+
+        return $this;
+    }
+
+    /**
+     * @param Salary $salary A Salary entity instance.
+     *
+     * @return Government
+     */
+    public function removeSalaries(Salary $salary)
+    {
+        $this->salaries->removeElement($salary);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getSalaries()
+    {
+        return $this->salaries;
+    }
+
+    /**
+     * @param Pension $pension A Pension entity instance.
+     *
+     * @return Government
+     */
+    public function addPensions(Pension $pension)
+    {
+        $this->pensions[] = $pension;
+
+        return $this;
+    }
+
+    /**
+     * @param Pension $pension A Pension entity instance.
+     *
+     * @return Government
+     */
+    public function removePensions(Pension $pension)
+    {
+        $this->pensions->removeElement($pension);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getPensions()
+    {
+        return $this->pensions;
+    }
+
+    /**
+     * @param Document $document A Document entity instance.
+     *
+     * @return Government
+     */
+    public function addDocuments(Document $document)
+    {
+        $this->documents[] = $document;
+
+        return $this;
+    }
+
+    /**
+     * @param Document $document A Document entity instance.
+     *
+     * @return Government
+     */
+    public function removeDocuments(Document $document)
+    {
+        $this->documents->removeElement($document);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getDocuments()
+    {
+        return $this->documents;
     }
 }

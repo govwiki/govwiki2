@@ -46,7 +46,7 @@
 
                                 <li>
                                     <a href="{{-
-                                    path('govwiki_admin_main_style') -}}">
+                                    path('govwiki_admin_style_index') -}}">
                                         Edit styles
                                     </a>
                                 </li>
@@ -76,9 +76,11 @@
                             <h6>Managers</h6>
                             <ul>
                                 {% for user in environment.users %}
-                                    <li>
-                                        <a href="{{ path('govwiki_admin_user_edit', {'id': user.id}) }}">{{ user }}</a>
-                                    </li>
+                                    {% if user.hasRole('ROLE_MANAGER') %}
+                                        <li>
+                                            <a href="{{ path('govwiki_admin_user_edit', {'id': user.id}) }}">{{ user }}</a>
+                                        </li>
+                                    {% endif %}
                                 {% endfor %}
                             </ul>
                         </div>
@@ -133,6 +135,9 @@
                                         {{ form_row(form.title) }}
                                         {{ form_row(form.adminEmail) }}
                                         {{ form_row(form.defaultLocale) }}
+                                        {{ form_row(form.file) }}
+                                        {{ form_row(form.logoHref) }}
+                                        {{ form_row(form.subscribable, {'label': 'Users can subscribe to governments of the environment'}) }}
                                     </div>
 
                                     {% if environment.locales|length == 1 %}

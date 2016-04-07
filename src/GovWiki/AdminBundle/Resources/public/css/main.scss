@@ -96,44 +96,101 @@
 
 }
 
+table td.button-row {
+   padding: 0 !important;
+
+   .btn {
+      width: 100%;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+   }
+}
+
+#subscribers {
+   table {
+      td, th {
+         text-align: center;
+      }
+   }
+}
+
+/*
+   Pagination sortable.
+*/
+.sortable {
+
+   a {
+      i {
+         background: url("/bundles/govwikifrontend/img/bg.gif");
+         width: 21px;
+         height: 9px;
+         display: inline-block;
+      }
+
+      &.asc {
+         i {
+            height: 4px;
+            margin-bottom: 4px;
+            background: url("/bundles/govwikifrontend/img/asc.gif");
+         }
+      }
+
+      &.desc {
+         i {
+
+            height: 4px;
+            margin-bottom: 4px;
+            background: url("/bundles/govwikifrontend/img/desc.gif");
+         }
+      }
+   }
+}
+
 /* ===================================================== */
 /* =============== Environment styles ================== */
 /* ===================================================== */
 
 #environment-styles {
-  .style__data-param {
-    display: inline-block;
-    width: 120px;
-    text-align: left;
-  }
-  .environment-styles__delete {
-    color: #ff0000;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  .data-value-default {
-    margin-left: 26px;
-  }
-  .color-picker {
-    & span {
-      padding: 0;
-      padding-right: 8px;
-    }
-  }
-  div {
-    padding: 10px 0;
-  }
-  & h5 {
-    display: inline-block;
-  }
+   .style__data-param {
+      display: inline-block;
+      width: 120px;
+      text-align: left;
+   }
+   .environment-styles__delete {
+      color: #ff0000;
+      font-size: 16px;
+      cursor: pointer;
+   }
+   .data-value-default {
+      margin-left: 26px;
+   }
+   .color-picker {
+      & span {
+         padding: 0;
+         padding-right: 8px;
+      }
+   }
+   & h5 {
+      display: inline-block;
+   }
+   
+   & input {
+      font-size: 12px;
+      box-shadow: none;
+      outline: none;
+      border-bottom: 1px solid #ccc;
+      text-align: center;
+   }
 
-  & input {
-    font-size: 12px;
-    box-shadow: none;
-    outline: none;
-    border-bottom: 1px solid #ccc;
-    text-align: center;
-  }
+   h4 span {
+      position: relative;
+      top: -2px;
+   }
+
+   .style-remove-button {
+      font-size: 12px;
+      color: red;
+   }
 }
 
 #govwiki_admin_form_styles_properties {
@@ -150,7 +207,8 @@
 
 body .container a.btn-primary,
 body .container a.btn-primary:hover {
-  color: #fff;
+   color: #fff;
+   background-color: #2196F3;
 }
 
 .delay-input {

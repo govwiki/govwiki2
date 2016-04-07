@@ -25,9 +25,9 @@ set :git_shallow_clone, 1
 set :branch,            fetch(:branch, '').sub!(/^.*\//, "") # remove origin/ prefix from branch
 
 # Directories
-set :writable_dirs,         [app_path + "/cache", app_path + "/logs"]
+set :writable_dirs,         [app_path + "/cache", app_path + "/logs", web_path + "/documents"]
 set :shared_files,          ["app/config/parameters.yml"]
-set :shared_children,       [app_path + "/logs", web_path + "/img/upload", web_path + "/css"]
+set :shared_children,       [app_path + "/logs", web_path + "/img/upload", web_path + "/css", wep_path + "/documents"]
 set :remote_backup_dir,     "/tmp"
 
 # Permissions

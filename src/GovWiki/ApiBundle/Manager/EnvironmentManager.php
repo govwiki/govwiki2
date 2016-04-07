@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
@@ -41,6 +42,11 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      * @var MaxRankComputerInterface
      */
     private $computer;
+
+    /**
+     * @var Environment
+     */
+    private $entity;
 
     /**
      * @param EntityManagerInterface   $em       A EntityManagerInterface
@@ -82,6 +88,19 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     }
 
     /**
+     * @return Environment
+     */
+    public function getEntity()
+    {
+        if (null === $this->entity) {
+            $this->entity = $this->em->getRepository('GovWikiDbBundle:Environment')
+                ->getByName($this->environment);
+        }
+
+        return $this->entity;
+    }
+
+    /**
      * @return string
      */
     public function getSlug()
@@ -94,8 +113,18 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getMap()
     {
-        return $this->em->getRepository('GovWikiDbBundle:Map')
-            ->get($this->environment);
+        $map = $this->getEntity()->getMap();
+
+        return [
+            'centerLatitude' => $map->getCenterLatitude(),
+            'centerLongitude' => $map->getCenterLongitude(),
+            'zoom' => $map->getZoom(),
+            'position' => $map->getPosition(),
+            'colorizedCountyConditions' => $map->getColorizedCountyConditions(),
+            'debug' => $map->isDebug(),
+            'legendTypes' => $map->getLegendTypes(),
+            'legend' => $map->getLegend(),
+        ];
     }
 
     public function getAvailableYears()
@@ -120,18 +149,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getTitle()
     {
-        $qb = $this->em->getRepository('GovWikiDbBundle:Environment')
-            ->createQueryBuilder('Environment');
-        $expr = $qb->expr();
-
-        return $qb
-            ->select('Environment.title')
-            ->where($expr->eq(
-                'Environment.slug',
-                $expr->literal($this->environment)
-            ))
-            ->getQuery()
-            ->getSingleScalarResult();
+        return $this->getEntity()->getTitle();
     }
 
     /**
@@ -154,6 +172,18 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     {
         return $this->em->getRepository('GovWikiDbBundle:Format')
             ->getOne($this->environment, $fieldName);
+    }
+
+    /**
+     * @param string $altTypeSlug Slugged government alt type.
+     * @param string $slug        Slugged government name.
+     *
+     * @return Government
+     */
+    public function getGovernmentWithoutData($altTypeSlug, $slug)
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Government')
+            ->getOne($this->getSlug(), $altTypeSlug, $slug);
     }
 
     /**
@@ -315,14 +345,8 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
         $government['currentYear'] = $year;
 
-        /*
-         * Replace single and double quote to html special char.
-         */
-        $governmentJson = json_encode($government);
-
         return [
             'government' => $government,
-            'government_json' => $governmentJson,
             'formats' => $formats,
             'tabs' => array_keys($formats),
         ];
@@ -394,8 +418,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getStyle()
     {
-        return $this->em->getRepository('GovWikiDbBundle:Environment')
-            ->getStyle($this->environment);
+        return $this->getEntity()->getStyle();
     }
 
     /**
@@ -529,7 +552,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             SELECT
                 f.caption AS name,
                 f.name AS category,
-                'Financial Statement' AS tab,
+                'Financial Statements' AS tab,
                 '$0.0' AS mask,
                 NULL AS fieldName
             FROM (
@@ -579,6 +602,8 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                     'fieldName' => $format['field'],
                     'category' => null,
                     'tab' => $format['tab_name'],
+                    'tab_id' => $format['tab_id'],
+                    'category_id' => $format['category_id'],
                     'mask' => $format['mask'],
                 ];
             }
@@ -658,7 +683,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
             $data['firstGovernment']['data'] = $firstGovernmentData;
             $data['secondGovernment']['data'] = $secondGovernmentData;
-        } elseif ('Financial Statement' === $data['tab']) {
+        } elseif ('Financial Statements' === $data['tab']) {
             /*
              * Compare by financial statements.
              */
@@ -671,7 +696,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
 
             if (array_key_exists('caption', $data) & !empty($data['caption'])) {
                 $qb->andWhere(
-                    $expr->eq('FinData.caption', $expr->literal($data['caption']))
+                    $expr->eq('FinData.caption', $expr->literal($data['fieldName']))
                 );
             }
 
@@ -734,18 +759,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getDefaultLocale()
     {
-        $expr = $this->em->getExpressionBuilder();
-        return $this->em->getRepository('GovWikiDbBundle:Locale')
-            ->createQueryBuilder('Locale')
-            ->select('Locale.shortName')
-            ->innerJoin('Locale.environment', 'Environment')
-            ->where($expr->andX(
-                $expr->eq('Environment.slug', ':slug'),
-                $expr->eq('Locale.id', 'Environment.defaultLocale')
-            ))
-            ->setParameter('slug', $this->environment)
-            ->getQuery()
-            ->getSingleScalarResult();
+        return $this->getEntity()->getDefaultLocale()->getShortName();
     }
 
     /**

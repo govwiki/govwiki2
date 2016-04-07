@@ -1,0 +1,55 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block title %}{{ parent() }} - edit format{% endblock title %}
+
+{% block breadcrumb %}
+    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
+    {{-
+    macro.breadcrumbElement(
+    admin_environment|capitalize ~' environment',
+    'govwiki_admin_main_show',
+    { 'environment': admin_environment }
+    )
+    -}}
+    {{- macro.breadcrumbElement('Governments', 'govwiki_admin_government_index') -}}
+    {{-
+        macro.breadcrumbElement('Edit ' ~ government.name, 'govwiki_admin_government_edit',
+        { 'id': government.id })
+    -}}
+    {{-
+        macro.breadcrumbElement('Subscribers', 'govwiki_admin_subscribe_index',
+        { 'government': government.id })
+    -}}
+    {{- macro.breadcrumbElement('Add') -}}
+{% endblock breadcrumb %}
+
+{% block body %}
+
+    <div class="container">
+
+        {# Panel #}
+        <div class="panel panel-success">
+
+            {# Header #}
+            <div class="panel-heading">
+                <h3 class="panel-title">Subscribers</h3>
+            </div>
+
+            {# Body #}
+            <div class="panel-body">
+
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <button type="submit" class="btn btn-success">Add</button>
+                <a href="{{- path('govwiki_admin_subscribe_index', {
+                    'government': government.id
+                }) -}}" class="btn btn-danger">Cancel</a>
+                {{ form_end(form) }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock body %}

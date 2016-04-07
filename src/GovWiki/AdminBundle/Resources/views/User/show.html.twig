@@ -18,6 +18,12 @@
                         <td>Email</td>
                         <td>{{ user.email }}</td>
                     </tr>
+                    {% if user.phone %}
+                    <tr>
+                        <td>Phone</td>
+                        <td>{{ user.phone }} ({% if user.phoneConfirmed %}confirmed{% else %}not confirmed{% endif %})</td>
+                    </tr>
+                    {% endif %}
                     <tr>
                         <td>Locked</td>
                         <td>

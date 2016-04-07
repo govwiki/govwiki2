@@ -6,6 +6,77 @@
 @import "main";
 
 
+/* TMP (Start) */
+
+.select-custom {
+   width: 100%;
+   margin-bottom: 20px;
+   padding: 6px 15px;
+   border: 1px solid #e5e5e5;
+   border-radius: 5px;
+   -webkit-box-shadow: none;
+   box-shadow: none;
+}
+
+.card {
+   position: relative;
+   display: block;
+   margin-bottom: 1.5rem;
+   background-color: #fff;
+   border: 1px solid #e5e5e5;
+   border-radius: .25rem;
+}
+
+.card-header {
+   padding: .75rem 1.25rem;
+   background-color: #f5f5f5;
+   border-bottom: 1px solid #e5e5e5;
+
+   .btn-custom {
+      float: right;
+      margin-top: -3px;
+      margin-right: -8px;
+   }
+
+}
+
+.card-block {
+   padding-bottom: 0 !important;
+}
+
+.card-sub-header {
+   border-bottom: 1px solid #e5e5e5;
+   color: #B9B9B9;
+
+   .date,
+   .taxes {
+      margin-left: 15px;
+   }
+
+   .comments {
+      margin-right: 15px;
+      float: right;
+   }
+
+}
+
+
+.card-block {
+   padding: 1.25rem;
+
+   .card-title {
+      margin-bottom: .75rem;
+   }
+
+   .card-text {
+
+   }
+
+}
+
+/* TMP (end) */
+
+
 .electedController {
    min-width: 700px;
    margin-top: 40px;
@@ -23,13 +94,17 @@
       min-height: 600px;
    }
 
-   .loader{
-      position: absolute;
-      margin-top: 240px;
-      left: 49%;
+   .loader {
       display: none;
    }
 
+   .tab-content {
+      .loader {
+         position: absolute;
+         margin-top: 240px;
+         left: 49%;
+      }
+   }
    /*
       Table for votes, contribution and etc.
    */

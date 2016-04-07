@@ -52,9 +52,10 @@ class EnvironmentRepository extends EntityRepository
 
         try {
             $qb
-                ->addSelect('Map')
+                ->addSelect('Map, Locale')
                 ->leftJoin('Environment.map', 'Map')
                 ->leftJoin('Environment.users', 'User')
+                ->leftJoin('Environment.defaultLocale', 'Locale')
                 ->where($expr->eq(
                     'Environment.slug',
                     $expr->literal($environment)
@@ -136,7 +137,7 @@ class EnvironmentRepository extends EntityRepository
     /**
      * @param string $environment A Environment name.
      *
-     * @return array|null
+     * @return string
      */
     public function getStyle($environment)
     {
@@ -157,7 +158,7 @@ class EnvironmentRepository extends EntityRepository
                     ->getQuery()
                     ->getSingleResult()['style'];
             } catch (ORMException $e) {
-                return [];
+                return '';
             }
         }
 

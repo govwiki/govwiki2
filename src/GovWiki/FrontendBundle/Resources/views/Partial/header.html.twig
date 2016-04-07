@@ -4,8 +4,8 @@
     <div class="col-xs-6 col-sm-6 col-md-3">
 
         {% if government is defined and government.secondaryLogoPath %}
-            <a class="anchor" href="/">
-                <img src="{{ environment_content.get('header_logo')|raw }}" class="logo" width="70%">
+            <a class="anchor" href="{{ entity.logoHref }}">
+                <img src="{{ entity.logo }}" class="logo" width="70%">
             </a>
             {% if government.secondaryLogoUrl %}
                 <a class="anchor" href="{{ government.secondaryLogoUrl }}">
@@ -15,8 +15,8 @@
                 <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
             {% endif %}
         {% elseif elected.government is defined and elected.government.secondaryLogoPath %}
-            <a class="anchor" href="/">
-                <img src="{{ environment_content.get('header_logo')|raw }}" class="logo" width="70%">
+            <a class="anchor" href="{{ entity.logoHref }}">
+                <img src="{{ entity.logo }}" class="logo" width="70%">
             </a>
             {% if elected.government.secondaryLogoUrl %}
                 <a class="anchor" href="{{ elected.government.secondaryLogoUrl }}">
@@ -26,7 +26,9 @@
                 <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
             {% endif %}
         {% else %}
-                <img src="{{ environment_content.get('header_logo')|raw }}" class="logo">
+            <a class="anchor" href="{{ entity.logoHref }}">
+                <img src="{{ entity.logo }}" class="logo">
+            </a>
         {% endif %}
     </div>
 
@@ -47,32 +49,38 @@
 
         <ul class="navigation navbar-collapse collapse" id="bs-navigation-collapse">
 
-            {% if hasElectedOfficials %}
-                {% if app.user %}
-                    {# Show User name (Athorized) #}
-                    <li>
-                        <a href="javascript:void(0)" class="link">
-                            Logged in as {{ app.user.username }}
-                        </a>
-                    </li>
+            {% if app.user %}
+                {# Show User name (Athorized) #}
+                <li>
+                    <a href="javascript:void(0)" class="link">
+                        Logged in as {{ app.user.username }}
+                    </a>
+                </li>
 
-                    {# Logout button #}
-                    <li>
-                        <a href="{{path('fos_user_security_logout')}}" class="link">
-                            Sign Out
-                        </a>
-                    </li>
+                {# Logout button #}
+                <li>
+                    <a href="{{path('fos_user_security_logout')}}" class="link">
+                        Sign Out
+                    </a>
+                </li>
 
-                {% else %}
-                    {# Login button#}
-                    <li>
-                        <a href="#" onclick="$('#modal-window').modal('show')" class="link">
-                            Login / Sign Up
-                        </a>
-                    </li>
+            {% else %}
+                {# Login button#}
+                <li>
+                    <a href="#" onclick="$('#modal-window').modal('show')" class="link">
+                        Login / Sign Up
+                    </a>
+                </li>
+            {% endif %}
 
-                {% endif %}
-
+            {% if (app.request.attributes.get('_route') == 'government') and
+                (entity.showDocuments) %}
+                <li>
+                    <a href="{{ govwiki_path('documents', {
+                        'altTypeSlug': app.request.attributes.get('altTypeSlug'),
+                        'slug': app.request.attributes.get('slug')
+                    }) }}">Documents</a>
+                </li>
             {% endif %}
 
             {# Return to map #}

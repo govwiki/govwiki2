@@ -37,4 +37,44 @@ class UserRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return array
+     */
+    public function getAdminsList()
+    {
+        return $this->createQueryBuilder('User')
+            ->select('User')
+            ->where('User.roles LIKE :role')
+            ->setParameter('role', '%ROLE_ADMIN%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Get all subscribers for given government.
+     *
+     * @param integer $government Government entity id.
+     *
+     * @return array
+     */
+    public function getSubscriberIds($government)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        $result = $this->createQueryBuilder('User')
+            ->select('User.id')
+            ->innerJoin('User.subscribedTo', 'Government')
+            ->where($expr->eq('Government.id', ':government'))
+            ->setParameter('government', $government)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(
+            function (array $row) {
+                return $row['id'];
+            },
+            $result
+        );
+    }
 }

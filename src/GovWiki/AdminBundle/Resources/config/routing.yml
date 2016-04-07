@@ -89,3 +89,11 @@ locale:
 subscriber:
     resource: @GovWikiAdminBundle/Controller/SubscribeController.php
     type:     annotation
+
+styles:
+    resource: @GovWikiAdminBundle/Controller/StyleController.php
+    type:     annotation
+
+document:
+    resource: @GovWikiAdminBundle/Controller/DocumentController.php
+    type:     annotation

@@ -6,15 +6,12 @@ use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Form\EnvironmentType;
-use GovWiki\DbBundle\GovWikiDbServices;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use GovWiki\AdminBundle\Form\AddStyleForm;
-use GovWiki\DbBundle\Entity\EnvironmentStyles;
 use GovWiki\DbBundle\Entity\Translation;
 
 /**
@@ -83,10 +80,10 @@ class MainController extends AbstractGovWikiAdminController
         $entity = $manager->getEntity();
 
         $locale = $entity->getLocales()[0];
-        $trans_key_settings = array(
+        $trans_key_settings = [
             'matching' => 'eq',
-            'transKeys' => array('map.greeting_text', 'general.bottom_text')
-        );
+            'transKeys' => ['map.greeting_text', 'general.bottom_text'],
+        ];
         /** @var Translation $translation */
         $translations = $this->getTranslationManager()->getTranslationsBySettings($locale->getShortName(), $trans_key_settings);
         $greetingText = '';
@@ -106,22 +103,39 @@ class MainController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($entity);
             $manager->changeEnvironment($entity->getSlug());
 
             if (count($entity->getLocales()) == 1) {
                 $greetingText = $request->request->get('greetingText');
                 $bottomText = $request->request->get('bottomText');
-                $texts = array(
+                $texts = [
                     'map.greeting_text' => $greetingText,
-                    'general.bottom_text' => $bottomText
-                );
+                    'general.bottom_text' => $bottomText,
+                ];
 
                 foreach ($translations as $translation) {
                     $translation->setTranslation($texts[$translation->getTransKey()]);
                 }
             }
 
+            // Change logo url.
+            $file = $entity->getFile();
+            if ($file) {
+                /*
+                 * Move uploaded file to upload directory.
+                 */
+                $filename = $entity->getSlug() . '.' .
+                    $file->getClientOriginalExtension();
+
+                $file->move(
+                    $this->getParameter('kernel.root_dir') .'/../web/img/upload',
+                    $filename
+                );
+
+                $entity->setLogo('/img/upload/' . $filename);
+            }
+
+            $em->persist($entity);
             $em->flush();
         }
 
@@ -129,24 +143,8 @@ class MainController extends AbstractGovWikiAdminController
             'form' => $form->createView(),
             'environment' => $entity,
             'greetingText' => $greetingText,
-            'bottomText' => $bottomText
+            'bottomText' => $bottomText,
         ];
-    }
-
-    /**
-     * @Configuration\Route("/max_ranks")
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function ranksAction()
-    {
-        $environment = $this->adminEnvironmentManager()->getSlug();
-        $this->get(GovWikiDbServices::MAX_RANKS_COMPUTER)
-            ->compute($environment);
-
-        return $this->redirectToRoute('govwiki_admin_main_show', [
-            'environment' => $environment,
-        ]);
     }
 
     /**
@@ -163,82 +161,6 @@ class MainController extends AbstractGovWikiAdminController
         return $this->redirectToRoute('govwiki_admin_main_show', [
             'environment' => $environment,
         ]);
-    }
-
-    /**
-     * @Configuration\Route("/style")
-     * @Configuration\Template()
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return array
-     */
-    public function styleAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $styleManager = $this->get(GovWikiAdminServices::ADMIN_STYLE_MANAGER);
-        $environmentSlug = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)->getSlug();
-        $currentEnvironment = $em->getRepository("GovWikiDbBundle:Environment")->findOneBySlug($environmentSlug);
-
-        // delete action
-        if ($request->request->get('deleteId')) {
-            $styleEntity = $em->getRepository("GovWikiDbBundle:EnvironmentStyles")
-                ->findOneById($request->request->get('deleteId'));
-            $em->remove($styleEntity);
-            $em->flush();
-
-            $styleManager->generateAndSaveStyles(
-                $environmentSlug,
-                $em->getRepository("GovWikiDbBundle:EnvironmentStyles")->findByEnvironment($currentEnvironment)
-            );
-
-            return new JsonResponse(['status' => 'Deleted']);
-        }
-
-        // update action
-        if ($request->request->get('update')) {
-            $data = $request->request->get('update');
-            $styleEntity = $em->getRepository("GovWikiDbBundle:EnvironmentStyles")->findOneById($data['id']);
-            $styleEntity->setProperties(json_encode($data['properties']));
-            $em->persist($styleEntity);
-            $em->flush();
-
-            $styleManager->generateAndSaveStyles(
-                $environmentSlug,
-                $em->getRepository("GovWikiDbBundle:EnvironmentStyles")->findByEnvironment($currentEnvironment)
-            );
-
-            return new JsonResponse(['status' => 'Updated']);
-        }
-
-        $createStyle = new EnvironmentStyles();
-        $form = $this->createForm(new AddStyleForm($currentEnvironment), $createStyle);
-        $styles = $em->getRepository("GovWikiDbBundle:EnvironmentStyles")->findByEnvironment($currentEnvironment);
-
-        // create action
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $styleJson = $styleManager->createStyles($createStyle);
-
-            $createStyle->setProperties($styleJson);
-            $em->persist($createStyle);
-            $em->flush();
-
-            $styleManager->generateAndSaveStyles(
-                $environmentSlug,
-                $em->getRepository("GovWikiDbBundle:EnvironmentStyles")->findByEnvironment($currentEnvironment)
-            );
-
-            return $this->redirect($this->generateUrl('govwiki_admin_main_style'));
-        }
-
-        $contents = $em->getRepository("GovWikiDbBundle:EnvironmentContents")->findByEnvironment($currentEnvironment);
-
-        return [
-            'form'     => $form->createView(),
-            'styles'   => $styles,
-            'contents' => $contents,
-        ];
     }
 
     /**

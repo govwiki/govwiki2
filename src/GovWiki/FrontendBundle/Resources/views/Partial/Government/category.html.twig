@@ -14,7 +14,7 @@
                 <td>
                     {{- ('format.'~format.field)|trans -}}
                     {#{{- format.name -}}#}
-                    {% if format.helpText %}
+                    {% if ('format.'~format.field~'.help_text')|trans != 'format.'~format.field~'.help_text' %}
                         <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}" title="{{- ('format.'~format.field~'.help_text')|trans -}}">
                     {% endif %}
                 </td>

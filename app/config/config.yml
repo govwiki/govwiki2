@@ -88,6 +88,8 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
         dql:
+            string_functions:
+                year: GovWiki\DbBundle\Doctrine\Functions\YearFunction
             numeric_functions:
                 regexp: GovWiki\DbBundle\Doctrine\Functions\RegexpFunction
 
@@ -103,9 +105,10 @@ swiftmailer:
 
 # KnpPaginatorBundle Configuration
 knp_paginator:
-    page_range: 2
+    page_range: 4
     template:
         pagination: GovWikiFrontendBundle:Pagination:pagination.html.twig
+        sortable: GovWikiFrontendBundle:Pagination:sortable_link.html.twig
 
 # StofDoctrineExtension Configuration
 stof_doctrine_extensions:
@@ -119,6 +122,9 @@ fos_user:
     db_driver: orm
     firewall_name: main
     user_class: GovWiki\UserBundle\Entity\User
+    registration:
+        form:
+            type: app_user_registration
 
 # JmsSerializationBundle Configuration
 jms_serializer:
@@ -131,3 +137,13 @@ ivory_ck_editor:
     configs:
         elected_official_comment_config:
             toolbar: [ [ 'Cut','Copy','Paste','Undo','Redo' ], [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ], [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ], [ 'Styles','Format','Font','FontSize' ], [ 'TextColor','BGColor' ] ]
+        message_config:
+            toolbar: [ [ 'Cut','Copy','Paste','Undo','Redo' ], [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ], [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ], [ 'Styles','Format','Font','FontSize' ], [ 'TextColor','BGColor' ] ]
+
+vresh_twilio:
+    #(Required) Your Account SID from www.twilio.com/user/account
+    sid: "%twilio.sid%"
+    #(Required) Your Auth Token from www.twilio.com/user/account
+    authToken: "%twilio.token%"
+    #(Optional, default: 1) Number of times to retry failed requests
+    retryAttempts: 3
