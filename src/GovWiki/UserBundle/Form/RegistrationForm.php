@@ -68,8 +68,9 @@ class RegistrationForm extends AbstractType
                 [
                     'class' => 'GovWiki\DbBundle\Entity\Government',
                     'required' => false,
-                    'label' => 'form.subscribed_to',
+                    'label' => 'form.subscribe_to',
                     'query_builder' => $queryBuilderFunction,
+                    'translation_domain' => 'messages',
                 ]
             )
             ->addEventListener(FormEvents::POST_SUBMIT, function(FormEvent $event) use ($environment) {
@@ -86,9 +87,9 @@ class RegistrationForm extends AbstractType
             ->remove('plainPassword')
             ->add('plainPassword', 'repeated', [
                 'type' => 'password',
-                'options' => array('translation_domain' => 'messages'),
-                'first_options' => array('label' => 'form.password'),
-                'second_options' => array('label' => 'form.password_confirmation'),
+                'options' => [ 'translation_domain' => 'messages' ],
+                'first_options' => [ 'label' => 'form.password' ],
+                'second_options' => [ 'label' => 'form.password_confirmation' ],
                 'invalid_message' => 'form.password.mismatch',
             ]);
     }
