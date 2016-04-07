@@ -22,7 +22,7 @@ class EndorsementRepository extends EntityRepository implements ListedEntityRepo
         $qb = $this->createQueryBuilder('Endorsement');
         $expr = $qb->expr();
 
-        $qb
+        return $qb
             ->addSelect('IssueCategory, Request, Creator')
             ->leftJoin('Endorsement.request', 'Request')
             ->leftJoin('Request.creator', 'Creator')
@@ -37,10 +37,6 @@ class EndorsementRepository extends EntityRepository implements ListedEntityRepo
                     )
                 )
             ));
-
-        dump($qb->getQuery()->getSQL());
-
-        return $qb;
     }
 
     /**
