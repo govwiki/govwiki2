@@ -22,11 +22,11 @@ class EndorsementRepository extends EntityRepository implements ListedEntityRepo
         $qb = $this->createQueryBuilder('Endorsement');
         $expr = $qb->expr();
 
-        return $qb
+        $qb
             ->addSelect('IssueCategory, Request, Creator')
             ->leftJoin('Endorsement.request', 'Request')
             ->leftJoin('Request.creator', 'Creator')
-            ->join('Endorsement.issueCategory', 'IssueCategory')
+            ->leftJoin('Endorsement.issueCategory', 'IssueCategory')
             ->where($expr->andX(
                 $expr->eq('Endorsement.electedOfficial', $electedOfficial),
                 $expr->orX(
@@ -37,6 +37,10 @@ class EndorsementRepository extends EntityRepository implements ListedEntityRepo
                     )
                 )
             ));
+
+        dump($qb->getQuery()->getSQL());
+
+        return $qb;
     }
 
     /**
@@ -51,7 +55,7 @@ class EndorsementRepository extends EntityRepository implements ListedEntityRepo
             ->addSelect('IssueCategory, Request, Creator')
             ->leftJoin('Endorsement.request', 'Request')
             ->leftJoin('Request.creator', 'Creator')
-            ->join('Endorsement.issueCategory', 'IssueCategory')
+            ->leftJoin('Endorsement.issueCategory', 'IssueCategory')
             ->join('Endorsement.electedOfficial', 'ElectedOfficial')
             ->join('ElectedOfficial.government', 'Government')
             ->where($expr->andX(

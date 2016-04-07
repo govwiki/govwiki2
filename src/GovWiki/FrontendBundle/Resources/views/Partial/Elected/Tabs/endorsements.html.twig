@@ -1,4 +1,5 @@
 <div role="tabpanel" class="tab-pane" id="Endorsements">
+    {% dump(endorsements) %}
     <div class="tab-pane-main">
         {% include 'GovWikiFrontendBundle:Partial/Elected/Lists:endorsements.html.twig' with {
             'list': endorsements

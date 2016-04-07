@@ -35,13 +35,19 @@
                    title="">{{statement.url}}</a>
                 <span class="glyphicon glyphicon-pencil edit"></span>
             </td>
-            <td data-issue-category="{{statement.issueCategory.name}}">
-                <a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{{statement.issueCategory.name}}"
-                   data-placeholder="Please edit" data-title="Please edit"
-                   class="editable editable-pre-wrapped editable-click" data-original-title=""
-                   title="">{{statement.issueCategory.name}}</a>
-                <span class="glyphicon glyphicon-pencil edit"></span>
-            </td>
+            {% if statement.issueCategory %}
+                <td data-issue-category="{{statement.issueCategory.name}}">
+                    <a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{{statement.issueCategory.name}}"
+                       data-placeholder="Please edit" data-title="Please edit"
+                       class="editable editable-pre-wrapped editable-click" data-original-title=""
+                       title="">{{statement.issueCategory.name}}</a>
+                    <span class="glyphicon glyphicon-pencil edit"></span>
+                </td>
+            {% else %}
+                <td>
+                    No data
+                </td>
+            {% endif %}
             <td>
 
             </td>

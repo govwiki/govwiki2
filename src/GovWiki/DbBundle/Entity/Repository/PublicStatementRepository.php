@@ -26,7 +26,7 @@ class PublicStatementRepository extends EntityRepository implements ListedEntity
             ->addSelect('IssueCategory, Request, Creator')
             ->leftJoin('PublicStatement.request', 'Request')
             ->leftJoin('Request.creator', 'Creator')
-            ->join('PublicStatement.issueCategory', 'IssueCategory')
+            ->leftJoin('PublicStatement.issueCategory', 'IssueCategory')
             ->where($expr->andX(
                 $expr->eq('PublicStatement.electedOfficial', $electedOfficial),
                 $expr->orX(
@@ -51,7 +51,7 @@ class PublicStatementRepository extends EntityRepository implements ListedEntity
             ->addSelect('IssueCategory, Request, Creator')
             ->leftJoin('PublicStatement.request', 'Request')
             ->leftJoin('Request.creator', 'Creator')
-            ->join('PublicStatement.issueCategory', 'IssueCategory')
+            ->leftJoin('PublicStatement.issueCategory', 'IssueCategory')
             ->join('PublicStatement.electedOfficial', 'ElectedOfficial')
             ->join('ElectedOfficial.government', 'Government')
             ->where($expr->andX(
