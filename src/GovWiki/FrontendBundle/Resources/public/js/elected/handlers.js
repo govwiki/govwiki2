@@ -127,9 +127,11 @@ $(function() {
         return result;
     }
 
-    // Click on disqus icon
-    $pane.on('click', '.vote', function() {
+    var $commentWindow = $('#conversation');
 
+
+    // Click on comment icon.
+    $pane.on('click', '.vote', function() {
         var $element = $(this);
 
         var id = $element.attr('id');
@@ -138,24 +140,29 @@ $(function() {
         var name = $element.attr('data-legislation-name');
 
         // Remove existing Facebook Comment form
-        var fbCommentElemExistList = $('.fb-comments');
+        var fbCommentElemExistList = $('.fb-comments', $commentWindow);
         for (var i = 0; i < fbCommentElemExistList.length; i++) {
             var fbCommentElemExist = fbCommentElemExistList[i];
             fbCommentElemExist.parentNode.removeChild(fbCommentElemExist);
         }
 
         // Create new Facebook Comment form
-        var fbCommentPrevElem = $('#conversation .modal-header');
+        var fbCommentPrevElem = $('.modal-body', $commentWindow);
         var fbCommentElem = document.createElement('DIV');
         fbCommentUrl = clearUrl(window.location.href);
         $(fbCommentElem).addClass('fb-comments');
+        fbCommentElem.setAttribute('id', 'comment-form');
         fbCommentElem.setAttribute('data-href', fbCommentUrl + '#vote_' + id);
         fbCommentElem.setAttribute('data-numposts', 5);
-        fbCommentPrevElem.after(fbCommentElem);
-        FB.XFBML.parse();
+        fbCommentPrevElem.append(fbCommentElem);
+
+        FB.XFBML.parse(null, function() {
+            $('.loader', $commentWindow).hide();
+        });
 
         $('#myModalLabel').text(electedName + ' - ' + name);
-        $('#conversation').modal('show');
+        $commentWindow.modal('show');
+        $('.loader', $commentWindow).show();
 
         //refresh_disqus(id, 'http://govwiki.us' + '/' + id, name);
     });

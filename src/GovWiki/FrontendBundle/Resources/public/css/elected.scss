@@ -94,13 +94,17 @@
       min-height: 600px;
    }
 
-   .loader{
-      position: absolute;
-      margin-top: 240px;
-      left: 49%;
+   .loader {
       display: none;
    }
 
+   .tab-content {
+      .loader {
+         position: absolute;
+         margin-top: 240px;
+         left: 49%;
+      }
+   }
    /*
       Table for votes, contribution and etc.
    */
