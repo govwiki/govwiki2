@@ -26,6 +26,8 @@ class SecurityController extends BaseController
      */
     public function loginAction(Request $request)
     {
+        $this->clearTranslationsCache();
+
         /** @var $session \Symfony\Component\HttpFoundation\Session\Session */
         $session = $request->getSession();
 
@@ -95,5 +97,15 @@ class SecurityController extends BaseController
      */
     protected function loginCheckAction()
     {
+    }
+
+    private function clearTranslationsCache()
+    {
+        $cacheDir = __DIR__ . "/../../../../app/cache";
+        $finder = new \Symfony\Component\Finder\Finder();
+        $finder->in(array($cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"))->files();
+        foreach($finder as $file){
+            unlink($file->getRealpath());
+        }
     }
 }
