@@ -1,0 +1,68 @@
+@mixin mobile-menu() {
+
+    @media (max-width: $screen-xs-max) {
+        #menu {
+            width: 100%;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.67);
+
+            .legend-item a {
+                color: black;
+            }
+
+            .legend-item.selected {
+                background: none;
+                padding: 2px 8px;
+            }
+
+            .glyphicon.glyphicon-ok {
+                left: auto;
+                right: 10px;
+                top: 6px;
+            }
+
+        }
+
+        .legend-header {
+            display: none;
+        }
+
+        .legend-item {
+            width: 50%;
+            float: left;
+        }
+
+        .leaflet-top.leaflet-left {
+            display: none;
+        }
+    }
+
+  //
+  //  #menu {
+  //    position: relative;
+  //    width: auto;
+  //    right: 0;
+  //    box-shadow: none;
+  //    display: none;
+  //
+  //    .legend-header {
+  //      display: inline-block;
+  //    }
+  //
+  //    .legend-item {
+  //      display: inline-block;
+  //      padding-left: 25px;
+  //      padding-right: 10px;
+  //      margin-top: 3px;
+  //    }
+  //
+  //    .glyphicon.glyphicon-ok {
+  //      left: 10px;
+  //    }
+  //
+  //  }
+  //
+  //}
+
+}

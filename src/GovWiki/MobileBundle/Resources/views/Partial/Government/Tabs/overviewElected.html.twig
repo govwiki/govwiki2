@@ -1,0 +1,60 @@
+{% if tabName == 'Overview + Elected Officials' %}
+    <div class="col-sm-8">
+    {% for elected in government.electedOfficials %}
+        <div class="person">
+
+            <div class="person-info">
+
+                <p>
+                    Title: {{elected.title}}
+                </p>
+
+                <p>
+                    <a href="{{ govwiki_path('elected', {
+                        'altTypeSlug': government.altTypeSlug,
+                        'slug': government.slug,
+                        'electedSlug': elected.slug
+                    }) }}" class="elected_link">Name {{elected.fullName}}</a>
+                </p>
+
+                <p>
+                    {% if elected.emailAddress %}
+                        <a href="mailto:{{elected.emailAddress}}">Email: {{elected.emailAddress}}</a>
+                    {% endif %}
+                </p>
+
+                <p>
+                    {% if elected.telephoneNumber %}
+                        Phone: {{elected.telephoneNumber}}
+                    {% endif %}
+                </p>
+
+                <p>
+                    Term Expires: {{elected.termExpires}}
+                </p>
+
+            </div>
+
+            <div class="person-photo">
+
+                {% if elected.photoUrl %}
+                    <a href="{{ govwiki_path('elected', {
+                        'altTypeSlug': government.altTypeSlug,
+                        'slug': government.slug,
+                        'electedSlug': elected.slug
+                    }) }}"
+                        <span class="f-val">
+                            <img src="{{elected.photoUrl}}"/>
+                        </span>
+                    </a>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+    {% endfor %}
+    </div>
+
+{% endif %}

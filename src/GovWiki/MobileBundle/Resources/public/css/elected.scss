@@ -1,0 +1,267 @@
+
+/* =================================== */
+/* ======== Elected Controller ======= */
+/* =================================== */
+
+@import "main";
+
+
+/* TMP (Start) */
+
+.select-custom {
+   width: 100%;
+   margin-bottom: 20px;
+   padding: 6px 15px;
+   border: 1px solid #e5e5e5;
+   border-radius: 5px;
+   -webkit-box-shadow: none;
+   box-shadow: none;
+}
+
+.card {
+   position: relative;
+   display: block;
+   margin-bottom: 1.5rem;
+   background-color: #fff;
+   border: 1px solid #e5e5e5;
+   border-radius: .25rem;
+   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+
+   &-header {
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+
+      .btn-custom {
+         float: right;
+         margin-top: -3px;
+         margin-right: -8px;
+      }
+
+      &__vote-name {
+         padding: 0.6rem;
+         margin-bottom: 1em;
+         font-size: 1.3em;
+         color: black;
+      }
+
+      &__vote-vote {
+         padding: 0 0.6rem 0.6rem 0.6rem;
+
+         & > span {
+            font-weight: 700
+         }
+      }
+
+
+      &__vote-sponsor {
+         float: right;
+
+         & > span {
+            font-weight: 700
+         }
+
+      }
+
+   }
+
+   &-block {
+      padding: 1.05rem;
+      padding-bottom: 0;
+
+      .card-title {
+         margin-bottom: .75rem;
+      }
+
+      .card-text {
+
+      }
+
+      &__vote-date {
+         font-size: 1.3em;
+      }
+
+      &__vote-issue {
+         float: right;
+         font-size: 1.3em;
+      }
+
+      &__vote-comments {
+         font-size: 3em;
+         margin: 0;
+         margin-top: 1em;
+      }
+
+   }
+
+   &-expand {
+      background-color: #f5f5f5;
+      color: #929292;
+      text-align: center;
+      font-size: 1.2em;
+   }
+
+   &-sub-header {
+      border-bottom: 1px solid #e5e5e5;
+      color: #B9B9B9;
+
+      .date,
+      .taxes {
+         margin-left: 15px;
+      }
+
+      .comments {
+         margin-right: 15px;
+         float: right;
+      }
+
+   }
+
+}
+
+
+.card
+
+
+.card
+
+/* TMP (end) */
+
+
+.electedController {
+   min-width: 700px;
+   margin-top: 40px;
+
+   /*
+      Size of tab names.
+   */
+   .nav-pills {
+      a {
+         font-size: 1.4em;
+      }
+   }
+
+   .tab-pane {
+      min-height: 600px;
+   }
+
+   .loader{
+      position: absolute;
+      margin-top: 240px;
+      left: 49%;
+      display: none;
+   }
+
+   /*
+      Table for votes, contribution and etc.
+   */
+   .table {
+      td,
+      th {
+         vertical-align: middle;
+
+         &.column__vote {
+            text-align: center;
+            width: 65px;
+         }
+
+         &.column__date {
+            width: 125px;
+         }
+
+         &.column__title {
+            width: 220px;
+         }
+      }
+
+      tr {
+         &:not([ data-id ]) {
+            td {
+               border-top: 1px dashed #eeeeee;
+            }
+         }
+
+         &.vote-comment {
+            color: black;
+
+            & td > p {
+               display: inline;
+            }
+         }
+      }
+   }
+
+   .add {
+      color: #0b4d70;
+      text-align: center;
+      cursor: pointer;
+   }
+   .add:hover {
+      background-color: #0b4d70;
+      color: #fff;
+   }
+   .edit {
+      color: #d3d3d3;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 12px;
+   }
+   .editable {
+      text-decoration: none !important;
+      color: #000 !important;
+      border-bottom: none !important;
+   }
+
+   .person {
+      width: 70%;
+      margin-top: 20px;
+      border-bottom: 1px dotted #ddd;
+
+      &-info {
+         width: 60%;
+         vertical-align: top;
+         font-size: 1.4em;
+         display: inline-block;
+         min-width: 60%;
+
+         p {
+            margin-bottom: 0;
+         }
+
+      }
+
+      &-info-content {
+         font-size: 16px;
+      }
+
+      &-photo {
+         width: 100%;
+         display: inline-block;
+
+         img {
+            width: 100%;
+            float: right;
+         }
+
+      }
+   }
+
+   .vote {
+      cursor: pointer;
+      display: inline-block;
+      text-align: center;
+      font-size: 13px;
+      width: 30px;
+      height: 30px;
+      background-image: url("/bundles/govwikifrontend/img/comment.svg");
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      padding: 2px;
+   }
+
+   .submit_comment_button {
+      float: right;
+      margin: 5px 5px 0 0;
+   }
+}
+
+@import 'mobile/elected';
