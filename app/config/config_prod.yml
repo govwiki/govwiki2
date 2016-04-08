@@ -1,6 +1,11 @@
 imports:
     - { resource: config.yml }
 
+framework:
+    router:
+        resource: "%kernel.root_dir%/config/routing_prod.yml"
+        strict_requirements: ~
+
 #framework:
 #    validation:
 #        cache: validator.mapping.cache.apc

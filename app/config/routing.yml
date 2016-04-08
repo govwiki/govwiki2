@@ -14,9 +14,5 @@ govwiki_admin:
     resource: "@GovWikiAdminBundle/Resources/config/routing.yml"
     prefix:   /admin
 
-govwiki_frontend:
-    resource: "@GovWikiFrontendBundle/Resources/config/routing.yml"
-    prefix: /
-
 govwiki_comment:
     resource: "@GovWikiCommentBundle/Resources/config/routing.yml"
