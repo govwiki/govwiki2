@@ -8,7 +8,7 @@ var financialStatementGraphs = require('./graph/financial-statement');
 function init(callback) {
     return function() {
         handler_onTabSwitch();
-        callback('loaded');
+        callback();
     };
 }
 
@@ -47,6 +47,7 @@ function forceInit() {
     employeeCompensationGraphs.initAll();
     financialHealthGraphs.initAll();
     financialStatementGraphs.initAll();
+
 }
 
 function initGoogleViz(callback) {

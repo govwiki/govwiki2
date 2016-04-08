@@ -55,8 +55,7 @@ assetic:
     debug:          "%kernel.debug%"
     use_controller: false
     bundles:
-        - 'GovWikiAdminBundle'
-        - 'GovWikiFrontendBundle'
+        - 'GovWikiMobileBundle'
         - 'GovWikiCommentBundle'
     #java: /usr/bin/java
     filters:
@@ -145,12 +144,17 @@ vresh_twilio:
     #(Optional, default: 1) Number of times to retry failed requests
     retryAttempts: 3
 
+framework:
+    router:
+        resource: "%kernel.root_dir%/config/routing_mobile.yml"
+
+
 mobile_detect:
     redirect:
         mobile:
-            is_enabled: true
-            host: http://m.govwiki.dev
-            status_code: 301
-            action: redirect
+            is_enabled: false
         tablet: ~
+        full:
+            is_enabled: true
+            host: http://govwiki.dev
     switch_device_view: ~

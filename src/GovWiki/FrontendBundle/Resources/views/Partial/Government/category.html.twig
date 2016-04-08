@@ -3,7 +3,7 @@
     Template for one category in tab.
 
 #}
-<table class="statistics-table">
+<table class="table table-striped statistics-table">
 {% for fieldName, format in fields %}
 
     {% if format is viewed(government) %}
@@ -15,7 +15,10 @@
                     {{- ('format.'~format.field)|trans -}}
                     {#{{- format.name -}}#}
                     {% if ('format.'~format.field~'.help_text')|trans != 'format.'~format.field~'.help_text' %}
-                        <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}" title="{{- ('format.'~format.field~'.help_text')|trans -}}">
+                        <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}"
+                             data-toggle="tooltip"
+                             data-placement="bottom"
+                             title="{{- ('format.'~format.field~'.help_text')|trans -}}">
                     {% endif %}
                 </td>
                 {# Field value #}

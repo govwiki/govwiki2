@@ -37,7 +37,7 @@ function employeeCompensation_one() {
         return;
     }
 
-    var chart, formatter, options, vis_data;
+    var chart, formatter, options, container, vis_data;
     vis_data = new google.visualization.DataTable();
     vis_data.addColumn('string', 'Median Compensation');
     vis_data.addColumn('number', 'Wages');
@@ -60,22 +60,46 @@ function employeeCompensation_one() {
     });
     formatter.format(vis_data, 1);
     formatter.format(vis_data, 2);
-    options = {
-        'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
-        'titleTextStyle': {
-            'fontSize': 12
-        },
-        'tooltip': {
-            'textStyle': {
+
+
+    if (isMobileBrowser()) {
+        container = 'mobile-median-comp-graph';
+        options = {
+            'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
+            'titleTextStyle': {
                 'fontSize': 12
-            }
-        },
-        'width': 340,
-        'height': 300,
-        'isStacked': 'true',
-        'colors': ['#005ce6', '#009933']
-    };
-    chart = new google.visualization.ColumnChart(document.getElementById('median-comp-graph'));
+            },
+            'tooltip': {
+                'textStyle': {
+                    'fontSize': 12
+                }
+            },
+            'width': '100%',
+            'height': '100%',
+            'isStacked': 'true',
+            'colors': ['#005ce6', '#009933']
+        };
+    } else {
+        container = 'median-comp-graph';
+        options = {
+            'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
+            'titleTextStyle': {
+                'fontSize': 12
+            },
+            'tooltip': {
+                'textStyle': {
+                    'fontSize': 12
+                }
+            },
+            'width': 340,
+            'height': 300,
+            'isStacked': 'true',
+            'colors': ['#005ce6', '#009933']
+        };
+    }
+
+
+    chart = new google.visualization.ColumnChart(document.getElementById(container));
     chart.draw(vis_data, options);
 
 
@@ -103,7 +127,7 @@ function employeeCompensation_two() {
         return;
     }
 
-    var chart, formatter, options, vis_data;
+    var chart, formatter, options, container, vis_data;
     vis_data = new google.visualization.DataTable();
     vis_data.addColumn('string', 'Median Pension');
     vis_data.addColumn('number', 'Wages');
@@ -113,25 +137,44 @@ function employeeCompensation_two() {
         fractionDigits: '0'
     });
     formatter.format(vis_data, 1);
-    options = {
-        'title': 'Median Total Pension',
-        'titleTextStyle': {
-            'fontSize': 12
-        },
-        'tooltip': {
-            'textStyle': {
+
+    if (isMobileBrowser()) {
+        container = 'mobile-median-pension-graph';
+        options = {
+            'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
+            'titleTextStyle': {
                 'fontSize': 12
-            }
-        },
-        'width': 340,
-        'height': 300,
-        'bar': {
-            'groupWidth': '30%'
-        },
-        'isStacked': 'true',
-        'colors': ['#005ce6', '#009933']
-    };
-    chart = new google.visualization.ColumnChart(document.getElementById('median-pension-graph'));
+            },
+            'tooltip': {
+                'textStyle': {
+                    'fontSize': 12
+                }
+            },
+            'width': '100%',
+            'height': '100%',
+            'isStacked': 'true',
+            'colors': ['#005ce6', '#009933']
+        };
+    } else {
+        container = 'median-pension-graph';
+        options = {
+            'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
+            'titleTextStyle': {
+                'fontSize': 12
+            },
+            'tooltip': {
+                'textStyle': {
+                    'fontSize': 12
+                }
+            },
+            'width': 340,
+            'height': 300,
+            'isStacked': 'true',
+            'colors': ['#005ce6', '#009933']
+        };
+    }
+
+    chart = new google.visualization.ColumnChart(document.getElementById(container));
     chart.draw(vis_data, options);
 }
 

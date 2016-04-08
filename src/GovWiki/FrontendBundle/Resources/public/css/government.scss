@@ -110,6 +110,7 @@
         .mobile-tab-title {
             background-color: #65A7D6;
             color: white;
+            margin-bottom: 20px;
         }
 
         .mobile-tab-content {
@@ -162,6 +163,27 @@
 
     }
 
+    #mobile-Financial_Statements {
+
+        #mobile-total-revenue-pie {
+            min-height: 350px;
+            border: 1px solid lightgray;
+            padding: 15px;
+            padding-bottom: 0;
+        }
+
+        #mobile-total-expenditures-pie {
+            min-height: 350px;
+            border: 1px solid lightgray;
+            padding: 15px;
+            padding-bottom: 0;
+        }
+
+        .chart-controls {
+            margin-bottom: 20px;
+        }
+
+    }
 
     section {
 

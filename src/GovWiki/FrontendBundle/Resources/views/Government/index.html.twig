@@ -159,7 +159,7 @@
                                     <span class="prev_tab">
                                         <i class="glyphicon glyphicon-chevron-left"></i>
                                     </span>
-                                    <a class="mobile-tab tab_salaries" href="#Salaries" aria-controls="Salaries" role="tab" data-toggle="tab">Salaries</a>
+                                    <a class="mobile-tab tab_salaries" href="#mobile-Salaries" aria-controls="mobile-Salaries" role="tab" data-toggle="tab">Salaries</a>
                                     <span class="next_tab">
                                         <i class="glyphicon glyphicon-chevron-right"></i>
                                     </span>
@@ -171,7 +171,7 @@
                                     <span class="prev_tab">
                                         <i class="glyphicon glyphicon-chevron-left"></i>
                                     </span>
-                                    <a class="mobile-tab tab_pensions" href="#Pensions" aria-controls="Pensions" role="tab" data-toggle="tab">Pensions</a>
+                                    <a class="mobile-tab tab_pensions" href="#mobile-Pensions" aria-controls="mobile-Pensions" role="tab" data-toggle="tab">Pensions</a>
                                     <span class="next_tab">
                                         <i class="glyphicon glyphicon-chevron-right"></i>
                                     </span>
@@ -199,8 +199,9 @@
                 <div class="row">
                     <div class="visible-xs col-xs-12" style="padding: 0">
 
-                        {% set tab_id_list = [] %}
                         {% if (formats is defined) and (formats is not empty) %}
+
+                            {% set tab_id_list = [] %}
 
                             {% for tabName, categories in formats %}
                                 {% if categories[""] is defined %}
@@ -209,16 +210,18 @@
                                     {% set tab_id = categories|first|first.tab_id %}
                                 {% endif %}
 
-                                <div class="mobile-tab-pane active"
-                                     id="mobile-{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
+                                <div class="mobile-tab-pane active" id="mobile-{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
 
                                     <div class="mobile-tab-title">
                                         {{ ('groups.group_id_'~tab_id)|trans }}
                                     </div>
-                                    {#<h4>{{ tabName }}</h4>#}
-                                    <br>
 
                                     <div class="mobile-tab-content">
+
+                                        {# Statistics #}
+                                        <div class="statistics col-sm-8">
+                                            {{ include('@GovWikiFrontend/Partial/Government/tab.html.twig') }}
+                                        </div>
 
                                         {# Overview + Elected Officials #}
                                         {{ include('GovWikiFrontendBundle:Partial/Government/MobileTabs:overviewElected.html.twig') }}
@@ -232,41 +235,57 @@
                                         {# Financial Health #}
                                         {{ include('GovWikiFrontendBundle:Partial/Government/MobileTabs:financialHealth.html.twig') }}
                                     </div>
+
                                 </div>
 
                             {% endfor %}
 
-                            {% if hasSalaries %}
-                                <div class="mobile-tab-pane paginate" id="Salaries">
-                                    <div class="tab-pane-main">
-                                        {{ render(controller('GovWikiApiBundle:V1/Government:salaries', {
-                                        'government': government.id
-                                        })) }}
+
+                                {% if hasSalaries %}
+                                    <div class="mobile-tab-pane active" id="mobile-Salaries">
+
+                                        <div class="mobile-tab-title">
+                                            Salaries
+                                        </div>
+
+                                        <div class="mobile-tab-content">
+                                            {{ render(controller('GovWikiApiBundle:V1/Government:mobileSalaries', {
+                                            'government': government.id
+                                            })) }}
+                                        </div>
                                     </div>
-                                </div>
-                            {% endif %}
+                                {% endif %}
 
-                            {% if hasPensions %}
-                                <div class="mobile-tab-pane paginate" id="Pensions">
-                                    <div class="tab-pane-main">
-                                        {{ render(controller('GovWikiApiBundle:V1/Government:pensions', {
-                                        'government': government.id
-                                        })) }}
+                                {% if hasPensions %}
+                                    <div class="mobile-tab-pane active" id="mobile-Pensions">
+
+                                        <div class="mobile-tab-title">
+                                            Pensions
+                                        </div>
+
+                                        <div class="mobile-tab-content">
+                                            {{ render(controller('GovWikiApiBundle:V1/Government:mobilePensions', {
+                                            'government': government.id
+                                            })) }}
+                                        </div>
+
                                     </div>
+                                {% endif %}
 
-                                </div>
-                            {% endif %}
+                                {# Financial Statements (if exists) #}
+                                {% if showFinStmt %}
+                                    <div class="mobile-tab-pane active" id="mobile-Financial_Statements">
 
-                            {# Financial Statements (if exists) #}
-                            {% if showFinStmt %}
-                                <div class="mobile-tab-pane" id="mobile-Financial_Statements">
+                                        <div class="mobile-tab-title">{{ 'gov.financial_statements'|trans }}</div>
 
-                                    {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
-                                    'financialStatements': government.financialStatements
-                                    } %}
+                                        <div class="mobile-tab-content">
+                                            {% include 'GovWikiFrontendBundle:Partial/Government/MobileTabs:financialStatements.html.twig' with {
+                                            'financialStatements': government.financialStatements
+                                            } %}
+                                        </div>
 
-                                </div>
-                            {% endif %}
+                                    </div>
+                                {% endif %}
 
                         {% else %}
                             <h3 class="text-center">No data. Please refresh page later</h3>

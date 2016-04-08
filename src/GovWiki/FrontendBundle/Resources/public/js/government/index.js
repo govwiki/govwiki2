@@ -11,8 +11,7 @@ $(function() {
     var Step3 = require('./form/compare/step-3.js');
     var Step31 = require('./form/compare/step-3-1.js');
 
-    graphs.init(function (data) {
-        console.log(data);
+    graphs.init(function () {
         graphs.forceInit();
     });
 
@@ -106,7 +105,6 @@ $(function() {
 
     step31 = new Step31(FormState, '.government-categories .category');
     step31.lock();
-
 
     /**
      * Change fin statement year.

@@ -18,7 +18,7 @@ function init() {
  */
 function financialStatements_revenue() {
 
-    var chart, options, r, rows, vis_data;
+    var chart, options, r, container, rows, vis_data;
     vis_data = new google.visualization.DataTable();
     vis_data.addColumn('string', 'Total Gov. Revenues');
     vis_data.addColumn('number', 'Total');
@@ -64,26 +64,56 @@ function financialStatements_revenue() {
     rows.sort(rowSortFunction);
 
     vis_data.addRows(rows);
-    options = {
-        'title': data.translations.total_revenue,
-        'titleTextStyle': {
-            'fontSize': 16
-        },
-        'tooltip': {
-            'textStyle': {
-                'fontSize': 12
-            }
-        },
-        'width': 470,
-        'height': 350,
-        'sliceVisibilityThreshold': 0,
-        'forceIFrame': true,
-        'chartArea': {
-            width: '90%',
-            height: '75%'
-        }
-    };
-    chart = new google.visualization.PieChart(document.getElementById('total-revenue-pie'));
+     if (isMobileBrowser()) {
+         container = 'mobile-total-revenue-pie';
+         options = {
+             'title': data.translations.total_revenue,
+             'titleTextStyle': {
+                 'fontSize': 16
+             },
+             'tooltip': {
+                 'textStyle': {
+                     'fontSize': 12
+                 }
+             },
+             width: '100%',
+             height: '100%',
+             'sliceVisibilityThreshold': 0,
+             'forceIFrame': true,
+             chartArea: {
+                 left: "3%",
+                 top: "13%",
+                 height: "94%",
+                 width: "94%"
+             },
+             legend: {
+                 position: 'top', maxLines: '6'
+             }
+         };
+     } else {
+         container = 'total-revenue-pie';
+         options = {
+             'title': data.translations.total_revenue,
+             'titleTextStyle': {
+                 'fontSize': 16
+             },
+             'tooltip': {
+                 'textStyle': {
+                     'fontSize': 12
+                 }
+             },
+             'width': 470,
+             'height': 350,
+             'sliceVisibilityThreshold': 0,
+             'forceIFrame': true,
+             'chartArea': {
+                 width: '90%',
+                 height: '75%'
+             }
+         };
+     }
+
+    chart = new google.visualization.PieChart(document.getElementById(container));
     chart.draw(vis_data, options);
 
 }
@@ -93,7 +123,7 @@ function financialStatements_revenue() {
  */
 function financialStatements_expenditures() {
 
-    var chart, options, r, rows, vis_data;
+    var chart, options, r, container, rows, vis_data;
     vis_data = new google.visualization.DataTable();
     vis_data.addColumn('string', 'Total Gov. Expenditures');
     vis_data.addColumn('number', 'Total');
@@ -138,26 +168,57 @@ function financialStatements_expenditures() {
     rows.sort(rowSortFunction);
 
     vis_data.addRows(rows);
-    options = {
-        'title': data.translations.total_expenditure,
-        'titleTextStyle': {
-            'fontSize': 16
-        },
-        'tooltip': {
-            'textStyle': {
-                'fontSize': 12
+
+    if (isMobileBrowser()) {
+        container = 'mobile-total-expenditures-pie';
+        options = {
+            'title': data.translations.total_revenue,
+            'titleTextStyle': {
+                'fontSize': 16
+            },
+            'tooltip': {
+                'textStyle': {
+                    'fontSize': 12
+                }
+            },
+            width: '100%',
+            height: '100%',
+            'sliceVisibilityThreshold': 0,
+            'forceIFrame': true,
+            chartArea: {
+                left: "3%",
+                top: "13%",
+                height: "94%",
+                width: "94%"
+            },
+            legend: {
+                position: 'top', maxLines: '6'
             }
-        },
-        'width': 470,
-        'height': 350,
-        'sliceVisibilityThreshold': 0,
-        'forceIFrame': true,
-        'chartArea': {
-            width: '90%',
-            height: '75%'
-        }
-    };
-    chart = new google.visualization.PieChart(document.getElementById('total-expenditures-pie'));
+        };
+    } else {
+        container = 'total-expenditures-pie';
+        options = {
+            'title': data.translations.total_revenue,
+            'titleTextStyle': {
+                'fontSize': 16
+            },
+            'tooltip': {
+                'textStyle': {
+                    'fontSize': 12
+                }
+            },
+            'width': 470,
+            'height': 350,
+            'sliceVisibilityThreshold': 0,
+            'forceIFrame': true,
+            'chartArea': {
+                width: '90%',
+                height: '75%'
+            }
+        };
+    }
+
+    chart = new google.visualization.PieChart(document.getElementById(container));
     chart.draw(vis_data, options);
 
 }
@@ -169,7 +230,7 @@ function financialStatements_expenditures() {
  */
 function financialStatementsTree_revenues() {
 
-    var chart, RevenuesDataTable, vis_data, total_amount = 0;
+    var chart, RevenuesDataTable, vis_data, total_amount = 0, options, container;
 
     RevenuesDataTable = [
         ['Location', 'Parent', 'FinData', 'Heat'],
@@ -196,26 +257,45 @@ function financialStatementsTree_revenues() {
 
         }
     }
-    console.log(total_amount);
 
-
-
-    var options = {
-        highlightOnMouseOver: true,
-        maxDepth: 1,
-        maxPostDepth: 2,
-        minHighlightColor: '#8c6bb1',
-        midHighlightColor: '#9ebcda',
-        maxHighlightColor: '#edf8fb',
-        minColor: '#009688',
-        midColor: '#f7f7f7',
-        maxColor: '#ee8100',
-        headerHeight: 15,
-        showScale: true,
-        height: 500,
-        useWeightedAverageForAggregation: true,
-        generateTooltip: revenuesTooltip
-    };
+    if (isMobileBrowser()) {
+        container = 'mobile-total-revenue-tree';
+        options = {
+            highlightOnMouseOver: true,
+            maxDepth: 1,
+            maxPostDepth: 2,
+            minHighlightColor: '#8c6bb1',
+            midHighlightColor: '#9ebcda',
+            maxHighlightColor: '#edf8fb',
+            minColor: '#009688',
+            midColor: '#f7f7f7',
+            maxColor: '#ee8100',
+            headerHeight: 15,
+            showScale: true,
+            width: '100%',
+            height: 500,
+            useWeightedAverageForAggregation: true,
+            generateTooltip: revenuesTooltip
+        };
+    } else {
+        container = 'total-revenue-tree';
+        options = {
+            highlightOnMouseOver: true,
+            maxDepth: 1,
+            maxPostDepth: 2,
+            minHighlightColor: '#8c6bb1',
+            midHighlightColor: '#9ebcda',
+            maxHighlightColor: '#edf8fb',
+            minColor: '#009688',
+            midColor: '#f7f7f7',
+            maxColor: '#ee8100',
+            headerHeight: 15,
+            showScale: true,
+            height: 500,
+            useWeightedAverageForAggregation: true,
+            generateTooltip: revenuesTooltip
+        };
+    }
 
     function revenuesTooltip(row, size, value) {
         var caption = vis_data.getValue(row, 0);
@@ -228,7 +308,7 @@ function financialStatementsTree_revenues() {
 
 
     vis_data = new google.visualization.arrayToDataTable(RevenuesDataTable);
-    chart = new google.visualization.TreeMap(document.getElementById('total-revenue-tree'));
+    chart = new google.visualization.TreeMap(document.getElementById(container));
     chart.draw(vis_data, options);
 }
 
@@ -238,7 +318,7 @@ function financialStatementsTree_revenues() {
  */
 function financialStatementsTree_expenditures() {
 
-    var chart, ExpendituresDataTable, vis_data, total_amount = 0;
+    var chart, ExpendituresDataTable, vis_data, total_amount = 0, options, container;
 
     ExpendituresDataTable = [
         ['Location', 'Parent', 'FinData', 'Heat'],
@@ -266,22 +346,43 @@ function financialStatementsTree_expenditures() {
         }
     }
 
-    var options = {
-        highlightOnMouseOver: true,
-        maxDepth: 1,
-        maxPostDepth: 2,
-        minHighlightColor: '#8c6bb1',
-        midHighlightColor: '#9ebcda',
-        maxHighlightColor: '#edf8fb',
-        minColor: '#009688',
-        midColor: '#f7f7f7',
-        maxColor: '#ee8100',
-        headerHeight: 15,
-        showScale: true,
-        height: 500,
-        useWeightedAverageForAggregation: true,
-        generateTooltip: expendituresTooltip
-    };
+    if (isMobileBrowser()) {
+        container = 'mobile-total-expenditures-tree';
+        options = {
+            highlightOnMouseOver: true,
+            maxDepth: 1,
+            maxPostDepth: 2,
+            minHighlightColor: '#8c6bb1',
+            midHighlightColor: '#9ebcda',
+            maxHighlightColor: '#edf8fb',
+            minColor: '#009688',
+            midColor: '#f7f7f7',
+            maxColor: '#ee8100',
+            headerHeight: 15,
+            showScale: true,
+            height: 500,
+            useWeightedAverageForAggregation: true,
+            generateTooltip: expendituresTooltip
+        };
+    } else {
+        container = 'total-expenditures-tree';
+        options = {
+            highlightOnMouseOver: true,
+            maxDepth: 1,
+            maxPostDepth: 2,
+            minHighlightColor: '#8c6bb1',
+            midHighlightColor: '#9ebcda',
+            maxHighlightColor: '#edf8fb',
+            minColor: '#009688',
+            midColor: '#f7f7f7',
+            maxColor: '#ee8100',
+            headerHeight: 15,
+            showScale: true,
+            height: 500,
+            useWeightedAverageForAggregation: true,
+            generateTooltip: expendituresTooltip
+        };
+    }
 
     function expendituresTooltip(row, size, value) {
         var caption = vis_data.getValue(row, 0);
@@ -293,7 +394,7 @@ function financialStatementsTree_expenditures() {
     }
 
     vis_data = new google.visualization.arrayToDataTable(ExpendituresDataTable);
-    chart = new google.visualization.TreeMap(document.getElementById('total-expenditures-tree'));
+    chart = new google.visualization.TreeMap(document.getElementById(container));
     chart.draw(vis_data, options);
 
 }
@@ -302,12 +403,14 @@ function financialStatementsTree_expenditures() {
  * #Financial_Statements (.chart-controls .btn)
  */
 function handler_switchChart() {
-console.log('im ther');
+
     hideChartGroup('pie-charts', false);
     hideChartGroup('compare-charts', true);
     hideChartGroup('tree-charts', true);
 
-    $('#Financial_Statements').on('click', '.chart-controls .btn', function() {
+    var mobile = isMobileBrowser() ? 'mobile-' : '';
+
+    $('#' + mobile + 'Financial_Statements').on('click', '.chart-controls .btn', function() {
 
         var chartType = this.getElementsByTagName('input')[0].id;
 
@@ -367,37 +470,39 @@ console.log('im ther');
 
         var display = hide ? {display: 'none'} : {display: 'block'};
 
+        var mobile = isMobileBrowser() ? 'mobile-' : '';
+
         if (chartGroup == 'pie-charts') {
-            $('#total-expenditures-pie').css(display);
-            $('#total-revenue-pie').css(display);
+            $('#' + mobile + 'total-expenditures-pie').css(display);
+            $('#' + mobile + 'total-revenue-pie').css(display);
 
         } else if (chartGroup == 'compare-charts') {
             if (hide) {
-                $('#total-compare-pie').css(display);
-                $('#total-compare-first-pie').css(display);
-                $('#total-compare-second-pie').css(display);
-                $('#total-compare-column').css(display);
+                $('#' + mobile + 'total-compare-pie').css(display);
+                $('#' + mobile + 'total-compare-first-pie').css(display);
+                $('#' + mobile + 'total-compare-second-pie').css(display);
+                $('#' + mobile + 'total-compare-column').css(display);
             } else {
                 var $selected = $('.government-categories .selected');
                 var category = $selected.hasClass('category');
                 var caption = $selected.hasClass('caption');
                 if (category) {
-                    $('#total-compare-first-pie').css(display);
-                    $('#total-compare-second-pie').css(display);
+                    $('#' + mobile + 'total-compare-first-pie').css(display);
+                    $('#' + mobile + 'total-compare-second-pie').css(display);
                 } else if (caption) {
-                    $('#total-compare-column').css(display);
+                    $('#' + mobile + 'total-compare-column').css(display);
                 } else {
-                    $('#total-compare-first-pie').css(display);
-                    $('#total-compare-second-pie').css(display);
+                    $('#' + mobile + 'total-compare-first-pie').css(display);
+                    $('#' + mobile + 'total-compare-second-pie').css(display);
                 }
 
-                $('#total-compare-pie').css(display);
+                $('#' + mobile + 'total-compare-pie').css(display);
 
             }
 
         } else if (chartGroup == 'tree-charts') {
-            $('#total-expenditures-tree').css(display);
-            $('#total-revenue-tree').css(display);
+            $('#' + mobile + 'total-expenditures-tree').css(display);
+            $('#' + mobile + 'total-revenue-tree').css(display);
         }
 
     }

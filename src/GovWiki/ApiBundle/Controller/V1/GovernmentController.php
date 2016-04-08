@@ -144,6 +144,36 @@ class GovernmentController extends AbstractGovWikiApiController
     }
 
     /**
+     * @Route("/{government}/mobileSalaries")
+     * @Template("GovWikiApiBundle:V1/Government/Mobile:salaries.html.twig")
+     *
+     * @param Request $request    A Request instance.
+     * @param integer $government Government entity id.
+     *
+     * @return array
+     */
+    public function mobileSalariesAction(Request $request, $government)
+    {
+        $paginator = $this->get('knp_paginator');
+        $year = $request->query->get(
+            'year',
+            $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+                ->getAvailableYears()[0]
+        );
+
+        $salaries = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Salary')
+            ->getListQuery($government, $year);
+        $salaries = $paginator->paginate(
+            $salaries,
+            $request->query->get('page', 1),
+            5
+        ); // TODO: Hardcoded max itemps per page
+
+        return [ 'salaries' => $salaries ];
+    }
+
+    /**
      * @Route("/{government}/pensions")
      * @Template()
      *
@@ -172,4 +202,36 @@ class GovernmentController extends AbstractGovWikiApiController
 
         return [ 'pensions' => $pensions ];
     }
+
+    /**
+     * @Route("/{government}/pensions")
+     * @Template("GovWikiApiBundle:V1/Government/Mobile:pensions.html.twig")
+     *
+     * @param Request $request    A Request instance.
+     * @param integer $government Government entity id.
+     *
+     * @return array
+     */
+    public function mobilePensionsAction(Request $request, $government)
+    {
+        $paginator = $this->get('knp_paginator');
+        $year = $request->query->get(
+            'year',
+            $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+                ->getAvailableYears()[0]
+        );
+
+        $pensions = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Pension')
+            ->getListQuery($government, $year);
+        $pensions = $paginator->paginate(
+            $pensions,
+            $request->query->get('page', 1),
+            5
+        ); // TODO: Hardcoded max itemps per page
+
+        return [ 'pensions' => $pensions ];
+    }
+
+
 }

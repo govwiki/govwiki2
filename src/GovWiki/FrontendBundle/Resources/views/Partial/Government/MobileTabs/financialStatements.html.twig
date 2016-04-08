@@ -21,11 +21,11 @@
 
 {# Charts #}
 <div class="col-md-12">
-    <div class="customGraph col-md-6" id="total-revenue-pie"></div>
-    <div class="customGraph col-md-6" id="total-expenditures-pie"></div>
-    <div class="customGraph col-md-6" id="total-revenue-tree"></div>
-    <div class="customGraph col-md-6" id="total-expenditures-tree"></div>
-    <div class="customGraph col-md-12" id="total-compare-pie">
+    <div class="customGraph col-xs-12 col-md-6" id="mobile-total-revenue-pie"></div>
+    <div class="customGraph col-xs-12 col-md-6" id="mobile-total-expenditures-pie"></div>
+    <div class="customGraph col-md-6" id="mobile-total-revenue-tree"></div>
+    <div class="customGraph col-md-6" id="mobile-total-expenditures-tree"></div>
+    <div class="customGraph col-md-12" id="mobile-total-compare-pie">
         {# Compare form #}
         <div class="row">
             <div class="col-md-12">
@@ -129,7 +129,8 @@
     %}
 
     {% for categoryName, fields in financialStatements %}
-        <table class="table financial-table">
+        <div class="table-responsive">
+            <table class="table financial-table">
 
             {% set showTotalAndOver = (fields|first).otherfunds is defined %}
 
@@ -137,11 +138,9 @@
                 <tr>
                     {# Category caption #}
                     <th><b>{{ ('caption_categories.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></th>
-                    {% if loop.first %}
-                        <th><b>{{ 'funds.general_fund'|trans }}</b></th>
-                        <th><b>{{ 'funds.other'|trans }}</b></th>
-                        <th><b>{{ 'funds.total'|trans }}</b></th>
-                    {% endif %}
+                    <th><b>{{ 'funds.general_fund'|trans }}</b></th>
+                    <th><b>{{ 'funds.other'|trans }}</b></th>
+                    <th><b>{{ 'funds.total'|trans }}</b></th>
                 </tr>
             </thead>
             <tbody>
@@ -186,6 +185,10 @@
                                     0
                                 {%- endif -%}
                             </td>
+
+                        {% else %}
+                            <td></td>
+                            <td></td>
                         {% endif %}
 
                     </tr>
@@ -194,6 +197,7 @@
             </tbody>
 
         </table>
+        </div>
     {% endfor %}
 
 </div>

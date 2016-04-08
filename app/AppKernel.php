@@ -38,6 +38,7 @@ class AppKernel extends Kernel
             new Ivory\CKEditorBundle\IvoryCKEditorBundle(),
             new CartoDbBundle\CartoDbBundle(),
             new Vresh\TwilioBundle\VreshTwilioBundle(),
+            new SunCat\MobileDetectBundle\MobileDetectBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
