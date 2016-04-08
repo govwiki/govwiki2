@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\FrontendBundle\Controller;
+namespace GovWiki\MobileBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use GovWiki\ApiBundle\GovWikiApiServices;
@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class LocalizationController
- * @package GovWiki\FrontendBundle\Controller
+ * @package GovWiki\MobileBundle\Controller
  *
  * @Configuration\Route("/localization")
  */

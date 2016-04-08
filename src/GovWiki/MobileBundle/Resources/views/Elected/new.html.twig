@@ -1,4 +1,4 @@
-{% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
+{% extends "GovWikiMobileBundle:Layout:main.html.twig" %}
 
 {% set elected = electedOfficial %}
 {# Main #}
@@ -108,19 +108,19 @@
 {#</div>#}
 
     <!-- Disqus Modal -->
-    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:disqus.html.twig' %}
+    {% include 'GovWikiMobileBundle:Partial/Elected/Modals:disqus.html.twig' %}
 
     <!-- Votes Modal -->
-    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:votes.html.twig' %}
+    {% include 'GovWikiMobileBundle:Partial/Elected/Modals:votes.html.twig' %}
 
     <!-- Contributions Modal -->
-    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:contributions.html.twig' %}
+    {% include 'GovWikiMobileBundle:Partial/Elected/Modals:contributions.html.twig' %}
 
     <!-- Endorsements Modal -->
-    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:endorsements.html.twig' %}
+    {% include 'GovWikiMobileBundle:Partial/Elected/Modals:endorsements.html.twig' %}
 
     <!-- Public Statements Modal -->
-    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:publicStatements.html.twig' %}
+    {% include 'GovWikiMobileBundle:Partial/Elected/Modals:publicStatements.html.twig' %}
 
     {% verbatim %}
     <script id="row-addVotes" type="text//x-handlebars-template">
@@ -221,7 +221,7 @@
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
 
-    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/elected.scss' filter='scss' %}
+    {% stylesheets '@GovWikiMobileBundle/Resources/public/css/elected.scss' filter='scss' %}
         <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 
@@ -247,9 +247,9 @@
     <script id="dsq-embed-scr" src="//cpc-civicprofiles.disqus.com/embed.js"></script>
     <script id="dsq-count-scr" src="//cpc-civicprofiles.disqus.com/count.js"></script>
 
-    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/script.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/elected/handlers.js'
+    {% javascripts  '@GovWikiMobileBundle/Resources/public/js/vendor/handlebars.js'
+                    '@GovWikiMobileBundle/Resources/public/js/script.js'
+                    '@GovWikiMobileBundle/Resources/public/js/elected/handlers.js'
                     output='js/elected.js' %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

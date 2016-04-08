@@ -1,10 +1,10 @@
 <?php
 
-namespace GovWiki\FrontendBundle\Service;
+namespace GovWiki\MobileBundle\Service;
 
 /**
  * Class EnvironmentContent
- * @package GovWiki\FrontendBundle\Service
+ * @package GovWiki\MobileBundle\Service
  */
 class EnvironmentContent
 {

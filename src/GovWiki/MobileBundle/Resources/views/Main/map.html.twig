@@ -1,5 +1,5 @@
-{% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
-{% dump('its mobile baby') %}
+{% extends "GovWikiMobileBundle:Layout:main.html.twig" %}
+
 {% block main %}
     <section class="mapController">
 
@@ -7,22 +7,6 @@
             {# Typeahead Search #}
 
             {% if hasElectedOfficials %}
-                {#
-
-                    Current environment has elected officials in government.
-                    Show not only government search but also elected official
-                    search.
-
-                #}
-                <div class="typeahead_wrap hidden-xs col-md-6 col-lg-5">
-                    <input id="search_government" type="text" placeholder="{{ 'map.government.name'|trans }}" class="text-uppercase typeahead_government form-control" disabled>
-                    {#<input id="search_government" type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" disabled>#}
-                </div>
-                <div class="typeahead_wrap hidden-xs col-md-6 col-lg-5">
-                    <input id="search_elected" type="text" placeholder="Loading the list of elected officials" class="text-uppercase typeahead_elected form-control" disabled>
-                </div>
-
-                {# TMP MOBILE LAYOUT (START) #}
 
                 <style>
                     .btn_custom {
@@ -95,52 +79,13 @@
                         </a>
                     </div>
                 </div>
-                {# TMP MOBILE LAYOUT (END) #}
 
-                <div class="col-md-6 col-lg-5">
-                    <p class="text-center text-nowrap hidden-xs hidden-sm">
-                        {{ 'map.type_part_agency_name'|trans }}
-                        {#Type part of the agency's name#}
-                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowUp.gif') }}" style="width:40px">
-                        {{ 'map.click_on_map'|trans }}
-                        {#or click it on the map#}
-                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowDown.gif') }}" style="width:40px">
-                    </p>
-                </div>
-                <div class="col-md-6 col-lg-5">
-                    <p class="text-nowrap hidden-xs hidden-sm" style="margin-left: 8%">
-                        Type part of the official's name
-                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowUp.gif') }}" style="width:40px">
-                    </p>
-                </div>
-            {% else %}
-                {#
-
-                    Environment hasn't any elected official, show only
-                    government search.
-
-                #}
-                <div class="col-md-6 col-lg-5">
-                    <div class="typeahead_wrap">
-                        <input id="search_government" type="text" placeholder="{{ 'map.government.name'|trans }}" class="text-uppercase typeahead_government form-control" disabled>
-                        {#<input id="search_government" type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" disabled>#}
-                    </div>
-                    <p class="text-center text-nowrap hidden-xs hidden-sm">
-                        {{ 'map.type_part_agency_name'|trans }}
-                        {#Type part of the agency's name#}
-                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowUp.gif') }}" style="width:40px">
-                        {{ 'map.click_on_map'|trans }}
-                        {#or click it on the map#}
-                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowDown.gif') }}" style="width:40px">
-                    </p>
-                </div>
             {% endif %}
-
 
         </div>
 
         <div class="row">
-            {{ include('@GovWikiFrontend/Partial/Main/'~ mapEntity.position ~'.html.twig') }}
+            {{ include('@GovWikiMobile/Partial/Main/'~ mapEntity.position ~'.html.twig') }}
         </div>
 
     </section>
@@ -153,7 +98,7 @@
 
     {{parent()}}
 
-    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/map.scss' filter='scss, cssrewrite' %}
+    {% stylesheets '@GovWikiMobileBundle/Resources/public/css/map.scss' filter='scss, cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 

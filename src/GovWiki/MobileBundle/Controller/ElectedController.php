@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\FrontendBundle\Controller;
+namespace GovWiki\MobileBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
@@ -21,7 +21,7 @@ class ElectedController extends Controller
 
     /**
      * @Route("/{altTypeSlug}/{slug}/{electedSlug}", name="elected")
-     * @Template("GovWikiFrontendBundle:Elected:index.html.twig")
+     * @Template("GovWikiMobileBundle:Elected:index.html.twig")
      *
      * @param string $altTypeSlug Slugged government alt type.
      * @param string $slug        Slugged government name.
@@ -92,7 +92,7 @@ class ElectedController extends Controller
         $template = $request->query->get('template', 'index');
 
         return $this->render(
-            "GovWikiFrontendBundle:Elected:{$template}.html.twig",
+            "GovWikiMobileBundle:Elected:{$template}.html.twig",
             $data
         );
     }

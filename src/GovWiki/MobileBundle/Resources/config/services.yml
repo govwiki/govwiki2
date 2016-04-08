@@ -1,6 +1,6 @@
 services:
     govwiki.frontend_bundle.twig_extension:
-        class: GovWiki\FrontendBundle\Twig\Extension
+        class: GovWiki\MobileBundle\Twig\Extension
         arguments:
             - @jms_serializer
             - %determinator.name%
@@ -10,15 +10,15 @@ services:
             - { name: twig.extension }
 
     govwiki.frontend_bundle.advertising:
-        class: GovWiki\FrontendBundle\Service\GetAdvertising
+        class: GovWiki\MobileBundle\Service\GetAdvertising
         arguments: ["@doctrine", "@templating"]
 
     govwiki.frontend_bundle.environment_content:
-        class: GovWiki\FrontendBundle\Service\EnvironmentContent
+        class: GovWiki\MobileBundle\Service\EnvironmentContent
         arguments: ["@doctrine", "@templating"]
 
     govwiki.forntend_bundle.listener.defaul_locale:
-        class: GovWiki\FrontendBundle\EventListener\DefaultLocaleListener
+        class: GovWiki\MobileBundle\EventListener\DefaultLocaleListener
         arguments: [@service_container]
         tags:
             -

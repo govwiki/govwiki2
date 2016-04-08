@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\FrontendBundle\Controller;
+namespace GovWiki\MobileBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
@@ -40,7 +40,7 @@ class MainController extends Controller
 
     /**
      * @Route("/", name="map")
-     * @Template("GovWikiFrontendBundle:Main:map.html.twig")
+     * @Template("GovWikiMobileBundle:Main:map.html.twig")
      *
      * @return array
      */

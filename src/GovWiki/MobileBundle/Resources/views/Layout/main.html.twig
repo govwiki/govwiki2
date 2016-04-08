@@ -21,7 +21,7 @@
     <body>
         {# Header #}
         <header class="container {% if environment == 'puerto_rico' %}puerto{% endif %}">
-            {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
+            {{ include('GovWikiMobileBundle:Partial:header.html.twig') }}
         </header>
 
         {# Menubar #}
@@ -44,7 +44,7 @@
                             </select>
                         {% endif %}
                     </div>
-                    {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) %}
+                    {% set _locales = render(controller('GovWikiMobileBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) %}
 
                     {% if _locales is defined %}
                         <div class="col-md-6">
@@ -67,7 +67,7 @@
 
         {# Footer #}
         <footer class="container footer">
-            {{ include('GovWikiFrontendBundle:Partial:footer.html.twig') }}
+            {{ include('GovWikiMobileBundle:Partial:footer.html.twig') }}
         </footer>
 
         {# Login modal window #}
@@ -116,7 +116,7 @@
             <div class="loader"></div>
         </div>
 
-        {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/jquery.min.js'
+        {% javascripts  '@GovWikiMobileBundle/Resources/public/js/vendor/jquery.min.js'
             output='js/jquery.js' %}
             <script src="{{ asset_url }}"></script>
         {% endjavascripts %}

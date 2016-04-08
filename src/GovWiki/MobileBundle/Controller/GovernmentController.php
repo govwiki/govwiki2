@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\FrontendBundle\Controller;
+namespace GovWiki\MobileBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Chat;
@@ -68,7 +68,7 @@ class GovernmentController extends Controller
 
     /**
      * @Route("/{altTypeSlug}/{slug}", name="government")
-     * @Template("GovWikiFrontendBundle:Government:index.html.twig")
+     * @Template("GovWikiMobileBundle:Government:index.html.twig")
      *
      * @param Request $request     A Request instance.
      * @param string  $altTypeSlug Slugged government alt type.

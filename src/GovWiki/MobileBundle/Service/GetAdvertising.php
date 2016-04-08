@@ -1,10 +1,10 @@
 <?php
 
-namespace GovWiki\FrontendBundle\Service;
+namespace GovWiki\MobileBundle\Service;
 
 /**
  * Class GetAdvertising
- * @package GovWiki\FrontendBundle\Service
+ * @package GovWiki\MobileBundle\Service
  */
 class GetAdvertising
 {
@@ -59,7 +59,7 @@ class GetAdvertising
 
         if ($adverting && $adverting->getAdvertingEnable()) {
             return $this->templating->render(
-                'GovWikiFrontendBundle:Advertising:default.html.twig',
+                'GovWikiMobileBundle:Advertising:default.html.twig',
                 [
                     'code' => $adverting->getAdvertingCode(),
                 ]

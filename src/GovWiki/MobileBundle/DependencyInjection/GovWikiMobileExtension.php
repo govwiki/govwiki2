@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\FrontendBundle\DependencyInjection;
+namespace GovWiki\MobileBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;

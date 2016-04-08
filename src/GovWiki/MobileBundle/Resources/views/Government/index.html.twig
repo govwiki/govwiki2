@@ -1,4 +1,4 @@
-{% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
+{% extends "GovWikiMobileBundle:Layout:main.html.twig" %}
 
 {% block main %}
 
@@ -86,7 +86,7 @@
                                                             {{- ('format.'~format.field)|trans -}}
                                                             {#{{- format.name -}}#}
                                                             {% if ('format.'~format.field~'.help_text')|trans != 'format.'~format.field~'.help_text' %}
-                                                                <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}" title="{{- ('format.'~format.field~'.help_text')|trans -}}">
+                                                                <img src="{{ asset('bundles/GovWikiMobile/img/help.png') }}" title="{{- ('format.'~format.field~'.help_text')|trans -}}">
                                                             {% endif %}
                                                         </td>
                                                         {# Field value #}
@@ -220,20 +220,20 @@
 
                                         {# Statistics #}
                                         <div class="statistics col-sm-8">
-                                            {{ include('@GovWikiFrontend/Partial/Government/tab.html.twig') }}
+                                            {{ include('@GovWikiMobile/Partial/Government/tab.html.twig') }}
                                         </div>
 
                                         {# Overview + Elected Officials #}
-                                        {{ include('GovWikiFrontendBundle:Partial/Government/MobileTabs:overviewElected.html.twig') }}
+                                        {{ include('GovWikiMobileBundle:Partial/Government/MobileTabs:overviewElected.html.twig') }}
 
                                         {# Employee Compensation #}
-                                        {{ include('GovWikiFrontendBundle:Partial/Government/MobileTabs:employeeCompensation.html.twig') }}
+                                        {{ include('GovWikiMobileBundle:Partial/Government/MobileTabs:employeeCompensation.html.twig') }}
 
                                         {# Quality of Services #}
-                                        {{ include('GovWikiFrontendBundle:Partial/Government/MobileTabs:qualityServices.html.twig') }}
+                                        {{ include('GovWikiMobileBundle:Partial/Government/MobileTabs:qualityServices.html.twig') }}
 
                                         {# Financial Health #}
-                                        {{ include('GovWikiFrontendBundle:Partial/Government/MobileTabs:financialHealth.html.twig') }}
+                                        {{ include('GovWikiMobileBundle:Partial/Government/MobileTabs:financialHealth.html.twig') }}
                                     </div>
 
                                 </div>
@@ -279,7 +279,7 @@
                                         <div class="mobile-tab-title">{{ 'gov.financial_statements'|trans }}</div>
 
                                         <div class="mobile-tab-content">
-                                            {% include 'GovWikiFrontendBundle:Partial/Government/MobileTabs:financialStatements.html.twig' with {
+                                            {% include 'GovWikiMobileBundle:Partial/Government/MobileTabs:financialStatements.html.twig' with {
                                             'financialStatements': government.financialStatements
                                             } %}
                                         </div>
@@ -405,20 +405,20 @@
                                     <div class="row">
                                         {# Statistics #}
                                         <div class="statistics col-sm-8">
-                                            {{ include('@GovWikiFrontend/Partial/Government/tab.html.twig') }}
+                                            {{ include('@GovWikiMobile/Partial/Government/tab.html.twig') }}
                                         </div>
 
                                         {# Overview + Elected Officials #}
-                                        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
+                                        {{ include('GovWikiMobileBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
 
                                         {# Employee Compensation #}
-                                        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
+                                        {{ include('GovWikiMobileBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
 
                                         {# Quality of Services #}
-                                        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
+                                        {{ include('GovWikiMobileBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
 
                                         {# Financial Health #}
-                                        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
+                                        {{ include('GovWikiMobileBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
                                     </div>
                                 </div>
 
@@ -449,7 +449,7 @@
                             {% if showFinStmt %}
                                 <div class="tab-pane" id="Financial_Statements">
 
-                                    {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
+                                    {% include 'GovWikiMobileBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
                                         'financialStatements': government.financialStatements
                                     } %}
 
@@ -514,7 +514,7 @@
 
     {{parent()}}
 
-    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/government.scss' filter='scss' %}
+    {% stylesheets '@GovWikiMobileBundle/Resources/public/css/government.scss' filter='scss' %}
         <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 

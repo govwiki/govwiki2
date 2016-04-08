@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\FrontendBundle\Twig;
+namespace GovWiki\MobileBundle\Twig;
 
 use GovWiki\ApiBundle\Manager\EnvironmentManager;
 use JMS\Serializer\Serializer;
@@ -10,7 +10,7 @@ use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * Class Extension
- * @package GovWiki\FrontendBundle\Twig
+ * @package GovWiki\MobileBundle\Twig
  */
 class Extension extends \Twig_Extension
 {

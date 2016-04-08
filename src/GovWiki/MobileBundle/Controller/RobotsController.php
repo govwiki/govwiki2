@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\FrontendBundle\Controller;
+namespace GovWiki\MobileBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Services\TxtSitemapGenerator;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class RobotsController
- * @package GovWiki\FrontendBundle\Controller
+ * @package GovWiki\MobileBundle\Controller
  */
 class RobotsController extends Controller
 {

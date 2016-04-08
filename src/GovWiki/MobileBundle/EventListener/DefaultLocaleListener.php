@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\FrontendBundle\EventListener;
+namespace GovWiki\MobileBundle\EventListener;
 
 use GovWiki\ApiBundle\Manager\EnvironmentManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -8,7 +8,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 /**
  * Class DefaultLocaleListener
- * @package GovWiki\FrontendBundle\EventListener
+ * @package GovWiki\MobileBundle\EventListener
  */
 class DefaultLocaleListener
 {

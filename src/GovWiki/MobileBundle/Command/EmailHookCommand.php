@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\FrontendBundle\Command;
+namespace GovWiki\MobileBundle\Command;
 
 use GovWiki\UserBundle\Entity\User;
 use GovWiki\UserBundle\Service\ChatMessage;
