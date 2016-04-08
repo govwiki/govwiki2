@@ -1,3 +1,6 @@
 govwiki_mobile:
     resource: "@GovWikiMobileBundle/Resources/config/routing.yml"
     prefix: /
+
+_main:
+    resource: routing.yml

@@ -67,11 +67,6 @@ class GovWikiRequestResponseListener extends BaseListener
             return false;
         }
 
-//        if ($view === self::MOBILE) {
-//            $host = $request->getHost();
-//            return strpos($host, 'm.') !== 0;
-//        }
-
         return true;
     }
 
