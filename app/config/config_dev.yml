@@ -46,14 +46,3 @@ assetic:
 
 #swiftmailer:
 #    delivery_address: user1@mail1.dev
-
-mobile_detect:
-    redirect:
-        mobile:
-            is_enabled: true
-            host: http://some.host
-        tablet: ~
-        full:
-            is_enabled: false
-    switch_device_view: ~
-    request_response_listener_class: GovWiki\MobileDetectBundle\EventListener\GovWikiRequestResponseListener

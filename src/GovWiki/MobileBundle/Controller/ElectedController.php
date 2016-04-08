@@ -3,7 +3,6 @@
 namespace GovWiki\MobileBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
-use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Form\ElectedOfficialCommentType;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
