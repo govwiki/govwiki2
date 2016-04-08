@@ -4,7 +4,6 @@ namespace GovWiki\ApiBundle\Determinator;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use GovWiki\MobileDetectBundle\Utils\Functions;
 
 /**
  * Class HostDeterminator
