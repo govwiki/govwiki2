@@ -149,8 +149,8 @@ mobile_detect:
     redirect:
         mobile:
             is_enabled: true
-            host: http://m.govwiki.dev
-            status_code: 301
-            action: redirect
         tablet: ~
+        full:
+            is_enabled: false
     switch_device_view: ~
+    request_response_listener_class: GovWiki\MobileDetectBundle\EventListener\GovWikiRequestResponseListener

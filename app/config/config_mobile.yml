@@ -55,7 +55,7 @@ assetic:
     debug:          "%kernel.debug%"
     use_controller: false
     bundles:
-        - 'GovWikiMobileBundle'
+#        - 'GovWikiMobileBundle'
         - 'GovWikiCommentBundle'
     #java: /usr/bin/java
     filters:
@@ -156,5 +156,5 @@ mobile_detect:
         tablet: ~
         full:
             is_enabled: true
-            host: http://govwiki.dev
     switch_device_view: ~
+    request_response_listener_class: GovWiki\MobileDetectBundle\EventListener\GovWikiRequestResponseListener
