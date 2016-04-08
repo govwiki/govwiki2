@@ -30,6 +30,7 @@ services:
 
     govwiki_api.environment.determinator.path:
         class: GovWiki\ApiBundle\Determinator\PathDeterminator
+        arguments: [ %kernel.environment% ]
         tags:
             - { name: environment.determinator, alias: path }
         parent: govwiki_api.environment.determinator.abstract
