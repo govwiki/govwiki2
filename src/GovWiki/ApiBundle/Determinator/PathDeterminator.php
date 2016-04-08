@@ -19,6 +19,7 @@ class PathDeterminator extends AbstractEnvironmentDeterminator
         if (null !== $request) {
             $controller = $request->attributes->get('_controller');
             if ((strpos($controller, 'Frontend') !== false) ||
+                (strpos($controller, 'Mobile') !== false) ||
                 (strpos($controller, 'Api') !== false) ||
                 (strpos($controller, 'Comment') !== false)
             ) {

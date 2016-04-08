@@ -9,7 +9,7 @@ framework:
 # Assetic Configuration
 assetic:
     bundles:
-#        - 'GovWikiMobileBundle'
+        - 'GovWikiMobileBundle'
         - 'GovWikiCommentBundle'
 
 mobile_detect:
