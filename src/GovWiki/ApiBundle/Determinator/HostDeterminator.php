@@ -4,6 +4,7 @@ namespace GovWiki\ApiBundle\Determinator;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use GovWiki\MobileDetectBundle\Utils\Functions;
 
 /**
  * Class HostDeterminator
@@ -35,8 +36,7 @@ class HostDeterminator extends AbstractEnvironmentDeterminator
     {
         $host = $request->getHost();
 
-        if (($this->environment === 'mobile') &&
-            (strpos($host, 'm.') !== false)) {
+        if (strpos($host, 'm.') !== false) {
             $host = substr($host, 2);
         }
 
