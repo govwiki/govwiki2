@@ -42,6 +42,8 @@ monolog:
         #    level:  info
 
 assetic:
+    bundles:
+        - 'GovWikiFrontendBundle'
     use_controller: true
 
 #swiftmailer:

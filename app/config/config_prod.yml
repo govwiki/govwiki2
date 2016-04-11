@@ -5,9 +5,7 @@ assetic:
     debug:          "%kernel.debug%"
     use_controller: false
     bundles:
-        - 'GovWikiAdminBundle'
         - 'GovWikiFrontendBundle'
-        - 'GovWikiCommentBundle'
 
 framework:
     router:

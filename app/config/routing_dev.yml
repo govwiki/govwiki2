@@ -14,9 +14,11 @@ _errors:
     resource: "@TwigBundle/Resources/config/routing/errors.xml"
     prefix:   /_error
 
+_main:
+    resource: routing.yml
+
 govwiki_frontend:
     resource: "@GovWikiFrontendBundle/Resources/config/routing.yml"
     prefix: /
 
-_main:
-    resource: routing.yml
+

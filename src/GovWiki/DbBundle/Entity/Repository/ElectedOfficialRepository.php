@@ -94,7 +94,7 @@ class ElectedOfficialRepository extends EntityRepository
             ->getQuery()
             ->getArrayResult();
 
-        if (is_array($result)) {
+        if (is_array($result) && !empty($result)) {
             return $result[0];
         }
 

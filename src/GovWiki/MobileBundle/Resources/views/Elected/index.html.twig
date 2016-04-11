@@ -55,7 +55,7 @@
                     </div>
 
                     <!-- Tab panes -->
-                    <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
+                    <div class="tab-content" style="margin-top: 20px; margin-bottom: 20px;">
 
                         {# Votes #}
                         {{ include('GovWikiMobileBundle:Partial/Elected/MobileTabs:votes.html.twig') }}
@@ -75,40 +75,6 @@
             </div>
 
         {# TMP MOBILE LAYOUT (END) #}
-
-        <div class="row person-info-tabs">
-            <div class="hidden-xs col-md-10 col-md-push-1">
-
-                <!-- Nav tabs -->
-                <ul class="nav nav-pills" role="tablist">
-                    <li role="presentation" class="active"><a href="#Votes" aria-controls="Votes" role="tab" data-toggle="tab">Votes</a></li>
-                    <li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>
-                    <li role="presentation"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
-                    <li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>
-                </ul>
-
-                <!-- Tab panes -->
-                <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
-
-                    <div class="loader"></div>
-
-                    {# Votes #}
-                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:votes.html.twig') }}
-
-                    {# Contributions #}
-                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:contributions.html.twig') }}
-
-                    {# Endorsements #}
-                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:endorsements.html.twig') }}
-
-                    {# Public Statements #}
-                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}
-
-
-                </div>
-
-            </div>
-        </div>
 
     </section>
 
@@ -255,7 +221,7 @@
     {% javascripts  '@GovWikiMobileBundle/Resources/public/js/vendor/handlebars.js'
                     '@GovWikiMobileBundle/Resources/public/js/script.js'
                     '@GovWikiMobileBundle/Resources/public/js/elected/handlers.js'
-                    output='js/elected.js' %}
+                    output='js/mobile_elected.js' %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 

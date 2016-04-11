@@ -237,4 +237,53 @@ $(function() {
             $mainContent.html(data);
         });
     });
+
+    $('.prev_tab').on('click', function () {
+
+        var $mobileTab = $(this).closest('.mobile-tab');
+
+        if ($mobileTab) {
+            $mobileTab.toggleClass('active');
+            var $prevMobileTab = prevTab();
+            gotoTab($prevMobileTab);
+        }
+
+        function prevTab() {
+            var $prevMobileTab = $mobileTab.prev();
+            if ($prevMobileTab.length == 0) {
+                $prevMobileTab = $mobileTab.parent().children();
+                $prevMobileTab = $prevMobileTab.eq($prevMobileTab.length-1);
+            }
+            $prevMobileTab.toggleClass('active');
+            return $prevMobileTab;
+        }
+
+    });
+
+    $('.next_tab').on('click', function () {
+
+        var $mobileTab = $(this).closest('.mobile-tab');
+
+        if ($mobileTab) {
+            $mobileTab.toggleClass('active');
+            var $nextMobileTab = nextTab();
+            gotoTab($nextMobileTab);
+        }
+
+        function nextTab() {
+            var $nextMobileTab = $mobileTab.next();
+            if ($nextMobileTab.length == 0) {
+                $nextMobileTab = $mobileTab.parent().children().eq(0);
+            }
+            $nextMobileTab.toggleClass('active');
+            return $nextMobileTab;
+        }
+
+    });
+
+
+    function gotoTab($mobileTab) {
+        $mobileTab.find('a')[0].click();
+    }
+
 });

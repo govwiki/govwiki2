@@ -6,127 +6,6 @@
 @import "main";
 
 
-/* TMP (Start) */
-
-.select-custom {
-   width: 100%;
-   margin-bottom: 20px;
-   padding: 6px 15px;
-   border: 1px solid #e5e5e5;
-   border-radius: 5px;
-   -webkit-box-shadow: none;
-   box-shadow: none;
-}
-
-.card {
-   position: relative;
-   display: block;
-   margin-bottom: 1.5rem;
-   background-color: #fff;
-   border: 1px solid #e5e5e5;
-   border-radius: .25rem;
-   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-
-   &-header {
-      background-color: #ffffff;
-      border-bottom: 1px solid #e5e5e5;
-
-      .btn-custom {
-         float: right;
-         margin-top: -3px;
-         margin-right: -8px;
-      }
-
-      &__vote-name {
-         padding: 0.6rem;
-         margin-bottom: 1em;
-         font-size: 1.3em;
-         color: black;
-      }
-
-      &__vote-vote {
-         padding: 0 0.6rem 0.6rem 0.6rem;
-
-         & > span {
-            font-weight: 700
-         }
-      }
-
-
-      &__vote-sponsor {
-         float: right;
-
-         & > span {
-            font-weight: 700
-         }
-
-      }
-
-   }
-
-   &-block {
-      padding: 1.05rem;
-      padding-bottom: 0;
-
-      .card-title {
-         margin-bottom: .75rem;
-      }
-
-      .card-text {
-
-      }
-
-      &__vote-date {
-         font-size: 1.3em;
-      }
-
-      &__vote-issue {
-         float: right;
-         font-size: 1.3em;
-      }
-
-      &__vote-comments {
-         font-size: 3em;
-         margin: 0;
-         margin-top: 1em;
-      }
-
-   }
-
-   &-expand {
-      background-color: #f5f5f5;
-      color: #929292;
-      text-align: center;
-      font-size: 1.2em;
-   }
-
-   &-sub-header {
-      border-bottom: 1px solid #e5e5e5;
-      color: #B9B9B9;
-
-      .date,
-      .taxes {
-         margin-left: 15px;
-      }
-
-      .comments {
-         margin-right: 15px;
-         float: right;
-      }
-
-   }
-
-}
-
-
-.card
-
-
-.card
-
-/* TMP (end) */
-
-
 .electedController {
    min-width: 700px;
    margin-top: 40px;
@@ -140,10 +19,6 @@
       }
    }
 
-   .tab-pane {
-      min-height: 600px;
-   }
-
    .loader{
       position: absolute;
       margin-top: 240px;
@@ -155,6 +30,8 @@
       Table for votes, contribution and etc.
    */
    .table {
+      margin-bottom: 0;
+
       td,
       th {
          vertical-align: middle;
@@ -174,9 +51,15 @@
       }
 
       tr {
+
+         td {
+            text-align: center;
+            vertical-align: middle;
+         }
+
          &:not([ data-id ]) {
             td {
-               border-top: 1px dashed #eeeeee;
+               border-top: 1px solid #dddddd;
             }
          }
 
@@ -252,7 +135,7 @@
       font-size: 13px;
       width: 30px;
       height: 30px;
-      background-image: url("/bundles/GovWikiMobile/img/comment.svg");
+      background-image: url("/bundles/govwikimobile/img/comment.svg");
       background-size: 100% 100%;
       background-repeat: no-repeat;
       padding: 2px;
@@ -265,3 +148,4 @@
 }
 
 @import 'mobile/elected';
+@import 'partials/card/card';

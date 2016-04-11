@@ -89,11 +89,4 @@ class SecurityController extends BaseController
         }
     }
 
-    /**
-     * @Route("/login_check", name="login_check")
-     * @return void
-     */
-    protected function loginCheckAction()
-    {
-    }
 }
