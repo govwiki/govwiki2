@@ -1,6 +1,14 @@
 imports:
     - { resource: config.yml }
 
+assetic:
+    debug:          "%kernel.debug%"
+    use_controller: false
+    bundles:
+        - 'GovWikiAdminBundle'
+        - 'GovWikiFrontendBundle'
+        - 'GovWikiCommentBundle'
+
 framework:
     router:
         resource: "%kernel.root_dir%/config/routing_prod.yml"

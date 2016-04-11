@@ -5,12 +5,17 @@ framework:
     router:
         resource: "%kernel.root_dir%/config/routing_mobile.yml"
         strict_requirements: ~
+    profiler: { only_exceptions: false }
 
 # Assetic Configuration
 assetic:
     bundles:
         - 'GovWikiMobileBundle'
         - 'GovWikiCommentBundle'
+
+web_profiler:
+    toolbar: true
+    intercept_redirects: false
 
 mobile_detect:
     redirect:

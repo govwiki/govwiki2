@@ -348,7 +348,7 @@
                     <nav>
                         <ul class="nav nav-pills tab-titles">
                             {% if (formats is defined) and (formats is not empty) %}
-                                {% dump formats %}
+
                                 {% for tabName, categories in formats %}
                                     {% if categories[""] is defined %}
                                         {% set tab_id = categories[""]|first.tab_id %}
