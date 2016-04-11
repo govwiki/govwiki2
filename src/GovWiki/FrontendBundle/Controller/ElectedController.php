@@ -76,8 +76,6 @@ class ElectedController extends Controller
             self::ROWS_PER_PAGE
         );
 
-        dump($data['publicStatements']);
-
         $context = new SerializationContext();
         $context->setGroups(['elected_official']);
 
