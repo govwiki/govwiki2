@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use GovWiki\DbBundle\Utils\Functions;
 
 /**
@@ -87,40 +88,38 @@ class FormatRepository extends EntityRepository
     }
 
     /**
-     * @param string $environment Environment name.
-     * @param string $name        Field name.
+     * @param integer $environment Environment entity id.
+     * @param string  $name        Field name.
      *
      * @return array|null
      */
     public function getOne($environment, $name)
     {
-        $qb = $this->createQueryBuilder('Format');
-        $expr = $qb->expr();
-
-        $qb->select(
-            'Format.helpText, Format.dataOrFormula, Format.name',
-            'Format.mask, Format.field, Format.ranked, Format.showIn',
-            'Format.type'
-        );
-        $result = $qb
-            ->addSelect(
-                'Tab.id AS tab_id, Tab.name AS tab_name, Category.id AS category_id, Category.name AS category_name',
-                'Category.decoration as category_decoration'
-            )
-            ->leftJoin('Format.environment', 'Environment')
-            ->leftJoin('Format.category', 'Category')
-            ->leftJoin('Format.tab', 'Tab')
-            ->where($expr->andX(
-                $expr->eq('Environment.slug', $expr->literal($environment)),
-                $expr->eq('Format.field', $expr->literal($name))
-            ))
-            ->getQuery()
-            ->getArrayResult();
-
-        if (is_array($result)) {
-            return $result[0];
+        $expr = $this->_em->getExpressionBuilder();
+        try {
+            return $this->createQueryBuilder('Format')
+                ->select(
+                    'Format.helpText, Format.dataOrFormula, Format.name',
+                    'Format.mask, Format.field, Format.ranked, Format.showIn',
+                    'Format.type',
+                    'Tab.id AS tab_id, Tab.name AS tab_name',
+                    'Category.id AS category_id, Category.name AS category_name',
+                    'Category.decoration as category_decoration'
+                )
+                ->leftJoin('Format.category', 'Category')
+                ->leftJoin('Format.tab', 'Tab')
+                ->where($expr->andX(
+                    $expr->eq('Format.environment', ':environment'),
+                    $expr->eq('Format.field', ':name')
+                ))
+                ->setParameters([
+                    'environment' => $environment,
+                    'name'        => $name,
+                ])
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
         }
-
-        return null;
     }
 }

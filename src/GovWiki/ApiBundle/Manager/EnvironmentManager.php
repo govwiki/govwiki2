@@ -171,7 +171,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
     public function getFieldFormat($fieldName)
     {
         return $this->em->getRepository('GovWikiDbBundle:Format')
-            ->getOne($this->environment, $fieldName);
+            ->getOne($this->entity->getId(), $fieldName);
     }
 
     /**

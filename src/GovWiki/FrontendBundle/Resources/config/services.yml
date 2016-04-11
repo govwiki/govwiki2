@@ -11,7 +11,9 @@ services:
 
     govwiki.frontend_bundle.advertising:
         class: GovWiki\FrontendBundle\Service\GetAdvertising
-        arguments: ["@doctrine", "@templating"]
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @templating
 
     govwiki.frontend_bundle.environment_content:
         class: GovWiki\FrontendBundle\Service\EnvironmentContent

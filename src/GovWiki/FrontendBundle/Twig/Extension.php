@@ -90,39 +90,39 @@ class Extension extends \Twig_Extension
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getGlobals()
-    {
-        $manager = $this->container->get('govwiki_api.manager.environment');
-
-        if ($manager->getEnvironment()) {
-            $styles = $manager->getEntity()->getStyle();
-
-            /** @var MessageCatalogue $catalogue */
-            $catalogue = $this->translator->getCatalogue();
-            $transKey = 'general.bottom_text';
-            if ($catalogue->has($transKey)) {
-                $bottomText = $this->translator->trans($transKey);
-            } else {
-                $bottomText = '';
-            }
-
-            return [
-                'styles' => $styles,
-                'environment' => $manager->getEnvironment(),
-                'environment_slug' => $manager->getSlug(),
-                'hasElectedOfficials' => $manager
-                        ->countElectedOfficials() > 0,
-                'title' => $manager->getTitle(),
-                'bottomText' => $bottomText,
-                'entity' => $manager->getEntity(),
-            ];
-        }
-
-        return [];
-    }
+//    /**
+//     * {@inheritdoc}
+//     */
+//    public function getGlobals()
+//    {
+//        $manager = $this->container->get('govwiki_api.manager.environment');
+//
+//        if ($manager->getEnvironment()) {
+//            $styles = $manager->getEntity()->getStyle();
+//
+//            /** @var MessageCatalogue $catalogue */
+//            $catalogue = $this->translator->getCatalogue();
+//            $transKey = 'general.bottom_text';
+//            if ($catalogue->has($transKey)) {
+//                $bottomText = $this->translator->trans($transKey);
+//            } else {
+//                $bottomText = '';
+//            }
+//
+//            return [
+//                'styles' => $styles,
+//                'environment' => $manager->getEnvironment(),
+//                'environment_slug' => $manager->getSlug(),
+//                'hasElectedOfficials' => $manager
+//                        ->countElectedOfficials() > 0,
+//                'title' => $manager->getTitle(),
+//                'bottomText' => $bottomText,
+//                'entity' => $manager->getEntity(),
+//            ];
+//        }
+//
+//        return [];
+//    }
 
 
     /**

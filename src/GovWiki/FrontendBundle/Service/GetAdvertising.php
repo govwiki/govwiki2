@@ -2,6 +2,10 @@
 
 namespace GovWiki\FrontendBundle\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\DbBundle\Entity\Environment;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+
 /**
  * Class GetAdvertising
  * @package GovWiki\FrontendBundle\Service
@@ -9,40 +13,39 @@ namespace GovWiki\FrontendBundle\Service;
 class GetAdvertising
 {
     /**
-     * @var object
+     * @var EntityManagerInterface
      */
-    private $doctrine;
+    private $em;
 
     /**
-     * @var object
+     * @var EngineInterface
      */
     private $templating;
 
     /**
-     * @param object $doctrine
-     * @param object $templating
+     * @param EntityManagerInterface $em         A EntityManagerInterface
+     *                                           instance.
+     * @param EngineInterface        $templating A EngineInterface instance.
      */
-    public function __construct($doctrine, $templating)
-    {
-        $this->doctrine   = $doctrine;
+    public function __construct(
+        EntityManagerInterface $em,
+        EngineInterface $templating
+    ) {
+        $this->em   = $em;
         $this->templating = $templating;
     }
 
     /**
-     * Get adverting code
+     * Get adverting code.
      *
-     * @param string $environment
-     * @param string $advertingName
+     * @param Environment $environment   A Environment entity instance.
+     * @param string      $advertingName Adverting name.
+     *
      * @return null
      */
-    public function getAdvertising($environment, $advertingName)
+    public function getAdvertising(Environment $environment, $advertingName)
     {
-        /* @var \GovWiki\DbBundle\Entity\Advertising $adverting */
-
-        $currentEnvironment = $this->doctrine->getManager()
-            ->getRepository("GovWikiDbBundle:Environment")->findOneBySlug($environment);
-
-        $adverting = $this->doctrine->getManager()
+        $adverting = $this->em
             ->createQuery(
                 'SELECT ad
                 FROM GovWikiDbBundle:Advertising ad
@@ -52,7 +55,7 @@ class GetAdvertising
             ->setParameters(
                 [
                     'advertingType' => $advertingName,
-                    'environment'   => $currentEnvironment->getId(),
+                    'environment'   => $environment->getId(),
                 ]
             )
             ->getSingleResult();

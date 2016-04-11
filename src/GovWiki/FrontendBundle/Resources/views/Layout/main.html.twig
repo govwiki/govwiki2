@@ -3,7 +3,7 @@
 <html lang="en">
 
     <head>
-        <title>{{ title }}</title>
+        <title>{{ environment.title }}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,8 +11,8 @@
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
         {% block stylesheets %}{% endblock %}
     {% if environment is defined %}
-        <link rel="icon" href="{{ asset('/img/'~environment~'/favicon.ico') }}" type="image/x-icon" />
-        <style>{{ styles }}</style>
+        <link rel="icon" href="{{ asset('/img/'~ environment.slug ~'/favicon.ico') }}" type="image/x-icon" />
+        <style>{{ environment.style }}</style>
     {% else %}
         <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
     {% endif %}
@@ -34,7 +34,7 @@
         }(document, 'script', 'facebook-jssdk'));</script>
 
         {# Header #}
-        <header class="container {% if environment == 'puerto_rico' %}puerto{% endif %}">
+        <header class="container">
             {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
         </header>
 
@@ -47,7 +47,7 @@
                         <select id="year-selector" class="form-control form-control__inline">
                             {% for year in years %}
                                 <option value="{{ year }}" {%-
-                                    if (government is defined and government.currentYear is defined and government.currentYear == year)
+                                    if (currentYear == year)
                                 -%}
                                         selected
                                     {%- endif -%}>

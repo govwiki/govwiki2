@@ -159,6 +159,25 @@ class Map
     }
 
     /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'centerLatitude' => $this->getCenterLatitude(),
+            'centerLongitude' => $this->getCenterLongitude(),
+            'zoom' => $this->getZoom(),
+            'position' => $this->getPosition(),
+            'colorizedCountyConditions' => $this
+                ->getColorizedCountyConditions()
+                ->toArray(),
+            'debug' => $this->isDebug(),
+            'legendTypes' => $this->getLegendTypes(),
+            'legend' => $this->getLegend(),
+        ];
+    }
+
+    /**
      * @return integer
      */
     public function getId()

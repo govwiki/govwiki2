@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\ApiBundle\DependencyInjection;
+namespace GovWiki\EnvironmentBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -12,31 +12,29 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class GovWikiApiExtension extends Extension
+class GovWikiEnvironmentExtension extends Extension
 {
     /**
      * {@inheritdoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
-
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
         $alias = $container->getParameter('determinator.name');
         $determinators = $container
-            ->findTaggedServiceIds('_environment.determinator');
+            ->findTaggedServiceIds('environment.determinator');
 
-        $configurator = $container
-            ->getDefinition('govwiki_api.environment_manager.configurator');
+        $listener = $container
+            ->getDefinition('govwiki_environment.listener.determinator');
 
         foreach ($determinators as $id => $tag) {
             if ($alias === $tag[0]['alias']) {
-                $configurator->setArguments([
-                    $container->getDefinition($id),
-                ]);
+                $arguments = $listener->getArguments();
+                $arguments[0] = $container->getDefinition($id);
+
+                $listener->setArguments($arguments);
                 break;
             }
         }
