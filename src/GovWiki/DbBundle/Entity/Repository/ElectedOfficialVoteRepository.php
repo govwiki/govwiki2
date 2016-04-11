@@ -13,17 +13,18 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
 
     /**
      * @param integer $electedOfficial Elected official entity id.
+     * @param integer $user            User entity id.
      *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getListQuery($electedOfficial)
+    public function getListQuery($electedOfficial, $user = null)
     {
+        $expr = $this->_em->getExpressionBuilder();
         $qb = $this->createQueryBuilder('Vote');
-        $expr = $qb->expr();
 
         $now = (new \DateTime())->format('Y-m-d H:i:s');
 
-        return $qb
+        $qb
             ->addSelect('Legislation, Comment, Request, Creator, IssueCategory')
             ->join('Vote.legislation', 'Legislation')
             ->join('Legislation.issueCategory', 'IssueCategory')
@@ -32,7 +33,11 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
             ->leftJoin('Vote.comments', 'Comment')
             ->where($expr->andX(
                 $expr->lte('Legislation.displayTime', $expr->literal($now)),
-                $expr->eq('Vote.electedOfficial', $electedOfficial),
+                $expr->eq('Vote.electedOfficial', $electedOfficial)
+            ));
+
+        if ($user) {
+            $qb->andWhere(
                 $expr->orX(
                     $expr->isNull('Legislation.request'),
                     $expr->neq(
@@ -40,20 +45,33 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
                         $expr->literal(AbstractCreateRequest::STATE_DISCARDED)
                     )
                 )
-            ));
+            );
+        } else {
+            $qb->andWhere(
+                $expr->orX(
+                    $expr->isNull('Legislation.request'),
+                    $expr->eq(
+                        'Request.status',
+                        $expr->literal(AbstractCreateRequest::STATE_APPLIED)
+                    )
+                )
+            );
+        }
+
+        return $qb;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getListQueryBySlugs($govAltTypeSlug, $govSlug, $eoSlug)
+    public function getListQueryBySlugs($govAltTypeSlug, $govSlug, $eoSlug, $user = null)
     {
         $qb = $this->createQueryBuilder('Vote');
         $expr = $qb->expr();
 
         $now = (new \DateTime())->format('Y-m-d H:i:s');
 
-        return $qb
+        $qb
             ->addSelect('Legislation, Comment, Request, Creator, IssueCategory')
             ->join('Vote.legislation', 'Legislation')
             ->join('Legislation.issueCategory', 'IssueCategory')
@@ -68,7 +86,11 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
                     $expr->eq('Government.altTypeSlug', $expr->literal($govAltTypeSlug)),
                     $expr->eq('Government.slug', $expr->literal($govSlug)),
                     $expr->eq('ElectedOfficial.slug', $expr->literal($eoSlug))
-                ),
+                )
+            ));
+
+        if ($user) {
+            $qb->andWhere(
                 $expr->orX(
                     $expr->isNull('Legislation.request'),
                     $expr->neq(
@@ -76,7 +98,19 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
                         $expr->literal(AbstractCreateRequest::STATE_DISCARDED)
                     )
                 )
+            );
+        } else {
+            $qb->andWhere(
+                $expr->orX(
+                    $expr->isNull('Legislation.request'),
+                    $expr->eq(
+                        'Request.status',
+                        $expr->literal(AbstractCreateRequest::STATE_APPLIED)
+                    )
+                )
+            );
+        }
 
-            ));
+        return $qb;
     }
 }

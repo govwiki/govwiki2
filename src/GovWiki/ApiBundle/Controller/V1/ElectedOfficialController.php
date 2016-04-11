@@ -4,6 +4,7 @@ namespace GovWiki\ApiBundle\Controller\V1;
 
 use GovWiki\DbBundle\Entity\Repository\ListedEntityRepositoryInterface;
 use GovWiki\FrontendBundle\Controller\ElectedController;
+use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -104,6 +105,14 @@ class ElectedOfficialController extends AbstractGovWikiApiController
      */
     public function sortAction(Request $request, $govAltTypeSlug, $govSlug, $eoSlug)
     {
+        $user = $this->getUser();
+
+        if ($user instanceof User) {
+            $user = $user->getId();
+        } else {
+            $user = null;
+        }
+
         $entity = $request->query->get('entity');
         $templateName = strtolower($entity);
         $templateName = "@GovWikiFrontend/Partial/Elected/Lists/{$templateName}.html.twig";
@@ -122,7 +131,7 @@ class ElectedOfficialController extends AbstractGovWikiApiController
         return $this->render($templateName, [
             'list' => $this->get('knp_paginator')
                 ->paginate(
-                    $repository->getListQueryBySlugs($govAltTypeSlug, $govSlug, $eoSlug),
+                    $repository->getListQueryBySlugs($govAltTypeSlug, $govSlug, $eoSlug, $user),
                     $request->query->getInt('page', 1),
                     ElectedController::ROWS_PER_PAGE
                 ),

@@ -428,7 +428,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      *
      * @return array|null
      */
-    public function getElectedOfficial($altTypeSlug, $slug, $eoSlug)
+    public function getElectedOfficial($altTypeSlug, $slug, $eoSlug, $user = null)
     {
         $electedOfficial = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
             ->findOne($this->environment, $altTypeSlug, $slug, $eoSlug);
@@ -439,13 +439,13 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             * Create queries for legislations, contributions and etc.
             */
             $votes = $this->em->getRepository('GovWikiDbBundle:ElectedOfficialVote')
-                ->getListQuery($electedOfficial['id']);
+                ->getListQuery($electedOfficial['id'], $user);
             $contributions = $this->em->getRepository('GovWikiDbBundle:Contribution')
-                ->getListQuery($electedOfficial['id']);
+                ->getListQuery($electedOfficial['id'], $user);
             $endorsements = $this->em->getRepository('GovWikiDbBundle:Endorsement')
-                ->getListQuery($electedOfficial['id']);
+                ->getListQuery($electedOfficial['id'], $user);
             $publicStatements = $this->em->getRepository('GovWikiDbBundle:PublicStatement')
-                ->getListQuery($electedOfficial['id']);
+                ->getListQuery($electedOfficial['id'], $user);
 
             return [
                 'electedOfficial' => $electedOfficial,
