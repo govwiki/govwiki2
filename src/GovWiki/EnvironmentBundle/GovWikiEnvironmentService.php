@@ -9,4 +9,5 @@ namespace GovWiki\EnvironmentBundle;
 abstract class GovWikiEnvironmentService
 {
     const MANAGER = 'govwiki_environment.manager';
+    const STORAGE = 'govwiki_environment.storage';
 }

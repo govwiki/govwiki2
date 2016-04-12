@@ -13,35 +13,35 @@ services:
                 method: onKernelResponse
                 priority: -100
 
-    govwiki_api.environment_manager.configurator:
-        class: GovWiki\ApiBundle\Manager\EnvironmentManagerConfigurator
-        arguments:
-            - @govwiki_api.environment.determinator.host
-        tags:
-            -
-                name: kernel.event_listener
-                event: kernel.request
-                priority: 20
-
-    govwiki_api.environment.determinator.path:
-        class: GovWiki\ApiBundle\Determinator\PathDeterminator
-        tags:
-            - { name: _environment.determinator, alias: path }
-
-    govwiki_api.environment.determinator.host:
-        class: GovWiki\ApiBundle\Determinator\HostDeterminator
-        arguments:
-            - @doctrine.orm.default_entity_manager
-        tags:
-            - { name: _environment.determinator, alias: host }
-
-    govwiki_api.manager.environment:
-        class: GovWiki\ApiBundle\Manager\EnvironmentManager
-        arguments:
-            - @doctrine.orm.default_entity_manager
-            - @carto_db.api
-            - @govwiki_db.service.max_ranks_computer
-        configurator: [@govwiki_api.environment_manager.configurator, configure]
+#    govwiki_api.environment_manager.configurator:
+#        class: GovWiki\ApiBundle\Manager\EnvironmentManagerConfigurator
+#        arguments:
+#            - @govwiki_api.environment.determinator.host
+#        tags:
+#            -
+#                name: kernel.event_listener
+#                event: kernel.request
+#                priority: 20
+#
+#    govwiki_api.environment.determinator.path:
+#        class: GovWiki\ApiBundle\Determinator\PathDeterminator
+#        tags:
+#            - { name: _environment.determinator, alias: path }
+#
+#    govwiki_api.environment.determinator.host:
+#        class: GovWiki\ApiBundle\Determinator\HostDeterminator
+#        arguments:
+#            - @doctrine.orm.default_entity_manager
+#        tags:
+#            - { name: _environment.determinator, alias: host }
+#
+#    govwiki_api.manager.environment:
+#        class: GovWiki\ApiBundle\Manager\EnvironmentManager
+#        arguments:
+#            - @doctrine.orm.default_entity_manager
+#            - @carto_db.api
+#            - @govwiki_db.service.max_ranks_computer
+#        configurator: [@govwiki_api.environment_manager.configurator, configure]
 
     govwiki_api.serializer.serialization_visitor:
         class: GovWiki\ApiBundle\Serializer\ArraySerializationVisitor

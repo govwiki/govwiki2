@@ -2,9 +2,8 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
-use GovWiki\ApiBundle\GovWikiApiServices;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -13,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @Configuration\Route("/localization")
  */
-class LocalizationController extends Controller
+class LocalizationController extends AbstractGovWikiController
 {
     /**
      * Change locale
@@ -39,7 +38,7 @@ class LocalizationController extends Controller
     /**
      * Show all environment locales in header
      *
-     * @param string $current_page_route Current page route
+     * @param string $current_page_route Current page route.
      *
      * @Configuration\Template()
      *
@@ -47,8 +46,7 @@ class LocalizationController extends Controller
      */
     public function showLocalesInHeaderAction($current_page_route)
     {
-        $environment_manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
-        $environment = $environment_manager->getEnvironment();
+        $environment = $this->getCurrentEnvironment()->getSlug();
 
         $locale_names_list = $this->getDoctrine()->getRepository('GovWikiDbBundle:AbstractLocale')->getListLocaleNames($environment);
 
@@ -59,7 +57,7 @@ class LocalizationController extends Controller
     {
         $cacheDir = __DIR__ . "/../../../../app/cache";
         $finder = new \Symfony\Component\Finder\Finder();
-        $finder->in(array($cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"))->files();
+        $finder->in([$cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"])->files();
         foreach($finder as $file){
             unlink($file->getRealpath());
         }

@@ -4,6 +4,7 @@ namespace GovWiki\UserBundle\Form;
 
 use Doctrine\ORM\EntityRepository;
 use GovWiki\ApiBundle\Manager\EnvironmentManager;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -18,16 +19,17 @@ class RegistrationForm extends AbstractType
 {
 
     /**
-     * @var EnvironmentManager
+     * @var EnvironmentStorageInterface
      */
-    private $manager;
+    private $storage;
 
     /**
-     * @param EnvironmentManager $manager A EnvironmentManager instance.
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
      */
-    public function __construct(EnvironmentManager $manager)
+    public function __construct(EnvironmentStorageInterface $storage)
     {
-        $this->manager = $manager;
+        $this->storage = $storage;
     }
 
     /**
@@ -35,7 +37,7 @@ class RegistrationForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $environment = $this->manager->getEntity();
+        $environment = $this->storage->get();
         $environment_id = $environment->getId();
 
         // Function for query builder generation.
