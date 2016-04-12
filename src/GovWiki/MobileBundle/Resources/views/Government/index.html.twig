@@ -97,7 +97,7 @@
                                 {# TODO: Hardcoded, for new db, must be replaced #}
                                 <a class="tab_{{ tabName | replace(' ', '_') | replace('+', 'a')|lower }}"
                                    href="#{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
-                                            {{ ('groups.group_id_'~tab_id)|trans }}
+                                            {{- ('groups.group_id_'~tab_id)|trans -}}
                                             {#{{ tabName }}#}
                                 </a>
                                 <span class="next_tab">
@@ -112,7 +112,7 @@
                             <span class="prev_tab">
                                 <i class="glyphicon glyphicon-chevron-left"></i>
                             </span>
-                            <a class="tab tab_salaries" href="#Salaries" aria-controls="Salaries" role="tab" data-toggle="tab">Salaries</a>
+                            <a class="tab_salaries" href="#Salaries">Salaries</a>
                             <span class="next_tab">
                                 <i class="glyphicon glyphicon-chevron-right"></i>
                             </span>
@@ -124,7 +124,7 @@
                             <span class="prev_tab">
                                 <i class="glyphicon glyphicon-chevron-left"></i>
                             </span>
-                            <a class="tab tab_pensions" href="#Pensions" aria-controls="Pensions" role="tab" data-toggle="tab">Pensions</a>
+                            <a class="tab_pensions" href="#Pensions">Pensions</a>
                             <span class="next_tab">
                                 <i class="glyphicon glyphicon-chevron-right"></i>
                             </span>
@@ -136,7 +136,7 @@
                             <span class="prev_tab">
                                 <i class="glyphicon glyphicon-chevron-left"></i>
                             </span>
-                            <a class="tab_financial_statements" href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">{{ 'gov.financial_statements'|trans }}</a>
+                            <a class="tab_financial_statements" href="#Financial_Statements">{{ 'gov.financial_statements'|trans }}</a>
                             <span class="next_tab">
                                 <i class="glyphicon glyphicon-chevron-right"></i>
                             </span>
