@@ -34,3 +34,11 @@ services:
         arguments:
             - @doctrine.orm.default_entity_manager
             - @govwiki_environment.storage
+
+    govwiki_environment.router:
+        class: GovWiki\EnvironmentBundle\Router\RouterDecorator
+        decorates: router
+        arguments:
+            - @govwiki_environment.router.inner
+            - @govwiki_environment.storage
+            - %determinator.name%

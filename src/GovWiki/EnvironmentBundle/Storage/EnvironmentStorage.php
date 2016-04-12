@@ -22,11 +22,6 @@ class EnvironmentStorage implements EnvironmentStorageInterface
      */
     public function get()
     {
-        if ($this->environment === null) {
-            $nullEnvironment = new Environment();
-            return $nullEnvironment;
-        }
-
         return $this->environment;
     }
 
