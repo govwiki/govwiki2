@@ -164,7 +164,7 @@
                                 <div class="tab-pane" id="Financial_Statements">
 
                                     {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
-                                        'financialStatements': government.financialStatements
+                                    'financialStatements': government.financialStatements
                                     } %}
 
                                 </div>
@@ -186,9 +186,9 @@
         {% if app.user and environment_is_subscribable %}
             <div class="subscribe-row">
                 <a href="{{-
-                    govwiki_path('govwiki_frontend_government_subscribe', {
-                        'government': government.id
-                    })
+                govwiki_path('govwiki_frontend_government_subscribe', {
+                    'government': government.id
+                })
                 -}}" class="btn {% if isSubscriber -%}btn-danger unsubscribe{%- else -%}btn-success subscribe{%- endif -%}" id="subscribe">
                     {%- if isSubscriber -%}
                         Unsubscribe
@@ -229,7 +229,7 @@
     {{parent()}}
 
     {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/government.scss' filter='scss' %}
-        <link rel="stylesheet" href="{{ asset_url }}">
+    <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 
 {% endblock %}

@@ -5,7 +5,7 @@ var webpack = require('webpack');
 
 var path = {
     base: 'src/GovWiki/MobileBundle/Resources/public/js',
-    web: './web/js'
+    web: '/web/js/mobile'
 };
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
         common: './' + path.base + '/common.js'
     },
     output: {
-        path: __dirname + '/web/js',
+        path: __dirname + path.web,
         filename: '[name].js',
         chunkFilename: '[id].js'
     },

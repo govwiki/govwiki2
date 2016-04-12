@@ -5,7 +5,7 @@ var webpack = require('webpack');
 
 var path = {
     base: 'src/GovWiki/FrontendBundle/Resources/public/js',
-    web: './web/js'
+    web: '/web/js'
 };
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
         document: './'+ path.base +'/document/document.js'
     },
     output: {
-        path: __dirname + '/web/js',
+        path: __dirname + path.web,
         filename: '[name].js',
         chunkFilename: '[id].js'
     },

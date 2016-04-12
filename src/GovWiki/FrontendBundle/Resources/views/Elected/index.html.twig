@@ -8,22 +8,16 @@
     <section class="electedController" data-elected-name="{{elected.fullName}}">
 
         <div class="row person-info-header">
-            <div class="hidden-xs col-md-10 col-md-push-1">
+            <div class="col-md-10 col-md-push-1">
                 <h5>ELECTED OFFICIALS - PROFILE</h5>
             </div>
         </div>
 
         <div class="row person-info-content">
-
-            <div class="col-xs-5 col-sm-3 col-sm-push-7">
-                <img src="{{elected.photoUrl}}" class="person-photo"/>
-            </div>
-
-            <div class="col-xs-7 col-sm-7 col-sm-pull-3 col-sm-offset-1">
-                <p class="visible-xs" style="font-weight: 700;font-size: 1.2em;">{{elected.fullName}}</p>
+            <div class="col-xs-7 col-sm-7 col-md-7 col-md-push-1 col-lg-7 col-lg-push-1" style="font-size:16px;">
                 <p>Title: {{elected.title}}</p>
                 <p>Name: {{elected.fullName}} &nbsp;&nbsp;
-                    <span class="hidden-xs disqus-comment-count vote" id="{{elected.id}}" data-disqus-identifier="{{elected.id}}">0</span>
+                    <span class="disqus-comment-count vote" id="{{elected.id}}" data-disqus-identifier="{{elected.id}}">0</span>
                 <p>Term expiries: {{elected.termExpires}}</p>
                 {% if elected.bioUrl %}
                     <p><a target="_blank" href="{{elected.bioUrl}}">Biographical Highlights</a></p>
@@ -31,53 +25,15 @@
                 <p>Email: <a href="mailto:{{elected.emailAddress}}">{{elected.emailAddress}}</a></p>
             </div>
 
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <img src="{{elected.photoUrl}}" class="person-photo"/>
+            </div>
         </div>
 
         <hr/>
 
-        {# TMP MOBILE LAYOUT (START) #}
-
-            <div class="row mobile-person-info-tabs">
-                <div class="visible-xs col-xs-12">
-
-                    <!-- Mobile Nav tabs -->
-                    <div class="row">
-                        <div class="visible-xs col-xs-12" style="padding: 0">
-
-                            <ul class="nav nav-pills" role="tablist">
-                                <li role="presentation" class="active"><a href="#Mobile-Votes" aria-controls="Mobile-Votes" role="tab" data-toggle="tab" aria-expanded="true">Votes</a></li>
-                                <li role="presentation"><a href="#Mobile-Contributions" aria-controls="Mobile-Contributions" role="tab" data-toggle="tab">Contributions</a></li>
-                                <li role="presentation"><a href="#Mobile-Endorsements" aria-controls="Mobile-Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
-                                <li role="presentation"><a href="#Mobile-Statements" aria-controls="Mobile-Statements" role="tab" data-toggle="tab">Public Statements</a></li>
-                            </ul>
-
-                        </div>
-                    </div>
-
-                    <!-- Tab panes -->
-                    <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
-
-                        {# Votes #}
-                        {{ include('GovWikiFrontendBundle:Partial/Elected/MobileTabs:votes.html.twig') }}
-
-                        {# Contributions #}
-                        {{ include('GovWikiFrontendBundle:Partial/Elected/MobileTabs:contributions.html.twig') }}
-
-                        {# Endorsements #}
-                        {{ include('GovWikiFrontendBundle:Partial/Elected/MobileTabs:endorsements.html.twig') }}
-
-                        {# Public Statements #}
-                        {{ include('GovWikiFrontendBundle:Partial/Elected/MobileTabs:publicStatements.html.twig') }}
-
-                    </div>
-
-                </div>
-            </div>
-
-        {# TMP MOBILE LAYOUT (END) #}
-
         <div class="row person-info-tabs">
-            <div class="hidden-xs col-md-10 col-md-push-1">
+            <div class="col-md-10 col-md-push-1">
 
                 <!-- Nav tabs -->
                 <ul class="nav nav-pills" role="tablist">
@@ -229,7 +185,7 @@
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
 
     {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/elected.scss' filter='scss' %}
-        <link rel="stylesheet" href="{{ asset_url }}">
+    <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 
 {% endblock %}
@@ -255,10 +211,10 @@
     <script id="dsq-count-scr" src="//cpc-civicprofiles.disqus.com/count.js"></script>
 
     {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/script.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/elected/handlers.js'
-                    output='js/elected.js' %}
-        <script src="{{ asset_url }}"></script>
+    '@GovWikiFrontendBundle/Resources/public/js/script.js'
+    '@GovWikiFrontendBundle/Resources/public/js/elected/handlers.js'
+    output='js/elected.js' %}
+    <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
 {% endblock %}
