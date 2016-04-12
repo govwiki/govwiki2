@@ -3,33 +3,42 @@
 /* ======= TYPEAHEAD ======= */
 /* ========================= */
 
-.typeahead_wrap {
-   margin-top: 40px;
-   margin-bottom: 10px;
 
-   #search {
+.search_custom {
+   margin: 10px;
 
-   }
+   label {
+      position: absolute;
+      z-index: 1;
 
-   .twitter-typeahead {
-      display: block !important;
-   }
-
-   .typeahead_government {
-      display: block;
-      background-color: #fff;
-      padding-left: 10px !important;
+      i {
+         margin-top: 0.4em;
+      }
 
    }
+}
 
-   .typeahead_elected {
-      display: block;
-      background-color: #fff;
-      padding-left: 10px !important;
 
-   }
+.twitter-typeahead {
+   display: block !important;
+   padding-left: 2.5em;
+   padding-right: 1em;
+}
+
+.typeahead_government {
+   display: block;
+   background-color: #fff;
+   padding-left: 10px !important;
 
 }
+
+.typeahead_elected {
+   display: block;
+   background-color: #fff;
+   padding-left: 10px !important;
+
+}
+
 
 .tt-menu {
    width: 100%;
