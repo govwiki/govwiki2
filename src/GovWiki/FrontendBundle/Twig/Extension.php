@@ -3,6 +3,7 @@
 namespace GovWiki\FrontendBundle\Twig;
 
 use GovWiki\ApiBundle\Manager\EnvironmentManager;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use JMS\Serializer\Serializer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -248,11 +249,11 @@ class Extension extends \Twig_Extension
      */
     public function generateGovWikiPath($route, array $parameters = [])
     {
-        $manager = $this->container->get('govwiki_api.manager.environment');
+        $environemnt = $this->container->get(GovWikiEnvironmentService::STORAGE)->get();
 
         if ('path' === $this->determinatorType) {
             $parameters = array_merge($parameters, [
-                'environment' => $manager->getSlug(),
+                'environment' => $environemnt->getSlug(),
             ]);
         }
 

@@ -4,6 +4,7 @@ namespace GovWiki\ApiBundle\Controller\V1;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -106,10 +107,10 @@ abstract class AbstractGovWikiApiController extends Controller
     }
 
     /**
-     * @return \GovWiki\ApiBundle\Manager\EnvironmentManager
+     * @return \GovWiki\EnvironmentBundle\Manager\EnvironmentManager
      */
     protected function environmentManager()
     {
-        return $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
+        return $this->get(GovWikiEnvironmentService::MANAGER);
     }
 }

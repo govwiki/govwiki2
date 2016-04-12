@@ -4,6 +4,7 @@ namespace GovWiki\EnvironmentBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\QueryException;
+use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use GovWiki\EnvironmentBundle\Strategy\DefaultNamingStrategy;
 use GovWiki\EnvironmentBundle\Strategy\NamingStrategyInterface;
@@ -108,5 +109,17 @@ class EnvironmentManager implements EnvironmentManagerInterface
             $this->namingStrategy = new DefaultNamingStrategy();
         }
         return $this->namingStrategy;
+    }
+
+    /**
+     * @param string $partOfName Part of government name.
+     *
+     * @return array
+     */
+    public function searchGovernment($partOfName)
+    {
+        /** @var GovernmentRepository $repository */
+        $repository = $this->em->getRepository('GovWikiDbBundle:Government');
+        return $repository->search($this->getEnvironment()->getId(), $partOfName);
     }
 }

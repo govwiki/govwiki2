@@ -357,8 +357,8 @@ class GovernmentRepository extends EntityRepository
     /**
      * Search government with name like given in partOfName parameter.
      *
-     * @param string $environment Environment name.
-     * @param string $partOfName  Part of government name.
+     * @param integer $environment Environment entity id.
+     * @param string  $partOfName  Part of government name.
      *
      * @return array
      */
@@ -371,16 +371,14 @@ class GovernmentRepository extends EntityRepository
             ->select(
                 'partial Government.{id, name, type, state, slug, altTypeSlug}'
             )
-            ->leftJoin('Government.environment', 'Environment')
-            ->where(
-                $expr->andX(
-                    $expr->eq('Environment.slug', $expr->literal($environment)),
-                    $expr->like(
-                        'Government.name',
-                        $expr->literal('%'.$partOfName.'%')
-                    )
-                )
-            )
+            ->where($expr->andX(
+                $expr->eq('Government.environment', ':environment'),
+                $expr->like('Government.name', ':partOfName')
+            ))
+            ->setParameters([
+                'environment' => $environment,
+                'partOfName' => '%'. $partOfName .'%',
+            ])
             ->getQuery()
             ->getArrayResult();
     }
