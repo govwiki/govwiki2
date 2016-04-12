@@ -20,7 +20,7 @@
 
     <body>
         {# Header #}
-        <header class="container {% if environment == 'puerto_rico' %}puerto{% endif %}">
+        <header class="{% if environment == 'puerto_rico' %}puerto{% endif %}">
             {{ include('GovWikiMobileBundle:Partial:header.html.twig') }}
         </header>
 
@@ -109,11 +109,6 @@
 
                 </div>
             </div>
-        </div>
-
-        {# Overflow all page and show loader (disabled via script.js) #}
-        <div class="loader_wrap">
-            <div class="loader"></div>
         </div>
 
         {% javascripts  '@GovWikiMobileBundle/Resources/public/js/vendor/jquery.min.js'

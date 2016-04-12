@@ -33,53 +33,28 @@ function financialHealth_one() {
     vis_data.addRows([['Public Safety Exp', 1 - data['public_safety_exp_over_tot_gov_fund_revenue']], ['Other', +data['public_safety_exp_over_tot_gov_fund_revenue']]]);
 
 
-    if (isMobileBrowser()) {
-        container = 'mobile-public-safety-pie';
-        options = {
-            'title': 'Public safety expense',
-            'titleTextStyle': {
+    container = 'mobile-public-safety-pie';
+    options = {
+        'title': 'Public safety expense',
+        'titleTextStyle': {
+            'fontSize': 12
+        },
+        'tooltip': {
+            'textStyle': {
                 'fontSize': 12
-            },
-            'tooltip': {
-                'textStyle': {
-                    'fontSize': 12
-                }
-            },
-            'width': '100%',
-            'height': '100%',
-            'is3D': 'true',
-            'colors': ['#005ce6', '#009933'],
-            'slices': {
-                1: {
-                    offset: 0.2
-                }
-            },
-            'pieStartAngle': 45
-        };
-    } else {
-        container = 'public-safety-pie';
-        options = {
-            'title': 'Public safety expense',
-            'titleTextStyle': {
-                'fontSize': 12
-            },
-            'tooltip': {
-                'textStyle': {
-                    'fontSize': 12
-                }
-            },
-            'width': 340,
-            'height': 300,
-            'is3D': 'true',
-            'colors': ['#005ce6', '#009933'],
-            'slices': {
-                1: {
-                    offset: 0.2
-                }
-            },
-            'pieStartAngle': 45
-        };
-    }
+            }
+        },
+        'width': '100%',
+        'height': '100%',
+        'is3D': 'true',
+        'colors': ['#005ce6', '#009933'],
+        'slices': {
+            1: {
+                offset: 0.2
+            }
+        },
+        'pieStartAngle': 45
+    };
 
     var element = document.getElementById(container);
 
@@ -105,43 +80,23 @@ function financialHealth_two() {
     vis_data.addRows([['Total Revenue \n Per Capita', +data['total_revenue_per_capita']], ['Median Total \n Revenue Per \n Capita For All Cities', 420]]);
 
 
-    if (isMobileBrowser()) {
-        container = 'mobile-fin-health-revenue-graph';
-        options = {
-            'title': 'Total Revenue',
-            'titleTextStyle': {
+    container = 'mobile-fin-health-revenue-graph';
+    options = {
+        'title': 'Total Revenue',
+        'titleTextStyle': {
+            'fontSize': 12
+        },
+        'tooltip': {
+            'textStyle': {
                 'fontSize': 12
-            },
-            'tooltip': {
-                'textStyle': {
-                    'fontSize': 12
-                }
-            },
-            'width': '100%',
-            'height': '100%',
-            'isStacked': 'true',
-            'colors': ['#005ce6', '#009933'],
-            'chartArea.width': '100%'
-        };
-    } else {
-        container = 'fin-health-revenue-graph';
-        options = {
-            'title': 'Total Revenue',
-            'titleTextStyle': {
-                'fontSize': 12
-            },
-            'tooltip': {
-                'textStyle': {
-                    'fontSize': 12
-                }
-            },
-            'width': 340,
-            'height': 300,
-            'isStacked': 'true',
-            'colors': ['#005ce6', '#009933'],
-            'chartArea.width': '100%'
-        };
-    }
+            }
+        },
+        'width': '100%',
+        'height': '100%',
+        'isStacked': 'true',
+        'colors': ['#005ce6', '#009933'],
+        'chartArea.width': '100%'
+    };
 
     chart = new google.visualization.ColumnChart(document.getElementById(container));
     chart.draw(vis_data, options);
@@ -162,45 +117,23 @@ function financialHealth_three() {
     vis_data.addColumn('number', 'Exp.');
     vis_data.addRows([['Total Expenditures \n Per Capita', +data['total_expenditures_per_capita']], ['Median Total \n Expenditures \n Per Capita \n For All Cities', 420]]);
 
-
-    if (isMobileBrowser()) {
-        container = 'mobile-fin-health-expenditures-graph';
-        options = {
-            'title': 'Total Expenditures',
-            'titleTextStyle': {
+    container = 'mobile-fin-health-expenditures-graph';
+    options = {
+        'title': 'Total Expenditures',
+        'titleTextStyle': {
+            'fontSize': 12
+        },
+        'tooltip': {
+            'textStyle': {
                 'fontSize': 12
-            },
-            'tooltip': {
-                'textStyle': {
-                    'fontSize': 12
-                }
-            },
-            'width': '100%',
-            'height': '100%',
-            'isStacked': 'true',
-            'colors': ['#005ce6', '#009933'],
-            'chartArea.width': '100%'
-        };
-    } else {
-        container = 'fin-health-expenditures-graph';
-        options = {
-            'title': 'Total Expenditures',
-            'titleTextStyle': {
-                'fontSize': 12
-            },
-            'tooltip': {
-                'textStyle': {
-                    'fontSize': 12
-                }
-            },
-            'width': 340,
-            'height': 300,
-            'isStacked': 'true',
-            'colors': ['#005ce6', '#009933'],
-            'chartArea.width': '100%'
-        };
-    }
-
+            }
+        },
+        'width': '100%',
+        'height': '100%',
+        'isStacked': 'true',
+        'colors': ['#005ce6', '#009933'],
+        'chartArea.width': '100%'
+    };
 
     chart = new google.visualization.ColumnChart(document.getElementById(container));
     chart.draw(vis_data, options);

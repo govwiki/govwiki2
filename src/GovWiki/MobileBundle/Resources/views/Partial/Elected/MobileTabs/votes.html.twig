@@ -3,6 +3,11 @@
 <div role="tabpanel" class="tab-pane active" id="Mobile-Votes">
 	<div class="tab-pane-main">
 
+		<div class="add_action">
+			Add new Vote
+			<span class="glyphicon glyphicon-plus"></span>
+		</div>
+
 		{% for vote in votes %}
 			{% set blockId = 'voteCollapse' ~ loop.index %}
 

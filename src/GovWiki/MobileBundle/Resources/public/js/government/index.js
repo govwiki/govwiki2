@@ -284,6 +284,20 @@ $(function() {
 
     function gotoTab($mobileTab) {
         $mobileTab.find('a')[0].click();
+        window.scrollBy(0, -45);
     }
+
+    // Sticky header
+
+    var $mobileNav = $('.mobile-nav');
+    $(window).scroll(function() {
+
+        if (window.pageYOffset > 147) {
+            $mobileNav.addClass("mobile-nav_fixed");
+        } else {
+            $mobileNav.removeClass("mobile-nav_fixed");
+        }
+
+    });
 
 });

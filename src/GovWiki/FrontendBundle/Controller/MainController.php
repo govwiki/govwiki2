@@ -53,42 +53,43 @@ class MainController extends Controller
         $environment = $environmentManager->getEnvironment();
 
         $map = $environmentManager->getMap();
-        /** @var ColorizedCountyConditions $colorizedCountyConditions */
-        $colorizedCountyConditions = $map['colorizedCountyConditions'];
-        $map['colorizedCountyConditions'] = $colorizedCountyConditions
-            ->toArray();
-        $map['colorizedCountyConditions']['field_mask'] = $environmentManager
+
+            /** @var ColorizedCountyConditions $colorizedCountyConditions */
+            $colorizedCountyConditions = $map['colorizedCountyConditions'];
+            $map['colorizedCountyConditions'] = $colorizedCountyConditions
+                ->toArray();
+            $map['colorizedCountyConditions']['field_mask'] = $environmentManager
                 ->getFieldFormat($colorizedCountyConditions->getFieldName())['mask'];
-        $map['colorizedCountyConditions']['localized_name'] = $this->get('translator.default')
-            ->trans('format.'. $colorizedCountyConditions->getFieldName());
+            $map['colorizedCountyConditions']['localized_name'] = $this->get('translator.default')
+                ->trans('format.' . $colorizedCountyConditions->getFieldName());
 
-        $mapEntity = $map;
-        if (null === $map) {
-            throw new NotFoundHttpException();
-        }
-        $map['username'] = $this->getParameter('carto_db.account');
-        $years = $environmentManager->getAvailableYears();
-        $map['year'] = $years[0];
+            $mapEntity = $map;
+            if (null === $map) {
+                throw new NotFoundHttpException();
+            }
+            $map['username'] = $this->getParameter('carto_db.account');
+            $years = $environmentManager->getAvailableYears();
+            $map['year'] = $years[0];
 
-        $map = json_encode($map);
+            $map = json_encode($map);
 
-        /** @var MessageCatalogue $catalogue */
-        $translator = $this->get('translator');
-        $catalogue = $translator->getCatalogue();
-        $transKey = 'map.greeting_text';
+            /** @var MessageCatalogue $catalogue */
+            $translator = $this->get('translator');
+            $catalogue = $translator->getCatalogue();
+            $transKey = 'map.greeting_text';
 
-        $greetingText = '';
-        if ($catalogue->has($transKey)) {
-            $greetingText = $translator->trans($transKey);
-        }
+            $greetingText = '';
+            if ($catalogue->has($transKey)) {
+                $greetingText = $translator->trans($transKey);
+            }
 
-        return [
-            'environment' => $environment,
-            'map' => $map,
-            'years' => $years,
-            'mapEntity' => $mapEntity,
-            'greetingText' => $greetingText
-        ];
+            return [
+                'environment' => $environment,
+                'map' => $map,
+                'years' => $years,
+                'mapEntity' => $mapEntity,
+                'greetingText' => $greetingText
+            ];
     }
 
     private function clearTranslationsCache()

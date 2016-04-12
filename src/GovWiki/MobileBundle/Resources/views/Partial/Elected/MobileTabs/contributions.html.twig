@@ -28,31 +28,25 @@
             <div class="card">
 
                 {# Header #}
-                <div class="card-header text-justify" data-toggle="collapse" data-target="#{{ blockId }}"
+                <div class="card__header text-justify" data-toggle="collapse" data-target="#{{ blockId }}"
                      aria-expanded="false" aria-controls="{{ blockId }}">
 
                     {# Contribution Name#}
-                    <p class="card-header__vote-name">{{ contribution.contributorName }}</p>
+                    <p class="card__header-title">{{ contribution.contributorName }}</p>
 
                     {# Contribution amount #}
-                    <div class="card-header__group">
-                        <span class="card-header__vote-vote">
-                            Election year: {{ helper.contributionYear(contribution) }}
-                        </span>
+                    <div class="card__group card__group_offset">
+                        <span class="card__group-item">Election year: {{ contribution.electionYear }}</span>
                     </div>
 
                     {# Contribution amount #}
-                    <div class="card-header__group">
-                        <span class="card-header__vote-vote">
-                            Ind. Exp. Desc : {{ helper.independentExpenditureDesc(contribution) }}
-                        </span>
-                        <span class="card-header__vote-sponsor">
-                            Amount: {{ helper.contributionAmount(contribution) }}
-                        </span>
+                    <div class="card__group card__group_offset">
+                        <span class="card__group-item">Ind. Exp. Desc : <strong>{{ contribution.independentExpenditureDesc ?? '-' }}</strong></span>
+                        <span class="card__group-item card__group-item_right">Amount: <strong>{{ contribution.contributionAmount|number_format }}</strong></span>
                     </div>
 
                     {# Expand icon #}
-                    <div class="card-expand" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false"
+                    <div class="card__header-expand" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false"
                          aria-controls="{{ blockId }}">
                         <i class="glyphicon glyphicon-chevron-down"></i>
                     </div>
@@ -61,12 +55,20 @@
 
                 {# Content (Collapsable) #}
                 <div class="collapse" id="{{ blockId }}">
-                    <div class="card-block">
+                    <div class="card__block">
+
+                        <div class="card__group">
+                            <span class="card__group-item">Election year: {{ helper.contributionYear(contribution) }}</span>
+                        </div>
 
                         {# Vote date & issue category #}
-                        <div>
-                            Ind. Exp. Desc : {{ helper.independentExpenditureDesc(contribution) }}
-                            Amount: {{ helper.contributionAmount(contribution) }}
+                        <div class="card__group">
+                            <span class="card__group-item">
+                                Ind. Exp. Desc : {{ helper.independentExpenditureDesc(contribution) }}
+                            </span>
+                            <span class="card__group-item card__group-item_right">
+                                Amount: {{ helper.contributionAmount(contribution) }}
+                            </span>
                         </div>
 
                         {# Legislation info #}
@@ -94,7 +96,8 @@
 
 
 {% macro contributionYear (contribution) %}
-    <div data-election-year="{{contribution.electionYear}}" class="card-block__vote-date">
+
+    <div data-election-year="{{contribution.electionYear}}" style="display: inline-block">
         <a href="javascript:void(0);" data-type="text" data-pk="1"
            data-placeholder="Please edit" data-title="Please edit"
            class="editable editable-pre-wrapped editable-click" data-original-title=""
@@ -103,7 +106,7 @@
 {% endmacro %}
 
 {% macro contributionName (contribution) %}
-    <div data-contributor-name="{{contribution.contributorName}}">
+    <div data-contributor-name="{{contribution.contributorName}}" style="display: inline-block">
         <a href="javascript:void(0);" data-type="textarea" data-pk="1"
            data-placeholder="Please edit" data-title="Please edit"
            class="editable editable-pre-wrapped editable-click" data-original-title=""
@@ -113,7 +116,7 @@
 {% endmacro %}
 
 {% macro independentExpenditureDesc (contribution) %}
-    <div data-independent-expenditure-desc="{{contribution.independentExpenditureDesc}}" class="card-block__vote-date">
+    <div data-independent-expenditure-desc="{{contribution.independentExpenditureDesc}}" style="display: inline-block">
         <a href="javascript:void(0);" data-type="textarea" data-pk="1"
            data-placeholder="Please edit" data-title="Please edit"
            class="editable editable-pre-wrapped editable-click" data-original-title=""
@@ -123,7 +126,7 @@
 {% endmacro %}
 
 {% macro contributionAmount (contribution) %}
-    <div data-contribution-amount="{{contribution.contributionAmount}}" class="card-block__vote-date">
+    <div data-contribution-amount="{{contribution.contributionAmount}}" style="display: inline-block">
         <a href="javascript:void(0);" data-type="text" data-pk="1"
            data-placeholder="Please edit" data-title="Please edit"
            class="editable editable-pre-wrapped editable-click" data-original-title=""
@@ -133,7 +136,7 @@
 {% endmacro %}
 
 {% macro contributorType (contribution) %}
-    <div data-contributor-type="{{contribution.contributorType}}">
+    <div data-contributor-type="{{contribution.contributorType}}" style="display: inline-block">
         <a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{'Candidate Committee': 'Candidate Committee'}, {'Corporate': 'Corporate', 'Individual': 'Individual', 'Political Party': 'Political Party', 'Political Action Committee': 'Political Action Committee', 'Self': 'Self', 'Union': 'Union', 'Other': 'Other'}"
            data-placeholder="Please edit" data-title="Please edit"
            class="editable editable-pre-wrapped editable-click" data-original-title=""

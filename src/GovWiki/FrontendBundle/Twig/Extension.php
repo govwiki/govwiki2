@@ -97,7 +97,7 @@ class Extension extends \Twig_Extension
     {
         $manager = $this->container->get('govwiki_api.manager.environment');
 
-        if ($manager->getEnvironment()) {
+        if ($manager->getEntity()) {
             $styles = $manager->getEntity()->getStyle();
 
             /** @var MessageCatalogue $catalogue */

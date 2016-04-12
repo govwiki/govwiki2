@@ -1,103 +1,99 @@
-<div class="row header">
+<div class="header">
+
+    {# Return to map #}
+    {% if app.request.attributes.get('_route') != "map" %}
+        <a href="{{ govwiki_path('map') }}" class="home-icon"><img src="/img/mobile/header/house.png" /></a>
+    {% endif %}
 
     {# Logo #}
-    <div class="col-xs-6 col-sm-6 col-md-3">
-
-        {% if government is defined and government.secondaryLogoPath %}
-            <a class="anchor" href="{{ entity.logoHref }}">
-                <img src="{{ entity.logo }}" class="logo" width="70%">
-            </a>
-            {% if government.secondaryLogoUrl %}
-                <a class="anchor" href="{{ government.secondaryLogoUrl }}">
-                    <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
-                </a>
-            {% else %}
+    {% if government is defined and government.secondaryLogoPath %}
+        <a class="anchor" href="{{ entity.logoHref }}">
+            <img src="{{ entity.logo }}" class="logo" width="70%">
+        </a>
+        {% if government.secondaryLogoUrl %}
+            <a class="anchor" href="{{ government.secondaryLogoUrl }}">
                 <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
-            {% endif %}
-        {% elseif elected.government is defined and elected.government.secondaryLogoPath %}
-            <a class="anchor" href="{{ entity.logoHref }}">
-                <img src="{{ entity.logo }}" class="logo" width="70%">
             </a>
-            {% if elected.government.secondaryLogoUrl %}
-                <a class="anchor" href="{{ elected.government.secondaryLogoUrl }}">
-                    <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
-                </a>
-            {% else %}
-                <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
-            {% endif %}
         {% else %}
-            <a class="anchor" href="{{ entity.logoHref }}">
-                <img src="{{ entity.logo }}" class="logo">
-            </a>
+            <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
         {% endif %}
-    </div>
+    {% elseif elected.government is defined and elected.government.secondaryLogoPath %}
+        <a class="anchor" href="{{ entity.logoHref }}">
+            <img src="{{ entity.logo }}" class="logo" width="70%">
+        </a>
+        {% if elected.government.secondaryLogoUrl %}
+            <a class="anchor" href="{{ elected.government.secondaryLogoUrl }}">
+                <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
+            </a>
+        {% else %}
+            <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
+        {% endif %}
+    {% else %}
+        <a class="anchor" href="{{ entity.logoHref }}">
+            <img src="{{ entity.logo }}" class="logo">
+        </a>
+    {% endif %}
 
-    {# Menu button (hamburger) for mobile devices #}
-    <div class="col-xs-6 col-sm-6 visible-xs visible-sm">
-
-        <button type="button" class="hamburger navbar-toggle collapsed" data-toggle="collapse"
-                data-target="#bs-navigation-collapse" aria-expanded="false">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-
-    </div>
-
-    {# Navigation #}
-    <nav class="col-xs-12 col-sm-12 col-md-9 text-right">
-
-        <ul class="navigation navbar-collapse collapse" id="bs-navigation-collapse">
-
-            {% if app.user %}
-                {# Show User name (Athorized) #}
-                <li>
-                    <a href="javascript:void(0)" class="link">
-                        Logged in as {{ app.user.username }}
-                    </a>
-                </li>
-
-                {# Logout button #}
-                <li>
-                    <a href="{{path('fos_user_security_logout')}}" class="link">
-                        Sign Out
-                    </a>
-                </li>
-
-            {% else %}
-                {# Login button#}
-                <li>
-                    <a href="#" onclick="$('#modal-window').modal('show')" class="link">
-                        Login / Sign Up
-                    </a>
-                </li>
-
-            {% endif %}
-
-            {# Return to map #}
-            {% if app.request.attributes.get('_route') != "map" %}
-                <li>
-                    <a href="{{ govwiki_path('map') }}" class="link">
-                        {{ 'header.links.return_to_map'|trans }}
-                        {#Return to Map#}
-                    </a>
-                </li>
-            {% endif %}
-
-            {# Return to some government #}
-            {% if app.request.attributes.get('_route') == "elected" %}
-                <li>
-                    <a href="{{ govwiki_path('government', {
-                        altTypeSlug: altTypeSlug,
-                        slug: slug
-                    }) }}" class="link">
-                        Return to {{ slug|replace('_', ' ') }}
-                    </a>
-                </li>
-            {% endif %}
-
-        </ul>
-
-    </nav>
+    {# Menu button (cog) for mobile devices #}
+    <a type="button" class="menu collapsed" data-toggle="collapse"
+            data-target="#bs-navigation-collapse" aria-expanded="false">
+        <img src="/img/mobile/header/cog.png" />
+    </a>
 
 </div>
+
+{# Navigation #}
+<nav>
+
+    <ul class="navigation navbar-collapse collapse" id="bs-navigation-collapse">
+
+        {% if app.user %}
+            {# Show User name (Athorized) #}
+            <li>
+                <a href="javascript:void(0)" class="link">
+                    Logged in as {{ app.user.username }}
+                </a>
+            </li>
+
+            {# Logout button #}
+            <li>
+                <a href="{{path('fos_user_security_logout')}}" class="link">
+                    Sign Out
+                </a>
+            </li>
+
+        {% else %}
+            {# Login button#}
+            <li>
+                <a href="#" onclick="$('#modal-window').modal('show')" class="link">
+                    Login / Sign Up
+                </a>
+            </li>
+
+        {% endif %}
+
+        {# Return to map #}
+        {% if app.request.attributes.get('_route') != "map" %}
+            <li>
+                <a href="{{ govwiki_path('map') }}" class="link">
+                    {{ 'header.links.return_to_map'|trans }}
+                    {#Return to Map#}
+                </a>
+            </li>
+        {% endif %}
+
+        {# Return to some government #}
+        {% if app.request.attributes.get('_route') == "elected" %}
+            <li>
+                <a href="{{ govwiki_path('government', {
+                    altTypeSlug: altTypeSlug,
+                    slug: slug
+                }) }}" class="link">
+                    Return to {{ slug|replace('_', ' ') }}
+                </a>
+            </li>
+        {% endif %}
+
+    </ul>
+
+</nav>

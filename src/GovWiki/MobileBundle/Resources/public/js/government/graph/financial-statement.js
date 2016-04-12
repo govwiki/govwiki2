@@ -64,54 +64,32 @@ function financialStatements_revenue() {
     rows.sort(rowSortFunction);
 
     vis_data.addRows(rows);
-     if (isMobileBrowser()) {
-         container = 'mobile-total-revenue-pie';
-         options = {
-             'title': data.translations.total_revenue,
-             'titleTextStyle': {
-                 'fontSize': 16
-             },
-             'tooltip': {
-                 'textStyle': {
-                     'fontSize': 12
-                 }
-             },
-             width: '100%',
-             height: '100%',
-             'sliceVisibilityThreshold': 0,
-             'forceIFrame': true,
-             chartArea: {
-                 left: "3%",
-                 top: "13%",
-                 height: "94%",
-                 width: "94%"
-             },
-             legend: {
-                 position: 'top', maxLines: '6'
+
+     container = 'mobile-total-revenue-pie';
+     options = {
+         'title': data.translations.total_revenue,
+         'titleTextStyle': {
+             'fontSize': 16
+         },
+         'tooltip': {
+             'textStyle': {
+                 'fontSize': 12
              }
-         };
-     } else {
-         container = 'total-revenue-pie';
-         options = {
-             'title': data.translations.total_revenue,
-             'titleTextStyle': {
-                 'fontSize': 16
-             },
-             'tooltip': {
-                 'textStyle': {
-                     'fontSize': 12
-                 }
-             },
-             'width': 470,
-             'height': 350,
-             'sliceVisibilityThreshold': 0,
-             'forceIFrame': true,
-             'chartArea': {
-                 width: '90%',
-                 height: '75%'
-             }
-         };
-     }
+         },
+         width: '100%',
+         height: '100%',
+         'sliceVisibilityThreshold': 0,
+         'forceIFrame': true,
+         chartArea: {
+             left: "3%",
+             top: "13%",
+             height: "94%",
+             width: "94%"
+         },
+         legend: {
+             position: 'top', maxLines: '6'
+         }
+     };
 
     chart = new google.visualization.PieChart(document.getElementById(container));
     chart.draw(vis_data, options);
@@ -169,54 +147,31 @@ function financialStatements_expenditures() {
 
     vis_data.addRows(rows);
 
-    if (isMobileBrowser()) {
-        container = 'mobile-total-expenditures-pie';
-        options = {
-            'title': data.translations.total_revenue,
-            'titleTextStyle': {
-                'fontSize': 16
-            },
-            'tooltip': {
-                'textStyle': {
-                    'fontSize': 12
-                }
-            },
-            width: '100%',
-            height: '100%',
-            'sliceVisibilityThreshold': 0,
-            'forceIFrame': true,
-            chartArea: {
-                left: "3%",
-                top: "13%",
-                height: "94%",
-                width: "94%"
-            },
-            legend: {
-                position: 'top', maxLines: '6'
+    container = 'mobile-total-expenditures-pie';
+    options = {
+        'title': data.translations.total_revenue,
+        'titleTextStyle': {
+            'fontSize': 16
+        },
+        'tooltip': {
+            'textStyle': {
+                'fontSize': 12
             }
-        };
-    } else {
-        container = 'total-expenditures-pie';
-        options = {
-            'title': data.translations.total_revenue,
-            'titleTextStyle': {
-                'fontSize': 16
-            },
-            'tooltip': {
-                'textStyle': {
-                    'fontSize': 12
-                }
-            },
-            'width': 470,
-            'height': 350,
-            'sliceVisibilityThreshold': 0,
-            'forceIFrame': true,
-            'chartArea': {
-                width: '90%',
-                height: '75%'
-            }
-        };
-    }
+        },
+        width: '100%',
+        height: '100%',
+        'sliceVisibilityThreshold': 0,
+        'forceIFrame': true,
+        chartArea: {
+            left: "3%",
+            top: "13%",
+            height: "94%",
+            width: "94%"
+        },
+        legend: {
+            position: 'top', maxLines: '6'
+        }
+    };
 
     chart = new google.visualization.PieChart(document.getElementById(container));
     chart.draw(vis_data, options);
@@ -258,44 +213,24 @@ function financialStatementsTree_revenues() {
         }
     }
 
-    if (isMobileBrowser()) {
-        container = 'mobile-total-revenue-tree';
-        options = {
-            highlightOnMouseOver: true,
-            maxDepth: 1,
-            maxPostDepth: 2,
-            minHighlightColor: '#8c6bb1',
-            midHighlightColor: '#9ebcda',
-            maxHighlightColor: '#edf8fb',
-            minColor: '#009688',
-            midColor: '#f7f7f7',
-            maxColor: '#ee8100',
-            headerHeight: 15,
-            showScale: true,
-            width: '100%',
-            height: 500,
-            useWeightedAverageForAggregation: true,
-            generateTooltip: revenuesTooltip
-        };
-    } else {
-        container = 'total-revenue-tree';
-        options = {
-            highlightOnMouseOver: true,
-            maxDepth: 1,
-            maxPostDepth: 2,
-            minHighlightColor: '#8c6bb1',
-            midHighlightColor: '#9ebcda',
-            maxHighlightColor: '#edf8fb',
-            minColor: '#009688',
-            midColor: '#f7f7f7',
-            maxColor: '#ee8100',
-            headerHeight: 15,
-            showScale: true,
-            height: 500,
-            useWeightedAverageForAggregation: true,
-            generateTooltip: revenuesTooltip
-        };
-    }
+    container = 'mobile-total-revenue-tree';
+    options = {
+        highlightOnMouseOver: true,
+        maxDepth: 1,
+        maxPostDepth: 2,
+        minHighlightColor: '#8c6bb1',
+        midHighlightColor: '#9ebcda',
+        maxHighlightColor: '#edf8fb',
+        minColor: '#009688',
+        midColor: '#f7f7f7',
+        maxColor: '#ee8100',
+        headerHeight: 15,
+        showScale: true,
+        width: '100%',
+        height: 500,
+        useWeightedAverageForAggregation: true,
+        generateTooltip: revenuesTooltip
+    };
 
     function revenuesTooltip(row, size, value) {
         var caption = vis_data.getValue(row, 0);
@@ -346,43 +281,23 @@ function financialStatementsTree_expenditures() {
         }
     }
 
-    if (isMobileBrowser()) {
-        container = 'mobile-total-expenditures-tree';
-        options = {
-            highlightOnMouseOver: true,
-            maxDepth: 1,
-            maxPostDepth: 2,
-            minHighlightColor: '#8c6bb1',
-            midHighlightColor: '#9ebcda',
-            maxHighlightColor: '#edf8fb',
-            minColor: '#009688',
-            midColor: '#f7f7f7',
-            maxColor: '#ee8100',
-            headerHeight: 15,
-            showScale: true,
-            height: 500,
-            useWeightedAverageForAggregation: true,
-            generateTooltip: expendituresTooltip
-        };
-    } else {
-        container = 'total-expenditures-tree';
-        options = {
-            highlightOnMouseOver: true,
-            maxDepth: 1,
-            maxPostDepth: 2,
-            minHighlightColor: '#8c6bb1',
-            midHighlightColor: '#9ebcda',
-            maxHighlightColor: '#edf8fb',
-            minColor: '#009688',
-            midColor: '#f7f7f7',
-            maxColor: '#ee8100',
-            headerHeight: 15,
-            showScale: true,
-            height: 500,
-            useWeightedAverageForAggregation: true,
-            generateTooltip: expendituresTooltip
-        };
-    }
+    container = 'mobile-total-expenditures-tree';
+    options = {
+        highlightOnMouseOver: true,
+        maxDepth: 1,
+        maxPostDepth: 2,
+        minHighlightColor: '#8c6bb1',
+        midHighlightColor: '#9ebcda',
+        maxHighlightColor: '#edf8fb',
+        minColor: '#009688',
+        midColor: '#f7f7f7',
+        maxColor: '#ee8100',
+        headerHeight: 15,
+        showScale: true,
+        height: 500,
+        useWeightedAverageForAggregation: true,
+        generateTooltip: expendituresTooltip
+    };
 
     function expendituresTooltip(row, size, value) {
         var caption = vis_data.getValue(row, 0);
@@ -408,7 +323,7 @@ function handler_switchChart() {
     hideChartGroup('compare-charts', true);
     hideChartGroup('tree-charts', true);
 
-    var mobile = isMobileBrowser() ? 'mobile-' : '';
+    var mobile = 'mobile-';
 
     $('#' + mobile + 'Financial_Statements').on('click', '.chart-controls .btn', function() {
 
@@ -470,7 +385,7 @@ function handler_switchChart() {
 
         var display = hide ? {display: 'none'} : {display: 'block'};
 
-        var mobile = isMobileBrowser() ? 'mobile-' : '';
+        var mobile = 'mobile-';
 
         if (chartGroup == 'pie-charts') {
             $('#' + mobile + 'total-expenditures-pie').css(display);
