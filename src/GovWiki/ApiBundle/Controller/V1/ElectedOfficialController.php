@@ -85,7 +85,7 @@ class ElectedOfficialController extends AbstractGovWikiApiController
 ////        return $response;
 //
 //        return $this->serializedResponse(
-//            $this->environmentManager()
+//            $this->getEnvironmentManager()
 //                ->getElectedOfficial($govAltTypeSlug, $govSlug, $eoSlug),
 //            [ 'elected_official' ]
 //        );
@@ -154,7 +154,7 @@ class ElectedOfficialController extends AbstractGovWikiApiController
             );
         }
 
-        return new JsonResponse($this->environmentManager()
+        return new JsonResponse($this->getEnvironmentManager()
             ->searchElectedOfficial($search));
     }
 }

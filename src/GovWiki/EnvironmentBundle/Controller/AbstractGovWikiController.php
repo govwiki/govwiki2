@@ -21,4 +21,12 @@ abstract class AbstractGovWikiController extends Controller
     {
         return $this->get(GovWikiEnvironmentService::STORAGE)->get();
     }
+
+    /**
+     * @return \GovWiki\EnvironmentBundle\Manager\EnvironmentManager
+     */
+    protected function getEnvironmentManager()
+    {
+        return $this->get(GovWikiEnvironmentService::MANAGER);
+    }
 }

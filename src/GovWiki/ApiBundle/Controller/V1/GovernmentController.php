@@ -36,8 +36,11 @@ class GovernmentController extends AbstractGovWikiApiController
             );
         }
 
-        return new JsonResponse($this->environmentManager()
-            ->searchGovernment($search));
+        $governments = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Government')
+            ->search($search);
+
+        return new JsonResponse($governments);
     }
 
     /**
@@ -72,7 +75,7 @@ class GovernmentController extends AbstractGovWikiApiController
         /*
          * Check field name.
          */
-        $fields = $this->environmentManager()->getRankedFields();
+        $fields = $this->getEnvironmentManager()->getRankedFields();
         $found = false;
         $tmp = preg_replace('|_rank$|', '', $fieldName);
         foreach ($fields as $field) {
@@ -87,7 +90,7 @@ class GovernmentController extends AbstractGovWikiApiController
             ], 400);
         }
 
-        $data = $this->environmentManager()->getGovernmentRank(
+        $data = $this->getEnvironmentManager()->getGovernmentRank(
             $altTypeSlug,
             $slug,
             [

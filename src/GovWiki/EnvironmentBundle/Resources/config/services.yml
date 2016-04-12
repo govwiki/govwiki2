@@ -24,7 +24,7 @@ services:
             - '' # Set from configuration.
             - @govwiki_environment.storage
         tags:
-            - { name: kernel.event_listener, event: kernel.request }
+            - { name: kernel.event_listener, event: kernel.request, priority: -50 }
 
     govwiki_environment.storage:
         class: GovWiki\EnvironmentBundle\Storage\EnvironmentStorage
@@ -34,10 +34,3 @@ services:
         arguments:
             - @doctrine.orm.default_entity_manager
             - @govwiki_environment.storage
-
-    #
-    # Use for read only access to current environment.
-    #
-    govwiki_environment.current_environment:
-        class: GovWiki\DbBundle\Entity\Environment
-        factory: [ @govwiki_environment.storage, get ]

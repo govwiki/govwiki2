@@ -28,7 +28,7 @@ services:
         class:     'GovWiki\DbBundle\Translation\DatabaseLoader'
         arguments:
             - @doctrine.orm.entity_manager
-            - @govwiki_environment.current_environment
+            - @govwiki_environment.storage
         tags:
             - { name: translation.loader, alias: db }
 

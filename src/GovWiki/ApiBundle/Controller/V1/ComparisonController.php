@@ -47,7 +47,7 @@ class ComparisonController extends AbstractGovWikiApiController
             );
         }
 
-        return new JsonResponse($this->environmentManager()
+        return new JsonResponse($this->getEnvironmentManager()
             ->searchGovernmentForComparison($search));
     }
 

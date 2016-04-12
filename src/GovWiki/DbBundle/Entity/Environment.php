@@ -30,7 +30,7 @@ class Environment
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
@@ -38,14 +38,14 @@ class Environment
      * @ORM\Column(unique=true)
      * @Assert\Regex(pattern="|^[\w\s]+$|")
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      *
      * @ORM\Column()
      */
-    private $title;
+    protected $title;
 
     /**
      * @var string
@@ -54,7 +54,7 @@ class Environment
      *
      * @Groups({"map"})
      */
-    private $slug;
+    protected $slug;
 
     /**
      * @var string
@@ -62,7 +62,7 @@ class Environment
      * @ORM\Column()
      * @Assert\NotBlank()
      */
-    private $domain;
+    protected $domain;
 
     /**
      * CSS styles.
@@ -71,14 +71,14 @@ class Environment
      *
      * @ORM\Column(type="text", nullable=true)
      */
-    private $style;
+    protected $style;
 
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
      */
-    private $enabled = false;
+    protected $enabled = false;
 
     /**
      * @var Map
@@ -90,7 +90,7 @@ class Environment
      *)
      * @ORM\JoinColumn(name="map_id")
      */
-    private $map;
+    protected $map;
 
     /**
      * @var Collection
@@ -101,7 +101,7 @@ class Environment
      *  cascade={"remove"}
      * )
      */
-    private $governments;
+    protected $governments;
 
     /**
      * @var Collection
@@ -112,7 +112,7 @@ class Environment
      *  cascade={"remove", "persist"}
      *)
      */
-    private $formats;
+    protected $formats;
 
     /**
      * @var Collection
@@ -122,7 +122,7 @@ class Environment
      *  mappedBy="environments"
      * )
      */
-    private $users;
+    protected $users;
 
     /**
      * @var Collection
@@ -133,68 +133,68 @@ class Environment
      *  cascade={"remove"}
      * )
      */
-    private $groups;
+    protected $groups;
 
     /**
      * @var Collection
      *
      * @ORM\OneToMany(targetEntity="Locale", mappedBy="environment", cascade={"remove"})
      */
-    private $locales;
+    protected $locales;
 
     /**
      * @var Locale
      *
      * @ORM\OneToOne(targetEntity="Locale")
      */
-    private $defaultLocale;
+    protected $defaultLocale;
 
     /**
      * @var string
      *
      * @ORM\Column()
      */
-    private $adminEmail;
+    protected $adminEmail;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(type="array")
      */
-    private $legislationDisplayTime;
+    protected $legislationDisplayTime;
 
     /**
      * @var string
      *
      * @ORM\Column(nullable=true)
      */
-    private $logoHref;
+    protected $logoHref;
 
     /**
      * @var string
      *
      * @ORM\Column(nullable=true)
      */
-    private $logo;
+    protected $logo;
 
     /**
      * @var UploadedFile
      */
-    private $file;
+    protected $file;
 
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
      */
-    private $subscribable = false;
+    protected $subscribable = false;
 
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
      */
-    private $showDocuments = false;
+    protected $showDocuments = false;
 
     /**
      *

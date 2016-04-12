@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Translation;
 
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Translation\Loader\LoaderInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
@@ -22,17 +23,17 @@ class DatabaseLoader implements LoaderInterface
     /**
      * default constructor
      *
-     * @param EntityManagerInterface $em          A EntityManagerInterface
-     *                                            instance.
-     * @param Environment            $environment A Environment entity instance.
+     * @param EntityManagerInterface      $em      A EntityManagerInterface
+     *                                             instance.
+     * @param EnvironmentStorageInterface $storage A Environment entity instance.
      */
     public function __construct(
         EntityManagerInterface $em,
-        Environment $environment
+        EnvironmentStorageInterface $storage
     ) {
         $this->localeRepository = $em->getRepository("GovWikiDbBundle:Locale");
         $this->translationRepository = $em->getRepository("GovWikiDbBundle:Translation");
-        $this->environment = $environment;
+        $this->environment = $storage->get();
     }
 
     /**
