@@ -8,6 +8,7 @@ use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\DbBundle\Entity\Message;
 use GovWiki\DbBundle\Form\MessageType;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -15,7 +16,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Doctrine\ORM\EntityManager;
 
 /**
  * MainController
@@ -79,7 +79,7 @@ class GovernmentController extends Controller
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
         $this->clearTranslationsCache();
-        $manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
+        $manager = $this->get(GovWikiEnvironmentService::MANAGER);
         $user = $this->getUser();
 
         $years = $manager->getAvailableYears();

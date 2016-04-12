@@ -38,7 +38,7 @@ class GovernmentController extends AbstractGovWikiApiController
 
         $governments = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:Government')
-            ->search($search);
+            ->search($this->getCurrentEnvironment()->getId(), $search);
 
         return new JsonResponse($governments);
     }

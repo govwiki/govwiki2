@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\EnvironmentBundle\Manager;
+namespace GovWiki\EnvironmentBundle\Manager\Environment;
 
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\EnvironmentBundle\Strategy\NamingStrategyInterface;

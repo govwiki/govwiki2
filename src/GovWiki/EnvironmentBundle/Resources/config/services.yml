@@ -30,7 +30,7 @@ services:
         class: GovWiki\EnvironmentBundle\Storage\EnvironmentStorage
 
     govwiki_environment.manager:
-        class: GovWiki\EnvironmentBundle\Manager\EnvironmentManager
+        class: GovWiki\EnvironmentBundle\Manager\Environment\EnvironmentManager
         arguments:
             - @doctrine.orm.default_entity_manager
             - @govwiki_environment.storage

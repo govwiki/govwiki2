@@ -227,29 +227,25 @@ class GovernmentRepository extends EntityRepository
      * Find government by slug and altTypeSlug.
      * Append maxRanks and financialStatements.
      *
-     * @param string  $environment Environment name.
+     * @param integer $environment Environment entity id.
      * @param string  $altTypeSlug Slugged government alt type.
      * @param string  $slug        Slugged government name.
      * @param integer $year        For fetching fin data.
      *
-     * @return array|null
+     * @return array
      */
     public function findGovernment($environment, $altTypeSlug, $slug, $year)
     {
-        $qb = $this->createQueryBuilder('Government');
-        $expr = $qb->expr();
+        $expr = $this->_em->getExpressionBuilder();
 
-        /*
-         * Get government.
-         */
-        $data = $qb
+        // Get government.
+        $government = $this->createQueryBuilder('Government')
             ->select(
                 'Government',
                 'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
                 'partial Document.{id, description, link, type}'
             )
             ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
-            ->leftJoin('Government.environment', 'Environment')
             ->leftJoin(
                 'Government.documents',
                 'Document',
@@ -260,94 +256,53 @@ class GovernmentRepository extends EntityRepository
                     $expr->eq('Document.type', $expr->literal(Document::LAST_AUDIT))
                 )
             )
-            ->where(
-                $expr->andX(
-                    $expr->eq(
-                        'Government.altTypeSlug',
-                        $qb->expr()->literal($altTypeSlug)
-                    ),
-                    $expr->eq(
-                        'Government.slug',
-                        $qb->expr()->literal($slug)
-                    ),
-                    $expr->eq('Environment.slug', $expr->literal($environment))
-                )
+            ->where($expr->andX(
+                $expr->eq('Government.altTypeSlug', ':altTypeSlug'),
+                $expr->eq('Government.slug', ':slug'),
+                $expr->eq('Government.environment', ':environment')
+            ))
+            ->setParameters([
+                'altTypeSlug' => $altTypeSlug,
+                'slug' => $slug,
+                'environment' => $environment,
+            ])
+            ->getQuery()
+            ->getOneOrNullResult(Query::HYDRATE_ARRAY);
+
+        if ($government === null) {
+            return [];
+        }
+
+        // Get government financial statements data.
+        $finData = $this->_em->getRepository('GovWikiDbBundle:FinData')
+            ->createQueryBuilder('FinData')
+            ->select(
+                'partial FinData.{id, caption, dollarAmount, displayOrder}',
+                'CaptionCategory, Fund'
             )
+            ->leftJoin('FinData.captionCategory', 'CaptionCategory')
+            ->leftJoin('FinData.fund', 'Fund')
+            ->where($expr->andX(
+                $expr->eq('FinData.government', ':government'),
+                $expr->eq('FinData.year', ':year')
+            ))
+            ->setParameters([
+                'government' => $government['id'],
+                'year' => $year,
+            ])
+            ->orderBy($expr->asc('CaptionCategory.id'))
+            ->addOrderBy($expr->asc('FinData.caption'))
             ->getQuery()
             ->getArrayResult();
 
-        if (count($data) <= 0) {
-            return null;
-        }
+        $government['finData'] = $this->processFinData($finData);
 
-        $government = $data[0];
-
-        /*
-         * Get financial statements.
-         */
-        $finStmtYears = $this->_em->getRepository('GovWikiDbBundle:FinData')
-            ->getAvailableYears($government['id']);
-
-        $government['finData'] = [];
-        if ((count($finStmtYears) > 0)) {
-            $finData = $this
-                ->_em->getRepository('GovWikiDbBundle:FinData')
-                ->createQueryBuilder('FinData')
-                ->select(
-                    'partial FinData.{id, caption, dollarAmount, displayOrder}',
-                    'CaptionCategory, Fund'
-                )
-                ->leftJoin('FinData.captionCategory', 'CaptionCategory')
-                ->leftJoin('FinData.fund', 'Fund')
-                ->where(
-                    $expr->andX(
-                        $expr->eq('FinData.government', $government['id']),
-                        $expr->eq('FinData.year', $year)
-                    )
-                )
-                ->orderBy($expr->asc('CaptionCategory.id'))
-                ->addOrderBy($expr->asc('FinData.caption'))
-                ->getQuery()
-                ->getArrayResult();
-
-            $financialStatementsGroups = [];
-            foreach ($finData as $finDataItem) {
-                $financialStatementsGroups[$finDataItem['caption']][] = $finDataItem;
-            }
-            $i = 0;
-            $financialStatements = [];
-            foreach ($financialStatementsGroups as $caption => $finData) {
-                foreach ($finData as $finDataItem) {
-                    $financialStatements[$i]['caption'] = $caption;
-                    $financialStatements[$i]['category_name'] = $finDataItem['captionCategory']['name'];
-                    $financialStatements[$i]['display_order'] = $finDataItem['displayOrder'];
-                    if (empty($financialStatements[$i]['genfund'])) {
-                        if (empty($finDataItem['fund'])) {
-                            $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
-                        } elseif ($finDataItem['fund']['name'] === 'General Fund') {
-                            $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
-                        }
-                    }
-                    if (empty($financialStatements[$i]['otherfunds'])) {
-                        if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Other') {
-                            $financialStatements[$i]['otherfunds'] = $finDataItem['dollarAmount'];
-                        }
-                    }
-                    if (empty($financialStatements[$i]['totalfunds'])) {
-                        if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Total') {
-                            $financialStatements[$i]['totalfunds'] = $finDataItem['dollarAmount'];
-                        }
-                    }
-                }
-                $i++;
-            }
-
-            $government['finData'] = $financialStatements;
-
-            // Find latest audit url.
-            $government['latestAuditUrl'] = null;
-            if (count($government['documents'])) {
-                $government['latestAuditUrl'] = $government['documents'][0];
+        // Find latest audit url.
+        $government['latestAuditUrl'] = null;
+        foreach ($government['documents'] as $document) {
+            if ($document['type'] === Document::LAST_AUDIT) {
+                $government['latestAuditUrl'] = $document;
+                break;
             }
         }
 
@@ -558,5 +513,48 @@ class GovernmentRepository extends EntityRepository
             ->setParameter('subscriber', [ $subscriber ])
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * @param array $finData Government financial statements.
+     *
+     * @return array
+     */
+    private function processFinData(array $finData)
+    {
+        $financialStatementsGroups = [];
+        foreach ($finData as $finDataItem) {
+            $financialStatementsGroups[$finDataItem['caption']][] = $finDataItem;
+        }
+        $i = 0;
+        $financialStatements = [];
+        foreach ($financialStatementsGroups as $caption => $finData) {
+            foreach ($finData as $finDataItem) {
+                $financialStatements[$i]['caption'] = $caption;
+                $financialStatements[$i]['category_name'] = $finDataItem['captionCategory']['name'];
+                $financialStatements[$i]['display_order'] = $finDataItem['displayOrder'];
+
+                if (empty($financialStatements[$i]['genfund'])) {
+                    if (empty($finDataItem['fund'])) {
+                        $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
+                    } elseif ($finDataItem['fund']['name'] === 'General Fund') {
+                        $financialStatements[$i]['genfund'] = $finDataItem['dollarAmount'];
+                    }
+                }
+                if (empty($financialStatements[$i]['otherfunds'])) {
+                    if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Other') {
+                        $financialStatements[$i]['otherfunds'] = $finDataItem['dollarAmount'];
+                    }
+                }
+                if (empty($financialStatements[$i]['totalfunds'])) {
+                    if (!empty($finDataItem['fund']) and $finDataItem['fund']['name'] === 'Total') {
+                        $financialStatements[$i]['totalfunds'] = $finDataItem['dollarAmount'];
+                    }
+                }
+            }
+            $i++;
+        }
+
+        return $financialStatements;
     }
 }
