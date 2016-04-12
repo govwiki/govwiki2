@@ -3,51 +3,14 @@
 {% block main %}
     <section class="mapController">
 
-        <div class="row">
+        <div>
             {# Typeahead Search #}
 
             {% if hasElectedOfficials %}
 
-                <style>
-                    .btn_custom {
-                        width: 50%;
-                        background-color: #588CA8;
-                        float: left;
-                        color: white;
-                        vertical-align: middle;
-                        text-align: center;
-                    }
+                <header></header>
 
-                    .btn_custom span {
-                        line-height: 45px;
-                    }
-
-                    .btn_custom.enable {
-                        background-color: #345369;
-                    }
-
-                    .legend_title {
-                        background-color: #345369;
-                        color: white;
-                    }
-
-                </style>
-
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        $('.legend_title').on('click', function () {
-                            $(this).find('.glyphicon').toggleClass('glyphicon-menu-down');
-                            $(this).find('.glyphicon').toggleClass('glyphicon-menu-up');
-                            $('#menu').collapse('toggle');
-                        });
-                    });
-                </script>
-
-                <div class="visible-xs col-xs-12" style="padding: 0">
-                    <div class="image_custom" style="width: 100%; height: 150px; background-color: darkgray"></div>
-                </div>
-
-                <div class="visible-xs col-xs-12" style="padding: 0">
+                <div class="clearfix">
                     <div class="btn_custom">
                         <span>Comparative Search</span>
                     </div>
@@ -56,7 +19,7 @@
                     </div>
                 </div>
 
-                <div class="visible-xs col-xs-12">
+                <div>
                     <div class="search_custom" style="border: 1px solid darkgray; border-radius: 5px;padding: 5px;margin-top: 10px;margin-bottom: 10px;">
                         <label for="search_custom">
                             <i class="glyphicon glyphicon-search" style="margin-left: 5px;font-size: 1.5em;color: silver;vertical-align: middle;"></i>
@@ -65,13 +28,13 @@
                     </div>
                 </div>
 
-                <div class="visible-xs col-xs-12">
+                <div>
                     <p style="color: #345369;text-align: center;">
                         Type city or official's name to get statistics or use map below
                     </p>
                 </div>
 
-                <div class="visible-xs col-xs-12" style="padding: 0">
+                <div>
                     <div class="legend_title">
                         <span style="margin-left: 10px;">SELECT OBJECTS TYPES TO SHOW</span>
                         <a data-toggle="collapse" href="#menu" aria-expanded="false" style="float: right;padding: 0 5px;">
@@ -84,7 +47,7 @@
 
         </div>
 
-        <div class="row">
+        <div>
             {{ include('@GovWikiMobile/Partial/Main/'~ mapEntity.position ~'.html.twig') }}
         </div>
 
@@ -99,7 +62,7 @@
     {{parent()}}
 
     {% stylesheets '@GovWikiMobileBundle/Resources/public/css/map.scss' filter='scss, cssrewrite' %}
-    <link rel="stylesheet" href="{{ asset_url }}">
+        <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 
 {% endblock %}

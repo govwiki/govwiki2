@@ -179,6 +179,15 @@ $(function(){
             initSublayerHandlers();
 
             fixCartodbConstrain();
+
+            // TODO: Refactor
+            document.addEventListener('DOMContentLoaded', function() {
+                $('.legend_title').on('click', function () {
+                    $(this).find('.glyphicon').toggleClass('glyphicon-menu-down');
+                    $(this).find('.glyphicon').toggleClass('glyphicon-menu-up');
+                    $('#menu').collapse('toggle');
+                });
+            });
         }
 
         /**

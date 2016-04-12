@@ -65,7 +65,7 @@ function financialStatements_revenue() {
 
     vis_data.addRows(rows);
 
-     container = 'mobile-total-revenue-pie';
+     container = 'total-revenue-pie';
      options = {
          'title': data.translations.total_revenue,
          'titleTextStyle': {
@@ -147,7 +147,7 @@ function financialStatements_expenditures() {
 
     vis_data.addRows(rows);
 
-    container = 'mobile-total-expenditures-pie';
+    container = 'total-expenditures-pie';
     options = {
         'title': data.translations.total_revenue,
         'titleTextStyle': {
@@ -213,7 +213,7 @@ function financialStatementsTree_revenues() {
         }
     }
 
-    container = 'mobile-total-revenue-tree';
+    container = 'total-revenue-tree';
     options = {
         highlightOnMouseOver: true,
         maxDepth: 1,
@@ -281,7 +281,7 @@ function financialStatementsTree_expenditures() {
         }
     }
 
-    container = 'mobile-total-expenditures-tree';
+    container = 'total-expenditures-tree';
     options = {
         highlightOnMouseOver: true,
         maxDepth: 1,
@@ -322,8 +322,10 @@ function handler_switchChart() {
     hideChartGroup('pie-charts', false);
     hideChartGroup('compare-charts', true);
     hideChartGroup('tree-charts', true);
+    hideTableGroup('financialTable', true);
+    hideTableGroup('compareTables', false);
 
-    var mobile = 'mobile-';
+    var mobile = '';
 
     $('#' + mobile + 'Financial_Statements').on('click', '.chart-controls .btn', function() {
 
@@ -366,7 +368,7 @@ function handler_switchChart() {
 
     function hideTableGroup(tableGroup, hide) {
 
-        var display = hide ? {display: 'none'} : {display: 'table'};
+        var display = hide ? {display: 'none'} : {display: 'block'};
 
         if (tableGroup == 'financialTable') {
             $('.compare-first-table').css(display);
@@ -385,7 +387,7 @@ function handler_switchChart() {
 
         var display = hide ? {display: 'none'} : {display: 'block'};
 
-        var mobile = 'mobile-';
+        var mobile = '';
 
         if (chartGroup == 'pie-charts') {
             $('#' + mobile + 'total-expenditures-pie').css(display);

@@ -60,7 +60,7 @@
         {% endif %}
 
         {# Main content #}
-        <main class="container">
+        <main>
             {{ advertising.getAdvertising(environment, 'google_adsense')|raw }}
             {% block main %}{% endblock %}
         </main>

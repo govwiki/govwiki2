@@ -240,7 +240,7 @@ $(function() {
 
     $('.prev_tab').on('click', function () {
 
-        var $mobileTab = $(this).closest('.mobile-tab');
+        var $mobileTab = $(this).closest('.tab');
 
         if ($mobileTab) {
             $mobileTab.toggleClass('active');
@@ -262,7 +262,7 @@ $(function() {
 
     $('.next_tab').on('click', function () {
 
-        var $mobileTab = $(this).closest('.mobile-tab');
+        var $mobileTab = $(this).closest('.tab');
 
         if ($mobileTab) {
             $mobileTab.toggleClass('active');
@@ -289,13 +289,13 @@ $(function() {
 
     // Sticky header
 
-    var $mobileNav = $('.mobile-nav');
+    var $mobileNav = $('.nav');
     $(window).scroll(function() {
 
         if (window.pageYOffset > 147) {
-            $mobileNav.addClass("mobile-nav_fixed");
+            $mobileNav.addClass("nav_fixed");
         } else {
-            $mobileNav.removeClass("mobile-nav_fixed");
+            $mobileNav.removeClass("nav_fixed");
         }
 
     });

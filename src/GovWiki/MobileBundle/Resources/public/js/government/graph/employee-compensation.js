@@ -62,7 +62,7 @@ function employeeCompensation_one() {
     formatter.format(vis_data, 2);
 
 
-    container = 'mobile-median-comp-graph';
+    container = 'median-comp-graph';
     options = {
         'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
         'titleTextStyle': {
@@ -119,7 +119,7 @@ function employeeCompensation_two() {
     });
     formatter.format(vis_data, 1);
 
-    container = 'mobile-median-pension-graph';
+    container = 'median-pension-graph';
     options = {
         'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
         'titleTextStyle': {

@@ -1,7 +1,22 @@
 {% if tabName == 'Overview + Elected Officials' %}
-    <div class="col-sm-8">
+
     {% for elected in government.electedOfficials %}
+
         <div class="person">
+
+            <div class="person-photo">
+
+                {% if elected.photoUrl %}
+                    <a href="{{ govwiki_path('elected', {
+                        'altTypeSlug': government.altTypeSlug,
+                        'slug': government.slug,
+                        'electedSlug': elected.slug
+                    }) }}">
+                        <img src="{{elected.photoUrl}}"/>
+                    </a>
+                {% endif %}
+
+            </div>
 
             <div class="person-info">
 
@@ -11,9 +26,9 @@
 
                 <p>
                     <a href="{{ govwiki_path('elected', {
-                        'altTypeSlug': government.altTypeSlug,
-                        'slug': government.slug,
-                        'electedSlug': elected.slug
+                    'altTypeSlug': government.altTypeSlug,
+                    'slug': government.slug,
+                    'electedSlug': elected.slug
                     }) }}" class="elected_link">Name {{elected.fullName}}</a>
                 </p>
 
@@ -35,26 +50,8 @@
 
             </div>
 
-            <div class="person-photo">
-
-                {% if elected.photoUrl %}
-                    <a href="{{ govwiki_path('elected', {
-                        'altTypeSlug': government.altTypeSlug,
-                        'slug': government.slug,
-                        'electedSlug': elected.slug
-                    }) }}"
-                        <span class="f-val">
-                            <img src="{{elected.photoUrl}}"/>
-                        </span>
-                    </a>
-                {% endif %}
-
-            </div>
-
         </div>
 
-
     {% endfor %}
-    </div>
 
 {% endif %}

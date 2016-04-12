@@ -27,7 +27,7 @@
 
     }
 
-    .mobile-header {
+    .header {
         background-image: url('/img/mobile/California.jpg');
         background-size: cover;
         background-repeat: no-repeat;
@@ -36,7 +36,7 @@
             color: white;
         }
 
-        .mobile-statistics-table {
+        .statistics-table {
             margin: 0;
 
             td {
@@ -55,17 +55,17 @@
 
         }
 
-        .mobile-header-content {
+        .header-content {
             background-color: rgba(0, 55, 122, 0.55);
         }
 
-        .mobile-header-icons {
+        .header-icons {
             text-align: right;
         }
 
     }
 
-    .mobile-nav {
+    .nav {
         margin-bottom: 0;
         padding-left: 0;
         list-style: none;
@@ -77,15 +77,17 @@
             z-index: 1000;
         }
 
-        .mobile-tab {
+        .tab {
             display: none;
-            padding: 10px 15px;
+            padding: 0 15px;
             text-align: center;
             background-color: #0B4D70;
             color: white;
 
             a {
                 color: white;
+                padding: 10px 0;
+                margin: 0 15px;
             }
 
             &.active {
@@ -112,23 +114,23 @@
 
     }
 
-    .mobile-tab-pane {
+    .tab-pane {
 
-        .mobile-tab-title {
+        .tab-title {
             background-color: #65A7D6;
             color: white;
             margin-bottom: 15px;
             padding: 0 15px;
         }
 
-        .mobile-tab-content {
+        .tab-content {
             padding: 0 7px;
 
         }
 
     }
 
-    .mobile-person {
+    .person {
         width: 100%;
         border-bottom: 1px dotted #ddd;
         padding-bottom: 10px;
@@ -172,20 +174,24 @@
 
     }
 
-    #mobile-Financial_Statements {
+    #Financial_Statements {
 
-        #mobile-total-revenue-pie {
-            min-height: 350px;
-            border: 1px solid lightgray;
-            padding: 15px;
-            padding-bottom: 0;
+        .tab-content {
+            padding: 0 22px;
         }
 
-        #mobile-total-expenditures-pie {
+        #total-revenue-pie {
             min-height: 350px;
             border: 1px solid lightgray;
-            padding: 15px;
-            padding-bottom: 0;
+            padding: 15px 15px 0 15px;
+            margin-bottom: 10px;
+        }
+
+        #total-expenditures-pie {
+            min-height: 350px;
+            border: 1px solid lightgray;
+            padding: 15px 15px 0 15px;
+            margin-bottom: 10px;
         }
 
         .chart-controls {
@@ -194,248 +200,203 @@
 
     }
 
-    section {
 
-        .loader {
-            margin: 0 auto;
-            margin-bottom: 12px;
-            display: none;
-        }
+    .loader {
+        margin: 0 auto;
+        margin-bottom: 12px;
+        display: none;
+    }
 
-        .divider {
-            color: #DBDBDB;
-            margin-top: 7%;
-        }
+    .divider {
+        color: #DBDBDB;
+        margin-top: 7%;
+    }
 
-        .selected {
-            background-color: #DDE7FF;
-        }
+    .selected {
+        background-color: #DDE7FF;
+    }
 
-        nav {
-            margin-bottom: 30px;
+    nav {
+        margin-bottom: 30px;
 
-            a {
-                font-size: 1.4em;
-            }
-        }
-
-        #Financial_Statements {
-
-            .government-compare {
-                padding-top: 15px;
-
-                h4 {
-                    color: #0d87e9;
-                }
-
-                select {
-                    font-size: 12px;
-                    padding: 10px;
-                }
-
-                .first-condition {
-                    border: 1px solid #0d87e9;
-                    border-radius: 10px;
-                }
-
-                .second-condition {
-                    border: 1px solid #0d87e9;
-                    border-radius: 10px;
-                }
-
-                .government-categories {
-                    border: 1px solid #0d87e9;
-                    border-radius: 10px;
-
-                    .category {
-
-                    }
-
-                    .caption {
-
-                    }
-
-                }
-
-            }
-
-            // Charts
-            #total-compare-first-pie, #total-compare-second-pie, #total-compare-column {
-                p {
-                    padding: 150px 0;
-                    background-color: #f3f3f3;
-                }
-            }
-
-        }
-
-        // Statistics (All pages)
-        .statistics {
+        a {
             font-size: 1.4em;
+        }
+    }
 
-            .f-nam {
-                min-width: 540px;
-                display: inline-block;
-                color: #666;
-                text-align: left;
-                margin-right: 5px;
-                vertical-align: top;
-                font-size: 120%;
+    #Financial_Statements {
+
+        .government-compare {
+            padding-top: 15px;
+
+            h4 {
+                color: #0d87e9;
             }
 
-            .f-nam__bold {
-                font-weight: bold;
+            select {
+                font-size: 12px;
+                padding: 10px;
             }
 
-            .f-nam__italic {
-                font-style: italic;
+            .first-condition {
+                border: 1px solid #0d87e9;
+                border-radius: 10px;
+                padding: 0 12px;
             }
 
-            .f-nam__underline {
-                text-decoration: underline;
+            .second-condition {
+                border: 1px solid #0d87e9;
+                border-radius: 10px;
+                padding: 0 12px;
             }
 
-            .currency-symbol {
-                padding-left: 40px;
+            .government-categories {
+                border: 1px solid #0d87e9;
+                border-radius: 10px;
+                padding: 0 12px;
+
+            }
+
+        }
+
+        // Charts
+        #total-compare-first-pie, #total-compare-second-pie, #total-compare-column {
+            p {
+                padding: 150px 0;
+                background-color: #f3f3f3;
             }
         }
 
-        // Statistics table (All tabs, except financial statement tab)
-        .statistics-table {
-            width: 100%;
-            thead, tbody {
+    }
 
-                & > .statistics-row {
+    // Statistics (All pages)
+    .statistics {
+        font-size: .9em;
 
-                    & > td {
-                        padding: 0;
+        .f-nam {
+            display: inline-block;
+            color: #666;
+            text-align: left;
+            margin-right: 5px;
+            vertical-align: top;
+            font-size: 120%;
+        }
 
-                        &:nth-child(1) {
-                            color: #666;
-                            border-bottom: 1px dotted #ddd;
-                        }
+        .f-nam__bold {
+            font-weight: bold;
+        }
 
-                        &:nth-child(2) {
-                            color: #000;
-                            text-align: right;
-                            white-space: nowrap;
-                        }
+        .f-nam__italic {
+            font-style: italic;
+        }
 
-                        a.rank {
-                            font-style: italic;
-                            font-size: 75%;
-                            cursor: pointer;
-                        }
+        .f-nam__underline {
+            text-decoration: underline;
+        }
 
+        .currency-symbol {
+            padding-left: 40px;
+        }
+    }
+
+    // Statistics table (All tabs, except financial statement tab)
+    .statistics-table {
+        width: 100%;
+        thead, tbody {
+
+            & > .statistics-row {
+
+                & > td {
+                    padding: 0;
+
+                    &:nth-child(1) {
+                        color: #666;
+                        border-bottom: 1px dotted #ddd;
                     }
 
-                }
-
-            }
-        }
-
-        // Dynamic tables on financial statement tab
-        .compare-first-table, .compare-second-table {
-            width: 49% !important;
-        }
-
-        // Default financial table on financial statement tab
-        .financial-table, .compare-first-table, .compare-second-table {
-            width: 100%;
-            thead, tbody {
-
-                & > tr {
-
-                    & > th, td {
-                        font-size: 1.4em;
-                        padding: 0;
-                        border: none;
-                        white-space: nowrap;
+                    &:nth-child(2) {
+                        color: #000;
                         text-align: right;
+                        white-space: nowrap;
+                    }
 
-                        &:nth-child(1) {
-                            color: #666;
-                            width: 30%;
-                            text-align: left;
-                        }
-
-                        &:nth-child(2) {
-                            color: #666;
-                            width: 20%;
-                        }
-
-                        &:nth-child(3) {
-                            color: #666;
-                            width: 20%;
-                        }
-
-                        &:nth-child(4) {
-                            color: #666;
-                            width: 20%;
-                        }
-
+                    a.rank {
+                        font-style: italic;
+                        font-size: 75%;
+                        cursor: pointer;
                     }
 
                 }
 
             }
+
         }
+    }
 
-        .person {
-            width: 100%;
-            margin-top: 20px;
-            border-bottom: 1px dotted #ddd;
+    // Default financial table on financial statement tab
+    .financial-table table, .compare-first-table table, .compare-second-table table{
+        width: 100%;
+        thead, tbody {
 
-            &-info {
-                width: 79%;
-                vertical-align: top;
-                font-size: 1.4em;
-                display: inline-block;
-                min-width: 79%;
+            & > tr {
 
-                p {
-                    margin-bottom: 0;
+                & > th, td {
+                    font-size: 1.4em;
+                    padding: 0;
+                    border: none;
+                    white-space: nowrap;
+                    text-align: right;
+
+                    &:nth-child(1) {
+                        color: #666;
+                        width: 30%;
+                        text-align: left;
+                    }
+
+                    &:nth-child(2) {
+                        color: #666;
+                        width: 20%;
+                    }
+
+                    &:nth-child(3) {
+                        color: #666;
+                        width: 20%;
+                    }
+
+                    &:nth-child(4) {
+                        color: #666;
+                        width: 20%;
+                    }
+
                 }
 
             }
 
-
-            &-photo {
-                width: 20%;
-                display: inline-block;
-
-                img {
-                    width: 100%;
-                    float: right;
-                }
-
-            }
         }
+    }
 
-        @import "partials/rank-popover/rank-popover"; /*
-         todo hardcode for puerto
-      */
-        .nav-pills__puerto {
+    @import "partials/rank-popover/rank-popover"; /*
+     todo hardcode for puerto
+  */
+    .nav-pills__puerto {
 
-            .active {
-                a {
-                    background-color: #f15a29;
-                    color: white;
-                }
-            }
-
+        .active {
             a {
-
-                background-color: white;
-                color: #f15a29;
-
-                &:hover {
-                    background-color: #f15a29;
-                    color: white;
-                }
+                background-color: #f15a29;
+                color: white;
             }
         }
 
+        a {
+
+            background-color: white;
+            color: #f15a29;
+
+            &:hover {
+                background-color: #f15a29;
+                color: white;
+            }
+        }
     }
 
    .subscribe-row {

@@ -7,19 +7,13 @@
     {# Must be unique #}
     <section class="electedController" data-elected-name="{{elected.fullName}}">
 
-        <div class="row person-info-header">
-            <div class="hidden-xs col-md-10 col-md-push-1">
-                <h5>ELECTED OFFICIALS - PROFILE</h5>
-            </div>
-        </div>
+        <div class="clearfix person-info-content">
 
-        <div class="row person-info-content">
-
-            <div class="col-xs-5 col-sm-3 col-sm-push-7">
+            <div class="col-xs-5">
                 <img src="{{elected.photoUrl}}" class="person-photo"/>
             </div>
 
-            <div class="col-xs-7 col-sm-7 col-sm-pull-3 col-sm-offset-1">
+            <div class="col-xs-7">
                 <p class="visible-xs" style="font-weight: 700;font-size: 1.2em;">{{elected.fullName}}</p>
                 <p>Title: {{elected.title}}</p>
                 <p>Name: {{elected.fullName}} &nbsp;&nbsp;
@@ -33,45 +27,35 @@
 
         </div>
 
-        <hr/>
-
         {# TMP MOBILE LAYOUT (START) #}
 
-            <div class="row mobile-person-info-tabs">
-                <div class="visible-xs col-xs-12">
+            <div class="person-info-tabs">
 
-                    <!-- Mobile Nav tabs -->
-                    <div class="row">
-                        <div class="visible-xs col-xs-12" style="padding: 0">
+                <!-- Mobile Nav tabs -->
+                <ul class="nav nav-pills mobile" role="tablist">
+                    <li role="presentation" class="active"><a href="#Votes" aria-controls="Votes" role="tab" data-toggle="tab" aria-expanded="true">Votes</a></li>
+                    <li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>
+                    <li role="presentation"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
+                    <li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>
+                </ul>
 
-                            <ul class="nav nav-pills" role="tablist">
-                                <li role="presentation" class="active"><a href="#Mobile-Votes" aria-controls="Mobile-Votes" role="tab" data-toggle="tab" aria-expanded="true">Votes</a></li>
-                                <li role="presentation"><a href="#Mobile-Contributions" aria-controls="Mobile-Contributions" role="tab" data-toggle="tab">Contributions</a></li>
-                                <li role="presentation"><a href="#Mobile-Endorsements" aria-controls="Mobile-Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
-                                <li role="presentation"><a href="#Mobile-Statements" aria-controls="Mobile-Statements" role="tab" data-toggle="tab">Public Statements</a></li>
-                            </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
 
-                        </div>
-                    </div>
+                    {# Votes #}
+                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:votes.html.twig') }}
 
-                    <!-- Tab panes -->
-                    <div class="tab-content" style="margin-top: 20px; margin-bottom: 20px;">
+                    {# Contributions #}
+                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:contributions.html.twig') }}
 
-                        {# Votes #}
-                        {{ include('GovWikiMobileBundle:Partial/Elected/MobileTabs:votes.html.twig') }}
+                    {# Endorsements #}
+                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:endorsements.html.twig') }}
 
-                        {# Contributions #}
-                        {{ include('GovWikiMobileBundle:Partial/Elected/MobileTabs:contributions.html.twig') }}
-
-                        {# Endorsements #}
-                        {{ include('GovWikiMobileBundle:Partial/Elected/MobileTabs:endorsements.html.twig') }}
-
-                        {# Public Statements #}
-                        {{ include('GovWikiMobileBundle:Partial/Elected/MobileTabs:publicStatements.html.twig') }}
-
-                    </div>
+                    {# Public Statements #}
+                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}
 
                 </div>
+
             </div>
 
         {# TMP MOBILE LAYOUT (END) #}

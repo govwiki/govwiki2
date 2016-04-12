@@ -375,7 +375,7 @@ $(function() {
         });
     });
 
-    $pane.on('click', 'table .add', function(e) {
+    $pane.on('click', '.add', function(e) {
         var compiledTemplate, currentEntity, insertCategories, tabPane, tableType;
         tabPane = $(e.target).closest('.tab-pane');
         tableType = tabPane[0].id;

@@ -66,11 +66,11 @@ Step.prototype.loading = function(isLoading) {
 
 /**
  * (DOM)
- * 
+ *
  * Manipulate tab state
  */
 Step.prototype.switchGraphs = function() {
-    
+
     var $preloader = $('<div class="loader"></div>');
     var $firstPie = $('#total-compare-first-pie');
     var $secondPie = $('#total-compare-second-pie');
@@ -87,7 +87,7 @@ Step.prototype.switchGraphs = function() {
 
     // Show preloaders
     $compareColumn.find('p').append($preloader);
-    
+
 };
 
 
@@ -197,14 +197,18 @@ Step.prototype.drawDiagramm = function(government, blockId, captionCategory) {
                 'fontSize': 12
             }
         },
-        'width': 470,
-        'height': 350,
-        'pieStartAngle': 60,
+        width: '100%',
+        height: '100%',
         'sliceVisibilityThreshold': 0,
         'forceIFrame': true,
-        'chartArea': {
-            width: '90%',
-            height: '75%'
+        chartArea: {
+            left: "3%",
+            top: "13%",
+            height: "94%",
+            width: "94%"
+        },
+        legend: {
+            position: 'top', maxLines: '6'
         }
     };
     chart = new google.visualization.PieChart(document.getElementById(blockId));
@@ -325,8 +329,8 @@ Step.prototype.drawColumnChart = function(comparedData, blockId) {
                 'fontSize': 12
             }
         },
-        'width': 500,
-        'height': 350,
+        'width': '100%',
+        'height': '100%',
         'pieStartAngle': 60,
         'sliceVisibilityThreshold': .05,
         'forceIFrame': true,

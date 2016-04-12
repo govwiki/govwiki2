@@ -37,6 +37,7 @@ body > header {
             display: inline-block;
             width: 100%;
             background-color: #54829b;
+            margin-top: -1px;
 
             a {
                text-transform: uppercase;
@@ -53,9 +54,6 @@ body > header {
                border-bottom: 1px solid #81a2b4;
             }
 
-            &:last-child {
-               margin-top: -1px;
-            }
 
          }
 

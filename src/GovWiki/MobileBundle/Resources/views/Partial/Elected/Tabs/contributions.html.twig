@@ -1,7 +1,146 @@
+{% import _self as helper %}
+{#
+    contributionYear
+    contributionName
+    independentExpenditureDesc
+    contributionAmount
+    contributionType
+#}
+
+
 <div role="tabpanel" class="tab-pane" id="Contributions">
     <div class="tab-pane-main">
-        {% include '@GovWikiMobile/Partial/Elected/Lists/contributions.html.twig' with {
-            'list': contributions
-        } %}
+
+        <div class="add_action">
+            <span>Add new Contribution</span>
+            <span class="glyphicon glyphicon-plus"></span>
+        </div>
+
+        {% for contribution in contributions %}
+            {% set blockId = 'contributionCollapse' ~ loop.index %}
+
+            <div data-id="{{contribution.id}}" {% if (contribution.request is not null) and (contribution.request.status == 'pending') -%}
+                    style="background: rgba(80, 0, 0, 0.1)"
+                {%- endif -%}>
+            </div>
+
+            {# Card #}
+            <div class="card">
+
+                {# Header #}
+                <div class="card__header text-justify" data-toggle="collapse" data-target="#{{ blockId }}"
+                     aria-expanded="false" aria-controls="{{ blockId }}">
+
+                    {# Contribution Name#}
+                    <p class="card__header-title">{{ contribution.contributorName }}</p>
+
+                    {# Contribution amount #}
+                    <div class="card__group card__group_offset">
+                        <span class="card__group-item">Election year: {{ contribution.electionYear }}</span>
+                    </div>
+
+                    {# Contribution amount #}
+                    <div class="card__group card__group_offset">
+                        <span class="card__group-item">Ind. Exp. Desc : <strong>{{ contribution.independentExpenditureDesc ?? '-' }}</strong></span>
+                        <span class="card__group-item card__group-item_right">Amount: <strong>{{ contribution.contributionAmount|number_format }}</strong></span>
+                    </div>
+
+                    {# Expand icon #}
+                    <div class="card__header-expand" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false"
+                         aria-controls="{{ blockId }}">
+                        <i class="glyphicon glyphicon-chevron-down"></i>
+                    </div>
+
+                </div>
+
+                {# Content (Collapsable) #}
+                <div class="collapse" id="{{ blockId }}">
+                    <div class="card__block">
+
+                        <div class="card__group">
+                            <span class="card__group-item">Election year: {{ helper.contributionYear(contribution) }}</span>
+                        </div>
+
+                        {# Vote date & issue category #}
+                        <div class="card__group">
+                            <span class="card__group-item">
+                                Ind. Exp. Desc : {{ helper.independentExpenditureDesc(contribution) }}
+                            </span>
+                            <span class="card__group-item card__group-item_right">
+                                Amount: {{ helper.contributionAmount(contribution) }}
+                            </span>
+                        </div>
+
+                        {# Legislation info #}
+                        <h4 class="card-title">{{ helper.contributionName(contribution) }}</h4>
+
+                    </div>
+                </div>
+
+            </div>{# Card end #}
+
+        {% else %}
+
+            <tr>
+                <td colspan="6" align="center">
+                    <p style="font-size:18px; margin: 0;">No information at this time. Please check back later.</p>
+                </td>
+            </tr>
+
+        {% endfor %}
+
     </div>
 </div>
+
+
+
+
+{% macro contributionYear (contribution) %}
+
+    <div data-election-year="{{contribution.electionYear}}" style="display: inline-block">
+        <a href="javascript:void(0);" data-type="text" data-pk="1"
+           data-placeholder="Please edit" data-title="Please edit"
+           class="editable editable-pre-wrapped editable-click" data-original-title=""
+           title="">{{contribution.electionYear}}<span class="glyphicon glyphicon-pencil edit"></span></a>
+    </div>
+{% endmacro %}
+
+{% macro contributionName (contribution) %}
+    <div data-contributor-name="{{contribution.contributorName}}" style="display: inline-block">
+        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+           data-placeholder="Please edit" data-title="Please edit"
+           class="editable editable-pre-wrapped editable-click" data-original-title=""
+           title="">{{contribution.contributorName}}</a>
+        <span class="glyphicon glyphicon-pencil edit"></span>
+    </div>
+{% endmacro %}
+
+{% macro independentExpenditureDesc (contribution) %}
+    <div data-independent-expenditure-desc="{{contribution.independentExpenditureDesc}}" style="display: inline-block">
+        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+           data-placeholder="Please edit" data-title="Please edit"
+           class="editable editable-pre-wrapped editable-click" data-original-title=""
+           title="">{{contribution.independentExpenditureDesc}}</a>
+        <span class="glyphicon glyphicon-pencil edit"></span>
+    </div>
+{% endmacro %}
+
+{% macro contributionAmount (contribution) %}
+    <div data-contribution-amount="{{contribution.contributionAmount}}" style="display: inline-block">
+        <a href="javascript:void(0);" data-type="text" data-pk="1"
+           data-placeholder="Please edit" data-title="Please edit"
+           class="editable editable-pre-wrapped editable-click" data-original-title=""
+           title="">{{contribution.contributionAmount|number_format}}</a>
+        <span class="glyphicon glyphicon-pencil edit"></span>
+    </div>
+{% endmacro %}
+
+{% macro contributorType (contribution) %}
+    <div data-contributor-type="{{contribution.contributorType}}" style="display: inline-block">
+        <a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{'Candidate Committee': 'Candidate Committee'}, {'Corporate': 'Corporate', 'Individual': 'Individual', 'Political Party': 'Political Party', 'Political Action Committee': 'Political Action Committee', 'Self': 'Self', 'Union': 'Union', 'Other': 'Other'}"
+           data-placeholder="Please edit" data-title="Please edit"
+           class="editable editable-pre-wrapped editable-click" data-original-title=""
+           title="">{{contribution.contributorType}}</a>
+        <span class="glyphicon glyphicon-pencil edit"></span>
+    </div>
+{% endmacro %}

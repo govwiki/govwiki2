@@ -75,13 +75,18 @@ Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
                 'fontSize': 12
             }
         },
-        'width': 470,
-        'height': 350,
+        width: '100%',
+        height: '100%',
         'sliceVisibilityThreshold': 0,
         'forceIFrame': true,
-        'chartArea': {
-            width: '90%',
-            height: '75%'
+        chartArea: {
+            left: "3%",
+            top: "13%",
+            height: "94%",
+            width: "94%"
+        },
+        legend: {
+            position: 'top', maxLines: '6'
         }
     };
     chart = new google.visualization.PieChart(document.getElementById(blockId));
@@ -127,7 +132,7 @@ Step.prototype.drawTable = function(container, comparedData) {
 
     var $container = $(container);
     $container.html('');
-    var governmentNumber = (container == '.compare-first-table') ? 'firstGovernment' : 'secondGovernment';
+    var governmentNumber = (container == '.compare-first-table table') ? 'firstGovernment' : 'secondGovernment';
 
     var category = comparedData.category;
     var governmentName = comparedData[governmentNumber].name;
@@ -225,8 +230,8 @@ Step.prototype.loadComparedData = function (tab, category, select) {
         contentType: 'application/json',
         success: function (comparedData) {
             self.switchGraphs();
-            self.drawTable('.compare-first-table', comparedData);
-            self.drawTable('.compare-second-table', comparedData);
+            self.drawTable('.compare-first-table table', comparedData);
+            self.drawTable('.compare-second-table table', comparedData);
             self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
             self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
         },

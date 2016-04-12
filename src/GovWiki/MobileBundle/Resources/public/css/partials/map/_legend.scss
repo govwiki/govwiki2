@@ -26,18 +26,12 @@
 
   .legend-item {
     position: relative;
-    padding: 8px 8px 8px 19px;
+    padding: 2px 8px;
     background-color: #f5f5f5;
     cursor: pointer;
 
     &:first-child {
       background-color: #dddddd;
-    }
-
-    &:hover {
-      color: #3c763d;
-      border-color: #d6e9c6;
-      background-color: #dff0d8;
     }
 
     &.selected {

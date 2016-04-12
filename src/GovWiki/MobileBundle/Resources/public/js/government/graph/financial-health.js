@@ -33,7 +33,7 @@ function financialHealth_one() {
     vis_data.addRows([['Public Safety Exp', 1 - data['public_safety_exp_over_tot_gov_fund_revenue']], ['Other', +data['public_safety_exp_over_tot_gov_fund_revenue']]]);
 
 
-    container = 'mobile-public-safety-pie';
+    container = 'public-safety-pie';
     options = {
         'title': 'Public safety expense',
         'titleTextStyle': {
@@ -80,7 +80,7 @@ function financialHealth_two() {
     vis_data.addRows([['Total Revenue \n Per Capita', +data['total_revenue_per_capita']], ['Median Total \n Revenue Per \n Capita For All Cities', 420]]);
 
 
-    container = 'mobile-fin-health-revenue-graph';
+    container = 'fin-health-revenue-graph';
     options = {
         'title': 'Total Revenue',
         'titleTextStyle': {
@@ -117,7 +117,7 @@ function financialHealth_three() {
     vis_data.addColumn('number', 'Exp.');
     vis_data.addRows([['Total Expenditures \n Per Capita', +data['total_expenditures_per_capita']], ['Median Total \n Expenditures \n Per Capita \n For All Cities', 420]]);
 
-    container = 'mobile-fin-health-expenditures-graph';
+    container = 'fin-health-expenditures-graph';
     options = {
         'title': 'Total Expenditures',
         'titleTextStyle': {
