@@ -181,12 +181,11 @@ $(function(){
             fixCartodbConstrain();
 
             // TODO: Refactor
-            document.addEventListener('DOMContentLoaded', function() {
-                $('.legend_title').on('click', function () {
-                    $(this).find('.glyphicon').toggleClass('glyphicon-menu-down');
-                    $(this).find('.glyphicon').toggleClass('glyphicon-menu-up');
-                    $('#menu').collapse('toggle');
-                });
+            $('.legend_title').on('click', function () {
+                var $glyph = $(this).find('.glyphicon');
+                $glyph.toggleClass('glyphicon-menu-down');
+                $glyph.toggleClass('glyphicon-menu-up');
+                $('#menu').collapse('toggle');
             });
         }
 
