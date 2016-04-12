@@ -39,37 +39,39 @@
         </header>
 
         {# Menubar #}
-        <menu class="container mainmenu">
-            <div class="row">
-                <div class="col-md-6">
-                    {% if years is defined and years|length > 1 %}
-                        <label for="year-selector" class="control-label">{{ 'general.year_selector_label'|trans }}: </label>
-                        <select id="year-selector" class="form-control form-control__inline">
-                            {% for year in years %}
-                                <option value="{{ year }}" {%-
-                                    if (government is defined and government.currentYear is defined and government.currentYear == year)
-                                -%}
-                                        selected
-                                    {%- endif -%}>
-                                    {{- year -}}
-                                </option>
-                            {% endfor %}
-                        </select>
+        {% if _locales is defined %}
+            <menu class="container mainmenu">
+                <div class="row">
+                    <div class="col-md-6">
+                        {% if years is defined and years|length > 1 %}
+                            <label for="year-selector" class="control-label">{{ 'general.year_selector_label'|trans }}: </label>
+                            <select id="year-selector" class="form-control form-control__inline">
+                                {% for year in years %}
+                                    <option value="{{ year }}" {%-
+                                        if (government is defined and government.currentYear is defined and government.currentYear == year)
+                                    -%}
+                                            selected
+                                        {%- endif -%}>
+                                        {{- year -}}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                    </div>
+                    {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) %}
+
+                    {% if _locales is defined %}
+                        <div class="col-md-6">
+                            <div class="pull-right">
+                                <ul class="nav">
+                                    {{- _locales|raw -}}
+                                </ul>
+                            </div>
+                        </div>
                     {% endif %}
                 </div>
-                {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) %}
-
-                {% if _locales is defined %}
-                    <div class="col-md-6">
-                        <div class="pull-right">
-                            <ul class="nav">
-                                {{- _locales|raw -}}
-                            </ul>
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
-        </menu>
+            </menu>
+        {% endif %}
 
         {# Main content #}
         <main class="container">
@@ -145,6 +147,8 @@
             {% endif %}
             <script> window.gw.username = "{{ username }}"; </script>
         {% endblock %}
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
     </body>
 </html>

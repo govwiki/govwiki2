@@ -113,18 +113,21 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getMap()
     {
-        $map = $this->getEntity()->getMap();
+        if ($this->getEntity()) {
+            $map = $this->getEntity()->getMap();
 
-        return [
-            'centerLatitude' => $map->getCenterLatitude(),
-            'centerLongitude' => $map->getCenterLongitude(),
-            'zoom' => $map->getZoom(),
-            'position' => $map->getPosition(),
-            'colorizedCountyConditions' => $map->getColorizedCountyConditions(),
-            'debug' => $map->isDebug(),
-            'legendTypes' => $map->getLegendTypes(),
-            'legend' => $map->getLegend(),
-        ];
+
+            return [
+                'centerLatitude' => $map->getCenterLatitude(),
+                'centerLongitude' => $map->getCenterLongitude(),
+                'zoom' => $map->getZoom(),
+                'position' => $map->getPosition(),
+                'colorizedCountyConditions' => $map->getColorizedCountyConditions(),
+                'debug' => $map->isDebug(),
+                'legendTypes' => $map->getLegendTypes(),
+                'legend' => $map->getLegend(),
+            ];
+        }
     }
 
     public function getAvailableYears()
@@ -759,7 +762,9 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getDefaultLocale()
     {
-        return $this->getEntity()->getDefaultLocale()->getShortName();
+        if ($this->getEntity()) {
+            return $this->getEntity()->getDefaultLocale()->getShortName();
+        }
     }
 
     /**

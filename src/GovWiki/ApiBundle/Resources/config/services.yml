@@ -23,17 +23,24 @@ services:
                 event: kernel.request
                 priority: 20
 
+    govwiki_api.environment.determinator.abstract:
+        class: GovWiki\ApiBundle\Determinator\AbstractEnvironmentDeterminator
+        arguments: [ %kernel.environment% ]
+        abstract: true
+
     govwiki_api.environment.determinator.path:
         class: GovWiki\ApiBundle\Determinator\PathDeterminator
+        arguments: [ %kernel.environment% ]
         tags:
             - { name: environment.determinator, alias: path }
+        parent: govwiki_api.environment.determinator.abstract
 
     govwiki_api.environment.determinator.host:
         class: GovWiki\ApiBundle\Determinator\HostDeterminator
-        arguments:
-            - @doctrine.orm.default_entity_manager
+        arguments: [%kernel.environment%, @doctrine.orm.default_entity_manager]
         tags:
             - { name: environment.determinator, alias: host }
+        parent: govwiki_api.environment.determinator.abstract
 
     govwiki_api.manager.environment:
         class: GovWiki\ApiBundle\Manager\EnvironmentManager

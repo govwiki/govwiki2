@@ -254,3 +254,90 @@ body > header {
   vertical-align: middle; }
 .table > tbody > tr > td {
   vertical-align: middle; }
+
+table td.button-row {
+  padding: 0 !important; }
+  table td.button-row .btn {
+    width: 100%;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0; }
+
+#subscribers table td, #subscribers table th {
+  text-align: center; }
+
+/*
+   Pagination sortable.
+*/
+.sortable a i {
+  background: url("/bundles/govwikifrontend/img/bg.gif");
+  width: 21px;
+  height: 9px;
+  display: inline-block; }
+.sortable a.asc i {
+  height: 4px;
+  margin-bottom: 4px;
+  background: url("/bundles/govwikifrontend/img/asc.gif"); }
+.sortable a.desc i {
+  height: 4px;
+  margin-bottom: 4px;
+  background: url("/bundles/govwikifrontend/img/desc.gif"); }
+
+/* ===================================================== */
+/* =============== Environment styles ================== */
+/* ===================================================== */
+#environment-styles .style__data-param {
+  display: inline-block;
+  width: 120px;
+  text-align: left; }
+#environment-styles .environment-styles__delete {
+  color: #ff0000;
+  font-size: 16px;
+  cursor: pointer; }
+#environment-styles .data-value-default {
+  margin-left: 26px; }
+#environment-styles .color-picker span {
+  padding: 0;
+  padding-right: 8px; }
+#environment-styles h5 {
+  display: inline-block; }
+#environment-styles input {
+  font-size: 12px;
+  box-shadow: none;
+  outline: none;
+  border-bottom: 1px solid #ccc;
+  text-align: center; }
+#environment-styles h4 span {
+  position: relative;
+  top: -2px; }
+#environment-styles .style-remove-button {
+  font-size: 12px;
+  color: red; }
+
+#govwiki_admin_form_styles_properties {
+  min-height: 100px; }
+
+#environment-styles__tabs {
+  padding-bottom: 20px; }
+  #environment-styles__tabs li {
+    margin-right: 6px; }
+
+body .container a.btn-primary,
+body .container a.btn-primary:hover {
+  color: #fff;
+  background-color: #2196F3; }
+
+.delay-input {
+  box-shadow: inset 0 -1px 0 #dddddd;
+  -webkit-box-shadow: inset 0 -1px 0 #dddddd;
+  padding: 1px;
+  width: 200px; }
+  .delay-input input {
+    border: none;
+    background-color: transparent;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    width: 95px; }
+    .delay-input input:focus {
+      outline: none !important;
+      -webkit-box-shadow: none;
+      box-shadow: none; }

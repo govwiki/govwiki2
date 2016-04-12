@@ -1,0 +1,54 @@
+
+/* ============================= */
+/* ====== Map Controller ======= */
+/* ============================= */
+
+@import "main";
+
+.mapController {
+
+   @import "partials/typeahead/typeahead";
+
+   @import "partials/map/map";
+
+   .intro-text {
+      padding: 20px 7px;
+
+      .title h4{
+         text-align: center;
+         color: $main-text;
+      }
+
+   }
+
+   header {
+      width: 100%;
+      height: 150px;
+      background-image: url('/img/mobile/California.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+   }
+
+   .btn_custom {
+      width: 50%;
+      background-color: #588CA8;
+      float: left;
+      color: white;
+      vertical-align: middle;
+      text-align: center;
+   }
+
+   .btn_custom span {
+      line-height: 45px;
+   }
+
+   .btn_custom.enable {
+      background-color: #345369;
+   }
+
+   .legend_title {
+      background-color: #345369;
+      color: white;
+   }
+
+}

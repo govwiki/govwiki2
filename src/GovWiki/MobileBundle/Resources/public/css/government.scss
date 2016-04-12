@@ -1,0 +1,410 @@
+/* ==================================== */
+/* ====== Government Controller ======= */
+/* ==================================== */
+@import "main";
+
+.governmentController {
+
+    @import "partials/typeahead/typeahead_government";
+
+    nav a {
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    header {
+
+        h3 {
+            color: $main-text;
+
+            /*
+               todo hardcode for puerto.
+            */
+            &.puerto {
+                color: #f15a29;
+            }
+        }
+
+    }
+
+    .header {
+        background-image: url('/img/mobile/California.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+
+        a {
+            color: white;
+        }
+
+        .statistics-table {
+            margin: 0;
+
+            td {
+                color: white;
+                padding: 0 8px;
+
+                &:nth-child(1) {
+                    text-align: left;
+                }
+
+                &:nth-child(2) {
+                    text-align: right;
+                }
+
+            }
+
+        }
+
+        .header-content {
+            background-color: rgba(0, 55, 122, 0.55);
+        }
+
+        .header-icons {
+            text-align: right;
+        }
+
+    }
+
+    .nav {
+        margin-bottom: 0;
+        padding-left: 0;
+        list-style: none;
+
+        &_fixed {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .tab {
+            display: none;
+            padding: 0 15px;
+            text-align: center;
+            background-color: #0B4D70;
+            color: white;
+
+            a {
+                color: white;
+                padding: 10px 0;
+                margin: 0 15px;
+            }
+
+            &.active {
+                display: block;
+            }
+
+            .prev_tab {
+                position: absolute;
+                display: block;
+                top: 0;
+                left: 15px;
+                padding: 10px 0;
+            }
+
+            .next_tab {
+                position: absolute;
+                display: block;
+                top: 0;
+                right: 15px;
+                padding: 10px 0;
+            }
+
+        }
+
+    }
+
+    .tab-pane {
+
+        .tab-title {
+            background-color: #65A7D6;
+            color: white;
+            margin-bottom: 15px;
+            padding: 0 15px;
+        }
+
+        .tab-content {
+            padding: 0 7px;
+
+        }
+
+    }
+
+    .person {
+        width: 100%;
+        border-bottom: 1px dotted #ddd;
+        padding-bottom: 10px;
+
+        &:not(:first-child) {
+            margin-top: 15px;
+        }
+
+        &-info {
+            width: 57%;
+            font-size: 1em;
+            display: inline-block;
+            padding: 7px;
+            vertical-align: middle;
+            word-wrap: break-word;
+
+            p {
+                margin-bottom: 0;
+            }
+
+        }
+
+        &-photo {
+            width: 41%;
+            display: inline-block;
+            vertical-align: middle;
+
+            a {
+                display: inline-block;
+                width: 100%;
+                height: 100%;
+                text-align: center;
+
+                img {
+                    width: 100%;
+                    min-height: 160px;
+                }
+            }
+
+        }
+
+    }
+
+    #Financial_Statements {
+
+        .tab-content {
+            padding: 0 22px;
+        }
+
+        #total-revenue-pie {
+            min-height: 350px;
+            border: 1px solid lightgray;
+            padding: 15px 15px 0 15px;
+            margin-bottom: 10px;
+        }
+
+        #total-expenditures-pie {
+            min-height: 350px;
+            border: 1px solid lightgray;
+            padding: 15px 15px 0 15px;
+            margin-bottom: 10px;
+        }
+
+        .chart-controls {
+            margin-bottom: 20px;
+        }
+
+    }
+
+
+    .loader {
+        margin: 0 auto;
+        margin-bottom: 12px;
+        display: none;
+    }
+
+    .divider {
+        color: #DBDBDB;
+        margin-top: 7%;
+    }
+
+    .selected {
+        background-color: #DDE7FF;
+    }
+
+    nav {
+        margin-bottom: 30px;
+
+        a {
+            font-size: 1.4em;
+        }
+    }
+
+    #Financial_Statements {
+
+        .government-compare {
+            padding-top: 15px;
+
+            h4 {
+                color: #0d87e9;
+            }
+
+            select {
+                font-size: 12px;
+                padding: 10px;
+            }
+
+            .first-condition {
+                border: 1px solid #0d87e9;
+                border-radius: 10px;
+                padding: 0 12px;
+            }
+
+            .second-condition {
+                border: 1px solid #0d87e9;
+                border-radius: 10px;
+                padding: 0 12px;
+            }
+
+            .government-categories {
+                border: 1px solid #0d87e9;
+                border-radius: 10px;
+                padding: 0 12px;
+
+            }
+
+        }
+
+        // Charts
+        #total-compare-first-pie, #total-compare-second-pie, #total-compare-column {
+            p {
+                padding: 150px 0;
+                background-color: #f3f3f3;
+            }
+        }
+
+    }
+
+    // Statistics (All pages)
+    .statistics {
+        font-size: .9em;
+
+        .f-nam {
+            display: inline-block;
+            color: #666;
+            text-align: left;
+            margin-right: 5px;
+            vertical-align: top;
+            font-size: 120%;
+        }
+
+        .f-nam__bold {
+            font-weight: bold;
+        }
+
+        .f-nam__italic {
+            font-style: italic;
+        }
+
+        .f-nam__underline {
+            text-decoration: underline;
+        }
+
+        .currency-symbol {
+            padding-left: 40px;
+        }
+    }
+
+    // Statistics table (All tabs, except financial statement tab)
+    .statistics-table {
+        width: 100%;
+        thead, tbody {
+
+            & > .statistics-row {
+
+                & > td {
+                    padding: 0;
+
+                    &:nth-child(1) {
+                        color: #666;
+                        border-bottom: 1px dotted #ddd;
+                    }
+
+                    &:nth-child(2) {
+                        color: #000;
+                        text-align: right;
+                        white-space: nowrap;
+                    }
+
+                    a.rank {
+                        font-style: italic;
+                        font-size: 75%;
+                        cursor: pointer;
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+    // Default financial table on financial statement tab
+    .financial-table table, .compare-first-table table, .compare-second-table table{
+        width: 100%;
+        thead, tbody {
+
+            & > tr {
+
+                & > th, td {
+                    font-size: 1.4em;
+                    padding: 0;
+                    border: none;
+                    white-space: nowrap;
+                    text-align: right;
+
+                    &:nth-child(1) {
+                        color: #666;
+                        width: 30%;
+                        text-align: left;
+                    }
+
+                    &:nth-child(2) {
+                        color: #666;
+                        width: 20%;
+                    }
+
+                    &:nth-child(3) {
+                        color: #666;
+                        width: 20%;
+                    }
+
+                    &:nth-child(4) {
+                        color: #666;
+                        width: 20%;
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+    @import "partials/rank-popover/rank-popover"; /*
+     todo hardcode for puerto
+  */
+    .nav-pills__puerto {
+
+        .active {
+            a {
+                background-color: #f15a29;
+                color: white;
+            }
+        }
+
+        a {
+
+            background-color: white;
+            color: #f15a29;
+
+            &:hover {
+                background-color: #f15a29;
+                color: white;
+            }
+        }
+    }
+
+   .subscribe-row {
+      text-align: center;
+
+      .btn {
+         font-size: 20px;
+         padding: 0 30px;
+      }
+   }
+}

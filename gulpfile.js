@@ -2,7 +2,18 @@ var path = require('./gulp/config.js').path;
 
 var gulp = require('gulp');
 var webpack = require('webpack');
-var webpackConfig = require('./webpack.config.js');
+var argv = require('yargs').argv;
+
+var webpackConfigPath = '';
+
+if (argv.mobile) {
+    webpackConfigPath = './webpack.config.mobile.js';
+    path.base = path.mobile;
+} else {
+    webpackConfigPath = './webpack.config.js';
+}
+
+var webpackConfig = require(webpackConfigPath);
 
 var gutil = require('gulp-util');
 var runSequence = require('run-sequence');

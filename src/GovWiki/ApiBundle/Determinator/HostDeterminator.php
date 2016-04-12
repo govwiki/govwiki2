@@ -18,10 +18,13 @@ class HostDeterminator extends AbstractEnvironmentDeterminator
     private $em;
 
     /**
-     * @param EntityManagerInterface $em A EntityManagerInterface instance.
+     * @param string                 $environment Symfony environment.
+     * @param EntityManagerInterface $em          A EntityManagerInterface
+     *                                            instance.
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct($environment, EntityManagerInterface $em)
     {
+        parent::__construct($environment);
         $this->em = $em;
     }
 
@@ -31,6 +34,10 @@ class HostDeterminator extends AbstractEnvironmentDeterminator
     public function getSlug(Request $request)
     {
         $host = $request->getHost();
+
+        if (strpos($host, 'm.') !== false) {
+            $host = substr($host, 2);
+        }
 
         $slug = $this->em->getRepository('GovWikiDbBundle:Environment')
             ->getNameByDomain($host);

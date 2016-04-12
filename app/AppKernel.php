@@ -35,12 +35,15 @@ class AppKernel extends Kernel
             new GovWiki\FrontendBundle\GovWikiFrontendBundle(),
             new GovWiki\CommentBundle\GovWikiCommentBundle(),
             new GovWiki\RequestBundle\GovWikiRequestBundle(),
+            new GovWiki\MobileBundle\GovWikiMobileBundle(),
             new Ivory\CKEditorBundle\IvoryCKEditorBundle(),
             new CartoDbBundle\CartoDbBundle(),
             new Vresh\TwilioBundle\VreshTwilioBundle(),
+            new SunCat\MobileDetectBundle\MobileDetectBundle(),
+            new GovWiki\MobileDetectBundle\GovWikiMobileDetectBundle(),
         ];
 
-        if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
+        if (in_array($this->getEnvironment(), ['dev', 'test', 'mobile'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();

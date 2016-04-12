@@ -6,6 +6,12 @@
 
 @import "../loader/loader";
 
+@media screen and (max-width: 771px) {
+   .map_mobile {
+      padding: 0;
+   }
+}
+
 #map_wrap {
    position: relative;
    width: 100%;

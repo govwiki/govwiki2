@@ -1,4 +1,4 @@
-<div class="col-sm-12 col-md-6 col-lg-5">
+<div class="col-sm-12 col-md-6 col-lg-5 map_mobile">
 
     {# Map wrapper #}
     <div id="map_wrap">
@@ -13,7 +13,7 @@
         </div>
 
         {# Legend #}
-        <ul id='menu'>
+        <ul id='menu' class="collapse in">
 
             {% if 'altTypes' in mapEntity.legendTypes %}
                 <li class="legend-header">

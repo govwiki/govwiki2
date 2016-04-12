@@ -56,7 +56,6 @@ assetic:
     use_controller: false
     bundles:
         - 'GovWikiAdminBundle'
-        - 'GovWikiFrontendBundle'
         - 'GovWikiCommentBundle'
     #java: /usr/bin/java
     filters:
@@ -92,8 +91,6 @@ doctrine:
                 year: GovWiki\DbBundle\Doctrine\Functions\YearFunction
             numeric_functions:
                 regexp: GovWiki\DbBundle\Doctrine\Functions\RegexpFunction
-
-
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -147,3 +144,12 @@ vresh_twilio:
     authToken: "%twilio.token%"
     #(Optional, default: 1) Number of times to retry failed requests
     retryAttempts: 3
+
+mobile_detect:
+    redirect:
+        mobile:
+            is_enabled: true
+            host: http://some.host
+        tablet: ~
+    switch_device_view: ~
+    request_response_listener_class: GovWiki\MobileDetectBundle\EventListener\GovWikiRequestResponseListener

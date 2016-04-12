@@ -10,6 +10,18 @@ use Symfony\Component\HttpFoundation\Request;
  */
 abstract class AbstractEnvironmentDeterminator
 {
+    /**
+     * @var string
+     */
+    protected $environment;
+
+    /**
+     * @param string $environment Symfony environment.
+     */
+    public function __construct($environment)
+    {
+        $this->environment = $environment;
+    }
 
     /**
      * @param Request $request A Request instance.
