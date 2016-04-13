@@ -14,8 +14,8 @@
 #    resource: "@TwigBundle/Resources/config/routing/errors.xml"
 #    prefix:   /_error
 #
-#_main:
-#    resource: routing.yml
+_main:
+    resource: routing.yml
 
 govwiki_mobile:
     resource: "@GovWikiMobileBundle/Resources/config/routing.yml"
