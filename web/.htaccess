@@ -53,12 +53,8 @@ DirectoryIndex app.php
     RewriteCond %{REQUEST_FILENAME} -f
     RewriteRule .? - [L]
 
-    # Rewrite mobile.
-    RewriteCond %{HTTP_HOST} ^m\.
-    RewriteRule .? %{ENV:BASE}/app.php [L,E=ENVIRONMENT:mobile]
-
     # Rewrite all other queries to the front controller.
-    RewriteRule .? %{ENV:BASE}/app.php [L,E=ENVIRONMENT:prod]
+    RewriteRule .? %{ENV:BASE}/app.php [L]
 </IfModule>
 
 <IfModule !mod_rewrite.c>

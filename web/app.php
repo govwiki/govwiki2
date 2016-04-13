@@ -18,9 +18,9 @@ $apcLoader->register(true);
 require_once __DIR__.'/../app/AppKernel.php';
 //require_once __DIR__.'/../app/AppCache.php';
 
-$environment = getenv('ENVIRONMENT');
-if (! $environment) {
-    $environment = 'prod';
+$environment = 'prod';
+if (strpos(getenv('HTTP_HOST'), 'm.') === 0) {
+    $environment = 'mobile';
 }
 
 $kernel = new AppKernel($environment, false);
