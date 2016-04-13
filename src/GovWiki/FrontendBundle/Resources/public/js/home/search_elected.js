@@ -6,58 +6,58 @@ var Handlebars = require('../vendor/handlebars.js');
 
 $(function() {
 
-    var findMatches = function findMatches(query, syncCallback, asyncCallback) {
-        $.ajax({
-            method: 'GET',
-            url: window.gw.urls.search_elected +'?search='+ query
-        }).success(function(data) {
-            console.log(data);
-            asyncCallback(data);
-        });
-    };
+  var findMatches = function findMatches(query, syncCallback, asyncCallback) {
+    $.ajax({
+      method: 'GET',
+      url: window.gw.urls.search_elected + '?search=' + query
+    }).success(function(data) {
+      console.log(data);
+      asyncCallback(data);
+    });
+  };
 
-    var searchValue = '';
+  var searchValue = '';
 
     // Init typeahead
-    var $typeahead = $('.typeahead_elected').typeahead({
-        hint: true,
-        highlight: true,
-        minLength: 3
-    }, {
-        name: 'elected_officials',
-        source: findMatches,
-        templates: {
-            empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
-            suggestion: Handlebars.compile('<div class="sugg-box">'+
+  var $typeahead = $('.typeahead_elected').typeahead({
+    hint: true,
+    highlight: true,
+    minLength: 3
+  }, {
+    name: 'elected_officials',
+    source: findMatches,
+    templates: {
+      empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
+      suggestion: Handlebars.compile('<div class="sugg-box">' +
                 '<div class="sugg-name">{{fullName}}</div>' +
                 '<div class="sugg-govname">{{government.name}}</div>' +
                 '</div>')
-        },
-        updater: function (item) {
-            alert(item);
-        }
-    });
+    },
+    updater: function(item) {
+      alert(item);
+    }
+  });
 
     // Pressed mouse or enter button
-    $typeahead.bind("typeahead:selected", function(obj, selectedItemData) {
-        $typeahead.typeahead('val', selectedItemData.fullName);
-        window.location.pathname += [selectedItemData.government.altTypeSlug, selectedItemData.government.slug, selectedItemData.slug].join('/');
-    });
+  $typeahead.bind('typeahead:selected', function(obj, selectedItemData) {
+    $typeahead.typeahead('val', selectedItemData.fullName);
+    window.location.pathname += [selectedItemData.government.altTypeSlug, selectedItemData.government.slug, selectedItemData.slug].join('/');
+  });
 
     // Move cursor via arrows keys
-    $typeahead.bind("typeahead:cursorchange", function(obj) {
-        $typeahead.typeahead('val', searchValue);
-    });
+  $typeahead.bind('typeahead:cursorchange', function(obj) {
+    $typeahead.typeahead('val', searchValue);
+  });
 
     // Store search value on typing
-    $typeahead.keyup(function(event) {
-        searchValue = $(event.target).val();
-    });
+  $typeahead.keyup(function(event) {
+    searchValue = $(event.target).val();
+  });
 
-    $typeahead.attr('placeholder', 'ELECTED OFFICIAL NAME');
-    $typeahead.attr('disabled', false);
+  $typeahead.attr('placeholder', 'ELECTED OFFICIAL NAME');
+  $typeahead.attr('disabled', false);
 
-    //var substringMatcher = function(strs) {
+    // var substringMatcher = function(strs) {
     //    return function findMatches(q, cb) {
     //        var matches, substringRegex;
     //
@@ -77,9 +77,9 @@ $(function() {
     //
     //        cb(matches);
     //    };
-    //};
+    // };
     //
-    //$.get('/data/search/california.json', function (data){
+    // $.get('/data/search/california.json', function (data){
     //
     //    var searchValue = '';
     //
@@ -123,6 +123,6 @@ $(function() {
     //    $typeahead.attr('placeholder', 'GOVERNMENT NAME');
     //    $typeahead.attr('disabled', false);
     //
-    //});
+    // });
 
 });

@@ -61,7 +61,7 @@ gulp.task('lint', function () {
             fix: true
         }))
         .pipe(eslint.format())
-        .pipe(gulpIf(isFixed, gulp.dest('src/GovWiki/FrontendBundle/Resources/public/js/**/*.js')))
+        .pipe(gulpIf(isFixed, gulp.dest('src/GovWiki/FrontendBundle/Resources/public/js')))
         .pipe(eslint.failAfterError());
 });
 
@@ -73,5 +73,5 @@ gulp.task('watch', function() {
 });
 
 gulp.task('default', function(callback) {
-    runSequence('build:js', 'watch', callback);
+    runSequence('lint', 'build:js', 'watch', callback);
 });

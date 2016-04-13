@@ -1,3 +1,6 @@
 {
-  "extends": "eslint-config-airbnb-es5"
+  "extends": "eslint-config-airbnb-es5",
+  "globals": {
+    "$": true
+  }
 }

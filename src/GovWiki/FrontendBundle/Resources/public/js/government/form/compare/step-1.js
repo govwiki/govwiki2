@@ -7,55 +7,55 @@ var Search = require('../../search/government.js');
  * @param container
  * @constructor
  */
-function Step (FormState, container) {
+function Step(FormState, container) {
 
-    this.container = container;
-    this.$container = $(container);
-    this.CurrentFormState = container == '.first-condition' ? FormState.firstStep : FormState.secondStep;
-    this.$select = $(container + ' select');
-    this.$loader = $('<div class="loader"></div>');
-    this.init();
+  this.container = container;
+  this.$container = $(container);
+  this.CurrentFormState = container == '.first-condition' ? FormState.firstStep : FormState.secondStep;
+  this.$select = $(container + ' select');
+  this.$loader = $('<div class="loader"></div>');
+  this.init();
 
 }
 
 /**
  * Init step
  */
-Step.prototype.init = function () {
+Step.prototype.init = function() {
 
-    var self = this;
+  var self = this;
 
-    self.handler_onMouseDownSelect();
-    self.handler_onChangeSelect();
+  self.handler_onMouseDownSelect();
+  self.handler_onChangeSelect();
 
-    //Typeahead initialization
-    self.search = new Search(self.container, self.searchResponseCallback);
+    // Typeahead initialization
+  self.search = new Search(self.container, self.searchResponseCallback);
 
     // Pressed mouse or enter button
-    self.search.$typeahead.bind("typeahead:selected", function (e, selectedGovernment) {
-        self.CurrentFormState.data = selectedGovernment;
-        self.createYearOptions(selectedGovernment);
-    });
+  self.search.$typeahead.bind('typeahead:selected', function(e, selectedGovernment) {
+    self.CurrentFormState.data = selectedGovernment;
+    self.createYearOptions(selectedGovernment);
+  });
 
     // Start typing, triggered after select item
-    self.search.$typeahead.bind('typeahead:asyncrequest', function(e) {
-        self.loading(true);
-    });
+  self.search.$typeahead.bind('typeahead:asyncrequest', function(e) {
+    self.loading(true);
+  });
 
 
-    self.search.$typeahead.bind('typeahead:asyncreceive', function(e) {
-        self.loading(false);
-    });
+  self.search.$typeahead.bind('typeahead:asyncreceive', function(e) {
+    self.loading(false);
+  });
 
-    self.search.$typeahead.bind('typeahead:asynccancel', function(e) {
-        self.loading(false);
-        self.lockSelect();
-    });
+  self.search.$typeahead.bind('typeahead:asynccancel', function(e) {
+    self.loading(false);
+    self.lockSelect();
+  });
 
-    self.search.$typeahead.bind('typeahead:open', function(e) {
-        self.lockSelect();
-        self.CurrentFormState.incomplete();
-    });
+  self.search.$typeahead.bind('typeahead:open', function(e) {
+    self.lockSelect();
+    self.CurrentFormState.incomplete();
+  });
 
 };
 
@@ -66,7 +66,7 @@ Step.prototype.init = function () {
  * Unlock step
  */
 Step.prototype.unlock = function() {
-    this.search.$typeahead.toggleClass('disabled', false);
+  this.search.$typeahead.toggleClass('disabled', false);
 };
 
 
@@ -76,8 +76,8 @@ Step.prototype.unlock = function() {
  * Lock step
  */
 Step.prototype.lock = function() {
-    this.search.$typeahead.toggleClass('disabled', true);
-    this.$select.toggleClass('disabled', true);
+  this.search.$typeahead.toggleClass('disabled', true);
+  this.$select.toggleClass('disabled', true);
 };
 
 
@@ -87,7 +87,7 @@ Step.prototype.lock = function() {
  * Lock step
  */
 Step.prototype.lockSelect = function() {
-    this.$select.toggleClass('disabled', true);
+  this.$select.toggleClass('disabled', true);
 };
 
 /**
@@ -98,14 +98,14 @@ Step.prototype.lockSelect = function() {
  */
 Step.prototype.loading = function(isLoading) {
 
-    var display = isLoading ? 'none' : 'block';
-    this.$select.css({display: display});
+  var display = isLoading ? 'none' : 'block';
+  this.$select.css({display: display});
 
-    if (isLoading) {
-        this.$container.append(this.$loader);
-    } else {
-        this.$loader.remove();
-    }
+  if (isLoading) {
+    this.$container.append(this.$loader);
+  } else {
+    this.$loader.remove();
+  }
 
 };
 
@@ -117,47 +117,47 @@ Step.prototype.loading = function(isLoading) {
  */
 Step.prototype.createYearOptions = function(government) {
 
-    var self = this;
+  var self = this;
 
-    if (!government) {
-        console.error('First argument not passed in createYearOptions() ');
-        return true;
-    }
+  if (!government) {
+    console.error('First argument not passed in createYearOptions() ');
+    return true;
+  }
 
-    var sortedYears = government.years.sort(function(a, b) {
-        return a < b;
-    });
+  var sortedYears = government.years.sort(function(a, b) {
+    return a < b;
+  });
 
-    self.CurrentFormState.data.year = government.years[0];
+  self.CurrentFormState.data.year = government.years[0];
 
-    disableSelect(false);
+  disableSelect(false);
 
-    self.$select.html('');
+  self.$select.html('');
 
-    sortedYears.forEach(function (year, index) {
-        var selected = index == 0 ? 'selected' : '';
-        self.$select.append('<option value="' + government.id + '" ' + selected + '>' + year + '</option>');
-    });
+  sortedYears.forEach(function(year, index) {
+    var selected = index == 0 ? 'selected' : '';
+    self.$select.append('<option value="' + government.id + '" ' + selected + '>' + year + '</option>');
+  });
 
-    correctForm(true);
+  correctForm(true);
 
     /**
      * Disable select
      * @param {Boolean} disabled
      */
-    function disableSelect(disabled) {
+  function disableSelect(disabled) {
 
-        self.$select.toggleClass('disabled', !!disabled);
+    self.$select.toggleClass('disabled', !!disabled);
 
-    }
+  }
 
     /**
      *
      * @param isCorrect
      */
-    function correctForm(isCorrect) {
-        isCorrect ? self.CurrentFormState.complete() : self.CurrentFormState.incomplete();
-    }
+  function correctForm(isCorrect) {
+    isCorrect ? self.CurrentFormState.complete() : self.CurrentFormState.incomplete();
+  }
 
 };
 
@@ -167,27 +167,27 @@ Step.prototype.createYearOptions = function(government) {
  *
  * On change select
  */
-Step.prototype.handler_onChangeSelect = function () {
+Step.prototype.handler_onChangeSelect = function() {
 
-    var self = this;
+  var self = this;
 
-    self.$select.on('change', function (e) {
+  self.$select.on('change', function(e) {
 
-        var $el = $(e.target);
+    var $el = $(e.target);
 
-        var $selected = $el.find('option:selected');
-        var governmentId = $selected.attr('value');
-        var year = $selected.text();
+    var $selected = $el.find('option:selected');
+    var governmentId = $selected.attr('value');
+    var year = $selected.text();
 
-        if (year) {
-            self.CurrentFormState.data.year = parseInt(year);
-            self.CurrentFormState.complete();
-        } else {
-            alert('Please choose correct year');
-            self.CurrentFormState.incomplete();
-        }
+    if (year) {
+      self.CurrentFormState.data.year = parseInt(year);
+      self.CurrentFormState.complete();
+    } else {
+      alert('Please choose correct year');
+      self.CurrentFormState.incomplete();
+    }
 
-    });
+  });
 
 };
 
@@ -195,20 +195,20 @@ Step.prototype.handler_onChangeSelect = function () {
 /**
  * Show error message if government not selected
  */
-Step.prototype.handler_onMouseDownSelect = function () {
+Step.prototype.handler_onMouseDownSelect = function() {
 
-    var self = this;
+  var self = this;
 
-    self.$select.on('mousedown', function (e) {
+  self.$select.on('mousedown', function(e) {
 
-        var $el = $(e.target);
+    var $el = $(e.target);
 
-        if ($el.hasClass('disabled')) {
-            alert('Please, first select government');
-            return false;
-        }
+    if ($el.hasClass('disabled')) {
+      alert('Please, first select government');
+      return false;
+    }
 
-    });
+  });
 
 };
 
