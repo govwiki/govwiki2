@@ -1,5 +1,7 @@
 var path = require('./gulp/config.js').path;
 
+var eslint = require('gulp-eslint');
+var gulpIf = require('gulp-if');
 var gulp = require('gulp');
 var webpack = require('webpack');
 var argv = require('yargs').argv;
@@ -44,6 +46,25 @@ gulp.task('build:js', ['build:vendor'], function(callback) {
 
 });
 
+function isFixed(file) {
+    // Has ESLint fixed the file contents?
+    return file.eslint != null && file.eslint.fixed;
+}
+
+gulp.task('lint', function () {
+    return gulp.src([
+            'src/GovWiki/FrontendBundle/Resources/public/js/**/*.js',
+            '!src/GovWiki/FrontendBundle/Resources/public/js/vendor/**',
+            '!node_modules/**'
+        ])
+        .pipe(eslint({
+            fix: true
+        }))
+        .pipe(eslint.format())
+        .pipe(gulpIf(isFixed, gulp.dest('src/GovWiki/FrontendBundle/Resources/public/js/**/*.js')))
+        .pipe(eslint.failAfterError());
+});
+
 gulp.task('watch', function() {
     gulp.watch(
         [path.base + '/**/*'],
@@ -51,4 +72,6 @@ gulp.task('watch', function() {
     );
 });
 
-gulp.task('default', runSequence('build:js', 'watch'));
+gulp.task('default', function(callback) {
+    runSequence('build:js', 'watch', callback);
+});
