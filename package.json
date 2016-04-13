@@ -4,7 +4,8 @@
   "description": "Government Wiki Project",
   "main": "README.md",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "gulp build:js && gulp build:js --mobile"
   },
   "repository": {
     "type": "git",
@@ -16,12 +17,7 @@
   "author": "sibers",
   "license": "MIT",
   "devDependencies": {
-    "babel-eslint": "^6.0.2",
-    "eslint-config-airbnb-es5": "^1.0.8",
-    "eslint-plugin-react": "^4.3.0",
     "gulp": "^3.9.1",
-    "gulp-eslint": "^2.0.0",
-    "gulp-if": "^2.0.0",
     "gutil": "^1.6.4",
     "node-notifier": "^4.5.0",
     "path": "^0.12.7",
