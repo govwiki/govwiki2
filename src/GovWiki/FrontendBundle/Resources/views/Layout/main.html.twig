@@ -39,11 +39,12 @@
         </header>
 
         {# Menubar #}
-        {% if _locales is defined %}
+        {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) %}
+        {% if (_locales is defined) or (years is defined and years|length > 1)%}
             <menu class="container mainmenu">
                 <div class="row">
                     <div class="col-md-6">
-                        {% if years is defined and years|length > 1 %}
+                        {% if (years is defined and years|length > 1) %}
                             <label for="year-selector" class="control-label">{{ 'general.year_selector_label'|trans }}: </label>
                             <select id="year-selector" class="form-control form-control__inline">
                                 {% for year in years %}
@@ -58,7 +59,6 @@
                             </select>
                         {% endif %}
                     </div>
-                    {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) %}
 
                     {% if _locales is defined %}
                         <div class="col-md-6">
