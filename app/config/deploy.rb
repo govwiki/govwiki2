@@ -113,6 +113,7 @@ namespace :govwiki do
     desc "Dump assets for prod and mobile environment"
     task :install do
       run "sh -c 'cd #{latest_release} &&  ./app/console --env=prod assetic:dump && ./app/console --env=mobile assetic:dump'"
+    end
   end
 end
 
