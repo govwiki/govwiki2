@@ -107,15 +107,22 @@ namespace :govwiki do
       capifony_puts_ok
     end
   end
+
+  # Dump assets
+  namespace :assets do
+    desc "Dump assets for prod and mobile environment"
+    task :install do
+      run "sh -c 'cd #{latest_release} &&  ./app/console --env=prod assetic:dump && ./app/console --env=mobile assetic:dump'"
+  end
 end
 
 # Dependencies
-after  "deploy:setup",       "govwiki:setup:upload_parameters"
-before "deploy:update_code", "govwiki:backup:remote"
+after  "deploy:setup",             "govwiki:setup:upload_parameters"
+before "deploy:update_code",       "govwiki:backup:remote"
 before "symfony:composer:install", "govwiki:update_code:rewrite_params"
-#after  "deploy:update_code", "govwiki:update_code:rewrite_params"
-after  "deploy",             "deploy:cleanup"
-before "symfony:cache:warmup", "symfony:doctrine:migrations:migrate"
+after  "deploy",                   "deploy:cleanup"
+before "symfony:cache:warmup",     "symfony:doctrine:migrations:migrate"
+after  "symfony:cache:warmup",     "govwiki:assets:install"
 
 # Logging
 logger.level = Logger::MAX_LEVEL
