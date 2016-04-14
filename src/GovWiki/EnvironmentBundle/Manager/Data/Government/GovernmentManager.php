@@ -2,32 +2,51 @@
 
 namespace GovWiki\EnvironmentBundle\Manager\Data\Government;
 
+use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
+use GovWiki\EnvironmentBundle\Converter\DataTypeConverter;
 use GovWiki\EnvironmentBundle\Manager\Data\AbstractDataManager;
+use GovWiki\EnvironmentBundle\Strategy\DefaultNamingStrategy;
 
 /**
  * Class GovernmentManager
  * @package GovWiki\EnvironmentBundle\Data\Manager\Data\Government
  */
-class GovernmentManager extends AbstractDataManager implements
-    GovernmentManagerInterface
+class GovernmentManager implements GovernmentManagerInterface
 {
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    /**
+     * @param EntityManagerInterface $em A EntityManagerInterface instance.
+     */
+    public function __construct(EntityManagerInterface $em)
+    {
+        $this->em = $em;
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function createTable($tableName, array $columnDefinitions = [])
+    public function createTable(Environment $environment, array $columnDefinitions)
     {
         /*
          * Generate column definition from given columns.
          */
         $columnSqlDefinition = '';
         foreach ($columnDefinitions as $fieldName => $type) {
-            $type = $this->getDataTypeConverter()
-                ->abstract2database($type);
+            $type = DataTypeConverter::abstract2database($type);
 
             $columnSqlDefinition .= "`{$fieldName}` {$type} DEFAULT NULL";
         }
+
+        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
 
         $this->em->getConnection()->exec("
             CREATE TABLE `{$tableName}` (
@@ -47,8 +66,11 @@ class GovernmentManager extends AbstractDataManager implements
     /**
      * {@inheritdoc}
      */
-    public function removeTable($tableName)
+    public function removeTable(Environment $environment)
     {
+        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
         $this->em->getConnection()
             ->exec("DROP TABLE IF EXISTS `{$tableName}``");
     }
@@ -56,26 +78,31 @@ class GovernmentManager extends AbstractDataManager implements
     /**
      * {@inheritdoc}
      */
-    public function get($tableName, $government, array $columnDefinitions)
+    public function get(Environment $environment, $government, $year, array $fields)
     {
-        if (is_array($columnDefinitions) &&
-            (count($columnDefinitions) > 0)) {
-            /*
-             * Get the names of all fields.
-             */
-            $fields = implode(',', array_keys($columnDefinitions));
+        if (is_array($fields) && (count($fields) > 0)) {
+            $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+                $environment
+            );
 
+            // Prepare field statement for query.
+            $fieldsStmt = implode(',', array_keys($fields));
+
+            // Fetch data.
             $data = $this->em->getConnection()->fetchAssoc("
-                SELECT {$fields} FROM {$tableName}
-                WHERE government_id = {$government}
+                SELECT {$fieldsStmt} FROM {$tableName}
+                WHERE
+                    government_id = {$government} AND
+                    year = {$year}
             ");
 
-            /*
-             * Set properly type for values.
-             */
+            // Convert value to proper type.
             $validData = [];
             foreach ($data as $field => $value) {
-                $type = $columnDefinitions[$field];
+                /*
+                 * Get field type from formats.
+                 */
+                $type = $fields[$field];
 
                 switch ($type) {
                     case 'integer':
@@ -99,11 +126,86 @@ class GovernmentManager extends AbstractDataManager implements
     /**
      * {@inheritdoc}
      */
-    public function search($environment, $partOfName)
-    {
-        /** @var GovernmentRepository $repository */
-        $repository = $this->em->getRepository('GovWikiDbBundle:Government');
+    public function getGovernmentRank(
+        Environment $environment,
+        $altTypeSlug,
+        $governmentSlug,
+        array $parameters
+    ) {
+        $rankFieldName = $parameters['field_name'];
+        $limit = $parameters['limit'];
+        $page = $parameters['page'];
+        $order = $parameters['order'];
+        $nameOrder = $parameters['name_order'];
+        $year = $parameters['year'];
 
-        return $repository->search($environment, $partOfName);
+        $fieldName = preg_replace('|_rank$|', '', $rankFieldName);
+
+        $con = $this->em->getConnection();
+
+        $mainSql = "
+            SELECT
+                government.slug AS name,
+                extra.{$fieldName} AS amount,
+                extra.{$rankFieldName} AS value
+            FROM {$environment} extra
+            INNER JOIN governments government ON extra.government_id = government.id
+        ";
+
+        $wheres = [
+            "government.alt_type_slug = '{$altTypeSlug}'",
+            "year = {$year}",
+        ];
+        $orderBys = [];
+
+        /*
+         * Get list of rank started from given government.
+         */
+        if ((null === $order) || ('' === $order)) {
+            /*
+             * Get rank for given government.
+             */
+
+            $sql = "
+                SELECT extra.{$rankFieldName}
+                FROM {$environment} extra
+                INNER JOIN governments government ON extra.government_id = government.id
+                WHERE
+                    government.alt_type_slug = '{$altTypeSlug}' AND
+                    government.slug = '{$governmentSlug}'
+                ORDER BY extra.{$rankFieldName}
+                LIMIT 1
+            ";
+
+            $wheres[] = "extra.{$rankFieldName} >= (". $sql .')';
+            if (('desc' !== $nameOrder) && ('asc' !== $nameOrder)) {
+                $orderBys[] = "extra.{$rankFieldName} ASC";
+            }
+            /*
+             * Get sorted information from offset computed on given page and limit.
+             */
+        } elseif ('desc' === $order) {
+            $orderBys[] = "extra.{$rankFieldName} DESC";
+        } elseif ('asc' === $order) {
+            $orderBys[] = "extra.{$rankFieldName} ASC";
+        }
+
+        if ('desc' === $nameOrder) {
+            $orderBys[] = 'government.slug DESC';
+        } elseif ('asc' === $nameOrder) {
+            $orderBys[] = 'government.slug ASC';
+        }
+
+        if (count($wheres) > 0) {
+            $mainSql .= ' WHERE ' . implode(' AND ', $wheres);
+        }
+
+        if (count($orderBys) > 0) {
+            $mainSql .= ' ORDER BY ' .implode(' , ', $orderBys);
+        }
+
+        $mainSql .= ' LIMIT '. ($page * $limit) .', '. $limit;
+
+        return $con->fetchAll($mainSql);
     }
 }

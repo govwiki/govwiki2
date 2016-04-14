@@ -48,7 +48,7 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
     {
         /** @var GovernmentRepository $repository */
         $repository = $this->getRepository();
-        return $repository->getListQuery($this->environment, $id, $name);
+        return $repository->getListQuery($this->environmentId, $id, $name);
     }
 
     /**
@@ -77,7 +77,7 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
 
             /** @var FormatRepository $repository */
             $repository = $this->getRepository('GovWikiDbBundle:Format');
-            $format = $repository->get($this->environment, true);
+            $format = $repository->get($this->environmentId, true);
 
             foreach ($format as $row) {
                 $columns[] = $row['field'];

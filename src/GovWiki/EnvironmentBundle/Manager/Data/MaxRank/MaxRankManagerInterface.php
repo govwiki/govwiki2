@@ -2,6 +2,8 @@
 
 namespace GovWiki\EnvironmentBundle\Manager\Data\MaxRank;
 
+use GovWiki\DbBundle\Entity\Environment;
+
 /**
  * Interface MaxRankManagerInterface
  * @package GovWiki\EnvironmentBundle\Manager\Data\MaxRank
@@ -9,45 +11,46 @@ namespace GovWiki\EnvironmentBundle\Manager\Data\MaxRank;
 interface MaxRankManagerInterface
 {
 
-
     /**
      * Compute and persist to database new max ranks values for all ranked
      * fields in each alt type groups ('City', 'County' and etc.) in given
      * environment.
      *
-     * @param string $maxRankTableName    Environment max rank data table name.
-     * @param string $governmentTableName Environment specific government data
-     * @param array  $rankedColumns       List of ranked column names.
+     * @param Environment $environment A Environment entity instance.
+     * @param array       $fields      Array of fields.
+     * @param integer     $year        Data year.
      *
-     * @return mixed
+     * @return void
      *
-     * @throws \Doctrine\DBAL\DBALException Error while update max ranks.
+     * @throws \Doctrine\DBAL\DBALException SQL error while update max ranks.
      */
     public function computeAndSave(
-        $maxRankTableName,
-        $governmentTableName,
-        array $rankedColumns
+        Environment $environment,
+        array $fields,
+        $year
     );
 
     /**
      * Get max ranks for given environment.
      *
-     * @param string $maxRankTableName    Environment max rank data table name.
-     * @param string $governmentTableName Environment specific government data
-     *                                    table name.
-     * @param string $altTypeSlug         Government slugged alt type.
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $altTypeSlug Government alt type.
+     * @param integer     $year        Data year.
      *
      * @return array
-     *
-     * @throws \Doctrine\DBAL\DBALException Given max rank table name not exists.
      */
-    public function get($maxRankTableName, $governmentTableName, $altTypeSlug);
+    public function get(
+        Environment $environment,
+        $altTypeSlug,
+        $year
+    );
 
     /**
-     * @param string $tableName Environment specific government data
-     *                          table name.
+     * @param Environment $environment A Environment entity instance.
      *
      * @return void
+     *
+     * @throws \Doctrine\DBAL\DBALException SQL error while removing.
      */
-    public function removeTable($tableName);
+    public function removeTable(Environment $environment);
 }

@@ -4,6 +4,7 @@ namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Form\ElectedOfficialCommentType;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -23,15 +24,16 @@ class ElectedController extends Controller
      * @Route("/{altTypeSlug}/{slug}/{electedSlug}", name="elected")
      * @Template("GovWikiFrontendBundle:Elected:index.html.twig")
      *
-     * @param string $altTypeSlug Slugged government alt type.
-     * @param string $slug        Slugged government name.
-     * @param string $electedSlug Slugged elected official full name.
+     * @param Request $request     A Request instance.
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
+     * @param string  $electedSlug Slugged elected official full name.
      *
      * @return array
      *
      * @throws \LogicException Some required bundle not registered.
      */
-    public function showAction($altTypeSlug, $slug, $electedSlug, Request $request)
+    public function showAction(Request $request, $altTypeSlug, $slug, $electedSlug)
     {
         $user = $this->getUser();
 
@@ -43,7 +45,7 @@ class ElectedController extends Controller
 
         $this->clearTranslationsCache();
 
-        $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+        $data = $this->get(GovWikiEnvironmentService::MANAGER)
             ->getElectedOfficial($altTypeSlug, $slug, $electedSlug, $user);
 
         if (null === $data) {

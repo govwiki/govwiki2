@@ -22,9 +22,4 @@ interface DataManagerPoolInterface
      * @return GovernmentManagerInterface;
      */
     public function getGovernmentManager();
-
-    /**
-     * @return FormatManagerInterface
-     */
-    public function getFormatManager();
 }

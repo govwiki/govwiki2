@@ -39,9 +39,4 @@ interface EnvironmentManagerInterface
      * @return integer
      */
     public function computeElectedOfficialsCount();
-
-    /**
-     * @return NamingStrategyInterface
-     */
-    public function getNamingStrategy();
 }

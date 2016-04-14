@@ -23,7 +23,7 @@ abstract class AbstractGovWikiController extends Controller
     }
 
     /**
-     * @return \GovWiki\EnvironmentBundle\Manager\EnvironmentManager
+     * @return \GovWiki\EnvironmentBundle\Manager\Environment\EnvironmentManager
      */
     protected function getEnvironmentManager()
     {

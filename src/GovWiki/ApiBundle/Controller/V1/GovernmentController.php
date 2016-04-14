@@ -3,6 +3,7 @@
 namespace GovWiki\ApiBundle\Controller\V1;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -130,7 +131,7 @@ class GovernmentController extends AbstractGovWikiApiController
         $paginator = $this->get('knp_paginator');
         $year = $request->query->get(
             'year',
-            $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+            $this->get(GovWikiEnvironmentService::MANAGER)
                 ->getAvailableYears()[0]
         );
 
@@ -160,7 +161,7 @@ class GovernmentController extends AbstractGovWikiApiController
         $paginator = $this->get('knp_paginator');
         $year = $request->query->get(
             'year',
-            $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+            $this->get(GovWikiEnvironmentService::MANAGER)
                 ->getAvailableYears()[0]
         );
 

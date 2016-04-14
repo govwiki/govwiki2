@@ -2,10 +2,7 @@
 
 namespace GovWiki\EnvironmentBundle\Twig;
 
-use GovWiki\ApiBundle\Manager\EnvironmentManager;
-use GovWiki\EnvironmentBundle\Manager\EnvironmentManagerInterface;
-use JMS\Serializer\Serializer;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use GovWiki\EnvironmentBundle\Manager\Environment\EnvironmentManagerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 

@@ -521,7 +521,7 @@ class AdminEnvironmentManager
     {
         if (null === $this->format) {
             $this->format = $this->em->getRepository('GovWikiDbBundle:Format')
-                ->get($this->environment, true);
+                ->get($this->entity->getId(), true);
         }
 
         $result = $this->format;

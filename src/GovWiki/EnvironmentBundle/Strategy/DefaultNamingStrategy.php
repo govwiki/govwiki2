@@ -8,13 +8,35 @@ use GovWiki\DbBundle\Entity\Environment;
  * Interface DefaultNamingStrategy
  * @package GovWiki\EnvironmentBundle\Strategy
  */
-class DefaultNamingStrategy implements NamingStrategyInterface
+final class DefaultNamingStrategy
 {
     /**
-     * {@inheritdoc}
+     * @param Environment $environment A Environment entity instance.
+     *
+     * @return string
      */
-    public function getEnvironmentRelatedTableName(Environment $environment)
+    public static function environmentRelatedTableName(Environment $environment)
     {
         return $environment->getSlug();
+    }
+
+    /**
+     * @param string $field Original field name.
+     *
+     * @return string
+     */
+    public static function rankedFieldName($field)
+    {
+        return $field .'_rank';
+    }
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     *
+     * @return string
+     */
+    public static function maxRanksTableName(Environment $environment)
+    {
+        return $environment->getSlug() .'_max_ranks';
     }
 }

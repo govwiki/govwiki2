@@ -2,10 +2,16 @@
 
 namespace GovWiki\EnvironmentBundle\Manager\Environment;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\QueryException;
+use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\Utils\Functions;
+use GovWiki\EnvironmentBundle\Manager\Data\DataManagerPool;
+use GovWiki\EnvironmentBundle\Manager\Data\DataManagerPoolInterface;
+use GovWiki\EnvironmentBundle\Manager\Data\Government\GovernmentManagerInterface;
+use GovWiki\EnvironmentBundle\Manager\Data\MaxRank\MaxRankManagerInterface;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use GovWiki\EnvironmentBundle\Strategy\DefaultNamingStrategy;
 use GovWiki\EnvironmentBundle\Strategy\NamingStrategyInterface;
@@ -18,26 +24,35 @@ class EnvironmentManager implements EnvironmentManagerInterface
 {
 
     /**
-     * @var EnvironmentStorageInterface
-     */
-    private $storage;
-
-    /**
      * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var NamingStrategyInterface
+     * @var EnvironmentStorageInterface
      */
-    private $namingStrategy;
+    private $storage;
+
+    /**
+     * @var GovernmentManagerInterface
+     */
+    private $governmentManager;
+
+    /**
+     * @var MaxRankManagerInterface
+     */
+    private $maxRankManager;
 
     public function __construct(
         EntityManagerInterface $em,
-        EnvironmentStorageInterface $storage
+        EnvironmentStorageInterface $storage,
+        GovernmentManagerInterface $governmentManager,
+        MaxRankManagerInterface $maxRankManager
     ) {
         $this->em = $em;
         $this->storage = $storage;
+        $this->governmentManager = $governmentManager;
+        $this->maxRankManager = $maxRankManager;
     }
 
     /**
@@ -63,8 +78,9 @@ class EnvironmentManager implements EnvironmentManagerInterface
     public function getAvailableYears()
     {
         $con = $this->em->getConnection();
-        $tableName = $this->getNamingStrategy()
-            ->getEnvironmentRelatedTableName($this->getEnvironment());
+        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+            $this->getEnvironment()
+        );
 
         $years = $con->fetchAll("
             SELECT year
@@ -102,18 +118,6 @@ class EnvironmentManager implements EnvironmentManagerInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getNamingStrategy()
-    {
-        if ($this->namingStrategy === null) {
-            $this->namingStrategy = new DefaultNamingStrategy();
-        }
-
-        return $this->namingStrategy;
-    }
-
-    /**
      * @param string $partOfName Part of government name.
      *
      * @return array
@@ -127,6 +131,18 @@ class EnvironmentManager implements EnvironmentManagerInterface
     }
 
     /**
+     * @param string $partOfName Part of government name.
+     *
+     * @return array
+     */
+    public function searchGovernmentForComparison($partOfName)
+    {
+        /** @var GovernmentRepository $repository */
+        $repository = $this->em->getRepository('GovWikiDbBundle:Government');
+        return $repository->searchForComparison($this->environment, $partOfName);
+    }
+
+    /**
      * @param string  $altTypeSlug Slugged government alt type.
      * @param string  $slug        Slugged government name.
      * @param integer $year        For fetching fin data.
@@ -135,143 +151,80 @@ class EnvironmentManager implements EnvironmentManagerInterface
      */
     public function getGovernment($altTypeSlug, $slug, $year = null)
     {
-        $tmp = $this->em->getRepository('GovWikiDbBundle:Format')
-            ->get($this->getEnvironment()->getId(), true);
+        $altType = str_replace('_', ' ', $altTypeSlug);
+        $fields = $this->em->getRepository('GovWikiDbBundle:Format')
+            ->getList($this->getEnvironment()->getId(), $altType);
 
         /*
-         * Get array of fields and array of ranked fields.
+         * Get array of formats fields.
          */
-        $fields = [];
-        $altType = str_replace('_', ' ', $altTypeSlug);
-        $formats = [];
-        foreach ($tmp as $format) {
-            if (in_array($altType, $format['showIn'], true)) {
-                $fields[] = $format['field'];
-
-                if ('data' === $format['dataOrFormula']) {
-                    $formats[] = $format;
-                    if (true === $format['ranked']) {
-                        $rankedFieldName = $format['field'] . '_rank';
-                        $fields[] = $rankedFieldName;
-                    }
-                }
-
+        $formats = array_filter(
+            $fields,
+            function (array $format) {
+                return $format['dataOrFormula'] === 'data';
             }
-        }
+        );
+        $formats = array_values($formats); // In order to make new keys.
 
+        /*
+         *  Fetch government.
+         */
         $government = $this->em->getRepository('GovWikiDbBundle:Government')
-            ->findGovernment($this->getEnvironment()->getId(), $altTypeSlug, $slug, $year);
-        if (null === $government) {
-            return [];
-        }
+            ->findGovernment(
+                $this->getEnvironment()->getId(),
+                $altTypeSlug,
+                $slug,
+                $year
+            );
 
         /*
          * Fetch environment related government data if at least one field
          * showing for given alt type.
          */
-        if (is_array($fields) && (count($fields) > 0)) {
-            $fields = implode(',', $fields);
-            $data = $this->em->getConnection()->fetchAssoc("
-                SELECT {$fields} FROM {$this->environment}
-                WHERE
-                    government_id = {$government['id']} AND
-                    year = {$year}
-            ");
-
-            /*
-             * Set properly type for values.
-             */
-            $validData = [];
-            $fieldFormats = Functions::groupBy($tmp, [ 'field' ]);
-            foreach ($data as $field => $value) {
-                if (strpos($field, '_rank') === false) {
-                    /*
-                     * Get field type from formats.
-                     */
-                    $type = $fieldFormats[$field]['type'];
-
-                    switch ($type) {
-                        case 'integer':
-                            $value = (int) $value;
-                            break;
-
-                        case 'float':
-                            $value = (float) $value;
-                            break;
-                    }
-                } else {
-                    $value = (int) $value;
-                }
-
-                $validData[$field] = $value;
+        $dataFields = [];
+        foreach ($fields as $field) {
+            $dataFields[$field['field']] = $field['type'];
+            if ($field['ranked'] === true) {
+                $name = DefaultNamingStrategy::rankedFieldName($field['field']);
+                $dataFields[$name] = 'integer';
             }
-
-            $government = array_merge($government, $validData);
-            unset($data);
         }
+
+        $data = $this->governmentManager
+            ->get($this->getEnvironment(), $government['id'], $year, $dataFields);
+        $government = array_merge($government, $data);
+        unset($data, $dataFields);
 
         /*
          * Get max ranks.
          */
-        $government['ranks'] = [];
-
-        $con = $this->em->getConnection();
-        $tableName = MaxRankComputer::getTableName($this->environment);
-
-        try {
-            $data = $con->fetchAssoc("
-                SELECT *
-                FROM {$tableName}
-                WHERE
-                    alt_type_slug = '{$altTypeSlug}' AND
-                    year = {$year}
-            ");
-            if (false === $data) {
-                $this->computer->compute($this->environment, $altTypeSlug, $year);
-                $data = $con->fetchAssoc("
-                    SELECT *
-                    FROM {$tableName}
-                    WHERE
-                        alt_type_slug = '{$altTypeSlug}' AND
-                        year = '{$year}'
-                ");
-            }
-        } catch (DBALException $e) {
-            $this->computer->compute($this->environment, $altTypeSlug, $year);
-            $data = $con->fetchAssoc("
-                SELECT *
-                FROM {$tableName}
-                WHERE
-                    alt_type_slug = '{$altTypeSlug}' AND
-                    year = '{$year}'
-            ");
+        $data = $this->maxRankManager->get(
+            $this->getEnvironment(),
+            $altTypeSlug,
+            $year
+        );
+        if ($data === false) {
+            $this->maxRankManager->computeAndSave(
+                $this->getEnvironment(),
+                $fields,
+                $year
+            );
+            $data = $this->maxRankManager->get(
+                $this->getEnvironment(),
+                $altTypeSlug,
+                $year
+            );
         }
-
-        /*
-        $distinctGovermentsCity = $this->em->createQueryBuilder()
-            ->select('Government.id, Government.city, Government.slug')
-            ->from('GovWikiDbBundle:Government', 'Government')
-            ->where('Government.environment = :id')
-            ->setParameters(
-                [
-                    'id' => $data['environment_id'],
-                ]
-            )
-            ->groupBy('Government.slug')
-            ->getQuery()
-            ->getResult();
-
-        var_dump($distinctGovermentsCity);
-        die;
-        */
+        $government['ranks'] = $data;
 
         if (count($data) > 0) {
             unset($data['alt_type_slug'], $data['year']);
             foreach ($data as $field => $value) {
                 if (array_key_exists($field, $government)) {
-                    $government['ranks'][$field .'_rank'] = [
-                        $government[$field .'_rank'],
-                        $value
+                    $rankName = DefaultNamingStrategy::rankedFieldName($field);
+                    $government['ranks'][$rankName] = [
+                        $government[$rankName],
+                        $value,
                     ];
                 }
             }
@@ -290,5 +243,95 @@ class EnvironmentManager implements EnvironmentManagerInterface
             'formats' => $formats,
             'tabs' => array_keys($formats),
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getRankedFields()
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Format')
+            ->getRankedFields($this->getEnvironment()->getId());
+    }
+
+    /**
+     * @param string $altTypeSlug Slugged government alt type.
+     * @param string $slug        Slugged government name.
+     * @param array  $parameters  Array of parameters:
+     *                            <ul>
+     *                              <li>field_name (required)</li>
+     *                              <li>limit (required)</li>
+     *                              <li>page</li>
+     *                              <li>order</li>
+     *                              <li>name_order</li>
+     *                            </ul>.
+     * @return array
+     */
+    public function getGovernmentRank($altTypeSlug, $slug, array $parameters)
+    {
+        return $this->em->getRepository('GovWikiDbBundle:Government')
+            ->getGovernmentRank(
+                $this->getEnvironment()->getId(),
+                $altTypeSlug,
+                $slug,
+                $parameters
+            );
+    }
+
+    /**
+     * @param string $partOfName Part of elected official name.
+     *
+     * @return array
+     */
+    public function searchElectedOfficial($partOfName)
+    {
+        /** @var ElectedOfficialRepository $repository */
+        $repository = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial');
+        return $repository->search($this->getEnvironment()->getId(), $partOfName);
+    }
+
+    /**
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
+     * @param string  $eoSlug      Slugged elected official full name.
+     * @param integer $user        User entity id.
+     *
+     * @return array|null
+     */
+    public function getElectedOfficial($altTypeSlug, $slug, $eoSlug, $user = null)
+    {
+        $electedOfficial = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
+            ->findOne($this->getEnvironment()->getId(), $altTypeSlug, $slug, $eoSlug);
+
+        if (null !== $electedOfficial) {
+
+            /*
+            * Create queries for legislations, contributions and etc.
+            */
+            $votes = $this->em->getRepository('GovWikiDbBundle:ElectedOfficialVote')
+                ->getListQuery($electedOfficial['id'], $user);
+            $contributions = $this->em->getRepository('GovWikiDbBundle:Contribution')
+                ->getListQuery($electedOfficial['id'], $user);
+            $endorsements = $this->em->getRepository('GovWikiDbBundle:Endorsement')
+                ->getListQuery($electedOfficial['id'], $user);
+            $publicStatements = $this->em->getRepository('GovWikiDbBundle:PublicStatement')
+                ->getListQuery($electedOfficial['id'], $user);
+
+            return [
+                'electedOfficial' => $electedOfficial,
+                'votes' => $votes,
+                'contributions' => $contributions,
+                'endorsements' => $endorsements,
+                'publicStatements' => $publicStatements,
+                'categories' => $this->em
+                    ->getRepository('GovWikiDbBundle:IssueCategory')
+                    ->findAll(),
+                'electedOfficials' => $this->em
+                    ->getRepository('GovWikiDbBundle:Government')
+                    ->governmentElectedOfficial($electedOfficial['id']),
+            ];
+        }
+
+        return null;
     }
 }

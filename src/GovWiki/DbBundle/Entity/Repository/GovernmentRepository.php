@@ -94,7 +94,7 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
-     * @param string  $environment Environment name.
+     * @param integer $environment A Environment entity id.
      * @param integer $id          Government id.
      * @param string  $name        Government name.
      *
@@ -102,125 +102,24 @@ class GovernmentRepository extends EntityRepository
      */
     public function getListQuery($environment, $id = null, $name = null)
     {
-        $qb = $this
-            ->createQueryBuilder('Government')
-            ->leftJoin('Government.environment', 'Environment');
+        $expr = $this->_em->getExpressionBuilder();
 
-        $expr = $qb->expr();
-
-        $qb->where($expr->eq('Environment.slug', $expr->literal($environment)));
+        $qb = $this->createQueryBuilder('Government')
+            ->where($expr->eq('Government.environemnt', ':environment'))
+            ->setParameter('environment', $environment);
 
         if (null !== $id) {
-            $qb->andWhere($expr->eq('Government.id', $id));
+            $qb
+                ->andWhere($expr->eq('Government.id', ':id'))
+                ->setParameter('id', $id);
         }
         if (null !== $name) {
-            $qb->andWhere($expr->like(
-                'Government.name',
-                $expr->literal('%'.$name.'%')
-            ));
+            $qb
+                ->andWhere($expr->like('Government.name', ':name'))
+                ->setParameter('name', '%'. $name .'%');
         }
 
         return $qb->getQuery();
-    }
-
-    /**
-     * @param string $environment    Environment name.
-     * @param string $altTypeSlug    Slugged alt type.
-     * @param string $governmentSlug Slugged government name.
-     * @param array  $parameters     Array of parameters:
-     *                               <ul>
-     *                                  <li>field_name (required)</li>
-     *                                  <li>limit (required)</li>
-     *                                  <li>page</li>
-     *                                  <li>order</li>
-     *                                  <li>name_order</li>
-     *                                  <li>year</li>
-     *                               </ul>.
-     *
-     * @return array
-     */
-    public function getGovernmentRank(
-        $environment,
-        $altTypeSlug,
-        $governmentSlug,
-        array $parameters
-    ) {
-        $rankFieldName = $parameters['field_name'];
-        $limit = $parameters['limit'];
-        $page = $parameters['page'];
-        $order = $parameters['order'];
-        $nameOrder = $parameters['name_order'];
-        $year = $parameters['year'];
-
-        $fieldName = preg_replace('|_rank$|', '', $rankFieldName);
-
-        $con = $this->_em->getConnection();
-
-        $mainSql = "
-            SELECT
-                government.slug AS name,
-                extra.{$fieldName} AS amount,
-                extra.{$rankFieldName} AS value
-            FROM {$environment} extra
-            INNER JOIN governments government ON extra.government_id = government.id
-            INNER JOIN environments environment ON environment.id = government.environment_id
-        ";
-
-        $wheres = [
-            "government.alt_type_slug = '{$altTypeSlug}'",
-            "year = {$year}",
-        ];
-        $orderBys = [];
-
-        /*
-         * Get list of rank started from given government.
-         */
-        if ((null === $order) || ('' === $order)) {
-            /*
-             * Get rank for given government.
-             */
-
-            $sql = "
-                SELECT extra.{$rankFieldName}
-                FROM {$environment} extra
-                INNER JOIN governments government ON extra.government_id = government.id
-                WHERE
-                    government.alt_type_slug = '{$altTypeSlug}' AND
-                    government.slug = '{$governmentSlug}'
-                ORDER BY extra.{$rankFieldName}
-                LIMIT 1
-            ";
-
-            $wheres[] = "extra.{$rankFieldName} >= (". $sql .')';
-            if (('desc' !== $nameOrder) && ('asc' !== $nameOrder)) {
-                $orderBys[] = "extra.{$rankFieldName} ASC";
-            }
-        /*
-         * Get sorted information from offset computed on given page and limit.
-         */
-        } elseif ('desc' === $order) {
-            $orderBys[] = "extra.{$rankFieldName} DESC";
-        } elseif ('asc' === $order) {
-            $orderBys[] = "extra.{$rankFieldName} ASC";
-        }
-
-        if ('desc' === $nameOrder) {
-            $orderBys[] = 'government.slug DESC';
-        } elseif ('asc' === $nameOrder) {
-            $orderBys[] = 'government.slug ASC';
-        }
-
-        if (count($wheres) > 0) {
-            $mainSql .= ' WHERE ' . implode(' AND ', $wheres);
-        }
-
-        if (count($orderBys) > 0) {
-            $mainSql .= ' ORDER BY ' .implode(' , ', $orderBys);
-        }
-
-        $mainSql .= ' LIMIT '. ($page * $limit) .', '. $limit;
-
-        return $con->fetchAll($mainSql);
     }
 
     /**
@@ -230,7 +129,7 @@ class GovernmentRepository extends EntityRepository
      * @param integer $environment Environment entity id.
      * @param string  $altTypeSlug Slugged government alt type.
      * @param string  $slug        Slugged government name.
-     * @param integer $year        For fetching fin data.
+     * @param integer $year        For fetching data.
      *
      * @return array
      */
@@ -239,35 +138,39 @@ class GovernmentRepository extends EntityRepository
         $expr = $this->_em->getExpressionBuilder();
 
         // Get government.
-        $government = $this->createQueryBuilder('Government')
-            ->select(
-                'Government',
-                'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
-                'partial Document.{id, description, link, type}'
-            )
-            ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
-            ->leftJoin(
-                'Government.documents',
-                'Document',
-                JOIN::WITH,
-                $expr->andX(
-                    $expr->eq('Document.government', 'Government.id'),
-                    $expr->eq('YEAR(Document.date)', $year),
-                    $expr->eq('Document.type', $expr->literal(Document::LAST_AUDIT))
+        try {
+            $government = $this->createQueryBuilder('Government')
+                ->select(
+                    'Government',
+                    'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
+                    'partial Document.{id, description, link, type}'
                 )
-            )
-            ->where($expr->andX(
-                $expr->eq('Government.altTypeSlug', ':altTypeSlug'),
-                $expr->eq('Government.slug', ':slug'),
-                $expr->eq('Government.environment', ':environment')
-            ))
-            ->setParameters([
-                'altTypeSlug' => $altTypeSlug,
-                'slug' => $slug,
-                'environment' => $environment,
-            ])
-            ->getQuery()
-            ->getOneOrNullResult(Query::HYDRATE_ARRAY);
+                ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
+                ->leftJoin(
+                    'Government.documents',
+                    'Document',
+                    JOIN::WITH,
+                    $expr->andX(
+                        $expr->eq('Document.government', 'Government.id'),
+                        $expr->eq('YEAR(Document.date)', $year),
+                        $expr->eq('Document.type', $expr->literal(Document::LAST_AUDIT))
+                    )
+                )
+                ->where($expr->andX(
+                    $expr->eq('Government.altTypeSlug', ':altTypeSlug'),
+                    $expr->eq('Government.slug', ':slug'),
+                    $expr->eq('Government.environment', ':environment')
+                ))
+                ->setParameters([
+                    'altTypeSlug' => $altTypeSlug,
+                    'slug'        => $slug,
+                    'environment' => $environment,
+                ])
+                ->getQuery()
+                ->getOneOrNullResult(Query::HYDRATE_ARRAY);
+        } catch (NonUniqueResultException $e) {
+            return [];
+        }
 
         if ($government === null) {
             return [];
@@ -341,32 +244,29 @@ class GovernmentRepository extends EntityRepository
      * Search government with name like given in partOfName parameter and
      * return object with id, name and available governments years.
      *
-     * @param string $environment Environment name.
-     * @param string $partOfName  Part of government name.
+     * @param integer $environment A Environment entity id.
+     * @param string  $partOfName  Part of government name.
      *
      * @return array
      */
     public function searchForComparison($environment, $partOfName)
     {
-        $qb = $this->createQueryBuilder('Government');
-        $expr = $qb->expr();
+        $expr = $this->_em->getExpressionBuilder();
 
-        $result = $qb
+        $result = $this->createQueryBuilder('Government')
             ->select(
                 'Government.id, Government.name, Government.altType',
                 'FinData.year'
             )
-            ->leftJoin('Government.environment', 'Environment')
             ->innerJoin('Government.finData', 'FinData')
-            ->where(
-                $expr->andX(
-                    $expr->eq('Environment.slug', $expr->literal($environment)),
-                    $expr->like(
-                        'Government.name',
-                        $expr->literal('%'.$partOfName.'%')
-                    )
-                )
-            )
+            ->where($expr->andX(
+                $expr->eq('Government.environment', ':environment'),
+                $expr->like('Government.name', ':partOfName')
+            ))
+            ->setParameters([
+                'environment' => $environment,
+                'partOfName' => '%'. $partOfName .'%',
+            ])
             ->groupBy('FinData.year, Government.id')
             ->orderBy($expr->asc('Government.id'))
             ->addOrderBy($expr->desc('FinData.year'))

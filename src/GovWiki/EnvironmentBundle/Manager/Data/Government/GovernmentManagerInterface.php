@@ -2,7 +2,7 @@
 
 namespace GovWiki\EnvironmentBundle\Manager\Data\Government;
 
-use GovWiki\EnvironmentBundle\Exception\UnknownAbstractTypeException;
+use GovWiki\DbBundle\Entity\Environment;
 
 /**
  * Interface GovernmentManagerInterface
@@ -12,44 +12,57 @@ interface GovernmentManagerInterface
 {
 
     /**
-     * @param string $tableName         Environment specific government data
-     *                                  table name.
-     * @param array  $columnDefinitions Column definitions
-     *                                  {@see EnvironmentManagerInterface::format2columnDefinition}.
+     * @param Environment $environment       A Environment entity instance.
+     * @param array       $columnDefinitions Column definitions
+     *                                       {@see EnvironmentManagerInterface::format2columnDefinition}.
      *
      * @return GovernmentManagerInterface
      *
-     * @throws UnknownAbstractTypeException Unknown type.
-     * @throws \Doctrine\DBAL\DBALException SQL error while removing.
+     * @throws \Doctrine\DBAL\DBALException SQL error while creating.
      */
-    public function createTable($tableName, array $columnDefinitions = []);
+    public function createTable(Environment $environment, array $columnDefinitions);
 
     /**
-     * @param string $tableName Environment specific government data
-     *                          table name.
+     * @param Environment $environment A Environment entity instance.
      *
      * @return void
+     *
+     * @throws \Doctrine\DBAL\DBALException SQL error while removing.
      */
-    public function removeTable($tableName);
+    public function removeTable(Environment $environment);
 
     /**
-     * @param string  $tableName         Environment specific government data
-     *                                   table name.
-     * @param integer $government        Government entity id.
-     * @param array   $columnDefinitions Column definitions
-     *                                   {@see EnvironmentManagerInterface::format2columnDefinition}.
+     * Get environment related data for government.
+     *
+     * @param Environment $environment A Environment entity instance.
+     * @param integer     $government  Government entity id.
+     * @param integer     $year        Year of fetching data.
+     * @param array       $fields      Array of fetching fields.
      *
      * @return mixed
      */
-    public function get($tableName, $government, array $columnDefinitions);
+    public function get(Environment $environment, $government, $year, array $fields);
 
     /**
-     * Search governments by the part of name in specified environment.
+     * @param Environment $environment    A Environment entity id.
+     * @param string      $altTypeSlug    Slugged alt type.
+     * @param string      $governmentSlug Slugged government name.
+     * @param array       $parameters     Array of parameters:
+     *                                    <ul>
+     *                                        <li>field_name (required)</li>
+     *                                        <li>limit (required)</li>
+     *                                        <li>page</li>
+     *                                        <li>order</li>
+     *                                        <li>name_order</li>
+     *                                        <li>year</li>
+     *                                    </ul>.
      *
-     * @param string $environment Environment entity slug.
-     * @param string $partOfName  Part of government name.
-     *
-     * @return mixed
+     * @return array
      */
-    public function search($environment, $partOfName);
+    public function getGovernmentRank(
+        Environment $environment,
+        $altTypeSlug,
+        $governmentSlug,
+        array $parameters
+    );
 }

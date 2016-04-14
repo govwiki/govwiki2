@@ -12,7 +12,7 @@ use GovWiki\DbBundle\Utils\Functions;
 class FormatRepository extends EntityRepository
 {
     /**
-     * @param string  $environment Environment name.
+     * @param integer $environment Environment entity id.
      * @param boolean $full        Flag.
      *
      * @return \Doctrine\ORM\Query
@@ -37,10 +37,10 @@ class FormatRepository extends EntityRepository
                 'Tab.id AS tab_id, Tab.name AS tab_name, Category.id AS category_id, Category.name AS category_name',
                 'Category.decoration as category_decoration'
             )
-            ->leftJoin('Format.environment', 'Environment')
             ->leftJoin('Format.category', 'Category')
             ->leftJoin('Format.tab', 'Tab')
-            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
+            ->where($expr->eq('Format.environment', ':environment'))
+            ->setParameter('environment', $environment)
             ->orderBy($expr->asc('Tab.orderNumber'))
             ->addOrderBy($expr->asc('Tab.name'))
             ->addOrderBy($expr->asc('Category.orderNumber'))
@@ -49,28 +49,27 @@ class FormatRepository extends EntityRepository
     }
 
     /**
-     * @param string $environment Environment name.
+     * @param integer $environment A Environment entity id.
      *
      * @return array
      */
     public function getRankedFields($environment)
     {
-        $qb = $this->createQueryBuilder('Format');
-        $expr = $qb->expr();
+        $expr = $this->_em->getExpressionBuilder();
 
-        return $qb
+        return $this->createQueryBuilder('Format')
             ->select('Format.field')
-            ->leftJoin('Format.environment', 'Environment')
             ->where($expr->andX(
-                $expr->eq('Environment.slug', $expr->literal($environment)),
+                $expr->eq('Format.environment', ':environment'),
                 $expr->eq('Format.ranked', 1)
             ))
+            ->setParameter('environment', $environment)
             ->getQuery()
             ->getArrayResult();
     }
 
     /**
-     * @param string  $environment Environment name.
+     * @param integer $environment Environment entity id.
      * @param boolean $plain       Flag, if set return plain array without
      *                             grouping by tab names and fields.
      *
@@ -121,5 +120,29 @@ class FormatRepository extends EntityRepository
         } catch (NonUniqueResultException $e) {
             return null;
         }
+    }
+
+    /**
+     * @param integer     $environment Environment entity id.
+     * @param string|null $altType     If set get only formats show only in
+     *                                 specified government alt type.
+     *
+     * @return array
+     */
+    public function getList($environment, $altType = null)
+    {
+        $result = $this->get($environment, true);
+
+        if (null !== $altType) {
+            // Remove formats not show in specified alt type.
+            $result = array_filter(
+                $result,
+                function (array $format) use ($altType) {
+                    return in_array($altType, $format['showIn'], true);
+                }
+            );
+        }
+
+        return $result;
     }
 }

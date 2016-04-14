@@ -29,7 +29,7 @@ class AdminFormatManager extends AbstractAdminEntityManager
     {
         /** @var FormatRepository $repository */
         $repository = $this->getRepository();
-        return $repository->getListQuery($this->environment);
+        return $repository->getListQuery($this->environmentId);
     }
 
     /**

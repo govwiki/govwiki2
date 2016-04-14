@@ -24,26 +24,17 @@ class DataManagerPool implements DataManagerPoolInterface
     private $governmentManager;
 
     /**
-     * @var FormatManagerInterface
-     */
-    private $formatManager;
-
-    /**
      * @param MaxRankManagerInterface    $maxRankManager    A MaxRankManagerInterface
      *                                                      instance.
      * @param GovernmentManagerInterface $governmentManager A GovernmentManagerInterface
      *                                                      instance.
-     * @param FormatManagerInterface     $formatManager     A FormatManagerInterface
-     *                                                      instance.
      */
     public function __construct(
         MaxRankManagerInterface $maxRankManager,
-        GovernmentManagerInterface $governmentManager,
-        FormatManagerInterface $formatManager
+        GovernmentManagerInterface $governmentManager
     ) {
         $this->maxRankManager = $maxRankManager;
         $this->governmentManager = $governmentManager;
-        $this->formatManager = $formatManager;
     }
 
     /**
@@ -60,13 +51,5 @@ class DataManagerPool implements DataManagerPoolInterface
     public function getGovernmentManager()
     {
         return $this->governmentManager;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormatManager()
-    {
-        return $this->formatManager;
     }
 }

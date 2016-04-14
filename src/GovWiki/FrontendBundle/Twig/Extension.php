@@ -78,19 +78,6 @@ class Extension extends \Twig_Extension
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFunctions()
-    {
-        return [
-            new \Twig_SimpleFunction('govwiki_path', [
-                $this,
-                'generateGovWikiPath',
-            ]),
-        ];
-    }
-
 //    /**
 //     * {@inheritdoc}
 //     */
@@ -239,26 +226,6 @@ class Extension extends \Twig_Extension
             return mb_substr($value, 0, 19) . '...';
         }
         return $value;
-    }
-
-    /**
-     * @param       $route
-     * @param array $parameters
-     *
-     * @return string
-     */
-    public function generateGovWikiPath($route, array $parameters = [])
-    {
-        $environemnt = $this->container->get(GovWikiEnvironmentService::STORAGE)->get();
-
-        if ('path' === $this->determinatorType) {
-            $parameters = array_merge($parameters, [
-                'environment' => $environemnt->getSlug(),
-            ]);
-        }
-
-        $router = $this->container->get('router');
-        return $router->generate($route, $parameters);
     }
 
     /**

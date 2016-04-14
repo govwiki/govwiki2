@@ -29,11 +29,21 @@ services:
     govwiki_environment.storage:
         class: GovWiki\EnvironmentBundle\Storage\EnvironmentStorage
 
+    govwiki_environment.data_manager.max_ranks:
+        class: GovWiki\EnvironmentBundle\Manager\Data\MaxRank\MaxRankManager
+        arguments: [ @doctrine.orm.default_entity_manager ]
+
+    govwiki_environment.data_manager.government:
+        class: GovWiki\EnvironmentBundle\Manager\Data\Government\GovernmentManager
+        arguments: [ @doctrine.orm.default_entity_manager ]
+
     govwiki_environment.manager:
         class: GovWiki\EnvironmentBundle\Manager\Environment\EnvironmentManager
         arguments:
             - @doctrine.orm.default_entity_manager
             - @govwiki_environment.storage
+            - @govwiki_environment.data_manager.government
+            - @govwiki_environment.data_manager.max_ranks
 
     govwiki_environment.router:
         class: GovWiki\EnvironmentBundle\Router\RouterDecorator
