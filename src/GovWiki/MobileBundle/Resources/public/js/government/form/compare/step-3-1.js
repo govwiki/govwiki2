@@ -132,7 +132,7 @@ Step.prototype.drawTable = function(container, comparedData) {
 
     var $container = $(container);
     $container.html('');
-    var governmentNumber = (container == '.compare-first-table table') ? 'firstGovernment' : 'secondGovernment';
+    var governmentNumber = (container == '.compare-first-table') ? 'firstGovernment' : 'secondGovernment';
 
     var category = comparedData.category;
     var governmentName = comparedData[governmentNumber].name;
@@ -230,8 +230,8 @@ Step.prototype.loadComparedData = function (tab, category, select) {
         contentType: 'application/json',
         success: function (comparedData) {
             self.switchGraphs();
-            self.drawTable('.compare-first-table table', comparedData);
-            self.drawTable('.compare-second-table table', comparedData);
+            self.drawTable('.compare-first-table', comparedData);
+            self.drawTable('.compare-second-table', comparedData);
             self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
             self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
         },

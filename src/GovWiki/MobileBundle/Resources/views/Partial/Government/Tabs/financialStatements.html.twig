@@ -104,17 +104,8 @@
 </div>
 
 {# Compare tables #}
-<div class="compare-first-table">
-    <div class="table-responsive">
-        <table class="table"></table>
-    </div>
-</div>
-
-<div class="compare-second-table">
-    <div class="table-responsive">
-        <table class="table"></table>
-    </div>
-</div>
+<table class="compare-first-table table"></table>
+<table class="compare-second-table table"></table>
 
 
 {% set finDataReplacements = {
@@ -131,9 +122,7 @@
 %}
 
 {% for categoryName, fields in financialStatements %}
-    <div class="financial-table">
-    <div class="table-responsive">
-        <table class="table">
+    <table class="financial-table table table-striped">
 
         {% set showTotalAndOver = (fields|first).otherfunds is defined %}
 
@@ -141,9 +130,19 @@
             <tr>
                 {# Category caption #}
                 <th><b>{{ ('caption_categories.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></th>
-                <th><b>{{ 'funds.general_fund'|trans }}</b></th>
-                <th><b>{{ 'funds.other'|trans }}</b></th>
-                <th><b>{{ 'funds.total'|trans }}</b></th>
+                <th>
+                    <select>
+                        <option value="2">
+                            {{ 'funds.general_fund'|trans }}
+                        </option>
+                        <option value="3">
+                            {{ 'funds.other'|trans }}
+                        </option>
+                        <option value="4">
+                            {{ 'funds.total'|trans }}
+                        </option>
+                    </select>
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -153,7 +152,7 @@
                 <tr>
 
                     <td>
-                        {{ ('findata.captions.' ~ name | replace(finDataReplacements) | lower)|trans }}
+                        {{ ('findata.captions.' ~ name | replace(finDataReplacements) | lower) | trans }}
                     </td>
                     <td>
                         {%- if not showTotalAndOver or loop.first -%}
@@ -188,10 +187,6 @@
                                 0
                             {%- endif -%}
                         </td>
-
-                    {% else %}
-                        <td></td>
-                        <td></td>
                     {% endif %}
 
                 </tr>
@@ -200,8 +195,6 @@
         </tbody>
 
     </table>
-    </div>
-    </div>
 {% endfor %}
 
 

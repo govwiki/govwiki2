@@ -334,44 +334,41 @@
     }
 
     // Default financial table on financial statement tab
-    .financial-table table, .compare-first-table table, .compare-second-table table{
+    .financial-table, .compare-first-table, .compare-second-table{
         width: 100%;
-        thead, tbody {
+        font-size: 0.9em;
 
-            & > tr {
+        th, td {
+            padding: 0;
 
-                & > th, td {
-                    font-size: 1.4em;
-                    padding: 0;
-                    border: none;
-                    white-space: nowrap;
-                    text-align: right;
-
-                    &:nth-child(1) {
-                        color: #666;
-                        width: 30%;
-                        text-align: left;
-                    }
-
-                    &:nth-child(2) {
-                        color: #666;
-                        width: 20%;
-                    }
-
-                    &:nth-child(3) {
-                        color: #666;
-                        width: 20%;
-                    }
-
-                    &:nth-child(4) {
-                        color: #666;
-                        width: 20%;
-                    }
-
-                }
-
+            &:nth-child(1) {
+                width: 60%;
+                text-align: left;
             }
 
+            &:nth-child(2) {
+                width: 40%;
+                text-align: right;
+            }
+
+            &:nth-child(3) {
+                display: none;
+                text-align: right;
+                width: 40%;
+            }
+
+            &:nth-child(4) {
+                display: none;
+                text-align: right;
+                width: 40%;
+            }
+
+
+        }
+
+        select {
+            font-size: 0.8em;
+            background-color: white;
         }
     }
 

@@ -7,6 +7,7 @@ var rowSortFunction = require('./utils.js').rowSortFunction;
  */
 function init() {
 
+    handler_switchColumnOnFinancialTable();
     handler_switchChart();
     financialStatements_revenue();
     financialStatements_expenditures();
@@ -314,6 +315,18 @@ function financialStatementsTree_expenditures() {
 
 }
 
+function handler_switchColumnOnFinancialTable() {
+    $('.financial-table select').on('change', function (e) {
+        var $select = $(e.currentTarget);
+
+        var $financialTable = $select.closest('.financial-table');
+        $financialTable.find('tbody td:not(:first-child)').css({display: 'none'});
+
+        var selectedColumn = $select.val();
+        $financialTable.find('tbody td:nth-child(' + selectedColumn + ')').css({display: 'table-cell'});
+    })
+}
+
 /**
  * #Financial_Statements (.chart-controls .btn)
  */
@@ -368,7 +381,7 @@ function handler_switchChart() {
 
     function hideTableGroup(tableGroup, hide) {
 
-        var display = hide ? {display: 'none'} : {display: 'block'};
+        var display = hide ? {display: 'none'} : {display: 'table'};
 
         if (tableGroup == 'financialTable') {
             $('.compare-first-table').css(display);
