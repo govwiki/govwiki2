@@ -337,6 +337,8 @@
     .financial-table, .compare-first-table, .compare-second-table{
         width: 100%;
         font-size: 0.9em;
+        word-wrap: break-word;
+        table-layout: fixed;
 
         th, td {
             padding: 0;
