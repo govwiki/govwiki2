@@ -6,17 +6,16 @@ framework:
         resource: "%kernel.root_dir%/config/routing_mobile.yml"
         strict_requirements: ~
 
-
 # Assetic Configuration
 assetic:
     ruby: ~
     bundles:
         - 'GovWikiMobileBundle'
-    use_controller: false
-
-web_profiler:
-    toolbar: true
-    intercept_redirects: false
+#    use_controller: false
+#
+#web_profiler:
+#    toolbar: true
+#    intercept_redirects: false
 
 monolog:
     handlers:

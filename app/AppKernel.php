@@ -43,7 +43,7 @@ class AppKernel extends Kernel
             new GovWiki\MobileDetectBundle\GovWikiMobileDetectBundle(),
         ];
 
-        if (in_array($this->getEnvironment(), ['dev', 'test', 'mobile'], true)) {
+        if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
