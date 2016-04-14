@@ -9,7 +9,7 @@ require('./search_government.js');
  *
  * @returns {number} Layer Position
  */
-cdb.geo.ui.Tooltip.prototype.getLayerIndex = function() {
+cdb.geo.ui.Tooltip.prototype.getLayerIndex = function () {
   return this.options.layer._position;
 };
 
@@ -21,7 +21,7 @@ cdb.geo.ui.Tooltip.prototype.getLayerIndex = function() {
  *
  * @returns {cdb.geo.ui.Tooltip}
  */
-cdb.geo.ui.Tooltip.prototype.setMask = function(mask) {
+cdb.geo.ui.Tooltip.prototype.setMask = function (mask) {
   this.options.gw = {
     mask: mask
   };
@@ -33,20 +33,20 @@ cdb.geo.ui.Tooltip.prototype.setMask = function(mask) {
  * Override carto db tooltip render method in order to format data before
  * displaying.
  */
-cdb.geo.ui.Tooltip.prototype.render = function(data) {
+cdb.geo.ui.Tooltip.prototype.render = function (data) {
     // Add by Shemin Dmitry
   var tmp = $.extend({}, data);
 
-  if (this.options.gw.mask && tmp && tmp.data ) {
+  if (this.options.gw.mask && tmp && tmp.data) {
     tmp.data = numeral(tmp.data).format(this.options.gw.mask);
   }
     // END
   var sanitizedOutput = cdb.core.sanitize.html(this.template(tmp));
-  this.$el.html( sanitizedOutput );
+  this.$el.html(sanitizedOutput);
   return this;
 };
 
-$(function() {
+$(function () {
 
     /**
      * window.gw.map = {
@@ -72,7 +72,7 @@ $(function() {
 
   window.gw.map.legend = window.gw.map.legend || [];
   window.gw.map.legendTypes = window.gw.map.legendTypes || [];
-  var legend = window.gw.map.legend.sort(function(a, b) {
+  var legend = window.gw.map.legend.sort(function (a, b) {
     return a.order > b.order;
   });
   var legendConfig = {
@@ -97,18 +97,18 @@ $(function() {
     sublayers: []
   })
     .addTo(map)
-    .done(function(layer) {
+    .done(function (layer) {
 
       var $map = $('#map');
       var $loader = $('#map_wrap').find('.loader');
 
-      layer.on('load', function() {
+      layer.on('load', function () {
         $loader.hide();
         $map.show();
-        $map.css({'opacity': 1});
+        $map.css({ 'opacity': 1 });
       });
 
-      $('#year-selector').change(function() {
+      $('#year-selector').change(function () {
         $loader.show();
         $map.hide();
         window.gw.map.year = $(this).find(':selected').val();
@@ -135,11 +135,11 @@ $(function() {
          * Get unique altTypes and render new subLayers by them
          */
       sql.execute('SELECT GeometryType(the_geom), alt_type_slug FROM ' + window.gw.environment + ' WHERE the_geom IS NOT NULL GROUP BY GeometryType(the_geom), alt_type_slug ORDER BY alt_type_slug')
-            .done(function(data) {
+            .done(function (data) {
               layersData = data;
               init(data);
             })
-            .error(function(errors) {
+            .error(function (errors) {
               return cartodbError(errors);
             });
 
@@ -147,7 +147,7 @@ $(function() {
         $('.loader').hide();
         var $mapProcessing = $('.mapOnProcessing');
         $mapProcessing.find('h5').eq(0).text('Something went wrong, please contact with us (contact@californiapolicycenter.org) ');
-        $mapProcessing.css({'opacity':1});
+        $mapProcessing.css({ 'opacity':1 });
         $mapProcessing.show();
 
         console.log(errors);
@@ -158,7 +158,7 @@ $(function() {
          */
       function init(data) {
 
-        var altTypes = data.rows.filter(function(alt) {
+        var altTypes = data.rows.filter(function (alt) {
           return !!alt.alt_type_slug;
         });
 
@@ -194,7 +194,7 @@ $(function() {
           }
         }
 
-        var altTypes = layersData.rows.filter(function(alt) {
+        var altTypes = layersData.rows.filter(function (alt) {
           return !!alt.alt_type_slug;
         });
 
@@ -214,19 +214,19 @@ $(function() {
          */
       function initSubLayers(altTypes) {
 
-        var countySubLayers = altTypes.filter(function(altType) {
+        var countySubLayers = altTypes.filter(function (altType) {
           return (altType.geometrytype === 'MULTIPOLYGON' || altType.geometrytype === 'POLYGON');
         });
 
-        var markerSubLayers = altTypes.filter(function(altType) {
+        var markerSubLayers = altTypes.filter(function (altType) {
           return (altType.geometrytype !== 'MULTIPOLYGON' && altType.geometrytype !== 'POLYGON');
         });
 
-        countySubLayers.forEach(function(altType) {
+        countySubLayers.forEach(function (altType) {
           initCountySubLayer(altType.alt_type_slug);
         });
 
-        markerSubLayers.forEach(function(altType) {
+        markerSubLayers.forEach(function (altType) {
           initMarkerSubLayer(altType.alt_type_slug);
         });
 
@@ -240,7 +240,7 @@ $(function() {
          * @returns {*}
          */
       function getConditionsByType(conditions, conditionType) {
-        return conditions.filter(function(condition) {
+        return conditions.filter(function (condition) {
           return condition.type === conditionType;
         });
       }
@@ -257,7 +257,7 @@ $(function() {
         useFill = useFill || false;
 
             // Search current altType in legend (window.gw.map.legend = [Object, Object, ...])
-        var foundLegend = legend.filter(function(item) {
+        var foundLegend = legend.filter(function (item) {
           return item.altType == altType;
         })[0];
 
@@ -290,7 +290,7 @@ $(function() {
       }
 
       function findLegendType(legendType) {
-        return window.gw.map.legendTypes.filter(function(legend) {
+        return window.gw.map.legendTypes.filter(function (legend) {
           return legend === legendType;
         })[0];
       }
@@ -318,7 +318,7 @@ $(function() {
             // If simple conditions found
         if (periodConditions.length !== 0) {
 
-          periodConditions.forEach(function(condition) {
+          periodConditions.forEach(function (condition) {
 
                     // Fill polygon or marker
             var fillRule = options.isMarkerLayer ? 'marker-fill' : 'polygon-fill';
@@ -331,8 +331,8 @@ $(function() {
             var lineColor = options.isMarkerLayer ? color : '#FFFFFF';
             var line = lineColorRule + ': ' + lineColor + ';';
             if (options.markerLineColorColorCss) {
-                line = options.markerLineColorColorCss;
-              }
+              line = options.markerLineColorColorCss;
+            }
             var stroke = options.isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
 
             var min = '[data >= ' + condition.min + ']';
@@ -371,11 +371,11 @@ $(function() {
         if (simpleConditions.length !== 0) {
 
                 // Sort by desc, because cartodb specifically processes css rules
-          simpleConditions.sort(function(cur, next) {
+          simpleConditions.sort(function (cur, next) {
             return cur.value < next.value;
           });
 
-          simpleConditions.forEach(function(condition) {
+          simpleConditions.forEach(function (condition) {
                     // Fill polygon or marker
             var fillRule = options.isMarkerLayer ? 'marker-fill' : 'polygon-fill';
             var fillColor = options.isMarkerLayer ? condition.color : condition.color;
@@ -387,8 +387,8 @@ $(function() {
             var lineColor = options.isMarkerLayer ? color : '#FFFFFF';
             var line = lineColorRule + ': ' + lineColor + ';';
             if (options.markerLineColorColorCss) {
-                line = options.markerLineColorColorCss;
-              }
+              line = options.markerLineColorColorCss;
+            }
             var stroke = options.isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
 
             var value = '[data ' + condition.operation + ' ' + condition.value + ']';
@@ -514,8 +514,8 @@ $(function() {
 
           var conditions = window.gw.map.county.conditions,
             options = {
-                isMarkerLayer: true
-              };
+              isMarkerLayer: true
+            };
 
           legendItemCss = getLegendItemAsCss(altType);
           if (legendItemCss) {
@@ -582,12 +582,12 @@ $(function() {
       function initTooltips() {
 
         for (var key in tooltips) {
-          if(tooltips.hasOwnProperty(key)) {
+          if (tooltips.hasOwnProperty(key)) {
 
             var tooltip = tooltips[key];
             if (tooltip != null) {
-                $('#map_wrap').append(tooltip.render().el);
-              }
+              $('#map_wrap').append(tooltip.render().el);
+            }
 
           }
         }
@@ -604,7 +604,7 @@ $(function() {
         var $tilePane = $('.leaflet-tile-pane');
 
         $objectsPane.appendTo($tilePane);
-        $objectsPane.css({'z-index':'100'});
+        $objectsPane.css({ 'z-index':'100' });
       }
 
         /**
@@ -628,117 +628,117 @@ $(function() {
                      * Or highlight current county
                      * It depends on the current Layer position
                      */
-            layer.bind('mouseover', function(e, latlon, pxPos, data, layerIndex) {
+            layer.bind('mouseover', function (e, latlon, pxPos, data, layerIndex) {
 
                         // TODO: Must be deleted, when data will be replaced, now it's hardcoded
-                data.slug = data.slug.replace(/_/g, ' ');
+              data.slug = data.slug.replace(/_/g, ' ');
 
-                hovers[layerIndex] = 1;
+              hovers[layerIndex] = 1;
 
                         /**
                          * If hover active
                          */
-                if (_.some(hovers)) {
+              if (_.some(hovers)) {
 
-                    $('#map').css('cursor', 'pointer');
+                $('#map').css('cursor', 'pointer');
 
                             /**
                              * If hover on county layer
                              */
-                    if (layerIndex == countySubLayer._position) {
-                        drawAppropriatePolygon(data);
-                      } else {
-                        removeAllHoverShapes();
-                      }
+                if (layerIndex == countySubLayer._position) {
+                  drawAppropriatePolygon(data);
+                } else {
+                  removeAllHoverShapes();
+                }
 
                             /**
                              * Open current tooltip, close another
                              */
-                    for (var key in tooltips) {
-                        if (tooltips.hasOwnProperty(key)) {
+                for (var key in tooltips) {
+                  if (tooltips.hasOwnProperty(key)) {
 
-                            var tooltip = tooltips[key];
+                    var tooltip = tooltips[key];
 
-                            if (tooltip != null) {
+                    if (tooltip != null) {
 
-                                if (tooltip.getLayerIndex() == layerIndex) {
-                                    tooltip.enable();
-                                  } else {
-                                    tooltip.disable();
-                                  }
+                      if (tooltip.getLayerIndex() == layerIndex) {
+                          tooltip.enable();
+                        } else {
+                          tooltip.disable();
+                        }
 
-                              }
-
-                          }
-                      }
+                    }
 
                   }
+                }
 
-              });
+              }
+
+            });
 
                     /**
                      * Hide tooltip on hover
                      * Or remove highlight on current county
                      * It depends on the current Layer position
                      */
-            layer.bind('mouseout', function(layerIndex) {
+            layer.bind('mouseout', function (layerIndex) {
 
-                hovers[layerIndex] = 0;
+              hovers[layerIndex] = 0;
 
                         /**
                          * If hover not active
                          */
-                if (!_.some(hovers)) {
-                    $('#map').css('cursor', 'auto');
+              if (!_.some(hovers)) {
+                $('#map').css('cursor', 'auto');
 
-                    removeAllHoverShapes();
+                removeAllHoverShapes();
 
                             /**
                              *  Close all tooltips, if cursor outside of layers
                              */
-                    for (var key in tooltips) {
-                        if (tooltips.hasOwnProperty(key)) {
+                for (var key in tooltips) {
+                  if (tooltips.hasOwnProperty(key)) {
 
-                            var tooltip = tooltips[key];
+                    var tooltip = tooltips[key];
 
-                            if (tooltip != null) {
+                    if (tooltip != null) {
 
-                                if (tooltip.getLayerIndex() == layerIndex) {
-                                    tooltip.disable();
-                                  }
+                      if (tooltip.getLayerIndex() == layerIndex) {
+                          tooltip.disable();
+                        }
 
-                              }
-
-                          }
-                      }
+                    }
 
                   }
-              });
+                }
+
+              }
+            });
 
                     /**
                      * Change window location after click on marker or county
                      */
-            layer.on('featureClick', function(event, latlng, pos, data, layerIndex) {
+            layer.on('featureClick', function (event, latlng, pos, data, layerIndex) {
 
-                if (!data.alt_type_slug || !data.slug) {
-                    alert('Please verify your data, altTypeSlug or governmentSlug may can not defined, more info in console.log');
-                    console.log(data);
-                    return false;
-                  }
+              if (!data.alt_type_slug || !data.slug) {
+                alert('Please verify your data, altTypeSlug or governmentSlug may can not defined, more info in console.log');
+                console.log(data);
+                return false;
+              }
 
                         /**
                          * TODO: Hardcoded, data must be in underscore style
                          */
-                data.slug = data.slug.replace(/ /g, '_');
+              data.slug = data.slug.replace(/ /g, '_');
 
-                var pathname = window.location.pathname;
+              var pathname = window.location.pathname;
 
-                if (pathname[pathname.length - 1] !== '/') {
-                    pathname += '/';
-                  }
+              if (pathname[pathname.length - 1] !== '/') {
+                pathname += '/';
+              }
 
-                window.location.pathname = pathname + data.alt_type_slug + '/' + data.slug;
-              });
+              window.location.pathname = pathname + data.alt_type_slug + '/' + data.slug;
+            });
 
           }
 
@@ -772,13 +772,13 @@ $(function() {
         var findIndex, filteredConditionsByType;
         var conditionType = oneCondition.type;
 
-        filteredConditionsByType = conditions.filter(function(condition) {
+        filteredConditionsByType = conditions.filter(function (condition) {
           return condition.type == conditionType;
         });
 
         if (filteredConditionsByType.length > 0) {
 
-          filteredConditionsByType.forEach(function(condition, index) {
+          filteredConditionsByType.forEach(function (condition, index) {
             switch (conditionType) {
               case 'simple':
                 if (condition.operation == oneCondition.operation && condition.value == oneCondition.value) findIndex = index;
@@ -789,7 +789,7 @@ $(function() {
               case 'null':
                 if (condition.color == oneCondition.color) findIndex = index;
                 break;
-              }
+            }
           });
 
         }
@@ -814,7 +814,7 @@ $(function() {
             // Build legend items for period conditions
         if (periodConditions.length !== 0) {
 
-          periodConditions.forEach(function(condition) {
+          periodConditions.forEach(function (condition) {
             var conditionColor = 'background: ' + condition.color;
             var conditionText = condition.min + ' - ' + condition.max;
 
@@ -828,7 +828,7 @@ $(function() {
             // Build legend items for simple conditions
         if (simpleConditions.length !== 0) {
 
-          simpleConditions.forEach(function(condition) {
+          simpleConditions.forEach(function (condition) {
             var conditionColor = 'background: ' + condition.color;
             var conditionText = condition.operation + ' ' + condition.value;
 
@@ -866,7 +866,7 @@ $(function() {
         var completeConditions = [];
         window.activeConditionsInRangeLegend = activeConditionsInRangeLegend;
 
-        $legend.on('click', 'li', function() {
+        $legend.on('click', 'li', function () {
 
           completeConditions = [];
           var $el = $(this);
@@ -879,13 +879,13 @@ $(function() {
             $el.removeClass('active');
 
             if (conditions.length > 0) {
-                var index = findCondition(activeConditionsInRangeLegend, conditionData);
-                if (index != -1) {
-                    activeConditionsInRangeLegend.splice(index, 1);
-                  }
-              } else {
-                conditions = defaultConditions;
+              var index = findCondition(activeConditionsInRangeLegend, conditionData);
+              if (index != -1) {
+                activeConditionsInRangeLegend.splice(index, 1);
               }
+            } else {
+              conditions = defaultConditions;
+            }
 
           } else {
             $el.addClass('active');
@@ -895,19 +895,19 @@ $(function() {
                 // Mark others with gray color
           if (activeConditionsInRangeLegend.length > 0) {
             var cpyDefaultConditions = JSON.parse(JSON.stringify(defaultConditions));
-            var diffConditions = cpyDefaultConditions.filter(function(condition) {
-                var index = findCondition(activeConditionsInRangeLegend, condition);
-                return index === -1;
-              });
+            var diffConditions = cpyDefaultConditions.filter(function (condition) {
+              var index = findCondition(activeConditionsInRangeLegend, condition);
+              return index === -1;
+            });
                     // Copy activeConditions into completeConditions array
-            activeConditionsInRangeLegend.forEach(function(activecondition) {
-                completeConditions.push(activecondition);
-              });
+            activeConditionsInRangeLegend.forEach(function (activecondition) {
+              completeConditions.push(activecondition);
+            });
                     // Copy diffConditions into completeConditions array
-            diffConditions.forEach(function(diffCondition) {
-                diffCondition.color = '#dddddd';
-                completeConditions.push(diffCondition);
-              });
+            diffConditions.forEach(function (diffCondition) {
+              diffCondition.color = '#dddddd';
+              completeConditions.push(diffCondition);
+            });
           } else {
             completeConditions = defaultConditions;
           }
@@ -915,7 +915,7 @@ $(function() {
           $map.hide();
           $loader.show();
           removeAllSubLayers();
-          reInit({conditions: completeConditions});
+          reInit({ conditions: completeConditions });
 
           $liTags.not($el).removeClass('active');
 
@@ -935,9 +935,9 @@ $(function() {
             // Add new elements.
         var compiledLegendItems = '';
 
-        legend.forEach(function(menu_item) {
+        legend.forEach(function (menu_item) {
 
-          var altType = altTypes.filter(function(altType) {
+          var altType = altTypes.filter(function (altType) {
             return (altType.alt_type_slug === menu_item.altType);
           })[0];
 
@@ -955,28 +955,28 @@ $(function() {
 
                     // If url to shape exist - show marker
             if (menu_item.shape) {
-                fillColor = 'fillColor="' + legendConfig.fillColor + '" ';
-                strokeColor = 'strokeColor="' + menu_item['color'] + '" ';
-                iconMarker = '<img src="' + menu_item['shape'] + '" class="svg" ' + strokeColor + fillColor + '/>';
+              fillColor = 'fillColor="' + legendConfig.fillColor + '" ';
+              strokeColor = 'strokeColor="' + menu_item['color'] + '" ';
+              iconMarker = '<img src="' + menu_item['shape'] + '" class="svg" ' + strokeColor + fillColor + '/>';
 
                     // Else - show county line
-              } else {
-                iconCounty = '<i class="grey-line"></i>';
-              }
+            } else {
+              iconCounty = '<i class="grey-line"></i>';
+            }
 
                 // Use default styles (hardcoded in this file)
           } else {
 
                     // If url to shape exist - show marker
             if (menu_item.shape) {
-                fillColor = 'fillColor="' + menu_item['color'] + '" ';
-                strokeColor = 'strokeColor="' + menu_item['color'] + '" ';
-                iconMarker = '<img src="' + menu_item['shape'] + '" class="svg" ' + strokeColor + fillColor + '/>';
+              fillColor = 'fillColor="' + menu_item['color'] + '" ';
+              strokeColor = 'strokeColor="' + menu_item['color'] + '" ';
+              iconMarker = '<img src="' + menu_item['shape'] + '" class="svg" ' + strokeColor + fillColor + '/>';
 
                         // Else - show county line
-              } else {
-                iconCounty = '<i class="grey-line"></i>';
-              }
+            } else {
+              iconCounty = '<i class="grey-line"></i>';
+            }
 
                     // iconMarker = (altType.geometrytype && (altType.geometrytype == "MULTIPOLYGON" || altType.geometrytype == "POLYGON"))
                     //    ? '<i class="grey-line"></i>'
@@ -991,12 +991,12 @@ $(function() {
 
         });
 
-        $legendContainer.append(compiledLegendItems).css({opacity: 1});
+        $legendContainer.append(compiledLegendItems).css({ opacity: 1 });
 
             /*
              * Replace all SVG images with inline SVG
              */
-        jQuery('img.svg').each(function() {
+        jQuery('img.svg').each(function () {
           var $img = jQuery(this);
           var imgID = $img.attr('id');
           var imgClass = $img.attr('class');
@@ -1005,23 +1005,23 @@ $(function() {
           var fillColor = $img.attr('fillColor');
           var strokeColor = $img.attr('strokeColor');
 
-          jQuery.get(imgURL, function(data) {
+          jQuery.get(imgURL, function (data) {
                     // Get the SVG tag, ignore the rest
             var $svg = jQuery(data).find('svg');
             var $rect = $svg.find('rect');
             var $path = $svg.find('path');
 
-            $rect[0] == null || $rect.css({'fill': fillColor, 'stroke': strokeColor});
-            $path[0] == null || $path.css({'fill': fillColor, 'stroke': strokeColor});
+            $rect[0] == null || $rect.css({ 'fill': fillColor, 'stroke': strokeColor });
+            $path[0] == null || $path.css({ 'fill': fillColor, 'stroke': strokeColor });
 
                     // Add replaced image's ID to the new SVG
-            if(typeof imgID !== 'undefined') {
-                $svg = $svg.attr('id', imgID);
-              }
+            if (typeof imgID !== 'undefined') {
+              $svg = $svg.attr('id', imgID);
+            }
                     // Add replaced image's classes to the new SVG
-            if(typeof imgClass !== 'undefined') {
-                $svg = $svg.attr('class', imgClass + ' replaced-svg');
-              }
+            if (typeof imgClass !== 'undefined') {
+              $svg = $svg.attr('class', imgClass + ' replaced-svg');
+            }
 
                     // Remove any invalid XML tags as per http://validator.w3.org
             $svg = $svg.removeAttr('xmlns:a');
@@ -1033,7 +1033,7 @@ $(function() {
 
         });
 
-        $legendContainer.on('click', '.legend-item', function() {
+        $legendContainer.on('click', '.legend-item', function () {
           $(this).toggleClass('selected');
           var countyName = $(this).attr('id');
           subLayers[countyName].toggle();

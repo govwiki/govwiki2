@@ -6,7 +6,7 @@ var financialStatementGraphs = require('./graph/financial-statement');
  * Initialization
  */
 function init(callback) {
-  return function() {
+  return function () {
     handler_onTabSwitch();
     callback();
   };
@@ -18,7 +18,7 @@ function init(callback) {
  */
 function handler_onTabSwitch() {
 
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 
     var tabname = $(e.target).attr('data-tabname');
 
@@ -26,17 +26,17 @@ function handler_onTabSwitch() {
          * Init graphs
          */
     switch (tabname) {
-    case 'Quality of Services':
-      break;
-    case 'Employee Compensation':
-      employeeCompensationGraphs.initAll();
-      break;
-    case 'Financial Health':
-      financialHealthGraphs.initAll();
-      break;
-    case 'Financial Financial_Statements':
-      financialStatementGraphs.initAll();
-      break;
+      case 'Quality of Services':
+        break;
+      case 'Employee Compensation':
+        employeeCompensationGraphs.initAll();
+        break;
+      case 'Financial Health':
+        financialHealthGraphs.initAll();
+        break;
+      case 'Financial Financial_Statements':
+        financialStatementGraphs.initAll();
+        break;
     }
 
   });

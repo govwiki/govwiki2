@@ -21,7 +21,7 @@ function Step(FormState, container) {
 /**
  * Init step
  */
-Step.prototype.init = function() {
+Step.prototype.init = function () {
 
   var self = this;
 
@@ -32,27 +32,27 @@ Step.prototype.init = function() {
   self.search = new Search(self.container, self.searchResponseCallback);
 
     // Pressed mouse or enter button
-  self.search.$typeahead.bind('typeahead:selected', function(e, selectedGovernment) {
+  self.search.$typeahead.bind('typeahead:selected', function (e, selectedGovernment) {
     self.CurrentFormState.data = selectedGovernment;
     self.createYearOptions(selectedGovernment);
   });
 
     // Start typing, triggered after select item
-  self.search.$typeahead.bind('typeahead:asyncrequest', function(e) {
+  self.search.$typeahead.bind('typeahead:asyncrequest', function (e) {
     self.loading(true);
   });
 
 
-  self.search.$typeahead.bind('typeahead:asyncreceive', function(e) {
+  self.search.$typeahead.bind('typeahead:asyncreceive', function (e) {
     self.loading(false);
   });
 
-  self.search.$typeahead.bind('typeahead:asynccancel', function(e) {
+  self.search.$typeahead.bind('typeahead:asynccancel', function (e) {
     self.loading(false);
     self.lockSelect();
   });
 
-  self.search.$typeahead.bind('typeahead:open', function(e) {
+  self.search.$typeahead.bind('typeahead:open', function (e) {
     self.lockSelect();
     self.CurrentFormState.incomplete();
   });
@@ -65,7 +65,7 @@ Step.prototype.init = function() {
  *
  * Unlock step
  */
-Step.prototype.unlock = function() {
+Step.prototype.unlock = function () {
   this.search.$typeahead.toggleClass('disabled', false);
 };
 
@@ -75,7 +75,7 @@ Step.prototype.unlock = function() {
  *
  * Lock step
  */
-Step.prototype.lock = function() {
+Step.prototype.lock = function () {
   this.search.$typeahead.toggleClass('disabled', true);
   this.$select.toggleClass('disabled', true);
 };
@@ -86,7 +86,7 @@ Step.prototype.lock = function() {
  *
  * Lock step
  */
-Step.prototype.lockSelect = function() {
+Step.prototype.lockSelect = function () {
   this.$select.toggleClass('disabled', true);
 };
 
@@ -96,10 +96,10 @@ Step.prototype.lockSelect = function() {
  * Loading state
  * @param isLoading
  */
-Step.prototype.loading = function(isLoading) {
+Step.prototype.loading = function (isLoading) {
 
   var display = isLoading ? 'none' : 'block';
-  this.$select.css({display: display});
+  this.$select.css({ display: display });
 
   if (isLoading) {
     this.$container.append(this.$loader);
@@ -115,7 +115,7 @@ Step.prototype.loading = function(isLoading) {
  * @param data
  * @returns {boolean}
  */
-Step.prototype.createYearOptions = function(government) {
+Step.prototype.createYearOptions = function (government) {
 
   var self = this;
 
@@ -124,7 +124,7 @@ Step.prototype.createYearOptions = function(government) {
     return true;
   }
 
-  var sortedYears = government.years.sort(function(a, b) {
+  var sortedYears = government.years.sort(function (a, b) {
     return a < b;
   });
 
@@ -134,7 +134,7 @@ Step.prototype.createYearOptions = function(government) {
 
   self.$select.html('');
 
-  sortedYears.forEach(function(year, index) {
+  sortedYears.forEach(function (year, index) {
     var selected = index == 0 ? 'selected' : '';
     self.$select.append('<option value="' + government.id + '" ' + selected + '>' + year + '</option>');
   });
@@ -167,11 +167,11 @@ Step.prototype.createYearOptions = function(government) {
  *
  * On change select
  */
-Step.prototype.handler_onChangeSelect = function() {
+Step.prototype.handler_onChangeSelect = function () {
 
   var self = this;
 
-  self.$select.on('change', function(e) {
+  self.$select.on('change', function (e) {
 
     var $el = $(e.target);
 
@@ -195,11 +195,11 @@ Step.prototype.handler_onChangeSelect = function() {
 /**
  * Show error message if government not selected
  */
-Step.prototype.handler_onMouseDownSelect = function() {
+Step.prototype.handler_onMouseDownSelect = function () {
 
   var self = this;
 
-  self.$select.on('mousedown', function(e) {
+  self.$select.on('mousedown', function (e) {
 
     var $el = $(e.target);
 

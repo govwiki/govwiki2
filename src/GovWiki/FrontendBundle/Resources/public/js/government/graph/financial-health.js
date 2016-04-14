@@ -38,22 +38,22 @@ function financialHealth_one() {
     options = {
       'title': 'Public safety expense',
       'titleTextStyle': {
-          'fontSize': 12
-        },
+        'fontSize': 12
+      },
       'tooltip': {
-          'textStyle': {
-              'fontSize': 12
-            }
-        },
+        'textStyle': {
+          'fontSize': 12
+        }
+      },
       'width': '100%',
       'height': '100%',
       'is3D': 'true',
       'colors': ['#005ce6', '#009933'],
       'slices': {
-          1: {
-              offset: 0.2
-            }
-        },
+        1: {
+          offset: 0.2
+        }
+      },
       'pieStartAngle': 45
     };
   } else {
@@ -61,22 +61,22 @@ function financialHealth_one() {
     options = {
       'title': 'Public safety expense',
       'titleTextStyle': {
-          'fontSize': 12
-        },
+        'fontSize': 12
+      },
       'tooltip': {
-          'textStyle': {
-              'fontSize': 12
-            }
-        },
+        'textStyle': {
+          'fontSize': 12
+        }
+      },
       'width': 340,
       'height': 300,
       'is3D': 'true',
       'colors': ['#005ce6', '#009933'],
       'slices': {
-          1: {
-              offset: 0.2
-            }
-        },
+        1: {
+          offset: 0.2
+        }
+      },
       'pieStartAngle': 45
     };
   }
@@ -110,13 +110,13 @@ function financialHealth_two() {
     options = {
       'title': 'Total Revenue',
       'titleTextStyle': {
-          'fontSize': 12
-        },
+        'fontSize': 12
+      },
       'tooltip': {
-          'textStyle': {
-              'fontSize': 12
-            }
-        },
+        'textStyle': {
+          'fontSize': 12
+        }
+      },
       'width': '100%',
       'height': '100%',
       'isStacked': 'true',
@@ -128,13 +128,13 @@ function financialHealth_two() {
     options = {
       'title': 'Total Revenue',
       'titleTextStyle': {
-          'fontSize': 12
-        },
+        'fontSize': 12
+      },
       'tooltip': {
-          'textStyle': {
-              'fontSize': 12
-            }
-        },
+        'textStyle': {
+          'fontSize': 12
+        }
+      },
       'width': 340,
       'height': 300,
       'isStacked': 'true',
@@ -168,13 +168,13 @@ function financialHealth_three() {
     options = {
       'title': 'Total Expenditures',
       'titleTextStyle': {
-          'fontSize': 12
-        },
+        'fontSize': 12
+      },
       'tooltip': {
-          'textStyle': {
-              'fontSize': 12
-            }
-        },
+        'textStyle': {
+          'fontSize': 12
+        }
+      },
       'width': '100%',
       'height': '100%',
       'isStacked': 'true',
@@ -186,13 +186,13 @@ function financialHealth_three() {
     options = {
       'title': 'Total Expenditures',
       'titleTextStyle': {
-          'fontSize': 12
-        },
+        'fontSize': 12
+      },
       'tooltip': {
-          'textStyle': {
-              'fontSize': 12
-            }
-        },
+        'textStyle': {
+          'fontSize': 12
+        }
+      },
       'width': 340,
       'height': 300,
       'isStacked': 'true',

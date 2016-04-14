@@ -26,28 +26,28 @@ function typeahead(container) {
     name: 'countries',
     source: findMatches,
     templates: {
-        empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
-        suggestion: Handlebars.compile('<div class="sugg-box">' +
+      empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
+      suggestion: Handlebars.compile('<div class="sugg-box">' +
                 '<div class="sugg-name">{{name}}</div>' +
                 '</div>')
-      },
-    updater: function(item) {
-        alert(item);
-      }
+    },
+    updater: function (item) {
+      alert(item);
+    }
   });
 
     // Pressed mouse or enter button
-  self.$typeahead.bind('typeahead:selected', function(obj, selectedGovernment) {
+  self.$typeahead.bind('typeahead:selected', function (obj, selectedGovernment) {
     self.$typeahead.typeahead('val', selectedGovernment.name);
   });
 
     // Move cursor via arrows keys
-  self.$typeahead.bind('typeahead:cursorchange', function(obj) {
+  self.$typeahead.bind('typeahead:cursorchange', function (obj) {
     self.$typeahead.typeahead('val', self.searchValue);
   });
 
     // Store search value on typing
-  self.$typeahead.keyup(function(event) {
+  self.$typeahead.keyup(function (event) {
     self.searchValue = $(event.target).val();
   });
 
@@ -63,9 +63,9 @@ function typeahead(container) {
     $.ajax({
       method: 'GET',
       url: window.gw.urls.search + '?search=' + query
-    }).success(function(data) {
-        asyncCallback(data);
-      });
+    }).success(function (data) {
+      asyncCallback(data);
+    });
   }
 
   return self;

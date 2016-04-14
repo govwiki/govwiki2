@@ -18,7 +18,7 @@ function Step(FormState, container) {
 /**
  * Init step
  */
-Step.prototype.init = function() {
+Step.prototype.init = function () {
 
   this.handler_onChangeSelect();
   this.handler_onClickSelect();
@@ -30,14 +30,14 @@ Step.prototype.init = function() {
  *
  * Unlock step
  */
-Step.prototype.unlock = function() {
+Step.prototype.unlock = function () {
   this.$select.toggleClass('disabled', false);
 };
 
 /**
  * Lock step
  */
-Step.prototype.lock = function() {
+Step.prototype.lock = function () {
   this.$select.toggleClass('disabled', true);
 };
 
@@ -45,7 +45,7 @@ Step.prototype.lock = function() {
  * @param data
  * @param blockId
  */
-Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
+Step.prototype.drawDiagramm = function (government, blockId, comparedData) {
   var chart, options, rows, vis_data;
 
   vis_data = new google.visualization.DataTable();
@@ -55,7 +55,7 @@ Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
   rows = [];
 
   var captions = government.data;
-  captions.forEach(function(item) {
+  captions.forEach(function (item) {
     if (item.amount < 0) {
       item.amount = -parseInt(item.amount);
     }
@@ -72,8 +72,8 @@ Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
     },
     'tooltip': {
       'textStyle': {
-          'fontSize': 12
-        }
+        'fontSize': 12
+      }
     },
     'width': 470,
     'height': 350,
@@ -95,7 +95,7 @@ Step.prototype.drawDiagramm = function(government, blockId, comparedData) {
  *
  * Manipulate tab state
  */
-Step.prototype.switchGraphs = function() {
+Step.prototype.switchGraphs = function () {
 
   var $firstPie = $('#total-compare-first-pie');
   var $secondPie = $('#total-compare-second-pie');
@@ -123,7 +123,7 @@ Step.prototype.switchGraphs = function() {
  * @param container
  * @param comparedData
  */
-Step.prototype.drawTable = function(container, comparedData) {
+Step.prototype.drawTable = function (container, comparedData) {
 
   var $container = $(container);
   $container.html('');
@@ -136,7 +136,7 @@ Step.prototype.drawTable = function(container, comparedData) {
   var thead = '<thead><tr><th colspan="2" style="text-align: center">' + governmentName + ' (' + year + ')</th></tr><tr><th>' + category + '</th><th> Total </th></tr>></thead>';
   var tbody = '<tbody>';
 
-  comparedData[governmentNumber].data.forEach(function(row) {
+  comparedData[governmentNumber].data.forEach(function (row) {
     tbody += '<tr><td>' + row.translatedCaption + '</td><td>' + numeral(row.amount).format('$0,0') + '</td></tr>';
   });
 
@@ -153,12 +153,12 @@ Step.prototype.drawTable = function(container, comparedData) {
  * TODO: Draft
  * If option selected, draw chart
  */
-Step.prototype.handler_onChangeSelect = function() {
+Step.prototype.handler_onChangeSelect = function () {
 
   var self = this;
 
 
-  $(self.container).on('change', function(e) {
+  $(self.container).on('change', function (e) {
 
     var $el = $(e.target);
     var $selected = $el.find('option:selected');
@@ -187,7 +187,7 @@ Step.prototype.handler_onChangeSelect = function() {
  * @param {String} category - only two: 'Revenues', 'Expenditures'
  * @param {Boolean} select - true(mark category in select as active/selected), false(not mark)
  */
-Step.prototype.loadComparedData = function(tab, category, select) {
+Step.prototype.loadComparedData = function (tab, category, select) {
 
   var self = this;
 
@@ -223,14 +223,14 @@ Step.prototype.loadComparedData = function(tab, category, select) {
     type: 'POST',
     data: data,
     contentType: 'application/json',
-    success: function(comparedData) {
+    success: function (comparedData) {
       self.switchGraphs();
       self.drawTable('.compare-first-table', comparedData);
       self.drawTable('.compare-second-table', comparedData);
       self.drawDiagramm(comparedData.firstGovernment, 'total-compare-first-pie', comparedData);
       self.drawDiagramm(comparedData.secondGovernment, 'total-compare-second-pie', comparedData);
     },
-    error: function(error) {
+    error: function (error) {
       alert('Cant load data for this governments, please try later');
       return true;
     }
@@ -244,11 +244,11 @@ Step.prototype.loadComparedData = function(tab, category, select) {
  *
  * Check third input, if previous form items filled correct - load governments categories
  */
-Step.prototype.handler_onClickSelect = function() {
+Step.prototype.handler_onClickSelect = function () {
 
   var self = this;
 
-  self.$select.on('mousedown', function(e) {
+  self.$select.on('mousedown', function (e) {
 
     var $el = $(e.target);
 
@@ -256,9 +256,9 @@ Step.prototype.handler_onClickSelect = function() {
       alert('Please, first select governments');
       return false;
     } else if (!self.firstStep.completed || !self.secondStep.completed) {
-        alert('Please, first enter all fields');
-        return false;
-      }
+      alert('Please, first enter all fields');
+      return false;
+    }
 
   });
 

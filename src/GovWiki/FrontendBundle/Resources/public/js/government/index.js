@@ -1,5 +1,5 @@
 
-$(function() {
+$(function () {
   var government = JSON.parse(window.gw.government);
 
   var graphs = require('./graphs.js');
@@ -11,7 +11,7 @@ $(function() {
   var Step3 = require('./form/compare/step-3.js');
   var Step31 = require('./form/compare/step-3-1.js');
 
-  graphs.init(function() {
+  graphs.init(function () {
     graphs.forceInit();
   });
 
@@ -26,7 +26,7 @@ $(function() {
     firstStep: {
       completed: true,
       data: {},
-      complete: function() {
+      complete: function () {
         this.completed = true;
 
         step2.unlock();
@@ -34,14 +34,14 @@ $(function() {
                 // If first step
         if (FormState.firstStep.completed && FormState.secondStep.completed) {
                     // Default action if thirdSteps not initialized
-            if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
-                step31.loadComparedData('Financial Statement', 'Revenues', true);
-              }
-            step31.unlock();
-            step3.unlock();
+          if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
+            step31.loadComparedData('Financial Statement', 'Revenues', true);
           }
+          step31.unlock();
+          step3.unlock();
+        }
       },
-      incomplete: function() {
+      incomplete: function () {
         this.completed = false;
 
         step2.lock();
@@ -52,19 +52,19 @@ $(function() {
     secondStep: {
       completed: false,
       data: {},
-      complete: function() {
+      complete: function () {
         this.completed = true;
 
         if (FormState.firstStep.completed && FormState.secondStep.completed) {
                     // Default action if thirdSteps not initialized
-            if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
-                step31.loadComparedData('Financial Statement', 'Revenues', true);
-              }
-            step31.unlock();
-            step3.unlock();
+          if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
+            step31.loadComparedData('Financial Statement', 'Revenues', true);
           }
+          step31.unlock();
+          step3.unlock();
+        }
       },
-      incomplete: function() {
+      incomplete: function () {
         this.completed = false;
 
         step31.lock();
@@ -74,20 +74,20 @@ $(function() {
     thirdStep: {
       completed: false,
       data: {},
-      complete: function() {
+      complete: function () {
         this.completed = false;
       },
-      incomplete: function() {
+      incomplete: function () {
         this.completed = true;
       }
     },
     thirdOneStep: {
       completed: false,
       data: {},
-      complete: function() {
+      complete: function () {
         this.completed = false;
       },
-      incomplete: function() {
+      incomplete: function () {
         this.completed = true;
       }
     }
@@ -109,7 +109,7 @@ $(function() {
     /**
      * Change fin statement year.
      */
-  $('#fin-stmt-year').change(function() {
+  $('#fin-stmt-year').change(function () {
     var $this = $(this);
     $this.closest('form').submit();
     window.localStorage.setItem('tab', 'Financial_Statements');
@@ -132,38 +132,38 @@ $(function() {
     $('#chat_message_container').show();
   }
 
-  $subscribeBtn.click(function(event) {
+  $subscribeBtn.click(function (event) {
     event.preventDefault();
     event.stopPropagation();
 
     $.ajax({
       url: $subscribeBtn.attr('href')
-    }).done(function() {
+    }).done(function () {
 
       if ($subscribeBtn.hasClass('subscribe')) {
-          $('#chat_message_container').show();
-          $subscribeBtn
+        $('#chat_message_container').show();
+        $subscribeBtn
                     .text('Unsubscribe')
                     .removeClass('subscribe')
                     .removeClass('btn-success')
                     .addClass('unsubscribe')
                     .addClass('btn-danger');
-        } else {
-          $('#chat_message_container').hide();
-          $subscribeBtn
+      } else {
+        $('#chat_message_container').hide();
+        $subscribeBtn
                     .text('Subscribe')
                     .removeClass('unsubscribe')
                     .removeClass('btn-danger')
                     .addClass('subscribe')
                     .addClass('btn-success');
-        }
+      }
     });
   });
 
     /*
         Reload data for government by given year.
      */
-  $('#year-selector').change(function() {
+  $('#year-selector').change(function () {
     var selectedYear = $(this).find(':selected').val();
     var openedTab = $('.tab-titles').find('li.active').find('a').attr('href');
 
@@ -174,7 +174,7 @@ $(function() {
     // Table pagination handler.
   var $pane = $('.paginate');
 
-  $pane.on('click', '.pagination a', function(e) {
+  $pane.on('click', '.pagination a', function (e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -201,13 +201,13 @@ $(function() {
 
     var $loader = $('.tab-content').find('.loader');
     $loader.show();
-    $.ajax(url).success(function(data) {
+    $.ajax(url).success(function (data) {
       $loader.hide();
       $mainContent.html(data);
     });
   });
 
-  $pane.on('click', '.sortable a', function(e) {
+  $pane.on('click', '.sortable a', function (e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -234,7 +234,7 @@ $(function() {
 
     var $loader = $('.tab-content').find('.loader');
     $loader.show();
-    $.ajax(url).success(function(data) {
+    $.ajax(url).success(function (data) {
       $loader.hide();
       $mainContent.html(data);
     });

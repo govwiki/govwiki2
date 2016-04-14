@@ -18,7 +18,7 @@ function Step(FormState, container) {
 /**
  * Init step
  */
-Step.prototype.init = function() {
+Step.prototype.init = function () {
 
   this.handler_onChangeSelect();
   this.handler_onClickSelect();
@@ -30,7 +30,7 @@ Step.prototype.init = function() {
  *
  * Unlock step
  */
-Step.prototype.unlock = function() {
+Step.prototype.unlock = function () {
   this.loading(true);
   this.loadMatchedCategories();
   this.$select.toggleClass('disabled', false);
@@ -39,7 +39,7 @@ Step.prototype.unlock = function() {
 /**
  * Lock step
  */
-Step.prototype.lock = function() {
+Step.prototype.lock = function () {
   this.$select.html('<option>' + this.$select.data('default-item') + '</option>');
   this.$select.toggleClass('disabled', true);
 };
@@ -51,10 +51,10 @@ Step.prototype.lock = function() {
  * Loading state
  * @param isLoading
  */
-Step.prototype.loading = function(isLoading) {
+Step.prototype.loading = function (isLoading) {
 
   var display = isLoading ? 'none' : 'block';
-  this.$select.css({display: display});
+  this.$select.css({ display: display });
 
   if (isLoading) {
     this.$select.parent().append(this.$loader);
@@ -69,7 +69,7 @@ Step.prototype.loading = function(isLoading) {
  *
  * Manipulate tab state
  */
-Step.prototype.switchGraphs = function() {
+Step.prototype.switchGraphs = function () {
 
   var $preloader = $('<div class="loader"></div>');
   var $firstPie = $('#total-compare-first-pie');
@@ -94,7 +94,7 @@ Step.prototype.switchGraphs = function() {
 /**
  * (Ajax, DOM)
  */
-Step.prototype.loadMatchedCategories = function() {
+Step.prototype.loadMatchedCategories = function () {
 
   var self = this;
   var captions = {
@@ -119,44 +119,44 @@ Step.prototype.loadMatchedCategories = function() {
     type: 'POST',
     contentType: 'application/json',
     data: captionsJson,
-    success: function(data) {
+    success: function (data) {
       self.loading(false);
 
       if (!data || data.length == 0) {
-          alert('Not can find categories for current comparison');
-          self.lock();
-          return true;
-        }
+        alert('Not can find categories for current comparison');
+        self.lock();
+        return true;
+      }
 
       self.$select.toggleClass('disabled', false);
 
             /**
              * Create expenditures group
              */
-      var expenditures = data.filter(function(item) {
-          return item.category == 'Expenditures';
-        });
+      var expenditures = data.filter(function (item) {
+        return item.category == 'Expenditures';
+      });
 
       var availableTabs = [];
-      data.forEach(function(item) {
-          availableTabs.indexOf(item.translatedTab) != -1 ? false : availableTabs.push({
-              translated: item.translatedTab,
-              normal: item.tab
-            });
+      data.forEach(function (item) {
+        availableTabs.indexOf(item.translatedTab) != -1 ? false : availableTabs.push({
+          translated: item.translatedTab,
+          normal: item.tab
         });
+      });
 
-      availableTabs.forEach(function(tab) {
-          self.$select.append('<optgroup data-name="' + tab.normal + '" label="' + tab.translated + '"></optgroup>');
-        });
+      availableTabs.forEach(function (tab) {
+        self.$select.append('<optgroup data-name="' + tab.normal + '" label="' + tab.translated + '"></optgroup>');
+      });
 
-      data.forEach(function(caption) {
-          var value = caption.fieldName || caption.name;
-          var $expenditureGroup = self.$select.find('[label="' + caption.translatedTab + '"]');
-          $expenditureGroup.append('<option value="' + value + '">' + caption.translatedName + '</option>');
-        });
+      data.forEach(function (caption) {
+        var value = caption.fieldName || caption.name;
+        var $expenditureGroup = self.$select.find('[label="' + caption.translatedTab + '"]');
+        $expenditureGroup.append('<option value="' + value + '">' + caption.translatedName + '</option>');
+      });
 
     },
-    error: function() {
+    error: function () {
       self.loading(false);
       alert('Something wrong, please try another government');
       self.$select.toggleClass('disabled', true);
@@ -169,7 +169,7 @@ Step.prototype.loadMatchedCategories = function() {
  * @param data
  * @param blockId
  */
-Step.prototype.drawDiagramm = function(government, blockId, captionCategory) {
+Step.prototype.drawDiagramm = function (government, blockId, captionCategory) {
 
   var chart, options, r, rows, vis_data;
 
@@ -182,7 +182,7 @@ Step.prototype.drawDiagramm = function(government, blockId, captionCategory) {
   rows.push(['Total ' + captionCategory, parseInt(government.total)]);
 
   var captions = government.data;
-  captions.forEach(function(item) {
+  captions.forEach(function (item) {
     rows.push([item.caption, parseInt(item.amount)]);
   });
 
@@ -194,8 +194,8 @@ Step.prototype.drawDiagramm = function(government, blockId, captionCategory) {
     },
     'tooltip': {
       'textStyle': {
-          'fontSize': 12
-        }
+        'fontSize': 12
+      }
     },
     'width': 470,
     'height': 350,
@@ -217,11 +217,11 @@ Step.prototype.drawDiagramm = function(government, blockId, captionCategory) {
  * TODO: Draft
  * If option selected, draw chart
  */
-Step.prototype.handler_onChangeSelect = function() {
+Step.prototype.handler_onChangeSelect = function () {
 
   var self = this;
 
-  $(self.container).on('change', function(e) {
+  $(self.container).on('change', function (e) {
 
     var $el = $(e.target);
     var $selected = $el.find('option:selected');
@@ -239,15 +239,15 @@ Step.prototype.handler_onChangeSelect = function() {
 
     var data = {
       firstGovernment: {
-          id: self.firstStep.data.id,
-          name: self.firstStep.data.name,
-          year: self.firstStep.data.year
-        },
+        id: self.firstStep.data.id,
+        name: self.firstStep.data.name,
+        year: self.firstStep.data.year
+      },
       secondGovernment: {
-          id: self.secondStep.data.id,
-          name: self.secondStep.data.name,
-          year: self.firstStep.data.year
-        },
+        id: self.secondStep.data.id,
+        name: self.secondStep.data.name,
+        year: self.firstStep.data.year
+      },
       caption: caption,
       tab: tab
     };
@@ -266,9 +266,9 @@ Step.prototype.handler_onChangeSelect = function() {
       type: 'POST',
       data: data,
       contentType: 'application/json',
-      success: function(comparedData) {
-          self.drawColumnChart(comparedData, 'total-compare-column');
-        }
+      success: function (comparedData) {
+        self.drawColumnChart(comparedData, 'total-compare-column');
+      }
     });
 
   });
@@ -281,11 +281,11 @@ Step.prototype.handler_onChangeSelect = function() {
  *
  * Check third input, if previous form items filled correct - load governments categories
  */
-Step.prototype.handler_onClickSelect = function() {
+Step.prototype.handler_onClickSelect = function () {
 
   var self = this;
 
-  self.$select.on('mousedown', function(e) {
+  self.$select.on('mousedown', function (e) {
 
     var $el = $(e.target);
 
@@ -293,15 +293,15 @@ Step.prototype.handler_onClickSelect = function() {
       alert('Please, first select governments');
       return false;
     } else if (!self.firstStep.completed || !self.secondStep.completed) {
-        alert('Please, first enter all fields');
-        return false;
-      }
+      alert('Please, first enter all fields');
+      return false;
+    }
 
   });
 
 };
 
-Step.prototype.drawColumnChart = function(comparedData, blockId) {
+Step.prototype.drawColumnChart = function (comparedData, blockId) {
 
   var chart, options, rows, vis_data;
 
@@ -322,8 +322,8 @@ Step.prototype.drawColumnChart = function(comparedData, blockId) {
     },
     'tooltip': {
       'textStyle': {
-          'fontSize': 12
-        }
+        'fontSize': 12
+      }
     },
     'width': 500,
     'height': 350,

@@ -4,13 +4,13 @@ var Handlebars = require('../vendor/handlebars.js');
  * Typeahead search
  */
 
-$(function() {
+$(function () {
 
   var findMatches = function findMatches(query, syncCallback, asyncCallback) {
     $.ajax({
       method: 'GET',
       url: window.gw.urls.search_elected + '?search=' + query
-    }).success(function(data) {
+    }).success(function (data) {
       console.log(data);
       asyncCallback(data);
     });
@@ -33,24 +33,24 @@ $(function() {
                 '<div class="sugg-govname">{{government.name}}</div>' +
                 '</div>')
     },
-    updater: function(item) {
+    updater: function (item) {
       alert(item);
     }
   });
 
     // Pressed mouse or enter button
-  $typeahead.bind('typeahead:selected', function(obj, selectedItemData) {
+  $typeahead.bind('typeahead:selected', function (obj, selectedItemData) {
     $typeahead.typeahead('val', selectedItemData.fullName);
     window.location.pathname += [selectedItemData.government.altTypeSlug, selectedItemData.government.slug, selectedItemData.slug].join('/');
   });
 
     // Move cursor via arrows keys
-  $typeahead.bind('typeahead:cursorchange', function(obj) {
+  $typeahead.bind('typeahead:cursorchange', function (obj) {
     $typeahead.typeahead('val', searchValue);
   });
 
     // Store search value on typing
-  $typeahead.keyup(function(event) {
+  $typeahead.keyup(function (event) {
     searchValue = $(event.target).val();
   });
 

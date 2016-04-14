@@ -67,13 +67,13 @@ function employeeCompensation_one() {
     options = {
       'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
       'titleTextStyle': {
-          'fontSize': 12
-        },
+        'fontSize': 12
+      },
       'tooltip': {
-          'textStyle': {
-              'fontSize': 12
-            }
-        },
+        'textStyle': {
+          'fontSize': 12
+        }
+      },
       'width': '100%',
       'height': '100%',
       'isStacked': 'true',
@@ -84,13 +84,13 @@ function employeeCompensation_one() {
     options = {
       'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
       'titleTextStyle': {
-          'fontSize': 12
-        },
+        'fontSize': 12
+      },
       'tooltip': {
-          'textStyle': {
-              'fontSize': 12
-            }
-        },
+        'textStyle': {
+          'fontSize': 12
+        }
+      },
       'width': 340,
       'height': 300,
       'isStacked': 'true',
@@ -104,7 +104,7 @@ function employeeCompensation_one() {
 
 
   function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt) {
+    return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   }
@@ -143,13 +143,13 @@ function employeeCompensation_two() {
     options = {
       'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
       'titleTextStyle': {
-          'fontSize': 12
-        },
+        'fontSize': 12
+      },
       'tooltip': {
-          'textStyle': {
-              'fontSize': 12
-            }
-        },
+        'textStyle': {
+          'fontSize': 12
+        }
+      },
       'width': '100%',
       'height': '100%',
       'isStacked': 'true',
@@ -160,13 +160,13 @@ function employeeCompensation_two() {
     options = {
       'title': 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
       'titleTextStyle': {
-          'fontSize': 12
-        },
+        'fontSize': 12
+      },
       'tooltip': {
-          'textStyle': {
-              'fontSize': 12
-            }
-        },
+        'textStyle': {
+          'fontSize': 12
+        }
+      },
       'width': 340,
       'height': 300,
       'isStacked': 'true',
