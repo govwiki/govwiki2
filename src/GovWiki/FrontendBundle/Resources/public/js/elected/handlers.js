@@ -244,38 +244,38 @@ $(function () {
           return $.ajax(window.gw.urls.check_url, {
             method: 'GET',
             data: {
-                url: $(this).val().match(match_url)[0]
-              },
+              url: $(this).val().match(match_url)[0]
+            },
             success: function (response) {
-                var urlContent;
-                console.log(response);
-                urlContent = $('#url-statement');
-                urlContent.find('.url-content-title').text('');
-                urlContent.find('.url-content-body').text('');
-                urlContent.find('.url-content-img').attr('src', '');
-                urlContent.find('.url-content-title').text(response.data.title);
-                if (response.type === 'html') {
-                    urlContent.find('.url-content-img').hide();
-                    urlContent.find('.url-content-body').text(response.data.body);
-                  }
-                if (response.type === 'youtube') {
-                    urlContent.find('.url-content-img').attr('src', response.data.preview);
-                  }
-                if (response.type === 'image') {
-                    urlContent.find('.url-content-img').attr('src', response.data.preview);
-                  }
-                return urlContent.slideDown();
-              },
-            error: function (error) {
-                var urlContent;
-                console.log(error);
-                urlContent = $('#url-statement');
-                urlContent.find('.url-content-title').text('');
-                urlContent.find('.url-content-body').text('');
-                urlContent.find('.url-content-img').attr('src', '');
-                urlContent.find('.url-content-body').text(error.responseText);
-                return urlContent.slideDown();
+              var urlContent;
+              console.log(response);
+              urlContent = $('#url-statement');
+              urlContent.find('.url-content-title').text('');
+              urlContent.find('.url-content-body').text('');
+              urlContent.find('.url-content-img').attr('src', '');
+              urlContent.find('.url-content-title').text(response.data.title);
+              if (response.type === 'html') {
+                urlContent.find('.url-content-img').hide();
+                urlContent.find('.url-content-body').text(response.data.body);
               }
+              if (response.type === 'youtube') {
+                urlContent.find('.url-content-img').attr('src', response.data.preview);
+              }
+              if (response.type === 'image') {
+                urlContent.find('.url-content-img').attr('src', response.data.preview);
+              }
+              return urlContent.slideDown();
+            },
+            error: function (error) {
+              var urlContent;
+              console.log(error);
+              urlContent = $('#url-statement');
+              urlContent.find('.url-content-title').text('');
+              urlContent.find('.url-content-body').text('');
+              urlContent.find('.url-content-img').attr('src', '');
+              urlContent.find('.url-content-body').text(error.responseText);
+              return urlContent.slideDown();
+            }
           });
         }
       });

@@ -2,12 +2,15 @@
   "extends": "airbnb/legacy",
   "globals": {
     "$": true,
+    "_": true,
     "cartodb": true,
     "L": true,
     "cdb": true,
-    "numeral": true
+    "numeral": true,
+    "google": true
   },
   "rules": {
+    "no-alert": 0,
     "no-console": 0,
     "max-len": ["error", 120],
     "vars-on-top": "error", // or 0 to disable

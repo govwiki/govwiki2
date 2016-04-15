@@ -25,7 +25,7 @@ gulp.task('build:vendor', function() {
     gulp.src(path.base + '/vendor/*').pipe(gulp.dest('./web/js/vendor/'));
 });
 
-gulp.task('build:js', ['build:vendor'], function(callback) {
+gulp.task('build:js', ['lint', 'build:vendor'], function(callback) {
 
     function error(err, stats) {
 
@@ -61,17 +61,23 @@ gulp.task('lint', function () {
             fix: true
         }))
         .pipe(eslint.format())
-        .pipe(gulpIf(isFixed, gulp.dest('src/GovWiki/FrontendBundle/Resources/public/js')))
-        .pipe(eslint.failAfterError());
+        .pipe(gulpIf(isFixed, gulp.dest('src/GovWiki/FrontendBundle/Resources/public/js')));
 });
 
 gulp.task('watch', function() {
     gulp.watch(
         [path.base + '/**/*'],
-        ['build:js']
+        ['lint', 'build:js']
+    );
+});
+
+gulp.task('watch-lint', function() {
+    gulp.watch(
+      [path.base + '/**/*'],
+      ['lint']
     );
 });
 
 gulp.task('default', function(callback) {
-    runSequence('lint', 'build:js', 'watch', callback);
+    runSequence('build:js', 'watch', callback);
 });

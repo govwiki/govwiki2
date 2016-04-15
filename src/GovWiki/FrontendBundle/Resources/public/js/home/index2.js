@@ -662,10 +662,10 @@ $(function () {
                     if (tooltip != null) {
 
                       if (tooltip.getLayerIndex() == layerIndex) {
-                          tooltip.enable();
-                        } else {
-                          tooltip.disable();
-                        }
+                        tooltip.enable();
+                      } else {
+                        tooltip.disable();
+                      }
 
                     }
 
@@ -704,8 +704,8 @@ $(function () {
                     if (tooltip != null) {
 
                       if (tooltip.getLayerIndex() == layerIndex) {
-                          tooltip.disable();
-                        }
+                        tooltip.disable();
+                      }
 
                     }
 
