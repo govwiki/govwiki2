@@ -32,16 +32,20 @@ class AppKernel extends Kernel
             new GovWiki\DbBundle\GovWikiDbBundle(),
             new GovWiki\ApiBundle\GovWikiApiBundle(),
             new GovWiki\UserBundle\GovWikiUserBundle(),
-            new GovWiki\FrontendBundle\GovWikiFrontendBundle(),
             new GovWiki\CommentBundle\GovWikiCommentBundle(),
             new GovWiki\RequestBundle\GovWikiRequestBundle(),
-            new GovWiki\MobileBundle\GovWikiMobileBundle(),
             new Ivory\CKEditorBundle\IvoryCKEditorBundle(),
             new CartoDbBundle\CartoDbBundle(),
             new Vresh\TwilioBundle\VreshTwilioBundle(),
             new SunCat\MobileDetectBundle\MobileDetectBundle(),
             new GovWiki\MobileDetectBundle\GovWikiMobileDetectBundle(),
         ];
+
+        if ($this->getEnvironment() === 'mobile') {
+            $bundles[] = new GovWiki\MobileBundle\GovWikiMobileBundle();
+        } else {
+            $bundles[] = new GovWiki\FrontendBundle\GovWikiFrontendBundle();
+        }
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();

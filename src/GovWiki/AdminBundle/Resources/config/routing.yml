@@ -97,3 +97,7 @@ styles:
 document:
     resource: @GovWikiAdminBundle/Controller/DocumentController.php
     type:     annotation
+
+comment:
+    resource: @GovWikiAdminBundle/Controller/CommentController.php
+    type:     annotation

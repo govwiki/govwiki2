@@ -1,0 +1,75 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block title %}{{ parent() }} - Edit elected official{% endblock %}
+
+{% block breadcrumb %}
+    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
+    {{-
+        macro.breadcrumbElement(
+            admin_environment|capitalize ~' environment',
+            'govwiki_admin_main_show',
+            { 'environment': admin_environment }
+        )
+    -}}
+    {{-
+        macro.breadcrumbElement(
+            'Elected Officials',
+            'govwiki_admin_electedofficial_index'
+        )
+    -}}
+    {{- macro.breadcrumbElement(elected.fullName ~' comments') -}}
+{% endblock breadcrumb %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            {{- knp_pagination_render(comments) -}}
+
+            <div>
+                <div class="btn-group pull-right">
+                    <a class="btn btn-primary" href="{{-
+                        path(
+                            'govwiki_admin_comment_new',
+                            { 'elected': elected.id }
+                        )
+                    -}}">New</a>
+                </div>
+            </div>
+
+            <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>{{ knp_pagination_sortable(comments, 'Id', 'VoteComment.id') }}</th>
+                    <th>{{ knp_pagination_sortable(comments, 'Legislation', 'VoteComment.subject.legislation.name') }}</th>
+                    <th>{{ knp_pagination_sortable(comments, 'Comment', 'VoteComment.body') }}</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in comments %}
+                    <tr>
+                        <td>{{- comment.id -}}</td>
+                        <td>{{- comment.subject.legislation.name -}}</td>
+                        <td>{{- comment.body|raw -}}</td>
+                        <td>
+                            <a class="btn btn-sm btn-default" href="{{-
+                            path('govwiki_admin_comment_edit', {
+                                'elected': elected.id,
+                                'comment': comment.id
+                            })
+                            -}}">Edit</a>
+                            <button type="button" class="btn btn-sm btn-danger btn-delete" data-url="{{-
+                            path('govwiki_admin_comment_remove', {
+                                'elected': elected.id,
+                                'comment': comment.id
+                            })
+                            -}}"  data-description="Are you sure want to delete comment '{{ comment.id }}'?">Remove</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+            {{- knp_pagination_render(comments) -}}
+        </div>
+    </div>
+{% endblock %}

@@ -169,8 +169,12 @@
         window.gw = {};
 
         $(function(){
-            $('.btn-delete').click(function() {
+            $('.btn-delete').click(function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
                 var $this = $(this);
+
                 var $modal = $('#modal-delete');
 
                 $('#delete-confirm').attr('href', $this.data('url'));
