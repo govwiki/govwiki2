@@ -31,6 +31,16 @@ final class DefaultNamingStrategy
     }
 
     /**
+     * @param string $rankFieldName Ranked field name.
+     *
+     * @return string
+     */
+    public static function originalFromRankFieldName($rankFieldName)
+    {
+        return substr($rankFieldName, 0, strpos($rankFieldName, '_rank'));
+    }
+
+    /**
      * @param Environment $environment A Environment entity instance.
      *
      * @return string

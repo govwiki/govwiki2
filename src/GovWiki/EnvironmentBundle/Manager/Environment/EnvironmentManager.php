@@ -2,19 +2,15 @@
 
 namespace GovWiki\EnvironmentBundle\Manager\Environment;
 
-use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\QueryException;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\Utils\Functions;
-use GovWiki\EnvironmentBundle\Manager\Data\DataManagerPool;
-use GovWiki\EnvironmentBundle\Manager\Data\DataManagerPoolInterface;
 use GovWiki\EnvironmentBundle\Manager\Data\Government\GovernmentManagerInterface;
 use GovWiki\EnvironmentBundle\Manager\Data\MaxRank\MaxRankManagerInterface;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use GovWiki\EnvironmentBundle\Strategy\DefaultNamingStrategy;
-use GovWiki\EnvironmentBundle\Strategy\NamingStrategyInterface;
 
 /**
  * Interface EnvironmentManager
@@ -139,7 +135,153 @@ class EnvironmentManager implements EnvironmentManagerInterface
     {
         /** @var GovernmentRepository $repository */
         $repository = $this->em->getRepository('GovWikiDbBundle:Government');
-        return $repository->searchForComparison($this->environment, $partOfName);
+
+        return $repository->searchForComparison(
+            $this->getEnvironment()->getId(),
+            $partOfName
+        );
+    }
+
+    /**
+     * Add to each governments 'data' field with specified findata caption
+     * dollar amount and total for fund category.
+     *
+     * @param array $data Request in form described in
+     *                    {@see ComparisonController::compareAction}.
+     *
+     * @return array
+     *
+     * @throws QueryException Query result is not unique.
+     */
+    public function getComparedGovernments(array $data)
+    {
+        $expr = $this->em->getExpressionBuilder();
+
+        $firstGovernmentId = $data['firstGovernment']['id'];
+        $secondGovernmentId = $data['secondGovernment']['id'];
+
+        if (array_key_exists('category', $data)) {
+            /*
+             * Compare by categories: 'Revenue' or 'Expenditure'.
+             */
+            $qb = $this->em->createQueryBuilder()
+                ->select(
+                    'partial FinData.{id, caption, dollarAmount, displayOrder}',
+                    'Category, Fund'
+                )
+                ->from('GovWikiDbBundle:FinData', 'FinData')
+                ->innerJoin('FinData.captionCategory', 'Category')
+                ->innerJoin('FinData.fund', 'Fund')
+                ->where($expr->andX(
+                    $expr->eq('Category.name', ':name'),
+                    $expr->neq('FinData.caption', ':caption')
+                ))
+                ->orderBy($expr->asc('Category.name'))
+                ->setParameters([
+                    'name' => $data['category'],
+                    'caption' => 'Total '. $data['category'],
+                ]);
+
+            $firstQb = clone $qb;
+
+            $firstQb->andWhere($expr->andX(
+                $expr->eq('FinData.government', $firstGovernmentId),
+                $expr->eq('FinData.year', $data['firstGovernment']['year'])
+            ));
+
+            $result = $firstQb->getQuery()->getArrayResult();
+
+            /*
+             * Compute total funds.
+             */
+            $firstGovernmentData = $this->computeFinData($result);
+
+            /*
+             * Get data for second government.
+             */
+            $qb->andWhere($expr->andX(
+                $expr->eq('FinData.government', $secondGovernmentId),
+                $expr->eq('FinData.year', $data['secondGovernment']['year'])
+            ));
+
+            $result = $qb->getQuery()->getArrayResult();
+
+            /*
+             * Compute total funds.
+             */
+            $secondGovernmentData = $this->computeFinData($result);
+
+            $data['firstGovernment']['data'] = $firstGovernmentData;
+            $data['secondGovernment']['data'] = $secondGovernmentData;
+        } elseif ('Financial Statements' === $data['tab']) {
+            /*
+             * Compare by financial statements.
+             */
+            $qb = $this->em->createQueryBuilder()
+                ->select(
+                    'FinData.caption, FinData.dollarAmount AS amount'
+                )
+                ->from('GovWikiDbBundle:FinData', 'FinData')
+                ->where($expr->eq('FinData.fund', 99)); // Only total funds.
+
+            if (array_key_exists('caption', $data) & !empty($data['caption'])) {
+                $qb->andWhere(
+                    $expr->eq('FinData.caption', $expr->literal($data['fieldName']))
+                );
+            }
+
+            /*
+             * Get data for first government.
+             */
+            $firstQb = clone $qb;
+            $firstQb->andWhere($expr->andX(
+                $expr->eq('FinData.government', $firstGovernmentId),
+                $expr->eq('FinData.year', $data['firstGovernment']['year'])
+            ));
+
+            $firstGovernmentData = $firstQb->getQuery()->getArrayResult();
+
+            /*
+             * Get data for second government.
+             */
+            $qb->andWhere($expr->andX(
+                $expr->eq('FinData.government', $secondGovernmentId),
+                $expr->eq('FinData.year', $data['secondGovernment']['year'])
+            ));
+
+            $secondGovernmentData = $qb->getQuery()->getArrayResult();
+
+            $data['firstGovernment']['data'] = $firstGovernmentData;
+            $data['secondGovernment']['data'] = $secondGovernmentData;
+        } else {
+            /*
+             * Compare by over tabs.
+             */
+            $con = $this->em->getConnection();
+
+            $firstGovernmentData = $con->fetchAll("
+                SELECT
+                    '{$data['caption']}' AS caption,
+                    {$data['fieldName']} AS amount,
+                    '{$data['fieldName']}' AS fieldName
+                FROM {$this->environment}
+                WHERE government_id = {$firstGovernmentId}
+            ");
+
+            $secondGovernmentData = $con->fetchAll("
+                SELECT
+                    '{$data['caption']}' AS caption,
+                    {$data['fieldName']} AS amount,
+                    '{$data['fieldName']}' AS fieldName
+                FROM {$this->environment}
+                WHERE government_id = {$secondGovernmentId}
+            ");
+
+            $data['firstGovernment']['data'] = $firstGovernmentData;
+            $data['secondGovernment']['data'] = $secondGovernmentData;
+        }
+
+        return $data;
     }
 
     /**
@@ -269,9 +411,9 @@ class EnvironmentManager implements EnvironmentManagerInterface
      */
     public function getGovernmentRank($altTypeSlug, $slug, array $parameters)
     {
-        return $this->em->getRepository('GovWikiDbBundle:Government')
+        return $this->governmentManager
             ->getGovernmentRank(
-                $this->getEnvironment()->getId(),
+                $this->getEnvironment(),
                 $altTypeSlug,
                 $slug,
                 $parameters

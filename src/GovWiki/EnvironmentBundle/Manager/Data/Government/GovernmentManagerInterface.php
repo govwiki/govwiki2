@@ -65,4 +65,29 @@ interface GovernmentManagerInterface
         $governmentSlug,
         array $parameters
     );
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $partOfName  Part of government name.
+     *
+     * @return array
+     */
+    public function searchGovernmentForComparison(
+        Environment $environment,
+        $partOfName
+    );
+
+    /**
+     * Add to each governments 'data' field with specified findata caption
+     * dollar amount and total for fund category.
+     *
+     * @param Environment $environment A Environment entity instance.
+     * @param array       $data        Request in form described in
+     *                                 {@see ComparisonController::compareAction}.
+     *
+     * @return array
+     *
+     * @throws \Doctrine\ORM\Query\QueryException Query result is not unique.
+     */
+    public function getComparedGovernments(Environment $environment, array $data);
 }

@@ -4,6 +4,7 @@ namespace GovWiki\ApiBundle\Controller\V1;
 
 use Doctrine\Common\Annotations\Annotation\Required;
 use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -92,7 +93,7 @@ class ComparisonController extends AbstractGovWikiApiController
         }
 
         $data = json_decode($request->getContent(), true);
-        $captions = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
+        $captions = $this->get(GovWikiEnvironmentService::MANAGER)
             ->getCategoriesForComparisonByGovernment($data['captions']);
 
         $translator = $this->get('translator');

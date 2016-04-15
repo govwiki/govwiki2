@@ -132,6 +132,7 @@ class GovernmentManager implements GovernmentManagerInterface
         $governmentSlug,
         array $parameters
     ) {
+        // Get values from parameters array.
         $rankFieldName = $parameters['field_name'];
         $limit = $parameters['limit'];
         $page = $parameters['page'];
@@ -139,9 +140,9 @@ class GovernmentManager implements GovernmentManagerInterface
         $nameOrder = $parameters['name_order'];
         $year = $parameters['year'];
 
-        $fieldName = preg_replace('|_rank$|', '', $rankFieldName);
-
-        $con = $this->em->getConnection();
+        $fieldName = DefaultNamingStrategy::originalFromRankFieldName(
+            $rankFieldName
+        );
 
         $mainSql = "
             SELECT
@@ -206,6 +207,187 @@ class GovernmentManager implements GovernmentManagerInterface
 
         $mainSql .= ' LIMIT '. ($page * $limit) .', '. $limit;
 
-        return $con->fetchAll($mainSql);
+        return $this->em->getConnection()->fetchAll($mainSql);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function searchGovernmentForComparison(
+        Environment $environment,
+        $partOfName
+    ) {
+        /** @var GovernmentRepository $repository */
+        $repository = $this->em->getRepository('GovWikiDbBundle:Government');
+
+        return $repository->searchForComparison(
+            $environment->getId(),
+            $partOfName
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getComparedGovernments(Environment $environment, array $data)
+    {
+        $expr = $this->em->getExpressionBuilder();
+
+        $firstGovernmentId = $data['firstGovernment']['id'];
+        $secondGovernmentId = $data['secondGovernment']['id'];
+
+        if (array_key_exists('category', $data)) {
+            /*
+             * Compare by categories: 'Revenue' or 'Expenditure'.
+             */
+            $qb = $this->em->createQueryBuilder()
+                ->select(
+                    'partial FinData.{id, caption, dollarAmount, displayOrder}',
+                    'Category, Fund'
+                )
+                ->from('GovWikiDbBundle:FinData', 'FinData')
+                ->innerJoin('FinData.captionCategory', 'Category')
+                ->innerJoin('FinData.fund', 'Fund')
+                ->where($expr->andX(
+                    $expr->eq('Category.name', ':name'),
+                    $expr->neq('FinData.caption', ':caption')
+                ))
+                ->orderBy($expr->asc('Category.name'))
+                ->setParameters([
+                    'name' => $data['category'],
+                    'caption' => 'Total '. $data['category'],
+                ]);
+
+            $firstQb = clone $qb;
+
+            $firstQb->andWhere($expr->andX(
+                $expr->eq('FinData.government', $firstGovernmentId),
+                $expr->eq('FinData.year', $data['firstGovernment']['year'])
+            ));
+
+            $result = $firstQb->getQuery()->getArrayResult();
+
+            /*
+             * Compute total funds.
+             */
+            $firstGovernmentData = $this->computeFinData($result);
+
+            /*
+             * Get data for second government.
+             */
+            $qb->andWhere($expr->andX(
+                $expr->eq('FinData.government', $secondGovernmentId),
+                $expr->eq('FinData.year', $data['secondGovernment']['year'])
+            ));
+
+            $result = $qb->getQuery()->getArrayResult();
+
+            /*
+             * Compute total funds.
+             */
+            $secondGovernmentData = $this->computeFinData($result);
+
+            $data['firstGovernment']['data'] = $firstGovernmentData;
+            $data['secondGovernment']['data'] = $secondGovernmentData;
+        } elseif ('Financial Statements' === $data['tab']) {
+            /*
+             * Compare by financial statements.
+             */
+            $qb = $this->em->createQueryBuilder()
+                ->select(
+                    'FinData.caption, FinData.dollarAmount AS amount'
+                )
+                ->from('GovWikiDbBundle:FinData', 'FinData')
+                ->where($expr->eq('FinData.fund', 99)); // Only total funds.
+
+            if (array_key_exists('caption', $data) & !empty($data['caption'])) {
+                $qb->andWhere(
+                    $expr->eq('FinData.caption', $expr->literal($data['fieldName']))
+                );
+            }
+
+            /*
+             * Get data for first government.
+             */
+            $firstQb = clone $qb;
+            $firstQb->andWhere($expr->andX(
+                $expr->eq('FinData.government', $firstGovernmentId),
+                $expr->eq('FinData.year', $data['firstGovernment']['year'])
+            ));
+
+            $firstGovernmentData = $firstQb->getQuery()->getArrayResult();
+
+            /*
+             * Get data for second government.
+             */
+            $qb->andWhere($expr->andX(
+                $expr->eq('FinData.government', $secondGovernmentId),
+                $expr->eq('FinData.year', $data['secondGovernment']['year'])
+            ));
+
+            $secondGovernmentData = $qb->getQuery()->getArrayResult();
+
+            $data['firstGovernment']['data'] = $firstGovernmentData;
+            $data['secondGovernment']['data'] = $secondGovernmentData;
+        } else {
+            /*
+             * Compare by over tabs.
+             */
+            $con = $this->em->getConnection();
+
+            $firstGovernmentData = $con->fetchAll("
+                SELECT
+                    '{$data['caption']}' AS caption,
+                    {$data['fieldName']} AS amount,
+                    '{$data['fieldName']}' AS fieldName
+                FROM {$environment->getId()}
+                WHERE government_id = {$firstGovernmentId}
+            ");
+
+            $secondGovernmentData = $con->fetchAll("
+                SELECT
+                    '{$data['caption']}' AS caption,
+                    {$data['fieldName']} AS amount,
+                    '{$data['fieldName']}' AS fieldName
+                FROM {$environment->getId()}
+                WHERE government_id = {$secondGovernmentId}
+            ");
+
+            $data['firstGovernment']['data'] = $firstGovernmentData;
+            $data['secondGovernment']['data'] = $secondGovernmentData;
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param array $result Raw fin data result.
+     *
+     * @return array
+     */
+    private function computeFinData(array $result)
+    {
+        $data = [];
+
+        $financialStatementsGroups = [];
+        foreach ($result as $finDataItem) {
+            $financialStatementsGroups[$finDataItem['caption']][] = $finDataItem;
+        }
+        $i = 0;
+        foreach ($financialStatementsGroups as $caption => $finData) {
+            $data[$i]['amount'] = 0.0;
+
+            foreach ($finData as $finDataItem) {
+                $data[$i]['caption'] = $caption;
+                $data[$i]['category'] = $finDataItem['captionCategory']['name'];
+
+                if ('Total' === $finDataItem['fund']['name']) {
+                    $data[$i]['amount'] = $finDataItem['dollarAmount'];
+                }
+            }
+            $i++;
+        }
+
+        return $data;
     }
 }
