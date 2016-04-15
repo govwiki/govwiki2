@@ -41,10 +41,10 @@ class AppKernel extends Kernel
             new GovWiki\MobileDetectBundle\GovWikiMobileDetectBundle(),
         ];
 
-        if ($this->getEnvironment() === 'prod') {
-            $bundles[] = new GovWiki\FrontendBundle\GovWikiFrontendBundle();
-        } elseif ($this->getEnvironment() === 'mobile') {
+        if ($this->getEnvironment() === 'mobile') {
             $bundles[] = new GovWiki\MobileBundle\GovWikiMobileBundle();
+        } else {
+            $bundles[] = new GovWiki\FrontendBundle\GovWikiFrontendBundle();
         }
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
