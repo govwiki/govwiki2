@@ -14,4 +14,4 @@ window.isMobileBrowser = function isMobileBrowser () {
 $(function() {
     var loader_wrap = $('.loader_wrap');
     loader_wrap.css({'opacity': 1, 'visibility': 'visible'});
-})
+});
