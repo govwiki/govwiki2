@@ -172,7 +172,7 @@ function financialStatements_expenditures() {
     if (isMobileBrowser()) {
         container = 'mobile-total-expenditures-pie';
         options = {
-            'title': data.translations.total_revenue,
+            'title': data.translations.total_expenditure,
             'titleTextStyle': {
                 'fontSize': 16
             },
@@ -198,7 +198,7 @@ function financialStatements_expenditures() {
     } else {
         container = 'total-expenditures-pie';
         options = {
-            'title': data.translations.total_revenue,
+            'title': data.translations.total_expenditure,
             'titleTextStyle': {
                 'fontSize': 16
             },

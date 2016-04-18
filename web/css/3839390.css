@@ -186,6 +186,11 @@ main {
   box-shadow: 0 1px 4px rgba(255, 0, 0, 0.6); }
 
 /* Temporary (start) */
+.btn-group .btn {
+  box-shadow: none; }
+  .btn-group .btn:hover {
+    box-shadow: none; }
+
 /* Temporary (end) */
 /* ===================================================== */
 /* ======== Customize bootstrap & global styles ======== */
@@ -215,18 +220,48 @@ i.icon {
 .nav-pills > li.active > a:focus {
   background-color: #0b4d70; }
 
+.mainmenu {
+  margin-top: 0;
+  margin-bottom: 3px; }
+  .mainmenu li {
+    margin: 0 2px; }
+  .mainmenu select,
+  .mainmenu select:focus {
+    outline: none;
+    border: none;
+    box-shadow: none; }
+
+.form-control__inline {
+  display: inline-block;
+  width: auto; }
+
 /*
    Set z-index for date picker.
 */
 .datepicker-dropdown {
   z-index: 10000 !important; }
 
+.disabled {
+  cursor: not-allowed !important;
+  color: #BBBBBB !important;
+  background-color: #F3F3F3 !important; }
+
 /*
-   Remove border from table in financial statement tab at government page.
+   Pagination sortable.
 */
-#Financial_Statements .table th,
-#Financial_Statements .table td {
-  border: none; }
+.sortable a i {
+  background: url("/bundles/govwikifrontend/img/bg.gif");
+  width: 21px;
+  height: 9px;
+  display: inline-block; }
+.sortable a.asc i {
+  height: 4px;
+  margin-bottom: 4px;
+  background: url("/bundles/govwikifrontend/img/asc.gif"); }
+.sortable a.desc i {
+  height: 4px;
+  margin-bottom: 4px;
+  background: url("/bundles/govwikifrontend/img/desc.gif"); }
 
 /* ========================= */
 /* ======== CartoDB ======== */
@@ -245,7 +280,88 @@ div.cartodb-tooltip-content-wrapper p {
 .leaflet-tile-pane .leaflet-layer:last-child {
   z-index: 1000; }
 
+/* ========================= */
+/* ======== Adverting ======== */
+/* ========================= */
+.adverting-top {
+  padding: 18px 0 0 0;
+  max-width: 728px;
+  margin: 0 auto;
+  overflow: hidden; }
+
+.message_form_container {
+  margin: 20px 50px; }
+
+/* TMP (Start) */
+.select-custom {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 6px 15px;
+  border: 1px solid #e5e5e5;
+  border-radius: 5px;
+  -webkit-box-shadow: none;
+  box-shadow: none; }
+
+.card {
+  position: relative;
+  display: block;
+  margin-bottom: 1.5rem;
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: .25rem;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
+  .card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e5e5; }
+    .card-header .btn-custom {
+      float: right;
+      margin-top: -3px;
+      margin-right: -8px; }
+    .card-header__vote-name {
+      padding: 0.6rem;
+      margin-bottom: 1em;
+      font-size: 1.3em;
+      color: black; }
+    .card-header__vote-vote {
+      padding: 0 0.6rem 0.6rem 0.6rem; }
+      .card-header__vote-vote > span {
+        font-weight: 700; }
+    .card-header__vote-sponsor {
+      float: right; }
+      .card-header__vote-sponsor > span {
+        font-weight: 700; }
+  .card-block {
+    padding: 1.05rem;
+    padding-bottom: 0; }
+    .card-block .card-title {
+      margin-bottom: .75rem; }
+    .card-block__vote-date {
+      font-size: 1.3em; }
+    .card-block__vote-issue {
+      float: right;
+      font-size: 1.3em; }
+    .card-block__vote-comments {
+      font-size: 3em;
+      margin: 0;
+      margin-top: 1em; }
+  .card-expand {
+    background-color: #f5f5f5;
+    color: #929292;
+    text-align: center;
+    font-size: 1.2em; }
+  .card-sub-header {
+    border-bottom: 1px solid #e5e5e5;
+    color: #B9B9B9; }
+    .card-sub-header .date,
+    .card-sub-header .taxes {
+      margin-left: 15px; }
+    .card-sub-header .comments {
+      margin-right: 15px;
+      float: right; }
+
+/* TMP (end) */
 .electedController {
+  min-width: 700px;
   margin-top: 40px;
   /*
      Size of tab names.
@@ -258,22 +374,30 @@ div.cartodb-tooltip-content-wrapper p {
   .electedController .tab-pane {
     min-height: 600px; }
   .electedController .loader {
+    display: none; }
+  .electedController .tab-content .loader {
     position: absolute;
     margin-top: 240px;
-    left: 49%;
-    display: none; }
+    left: 49%; }
   .electedController .table td,
   .electedController .table th {
     vertical-align: middle; }
     .electedController .table td.column__vote,
     .electedController .table th.column__vote {
       text-align: center;
-      width: 115px; }
+      width: 65px; }
     .electedController .table td.column__date,
     .electedController .table th.column__date {
-      width: 127px; }
+      width: 125px; }
+    .electedController .table td.column__title,
+    .electedController .table th.column__title {
+      width: 220px; }
   .electedController .table tr:not([data-id]) td {
     border-top: 1px dashed #eeeeee; }
+  .electedController .table tr.vote-comment {
+    color: black; }
+    .electedController .table tr.vote-comment td > p {
+      display: inline; }
   .electedController .add {
     color: #0b4d70;
     text-align: center;
@@ -302,6 +426,8 @@ div.cartodb-tooltip-content-wrapper p {
       min-width: 60%; }
       .electedController .person-info p {
         margin-bottom: 0; }
+    .electedController .person-info-content {
+      font-size: 16px; }
     .electedController .person-photo {
       width: 100%;
       display: inline-block; }
@@ -322,3 +448,28 @@ div.cartodb-tooltip-content-wrapper p {
   .electedController .submit_comment_button {
     float: right;
     margin: 5px 5px 0 0; }
+
+@media screen and (max-width: 768px) {
+  .electedController {
+    min-width: 0;
+    margin-top: 0; }
+    .electedController hr {
+      display: none; }
+    .electedController .person-info-content {
+      color: #0b4d70;
+      font-size: 1em; }
+      .electedController .person-info-content p {
+        margin: 0; }
+      .electedController .person-info-content > div {
+        padding: 7px; }
+    .electedController .mobile-person-info-tabs {
+      font-size: 0.5em; }
+      .electedController .mobile-person-info-tabs li {
+        width: 25%;
+        margin: 0; }
+        .electedController .mobile-person-info-tabs li:not(:first-child) {
+          border-left: 1px solid white; }
+        .electedController .mobile-person-info-tabs li a {
+          text-align: center;
+          padding: 10px 0;
+          border-radius: 0; } }

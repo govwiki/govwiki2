@@ -38,14 +38,10 @@ class AppKernel extends Kernel
             new CartoDbBundle\CartoDbBundle(),
             new Vresh\TwilioBundle\VreshTwilioBundle(),
             new SunCat\MobileDetectBundle\MobileDetectBundle(),
+            new GovWiki\MobileBundle\GovWikiMobileBundle(),
+            new GovWiki\FrontendBundle\GovWikiFrontendBundle(),
             new GovWiki\MobileDetectBundle\GovWikiMobileDetectBundle(),
         ];
-
-        if ($this->getEnvironment() === 'mobile') {
-            $bundles[] = new GovWiki\MobileBundle\GovWikiMobileBundle();
-        } else {
-            $bundles[] = new GovWiki\FrontendBundle\GovWikiFrontendBundle();
-        }
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
