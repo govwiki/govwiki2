@@ -96,15 +96,9 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
-
-	eval("window.changeLocale = __webpack_require__(1);\n$loaderWrap = $('.loader_wrap');\n$loaderWrap.css({\"opacity\":0});\nwindow.setTimeout(function() {\n    $loaderWrap.css({\"visibility\":\"hidden\"});\n}, 1000);\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/GovWiki/FrontendBundle/Resources/public/js/common.js\n ** module id = 0\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/GovWiki/FrontendBundle/Resources/public/js/common.js?");
-
-/***/ },
-/* 1 */
 /***/ function(module, exports) {
 
-	eval("function changeLocale(localeShortName, changeLocaleUrl, current_page_route) {\n    var loader_wrap = $('.loader_wrap');\n    loader_wrap.css({'opacity': 1, 'visibility': 'visible'});\n\n    if ('government' == current_page_route) {\n        var openedTab = $('.tab-titles').find('li.active').find('a').attr('href');\n        window.localStorage.setItem('tab', openedTab);\n    }\n\n    $.ajax({\n        url: changeLocaleUrl,\n        data: {'current_url': window.location.pathname, 'locale_short_name': localeShortName}\n    });\n\n    return false;\n}\n\nmodule.exports = changeLocale;\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/GovWiki/FrontendBundle/Resources/public/js/localization/localization.js\n ** module id = 1\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/GovWiki/FrontendBundle/Resources/public/js/localization/localization.js?");
+	eval("$(function() {\n    $loaderWrap = $('.loader_wrap');\n    $loaderWrap.css({\"opacity\":0});\n    window.setTimeout(function() {\n        $loaderWrap.css({\"visibility\":\"hidden\"});\n    }, 1000);\n\n    $('.locale-change').click(function (event) {\n        var loader_wrap = $('.loader_wrap');\n        loader_wrap.css({'opacity': 1, 'visibility': 'visible'});\n\n    })\n});\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/GovWiki/FrontendBundle/Resources/public/js/common.js\n ** module id = 0\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/GovWiki/FrontendBundle/Resources/public/js/common.js?");
 
 /***/ }
 /******/ ]);
