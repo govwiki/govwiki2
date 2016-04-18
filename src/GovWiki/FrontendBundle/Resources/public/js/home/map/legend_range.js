@@ -1,35 +1,39 @@
-var Sublayer = require('./sublayer.js');
+var config = require('./config.js');
+var sublayer = require('./sublayer.js');
+var Style = require('./style.js');
+
 function init(showOnTop) {
   var $legend;
   var legendClass = 'cartodb-legend-stack';
   var conditionColor;
   var conditionText;
   var legendItems = '';
-  var activeConditionsInRangeLegend = [];
+  var activeConditions = [];
   var completeConditions = [];
   var conditionData;
   var fieldName = window.gw.map.county.localized_name;
   var conditions = window.gw.map.county.conditions;
-  var defaultConditions = JSON.parse(JSON.stringify(conditions));
-  var cpyDefaultConditions;
-  var diffConditions;
-  window.activeConditionsInRangeLegend = activeConditionsInRangeLegend;
+  var disabledConditions;
+  var periodConditions;
+  var simpleConditions;
+  var nullCondition;
+  window.activeConditions = activeConditions;
 
   if (!window.gw.map.county.colorized) {
     return false;
   }
 
   // var fieldName = window.gw.map.county.fieldName.replace(/_/g, ' ');
-  var periodConditions = getConditionsByType(conditions, 'period');
-  var simpleConditions = getConditionsByType(conditions, 'simple');
-  var nullCondition = getConditionsByType(conditions, 'null');
+  periodConditions = Style.getConditionsByType(conditions, 'period');
+  simpleConditions = Style.getConditionsByType(conditions, 'simple');
+  nullCondition = Style.getConditionsByType(conditions, 'null');
 
   // Build legend items for period conditions
   if (periodConditions.length !== 0) {
     periodConditions.forEach(function loop(condition) {
       conditionColor = 'background: ' + condition.color;
       conditionText = condition.min + ' - ' + condition.max;
-      legendItems += '<li data-condition="' + JSON.stringify(condition).replace(/\"/g, '&quot;') +
+      legendItems += '<li data-condition="' + JSON.stringify(condition).replace(/"/g, '&quot;') +
         '"><div class="bullet" style="' + conditionColor + '"></div>' +
         conditionText +
         '</li>';
@@ -41,7 +45,7 @@ function init(showOnTop) {
     simpleConditions.forEach(function loop(condition) {
       conditionColor = 'background: ' + condition.color;
       conditionText = condition.operation + ' ' + condition.value;
-      legendItems += '<li data-condition="' + JSON.stringify(condition).replace(/\"/g, '&quot;') +
+      legendItems += '<li data-condition="' + JSON.stringify(condition).replace(/"/g, '&quot;') +
         '"><div class="bullet" style="' + conditionColor + '"></div>' +
         conditionText +
         '</li>';
@@ -51,7 +55,7 @@ function init(showOnTop) {
   // Build legend items for null conditions
   if (nullCondition.length !== 0) {
     conditionColor = 'background: ' + nullCondition[0].color;
-    legendItems += '<li data-condition="' + JSON.stringify(nullCondition[0]).replace(/\"/g, '&quot;') +
+    legendItems += '<li data-condition="' + JSON.stringify(nullCondition[0]).replace(/"/g, '&quot;') +
       '"><div class="bullet" style="' + conditionColor + '"></div>null</li>';
   }
 
@@ -68,51 +72,95 @@ function init(showOnTop) {
   $('#menu').after($legend);
 
   $legend.on('click', 'li', function legendItemClick() {
-    var index;
     var $el = $(this);
-    var $ul = $legend.closest('ul');
-    var $liTags = $ul.find('li');
+    var isActive = $el.hasClass('active');
+
+    completeConditions = [];
     conditionData = JSON.parse($(this).attr('data-condition'));
+
     // Toggle range button
-    if ($el.hasClass('active')) {
-      $el.removeClass('active');
-      if (conditions.length > 0) {
-        index = findCondition(activeConditionsInRangeLegend, conditionData);
-        if (index !== -1) {
-          activeConditionsInRangeLegend.splice(index, 1);
-        }
-      } else {
-        conditions = defaultConditions;
-      }
+    if (isActive) {
+      removeActiveCondition(activeConditions, conditionData);
     } else {
-      $el.addClass('active');
-      activeConditionsInRangeLegend.push(conditionData);
+      addActiveCondition(activeConditions, conditionData);
     }
-    // Mark others with gray color
-    if (activeConditionsInRangeLegend.length > 0) {
-      cpyDefaultConditions = JSON.parse(JSON.stringify(defaultConditions));
-      diffConditions = cpyDefaultConditions.filter(function loop(condition) {
-        index = findCondition(activeConditionsInRangeLegend, condition);
-        return index === -1;
-      });
-      // Copy activeConditions into completeConditions array
-      activeConditionsInRangeLegend.forEach(function loop(activecondition) {
-        completeConditions.push(activecondition);
-      });
-      // Copy diffConditions into completeConditions array
-      diffConditions.forEach(function loop(diffCondition) {
-        diffCondition.color = '#dddddd';
-        completeConditions.push(diffCondition);
-      });
+
+    if (activeConditions.length > 0) {
+      disabledConditions = findDisabledConditions(activeConditions);
+      addActiveConditions(completeConditions, activeConditions);
+      addDisabledConditions(completeConditions, disabledConditions);
     } else {
-      completeConditions = defaultConditions;
+      completeConditions = config.defaultConditions;
     }
-    Sublayer.removeAllSubLayers();
-    Sublayer.reInit({ conditions: completeConditions });
-    $liTags.not($el).removeClass('active');
+
+    console.group();
+    console.log('Clicked element data: ', conditionData);
+    console.log('Active conditions: ', activeConditions);
+    console.log('Disabled conditions: ', disabledConditions);
+    console.log('Complete conditions: ', completeConditions);
+    console.groupEnd();
+
+    sublayer.removeAllSubLayers();
+    sublayer.reInit({ conditions: completeConditions });
+
+    $el.toggleClass('active');
   });
   return true;
 }
+
+/**
+ * @param activeConditions
+ * @param conditionData
+ */
+function removeActiveCondition(activeConditions, conditionData) {
+  var index = findCondition(activeConditions, conditionData);
+  if (index !== -1) {
+    debugger;
+    activeConditions.splice(index, 1);
+  }
+  return index;
+}
+
+/**
+ * @param activeConditions
+ * @param conditionData
+ */
+function addActiveCondition(activeConditions, conditionData) {
+  return activeConditions.push(conditionData);
+}
+
+/**
+ * @param completeConditions
+ * @param activeConditions
+ */
+function addActiveConditions(completeConditions, activeConditions) {
+  activeConditions.forEach(function loop(activeCondition) {
+    completeConditions.push(activeCondition);
+  });
+}
+
+/**
+ * @param completeConditions
+ * @param disabledConditions
+ */
+function addDisabledConditions(completeConditions, disabledConditions) {
+  _.forEach(disabledConditions, function loop(disabledCondition) {
+    var completeCondition = _.assign({}, disabledCondition);
+    completeCondition.color = '#dddddd';
+    completeConditions.push(completeCondition);
+  });
+}
+
+/**
+ * @param activeConditions
+ * @returns {*}
+ */
+function findDisabledConditions(activeConditions) {
+  return config.defaultConditions.filter(function loop(condition) {
+    return findCondition(activeConditions, condition) === -1;
+  });
+}
+
 /**
  * Search one condition in conditions
  * @param conditions
@@ -120,51 +168,31 @@ function init(showOnTop) {
  * @return {Number}
  */
 function findCondition(conditions, oneCondition) {
-  var findIndex;
-  var filteredConditionsByType;
-  var conditionType;
+  var findIndex = null;
   if (!conditions) {
     return -1;
   }
-  conditionType = oneCondition.type;
-  filteredConditionsByType = conditions.filter(function loop(condition) {
-    return condition.type === conditionType;
-  });
-  if (filteredConditionsByType.length > 0) {
-    filteredConditionsByType.forEach(function loop(condition, index) {
-      switch (conditionType) {
-        case 'simple':
-          if (condition.operation === oneCondition.operation && condition.value === oneCondition.value) {
-            findIndex = index;
-          }
-          break;
-        case 'period':
-          if (condition.min === oneCondition.min && condition.max === oneCondition.max) {
-            findIndex = index;
-          }
-          break;
-        case 'null':
-          if (condition.color === oneCondition.color) {
-            findIndex = index;
-          }
-          break;
-        default:
+
+  if (conditions.length > 0) {
+    conditions.forEach(function loop(condition, index) {
+      if (oneCondition.type === 'simple') {
+        if (condition.operation === oneCondition.operation && condition.value === oneCondition.value) {
+          findIndex = index;
+        }
+      } else if (oneCondition.type === 'period') {
+        if (condition.min === oneCondition.min && condition.max === oneCondition.max) {
+          findIndex = index;
+        }
+      } else if (oneCondition.type === 'null') {
+        if (condition.color === oneCondition.color) {
+          findIndex = index;
+        }
       }
     });
   }
   return findIndex !== null ? findIndex : -1;
 }
-/**
- * Get condition filtered by conditionType
- * @param {Array} conditions
- * @param {String} conditionType - period, simple, null
- * @returns {*}
- */
-function getConditionsByType(conditions, conditionType) {
-  return conditions.filter(function loop(condition) {
-    return condition.type === conditionType;
-  });
-}
+
 module.exports = {
   init: init
 };

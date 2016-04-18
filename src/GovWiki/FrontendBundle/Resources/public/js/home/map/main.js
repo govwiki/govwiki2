@@ -5,14 +5,14 @@ require('./cartodb_util.js');
 require('../search_elected.js');
 require('../search_government.js');
 
+var config = require('./config.js');
 var sublayer = require('./sublayer.js');
 var legend = require('./legend.js');
 var legendRange = require('./legend_range.js');
-var Tooltip = require('./tooltip.js');
-var map;
+var tooltip = require('./tooltip.js');
 
 // Create the leaflet map
-map = L.map('map', {
+config.map = L.map('map', {
   zoomControl: true,
   center: [window.gw.map.centerLatitude, window.gw.map.centerLongitude],
   zoom: window.gw.map.zoom
@@ -20,18 +20,29 @@ map = L.map('map', {
 
 L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
   attribution: 'GovWiki'
-}).addTo(map);
+}).addTo(config.map);
 
-cartodb.createLayer(map, {
+cartodb.createLayer(config.map, {
   user_name: window.gw.map.username,
   type: 'cartodb',
   sublayers: []
 })
-  .addTo(map)
-  .done(function mapLoaded() {
+  .addTo(config.map)
+  .done(function mapLoaded(baseLayer) {
     var sql;
     var select;
     var where;
+
+    var $map = $('#map');
+    var $loader = $('#map_wrap').find('.loader');
+
+    baseLayer.on('load', function load() {
+      $loader.hide();
+      $map.show();
+      $map.css({ opacity: 1 });
+    });
+
+    config.baseLayer = baseLayer;
 
     /**
      * Create new SQL request
@@ -44,8 +55,9 @@ cartodb.createLayer(map, {
      */
     select = 'SELECT GeometryType(the_geom), alt_type_slug FROM ' + window.gw.environment;
     where = 'WHERE the_geom IS NOT NULL GROUP BY GeometryType(the_geom), alt_type_slug ORDER BY alt_type_slug';
-    sql.execute(select + '' + where)
+    sql.execute(select + ' ' + where)
       .done(function sqlLoaded(data) {
+        config.layersData = data;
         init(data);
       })
       .error(function error(errors) {
@@ -69,7 +81,8 @@ function init(data) {
     return !!alt.alt_type_slug;
   });
 
-  initSubLayers(altTypes);
+  sublayer.initSubLayers(altTypes);
+  tooltip.initTooltips();
 
   isAltTypeLegendUsed = false;
 
@@ -80,48 +93,10 @@ function init(data) {
   if (findLegendType('range')) {
     legendRange.init(!isAltTypeLegendUsed);
   }
-  Tooltip.init();
+
   function findLegendType(legendType) {
-    return window.gw.map.legendTypes.filter(function (legend) {
-      return legend === legendType;
+    return _.forOwn(window.gw.map.legendTypes, function loop(legendName) {
+      return legendName === legendType;
     })[0];
   }
 }
-/**
- * Create additional subLayers by altType
- *
- * @param altTypes Unique altTypes from MySQL
- */
-function initSubLayers(altTypes) {
-  var countySubLayers = altTypes.filter(function loop(altType) {
-    return (altType.geometrytype === 'MULTIPOLYGON' || altType.geometrytype === 'POLYGON');
-  });
-  var markerSubLayers = altTypes.filter(function loop(altType) {
-    return (altType.geometrytype !== 'MULTIPOLYGON' && altType.geometrytype !== 'POLYGON');
-  });
-  countySubLayers.forEach(function loop(altType) {
-    sublayer.initCountySubLayer(altType.alt_type_slug);
-  });
-  markerSubLayers.forEach(function loop(altType) {
-    sublayer.initMarkerSubLayer(altType.alt_type_slug);
-  });
-  sublayer.initSublayerHandlers();
-}
-/**
- * Add tooltips on page
- * @type {*[]}
- */
-function initTooltips(tooltips) {
-  var key;
-  var tooltip;
-  for (key in tooltips) {
-    if (tooltips.hasOwnProperty(key)) {
-      tooltip = tooltips[key];
-      if (tooltip !== null) {
-        $('#map_wrap').append(tooltip.render().el);
-      }
-    }
-  }
-}
-
-

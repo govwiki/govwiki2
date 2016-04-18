@@ -1,6 +1,11 @@
+var map;
 var legend;
+var baseLayer;
+var countySubLayer;
 var subLayers = {};
+var layersData;
 var tooltips = {};
+var defaultConditions;
 var debug;
 
 /**
@@ -57,6 +62,7 @@ window.gw.map = JSON.parse(window.gw.map);
     }
  */
 window.gw.map.county = window.gw.map.colorizedCountyConditions;
+defaultConditions = JSON.parse(JSON.stringify(window.gw.map.county.conditions));
 
 /**
  * window.gw.map.legend = [
@@ -97,8 +103,13 @@ legend = window.gw.map.legend.sort(function loop(a, b) {
 debug = window.localStorage.getItem('debug');
 
 module.exports = {
-  debug: debug,
+  map: map,
   legend: legend,
+  baseLayer: baseLayer,
+  countySubLayer: countySubLayer,
   subLayers: subLayers,
-  tooltips: tooltips
+  layersData: layersData,
+  tooltips: tooltips,
+  defaultConditions: defaultConditions,
+  debug: debug
 };

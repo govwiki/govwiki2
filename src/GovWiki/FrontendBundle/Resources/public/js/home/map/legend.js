@@ -107,18 +107,18 @@ function replaceImgToSvg() {
       var $svg = $(data).find('svg');
       var $rect = $svg.find('rect');
       var $path = $svg.find('path');
-      if ($rect[0] === null) {
+      if ($rect[0] !== undefined) {
         $rect.css({ fill: fillColor, stroke: strokeColor });
       }
-      if ($path[0] === null) {
+      if ($path[0] !== undefined) {
         $path.css({ fill: fillColor, stroke: strokeColor });
       }
       // Add replaced image's ID to the new SVG
-      if (typeof imgID !== 'undefined') {
+      if (typeof imgID !== undefined) {
         $svg = $svg.attr('id', imgID);
       }
       // Add replaced image's classes to the new SVG
-      if (typeof imgClass !== 'undefined') {
+      if (typeof imgClass !== undefined) {
         $svg = $svg.attr('class', imgClass + ' replaced-svg');
       }
       // Remove any invalid XML tags as per http://validator.w3.org

@@ -15,6 +15,20 @@ function init(altType) {
   });
   config.tooltips[altType].setMask(window.gw.map.county.field_mask);
 }
+
+
+/**
+ * Add tooltips on page
+ * @type {*[]}
+ */
+function initTooltips() {
+  _.forOwn(config.tooltips, function loop(tooltip) {
+    $('#map_wrap').append(tooltip.render().el);
+  });
+}
+
+
 module.exports = {
-  init: init
+  init: init,
+  initTooltips: initTooltips
 };

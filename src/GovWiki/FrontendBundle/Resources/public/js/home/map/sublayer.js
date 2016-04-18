@@ -24,7 +24,7 @@ function drawAppropriatePolygon(data) {
   polygon = new L.GeoJSON(JSON.parse(data.geometry), {
     style: polygonStyle
   });
-  map.addLayer(polygon);
+  config.map.addLayer(polygon);
   polygon.cartodb_id = data.cartodb_id;
 }
 /**
@@ -39,7 +39,6 @@ function initCountySubLayer(altType) {
   var cartocss = '';
   var conditions;
   var cLayer;
-  var countySubLayer;
   var _altType;
   var colorized = window.gw.map.county.colorized;
   if (colorized) {
@@ -67,9 +66,9 @@ function initCountySubLayer(altType) {
     altType + "'",
     interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometry', 'data', 'name']
   };
-  countySubLayer = layer.createSubLayer(cLayer);
+  config.countySubLayer = config.baseLayer.createSubLayer(cLayer);
   _altType = altType.toLowerCase();
-  config.subLayers[_altType] = countySubLayer;
+  config.subLayers[_altType] = config.countySubLayer;
   Tooltip.init(_altType);
 }
 /**
@@ -86,11 +85,13 @@ function initMarkerSubLayer(altType) {
   var cartocss = '';
   var colorized = window.gw.map.county.colorized;
   var legendItemCss = {};
+  var conditions;
+  var options;
   if (colorized) {
-    var conditions = window.gw.map.county.conditions,
-      options = {
-        isMarkerLayer: true
-      };
+    conditions = window.gw.map.county.conditions;
+    options = {
+      isMarkerLayer: true
+    };
     legendItemCss = Legend.getLegendItemAsCss(altType);
     if (legendItemCss) {
       options.markerFileCss = legendItemCss.markerFileCss;
@@ -111,7 +112,7 @@ function initMarkerSubLayer(altType) {
     cartocss = '#layer { ' + legendItemCss.markerFileCss + legendItemCss.markerLineColorColorCss +
       ' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
   }
-  config.subLayers[_altType] = layer.createSubLayer({
+  config.subLayers[_altType] = config.baseLayer.createSubLayer({
     sql: "SELECT *, (data_json::json->>'" + window.gw.map.year +
     "')::float AS data, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment +
     " WHERE alt_type_slug = '" + altType + "'",
@@ -141,10 +142,6 @@ function initSublayerHandlers() {
        * It depends on the current Layer position
        */
       layer.bind('mouseover', function mouseover(e, latlon, pxPos, data, layerIndex) {
-        var key;
-        var tooltip;
-        // TODO: Must be deleted, when data will be replaced, now it's hardcoded
-        data.slug = data.slug.replace(/_/g, ' ');
         hovers[layerIndex] = 1;
         /**
          * If hover active
@@ -154,7 +151,7 @@ function initSublayerHandlers() {
           /**
            * If hover on county layer
            */
-          if (layerIndex === countySubLayer._position) {
+          if (layerIndex === config.countySubLayer._position) {
             drawAppropriatePolygon(data);
           } else {
             removeAllHoverShapes();
@@ -162,18 +159,15 @@ function initSublayerHandlers() {
           /**
            * Open current tooltip, close another
            */
-          for (key in tooltips) {
-            if (tooltips.hasOwnProperty(key)) {
-              tooltip = config.tooltips[key];
-              if (tooltip !== null) {
-                if (tooltip.getLayerIndex() === layerIndex) {
-                  tooltip.enable();
-                } else {
-                  tooltip.disable();
-                }
+          _.forOwn(config.tooltips, function loop(tooltip) {
+            if (tooltip !== null) {
+              if (tooltip.getLayerIndex() === layerIndex) {
+                tooltip.enable();
+              } else {
+                tooltip.disable();
               }
             }
-          }
+          });
         }
       });
       /**
@@ -182,8 +176,6 @@ function initSublayerHandlers() {
        * It depends on the current Layer position
        */
       layer.bind('mouseout', function mouseout(layerIndex) {
-        var key;
-        var tooltip;
         hovers[layerIndex] = 0;
         /**
          * If hover not active
@@ -194,16 +186,13 @@ function initSublayerHandlers() {
           /**
            *  Close all tooltips, if cursor outside of layers
            */
-          for (key in tooltips) {
-            if (tooltips.hasOwnProperty(key)) {
-              tooltip = config.tooltips[key];
-              if (tooltip !== null) {
-                if (tooltip.getLayerIndex() === layerIndex) {
-                  tooltip.disable();
-                }
+          _.forOwn(config.tooltips, function loop(tooltip) {
+            if (tooltip !== null) {
+              if (tooltip.getLayerIndex() === layerIndex) {
+                tooltip.disable();
               }
             }
-          }
+          });
         }
       });
       /**
@@ -213,18 +202,15 @@ function initSublayerHandlers() {
         var pathname;
         if (!data.alt_type_slug || !data.slug) {
           alert('Please verify your data, altTypeSlug or governmentSlug may can not defined, more info in console.log');
-          console.log(data);
-          return false;
+          return true;
         }
-        /**
-         * TODO: Hardcoded, data must be in underscore style
-         */
-        data.slug = data.slug.replace(/ /g, '_');
         pathname = window.location.pathname;
         if (pathname[pathname.length - 1] !== '/') {
           pathname += '/';
         }
         window.location.pathname = pathname + data.alt_type_slug + '/' + data.slug;
+
+        return true;
       });
     }
   }
@@ -233,7 +219,7 @@ function initSublayerHandlers() {
  * @public
  */
 function removeAllHoverShapes() {
-  map.removeLayer(polygon);
+  config.map.removeLayer(polygon);
   polygon.cartodb_id = null;
 }
 /**
@@ -249,29 +235,48 @@ function removeAllSubLayers() {
     }
   }
 }
+
+/**
+ * Create additional subLayers by altType
+ *
+ * @param altTypes Unique altTypes from MySQL
+ */
+function initSubLayers(altTypes) {
+  var countySubLayers = altTypes.filter(function loop(altType) {
+    return (altType.geometrytype === 'MULTIPOLYGON' || altType.geometrytype === 'POLYGON');
+  });
+  var markerSubLayers = altTypes.filter(function loop(altType) {
+    return (altType.geometrytype !== 'MULTIPOLYGON' && altType.geometrytype !== 'POLYGON');
+  });
+  countySubLayers.forEach(function loop(altType) {
+    initCountySubLayer(altType.alt_type_slug);
+  });
+  markerSubLayers.forEach(function loop(altType) {
+    initMarkerSubLayer(altType.alt_type_slug);
+  });
+  initSublayerHandlers();
+}
+
 /**
  * Reinitialize map with
  */
 function reInit(settings) {
   var altTypes;
   if (settings) {
-    if (settings.conditions.length > 0) {
-      window.gw.map.county.conditions = settings.conditions;
-    } else {
-      window.gw.map.county.conditions = defaultConditions;
-    }
+    window.gw.map.county.conditions = (settings.conditions.length > 0) ? settings.conditions : config.defaultConditions;
   }
-  altTypes = layersData.rows.filter(function loop(alt) {
+  altTypes = config.layersData.rows.filter(function loop(alt) {
     return !!alt.alt_type_slug;
   });
   initSubLayers(altTypes);
-  initTooltips();
 }
+
 module.exports = {
   initCountySubLayer: initCountySubLayer,
   initMarkerSubLayer: initMarkerSubLayer,
   initSublayerHandlers: initSublayerHandlers,
   removeAllHoverShapes: removeAllHoverShapes,
   removeAllSubLayers: removeAllSubLayers,
+  initSubLayers: initSubLayers,
   reInit: reInit
 };
