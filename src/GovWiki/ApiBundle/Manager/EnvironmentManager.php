@@ -310,24 +310,6 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
             ");
         }
 
-        /*
-        $distinctGovermentsCity = $this->em->createQueryBuilder()
-            ->select('Government.id, Government.city, Government.slug')
-            ->from('GovWikiDbBundle:Government', 'Government')
-            ->where('Government.environment = :id')
-            ->setParameters(
-                [
-                    'id' => $data['environment_id'],
-                ]
-            )
-            ->groupBy('Government.slug')
-            ->getQuery()
-            ->getResult();
-
-        var_dump($distinctGovermentsCity);
-        die;
-        */
-
         if (count($data) > 0) {
             unset($data['alt_type_slug'], $data['year']);
             foreach ($data as $field => $value) {
