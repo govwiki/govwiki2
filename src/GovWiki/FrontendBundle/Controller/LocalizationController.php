@@ -18,20 +18,22 @@ class LocalizationController extends Controller
     /**
      * Change locale
      *
-     * @Configuration\Route("/change_locale")
+     * @Configuration\Route(
+     *  "/change_locale/{locale}",
+     *  requirements={ "locale": "\w+" }
+     * )
      *
      * @param Request $request Request.
+     * @param string  $locale  Locale short name.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function changeLocaleAction(Request $request)
+    public function changeLocaleAction(Request $request, $locale)
     {
         $this->clearTranslationsCache();
 
-        $url = $request->get('current_url');
-        $locale_name = $request->get('locale_short_name');
-
-        $this->get('session')->set('_locale', $locale_name);
+        $url = $request->server->get('HTTP_REFERER');
+        $this->get('session')->set('_locale', $locale);
 
         return $this->redirect($url);
     }
