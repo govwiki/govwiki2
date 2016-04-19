@@ -1,3 +1,4 @@
+var origRender;
 /**
  * Extend CartoDB Tooltip
  * Get Layer position
@@ -26,13 +27,11 @@ cdb.geo.ui.Tooltip.prototype.setMask = function setMask(mask) {
  * displaying.
  * @author Shemin Dmitry
  */
+origRender = cdb.geo.ui.Tooltip.prototype.render;
 cdb.geo.ui.Tooltip.prototype.render = function render(data) {
   var tmp = $.extend({}, data);
-  var sanitizedOutput;
-  if (this.options.gw.mask && tmp && tmp.data) {
-    tmp.data = numeral(tmp.data).format(this.options.gw.mask);
+  if (tmp.data !== null && tmp.data !== 'undefined' && this.options.gw.mask) {
+    tmp.dataFormatted = numeral(tmp.data).format(this.options.gw.mask);
   }
-  sanitizedOutput = cdb.core.sanitize.html(this.template(tmp));
-  this.$el.html(sanitizedOutput);
-  return this;
+  return origRender.call(this, tmp);
 };

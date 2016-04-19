@@ -5,7 +5,13 @@ var config = require('./config.js');
  */
 function init(altType) {
   var tooltipTpl = '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"></p>';
-  tooltipTpl += '<p>{{name}} {{#data}} ({{data}}) {{/data}} </p>';
+
+  if (config.debug) {
+    tooltipTpl += '<p>{{name}} ({{data}})</p>';
+  } else {
+    tooltipTpl += '<p>{{name}} {{#dataFormatted}} ({{dataFormatted}}) {{/dataFormatted}} </p>';
+  }
+
   tooltipTpl += '</div></div>';
   config.tooltips[altType] = new cdb.geo.ui.Tooltip({
     layer: config.subLayers[altType],
@@ -22,6 +28,13 @@ function init(altType) {
  * @type {*[]}
  */
 function initTooltips() {
+  var $mapWrap = $('#map_wrap');
+  var $cartodbTooltips = $mapWrap.find('cartodb-tooltip');
+
+  if ($cartodbTooltips.length !== 0) {
+    $cartodbTooltips.remove();
+  }
+
   _.forOwn(config.tooltips, function loop(tooltip) {
     $('#map_wrap').append(tooltip.render().el);
   });

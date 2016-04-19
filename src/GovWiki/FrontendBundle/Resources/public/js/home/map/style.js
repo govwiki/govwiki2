@@ -1,3 +1,4 @@
+var config = require('./config');
 
 /**
  * Get period conditions as css string
@@ -90,6 +91,7 @@ function getSimpleConditionsAsCss(conditions, options) {
       fillColor = opt.isMarkerLayer ? condition.color : condition.color;
       markerTypeCss = opt.markerFileCss ? opt.markerFileCss : '';
       fill = fillRule + ': ' + fillColor + '; ' + markerTypeCss;
+
       // Stroke polygon or marker
       lineColorRule = opt.isMarkerLayer ? 'marker-line-color' : 'line-color';
       lineColor = opt.isMarkerLayer ? condition.color : '#FFFFFF';
@@ -97,14 +99,17 @@ function getSimpleConditionsAsCss(conditions, options) {
       if (opt.markerLineColorColorCss) {
         line = opt.markerLineColorColorCss;
       }
+
       stroke = opt.isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
       value = '[data ' + condition.operation + ' ' + condition.value + ']';
       style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
+
       cssConditions += '#layer' + value + style;
     });
   }
   return cssConditions || '';
 }
+
 /**
  * Get Null condition as css string
  *
@@ -140,6 +145,7 @@ function getNullConditionAsCss(conditions, options) {
     fillColor = opt.isMarkerLayer ? nullCondition[0].color : nullCondition[0].color;
     markerTypeCss = opt.markerFileCss ? opt.markerFileCss : '';
     fill = fillRule + ': ' + fillColor + ';' + markerTypeCss;
+
     // Stroke polygon or marker
     lineColorRule = opt.isMarkerLayer ? 'marker-line-color' : 'line-color';
     lineColor = opt.isMarkerLayer ? nullCondition[0].color : '#FFFFFF';
@@ -147,12 +153,66 @@ function getNullConditionAsCss(conditions, options) {
     if (opt.markerLineColorColorCss) {
       line = opt.markerLineColorColorCss;
     }
+
     stroke = opt.isMarkerLayer ? 'marker-line-width: 1;' : 'line-width: 0.5;';
     style = '{ ' + fill + line + stroke + ' line-opacity: 1; polygon-opacity: 0.3; } ';
     cssConditions += '#layer[data = null]' + style;
   }
   return cssConditions || '';
 }
+
+
+/**
+ * Get colors for map layer FROM legend by altType !!!
+ *
+ * @param altType
+ * @param {boolean?} useFill - When range legend is disabled, we use fill without stroke
+ * @returns {Object||Boolean} cartocss - Cartocss styles or false, if altType not found in legend <br/>
+ * @returns {String||Null} cartocss.markerLineColorCss - Cartocss for markerLinecolor <br/>
+ * @returns {String} cartocss.markerFileCss - Cartocss for markerFileCss <br/>
+ */
+function getColorsFromLegend(altType) {
+  var foundLegend;
+  var url;
+  var markerFileCss;
+  var markerFillColorCss;
+  var markerLineColorColorCss;
+
+  // Search current altType in legend (window.gw.map.legend = [Object, Object, ...])
+  foundLegend = config.legend.filter(function loop(item) {
+    return item.altType === altType;
+  })[0];
+
+  if (!foundLegend) {
+    return false;
+  }
+
+  if (config.debug) {
+    url = 'http://california.govwiki.freedemster.com';
+  } else {
+    url = window.location.href.substr(0, window.location.href.length - 1);
+  }
+
+  if (foundLegend.color || foundLegend.shape) {
+    // If url to marker exist, create new css rule (path to marker icon)
+    markerFileCss = 'marker-file: url(' + url + foundLegend.shape + ');';
+
+    markerFillColorCss = 'marker-fill: ' + foundLegend.color + '; ';
+    markerLineColorColorCss = 'marker-line-color: ' + foundLegend.color + '; ';
+  } else {
+    console.error('Legend not contain style properties, please fix it !!!');
+    markerFileCss = '';
+    markerFillColorCss = '';
+    markerLineColorColorCss = '';
+  }
+
+  return {
+    markerFileCss: markerFileCss,
+    markerFillColorCss: markerFillColorCss,
+    markerLineColorColorCss: markerLineColorColorCss
+  };
+}
+
 
 /**
  * Get condition filtered by conditionType
@@ -170,5 +230,6 @@ module.exports = {
   getPeriodConditionsAsCss: getPeriodConditionsAsCss,
   getSimpleConditionsAsCss: getSimpleConditionsAsCss,
   getNullConditionAsCss: getNullConditionAsCss,
-  getConditionsByType: getConditionsByType
+  getConditionsByType: getConditionsByType,
+  getColorsFromLegend: getColorsFromLegend
 };

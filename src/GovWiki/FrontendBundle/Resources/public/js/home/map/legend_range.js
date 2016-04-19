@@ -8,16 +8,13 @@ function init(showOnTop) {
   var conditionColor;
   var conditionText;
   var legendItems = '';
-  var activeConditions = [];
-  var completeConditions = [];
-  var conditionData;
+
   var fieldName = window.gw.map.county.localized_name;
   var conditions = window.gw.map.county.conditions;
-  var disabledConditions;
+
   var periodConditions;
   var simpleConditions;
   var nullCondition;
-  window.activeConditions = activeConditions;
 
   if (!window.gw.map.county.colorized) {
     return false;
@@ -71,7 +68,24 @@ function init(showOnTop) {
     '</ul></div></div>');
   $('#menu').after($legend);
 
-  $legend.on('click', 'li', function legendItemClick() {
+  handler_toggleConditions($legend);
+  return true;
+}
+
+/**
+ * Click on range legend item, to disable layers
+ * @param $container
+ */
+function handler_toggleConditions($container) {
+  // Each clicked element contain conditionData in attribute 'data-condition'
+  // It simple stringifyed object, for example: JSON.stringify(window.gw.map.county.conditions[0])
+  // <li data-condition='{"type":"simple","color":"#80ff00","value":"1","operation":"<="}'>
+  var conditionData;
+  var activeConditions = [];
+  var disabledConditions;
+  var completeConditions = [];
+
+  $container.on('click', 'li', function legendItemClick() {
     var $el = $(this);
     var isActive = $el.hasClass('active');
 
@@ -105,7 +119,6 @@ function init(showOnTop) {
 
     $el.toggleClass('active');
   });
-  return true;
 }
 
 /**
@@ -115,7 +128,6 @@ function init(showOnTop) {
 function removeActiveCondition(activeConditions, conditionData) {
   var index = findCondition(activeConditions, conditionData);
   if (index !== -1) {
-    debugger;
     activeConditions.splice(index, 1);
   }
   return index;

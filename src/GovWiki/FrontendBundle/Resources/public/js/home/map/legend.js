@@ -54,44 +54,6 @@ function init() {
   });
 }
 /**
- * Get colors for map layer FROM legend by altType !!!
- *
- * @param altType
- * @param {boolean?} useFill
- * @returns {*}
- */
-function getLegendItemAsCss(altType, useFill) {
-  var options = {};
-  var foundLegend;
-  var url;
-  var markerIconUrl;
-  var markerFileCss;
-  var markerStrokeColor;
-  var markerLineColorColorCss;
-  options.useFill = useFill || false;
-  // Search current altType in legend (window.gw.map.legend = [Object, Object, ...])
-  foundLegend = config.legend.filter(function loop(item) {
-    return item.altType === altType;
-  })[0];
-  if (!foundLegend) {
-    return false;
-  }
-  url = config.debug
-    ? 'http://california.govwiki.freedemster.com'
-    : window.location.href.substr(0, window.location.href.length - 1);
-  // If url to marker exist, create new css rule (path to marker icon)
-  markerIconUrl = foundLegend ? foundLegend.shape : false;
-  markerFileCss = markerIconUrl ? 'marker-file: url(' + url + markerIconUrl + ');' : '';
-  markerStrokeColor = foundLegend ? foundLegend.color : false;
-  markerLineColorColorCss = options.useFill
-    ? 'marker-fill: ' + markerStrokeColor + '; '
-    : 'marker-line-color: ' + markerStrokeColor + '; ';
-  return {
-    markerFileCss: markerFileCss,
-    markerLineColorColorCss: markerLineColorColorCss
-  };
-}
-/**
  * Replace all SVG images with inline SVG
  */
 function replaceImgToSvg() {
@@ -129,6 +91,5 @@ function replaceImgToSvg() {
   });
 }
 module.exports = {
-  init: init,
-  getLegendItemAsCss: getLegendItemAsCss
+  init: init
 };

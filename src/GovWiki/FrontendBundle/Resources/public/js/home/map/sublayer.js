@@ -36,28 +36,17 @@ function drawAppropriatePolygon(data) {
  * @public
  */
 function initCountySubLayer(altType) {
-  var cartocss = '';
-  var conditions;
+  // Default county color
+  var cartocss = '#layer { polygon-fill: #DDDDDD; polygon-opacity: 0.7; line-color: #FFF;' +
+    ' line-width: 0.5; line-opacity: 1; } ';
   var cLayer;
   var _altType;
   var colorized = window.gw.map.county.colorized;
+
   if (colorized) {
-    conditions = window.gw.map.county.conditions;
-    // Default county color
-    cartocss += '#layer { polygon-fill: #DDDDDD; polygon-opacity: 0.7; line-color: #FFF;' +
-      ' line-width: 0.5; line-opacity: 1; } ';
-    cartocss += Style.getPeriodConditionsAsCss(conditions);
-    cartocss += Style.getSimpleConditionsAsCss(conditions);
-    cartocss += Style.getNullConditionAsCss(conditions);
-    if (cartocss === '') {
-      console.warn('Can\'t find any condition, please verify your window.gw.map.county.conditions data');
-      console.warn('or check getPeriodConditionsAsCss, getSimpleConditionsAsCss, getNullConditionAsCss functions');
-    }
-  } else {
-    // Default county color if colorized disabled (flag in admin panel)
-    cartocss = '#layer { polygon-fill: #DDDDDD; polygon-opacity: 0.7; line-color: #FFF;' +
-      ' line-width: 0.5; line-opacity: 1; } ';
+    cartocss += getConditionsColorsAsCartoCss();
   }
+
   cLayer = {
     cartocss: cartocss,
     sql: "SELECT *, (data_json::json->>'" + window.gw.map.year +
@@ -66,7 +55,9 @@ function initCountySubLayer(altType) {
     altType + "'",
     interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometry', 'data', 'name']
   };
+
   config.countySubLayer = config.baseLayer.createSubLayer(cLayer);
+
   _altType = altType.toLowerCase();
   config.subLayers[_altType] = config.countySubLayer;
   Tooltip.init(_altType);
@@ -83,33 +74,25 @@ function initCountySubLayer(altType) {
 function initMarkerSubLayer(altType) {
   var _altType = altType.toLowerCase();
   var cartocss = '';
-  var colorized = window.gw.map.county.colorized;
-  var legendItemCss = {};
-  var conditions;
-  var options;
-  if (colorized) {
-    conditions = window.gw.map.county.conditions;
-    options = {
-      isMarkerLayer: true
-    };
-    legendItemCss = Legend.getLegendItemAsCss(altType);
-    if (legendItemCss) {
-      options.markerFileCss = legendItemCss.markerFileCss;
-      options.markerLineColorColorCss = legendItemCss.markerLineColorColorCss;
-    }
-    // Default marker color
-    cartocss += '#layer { ' + legendItemCss.markerFileCss + legendItemCss.markerLineColorColorCss +
+
+  var isRangeLegend = window.gw.map.county.colorized;
+  var options = { isMarkerLayer: true };
+  var legendColorsAsCartoCss = Style.getColorsFromLegend(altType);
+
+  options.markerFileCss = legendColorsAsCartoCss.markerFileCss;
+  options.markerFillColorCss = legendColorsAsCartoCss.markerFillColorCss;
+  options.markerLineColorColorCss = legendColorsAsCartoCss.markerLineColorColorCss;
+
+  if (isRangeLegend) {
+    cartocss += '#layer { ' +
+      legendColorsAsCartoCss.markerFileCss +
+      legendColorsAsCartoCss.markerLineColorColorCss +
       ' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
-    cartocss += Style.getPeriodConditionsAsCss(conditions, options);
-    cartocss += Style.getSimpleConditionsAsCss(conditions, options);
-    cartocss += Style.getNullConditionAsCss(conditions, options);
-    if (cartocss === '') {
-      console.warn('Can\'t find any condition, please verify your window.gw.map.county.conditions data');
-      console.warn('or check getPeriodConditionsAsCss, getSimpleConditionsAsCss, getNullConditionAsCss functions');
-    }
+    cartocss += getConditionsColorsAsCartoCss(options);
   } else {
-    legendItemCss = Style.getLegendItemAsCss(altType, true);
-    cartocss = '#layer { ' + legendItemCss.markerFileCss + legendItemCss.markerLineColorColorCss +
+    cartocss += '#layer { ' +
+      legendColorsAsCartoCss.markerFileCss +
+      legendColorsAsCartoCss.markerFillColorCss +
       ' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
   }
   config.subLayers[_altType] = config.baseLayer.createSubLayer({
@@ -121,6 +104,29 @@ function initMarkerSubLayer(altType) {
   });
   Tooltip.init(_altType);
 }
+
+/**
+ * @param options
+ * @returns {string}
+ */
+function getConditionsColorsAsCartoCss(options) {
+  var cartocss = '';
+  var conditionsAsCartoCss = '';
+  var conditions = window.gw.map.county.conditions;
+
+  conditionsAsCartoCss += Style.getPeriodConditionsAsCss(conditions, options);
+  conditionsAsCartoCss += Style.getSimpleConditionsAsCss(conditions, options);
+  conditionsAsCartoCss += Style.getNullConditionAsCss(conditions, options);
+
+  if (conditionsAsCartoCss === '') {
+    console.warn('Can\'t find any condition, please verify your window.gw.map.county.conditions data');
+    console.warn('or check getPeriodConditionsAsCss, getSimpleConditionsAsCss, getNullConditionAsCss functions');
+  }
+
+  cartocss += conditionsAsCartoCss;
+  return cartocss;
+}
+
 /**
  * Set handlers on SubLayers
  *
@@ -269,6 +275,7 @@ function reInit(settings) {
     return !!alt.alt_type_slug;
   });
   initSubLayers(altTypes);
+  Tooltip.initTooltips();
 }
 
 module.exports = {
