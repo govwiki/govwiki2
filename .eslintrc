@@ -7,7 +7,9 @@
     "L": true,
     "cdb": true,
     "numeral": true,
-    "google": true
+    "google": true,
+    "FB": true,
+    "Handlebars": true
   },
   "rules": {
     "no-alert": 0,

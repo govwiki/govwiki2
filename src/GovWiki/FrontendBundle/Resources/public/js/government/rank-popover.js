@@ -6,7 +6,7 @@ var Handlebars = require('../vendor/handlebars.runtime.js');
  * @param {Number} options.year
  * @constructor
  */
-var RankPopover = function (options) {
+var RankPopover = function RankPopover(options) {
   options = options || {};
 
   this.$popover = null;
@@ -28,42 +28,44 @@ var RankPopover = function (options) {
  * Initialize popover
  */
 RankPopover.prototype.init = function init() {
-
   var self = this;
-  self.noMoreData = false;
-
   var $statistics = $('.statistics');
   var $governmentController = $('.governmentController');
+  self.noMoreData = false;
 
-    // Popover window (Rank over all altTypes)
+  // Popover window (Rank over all altTypes)
   $statistics.popover({
     placement: 'bottom',
     selector: this.selector,
     animation: true,
-    template: '<div class="popover rankPopover" role="tooltip"><div class="arrow"></div><div class="popover-title-custom"><h3 class="popover-title"></h3></div><div class="popover-content"></div></div>'
+    template: '<div class="popover rankPopover" role="tooltip"><div class="arrow"></div>' +
+    '<div class="popover-title-custom"><h3 class="popover-title"></h3></div>' +
+    '<div class="popover-content"></div></div>'
   });
 
-  $governmentController.on('click', function (e) {
-        // Close other popovers
+  $governmentController.on('click', function click(e) {
+    // Close other popovers
     if (!$(e.target).closest('.popover')[0]) {
       $('.rank').not(e.target).popover('destroy');
     }
   });
 
-  $statistics.on('click', function (e) {
+  $statistics.on('click', function click(e) {
+    var $popoverContent = self.$popoverContent;
+    var $preloader = self.$preloader;
+    var rankFieldName = self.rankFieldName;
+    var $element = $(e.target);
+    var $popover = $element.hasClass('rank') ? $element : $element.closest('.rank');
+
     e.preventDefault();
     e.stopPropagation();
 
-    $element = $(e.target);
-
-        // Close other popovers
+    // Close other popovers
     if (!$(e.target).closest('.popover')[0]) {
       $('.rank').not(e.target).popover('destroy');
     }
 
-    $popover = $element.hasClass('rank') ? $element : $element.closest('.rank');
-
-    if ($popover.length == 0) {
+    if ($popover.length === 0) {
       return false;
     }
 
@@ -73,13 +75,9 @@ RankPopover.prototype.init = function init() {
 
     self.rankFieldName = $popover.attr('data-field');
 
-    self.$popover.on('hide.bs.popover', function () {
+    self.$popover.on('hide.bs.popover', function onHidePopover() {
       self.noMoreData = false;
     });
-
-    var $popoverContent = self.$popoverContent;
-    var $preloader = self.$preloader;
-    var rankFieldName = self.rankFieldName;
 
     if (rankFieldName) {
       self.loading = true;
@@ -91,14 +89,14 @@ RankPopover.prototype.init = function init() {
           field_name: rankFieldName,
           year: self.year
         },
-        success: function (data) {
+        success: function success(data) {
           if (data.data.length != 0) {
             self.formatData.call(self, data);
-                        // Render rankTable template
+            // Render rankTable template
             $popoverContent.html(Handlebars.templates.rankTable(data));
             self.$rankTable = $popoverContent.find('table tbody');
             self.$preloader = $popoverContent.find('.loader');
-                        // Initialize scroll and sort handlers
+            // Initialize scroll and sort handlers
             self.scrollHandler.call(self);
             self.sortHandler.call(self);
             self.loading = false;
@@ -112,10 +110,7 @@ RankPopover.prototype.init = function init() {
         }
       });
     }
-
-
   });
-
 };
 
 /**
@@ -135,11 +130,12 @@ RankPopover.prototype.scrollHandler = function scrollHandler() {
   self.previousScrollTop = 0;
   self.currentPage = 0;
 
-  $popoverContent.scroll(function () {
-
+  $popoverContent.scroll(function scroll() {
     var currentScrollTop = $popoverContent.scrollTop();
 
-    if (self.previousScrollTop < currentScrollTop && currentScrollTop > 0.5 * $popoverContent[0].scrollHeight && !self.noMoreData) {
+    if (self.previousScrollTop < currentScrollTop &&
+          currentScrollTop > 0.5 * $popoverContent[0].scrollHeight &&
+          !self.noMoreData) {
       self.previousScrollTop = currentScrollTop;
       if (self.loading === false) {
         self.loading = true;
@@ -155,6 +151,7 @@ RankPopover.prototype.scrollHandler = function scrollHandler() {
             year: self.year
           },
           success: function (data) {
+            var h3;
             if (data.data.length != 0) {
               self.formatData(data);
               self.loading = false;
@@ -163,7 +160,7 @@ RankPopover.prototype.scrollHandler = function scrollHandler() {
             } else {
               if (!self.noMoreData) {
                 self.noMoreData = true;
-                var h3 = $('<h3 style="text-align: center">No more data</h3>');
+                h3 = $('<h3 style="text-align: center">No more data</h3>');
                 self.$popoverContent.append(h3);
                 self.loading = false;
                 self.$preloader.hide();
@@ -186,7 +183,9 @@ RankPopover.prototype.sortHandler = function sortHandler() {
   var $popoverContent = self.$popoverContent;
   var order = self.order;
 
-  $popoverContent.on('click', 'th', function (e) {
+  $popoverContent.on('click', 'th', function click(e) {
+    var $sortIcon;
+    var $column;
     e.stopPropagation();
 
     self.$popoverContent.find('h3').remove();
@@ -195,8 +194,8 @@ RankPopover.prototype.sortHandler = function sortHandler() {
     self.previousScrollTop = 0;
     self.currentPage = 0;
 
-    var $column = $(this).hasClass('sortable') ? $(this) : $(this).closest('th');
-    var $sortIcon = $column.find('i');
+    $column = $(this).hasClass('sortable') ? $(this) : $(this).closest('th');
+    $sortIcon = $column.find('i');
 
     if ($column.hasClass('desc')) {
       $column.attr('data-sort-type') === 'name_order' ? order.altType = '' : order.rank = '';
@@ -227,12 +226,11 @@ RankPopover.prototype.sortHandler = function sortHandler() {
  * @param {String} [order.rank] Available values: '', 'asc', 'desc'
  */
 RankPopover.prototype.loadNewRows = function loadNewRows(order) {
-  order = order || this.order;
-
   var self = this;
 
-  var $preloader = self.$preloader;
   var $rankTable = self.$rankTable || self.$popoverContent.find('table tbody');
+
+  order = order || this.order;
 
   $rankTable.html('');
 
@@ -250,8 +248,8 @@ RankPopover.prototype.loadNewRows = function loadNewRows(order) {
       field_name: self.rankFieldName,
       year: self.year
     },
-    success: function (data) {
-      if (data.data.length != 0) {
+    success: function success(data) {
+      if (data.data.length !== 0) {
         self.formatData.call(self, data);
         $rankTable.html(Handlebars.templates.rankTableAdditionalRows(data));
         self.loading = false;
@@ -273,19 +271,20 @@ RankPopover.prototype.loadNewRows = function loadNewRows(order) {
  * @returns {void|*}
  */
 RankPopover.prototype.formatData = function formatData(data) {
-
   var self = this;
 
   var $popover = self.$popover;
   var mask = $popover.attr('data-mask');
 
   if (mask) {
-    return data.data.forEach(function (rank) {
+    return data.data.forEach(function loop(rank) {
       return rank.amount = numeral(rank.amount).format(mask);
     });
   }
+  return true;
 };
 
+/*eslint-disable */
 // rankTable template
 (function () {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
@@ -349,5 +348,6 @@ RankPopover.prototype.formatData = function formatData(data) {
     return buffer;
   }, 'useData':true });
 })();
+/*eslint-enable */
 
 module.exports = RankPopover;
