@@ -65,7 +65,7 @@ RankPopover.prototype.init = function init() {
     }
 
     if ($popover.length === 0) {
-      return false;
+      return true;
     }
 
     self.$popover = $element;
@@ -109,7 +109,7 @@ RankPopover.prototype.init = function init() {
         }
       });
     }
-    return false;
+    return true;
   });
 };
 
@@ -263,20 +263,18 @@ RankPopover.prototype.loadNewRows = function loadNewRows(order) {
  * @returns {void|*}
  */
 RankPopover.prototype.formatData = function formatData(data) {
-  var dataFormatted;
   var self = this;
 
   var $popover = self.$popover;
   var mask = $popover.attr('data-mask');
 
+  /*eslint-disable */
   if (mask) {
-    dataFormatted = data.data.map(function loop(rank) {
-      var _rank = _.assign({}, rank);
-      _rank.amount = numeral(_rank.amount).format(mask);
-      return _rank;
+    return data.data.forEach(function loop(rank) {
+      return rank.amount = numeral(rank.amount).format(mask);
     });
-    return dataFormatted;
   }
+  /*eslint-disable */
   return true;
 };
 

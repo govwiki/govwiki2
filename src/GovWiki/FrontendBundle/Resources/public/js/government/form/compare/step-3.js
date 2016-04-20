@@ -16,8 +16,8 @@ function Step(FormState, container) {
  * Init step
  */
 Step.prototype.init = function init() {
-  this.handler_onChangeSelect();
-  this.handler_onClickSelect();
+  this.handlerOnChangeSelect();
+  this.handlerOnClickSelect();
 };
 /**
  * (Ajax, DOM)

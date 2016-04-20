@@ -19,8 +19,8 @@ function Step(FormState, container) {
  */
 Step.prototype.init = function init() {
   var self = this;
-  self.handler_onMouseDownSelect();
-  self.handler_onChangeSelect();
+  self.handlerOnMouseDownSelect();
+  self.handlerOnChangeSelect();
   // Typeahead initialization
   self.search = new Search(self.container, self.searchResponseCallback);
   // Pressed mouse or enter button

@@ -209,3 +209,10 @@ module.exports = {
   init: init
 };
 
+module.forTests = {
+  findDisabledConditions: findDisabledConditions,
+  addDisabledConditions: addDisabledConditions,
+  addActiveConditions: addActiveConditions,
+  addActiveCondition: addActiveCondition,
+  removeActiveCondition: removeActiveCondition
+};

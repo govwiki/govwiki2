@@ -1,4 +1,6 @@
+var requireDir = require('require-dir');
 var path = require('./gulp/config.js').path;
+requireDir('./gulp');
 
 var eslint = require('gulp-eslint');
 var gulpIf = require('gulp-if');
@@ -7,6 +9,10 @@ var webpack = require('webpack');
 var argv = require('yargs').argv;
 
 var webpackConfigPath = '';
+
+if (argv.test) {
+    global.isTest = true;
+}
 
 if (argv.mobile) {
     webpackConfigPath = './webpack.config.mobile.js';
