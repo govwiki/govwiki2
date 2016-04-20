@@ -39,17 +39,11 @@ services:
                 event: govwiki.event.government.update
                 method:
 
-#    govwiki_admin.listener.government_sync:
-#        class: GovWiki\AdminBundle\Listener\SyncGovernmentWithCartoDb
-#        arguments: [@carto_db.api]
-#        tags:
-#            - { name: doctrine.event_subscriber }
-
-#    govwiki_admin.listener.government_table_upadte:
-#        class: GovWiki\AdminBundle\Listener\UpdateGovernmentTable
-#        arguments: [@service_container]
-#        tags:
-#            - { name: doctrine.event_subscriber }
+    goviki_admin.param_converter.environment:
+        class: GovWiki\AdminBundle\Request\ParamConverter\EnvironmentParamConverter
+        arguments: [ @doctrine.orm.default_entity_manager ]
+        tags:
+            - { name: request.param_converter, converter: environment_converter }
 
     govwiki_admin.listener.wizard:
         class: GovWiki\AdminBundle\Listener\WizardStepListener

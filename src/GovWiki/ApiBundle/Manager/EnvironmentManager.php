@@ -113,21 +113,18 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getMap()
     {
-        if ($this->getEntity()) {
-            $map = $this->getEntity()->getMap();
+        $map = $this->getEntity()->getMap();
 
-
-            return [
-                'centerLatitude' => $map->getCenterLatitude(),
-                'centerLongitude' => $map->getCenterLongitude(),
-                'zoom' => $map->getZoom(),
-                'position' => $map->getPosition(),
-                'colorizedCountyConditions' => $map->getColorizedCountyConditions(),
-                'debug' => $map->isDebug(),
-                'legendTypes' => $map->getLegendTypes(),
-                'legend' => $map->getLegend(),
-            ];
-        }
+        return [
+            'centerLatitude' => $map->getCenterLatitude(),
+            'centerLongitude' => $map->getCenterLongitude(),
+            'zoom' => $map->getZoom(),
+            'position' => $map->getPosition(),
+            'colorizedCountyConditions' => $map->getColorizedCountyConditions(),
+            'debug' => $map->isDebug(),
+            'legendTypes' => $map->getLegendTypes(),
+            'legend' => $map->getLegend(),
+        ];
     }
 
     public function getAvailableYears()
@@ -309,6 +306,24 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
                     year = '{$year}'
             ");
         }
+
+        /*
+        $distinctGovermentsCity = $this->em->createQueryBuilder()
+            ->select('Government.id, Government.city, Government.slug')
+            ->from('GovWikiDbBundle:Government', 'Government')
+            ->where('Government.environment = :id')
+            ->setParameters(
+                [
+                    'id' => $data['environment_id'],
+                ]
+            )
+            ->groupBy('Government.slug')
+            ->getQuery()
+            ->getResult();
+
+        var_dump($distinctGovermentsCity);
+        die;
+        */
 
         if (count($data) > 0) {
             unset($data['alt_type_slug'], $data['year']);
@@ -744,9 +759,7 @@ class EnvironmentManager implements EnvironmentManagerAwareInterface
      */
     public function getDefaultLocale()
     {
-        if ($this->getEntity()) {
-            return $this->getEntity()->getDefaultLocale()->getShortName();
-        }
+        return $this->getEntity()->getDefaultLocale()->getShortName();
     }
 
     /**

@@ -1,0 +1,66 @@
+services:
+    govwiki_environment.twig.extension:
+        class: GovWiki\EnvironmentBundle\Twig\Extension
+        arguments:
+            - @govwiki_environment.storage
+            - @govwiki_environment.manager.elected_official
+            - @translator
+        tags:
+            - { name: twig.extension }
+
+    govwiki_environment.router:
+        class: GovWiki\EnvironmentBundle\Router\RouterDecorator
+        decorates: router
+        arguments:
+            - @govwiki_environment.router.inner
+            - @govwiki_environment.storage
+            - %determinator.name%
+
+    #
+    # Environemnt determination.
+    #
+    govwiki_environment.determinator.path:
+        class: GovWiki\EnvironmentBundle\Determinator\PathDeterminator
+        tags:
+            - { name: environment.determinator, alias: path }
+
+    govwiki_environment.determinator.host:
+        class: GovWiki\EnvironmentBundle\Determinator\HostDeterminator
+        arguments: [ @doctrine.orm.default_entity_manager ]
+        tags:
+            - { name: environment.determinator, alias: host }
+
+    govwiki_environment.listener.determinator:
+        class: GovWiki\EnvironmentBundle\EventListener\EnvironmentDeterminatorListener
+        arguments:
+            - '' # Set from configuration.
+            - @govwiki_environment.storage
+            - @session
+            - @doctrine.orm.default_entity_manager
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: -50 }
+
+    #
+    # Environment managers.
+    #
+    govwiki_environment.storage:
+        class: GovWiki\EnvironmentBundle\Storage\EnvironmentStorage
+
+    govwiki_environment.manager.max_ranks:
+        class: GovWiki\EnvironmentBundle\Manager\MaxRank\MaxRankManager
+        arguments: [ @doctrine.orm.default_entity_manager ]
+
+    govwiki_environment.manager.format:
+        class: GovWiki\EnvironmentBundle\Manager\Format\FormatManager
+        arguments: [ @doctrine.orm.default_entity_manager ]
+
+    govwiki_environment.manager.elected_official:
+        class: GovWiki\EnvironmentBundle\Manager\ElectedOfficial\ElectedOfficialManager
+        arguments: [ @doctrine.orm.default_entity_manager ]
+
+    govwiki_environment.manager.government:
+        class: GovWiki\EnvironmentBundle\Manager\Government\GovernmentManager
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @govwiki_environment.manager.max_ranks
+            - @govwiki_environment.manager.format

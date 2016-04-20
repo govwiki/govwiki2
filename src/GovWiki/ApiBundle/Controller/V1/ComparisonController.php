@@ -4,6 +4,7 @@ namespace GovWiki\ApiBundle\Controller\V1;
 
 use Doctrine\Common\Annotations\Annotation\Required;
 use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,8 +48,12 @@ class ComparisonController extends AbstractGovWikiApiController
             );
         }
 
-        return new JsonResponse($this->environmentManager()
-            ->searchGovernmentForComparison($search));
+        return new JsonResponse($this->getGovernmentManager()
+            ->searchGovernmentForComparison(
+                $this->getCurrentEnvironment(),
+                $search
+            )
+        );
     }
 
     /**
@@ -92,8 +97,11 @@ class ComparisonController extends AbstractGovWikiApiController
         }
 
         $data = json_decode($request->getContent(), true);
-        $captions = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-            ->getCategoriesForComparisonByGovernment($data['captions']);
+        $captions = $this->getGovernmentManager()
+            ->getCategoriesForComparisonByGovernment(
+                $this->getCurrentEnvironment(),
+                $data['captions']
+            );
 
         $translator = $this->get('translator');
 
@@ -188,8 +196,11 @@ class ComparisonController extends AbstractGovWikiApiController
         }
 
         $data = json_decode($request->getContent(), true);
-        $result = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-            ->getComparedGovernments($data);
+        $result = $this->getGovernmentManager()
+            ->getComparedGovernments(
+                $this->getCurrentEnvironment(),
+                $data
+            );
 
         /*
          * Translate data.

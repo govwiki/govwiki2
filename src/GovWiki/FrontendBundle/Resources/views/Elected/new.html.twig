@@ -240,9 +240,9 @@
         window.gw.electedOfficial = '{{ electedOfficialJSON | escape('js') }}';
 
         window.gw.urls = {};
-        window.gw.urls.create_request = '{{ govwiki_path('govwiki_api_v1_createrequest_create') }}'
-        window.gw.urls.edit_request = '{{ govwiki_path('govwiki_api_v1_editrequest_create') }}'
-        window.gw.urls.check_url = '{{ govwiki_path('govwiki_api_v1_url_extract') }}'
+        window.gw.urls.create_request = '{{ path('govwiki_api_v1_createrequest_create') }}';
+        window.gw.urls.edit_request = '{{ path('govwiki_api_v1_editrequest_create') }}';
+        window.gw.urls.check_url = '{{ path('govwiki_api_v1_url_extract') }}';
     </script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>

@@ -2,12 +2,8 @@
 
 namespace CartoDbBundle\Service;
 
-use CartoDbBundle\Exception\CartoDBRequestFailException;
-use CartoDbBundle\Utils\NamedMap;
-use Symfony\Component\Routing\RouterInterface;
-
 /**
- * Wrapper under carto db api.
+ * Wrapper under CartoDB api.
  *
  * @package GovWiki\CartoDbBundle\Service
  */
@@ -24,150 +20,13 @@ class CartoDbApi
     private $endpoint;
 
     /**
-     * @var string
-     */
-    private $host;
-
-    /**
      * @param string $apiKey  CartoDB api key.
      * @param string $account CartoDB account name.
      */
-    public function __construct($apiKey, $account, RouterInterface $router)
+    public function __construct($apiKey, $account)
     {
         $this->apiKey = $apiKey;
         $this->endpoint = "https://{$account}.cartodb.com/api";
-        $this->host = $router->getContext()->getHost();
-    }
-
-    /**
-     * Send geo json file to CartoDB.
-     *
-     * @param string  $filePath     Path to GeoJson data file.
-     * @param boolean $createNewMap If set create new visualization = map.
-     *
-     * @return string Item queue id.
-     *
-     * @throws CartoDBRequestFailException Fail request.
-     *
-     * @deprecated
-     */
-    public function importDataset($filePath, $createNewMap = false)
-    {
-        $uri = '/v1/imports';
-        if ($createNewMap) {
-            $uri .= '?create_vis=true';
-        }
-//        $filename = substr($filePath, strrpos($filePath, '/') + 1);
-//        $newFilePath = __DIR__ . '/../../../web/img/'. $filename;
-//
-//        rename($filePath, $newFilePath);
-//
-//        $data = json_encode([ 'url' => "http://{$this->host}/img/{$filename}"]);
-//
-//        $response = $this
-//            ->makeRequest($uri, 'POST', [
-//                'curl' => [
-//                    CURLOPT_POSTFIELDS => $data,
-//                    CURLOPT_HTTPHEADER => [
-//                        'Content-Type: application/json',
-//                        'Content-Length: ' . strlen($data),
-//                    ],
-//                ],
-//            ]);
-
-        $filePath = realpath($filePath);
-
-        $response = $this
-            ->makeRequest($uri, 'POST', [
-                'file' => "@{$filePath}",
-                'curl' => [
-                    CURLOPT_HTTPHEADER => [
-                        'Content-Type: multipart/form-data',
-                    ],
-                ],
-            ]);
-        unlink($filePath);
-
-        if (array_key_exists('success', $response)
-            && $response['success'] === true) {
-            return $response['item_queue_id'];
-        }
-
-        throw new CartoDBRequestFailException($response);
-    }
-
-    /**
-     * Check import status by using item queue id returned from
-     * {@see CartoDbApi::importDataset}.
-     *
-     * @param string $itemQueueId Carto db item queue id.
-     *
-     * @return array
-     *
-     * @throws CartoDBRequestFailException Request fail.
-     */
-    public function checkImportProcess($itemQueueId)
-    {
-        $response = $this->makeRequest("/v1/imports/{$itemQueueId}");
-
-        if (array_key_exists('success', $response)) {
-            return $response;
-        }
-
-        return [];
-    }
-
-    /**
-     * Fetch visualization url from response.
-     *
-     * @param array $response Response from
-     *                        {@see CartoDbApi::checkImpostProcess}.
-     *
-     * @return string
-     *
-     * @deprecated
-     */
-    public function getVizUrl(array $response)
-    {
-        if (array_key_exists('visualization_id', $response) &&
-            'complete' === $response['state']) {
-            $vizId = $response['visualization_id'];
-            return "{$this->endpoint}/v2/viz/{$vizId}/viz.json";
-        }
-
-        return null;
-    }
-
-    /**
-     * @param NamedMap $map A NamedMap instance.
-     *
-     * @return array
-     */
-    public function createMap(NamedMap $map)
-    {
-        $data = $map->toJson();
-
-        return $this->makeRequest('/v1/map/named', 'POST', [
-            'curl' => [
-                CURLOPT_HTTPHEADER => [
-                    'Content-Type: application/json',
-                    'Content-Length: '. strlen($data),
-                ],
-                CURLOPT_POSTFIELDS => $data,
-            ],
-        ]);
-    }
-
-    /**
-     * Remove named map.
-     *
-     * @param string $name Map name.
-     *
-     * @return array
-     */
-    public function deleteMap($name)
-    {
-        return $this->makeRequest("/v1/map/named/{$name}", 'DELETE');
     }
 
     /**
@@ -185,11 +44,10 @@ class CartoDbApi
     }
 
     /**
-     * todo annotate
-     *
-     * @param string $name   Dataset name.
-     * @param array  $fields Array of dataset field where key is field name and
-     *                       value if field type.
+     * @param string  $name      Dataset name.
+     * @param array   $fields    Array of dataset field where key is field name
+     *                           and value if field type.
+     * @param boolean $temporary Flag, if set don't cartodbfy.
      *
      * @return CartoDbApi
      */
@@ -268,7 +126,6 @@ class CartoDbApi
         ]);
 
         if ('GET' !== $method) {
-//            curl_setopt($handler, CURLOPT_POST, true);
             curl_setopt($handler, CURLOPT_CUSTOMREQUEST, $method);
         }
 

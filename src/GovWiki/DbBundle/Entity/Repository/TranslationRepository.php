@@ -18,29 +18,35 @@ use Doctrine\ORM\EntityRepository;
 class TranslationRepository extends EntityRepository
 {
     /**
-     * @param string $environment Environment name.
-     * @param string $locale_name Locale short name ('en', 'fr' etc.)
-     * @param array $trans_key_settings Array with Matching type and Translation Keys array
-     * @param string $translation Translation text
-     * @param boolean $needOneResult If true, return object, else return array.
+     * @param integer $environment        Environment entity id.
+     * @param string  $locale_name        Locale short name ('en', 'fr' etc.)
+     * @param array   $trans_key_settings Array with Matching type and
+     *                                    Translation Keys array
+     * @param string  $translation        Translation text
+     * @param boolean $needOneResult      If true, return object, else return
+     *                                    array.
      *
      * @return array
      */
-    public function getTranslationsBySettings($environment, $locale_name, $trans_key_settings = null, $translation = null, $needOneResult = null)
-    {
+    public function getTranslationsBySettings(
+        $environment,
+        $locale_name,
+        $trans_key_settings = null,
+        $translation = null,
+        $needOneResult = null
+    ) {
         $expr = $this->_em->getExpressionBuilder();
         $added = false;
 
         $qb = $this->createQueryBuilder('tr')
             ->select('tr')
-            ->leftJoin('tr.locale', 'Locale')
-            ->leftJoin('Locale.environment', 'Environment');
+            ->leftJoin('tr.locale', 'Locale');
 
         if (null !== $environment) {
             $qb
                 ->where($expr->andX(
                     $expr->eq('Locale.shortName', ':locale_name'),
-                    $expr->eq('Environment.slug', ':env')
+                    $expr->eq('Locale.environment', ':env')
                 ))
                 ->setParameters([
                     'env' => $environment,

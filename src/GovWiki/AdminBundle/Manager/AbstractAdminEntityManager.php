@@ -26,7 +26,7 @@ abstract class AbstractAdminEntityManager implements
     /**
      * @var integer
      */
-    private $environmentId;
+    protected $environmentId;
 
     /**
      * @param EntityManagerInterface $em A EntityManagerInterface instance.

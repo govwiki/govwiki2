@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class AdminEnvironmentManager
 {
-    const ENVIRONMENT_PARAMETER = 'environment';
+        const ENVIRONMENT_PARAMETER = 'environment';
 
     /**
      * @var EntityManagerInterface
@@ -521,7 +521,7 @@ class AdminEnvironmentManager
     {
         if (null === $this->format) {
             $this->format = $this->em->getRepository('GovWikiDbBundle:Format')
-                ->get($this->environment, true);
+                ->get($this->entity->getId(), true);
         }
 
         $result = $this->format;
@@ -556,18 +556,6 @@ class AdminEnvironmentManager
         if ($this->getReference()) {
             $entityManager->setEnvironmentId($this->getReference()->getId());
         }
-    }
-
-    /**
-     * @return AdminEnvironmentManager
-     *
-     * @throws \Doctrine\DBAL\DBALException Can't execute query.
-     */
-    public function createGovernmentTable()
-    {
-        $this->tableManager->createGovernmentTable($this->environment);
-
-        return $this;
     }
 
     /**

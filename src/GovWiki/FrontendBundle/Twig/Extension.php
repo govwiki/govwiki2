@@ -2,53 +2,12 @@
 
 namespace GovWiki\FrontendBundle\Twig;
 
-use GovWiki\ApiBundle\Manager\EnvironmentManager;
-use JMS\Serializer\Serializer;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Translation\TranslatorInterface;
-use Symfony\Component\Translation\MessageCatalogue;
-
 /**
  * Class Extension
  * @package GovWiki\FrontendBundle\Twig
  */
 class Extension extends \Twig_Extension
 {
-
-    /**
-     * @var Serializer
-     */
-    private $serializer;
-
-    /**
-     * @var string
-     */
-    private $determinatorType;
-
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    /**
-     * @param EnvironmentManager $manager A EnvironmentManager instance.
-     */
-    public function __construct(
-        Serializer $serializer,
-        $determinatorType,
-        ContainerInterface $container,
-        TranslatorInterface $translator
-    ) {
-        $this->serializer = $serializer;
-        $this->determinatorType = $determinatorType;
-        $this->container = $container;
-        $this->translator = $translator;
-    }
 
     /**
      * {@inheritdoc}
@@ -76,54 +35,6 @@ class Extension extends \Twig_Extension
             ]),
         ];
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getFunctions()
-    {
-        return [
-            new \Twig_SimpleFunction('govwiki_path', [
-                $this,
-                'generateGovWikiPath',
-            ]),
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getGlobals()
-    {
-        $manager = $this->container->get('govwiki_api.manager.environment');
-
-        if ($manager->getEntity()) {
-            $styles = $manager->getEntity()->getStyle();
-
-            /** @var MessageCatalogue $catalogue */
-            $catalogue = $this->translator->getCatalogue();
-            $transKey = 'general.bottom_text';
-            if ($catalogue->has($transKey)) {
-                $bottomText = $this->translator->trans($transKey);
-            } else {
-                $bottomText = '';
-            }
-
-            return [
-                'styles' => $styles,
-                'environment' => $manager->getEnvironment(),
-                'environment_slug' => $manager->getSlug(),
-                'hasElectedOfficials' => $manager
-                        ->countElectedOfficials() > 0,
-                'title' => $manager->getTitle(),
-                'bottomText' => $bottomText,
-                'entity' => $manager->getEntity(),
-            ];
-        }
-
-        return [];
-    }
-
 
     /**
      * {@inheritdoc}
@@ -178,9 +89,7 @@ class Extension extends \Twig_Extension
             } elseif (strpos($mask, '%') !== false) {
                 $postfix = '%';
 
-                /*
-                 * todo Ahtung! Hardcoded!
-                 */
+                // If type is float then this value is percent value :-)
                 if ('float' === $format['type']) {
                     $value *= 100;
                 }
@@ -194,9 +103,7 @@ class Extension extends \Twig_Extension
 
             $value = $prefix . number_format($value, $decimal) . $postfix;
         } elseif (! is_string($value)) {
-            /*
-             * Add thousands separator.
-             */
+            // Add thousands separator.
             $value = number_format($value);
         }
 
@@ -217,7 +124,7 @@ class Extension extends \Twig_Extension
     /**
      * @param mixed $value Value.
      *
-     * @param mixed
+     * @return mixed
      */
     public function displayValue($value)
     {
@@ -232,32 +139,18 @@ class Extension extends \Twig_Extension
         return $value;
     }
 
-    private function fixValueSize($value)
-    {
-        if (is_string($value) && strlen($value) > 25) {
-            return mb_substr($value, 0, 19) . '...';
-        }
-        return $value;
-    }
-
     /**
-     * @param       $route
-     * @param array $parameters
+     * @param string $value String value to trim it.
      *
      * @return string
      */
-    public function generateGovWikiPath($route, array $parameters = [])
+    private function fixValueSize($value)
     {
-        $manager = $this->container->get('govwiki_api.manager.environment');
-
-        if ('path' === $this->determinatorType) {
-            $parameters = array_merge($parameters, [
-                'environment' => $manager->getSlug(),
-            ]);
+        if (is_string($value) && strlen($value) > 25) {
+            return mb_substr($value, 0, 19) .'...';
         }
 
-        $router = $this->container->get('router');
-        return $router->generate($route, $parameters);
+        return $value;
     }
 
     /**

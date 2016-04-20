@@ -3,9 +3,8 @@
 namespace GovWiki\ApiBundle\Controller\V1;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use JMS\Serializer\SerializationContext;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -13,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Class AbstractGovWikiApiController
  * @package GovWiki\ApiBundle\Controller
  */
-abstract class AbstractGovWikiApiController extends Controller
+abstract class AbstractGovWikiApiController extends AbstractGovWikiController
 {
     /**
      * @param string $message Error message.
@@ -24,7 +23,7 @@ abstract class AbstractGovWikiApiController extends Controller
     {
         return new JsonResponse([
             'status' => 'error',
-            'message' => $message
+            'message' => $message,
         ], 404);
     }
 
@@ -37,7 +36,7 @@ abstract class AbstractGovWikiApiController extends Controller
     {
         return new JsonResponse([
             'status' => 'error',
-            'message' => $message
+            'message' => $message,
         ], 400);
     }
 
@@ -103,13 +102,5 @@ abstract class AbstractGovWikiApiController extends Controller
         $response->setContent($serializer->serialize($data, 'json', $context));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
-    }
-
-    /**
-     * @return \GovWiki\ApiBundle\Manager\EnvironmentManager
-     */
-    protected function environmentManager()
-    {
-        return $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
     }
 }

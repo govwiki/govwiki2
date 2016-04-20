@@ -310,9 +310,9 @@ class GovernmentController extends AbstractGovWikiAdminController
 //            /*
 //             * Send to CartoDB;
 //             */
-//            $environmentManager = $this->adminEnvironmentManager();
+//            $getEnvironmentManager = $this->adminEnvironmentManager();
 //
-//            $environment = $environmentManager->getEnvironment();
+//            $environment = $getEnvironmentManager->getEnvironment();
 //            $filePath = $this->getParameter('kernel.logs_dir').'/'.
 //                $environment.'.json';
 //

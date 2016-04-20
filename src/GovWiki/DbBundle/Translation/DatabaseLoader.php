@@ -2,8 +2,9 @@
 
 namespace GovWiki\DbBundle\Translation;
 
-use Doctrine\ORM\EntityManager;
-use GovWiki\ApiBundle\Manager\EnvironmentManagerAwareInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Translation\Loader\LoaderInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
@@ -13,35 +14,26 @@ use Symfony\Component\Translation\MessageCatalogue;
  * @uses Symfony\Component\Translation\Loader\LoaderInterface
  * @uses Symfony\Component\Translation\MessageCatalogue
  */
-class DatabaseLoader implements LoaderInterface, EnvironmentManagerAwareInterface
+class DatabaseLoader implements LoaderInterface
 {
     private $localeRepository;
     private $translationRepository;
     private $environment;
 
     /**
-     * {@inheritdoc}
-     */
-    public function setEnvironment($environment)
-    {
-        if (('' === $environment) || ('admin' === $environment)) {
-            return $this;
-        }
-
-        $this->environment = $environment;
-
-        return $this;
-    }
-
-    /**
      * default constructor
      *
-     * @param EntityManager $em
+     * @param EntityManagerInterface      $em      A EntityManagerInterface
+     *                                             instance.
+     * @param EnvironmentStorageInterface $storage A Environment entity instance.
      */
-    public function __construct(EntityManager $em)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        EnvironmentStorageInterface $storage
+    ) {
         $this->localeRepository = $em->getRepository("GovWikiDbBundle:Locale");
         $this->translationRepository = $em->getRepository("GovWikiDbBundle:Translation");
+        $this->environment = $storage->get();
     }
 
     /**
@@ -55,7 +47,7 @@ class DatabaseLoader implements LoaderInterface, EnvironmentManagerAwareInterfac
     public function load($resource, $locale, $messageDomain = 'messages')
     {
         // get our translations, obviously
-        $translations = $this->translationRepository->getTranslationsBySettings($this->environment, $locale);
+        $translations = $this->translationRepository->getTranslationsBySettings($this->environment->getId(), $locale);
 
         $catalogue = new MessageCatalogue($locale);
 

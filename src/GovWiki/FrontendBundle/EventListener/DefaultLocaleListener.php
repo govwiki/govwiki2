@@ -32,20 +32,20 @@ class DefaultLocaleListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
-        $request = $event->getRequest();
-        $controller = $request->attributes->get('_controller');
-
-        if (!$request->hasPreviousSession() ||
-            (strpos($controller, 'Frontend') === false)) {
-            return;
-        }
-
-        if ($locale = $request->attributes->get('_locale')) {
-            $request->getSession()->set('_locale', $locale);
-        } else {
-            $defaultLocale = $this->container->get('govwiki_api.manager.environment')->getDefaultLocale();
-
-            $request->setLocale($request->getSession()->get('_locale', $defaultLocale));
-        }
+//        $request = $event->getRequest();
+//        $controller = $request->attributes->get('_controller');
+//
+//        if (!$request->hasPreviousSession() ||
+//            (strpos($controller, 'Frontend') === false)) {
+//            return;
+//        }
+//
+//        if ($locale = $request->attributes->get('_locale')) {
+//            $request->getSession()->set('_locale', $locale);
+//        } else {
+//            $defaultLocale = $this->container->get('govwiki_api.manager.environment')->getDefaultLocale();
+//
+//            $request->setLocale($request->getSession()->get('_locale', $defaultLocale));
+//        }
     }
 }

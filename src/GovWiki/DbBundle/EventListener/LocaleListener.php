@@ -6,15 +6,42 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * Class LocaleListener
+ * @package GovWiki\DbBundle\EventListener
+ */
 class LocaleListener implements EventSubscriberInterface
 {
+
+    /**
+     * @var string
+     */
     private $defaultLocale;
 
+    /**
+     * @param string $defaultLocale Application default locale.
+     */
     public function __construct($defaultLocale = 'en')
     {
         $this->defaultLocale = $defaultLocale;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            // must be registered before the default Locale listener
+            KernelEvents::REQUEST => [['onKernelRequest', 17]],
+        ];
+    }
+
+    /**
+     * @param GetResponseEvent $event A GetResponseEvent instance.
+     *
+     * @return void
+     */
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
@@ -29,13 +56,5 @@ class LocaleListener implements EventSubscriberInterface
             // if no explicit locale has been set on this request, use one from the session
             $request->setLocale($request->getSession()->get('_locale', $this->defaultLocale));
         }
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return array(
-            // must be registered before the default Locale listener
-            KernelEvents::REQUEST => array(array('onKernelRequest', 17)),
-        );
     }
 }
