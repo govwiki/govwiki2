@@ -5,11 +5,13 @@ require('./cartodb_util.js');
 require('../search_elected.js');
 require('../search_government.js');
 
+/* eslint-disable */
 var config = require('./config.js');
 var sublayer = require('./sublayer.js');
 var legend = require('./legend.js');
 var legendRange = require('./legend_range.js');
 var tooltip = require('./tooltip.js');
+/* eslint-enable */
 
 // Create the leaflet map
 config.map = L.map('map', {

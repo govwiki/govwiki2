@@ -6,8 +6,8 @@ var financialStatementGraphs = require('./graph/financial-statement');
  * Initialization
  */
 function init(callback) {
-  return function () {
-    handler_onTabSwitch();
+  return function cb() {
+    handlerOnTabSwitch();
     callback();
   };
 }
@@ -16,15 +16,13 @@ function init(callback) {
  * (Handler)
  * On tab switch
  */
-function handler_onTabSwitch() {
-
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-
+function handlerOnTabSwitch() {
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function shownTab(e) {
     var tabname = $(e.target).attr('data-tabname');
 
-        /**
-         * Init graphs
-         */
+    /**
+     * Init graphs
+     */
     switch (tabname) {
       case 'Quality of Services':
         break;
@@ -37,24 +35,21 @@ function handler_onTabSwitch() {
       case 'Financial Financial_Statements':
         financialStatementGraphs.initAll();
         break;
+      default:
     }
-
   });
-
 }
 
 function forceInit() {
   employeeCompensationGraphs.initAll();
   financialHealthGraphs.initAll();
   financialStatementGraphs.initAll();
-
 }
 
 function initGoogleViz(callback) {
-
   google.load('visualization', '1.0', {
-    'packages': ['treemap', 'corechart'],
-    'callback': init(callback)
+    packages: ['treemap', 'corechart'],
+    callback: init(callback)
   });
 }
 

@@ -6,13 +6,12 @@ var Handlebars = require('handlebars');
  * @param {Selector} container - May be .first-condition or .second-condition
  */
 function typeahead(container) {
-
+  var self = this;
   if (!container) {
     alert('Please pass container selector');
     return true;
   }
 
-  var self = this;
   self.governmentData = {};
   self.$typeahead = $(container + ' .typeahead_government');
   self.searchValue = '';
@@ -31,23 +30,23 @@ function typeahead(container) {
                 '<div class="sugg-name">{{name}}</div>' +
                 '</div>')
     },
-    updater: function (item) {
+    updater: function updater(item) {
       alert(item);
     }
   });
 
     // Pressed mouse or enter button
-  self.$typeahead.bind('typeahead:selected', function (obj, selectedGovernment) {
+  self.$typeahead.bind('typeahead:selected', function selected(obj, selectedGovernment) {
     self.$typeahead.typeahead('val', selectedGovernment.name);
   });
 
     // Move cursor via arrows keys
-  self.$typeahead.bind('typeahead:cursorchange', function (obj) {
+  self.$typeahead.bind('typeahead:cursorchange', function cursorchange() {
     self.$typeahead.typeahead('val', self.searchValue);
   });
 
     // Store search value on typing
-  self.$typeahead.keyup(function (event) {
+  self.$typeahead.keyup(function keyup(event) {
     self.searchValue = $(event.target).val();
   });
 
@@ -63,13 +62,12 @@ function typeahead(container) {
     $.ajax({
       method: 'GET',
       url: window.gw.urls.search + '?search=' + query
-    }).success(function (data) {
+    }).success(function success(data) {
       asyncCallback(data);
     });
   }
 
   return self;
-
 }
 
 module.exports = typeahead;

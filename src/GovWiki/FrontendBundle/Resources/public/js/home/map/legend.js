@@ -64,7 +64,7 @@ function replaceImgToSvg() {
     var imgURL = $img.attr('src');
     var fillColor = $img.attr('fillColor');
     var strokeColor = $img.attr('strokeColor');
-    $.get(imgURL, function (data) {
+    $.get(imgURL, function load(data) {
       // Get the SVG tag, ignore the rest
       var $svg = $(data).find('svg');
       var $rect = $svg.find('rect');

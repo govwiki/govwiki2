@@ -9,7 +9,8 @@
     "numeral": true,
     "google": true,
     "FB": true,
-    "Handlebars": true
+    "Handlebars": true,
+    "isMobileBrowser": true
   },
   "rules": {
     "no-alert": 0,

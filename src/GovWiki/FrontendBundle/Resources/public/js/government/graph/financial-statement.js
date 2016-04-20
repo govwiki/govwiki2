@@ -6,12 +6,12 @@ var rowSortFunction = require('./utils.js').rowSortFunction;
  * Initialization
  */
 function init() {
-  handler_switchChart();
-  financialStatements_revenue();
-  financialStatements_expenditures();
+  handlerSwitchChart();
+  revenuePie();
+  expendituresPie();
 }
 
-function renderTooltip(caption, totalfunds) {
+function renderTooltip(caption, totalfunds, totalAmount) {
   var percent = totalfunds * 100 / totalAmount;
   percent = percent.toFixed(2);
   return '' + caption + ': ' + numeral(totalfunds).format('$0,0') + ' (' + percent + '%)';
@@ -20,7 +20,7 @@ function renderTooltip(caption, totalfunds) {
 /**
  * #total-revenue-pie
  */
-function financialStatements_revenue() {
+function revenuePie() {
   var subCatValue;
   var subCategory;
   var rKey;
@@ -35,6 +35,7 @@ function financialStatements_revenue() {
   var visData;
   var revenues = data.financialStatements.Revenues;
   var totalAmount = 0;
+  var key;
 
   visData = new google.visualization.DataTable();
   visData.addColumn('string', 'Total Gov. Revenues');
@@ -55,11 +56,11 @@ function financialStatements_revenue() {
     }
   }
 
-  for (var key in revenues) {
+  for (key in revenues) {
     if (revenues.hasOwnProperty(key) && (revenues[key].caption !== 'Total Revenues')) {
       caption = revenues[key].translatedCaption;
-      totalfunds = parseInt(revenues[key].totalfunds);
-      tooltip = renderTooltip(caption, totalfunds);
+      totalfunds = parseInt(revenues[key].totalfunds, 10);
+      tooltip = renderTooltip(caption, totalfunds, totalAmount);
       r = [caption, totalfunds, tooltip];
       rows.push(r);
     }
@@ -125,7 +126,7 @@ function financialStatements_revenue() {
 /**
  * #total-expenditures-pie
  */
-function financialStatements_expenditures() {
+function expendituresPie() {
   var subCatValue;
   var subCategory;
   var tooltip;
@@ -138,15 +139,15 @@ function financialStatements_expenditures() {
   var rows;
   var visData;
   var rKey;
+  var key;
+  var expenditures = data.financialStatements.Expenditures;
+  var totalAmount = 0;
 
   visData = new google.visualization.DataTable();
   visData.addColumn('string', 'Total Gov. Expenditures');
   visData.addColumn('number', 'Total');
   visData.addColumn({ type: 'string', role: 'tooltip' });
   rows = [];
-
-  var expenditures = data.financialStatements.Expenditures;
-  var totalAmount = 0;
 
   // Prepare Revenues data to Google Tree Chart
   for (rKey in expenditures) {
@@ -157,14 +158,14 @@ function financialStatements_expenditures() {
         continue;
       }
 
-      totalAmount += parseInt(subCatValue);
+      totalAmount += parseInt(subCatValue, 10);
     }
   }
 
-  for (var key in expenditures) {
+  for (key in expenditures) {
     if (expenditures.hasOwnProperty(key) && (expenditures[key].caption !== 'Total Expenditures')) {
       caption = expenditures[key].translatedCaption;
-      totalfunds = parseInt(expenditures[key].totalfunds);
+      totalfunds = parseInt(expenditures[key].totalfunds, 10);
       tooltip = renderTooltip(caption, totalfunds);
       r = [caption, totalfunds, tooltip];
       rows.push(r);
@@ -234,7 +235,7 @@ function financialStatements_expenditures() {
  * TODO: Refactor
  * #total-revenue-tree
  */
-function financialStatementsTree_revenues() {
+function revenuesTree() {
   var chart;
   var RevenuesDataTable;
   var visData;
@@ -332,7 +333,7 @@ function financialStatementsTree_revenues() {
  * TODO: Refactor
  * #total-expenditures-tree
  */
-function financialStatementsTree_expenditures() {
+function expendituresTree() {
   var subCatValue;
   var subCategory;
   var chart;
@@ -426,7 +427,7 @@ function financialStatementsTree_expenditures() {
 /**
  * #Financial_Statements (.chart-controls .btn)
  */
-function handler_switchChart() {
+function handlerSwitchChart() {
   var mobile = isMobileBrowser() ? 'mobile-' : '';
   hideChartGroup('pie-charts', false);
   hideChartGroup('compare-charts', true);
@@ -441,10 +442,10 @@ function handler_switchChart() {
       hideChartGroup('pie-charts', false);
       hideChartGroup('compare-charts', true);
       hideChartGroup('tree-charts', true);
-      if (!chartStatus.financialStatements_revenues.init ||
-        !chartStatus.financialStatements_expenditures.init) {
-        financialStatements_revenue();
-        financialStatements_expenditures();
+      if (!chartStatus.revenuePie.init ||
+        !chartStatus.expendituresPie.init) {
+        revenuePie();
+        expendituresPie();
       }
     } else if (chartType === 'tree-charts') {
       hideTableGroup('financialTable', true);
@@ -452,10 +453,10 @@ function handler_switchChart() {
       hideChartGroup('pie-charts', true);
       hideChartGroup('compare-charts', true);
       hideChartGroup('tree-charts', false);
-      if (!chartStatus.financialStatementsTree_expenditures.init ||
-        !chartStatus.financialStatementsTree_revenues.init) {
-        financialStatementsTree_expenditures();
-        financialStatementsTree_revenues();
+      if (!chartStatus.expendituresTree.init ||
+        !chartStatus.revenuesTree.init) {
+        expendituresTree();
+        revenuesTree();
       }
     } else if (chartType === 'compare-charts') {
       hideTableGroup('financialTable', false);
@@ -463,10 +464,10 @@ function handler_switchChart() {
       hideChartGroup('pie-charts', true);
       hideChartGroup('compare-charts', false);
       hideChartGroup('tree-charts', true);
-      if (!chartStatus.financialStatementsTree_expenditures.init ||
-        !chartStatus.financialStatementsTree_revenues.init) {
-        financialStatementsTree_expenditures();
-        financialStatementsTree_revenues();
+      if (!chartStatus.expendituresTree.init ||
+        !chartStatus.revenuesTree.init) {
+        expendituresTree();
+        revenuesTree();
       }
     }
   });
@@ -540,5 +541,5 @@ function getSubCatValue(subCategory) {
 module.exports = {
   init: init,
   initAll: init,
-  handler_switchChart: handler_switchChart
+  handlerSwitchChart: handlerSwitchChart
 };

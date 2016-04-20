@@ -33,9 +33,11 @@ Step.prototype.unlock = function unlock() {
 Step.prototype.lock = function lock() {
   this.$select.toggleClass('disabled', true);
 };
+
 /**
- * @param data
+ * @param government
  * @param blockId
+ * @param comparedData
  */
 Step.prototype.drawDiagramm = function drawDiagramm(government, blockId, comparedData) {
   var chart;
@@ -49,11 +51,13 @@ Step.prototype.drawDiagramm = function drawDiagramm(government, blockId, compare
   rows = [];
   captions = government.data;
   captions.forEach(function loop(item) {
-    if (item.amount < 0) {
-      item.amount = -parseInt(item.amount, 10);
+    var _item = _.assign({}, item);
+    if (_item.amount < 0) {
+      _item.amount = -parseInt(_item.amount, 10);
     }
-    rows.push([item.translatedCaption, parseInt(item.amount, 10)]);
+    rows.push([_item.translatedCaption, parseInt(_item.amount, 10)]);
   });
+
   rows.sort(rowSortFunction);
   visData.addRows(rows);
   options = {
@@ -134,7 +138,7 @@ Step.prototype.drawTable = function drawTable(container, comparedData) {
  * TODO: Draft
  * If option selected, draw chart
  */
-Step.prototype.handler_onChangeSelect = function handler_onChangeSelect() {
+Step.prototype.handlerOnChangeSelect = function handlerOnChangeSelect() {
   var self = this;
   $(self.container).on('change', function change(e) {
     var $el = $(e.target);
@@ -210,7 +214,7 @@ Step.prototype.loadComparedData = function loadComparedData(tab, category, selec
  *
  * Check third input, if previous form items filled correct - load governments categories
  */
-Step.prototype.handler_onClickSelect = function handler_onClickSelect() {
+Step.prototype.handlerOnClickSelect = function handlerOnClickSelect() {
   var self = this;
   self.$select.on('mousedown', function mousedown(e) {
     var $el = $(e.target);

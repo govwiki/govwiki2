@@ -4,14 +4,14 @@ var data = require('./glob.js').data;
  * Initialization
  */
 function init() {
-  employeeCompensation_one();
-  employeeCompensation_two();
+  employeeCompensationFirstChart();
+  employeeCompensationSecondChart();
 }
 
 /**
  * median-comp-graph
  */
-function employeeCompensation_one() {
+function employeeCompensationFirstChart() {
   var chart;
   var formatter;
   var options;
@@ -109,7 +109,7 @@ function employeeCompensation_one() {
 
 
   function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function (txt) {
+    return str.replace(/\w\S*/g, function replace(txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   }
@@ -118,7 +118,7 @@ function employeeCompensation_one() {
 /**
  * median-pension-graph
  */
-function employeeCompensation_two() {
+function employeeCompensationSecondChart() {
   var chart;
   var formatter;
   var options;

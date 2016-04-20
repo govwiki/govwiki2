@@ -97,7 +97,6 @@ Step.prototype.loadMatchedCategories = function loadMatchedCategories() {
     contentType: 'application/json',
     data: captionsJson,
     success: function success(data) {
-      var expenditures;
       var availableTabs;
       self.loading(false);
       if (!data || data.length === 0) {
@@ -106,19 +105,17 @@ Step.prototype.loadMatchedCategories = function loadMatchedCategories() {
         return true;
       }
       self.$select.toggleClass('disabled', false);
-      /**
-       * Create expenditures group
-       */
-      expenditures = data.filter(function loop(item) {
-        return item.category === 'Expenditures';
-      });
       availableTabs = [];
+
       data.forEach(function loop(item) {
-        availableTabs.indexOf(item.translatedTab) != -1 ? false : availableTabs.push({
-          translated: item.translatedTab,
-          normal: item.tab
-        });
+        if (availableTabs.indexOf(item.translatedTab) === -1) {
+          availableTabs.push({
+            translated: item.translatedTab,
+            normal: item.tab
+          });
+        }
       });
+
       availableTabs.forEach(function loop(tab) {
         self.$select.append('<optgroup data-name="' + tab.normal + '" label="' + tab.translated + '"></optgroup>');
       });
@@ -184,7 +181,7 @@ Step.prototype.drawDiagramm = function drawDiagramm(government, blockId, caption
  * TODO: Draft
  * If option selected, draw chart
  */
-Step.prototype.handler_onChangeSelect = function handler_onChangeSelect() {
+Step.prototype.handlerOnChangeSelect = function handlerOnChangeSelect() {
   var self = this;
   var data;
   $(self.container).on('change', function change(e) {
@@ -234,7 +231,7 @@ Step.prototype.handler_onChangeSelect = function handler_onChangeSelect() {
  *
  * Check third input, if previous form items filled correct - load governments categories
  */
-Step.prototype.handler_onClickSelect = function handler_onClickSelect() {
+Step.prototype.handlerOnClickSelect = function handlerOnClickSelect() {
   var self = this;
   self.$select.on('mousedown', function mousedown(e) {
     var $el = $(e.target);

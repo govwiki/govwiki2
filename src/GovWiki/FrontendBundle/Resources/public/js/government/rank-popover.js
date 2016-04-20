@@ -7,18 +7,18 @@ var Handlebars = require('../vendor/handlebars.runtime.js');
  * @constructor
  */
 var RankPopover = function RankPopover(options) {
-  options = options || {};
+  var opt = options || {};
 
   this.$popover = null;
   this.$rankTable = null;
   this.$preloader = null;
   this.$rankTable = null;
 
-  this.selector = options.selector || '.rank';
+  this.selector = opt.selector || '.rank';
   this.loading = false;
   this.rankFieldName = null;
   this.order = { altType: '', rank: '' };
-  this.year = options.year;
+  this.year = opt.year;
 
   this.init();
 };
@@ -52,7 +52,6 @@ RankPopover.prototype.init = function init() {
 
   $statistics.on('click', function click(e) {
     var $popoverContent = self.$popoverContent;
-    var $preloader = self.$preloader;
     var rankFieldName = self.rankFieldName;
     var $element = $(e.target);
     var $popover = $element.hasClass('rank') ? $element : $element.closest('.rank');
@@ -90,7 +89,7 @@ RankPopover.prototype.init = function init() {
           year: self.year
         },
         success: function success(data) {
-          if (data.data.length != 0) {
+          if (data.data.length !== 0) {
             self.formatData.call(self, data);
             // Render rankTable template
             $popoverContent.html(Handlebars.templates.rankTable(data));
@@ -110,6 +109,7 @@ RankPopover.prototype.init = function init() {
         }
       });
     }
+    return false;
   });
 };
 
@@ -117,12 +117,10 @@ RankPopover.prototype.init = function init() {
  * Add scroll handler on popoverContent
  */
 RankPopover.prototype.scrollHandler = function scrollHandler() {
-
   var self = this;
 
   var $rankTable = self.$rankTable;
   var $popoverContent = self.$popoverContent;
-  var $preloader = self.$preloader;
 
   var rankFieldName = self.rankFieldName;
   var order = self.order;
@@ -150,9 +148,9 @@ RankPopover.prototype.scrollHandler = function scrollHandler() {
             field_name: rankFieldName,
             year: self.year
           },
-          success: function (data) {
+          success: function success(data) {
             var h3;
-            if (data.data.length != 0) {
+            if (data.data.length !== 0) {
               self.formatData(data);
               self.loading = false;
               self.$preloader.hide();
@@ -171,14 +169,12 @@ RankPopover.prototype.scrollHandler = function scrollHandler() {
       }
     }
   });
-
 };
 
 /**
  * Add sort handler for rankTable header (th)
  */
 RankPopover.prototype.sortHandler = function sortHandler() {
-
   var self = this;
   var $popoverContent = self.$popoverContent;
   var order = self.order;
@@ -197,26 +193,23 @@ RankPopover.prototype.sortHandler = function sortHandler() {
     $column = $(this).hasClass('sortable') ? $(this) : $(this).closest('th');
     $sortIcon = $column.find('i');
 
+    /* eslint-disable */
     if ($column.hasClass('desc')) {
       $column.attr('data-sort-type') === 'name_order' ? order.altType = '' : order.rank = '';
       $column.removeClass('desc').removeClass('asc');
       $sortIcon.removeClass('icon__bottom').removeClass('icon__top');
-
     } else if ($column.hasClass('asc')) {
       $column.attr('data-sort-type') === 'name_order' ? order.altType = 'desc' : order.rank = 'desc';
       $column.removeClass('asc').addClass('desc');
       $sortIcon.removeClass('icon__top').addClass('icon__bottom');
-
     } else {
       $column.attr('data-sort-type') === 'name_order' ? order.altType = 'asc' : order.rank = 'asc';
       $column.addClass('asc');
       $sortIcon.addClass('icon__top');
     }
-
+    /* eslint-enable */
     self.loadNewRows.call(self, order);
-
   });
-
 };
 
 /**
@@ -230,7 +223,7 @@ RankPopover.prototype.loadNewRows = function loadNewRows(order) {
 
   var $rankTable = self.$rankTable || self.$popoverContent.find('table tbody');
 
-  order = order || this.order;
+  var _order = order || this.order;
 
   $rankTable.html('');
 
@@ -243,8 +236,8 @@ RankPopover.prototype.loadNewRows = function loadNewRows(order) {
     dataType: 'json',
     data: {
       page: self.currentPage,
-      order: order.rank,
-      name_order: order.altType,
+      order: _order.rank,
+      name_order: _order.altType,
       field_name: self.rankFieldName,
       year: self.year
     },
@@ -261,7 +254,6 @@ RankPopover.prototype.loadNewRows = function loadNewRows(order) {
       }
     }
   });
-
 };
 
 /**
@@ -271,15 +263,19 @@ RankPopover.prototype.loadNewRows = function loadNewRows(order) {
  * @returns {void|*}
  */
 RankPopover.prototype.formatData = function formatData(data) {
+  var dataFormatted;
   var self = this;
 
   var $popover = self.$popover;
   var mask = $popover.attr('data-mask');
 
   if (mask) {
-    return data.data.forEach(function loop(rank) {
-      return rank.amount = numeral(rank.amount).format(mask);
+    dataFormatted = data.data.map(function loop(rank) {
+      var _rank = _.assign({}, rank);
+      _rank.amount = numeral(_rank.amount).format(mask);
+      return _rank;
     });
+    return dataFormatted;
   }
   return true;
 };

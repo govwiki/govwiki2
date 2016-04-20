@@ -68,7 +68,7 @@ function init(showOnTop) {
     '</ul></div></div>');
   $('#menu').after($legend);
 
-  handler_toggleConditions($legend);
+  handlerToggleConditions($legend);
   return true;
 }
 
@@ -76,7 +76,7 @@ function init(showOnTop) {
  * Click on range legend item, to disable layers
  * @param $container
  */
-function handler_toggleConditions($container) {
+function handlerToggleConditions($container) {
   // Each clicked element contain conditionData in attribute 'data-condition'
   // It simple stringifyed object, for example: JSON.stringify(window.gw.map.county.conditions[0])
   // <li data-condition='{"type":"simple","color":"#80ff00","value":"1","operation":"<="}'>

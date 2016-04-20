@@ -134,7 +134,7 @@ Step.prototype.createYearOptions = function createYearOptions(government) {
  *
  * On change select
  */
-Step.prototype.handler_onChangeSelect = function handler_onChangeSelect() {
+Step.prototype.handlerOnChangeSelect = function handlerOnChangeSelect() {
   var self = this;
   self.$select.on('change', function change(e) {
     var $el = $(e.target);
@@ -153,7 +153,7 @@ Step.prototype.handler_onChangeSelect = function handler_onChangeSelect() {
 /**
  * Show error message if government not selected
  */
-Step.prototype.handler_onMouseDownSelect = function handler_onMouseDownSelect() {
+Step.prototype.handlerOnMouseDownSelect = function handlerOnMouseDownSelect() {
   var self = this;
   self.$select.on('mousedown', function mousedown(e) {
     var $el = $(e.target);

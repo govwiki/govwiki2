@@ -4,15 +4,15 @@ var data = require('./glob.js').data;
  * Initialization
  */
 function init() {
-  financialHealth_one();
-  financialHealth_two();
-  financialHealth_three();
+  financialHealthFirstChart();
+  financialHealthSecondChart();
+  financialHealthThirdChart();
 }
 
 /**
  * public-safety-pie
  */
-function financialHealth_one() {
+function financialHealthFirstChart() {
   var chart;
   var options;
   var visData;
@@ -97,7 +97,7 @@ function financialHealth_one() {
 /**
  * fin-health-revenue-graph
  */
-function financialHealth_two() {
+function financialHealthSecondChart() {
   var chart;
   var options;
   var visData;
@@ -161,7 +161,7 @@ function financialHealth_two() {
 /**
  * fin-health-expenditures-graph
  */
-function financialHealth_three() {
+function financialHealthThirdChart() {
   var chart;
   var options;
   var visData;

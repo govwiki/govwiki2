@@ -8,10 +8,10 @@ var tableType = window.sessionStorage.getItem('tableType');
  */
 var $pane = $('.tab-pane');
 
-handler_sortAndPagination('.pagination a');
-handler_sortAndPagination('.sortable a');
+handlerSortAndPagination('.pagination a');
+handlerSortAndPagination('.sortable a');
 
-function handler_sortAndPagination(selector) {
+function handlerSortAndPagination(selector) {
   $pane.on('click', selector, function click(e) {
     var $this = $(this);
     var $closestPane = $this.closest('.tab-pane');

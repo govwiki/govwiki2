@@ -1,6 +1,5 @@
 var config = require('./config.js');
 var Tooltip = require('./tooltip.js');
-var Legend = require('./legend');
 var Style = require('./style.js');
 /**
  * ============================

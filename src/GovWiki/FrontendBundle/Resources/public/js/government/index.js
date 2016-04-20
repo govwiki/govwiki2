@@ -7,6 +7,7 @@ var step2;
 var step3;
 var step31;
 
+var FormState;
 var Step31;
 var Step3;
 var Step2;
@@ -14,7 +15,7 @@ var Step1;
 var government = JSON.parse(window.gw.government);
 
 var graphs = require('./graphs.js');
-var popover = new (require('./rank-popover.js'))({
+var popover = new (require('./rank-popover.js'))({  // eslint-disable-line
   year: JSON.parse(window.gw.government).currentYear
 });
 
@@ -34,7 +35,7 @@ graphs.init(function init() {
  * @typedef FormState
  * @type {{firstStep: boolean, secondStep: boolean, thirdStep: boolean}}
  */
-var FormState = {
+FormState = {
   firstStep: {
     completed: true,
     data: {},
@@ -53,7 +54,7 @@ var FormState = {
         step3.unlock();
       }
     },
-    incomplete: function () {
+    incomplete: function incomplete() {
       this.completed = false;
 
       step2.lock();
