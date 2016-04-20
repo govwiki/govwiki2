@@ -2,18 +2,19 @@
 
 namespace GovWiki\MobileBundle\Controller;
 
-use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Form\ElectedOfficialCommentType;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
+use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\SerializationContext;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * MainController
+ * Class ElectedController
+ * @package GovWiki\MobileBundle\Controller
  */
-class ElectedController extends Controller
+class ElectedController extends AbstractGovWikiController
 {
 
     const ROWS_PER_PAGE = 15;
@@ -32,10 +33,24 @@ class ElectedController extends Controller
      */
     public function showAction($altTypeSlug, $slug, $electedSlug, Request $request)
     {
+        $user = $this->getUser();
+
+        if ($user instanceof User) {
+            $user = $user->getId();
+        } else {
+            $user = null;
+        }
+
         $this->clearTranslationsCache();
 
-        $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-            ->getElectedOfficial($altTypeSlug, $slug, $electedSlug);
+        $data = $this->getElectedOfficialManager()
+            ->getElectedOfficial(
+                $this->getCurrentEnvironment(),
+                $altTypeSlug,
+                $slug,
+                $electedSlug,
+                $user
+            );
 
         if (null === $data) {
             return [];
@@ -76,10 +91,10 @@ class ElectedController extends Controller
         $electedOfficialJSON = $this->get('jms_serializer')
             ->serialize($data['electedOfficial'], 'json', $context);
 
-        $electedOfficialCommentForm = $this->createForm(new ElectedOfficialCommentType(), array(
+        $electedOfficialCommentForm = $this->createForm(new ElectedOfficialCommentType(), [
             'current_text' => $data['electedOfficial']['electedOfficialComments'],
             'electedOfficialId' => $data['electedOfficial']['id']
-        ));
+        ]);
 
         $data = array_merge($data, [
             'altTypeSlug' => $altTypeSlug,
@@ -100,7 +115,7 @@ class ElectedController extends Controller
     {
         $cacheDir = __DIR__ . "/../../../../app/cache";
         $finder = new \Symfony\Component\Finder\Finder();
-        $finder->in(array($cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"))->files();
+        $finder->in([$cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"])->files();
         foreach($finder as $file){
             unlink($file->getRealpath());
         }

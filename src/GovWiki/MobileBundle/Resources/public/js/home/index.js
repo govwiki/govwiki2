@@ -63,7 +63,7 @@ $(function(){
     var color, layersData, defaultConditions;
 
     // TODO: Hardcoded
-    window.gw.map.county = window.gw.map.colorizedCountyConditions;
+    window.gw.map.county = window.gw.map.coloringConditions;
 
     // For restore map to init state
     if (window.gw.map.county.conditions) {

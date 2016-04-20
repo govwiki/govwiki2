@@ -6,12 +6,3 @@ services:
     govwiki.mobile_bundle.environment_content:
         class: GovWiki\MobileBundle\Service\EnvironmentContent
         arguments: ["@doctrine", "@templating"]
-
-    govwiki.mobile_bundle.listener.defaul_locale:
-        class: GovWiki\MobileBundle\EventListener\DefaultLocaleListener
-        arguments: [@service_container]
-        tags:
-            -
-                name: kernel.event_listener
-                event: kernel.request
-                priority: 15

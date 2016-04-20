@@ -8,19 +8,18 @@ use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\DbBundle\Entity\Message;
 use GovWiki\DbBundle\Form\MessageType;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Doctrine\ORM\EntityManager;
 
 /**
  * MainController
  */
-class GovernmentController extends Controller
+class GovernmentController extends AbstractGovWikiController
 {
 
     /**
@@ -79,14 +78,16 @@ class GovernmentController extends Controller
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
         $this->clearTranslationsCache();
-        $manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
+        $manager = $this->getGovernmentManager();
         $user = $this->getUser();
+        $environment = $this->getCurrentEnvironment();
 
-        $years = $manager->getAvailableYears();
+        $years = $manager->getAvailableYears($environment);
         $currentYear = $request->query->getInt('year', $years[0]);
 
         $data = $manager
             ->getGovernment(
+                $environment,
                 $altTypeSlug,
                 $slug,
                 $currentYear
@@ -144,7 +145,8 @@ class GovernmentController extends Controller
                         return 0;
                     }
 
-                    return ($a < $b) ? 1: -1; }
+                    return ($a < $b) ? 1: -1;
+                }
 
                 return 0;
             });
@@ -160,6 +162,7 @@ class GovernmentController extends Controller
         }
 
         $data['years'] = $years;
+        $data['currentYear'] = $currentYear;
         $data['government']['translations'] = [
             'total_revenue' => $translator->trans('general.findata.main.total_revenue'),
             'total_expenditure' => $translator->trans('general.findata.main.total_expenditure'),

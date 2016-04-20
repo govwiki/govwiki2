@@ -4,7 +4,6 @@ namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\DbBundle\Form\ElectedOfficialCommentType;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
-use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -12,7 +11,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * MainController
+ * Class ElectedController
+ * @package GovWiki\FrontendBundle\Controller
  */
 class ElectedController extends AbstractGovWikiController
 {
