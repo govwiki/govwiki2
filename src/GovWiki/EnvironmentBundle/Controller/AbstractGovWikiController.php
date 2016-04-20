@@ -23,10 +23,34 @@ abstract class AbstractGovWikiController extends Controller
     }
 
     /**
-     * @return \GovWiki\EnvironmentBundle\Manager\Environment\EnvironmentManager
+     * @return \GovWiki\EnvironmentBundle\Manager\ElectedOfficial\ElectedOfficialManager
      */
-    protected function getEnvironmentManager()
+    protected function getElectedOfficialManager()
     {
-        return $this->get(GovWikiEnvironmentService::MANAGER);
+        return $this->get(GovWikiEnvironmentService::ELECTED_OFFICIAL_MANAGER);
+    }
+
+    /**
+     * @return \GovWiki\EnvironmentBundle\Manager\Government\GovernmentManager
+     */
+    protected function getGovernmentManager()
+    {
+        return $this->get(GovWikiEnvironmentService::GOVERNMENT_MANAGER);
+    }
+
+    /**
+     * @return \GovWiki\EnvironmentBundle\Manager\Format\FormatManager
+     */
+    protected function getFormatManager()
+    {
+        return $this->get(GovWikiEnvironmentService::FORMAT_MANAGER);
+    }
+
+    /**
+     * @return \GovWiki\EnvironmentBundle\Manager\MaxRank\MaxRankManager
+     */
+    protected function getMaxRankManager()
+    {
+        return $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER);
     }
 }

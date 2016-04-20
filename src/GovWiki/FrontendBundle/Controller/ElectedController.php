@@ -2,12 +2,11 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
-use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Form\ElectedOfficialCommentType;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\SerializationContext;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * MainController
  */
-class ElectedController extends Controller
+class ElectedController extends AbstractGovWikiController
 {
 
     const ROWS_PER_PAGE = 15;
@@ -45,8 +44,14 @@ class ElectedController extends Controller
 
         $this->clearTranslationsCache();
 
-        $data = $this->get(GovWikiEnvironmentService::MANAGER)
-            ->getElectedOfficial($altTypeSlug, $slug, $electedSlug, $user);
+        $data = $this->getElectedOfficialManager()
+            ->getElectedOfficial(
+                $this->getCurrentEnvironment(),
+                $altTypeSlug,
+                $slug,
+                $electedSlug,
+                $user
+            );
 
         if (null === $data) {
             return [];
@@ -89,14 +94,14 @@ class ElectedController extends Controller
 
         $electedOfficialCommentForm = $this->createForm(new ElectedOfficialCommentType(), [
             'current_text' => $data['electedOfficial']['electedOfficialComments'],
-            'electedOfficialId' => $data['electedOfficial']['id']
+            'electedOfficialId' => $data['electedOfficial']['id'],
         ]);
 
         $data = array_merge($data, [
             'altTypeSlug' => $altTypeSlug,
             'slug' => $slug,
             'electedOfficialJSON' => $electedOfficialJSON,
-            'electedOfficialCommentForm' => $electedOfficialCommentForm->createView()
+            'electedOfficialCommentForm' => $electedOfficialCommentForm->createView(),
         ]);
 
         $template = $request->query->get('template', 'index');

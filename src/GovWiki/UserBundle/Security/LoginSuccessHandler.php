@@ -3,7 +3,6 @@
 namespace GovWiki\UserBundle\Security;
 
 use Doctrine\ORM\EntityManagerInterface;
-use GovWiki\ApiBundle\Manager\EnvironmentManagerAwareInterface;
 use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

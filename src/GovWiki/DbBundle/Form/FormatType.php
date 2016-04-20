@@ -2,10 +2,8 @@
 
 namespace GovWiki\DbBundle\Form;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
-use GovWiki\ApiBundle\Manager\EnvironmentManager;
 use GovWiki\DbBundle\Entity\Format;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -72,7 +70,7 @@ class FormatType extends AbstractType
                             'Environment.slug',
                             $expr->literal($this->manger->getSlug())
                         ));
-                }
+                },
             ])
             ->add('field')
             ->add('name')

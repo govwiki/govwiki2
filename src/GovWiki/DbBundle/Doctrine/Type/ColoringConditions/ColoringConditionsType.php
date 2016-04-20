@@ -1,21 +1,22 @@
 <?php
 
-namespace GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition;
+namespace GovWiki\DbBundle\Doctrine\Type\ColoringConditions;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
 /**
- * Class ColorizedCountyConditionsType
+ * Class ColoringConditionsType
+ * @package GovWiki\DbBundle\Doctrine\Type\ColoringConditions
  */
-class ColorizedCountyConditionsType extends Type
+class ColoringConditionsType extends Type
 {
     /**
      * {@inheritdoc
      */
     public function getName()
     {
-        return 'ColorizedCountyConditions';
+        return 'ColoringConditions';
     }
 
     /**
@@ -23,7 +24,7 @@ class ColorizedCountyConditionsType extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
@@ -31,7 +32,7 @@ class ColorizedCountyConditionsType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if ($value instanceof ColorizedCountyConditions) {
+        if ($value instanceof ColoringConditions) {
             return $value->serialize();
         }
 
@@ -44,12 +45,10 @@ class ColorizedCountyConditionsType extends Type
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         try {
-            return ColorizedCountyConditions::unserialize($value);
+            return ColoringConditions::unserialize($value);
         } catch (\InvalidArgumentException $e) {
-            /*
-             * Some error while unserialize Colorized conditions.
-             */
-            return new ColorizedCountyConditions();
+            // Some error while unserialize Colorized conditions.
+            return new ColoringConditions();
         }
     }
 }

@@ -79,15 +79,16 @@ class GovernmentController extends AbstractGovWikiController
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
         $this->clearTranslationsCache();
-        $manager = $this->get(GovWikiEnvironmentService::MANAGER);
+        $manager = $this->getGovernmentManager();
         $user = $this->getUser();
         $environment = $this->getCurrentEnvironment();
 
-        $years = $manager->getAvailableYears();
+        $years = $manager->getAvailableYears($environment);
         $currentYear = $request->query->getInt('year', $years[0]);
 
         $data = $manager
             ->getGovernment(
+                $environment,
                 $altTypeSlug,
                 $slug,
                 $currentYear

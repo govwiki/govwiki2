@@ -1,10 +1,10 @@
 <?php
 
-namespace GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition;
+namespace GovWiki\DbBundle\Doctrine\Type\ColoringConditions;
 
 /**
  * Class PeriodCondition
- * @package GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition
+ * @package GovWiki\DbBundle\Doctrine\Type\ColoringConditions
  */
 class PeriodCondition extends AbstractCondition
 {

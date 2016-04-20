@@ -37,9 +37,11 @@ class GovernmentController extends AbstractGovWikiApiController
             );
         }
 
-        $governments = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Government')
-            ->search($this->getCurrentEnvironment()->getId(), $search);
+        $governments = $this->getGovernmentManager()
+            ->searchGovernment(
+                $this->getCurrentEnvironment(),
+                $search
+            );
 
         return new JsonResponse($governments);
     }
@@ -65,6 +67,8 @@ class GovernmentController extends AbstractGovWikiApiController
      */
     public function getRanksAction(Request $request, $altTypeSlug, $slug)
     {
+        $environment = $this->getCurrentEnvironment();
+
         $fieldName = $request->query->get('field_name', null);
         if ((null === $fieldName) || ('' === $fieldName)) {
             return new JsonResponse(
@@ -76,7 +80,7 @@ class GovernmentController extends AbstractGovWikiApiController
         /*
          * Check field name.
          */
-        $fields = $this->getEnvironmentManager()->getRankedFields();
+        $fields = $this->getFormatManager()->getRankedFields($environment);
         $found = false;
         $tmp = preg_replace('|_rank$|', '', $fieldName);
         foreach ($fields as $field) {
@@ -91,7 +95,8 @@ class GovernmentController extends AbstractGovWikiApiController
             ], 400);
         }
 
-        $data = $this->getEnvironmentManager()->getGovernmentRank(
+        $data = $this->getGovernmentManager()->getGovernmentRank(
+            $environment,
             $altTypeSlug,
             $slug,
             [
@@ -131,8 +136,10 @@ class GovernmentController extends AbstractGovWikiApiController
         $paginator = $this->get('knp_paginator');
         $year = $request->query->get(
             'year',
-            $this->get(GovWikiEnvironmentService::MANAGER)
-                ->getAvailableYears()[0]
+            $this->getGovernmentManager()
+                ->getAvailableYears(
+                    $this->getCurrentEnvironment()
+                )[0]
         );
 
         $salaries = $this->getDoctrine()
@@ -161,8 +168,10 @@ class GovernmentController extends AbstractGovWikiApiController
         $paginator = $this->get('knp_paginator');
         $year = $request->query->get(
             'year',
-            $this->get(GovWikiEnvironmentService::MANAGER)
-                ->getAvailableYears()[0]
+            $this->getGovernmentManager()
+                ->getAvailableYears(
+                    $this->getCurrentEnvironment()
+                )[0]
         );
 
         $pensions = $this->getDoctrine()

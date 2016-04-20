@@ -28,10 +28,10 @@ services:
         tags:
             - { name: form.type, alias: conditions }
 
-    govwiki_db.form.type.colorized_county_condition:
-        class: GovWiki\DbBundle\Form\Type\ColorizedCountyConditionType
+    govwiki_db.form.type.coloring_condition:
+        class: GovWiki\DbBundle\Form\Type\ColoringConditionsType
         tags:
-            - { name: form.type, alias: colorized_county_condition }
+            - { name: form.type, alias: coloring_condition }
 
     govwiki_db.form.government:
         class: GovWiki\DbBundle\Form\GovernmentType

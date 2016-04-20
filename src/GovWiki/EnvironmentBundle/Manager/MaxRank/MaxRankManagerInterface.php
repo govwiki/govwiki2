@@ -1,12 +1,12 @@
 <?php
 
-namespace GovWiki\EnvironmentBundle\Manager\Data\MaxRank;
+namespace GovWiki\EnvironmentBundle\Manager\MaxRank;
 
 use GovWiki\DbBundle\Entity\Environment;
 
 /**
  * Interface MaxRankManagerInterface
- * @package GovWiki\EnvironmentBundle\Manager\Data\MaxRank
+ * @package GovWiki\EnvironmentBundle\Manager\MaxRank
  */
 interface MaxRankManagerInterface
 {

@@ -31,31 +31,6 @@ class GovernmentTableManager
      *
      * @throws \Doctrine\DBAL\DBALException Can't execute query.
      */
-    public function createGovernmentTable($name)
-    {
-        $con = $this->em->getConnection();
-
-        $con->exec("DROP TABLE IF EXISTS `{$name}`");
-        $con->exec("
-            CREATE TABLE `{$name}` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `government_id` int(11) DEFAULT NULL,
-                `year` int(4) DEFAULT NULL,
-                CONSTRAINT `fk_{$name}_government` FOREIGN KEY (`government_id`) REFERENCES `governments` (`id`),
-                PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-        ");
-
-        return $this;
-    }
-
-    /**
-     * @param string $name Government table name.
-     *
-     * @return GovernmentTableManager
-     *
-     * @throws \Doctrine\DBAL\DBALException Can't execute query.
-     */
     public function deleteGovernmentTable($name)
     {
         $name = strtolower($name);

@@ -48,8 +48,12 @@ class ComparisonController extends AbstractGovWikiApiController
             );
         }
 
-        return new JsonResponse($this->getEnvironmentManager()
-            ->searchGovernmentForComparison($search));
+        return new JsonResponse($this->getGovernmentManager()
+            ->searchGovernmentForComparison(
+                $this->getCurrentEnvironment(),
+                $search
+            )
+        );
     }
 
     /**
@@ -93,8 +97,11 @@ class ComparisonController extends AbstractGovWikiApiController
         }
 
         $data = json_decode($request->getContent(), true);
-        $captions = $this->get(GovWikiEnvironmentService::MANAGER)
-            ->getCategoriesForComparisonByGovernment($data['captions']);
+        $captions = $this->getGovernmentManager()
+            ->getCategoriesForComparisonByGovernment(
+                $this->getCurrentEnvironment(),
+                $data['captions']
+            );
 
         $translator = $this->get('translator');
 
@@ -189,8 +196,11 @@ class ComparisonController extends AbstractGovWikiApiController
         }
 
         $data = json_decode($request->getContent(), true);
-        $result = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-            ->getComparedGovernments($data);
+        $result = $this->getGovernmentManager()
+            ->getComparedGovernments(
+                $this->getCurrentEnvironment(),
+                $data
+            );
 
         /*
          * Translate data.

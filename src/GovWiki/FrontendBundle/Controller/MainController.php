@@ -2,19 +2,16 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
-use GovWiki\ApiBundle\GovWikiApiServices;
-use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * MainController
  */
-class MainController extends Controller
+class MainController extends AbstractGovWikiController
 {
 
     /**
@@ -50,17 +47,18 @@ class MainController extends Controller
         $this->clearTranslationsCache();
         $translator = $this->get('translator');
 
-        $environmentManager = $this->get(GovWikiEnvironmentService::MANAGER);
-        $map = $environmentManager->getEnvironment()->getMap();
-        $coloringConditions = $map->getColorizedCountyConditions();
-        $fieldMask = $environmentManager
-            ->getFieldFormat($coloringConditions->getFieldName());
+        $environment = $this->getCurrentEnvironment();
+
+        $map = $environment->getMap();
+        $coloringConditions = $map->getColoringConditions();
+        $fieldMask = $this->getFormatManager()
+            ->getFieldFormat($environment, $coloringConditions->getFieldName());
         $localizedName = $translator
             ->trans('format.'. $coloringConditions->getFieldName());
 
         $map = $map->toArray();
-        $map['colorizedCountyConditions']['field_mask'] = $fieldMask;
-        $map['colorizedCountyConditions']['localized_name'] = $localizedName;
+        $map['coloringConditions']['field_mask'] = $fieldMask;
+        $map['coloringConditions']['localized_name'] = $localizedName;
         $map['username'] = $this->getParameter('carto_db.account');
 
         /** @var MessageCatalogue $catalogue */
@@ -72,13 +70,13 @@ class MainController extends Controller
             $greetingText = $translator->trans($transKey);
         }
 
-        $years = $environmentManager->getAvailableYears();
+        $years = $this->getGovernmentManager()->getAvailableYears($environment);
 
         return [
             'map' => json_encode($map),
             'greetingText' => $greetingText,
             'years' => $years,
-            'currentYear' => $years[0],
+            'currentYear' => (count($years) > 0) ? $years[0] : 0,
         ];
     }
 

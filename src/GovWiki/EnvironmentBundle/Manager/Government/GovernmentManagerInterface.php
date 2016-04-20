@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\EnvironmentBundle\Manager\Data\Government;
+namespace GovWiki\EnvironmentBundle\Manager\Government;
 
 use GovWiki\DbBundle\Entity\Environment;
 
@@ -12,6 +12,15 @@ interface GovernmentManagerInterface
 {
 
     /**
+     * Return available years for current environment.
+     *
+     * @param Environment $environment A Environment entity instance.
+     *
+     * @return integer[]
+     */
+    public function getAvailableYears(Environment $environment);
+
+    /**
      * @param Environment $environment       A Environment entity instance.
      * @param array       $columnDefinitions Column definitions
      *                                       {@see EnvironmentManagerInterface::format2columnDefinition}.
@@ -20,7 +29,7 @@ interface GovernmentManagerInterface
      *
      * @throws \Doctrine\DBAL\DBALException SQL error while creating.
      */
-    public function createTable(Environment $environment, array $columnDefinitions);
+    public function createTable(Environment $environment, array $columnDefinitions = []);
 
     /**
      * @param Environment $environment A Environment entity instance.
@@ -30,18 +39,6 @@ interface GovernmentManagerInterface
      * @throws \Doctrine\DBAL\DBALException SQL error while removing.
      */
     public function removeTable(Environment $environment);
-
-    /**
-     * Get environment related data for government.
-     *
-     * @param Environment $environment A Environment entity instance.
-     * @param integer     $government  Government entity id.
-     * @param integer     $year        Year of fetching data.
-     * @param array       $fields      Array of fetching fields.
-     *
-     * @return mixed
-     */
-    public function get(Environment $environment, $government, $year, array $fields);
 
     /**
      * @param Environment $environment    A Environment entity id.
@@ -72,9 +69,31 @@ interface GovernmentManagerInterface
      *
      * @return array
      */
+    public function searchGovernment(Environment $environment, $partOfName);
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $partOfName  Part of government name.
+     *
+     * @return array
+     */
     public function searchGovernmentForComparison(
         Environment $environment,
         $partOfName
+    );
+
+    /**
+     * Get revenues and expenditures by government.
+     *
+     * @param Environment $environment A Environment entity instance.
+     * @param array       $governments Array of object, each contains id and
+     *                                 year.
+     *
+     * @return array
+     */
+    public function getCategoriesForComparisonByGovernment(
+        Environment $environment,
+        array $governments
     );
 
     /**
@@ -90,4 +109,19 @@ interface GovernmentManagerInterface
      * @throws \Doctrine\ORM\Query\QueryException Query result is not unique.
      */
     public function getComparedGovernments(Environment $environment, array $data);
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $altTypeSlug Slugged government alt type.
+     * @param string      $slug        Slugged government name.
+     * @param integer     $year        For fetching fin data.
+     *
+     * @return array
+     */
+    public function getGovernment(
+        Environment $environment,
+        $altTypeSlug,
+        $slug,
+        $year = null
+    );
 }

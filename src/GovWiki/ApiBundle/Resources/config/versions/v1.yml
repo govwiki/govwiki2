@@ -1,40 +1,27 @@
 government:
     resource: "@GovWikiApiBundle/Controller/V1/GovernmentController.php"
-    type:     govwiki
+    type:     annotation
 
 elected-official:
     resource: "@GovWikiApiBundle/Controller/V1/ElectedOfficialController.php"
-    type:     govwiki
+    type:     annotation
     prefix:   elected-official
 
 create-request:
     resource: "@GovWikiApiBundle/Controller/V1/CreateRequestController.php"
-    type:     govwiki
+    type:     annotation
 
 edit-request:
     resource: "@GovWikiApiBundle/Controller/V1/EditRequestController.php"
-    type:     govwiki
-
-user:
-    resource: "@GovWikiApiBundle/Controller/V1/UserController.php"
-    type:     govwiki
+    type:     annotation
 
 url:
     resource: "@GovWikiApiBundle/Controller/V1/UrlController.php"
-    type:     govwiki
-
-#rank_order:
-#    resource: "@GovWikiApiBundle/Controller/V1/RankOrderController.php"
-#    type:     govwiki
-#    prefix:   rank_order
-
-map:
-    resource: "@GovWikiApiBundle/Controller/V1/MapController.php"
-    type:     govwiki
+    type:     annotation
 
 comparison:
     resource: "@GovWikiApiBundle/Controller/V1/ComparisonController.php"
-    type:     govwiki
+    type:     annotation
 
 twilio_sms:
     resource: "@GovWikiApiBundle/Controller/V1/TwilioSmsController.php"

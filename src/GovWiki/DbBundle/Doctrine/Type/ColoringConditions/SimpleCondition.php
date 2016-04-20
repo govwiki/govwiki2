@@ -1,10 +1,10 @@
 <?php
 
-namespace GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition;
+namespace GovWiki\DbBundle\Doctrine\Type\ColoringConditions;
 
 /**
  * Class SimpleCondition
- * @package GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition
+ * @package GovWiki\DbBundle\Doctrine\Type\ColoringConditions
  */
 class SimpleCondition extends AbstractCondition
 {

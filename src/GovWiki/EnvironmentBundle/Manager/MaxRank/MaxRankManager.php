@@ -1,16 +1,15 @@
 <?php
 
-namespace GovWiki\EnvironmentBundle\Manager\Data\MaxRank;
+namespace GovWiki\EnvironmentBundle\Manager\MaxRank;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\Environment;
-use GovWiki\EnvironmentBundle\Manager\Data\AbstractDataManager;
 use GovWiki\EnvironmentBundle\Strategy\DefaultNamingStrategy;
 
 /**
  * Class MaxRankManager
- * @package GovWiki\EnvironmentBundle\Data\MaxRank
+ * @package GovWiki\EnvironmentBundle\MaxRank
  */
 class MaxRankManager implements MaxRankManagerInterface
 {

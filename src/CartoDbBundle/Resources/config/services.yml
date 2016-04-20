@@ -7,4 +7,3 @@ services:
         arguments:
             - %carto_db.api_key%
             - %carto_db.account%
-            - @router

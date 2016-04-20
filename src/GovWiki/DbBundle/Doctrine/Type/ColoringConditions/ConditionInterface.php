@@ -1,10 +1,10 @@
 <?php
 
-namespace GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition;
+namespace GovWiki\DbBundle\Doctrine\Type\ColoringConditions;
 
 /**
  * Interface ConditionInterface
- * @package GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition
+ * @package GovWiki\DbBundle\Doctrine\Type\ColoringConditions
  */
 interface ConditionInterface
 {

@@ -79,7 +79,11 @@ class ElectedOfficialController extends AbstractGovWikiApiController
             );
         }
 
-        return new JsonResponse($this->getEnvironmentManager()
-            ->searchElectedOfficial($search));
+        return new JsonResponse($this->getElectedOfficialManager()
+            ->searchElectedOfficial(
+                $this->getCurrentEnvironment(),
+                $search
+            )
+        );
     }
 }

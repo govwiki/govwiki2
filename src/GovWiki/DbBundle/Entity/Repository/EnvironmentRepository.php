@@ -79,7 +79,6 @@ class EnvironmentRepository extends EntityRepository
      *                    manager.
      *
      * @return \Doctrine\ORM\Query
-     * @deprecated
      */
     public function getListQuery($id = null)
     {

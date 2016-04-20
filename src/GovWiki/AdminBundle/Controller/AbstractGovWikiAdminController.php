@@ -3,6 +3,9 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -10,8 +13,20 @@ use Symfony\Component\EventDispatcher\Event;
  * Class AbstractGovWikiAdminController
  * @package GovWiki\AdminBundle\Controller
  */
-class AbstractGovWikiAdminController extends Controller
+class AbstractGovWikiAdminController extends AbstractGovWikiController
 {
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     *
+     * @return void
+     */
+    protected function setCurrentEnvironment(Environment $environment)
+    {
+        $this->get(GovWikiEnvironmentService::STORAGE)->set($environment);
+        $this->get('session')->set('environment', $environment->getSlug());
+    }
+
     /**
      * Helper method for pagination.
      *

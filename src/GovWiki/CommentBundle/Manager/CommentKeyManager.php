@@ -45,11 +45,6 @@ class CommentKeyManager
         return $key;
     }
 
-    public function getElectedOfficial($key, $vote)
-    {
-
-    }
-
     /**
      * @param string $key Generated key.
      *

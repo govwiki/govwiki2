@@ -1,14 +1,15 @@
 <?php
 
-namespace GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition;
+namespace GovWiki\DbBundle\Doctrine\Type\ColoringConditions;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 /**
- * Class ColorizedCountyConditions
+ * Class ColoringConditions
+ * @package GovWiki\DbBundle\Doctrine\Type\ColoringConditions
  */
-class ColorizedCountyConditions
+class ColoringConditions
 {
     /**
      * @var string
@@ -59,7 +60,7 @@ class ColorizedCountyConditions
     /**
      * @param array $array Serialized colorized county conditions data.
      *
-     * @return ColorizedCountyConditions
+     * @return ColoringConditions
      */
     public static function fromArray(array $array)
     {
@@ -80,7 +81,7 @@ class ColorizedCountyConditions
         /*
          * Create new instance and fill by conditions.
          */
-        $object = new ColorizedCountyConditions($array['fieldName']);
+        $object = new ColoringConditions($array['fieldName']);
         $object->setColorized($array['colorized']);
 
         /*
@@ -127,7 +128,7 @@ class ColorizedCountyConditions
      * @param string $serializedData Data serialized by
      *                               {@see ColorizedCountyCondition::serialize}.
      *
-     * @return ColorizedCountyConditions
+     * @return ColoringConditions
      *
      * @throws \InvalidArgumentException Wrong data given.
      */
@@ -135,7 +136,7 @@ class ColorizedCountyConditions
     {
         $array = unserialize($serializedData);
         if (! is_array($array)) {
-            return new ColorizedCountyConditions();
+            return new ColoringConditions();
         }
 
         return self::fromArray($array);
@@ -154,7 +155,7 @@ class ColorizedCountyConditions
      *                          which color is used base on this field values
      *                          for concrete county.
      *
-     * @return ColorizedCountyConditions
+     * @return ColoringConditions
      */
     public function setFieldName($fieldName)
     {
@@ -176,7 +177,7 @@ class ColorizedCountyConditions
      *
      * @param ConditionInterface $condition A Condition instance.
      *
-     * @return ColorizedCountyConditions
+     * @return ColoringConditions
      */
     public function addCondition(ConditionInterface $condition)
     {

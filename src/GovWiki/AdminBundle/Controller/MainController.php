@@ -54,13 +54,13 @@ class MainController extends AbstractGovWikiAdminController
 
     /**
      * @Configuration\Route(
-     *  "/show/{environment}",
-     *  defaults={ "environment": "" }
+     *  "/show/{slug}",
+     *  defaults={ "slug": "" }
      * )
      * @Configuration\Template()
      *
-     * @param Request $request     A Request instance.
-     * @param string  $environment Environment name.
+     * @param Request $request A Request instance.
+     * @param string  $slug    Environment name.
      *
      * @return array
      *
@@ -69,17 +69,17 @@ class MainController extends AbstractGovWikiAdminController
      * @throws \LogicException Some required bundle not registered.
      * @throws \InvalidArgumentException Unknown entity manager.
      */
-    public function showAction(Request $request, $environment = '')
+    public function showAction(Request $request, $slug = '')
     {
-        $manager = $this->adminEnvironmentManager();
-
-        if ('' !== $environment) {
-            $manager->changeEnvironment($environment);
+        $environment = $this->getCurrentEnvironment();
+        if ($slug !== '') {
+            $environment = $this->getDoctrine()
+                ->getRepository('GovWikiDbBundle:Environment')
+                ->getBySlug($slug);
+            $this->setCurrentEnvironment($environment);
         }
-        /** @var Environment $entity */
-        $entity = $manager->getEntity();
 
-        $locale = $entity->getLocales()[0];
+        $locale = $environment->getLocales()[0];
         $trans_key_settings = [
             'matching' => 'eq',
             'transKeys' => ['map.greeting_text', 'general.bottom_text'],
@@ -99,13 +99,16 @@ class MainController extends AbstractGovWikiAdminController
             }
         }
 
-        $form = $this->createForm(new EnvironmentType(), $entity);
+        $form = $this->createForm(new EnvironmentType(), $environment);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $manager->changeEnvironment($entity->getSlug());
+            $environment = $this->getDoctrine()
+                ->getRepository('GovWikiDbBundle:Environment')
+                ->getBySlug($slug);
+            $this->setCurrentEnvironment($environment);
 
-            if (count($entity->getLocales()) == 1) {
+            if (count($environment->getLocales()) == 1) {
                 $greetingText = $request->request->get('greetingText');
                 $bottomText = $request->request->get('bottomText');
                 $texts = [
@@ -119,12 +122,12 @@ class MainController extends AbstractGovWikiAdminController
             }
 
             // Change logo url.
-            $file = $entity->getFile();
+            $file = $environment->getFile();
             if ($file) {
                 /*
                  * Move uploaded file to upload directory.
                  */
-                $filename = $entity->getSlug() . '.' .
+                $filename = $environment->getSlug() . '.' .
                     $file->getClientOriginalExtension();
 
                 $file->move(
@@ -132,16 +135,16 @@ class MainController extends AbstractGovWikiAdminController
                     $filename
                 );
 
-                $entity->setLogo('/img/upload/' . $filename);
+                $environment->setLogo('/img/upload/' . $filename);
             }
 
-            $em->persist($entity);
+            $em->persist($environment);
             $em->flush();
         }
 
         return [
             'form' => $form->createView(),
-            'environment' => $entity,
+            'environment' => $environment,
             'greetingText' => $greetingText,
             'bottomText' => $bottomText,
         ];
@@ -164,9 +167,16 @@ class MainController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{environment}/delete")
+     * @Configuration\Route(
+     *  "/{environment}/delete",
+     *  requirements={ "environment": "\w+" }
+     * )
+     * @Configuration\ParamConverter(
+     *  "environment",
+     *  converter="environment_converter"
+     * )
      *
-     * @param string $environment Environment name.
+     * @param Environment $environment A Environment entity instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
@@ -175,14 +185,133 @@ class MainController extends AbstractGovWikiAdminController
      * @throws \Doctrine\DBAL\DBALException Can't delete government related
      *                                      table.
      */
-    public function removeAction($environment)
+    public function removeAction(Environment $environment)
     {
-        $this->adminEnvironmentManager()->removeEnvironment($environment);
+        // Delete environment related tables.
+        $this->getGovernmentManager()->removeTable($environment);
+        $this->getMaxRankManager()->removeTable($environment);
 
-        $api = $this->get(CartoDbServices::CARTO_DB_API);
+        // Remove dataset from CartoDB.
+        $this->get(CartoDbServices::CARTO_DB_API)
+            ->sqlRequest("DROP TABLE {$environment}");
 
-        $api->sqlRequest("DROP TABLE {$environment}");
-        $api->deleteMap($environment);
+        // Remove all environment data.
+        // Doctrine QueryBuilder don't allow to use join in remove query :-(
+        // use native query.
+        $con = $this->getDoctrine()->getConnection();
+
+        $con->beginTransaction();
+        try {
+            $con->exec('SET foreign_key_checks = 0');
+            $con->exec("
+                DELETE c FROM `comments` c
+                LEFT JOIN `elected_officials_votes` v ON v.id = c.subject_id
+                LEFT JOIN `elected_officials` eo ON eo.id = v.elected_official_id
+                LEFT JOIN `governments` g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$environment->getId()} AND
+                    c.type = 'vote'
+            ");
+
+            $con->exec("
+                DELETE v FROM elected_officials_votes v
+                LEFT JOIN elected_officials eo ON v.elected_official_id = eo.id
+                LEFT JOIN governments g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE l FROM legislations l
+                LEFT JOIN governments g ON l.government_id = g.id
+                WHERE
+                    g.environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE c FROM contributions c
+                LEFT JOIN elected_officials eo ON c.elected_official_id = eo.id
+                LEFT JOIN governments g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE e FROM endorsements e
+                LEFT JOIN elected_officials eo ON e.elected_official_id = eo.id
+                LEFT JOIN governments g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE ps FROM public_statements ps
+                LEFT JOIN elected_officials eo ON ps.elected_official_id = eo.id
+                LEFT JOIN governments g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE eo FROM elected_officials eo
+                LEFT JOIN governments g ON eo.government_id = g.id
+                WHERE
+                    g.environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE f FROM findata f
+                LEFT JOIN governments g ON f.government_id = g.id
+                WHERE
+                    g.environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE FROM governments
+                WHERE
+                    environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE FROM formats
+                WHERE
+                    environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE FROM groups
+                WHERE
+                    environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE t FROM translations t
+                JOIN locales l ON t.locale_id = l.id
+                WHERE
+                    l.environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE FROM locales
+                WHERE
+                    environment_id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE e, m FROM environments e
+                JOIN maps m ON m.id = e.map_id
+                WHERE
+                    e.id = {$environment->getId()}
+            ");
+
+            $con->commit();
+            $this->successMessage('Environment removed.');
+        } catch (\Exception $e) {
+            $this->errorMessage("Can't remove environemnt: ". $e->getMessage());
+            $con->rollBack();
+        } finally {
+            $con->exec('SET foreign_key_checks = 1');
+        }
 
         return $this->redirectToRoute('govwiki_admin_main_home');
     }

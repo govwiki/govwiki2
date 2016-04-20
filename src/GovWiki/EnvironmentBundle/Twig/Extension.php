@@ -2,7 +2,9 @@
 
 namespace GovWiki\EnvironmentBundle\Twig;
 
+use GovWiki\EnvironmentBundle\Manager\ElectedOfficial\ElectedOfficialManagerInterface;
 use GovWiki\EnvironmentBundle\Manager\Environment\EnvironmentManagerInterface;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
@@ -14,9 +16,14 @@ class Extension extends \Twig_Extension
 {
 
     /**
-     * @var EnvironmentManagerInterface
+     * @var EnvironmentStorageInterface
      */
-    private $environmentManager;
+    private $storage;
+
+    /**
+     * @var ElectedOfficialManagerInterface
+     */
+    private $electedOfficialManager;
 
     /**
      * @var TranslatorInterface
@@ -24,15 +31,23 @@ class Extension extends \Twig_Extension
     private $translator;
 
     /**
-     * @param EnvironmentManagerInterface $environmentManager A
-     *                                                        EnvironmentManagerInterface
-     *                                                        instance.
+     * @param EnvironmentStorageInterface     $storage                A
+     *                                                                EnvironmentStorageInterface
+     *                                                                instance.
+     * @param ElectedOfficialManagerInterface $electedOfficialManager A
+     *                                                                ElectedOfficialManagerInterface
+     *                                                                instance.
+     * @param TranslatorInterface             $translator             A
+     *                                                                TranslatorInterface
+     *                                                                instance.
      */
     public function __construct(
-        EnvironmentManagerInterface $environmentManager,
+        EnvironmentStorageInterface $storage,
+        ElectedOfficialManagerInterface $electedOfficialManager,
         TranslatorInterface $translator
     ) {
-        $this->environmentManager = $environmentManager;
+        $this->storage = $storage;
+        $this->electedOfficialManager = $electedOfficialManager;
         $this->translator = $translator;
     }
 
@@ -49,7 +64,7 @@ class Extension extends \Twig_Extension
      */
     public function getGlobals()
     {
-        $environment = $this->environmentManager->getEnvironment();
+        $environment = $this->storage->get();
 
         /** @var MessageCatalogue $catalogue */
         $transKey = 'general.bottom_text';
@@ -61,8 +76,8 @@ class Extension extends \Twig_Extension
         return [
             'environment' => $environment,
             'bottomText' => $bottomText,
-            'hasElectedOfficials' => $this->environmentManager
-                ->computeElectedOfficialsCount() > 0,
+            'hasElectedOfficials' => $this->electedOfficialManager
+                ->computeElectedOfficialsCount($environment) > 0,
         ];
     }
 }

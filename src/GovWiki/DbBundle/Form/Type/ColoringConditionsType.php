@@ -8,17 +8,17 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class ColorizedCountyConditionType
+ * Class ColoringConditionsType
  * @package GovWiki\DbBundle\Form\Type
  */
-class ColorizedCountyConditionType extends AbstractType
+class ColoringConditionsType extends AbstractType
 {
     /**
      * {@inheritdoc}
      */
     public function getName()
     {
-        return 'colorized_county_condition';
+        return 'coloring_conditions';
     }
 
     /**
@@ -35,7 +35,7 @@ class ColorizedCountyConditionType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions',
+            'data_class' => 'GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditions',
         ]);
     }
 

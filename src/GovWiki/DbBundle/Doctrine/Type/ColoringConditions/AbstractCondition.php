@@ -1,11 +1,10 @@
 <?php
 
-namespace GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+namespace GovWiki\DbBundle\Doctrine\Type\ColoringConditions;
 
 /**
  * Class AbstractCondition
- * @package GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition
+ * @package GovWiki\DbBundle\Doctrine\Type\ColoringConditions
  */
 abstract class AbstractCondition implements ConditionInterface
 {
@@ -87,6 +86,7 @@ abstract class AbstractCondition implements ConditionInterface
     {
         if (PHP_VERSION_ID === 50429 || PHP_VERSION_ID === 50513 || PHP_VERSION_ID >= 50600) {
             $reflection = new \ReflectionClass(static::class);
+
             return $reflection->newInstanceWithoutConstructor();
         } else {
             return unserialize(sprintf('O:%d:"%s":0:{}', strlen(static::class), static::class));

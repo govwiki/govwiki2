@@ -58,7 +58,7 @@ class GetAdvertising
                     'environment'   => $environment->getId(),
                 ]
             )
-            ->getSingleResult();
+            ->getOneOrNullResult();
 
         if ($adverting && $adverting->getAdvertingEnable()) {
             return $this->templating->render(

@@ -1,17 +1,19 @@
 <?php
 
-namespace GovWiki\EnvironmentBundle\Manager\Data\Government;
+namespace GovWiki\EnvironmentBundle\Manager\Government;
 
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
+use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\EnvironmentBundle\Converter\DataTypeConverter;
-use GovWiki\EnvironmentBundle\Manager\Data\AbstractDataManager;
+use GovWiki\EnvironmentBundle\Manager\Format\FormatManagerInterface;
+use GovWiki\EnvironmentBundle\Manager\MaxRank\MaxRankManagerInterface;
 use GovWiki\EnvironmentBundle\Strategy\DefaultNamingStrategy;
 
 /**
  * Class GovernmentManager
- * @package GovWiki\EnvironmentBundle\Data\Manager\Data\Government
+ * @package GovWiki\EnvironmentBundle\Data\Manager\Government
  */
 class GovernmentManager implements GovernmentManagerInterface
 {
@@ -22,17 +24,62 @@ class GovernmentManager implements GovernmentManagerInterface
     private $em;
 
     /**
-     * @param EntityManagerInterface $em A EntityManagerInterface instance.
+     * @var MaxRankManagerInterface
      */
-    public function __construct(EntityManagerInterface $em)
-    {
+    private $maxRankManager;
+
+    /**
+     * @var FormatManagerInterface
+     */
+    private $formatManager;
+
+    /**
+     * @param EntityManagerInterface  $em             A EntityManagerInterface
+     *                                                instance.
+     * @param MaxRankManagerInterface $maxRankManager A MaxRankManagerInterface
+     *                                                instance.
+     * @param FormatManagerInterface  $formatManager  A FormatManagerInterface
+     *                                                instance.
+     */
+    public function __construct(
+        EntityManagerInterface $em,
+        MaxRankManagerInterface $maxRankManager,
+        FormatManagerInterface $formatManager
+    ) {
         $this->em = $em;
+        $this->maxRankManager = $maxRankManager;
+        $this->formatManager = $formatManager;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createTable(Environment $environment, array $columnDefinitions)
+    public function getAvailableYears(Environment $environment)
+    {
+        $con = $this->em->getConnection();
+        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
+
+        $years = $con->fetchAll("
+            SELECT year
+            FROM {$tableName}
+            GROUP BY year
+            ORDER BY year DESC
+        ");
+
+        return array_map(
+            function (array $result) {
+                return $result['year'];
+            },
+            $years
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createTable(Environment $environment, array $columnDefinitions = [])
     {
         /*
          * Generate column definition from given columns.
@@ -52,6 +99,7 @@ class GovernmentManager implements GovernmentManagerInterface
             CREATE TABLE `{$tableName}` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `government_id` int(11) DEFAULT NULL,
+                `year` int(4) DEFAULT NULL,
                 CONSTRAINT `fk_{$tableName}_government`
                     FOREIGN KEY (`government_id`)
                     REFERENCES `governments` (`id`),
@@ -73,54 +121,6 @@ class GovernmentManager implements GovernmentManagerInterface
         );
         $this->em->getConnection()
             ->exec("DROP TABLE IF EXISTS `{$tableName}``");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get(Environment $environment, $government, $year, array $fields)
-    {
-        if (is_array($fields) && (count($fields) > 0)) {
-            $tableName = DefaultNamingStrategy::environmentRelatedTableName(
-                $environment
-            );
-
-            // Prepare field statement for query.
-            $fieldsStmt = implode(',', array_keys($fields));
-
-            // Fetch data.
-            $data = $this->em->getConnection()->fetchAssoc("
-                SELECT {$fieldsStmt} FROM {$tableName}
-                WHERE
-                    government_id = {$government} AND
-                    year = {$year}
-            ");
-
-            // Convert value to proper type.
-            $validData = [];
-            foreach ($data as $field => $value) {
-                /*
-                 * Get field type from formats.
-                 */
-                $type = $fields[$field];
-
-                switch ($type) {
-                    case 'integer':
-                        $value = (int) $value;
-                        break;
-
-                    case 'float':
-                        $value = (float) $value;
-                        break;
-                }
-
-                $validData[$field] = $value;
-            }
-
-            return $validData;
-        }
-
-        return [];
     }
 
     /**
@@ -213,6 +213,17 @@ class GovernmentManager implements GovernmentManagerInterface
     /**
      * {@inheritdoc}
      */
+    public function searchGovernment(Environment $environment, $partOfName)
+    {
+        /** @var GovernmentRepository $repository */
+        $repository = $this->em->getRepository('GovWikiDbBundle:Government');
+
+        return $repository->search($environment->getId(), $partOfName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function searchGovernmentForComparison(
         Environment $environment,
         $partOfName
@@ -224,6 +235,91 @@ class GovernmentManager implements GovernmentManagerInterface
             $environment->getId(),
             $partOfName
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCategoriesForComparisonByGovernment(
+        Environment $environment,
+        array $governments
+    ) {
+        $con = $this->em->getConnection();
+
+        /*
+         * Collect governments alt types.
+         */
+        $altTypes = [];
+        foreach ($governments as $government) {
+            $altTypes[$government['altType']] = true;
+        }
+        $altTypes = array_keys($altTypes);
+
+
+        /*
+         * Get financial statements captions.
+         */
+        $financialStatementCaptionList = $con->fetchAll("
+            SELECT
+                f.caption AS name,
+                f.name AS category,
+                'Financial Statements' AS tab,
+                '$0.0' AS mask,
+                NULL AS fieldName
+            FROM (
+                    SELECT f2.caption, cc.name
+                    FROM findata f2
+                    INNER JOIN caption_categories cc
+                        ON cc.id = f2.caption_category_id
+                    WHERE
+                      f2.government_id = {$governments[0]['id']} AND
+                      f2.caption_category_id in (2, 3) AND
+                      f2.year = {$governments[0]['year']}
+                    GROUP BY caption
+                ) f
+            INNER JOIN (
+                SELECT caption
+                FROM findata
+                WHERE
+                  government_id = {$governments[1]['id']} AND
+                  caption_category_id in (2, 3) AND
+                      year = {$governments[1]['year']}
+                GROUP BY caption
+            ) s ON f.caption = s.caption
+        ");
+
+        /*
+         * Select available for comparison field from tabs.
+         * For example 'Financial Highlight' and etc.
+         */
+        /*
+         * Get array of fields and array of ranked fields.
+         */
+        $fields = [];
+
+        $tmp = $this->formatManager->get($environment, true);
+        foreach ($tmp as $format) {
+            $intersects = array_intersect($altTypes, $format['showIn']);
+            $isShowInAllAltTypes = count($intersects) === count($altTypes);
+
+            if ($isShowInAllAltTypes && ('string' !== $format['type'])) {
+                /*
+                 * This format available for all given alt types and given field
+                 * type is not string.
+                 */
+                $fields[] = [
+                    'name' => $format['name'],
+                    'fieldName' => $format['field'],
+                    'category' => null,
+                    'tab' => $format['tab_name'],
+                    'tab_id' => $format['tab_id'],
+                    'category_id' => $format['category_id'],
+                    'mask' => $format['mask'],
+                ];
+            }
+        }
+
+        return array_merge($financialStatementCaptionList, $fields);
     }
 
     /**
@@ -361,6 +457,107 @@ class GovernmentManager implements GovernmentManagerInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getGovernment(
+        Environment $environment,
+        $altTypeSlug,
+        $slug,
+        $year = null
+    ) {
+        $altType = str_replace('_', ' ', $altTypeSlug);
+        $fields = $this->formatManager->getList($environment, $altType);
+
+        /*
+         * Get array of formats fields.
+         */
+        $formats = array_filter(
+            $fields,
+            function (array $format) {
+                return $format['dataOrFormula'] === 'data';
+            }
+        );
+        $formats = array_values($formats); // In order to make new keys.
+
+        /*
+         *  Fetch government.
+         */
+        $government = $this->em->getRepository('GovWikiDbBundle:Government')
+            ->findGovernment(
+                $environment->getId(),
+                $altTypeSlug,
+                $slug,
+                $year
+            );
+
+        /*
+         * Fetch environment related government data if at least one field
+         * showing for given alt type.
+         */
+        $dataFields = [];
+        foreach ($fields as $field) {
+            $dataFields[$field['field']] = $field['type'];
+            if ($field['ranked'] === true) {
+                $name = DefaultNamingStrategy::rankedFieldName($field['field']);
+                $dataFields[$name] = 'integer';
+            }
+        }
+
+        $data = $this->get($environment, $government['id'], $year, $dataFields);
+        $government = array_merge($government, $data);
+        unset($data, $dataFields);
+
+        /*
+         * Get max ranks.
+         */
+        $data = $this->maxRankManager->get(
+            $environment,
+            $altTypeSlug,
+            $year
+        );
+        if ($data === false) {
+            $this->maxRankManager->computeAndSave(
+                $environment,
+                $fields,
+                $year
+            );
+            $data = $this->maxRankManager->get(
+                $environment,
+                $altTypeSlug,
+                $year
+            );
+        }
+        $government['ranks'] = $data;
+
+        if (count($data) > 0) {
+            unset($data['alt_type_slug'], $data['year']);
+            foreach ($data as $field => $value) {
+                if (array_key_exists($field, $government)) {
+                    $rankName = DefaultNamingStrategy::rankedFieldName($field);
+                    $government['ranks'][$rankName] = [
+                        $government[$rankName],
+                        $value,
+                    ];
+                }
+            }
+
+        }
+
+        $formats = Functions::groupBy(
+            $formats,
+            [ 'tab_name', 'category_name', 'field' ]
+        );
+
+        $government['currentYear'] = $year;
+
+        return [
+            'government' => $government,
+            'formats' => $formats,
+            'tabs' => array_keys($formats),
+        ];
+    }
+
+    /**
      * @param array $result Raw fin data result.
      *
      * @return array
@@ -389,5 +586,60 @@ class GovernmentManager implements GovernmentManagerInterface
         }
 
         return $data;
+    }
+
+    /**
+     * Get environment related data for government.
+     *
+     * @param Environment $environment A Environment entity instance.
+     * @param integer     $government  Government entity id.
+     * @param integer     $year        Year of fetching data.
+     * @param array       $fields      Array of fetching fields.
+     *
+     * @return mixed
+     */
+    private function get(Environment $environment, $government, $year, array $fields)
+    {
+        if (is_array($fields) && (count($fields) > 0)) {
+            $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+                $environment
+            );
+
+            // Prepare field statement for query.
+            $fieldsStmt = implode(',', array_keys($fields));
+
+            // Fetch data.
+            $data = $this->em->getConnection()->fetchAssoc("
+                SELECT {$fieldsStmt} FROM {$tableName}
+                WHERE
+                    government_id = {$government} AND
+                    year = {$year}
+            ");
+
+            // Convert value to proper type.
+            $validData = [];
+            foreach ($data as $field => $value) {
+                /*
+                 * Get field type from formats.
+                 */
+                $type = $fields[$field];
+
+                switch ($type) {
+                    case 'integer':
+                        $value = (int) $value;
+                        break;
+
+                    case 'float':
+                        $value = (float) $value;
+                        break;
+                }
+
+                $validData[$field] = $value;
+            }
+
+            return $validData;
+        }
+
+        return [];
     }
 }

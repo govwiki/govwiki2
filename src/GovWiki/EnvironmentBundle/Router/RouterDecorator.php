@@ -55,9 +55,8 @@ class RouterDecorator implements RouterInterface
     ) {
         $collection = $this->router->getRouteCollection();
         $currentRoute = $collection->get($name);
-        /*
-         * Add environment to parameters only if it's really need.
-         */
+
+        // Add environment to parameters only if it's really need.
         $needEnvironment = $currentRoute->hasRequirement('environment') &&
             (strpos($name, 'admin') === false);
 
