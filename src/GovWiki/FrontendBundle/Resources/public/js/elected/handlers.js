@@ -511,6 +511,10 @@ $(function() {
             },
             data: sendObject,
             success: function(data) {
+                if (modalType === 'addVotes') {
+                    alert('Thanks for your submission. Your entry will appear on the elected official profiles within 3-5 business days');
+                }
+
                 return console.log(data);
             }
         });

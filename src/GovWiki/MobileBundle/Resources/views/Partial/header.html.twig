@@ -2,7 +2,7 @@
 
     {# Return to map #}
     {% if app.request.attributes.get('_route') != "map" %}
-        <a href="{{ govwiki_path('map') }}" class="home-icon"><img src="/img/mobile/header/house.png" /></a>
+        <a href="{{ path('map') }}" class="home-icon"><img src="/img/mobile/header/house.png" /></a>
     {% endif %}
 
     {# Logo #}
@@ -75,7 +75,7 @@
         {# Return to map #}
         {% if app.request.attributes.get('_route') != "map" %}
             <li>
-                <a href="{{ govwiki_path('map') }}" class="link">
+                <a href="{{ path('map') }}" class="link">
                     {{ 'header.links.return_to_map'|trans }}
                     {#Return to Map#}
                 </a>
@@ -85,7 +85,7 @@
         {# Return to some government #}
         {% if app.request.attributes.get('_route') == "elected" %}
             <li>
-                <a href="{{ govwiki_path('government', {
+                <a href="{{ path('government', {
                     altTypeSlug: altTypeSlug,
                     slug: slug
                 }) }}" class="link">

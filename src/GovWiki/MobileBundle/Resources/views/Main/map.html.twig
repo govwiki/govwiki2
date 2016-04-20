@@ -79,8 +79,8 @@
         window.gw.map = '{{ map | escape('js') }}';
         window.gw.environment = '{{ environment }}';
         window.gw.urls = {};
-        window.gw.urls.search_government = '{{ govwiki_path('govwiki_api_v1_government_search') }}';
-        window.gw.urls.search_elected = '{{ govwiki_path('govwiki_api_v1_electedofficial_search') }}';
+        window.gw.urls.search_government = '{{ path('govwiki_api_v1_government_search') }}';
+        window.gw.urls.search_elected = '{{ path('govwiki_api_v1_electedofficial_search') }}';
     </script>
 
     <script src="/js/vendor/typeahead.js"></script>
