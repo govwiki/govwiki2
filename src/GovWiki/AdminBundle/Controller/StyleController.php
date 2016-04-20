@@ -40,7 +40,7 @@ class StyleController extends AbstractGovWikiAdminController
         $styles = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:EnvironmentStyles')
             ->get(
-                $this->adminEnvironmentManager()->getEntity()->getId()
+                $this->getCurrentEnvironment()->getId()
             );
         $styles = new ArrayCollection($styles);
         $original = clone $styles;
@@ -50,7 +50,7 @@ class StyleController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $environment = $this->adminEnvironmentManager()->getEntity();
+            $environment = $this->getCurrentEnvironment();
 
             /** @var EnvironmentStyles $style */
             foreach ($original as $style) {
@@ -79,8 +79,7 @@ class StyleController extends AbstractGovWikiAdminController
 
         return [
             'form' => $form->createView(),
-            'environment_id' => $this->adminEnvironmentManager()->getEntity()
-                ->getId(),
+            'environment_id' => $this->getCurrentEnvironment()->getId(),
         ];
     }
 
@@ -97,9 +96,9 @@ class StyleController extends AbstractGovWikiAdminController
         $styles = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:EnvironmentStyles')
             ->get(
-                $this->adminEnvironmentManager()->getEntity()->getId()
+                $this->getCurrentEnvironment()->getId()
             );
-        $environment = $this->adminEnvironmentManager()->getSlug();
+        $environment = $this->getCurrentEnvironment()->getSlug();
 
         $filePath = $this->getParameter('kernel.logs_dir') . '/'. $environment .
             '.styles.csv';
@@ -149,7 +148,7 @@ class StyleController extends AbstractGovWikiAdminController
             if ($file instanceof UploadedFile) {
                 $em = $this->getDoctrine()->getManager();
                 $file = $file->openFile();
-                $environment = $this->adminEnvironmentManager()->getEntity();
+                $environment = $this->getCurrentEnvironment();
 
                 $em->getRepository('GovWikiDbBundle:EnvironmentStyles')
                     ->purge($environment->getId());

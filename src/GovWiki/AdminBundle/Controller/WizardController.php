@@ -11,7 +11,6 @@ use GovWiki\DbBundle\Entity\Translation;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Fund;
 use GovWiki\DbBundle\Entity\CaptionCategory;
-use GovWiki\DbBundle\Form\EnvironmentType;
 use GovWiki\DbBundle\Form\MapType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -119,7 +118,7 @@ class WizardController extends AbstractGovWikiAdminController
         if (null === $environment) {
             $environment = new Environment();
         }
-        $form = $this->createForm(new EnvironmentType(), $environment);
+        $form = $this->createForm('environment', $environment);
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {

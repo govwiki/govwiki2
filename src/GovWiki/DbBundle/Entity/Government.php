@@ -193,6 +193,13 @@ class Government
     private $secondaryLogo;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(nullable=true)
+     */
+    private $image;
+
+    /**
      * @var Collection
      *
      * @ORM\ManyToMany(
@@ -1100,5 +1107,23 @@ class Government
     public function getDocuments()
     {
         return $this->documents;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param string $image Path to main image.
+     *
+     * @return Government
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
     }
 }

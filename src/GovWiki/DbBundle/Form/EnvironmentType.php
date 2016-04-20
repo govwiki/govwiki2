@@ -6,6 +6,9 @@ use Doctrine\ORM\EntityRepository;
 use GovWiki\DbBundle\Entity\Environment;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -14,6 +17,25 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class EnvironmentType extends AbstractType
 {
+
+    /**
+     * Directory for environment main image upload.
+     */
+    const DIRECTORY = '/img/mobile';
+
+    /**
+     * @var string
+     */
+    private $webDir;
+
+    /**
+     * @param string $webDir Path to web directory.
+     */
+    public function __construct($webDir)
+    {
+        $this->webDir = $webDir;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -23,6 +45,25 @@ class EnvironmentType extends AbstractType
         $subject = $builder->getData();
         $id = $subject->getId();
 
+        $listener = function (FormEvent $event) use ($subject) {
+            $data = $event->getData();
+
+            if ($data['mainImageFile'] !== null) {
+                /** @var UploadedFile $file */
+                $file = $data['mainImageFile'];
+                $name = $subject->getSlug() .'.'. $file->getClientOriginalExtension();
+
+                $file->move($this->webDir . self::DIRECTORY, $name);
+
+                $data['mainImage'] = self::DIRECTORY .'/'. $name;
+            } else {
+                $data['mainImage'] = $subject->getMainImage();
+            }
+
+            unset($data['mainImageFile']);
+            $event->setData($data);
+        };
+
         $builder
             ->add('name')
             ->add('domain')
@@ -31,6 +72,11 @@ class EnvironmentType extends AbstractType
             ->add('file', 'file', [
                 'required' => false,
                 'label' => 'Logo',
+            ])
+            ->add('mainImage', 'hidden')
+            ->add('mainImageFile', 'file', [
+                'required' => false,
+                'mapped' => false,
             ])
             ->add('adminEmail')
             ->add('defaultLocale', 'entity', [
@@ -46,7 +92,7 @@ class EnvironmentType extends AbstractType
                 },
             ])
             ->add('subscribable', 'checkbox', [ 'required' => false ])
-        ;
+            ->addEventListener(FormEvents::PRE_SUBMIT, $listener);
     }
 
     /**

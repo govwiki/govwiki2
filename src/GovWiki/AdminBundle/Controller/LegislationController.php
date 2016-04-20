@@ -51,7 +51,7 @@ class LegislationController extends Controller
         $legislation = $manager->create();
 
         $form = $this->createForm(
-            new LegislationType($this->getManager()->getEnvironment()),
+            new LegislationType($this->getManager()->getEnvironment()->getSlug()),
             $legislation
         );
         $form->handleRequest($request);
@@ -81,7 +81,7 @@ class LegislationController extends Controller
     public function editAction(Request $request, Legislation $legislation)
     {
         $form = $this->createForm(
-            new LegislationType($this->getManager()->getEnvironment()),
+            new LegislationType($this->getManager()->getEnvironment()->getSlug()),
             $legislation
         );
         $form->handleRequest($request);

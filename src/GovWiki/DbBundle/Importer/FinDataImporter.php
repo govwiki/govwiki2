@@ -2,12 +2,12 @@
 
 namespace GovWiki\DbBundle\Importer;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\DbBundle\Exception\RequiredColumnsNotFoundException;
 use GovWiki\DbBundle\File\ReaderInterface;
 use GovWiki\DbBundle\File\WriterInterface;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 
 /**
  * Class FinDataImporter
@@ -30,17 +30,17 @@ class FinDataImporter extends AbstractImporter
      * {@inheritdoc}
      */
     public function __construct(
-        Connection $con,
-        AdminEnvironmentManager $manager
+        EntityManagerInterface $em,
+        EnvironmentStorageInterface $storage
     ) {
-        parent::__construct($con, $manager);
+        parent::__construct($em, $storage);
 
         /*
          * Get FinData entity metadata in order to generate required column
          * names and get they types.
          */
         /** @var \Doctrine\Orm\Mapping\ClassMetadata $metadata */
-        $metadata = $this->manager->getMetadata('GovWikiDbBundle:FinData');
+        $metadata = $this->em->getClassMetadata('GovWikiDbBundle:FinData');
 
         $fields = $metadata->getFieldNames();
         $associationFields = $metadata->getAssociationMappings();
@@ -86,7 +86,7 @@ class FinDataImporter extends AbstractImporter
                 }
                 $columnChecked = true;
 
-                $environment = $this->manager->getEnvironment();
+                $environment = $this->ge;
 
                 /*
                  * Remove the old information for the year.

@@ -124,4 +124,28 @@ interface GovernmentManagerInterface
         $slug,
         $year = null
     );
+
+    /**
+     * @param Environment $environment A Environment entity instance
+     * @param integer     $government  A Government entity id.
+     * @param integer     $year        Data year.
+     * @param array       $fields      List of fetched field names. If null -
+     *                                 fetch all.
+     */
+    public function getEnvironmentRelatedData(
+        Environment $environment,
+        $government,
+        $year,
+        array $fields = null
+    );
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param array       $data        New data.
+     *
+     * @return void
+     *
+     * @throws \Doctrine\DBAL\DBALException Can't execute query.
+     */
+    public function updateGovernment(Environment $environment, array $data);
 }

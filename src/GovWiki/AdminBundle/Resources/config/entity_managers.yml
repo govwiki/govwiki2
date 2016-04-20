@@ -4,11 +4,9 @@ services:
     #
     govwiki_admin.entity_manager.abstract:
         class: GovWiki\AdminBundle\Manager\AbstractAdminEntityManager
-        arguments: [@doctrine.orm.default_entity_manager]
-        #
-        # Set current environment name from admin environment manager.
-        #
-        configurator: [@govwiki_admin.manager.environment, configure]
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @govwiki_environment.storage
         abstract: true
 
     #
@@ -18,8 +16,8 @@ services:
         class: GovWiki\AdminBundle\Manager\Entity\AdminGovernmentManager
         arguments:
             - @doctrine.orm.default_entity_manager
+            - @govwiki_environment.storage
             - @carto_db.api
-        configurator: [@govwiki_admin.manager.environment, configure]
 
     #
     # ElectedOfficial admin entity manager.

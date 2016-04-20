@@ -58,6 +58,6 @@ class FormatManager implements FormatManagerInterface
     public function getList(Environment $environment, $altType = null)
     {
         return $this->em->getRepository('GovWikiDbBundle:Format')
-            ->getList($environment->getId(), $altType);
+                ->getList($environment->getId(), $altType);
     }
 }

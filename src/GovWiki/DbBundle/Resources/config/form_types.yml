@@ -1,5 +1,11 @@
 services:
 
+    govwiki_db.form.type.environment:
+        class: GovWiki\DbBundle\Form\EnvironmentType
+        arguments: [ %kernel.root_dir%/../web]
+        tags:
+            - { name: form.type, alias: environment }
+
     govwiki_db.form.type.alt_type:
         class: GovWiki\DbBundle\Form\Type\AltTypeType
         arguments: [@govwiki_admin.manager.environment]
@@ -8,7 +14,7 @@ services:
 
     govwiki_db.form.type.elected_official:
         class: GovWiki\DbBundle\Form\ElectedOfficialType
-        arguments: [@govwiki_admin.manager.environment]
+        arguments: [ @govwiki_environment.storage ]
         tags:
             - { name: form.type, alias: govwiki_dbbundle_electedofficial }
 
@@ -35,13 +41,15 @@ services:
 
     govwiki_db.form.government:
         class: GovWiki\DbBundle\Form\GovernmentType
-        arguments: [@govwiki_admin.manager.environment]
+        arguments:
+            - %kernel.root_dir%/../web
+            - @govwiki_environment.storage
         tags:
             - { name: form.type, alias: government }
 
     govwiki_db.form.format:
         class: GovWiki\DbBundle\Form\FormatType
-        arguments: [@govwiki_admin.manager.environment]
+        arguments: [ @govwiki_environment.storage ]
         tags:
             - { name: form.type, alias: format }
 
@@ -55,7 +63,7 @@ services:
 
     govwiki_db.form.fin_data:
         class: GovWiki\DbBundle\Form\FinDataType
-        arguments: [@govwiki_admin.manager.environment]
+        arguments: [ @govwiki_environment.storage ]
         tags:
             - { name: form.type, alias: fin_data }
 

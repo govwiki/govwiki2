@@ -27,7 +27,8 @@ class AdminTabManager extends AbstractAdminEntityManager
     {
         /** @var TabRepository $repository */
         $repository = $this->getRepository();
-        return $repository->getListQuery($this->environment);
+
+        return $repository->getListQuery($this->getEnvironment()->getSlug());
     }
 
     /**
@@ -36,7 +37,7 @@ class AdminTabManager extends AbstractAdminEntityManager
     public function create()
     {
         $tab = new Tab();
-        $tab->setEnvironment($this->getEnvironmentReference());
+        $tab->setEnvironment($this->getEnvironment());
 
         return $tab;
     }
@@ -52,7 +53,7 @@ class AdminTabManager extends AbstractAdminEntityManager
         $repository = $this->getRepository();
 
         $tab->setOrderNumber($repository->getPreviousOrderNumber(
-            $this->environment,
+            $this->getEnvironment()->getSlug(),
             $tab->getOrderNumber()
         ));
 
@@ -70,7 +71,7 @@ class AdminTabManager extends AbstractAdminEntityManager
         $repository = $this->getRepository();
 
         $tab->setOrderNumber($repository->getNextOrderNumber(
-            $this->environment,
+            $this->getEnvironment()->getSlug(),
             $tab->getOrderNumber()
         ));
 

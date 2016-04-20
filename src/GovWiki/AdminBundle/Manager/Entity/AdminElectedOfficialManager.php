@@ -34,7 +34,7 @@ class AdminElectedOfficialManager extends AbstractAdminEntityManager
         /** @var ElectedOfficialRepository $repository */
         $repository = $this->getRepository();
         return $repository->getListQuery(
-            $this->environment,
+            $this->getEnvironment()->getSlug(),
             $id,
             $fullName,
             $government

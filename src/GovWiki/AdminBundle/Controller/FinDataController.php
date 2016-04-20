@@ -110,7 +110,7 @@ class FinDataController extends AbstractGovWikiAdminController
         $form = $this->createFormBuilder(null, [
             'action' => $this->generateUrl(
                 'govwiki_admin_findata_import',
-                [ 'environment' => $this->getManager()->getEnvironment() ]
+                [ 'environment' => $this->getManager()->getEnvironment()->getSlug() ]
             ),
         ])
             ->add('csv_file', 'file')

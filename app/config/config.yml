@@ -79,8 +79,7 @@ doctrine:
         charset:  UTF8
         types:
             coloring_conditions: GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditionsType
-        mapping_types:
-            coloring_conditions: text
+            ColoringConditions: GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditionsType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"

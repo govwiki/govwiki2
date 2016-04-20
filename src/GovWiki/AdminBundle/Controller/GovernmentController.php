@@ -9,6 +9,7 @@ use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Form\ExtGovernmentType;
 use GovWiki\DbBundle\GovWikiDbServices;
 use GovWiki\DbBundle\Reader\CsvReader;
+use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\DbBundle\Writer\CsvWriter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -78,13 +79,13 @@ class GovernmentController extends AbstractGovWikiAdminController
     {
         $manager = $this->getManager();
         $government = $manager->create();
+        $environment = $this->getCurrentEnvironment();
+
+        $formats = $this->getFormatManager()->getList($environment);
 
         $form = $this->createFormBuilder()
             ->add('main', 'government')
-            ->add(
-                'extension',
-                new ExtGovernmentType($this->adminEnvironmentManager())
-            )
+            ->add('extension', new ExtGovernmentType($formats))
             ->setData([ 'main' => $government, 'extension' => [] ])
             ->getForm();
         $form->handleRequest($request);
@@ -92,10 +93,10 @@ class GovernmentController extends AbstractGovWikiAdminController
         if ($form->isValid()) {
             $manager->update($government);
 
-            $colorizedCountyConditions = $this->adminEnvironmentManager()->getMap()
-                ->getColorizedCountyConditions();
-            $colorizedFieldName = $colorizedCountyConditions->getFieldName();
-            $isColorized = $colorizedCountyConditions->isColorized();
+            $coloringConditions = $environment->getMap()
+                ->getColoringConditions();
+            $colorizedFieldName = $coloringConditions->getFieldName();
+            $isColorized = $coloringConditions->isColorized();
 
             $extraGovernmentData = $form->getData()['extension'];
             $data = null;
@@ -124,7 +125,7 @@ class GovernmentController extends AbstractGovWikiAdminController
 
         return [
             'form' => $form->createView(),
-            'formats' => $this->adminEnvironmentManager()->getFormats(),
+            'formats' => Functions::groupBy($formats, [ 'tab_name', 'field' ]),
         ];
     }
 
@@ -145,18 +146,21 @@ class GovernmentController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, Government $government)
     {
-        $data = $this->adminEnvironmentManager()
-            ->getGovernment($government->getId());
+        $environment = $this->getCurrentEnvironment();
+
+        $formats = $this->getFormatManager()
+            ->getList($environment, $government->getAltType());
+
+        $data = $this->getGovernmentManager()
+            ->getEnvironmentRelatedData(
+                $environment,
+                $government->getId(),
+                $this->getGovernmentManager()->getAvailableYears($environment)[0]
+            );
 
         $form = $this->createFormBuilder()
             ->add('main', 'government')
-            ->add(
-                'extension',
-                new ExtGovernmentType(
-                    $this->adminEnvironmentManager(),
-                    $government->getAltType()
-                )
-            )
+            ->add('extension', new ExtGovernmentType($formats))
             ->setData([ 'main' => $government, 'extension' => $data ])
             ->getForm();
         $form->handleRequest($request);
@@ -190,10 +194,10 @@ class GovernmentController extends AbstractGovWikiAdminController
             /*
             * Update government record in CartoDB dataset.
             */
-            $colorizedCountyConditions = $this->adminEnvironmentManager()->getMap()
-                ->getColorizedCountyConditions();
-            $colorizedFieldName = $colorizedCountyConditions->getFieldName();
-            $isColorized = $colorizedCountyConditions->isColorized();
+            $coloringConditions = $this->getCurrentEnvironment()->getMap()
+                ->getColoringConditions();
+            $colorizedFieldName = $coloringConditions->getFieldName();
+            $isColorized = $coloringConditions->isColorized();
 
             $sql = "
                 UPDATE {$government->getEnvironment()->getSlug()}
@@ -208,10 +212,6 @@ class GovernmentController extends AbstractGovWikiAdminController
                 array_key_exists($colorizedFieldName, $extraGovernmentData)) {
                 $data = $extraGovernmentData[$colorizedFieldName];
             }
-//            $this->dispatch(
-//                GovWikiAdminEvents::GOVERNMENT_ADD,
-//                new GovernmentAddEvent($government, $data)
-//            );
 
             $this->get(CartoDbServices::CARTO_DB_API)
                 ->sqlRequest($sql ." WHERE
@@ -219,8 +219,8 @@ class GovernmentController extends AbstractGovWikiAdminController
                     slug = '{$oldSlug}'
                 ");
 
-            $this->adminEnvironmentManager()
-                ->updateGovernment($extraGovernmentData);
+            $this->getGovernmentManager()
+                ->updateGovernment($environment, $extraGovernmentData);
 
             $this->addFlash('admin_success', 'Government '.
                 $government->getName() .' saved');
@@ -231,8 +231,7 @@ class GovernmentController extends AbstractGovWikiAdminController
         return [
             'id' => $government->getId(),
             'form' => $form->createView(),
-            'formats' => $this->adminEnvironmentManager()
-                ->getFormats(false, $government->getAltType()),
+            'formats' => Functions::groupBy($formats, [ 'tab_name', 'field' ]),
         ];
     }
 
@@ -252,7 +251,7 @@ class GovernmentController extends AbstractGovWikiAdminController
          */
         $this->get(CartoDbServices::CARTO_DB_API)
             ->sqlRequest("
-                DELETE FROM {$this->adminEnvironmentManager()->getSlug()}
+                DELETE FROM {$this->getCurrentEnvironment()->getSlug()}
                 WHERE alt_type_slug = '{$government->getAltTypeSlug()}' AND
                     slug = '{$government->getSlug()}'
             ");
@@ -279,7 +278,7 @@ class GovernmentController extends AbstractGovWikiAdminController
     public function importAction(Request $request)
     {
         /*
-         * Build form.
+         * todo make.
          */
         $form = $this->createFormBuilder()
                 ->add('file', 'file', [
@@ -343,6 +342,7 @@ class GovernmentController extends AbstractGovWikiAdminController
      */
     public function exportAction()
     {
+        // todo make
         $filePath = $this->getParameter('kernel.logs_dir') . '/government.csv';
 
         $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)

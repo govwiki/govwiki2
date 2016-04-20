@@ -31,7 +31,7 @@ class AdminTranslationManager extends AbstractAdminEntityManager
     {
         /** @var TranslationRepository $repository */
         $repository = $this->getRepository();
-        return $repository->getTranslationsBySettings($this->environment, $locale_name, $trans_key_settings, $translation, $needOneResult);
+        return $repository->getTranslationsBySettings($this->getEnvironment()->getSlug(), $locale_name, $trans_key_settings, $translation, $needOneResult);
     }
 
     /**
@@ -45,7 +45,7 @@ class AdminTranslationManager extends AbstractAdminEntityManager
         /** @var TranslationRepository $repository */
         $repository = $this->getRepository();
 
-        $environment = $this->environment;
+        $environment = $this->getEnvironment()->getSlug();
         if ($getGlobal) {
             $environment = null;
         }

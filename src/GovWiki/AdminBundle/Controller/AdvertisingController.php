@@ -14,7 +14,7 @@ use GovWiki\AdminBundle\GovWikiAdminServices;
  *
  * @Configuration\Route("/advertising")
  */
-class AdvertisingController extends Controller
+class AdvertisingController extends AbstractGovWikiAdminController
 {
     /**
      * Adverting index page
@@ -30,7 +30,7 @@ class AdvertisingController extends Controller
     public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $environmentSlug = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)->getSlug();
+        $environmentSlug = $this->getCurrentEnvironment()->getSlug();
         $currentEnvironment = $em->getRepository("GovWikiDbBundle:Environment")->findOneBySlug($environmentSlug);
 
         $defaultEntity = $em

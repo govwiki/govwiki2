@@ -21,10 +21,12 @@ class AbstractGovWikiAdminController extends AbstractGovWikiController
      *
      * @return void
      */
-    protected function setCurrentEnvironment(Environment $environment)
+    protected function setCurrentEnvironment(Environment $environment = null)
     {
         $this->get(GovWikiEnvironmentService::STORAGE)->set($environment);
-        $this->get('session')->set('environment', $environment->getSlug());
+        if ($environment !== null) {
+            $this->get('session')->set('environment', $environment->getSlug());
+        }
     }
 
     /**

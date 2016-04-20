@@ -6,6 +6,7 @@ use CartoDbBundle\CartoDbServices;
 use CartoDbBundle\Service\CartoDbApi;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditions;
 use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Form\MapType;
@@ -35,11 +36,8 @@ class MapController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request)
     {
-        /** @var AdminEnvironmentManager $manager */
-        $manager = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
-
         /** @var Map $map */
-        $map = $manager->getMap();
+        $map = $this->getCurrentEnvironment()->getMap();
         if (null === $map) {
             throw new NotFoundHttpException();
         }
@@ -54,11 +52,10 @@ class MapController extends AbstractGovWikiAdminController
 
             if (array_key_exists('colorized', $data)) {
                 $data['colorized'] = true;
-                $conditions = ColorizedCountyConditions::fromArray($data);
+                $conditions = ColoringConditions::fromArray($data);
                 $values = $this->adminEnvironmentManager()
                     ->getGovernmentsFiledValues($conditions->getFieldName());
-                $environment = $this->adminEnvironmentManager()
-                    ->getEnvironment();
+                $environment = $this->getCurrentEnvironment()->getSlug();
 
                 $values = array_map(
                     function (array $row) {
@@ -120,18 +117,18 @@ class MapController extends AbstractGovWikiAdminController
                 $api->dropDataset($environment.'_temporary');
             } else {
                 $data['colorized'] = false;
-                $conditions = ColorizedCountyConditions::fromArray($data);
+                $conditions = ColoringConditions::fromArray($data);
             }
 
 
-            $map->setColorizedCountyConditions($conditions);
+            $map->setColoringConditions($conditions);
             $em->persist($map);
             $em->flush();
         }
 
         return [
             'form' => $form->createView(),
-            'conditions' => $map->getColorizedCountyConditions(),
+            'conditions' => $map->getColoringConditions(),
             'fields' => $this
                 ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
                 ->getGovernmentFields(),

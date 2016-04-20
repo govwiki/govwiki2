@@ -135,12 +135,14 @@ class FormatRepository extends EntityRepository
 
         if (null !== $altType) {
             // Remove formats not show in specified alt type.
-            $result = array_filter(
-                $result,
-                function (array $format) use ($altType) {
-                    return in_array($altType, $format['showIn'], true);
+            $tmp = [];
+            foreach ($result as $format) {
+                if (in_array($altType, $format['showIn'], true)) {
+                    $tmp[] = $format;
                 }
-            );
+            }
+
+            $result = $tmp;
         }
 
         return $result;

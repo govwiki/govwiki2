@@ -197,6 +197,13 @@ class Environment
     protected $showDocuments = false;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(nullable=true)
+     */
+    protected $mainImage;
+
+    /**
      *
      */
     public function __construct()
@@ -691,7 +698,7 @@ class Environment
     /**
      * Get subscribable
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getSubscribable()
     {
@@ -714,6 +721,26 @@ class Environment
     public function setShowDocuments($showDocuments)
     {
         $this->showDocuments = $showDocuments;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainImage()
+    {
+        return $this->mainImage;
+    }
+
+    /**
+     * @param string $mainImage New path to main image.
+     *
+     * @return Environment
+     */
+    public function setMainImage($mainImage)
+    {
+        $this->mainImage = $mainImage;
 
         return $this;
     }

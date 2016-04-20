@@ -28,6 +28,6 @@ class AdminCreateRequestManager extends AbstractAdminEntityManager
         /** @var CreateRequestRepository $repository */
         $repository = $this->getRepository();
 
-        return $repository->getListQuery($this->environment);
+        return $repository->getListQuery($this->getEnvironment()->getSlug());
     }
 }

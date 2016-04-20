@@ -3,8 +3,8 @@
 namespace GovWiki\DbBundle\Form;
 
 use Doctrine\ORM\EntityRepository;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\DbBundle\Entity\Format;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,17 +16,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class FormatType extends AbstractType
 {
     /**
-     * @var AdminEnvironmentManager
+     * @var EnvironmentStorageInterface
      */
-    private $manger;
+    private $storage;
 
     /**
-     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
-     *                                         instance.
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
      */
-    public function __construct(AdminEnvironmentManager $manager)
+    public function __construct(EnvironmentStorageInterface $storage)
     {
-        $this->manger = $manager;
+        $this->storage = $storage;
     }
 
     /**
@@ -51,7 +51,7 @@ class FormatType extends AbstractType
                         ->join('Tab.environment', 'Environment')
                         ->where($expr->eq(
                             'Environment.slug',
-                            $expr->literal($this->manger->getSlug())
+                            $expr->literal($this->storage->get()->getSlug())
                         ));
                 }
             ])
@@ -68,7 +68,7 @@ class FormatType extends AbstractType
                         ->join('Category.environment', 'Environment')
                         ->where($expr->eq(
                             'Environment.slug',
-                            $expr->literal($this->manger->getSlug())
+                            $expr->literal($this->storage->get()->getSlug())
                         ));
                 },
             ])

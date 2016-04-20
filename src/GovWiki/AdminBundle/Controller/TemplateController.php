@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @Configuration\Route("/templates")
  */
-class TemplateController extends Controller
+class TemplateController extends AbstractGovWikiAdminController
 {
 
     /**
@@ -28,12 +28,10 @@ class TemplateController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $manager = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
-
-        $environment = $manager->getEntity();
+        $environment = $this->getCurrentEnvironment();
         $template = $this->getDoctrine()
             ->getRepository('GovWikiAdminBundle:Template')
-            ->getVoteEmailTemplate($manager->getEnvironment());
+            ->getVoteEmailTemplate($this->getCurrentEnvironment()->getSlug());
 
         $form = $this->createFormBuilder([
             'template' => $template->getContent(),

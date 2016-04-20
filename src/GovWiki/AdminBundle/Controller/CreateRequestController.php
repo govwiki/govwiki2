@@ -95,7 +95,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
                      * Set display time for applied legislation.
                      */
 
-                    $environment = $this->adminEnvironmentManager()->getEntity();
+                    $environment = $this->getCurrentEnvironment();
                     $delay = $environment->getLegislationDisplayTime();
 
                     if (null !== $delay) {
@@ -164,7 +164,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
      */
     private function sendEmails(array $electedList, AbstractCreateRequest $createRequest)
     {
-        $domain = $this->adminEnvironmentManager()->getEntity()->getDomain();
+        $domain = $this->getCurrentEnvironment()->getDomain();
 
         $commentKeyManager = $this
             ->get(GovWikiCommentServices::COMMENT_KEY_MANAGER);
@@ -198,7 +198,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
                 'full_name' => $row['fullName'],
                 'title' => $row['title'],
                 'type' => $type,
-                'email' => $this->adminEnvironmentManager()->getEntity()->getAdminEmail(),
+                'email' => $this->getCurrentEnvironment()->getAdminEmail(),
                 'government_name' => $row['name'],
                 'profileUrl' => "http://{$domain}".$govwikiRouter->generate(
                     'elected',
@@ -215,8 +215,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
                 $template = $this->getDoctrine()
                     ->getRepository('GovWikiAdminBundle:Template')
                     ->getVoteEmailTemplate(
-                        $this->adminEnvironmentManager()
-                            ->getEnvironment()
+                        $this->getCurrentEnvironment()->getSlug()
                     );
                 $vote =
                     $this->getVote($createRequest->getSubject(), $row['id']);
@@ -236,7 +235,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
 
             $message
                 ->setSubject($this->getParameter('email_subject'))
-                ->setFrom($this->adminEnvironmentManager()->getEntity()->getAdminEmail())
+                ->setFrom($this->getCurrentEnvironment()->getAdminEmail())
                 ->setBody(
                     $engine->render(
                         $template->getContent(),

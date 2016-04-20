@@ -5,13 +5,13 @@ namespace GovWiki\AdminBundle\Manager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 
 /**
  * Class AbstractAdminEntityManager
  * @package GovWiki\AdminBundle\Manager
  */
-abstract class AbstractAdminEntityManager implements
-    AdminEntityManagerAwareInterface
+abstract class AbstractAdminEntityManager
 {
     /**
      * @var EntityManagerInterface
@@ -19,44 +19,30 @@ abstract class AbstractAdminEntityManager implements
     protected $em;
 
     /**
-     * @var string
+     * @var EnvironmentStorageInterface
      */
-    protected $environment;
+    protected $storage;
 
     /**
-     * @var integer
+     * @param EntityManagerInterface      $em      A EntityManagerInterface
+     *                                             instance.
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
      */
-    protected $environmentId;
-
-    /**
-     * @param EntityManagerInterface $em A EntityManagerInterface instance.
-     */
-    public function __construct(EntityManagerInterface $em) {
+    public function __construct(
+        EntityManagerInterface $em,
+        EnvironmentStorageInterface $storage
+    ) {
         $this->em = $em;
+        $this->storage = $storage;
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function setEnvironment($environment)
-    {
-        $this->environment = $environment;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setEnvironmentId($id)
-    {
-        $this->environmentId = $id;
-    }
-
-    /**
-     * @return string
+     * @return Environment
      */
     public function getEnvironment()
     {
-        return $this->environment;
+        return $this->storage->get();
     }
 
     /**
@@ -67,6 +53,7 @@ abstract class AbstractAdminEntityManager implements
     public function create()
     {
         $className = $this->getEntityClassName();
+
         return new $className();
     }
 
@@ -109,59 +96,6 @@ abstract class AbstractAdminEntityManager implements
     abstract protected function getEntityClassName();
 
     /**
-     * @return \Doctrine\ORM\EntityRepository
-     */
-    protected function getRepository($entityName = null)
-    {
-        if (null === $entityName) {
-            $entityName = $this->getEntityClassName();
-        }
-
-        return $this->em->getRepository($entityName);
-    }
-
-    /**
-     * @param integer $id Entity id.
-     *
-     * @return object
-     */
-    public function getReference($id)
-    {
-        return $this->em->getReference($this->getEntityClassName(), $id);
-    }
-
-    /**
-     * @param string $alias Entity alias.
-     *
-     * @return \Doctrine\ORM\QueryBuilder
-     */
-    protected function createQueryBuilder($alias)
-    {
-        return $this->getRepository()->createQueryBuilder($alias);
-    }
-
-    /**
-     * @param string $dql Dql statement.
-     *
-     * @return \Doctrine\ORM\Query
-     */
-    protected function createQuery($dql)
-    {
-        return $this->em->createQuery($dql);
-    }
-
-    /**
-     * @return Environment
-     */
-    public function getEnvironmentReference()
-    {
-        return $this->em->getReference(
-            'GovWiki\DbBundle\Entity\Environment',
-            $this->environmentId
-        );
-    }
-
-    /**
      * @param array $columns Array of columns name for fetching data from
      *                       repository.
      *
@@ -194,10 +128,43 @@ abstract class AbstractAdminEntityManager implements
         return $qb
             ->join($alias.'.environment', 'Environment')
             ->where(
-                $expr->eq('Environment.slug', $expr->literal($this->environment))
+                $expr->eq('Environment.slug', ':environment')
             )
+            ->setParameter('environment', $this->getEnvironment()->getSlug())
             ->setFirstResult($offset)
             ->getQuery()
             ->getArrayResult();
+    }
+
+    /**
+     * @return \Doctrine\ORM\EntityRepository
+     */
+    protected function getRepository($entityName = null)
+    {
+        if (null === $entityName) {
+            $entityName = $this->getEntityClassName();
+        }
+
+        return $this->em->getRepository($entityName);
+    }
+
+    /**
+     * @param string $alias Entity alias.
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    protected function createQueryBuilder($alias)
+    {
+        return $this->getRepository()->createQueryBuilder($alias);
+    }
+
+    /**
+     * @param string $dql Dql statement.
+     *
+     * @return \Doctrine\ORM\Query
+     */
+    protected function createQuery($dql)
+    {
+        return $this->em->createQuery($dql);
     }
 }

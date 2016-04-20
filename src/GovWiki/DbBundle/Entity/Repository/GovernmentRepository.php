@@ -105,7 +105,7 @@ class GovernmentRepository extends EntityRepository
         $expr = $this->_em->getExpressionBuilder();
 
         $qb = $this->createQueryBuilder('Government')
-            ->where($expr->eq('Government.environemnt', ':environment'))
+            ->where($expr->eq('Government.environment', ':environment'))
             ->setParameter('environment', $environment);
 
         if (null !== $id) {

@@ -28,7 +28,7 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
     public function indexAction(Request $request)
     {
         $session = $this->container->get('session');
-        $environment = $this->adminEnvironmentManager()->getEnvironment();
+        $environment = $this->getCurrentEnvironment()->getSlug();
 
         $id = null;
         $fullName = null;

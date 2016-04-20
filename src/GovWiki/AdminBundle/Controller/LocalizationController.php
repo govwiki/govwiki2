@@ -38,7 +38,7 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function globalAction(Request $request)
     {
-        $this->adminEnvironmentManager()->clearEnvironment();
+        $this->setCurrentEnvironment(null);
         return $this->indexAction($request);
     }
 
@@ -175,7 +175,7 @@ class LocalizationController extends AbstractGovWikiAdminController
                 $global_locale = $this->getLocaleManager()
                     ->getOneLocaleByShortName($locale_name, true);
 
-                $environment_name = $this->adminEnvironmentManager()->getEnvironment();
+                $environment_name = $this->getCurrentEnvironment()->getSlug();
                 $environment = $em->getRepository('GovWikiDbBundle:Environment')->findOneBySlug($environment_name);
 
                 $new_locale = new Locale();
@@ -255,7 +255,7 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function exportLocaleAction($locale_name)
     {
-        $env_name = $this->adminEnvironmentManager()->getEnvironment();
+        $env_name = $this->getCurrentEnvironment()->getSlug();
         if (null === $env_name) {
             $env_name = 'global';
         }
@@ -486,7 +486,7 @@ class LocalizationController extends AbstractGovWikiAdminController
             if (in_array($transKey, $footer_transKey_list)) {
                 $footer_slug_parts = explode('.', $transKey);
 
-                $environment_name = $this->adminEnvironmentManager()->getEnvironment();
+                $environment_name = $this->getCurrentEnvironment()->getSlug();
                 $environment = $em->getRepository('GovWikiDbBundle:Environment')->findOneBySlug($environment_name);
                 $env_content = $em->getRepository('GovWikiDbBundle:EnvironmentContents')->findOneBy([
                     'environment' => $environment,

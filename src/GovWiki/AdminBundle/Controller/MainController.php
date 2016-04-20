@@ -5,7 +5,6 @@ namespace GovWiki\AdminBundle\Controller;
 use CartoDbBundle\CartoDbServices;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Environment;
-use GovWiki\DbBundle\Form\EnvironmentType;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -99,7 +98,7 @@ class MainController extends AbstractGovWikiAdminController
             }
         }
 
-        $form = $this->createForm(new EnvironmentType(), $environment);
+        $form = $this->createForm('environment', $environment);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -157,7 +156,7 @@ class MainController extends AbstractGovWikiAdminController
      */
     public function sitemapAction()
     {
-        $environment = $this->adminEnvironmentManager()->getSlug();
+        $environment = $this->getCurrentEnvironment()->getSlug();
         $this->get(GovWikiAdminServices::TXT_SITEMAP_GENERATOR)
             ->generate($environment);
 
@@ -324,13 +323,13 @@ class MainController extends AbstractGovWikiAdminController
     public function updateAction()
     {
         $environmentManager = $this->adminEnvironmentManager();
-        $map = $this->adminEnvironmentManager()->getMap();
+        $map = $this->getCurrentEnvironment()->getMap();
         $environmentManager->updateCartoDB(
-            $map->getColorizedCountyConditions()->getFieldName()
+            $map->getColoringConditions()->getFieldName()
         );
 
         return $this->redirectToRoute('govwiki_admin_main_show', [
-            'environment' => $environmentManager->getEnvironment(),
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
         ]);
     }
 
@@ -343,7 +342,13 @@ class MainController extends AbstractGovWikiAdminController
      */
     public function enableAction(Request $request)
     {
-        $this->adminEnvironmentManager()->enable();
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $this->getCurrentEnvironment();
+        $entity->setEnabled(true);
+
+        $em->persist($entity);
+        $em->flush();
 
         if ($request->isXmlHttpRequest()) {
             return new JsonResponse();
@@ -361,7 +366,13 @@ class MainController extends AbstractGovWikiAdminController
      */
     public function disableAction(Request $request)
     {
-        $this->adminEnvironmentManager()->disable();
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $this->getCurrentEnvironment();
+        $entity->setEnabled(false);
+
+        $em->persist($entity);
+        $em->flush();
 
         if ($request->isXmlHttpRequest()) {
             return new JsonResponse();

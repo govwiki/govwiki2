@@ -2,11 +2,8 @@
 
 namespace GovWiki\DbBundle\Form;
 
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
-use GovWiki\DbBundle\Entity\Government;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class ExtGovernmentType
@@ -14,25 +11,18 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class ExtGovernmentType extends AbstractType
 {
-    /**
-     * @var AdminEnvironmentManager
-     */
-    private $manager;
 
     /**
-     * @var string
+     * @var array
      */
-    private $altType;
+    private $formats;
 
     /**
-     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
-     *                                         instance.
-     * @param string                  $altType Government alt type.
+     * @param array $formats Array of field formats.
      */
-    public function __construct(AdminEnvironmentManager $manager, $altType = null)
+    public function __construct(array $formats)
     {
-        $this->manager = $manager;
-        $this->altType = $altType;
+        $this->formats = $formats;
     }
 
     /**
@@ -40,44 +30,20 @@ class ExtGovernmentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $formats = $this->manager
-            ->getFormats(true);
+        foreach ($this->formats as $format) {
+            $format['type'] = ('string' === $format['type']) ? 'text' : 'number';
 
-        if ($this->altType) {
-            foreach ($formats as $format) {
-                if (in_array($this->altType, $format['showIn'], true)) {
-                    $format['type'] = ('string' === $format['type']) ? 'text' : 'number';
-
-                    $builder->add(
-                        $format['field'],
-                        $format['type'],
-                        [ 'required' => false ]
-                    );
-                    if ($format['ranked']) {
-                        $builder->add(
-                            $format['field'] . '_rank',
-                            'integer',
-                            [ 'required' => false ]
-                        );
-                    }
-                }
-            }
-        } else {
-            foreach ($formats as $format) {
-                $format['type'] = ('string' === $format['type']) ? 'text' : 'number';
-
+            $builder->add(
+                $format['field'],
+                $format['type'],
+                [ 'required' => false ]
+            );
+            if ($format['ranked']) {
                 $builder->add(
-                    $format['field'],
-                    $format['type'],
+                    $format['field'] . '_rank',
+                    'integer',
                     [ 'required' => false ]
                 );
-                if ($format['ranked']) {
-                    $builder->add(
-                        $format['field'] . '_rank',
-                        'integer',
-                        [ 'required' => false ]
-                    );
-                }
             }
         }
     }

@@ -558,6 +558,62 @@ class GovernmentManager implements GovernmentManagerInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getEnvironmentRelatedData(
+        Environment $environment,
+        $government,
+        $year,
+        array $fields = null
+    ) {
+        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
+
+        $fieldsStmt = '*';
+        if ($fields !== null) {
+            $fieldsStmt = implode(',', $fields);
+        }
+
+        return $this->em->getConnection()->fetchAssoc("
+            SELECT {$fieldsStmt} FROM {$tableName}
+            WHERE
+                government_id = {$government} AND
+                year = {$year}
+        ");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateGovernment(Environment $environment, array $data)
+    {
+        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
+
+        $stmt = '';
+        $id = $data['id'];
+        unset($data['id']);
+
+        foreach ($data as $field => $value) {
+            if (is_string($value)) {
+                $value = "'{$value}'";
+            } elseif (null === $value) {
+                $value = 'NULL';
+            }
+
+            $stmt .= "{$field} = {$value},";
+        }
+        $stmt = rtrim($stmt, ',');
+
+        $this->em->getConnection()->exec("
+            UPDATE `{$tableName}` SET {$stmt}
+            WHERE id = {$id}
+        ");
+    }
+
+    /**
      * @param array $result Raw fin data result.
      *
      * @return array
@@ -601,20 +657,13 @@ class GovernmentManager implements GovernmentManagerInterface
     private function get(Environment $environment, $government, $year, array $fields)
     {
         if (is_array($fields) && (count($fields) > 0)) {
-            $tableName = DefaultNamingStrategy::environmentRelatedTableName(
-                $environment
-            );
-
-            // Prepare field statement for query.
-            $fieldsStmt = implode(',', array_keys($fields));
-
             // Fetch data.
-            $data = $this->em->getConnection()->fetchAssoc("
-                SELECT {$fieldsStmt} FROM {$tableName}
-                WHERE
-                    government_id = {$government} AND
-                    year = {$year}
-            ");
+            $data = $this->getEnvironmentRelatedData(
+                $environment,
+                $government,
+                $year,
+                array_keys($fields)
+            );
 
             // Convert value to proper type.
             $validData = [];

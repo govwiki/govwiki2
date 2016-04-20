@@ -17,7 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
  *
  * @Configuration\Route("/legend")
  */
-class LegendController extends Controller
+class LegendController extends AbstractGovWikiAdminController
 {
     /**
      * @Configuration\Route("/")
@@ -33,12 +33,10 @@ class LegendController extends Controller
      */
     public function editAction(Request $request)
     {
-        /** @var AdminEnvironmentManager $manager */
-        $manager = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
-        $environment = $manager->getSlug();
+        $environment = $this->getCurrentEnvironment()->getSlug();
 
         /** @var Map $map */
-        $map = $manager->getMap();
+        $map = $this->getCurrentEnvironment()->getMap();
         if (null === $map) {
             throw new NotFoundHttpException();
         }

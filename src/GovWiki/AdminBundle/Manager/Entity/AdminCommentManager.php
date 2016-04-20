@@ -28,6 +28,7 @@ class AdminCommentManager extends AbstractAdminEntityManager
     {
         /** @var VoteCommentRepository $repository */
         $repository = $this->getRepository();
+
         return $repository->getListQuery($elected);
     }
 }

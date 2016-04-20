@@ -8,6 +8,7 @@ use GovWiki\AdminBundle\Manager\AbstractAdminEntityManager;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Repository\FormatRepository;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 
 /**
  * Class AdminGovernmentManager
@@ -21,12 +22,18 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
     private $api;
 
     /**
-     * @param EntityManagerInterface $em  A EntityManagerInterface instance.
-     * @param CartoDbApi             $api A CartoDbApi instance.
+     * @param EntityManagerInterface      $em      A EntityManagerInterface
+     *                                             instance.
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
+     * @param CartoDbApi                  $api     A CartoDbApi instance.
      */
-    public function __construct(EntityManagerInterface $em, CartoDbApi $api)
-    {
-        parent::__construct($em);
+    public function __construct(
+        EntityManagerInterface $em,
+        EnvironmentStorageInterface $storage,
+        CartoDbApi $api
+    ) {
+        parent::__construct($em, $storage);
         $this->api = $api;
     }
 
@@ -48,7 +55,8 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
     {
         /** @var GovernmentRepository $repository */
         $repository = $this->getRepository();
-        return $repository->getListQuery($this->environmentId, $id, $name);
+
+        return $repository->getListQuery($this->getEnvironment()->getId(), $id, $name);
     }
 
     /**
@@ -58,7 +66,7 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
     {
         /** @var Government $government */
         $government = parent::create();
-        return $government->setEnvironment($this->getEnvironmentReference());
+        return $government->setEnvironment($this->getEnvironment());
     }
 
     /**
@@ -77,7 +85,7 @@ class AdminGovernmentManager extends AbstractAdminEntityManager
 
             /** @var FormatRepository $repository */
             $repository = $this->getRepository('GovWikiDbBundle:Format');
-            $format = $repository->get($this->environmentId, true);
+            $format = $repository->get($this->getEnvironment()->getId(), true);
 
             foreach ($format as $row) {
                 $columns[] = $row['field'];
