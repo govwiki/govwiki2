@@ -2,6 +2,10 @@ main:
     resource: "@GovWikiAdminBundle/Controller/MainController.php"
     type:     annotation
 
+environment:
+    resource: "@GovWikiAdminBundle/Controller/EnvironmentController.php"
+    type:     annotation
+
 government:
     resource: "@GovWikiAdminBundle/Controller/GovernmentController.php"
     type:     annotation
@@ -64,10 +68,6 @@ wizard:
 
 fin_data:
     resource: @GovWikiAdminBundle/Controller/FinDataController.php
-    type:     annotation
-
-template:
-    resource: "@GovWikiAdminBundle/Controller/TemplateController.php"
     type:     annotation
 
 legend:

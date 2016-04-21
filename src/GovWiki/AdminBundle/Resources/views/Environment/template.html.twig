@@ -1,4 +1,4 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - Templates{% endblock %}
 
@@ -8,11 +8,17 @@
         macro.breadcrumbElement(
         admin_environment|capitalize ~' environment',
             'govwiki_admin_main_show',
-            { 'environment': admin_environment }
+            { 'environment': environment.slug }
         )
     }}
     {{ macro.breadcrumbElement('Templates') }}
 {% endblock breadcrumb %}
+
+{% block panel_title %}
+{% endblock panel_title %}
+
+{% block panel_body %}
+{% endblock panel_body %}
 
 {% block body %}
 

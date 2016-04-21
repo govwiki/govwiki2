@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Twig;
 
+use GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ConditionInterface;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 
 /**
@@ -36,17 +37,6 @@ class TwigExtensions extends \Twig_Extension
     /**
      * {@inheritdoc}
      */
-    public function getGlobals()
-    {
-        return [
-            'admin_styles' => json_encode($this->storage->get()->getStyle()),
-            'admin_environment' => $this->storage->get()->getSlug(),
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getFunctions()
     {
         return [
@@ -76,7 +66,7 @@ class TwigExtensions extends \Twig_Extension
             new \Twig_SimpleFilter('condition_type', [
                 $this,
                 'getConditionType',
-            ])
+            ]),
         ];
     }
 

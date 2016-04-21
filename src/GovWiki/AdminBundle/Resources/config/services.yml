@@ -24,6 +24,14 @@ services:
         class: GovWiki\AdminBundle\Manager\AdminStyleManager
         arguments: [ @doctrine.orm.default_entity_manager ]
 
+    govwiki_admin.listener.environment:
+        class: GovWiki\AdminBundle\Listener\EnvironmentListener
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @govwiki_environment.storage
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller}
+
     govwiki_admin.listener.government_sync:
         class: GovWiki\AdminBundle\Listener\GovernmentUpdateListener
         arguments: [@carto_db.api]

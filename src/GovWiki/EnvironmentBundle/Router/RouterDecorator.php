@@ -3,6 +3,7 @@
 namespace GovWiki\EnvironmentBundle\Router;
 
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -55,6 +56,10 @@ class RouterDecorator implements RouterInterface
     ) {
         $collection = $this->router->getRouteCollection();
         $currentRoute = $collection->get($name);
+
+        if ($currentRoute === null) {
+            throw new NotFoundHttpException();
+        }
 
         // Add environment to parameters only if it's really need.
         $needEnvironment = $currentRoute->hasRequirement('environment') &&

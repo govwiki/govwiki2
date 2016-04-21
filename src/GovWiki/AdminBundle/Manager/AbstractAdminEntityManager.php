@@ -113,9 +113,15 @@ abstract class AbstractAdminEntityManager
 
         $qb = $repository->createQueryBuilder($alias);
         if (count($columns) > 0) {
-            foreach ($columns as &$column) {
-                $column = "$alias.$column";
-            }
+//            foreach ($columns as &$column) {
+//                $column = "$alias.$column";
+//            }
+            $columns = array_map(
+                function ($column) use ($alias) {
+                    return "$alias.$column";
+                },
+                $columns
+            );
             $qb->select(implode(',', $columns));
         }
 
@@ -137,6 +143,10 @@ abstract class AbstractAdminEntityManager
     }
 
     /**
+     * @param string $entityName Get for specified entity. If null get repository
+     *                           for manged entity
+     *                           {@see AbstractAdminEntityManager::getEntityClassName}.
+     *
      * @return \Doctrine\ORM\EntityRepository
      */
     protected function getRepository($entityName = null)

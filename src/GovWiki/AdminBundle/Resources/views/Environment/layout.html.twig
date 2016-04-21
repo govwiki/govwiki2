@@ -1,0 +1,39 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block submenu %}
+    {{- macro.submenuElement(
+        'Info',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    )-}}
+
+    {{- macro.submenuElement(
+        'Templates',
+        'govwiki_admin_environment_template',
+        { 'environment': environment.slug }
+    )-}}
+
+    {{- macro.submenuElement(
+        'Localizations',
+        'govwiki_admin_localization_index',
+        { 'environment': environment.slug }
+    )-}}
+
+    {{- macro.submenuElement(
+        'Styles',
+        'govwiki_admin_style_index',
+        { 'environment': environment.slug }
+    )-}}
+
+    {{- macro.submenuElement(
+        'Map',
+        'govwiki_admin_map_edit',
+        { 'environment': environment.slug }
+    )-}}
+
+    {#{{- macro.submenuElement(#}
+        {#'Format',#}
+        {#'govwiki_admin_format_list',#}
+        {#{ 'environment': environment.slug }#}
+    {#)-}}#}
+{% endblock submenu %}
