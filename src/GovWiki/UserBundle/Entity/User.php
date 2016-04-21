@@ -236,7 +236,9 @@ class User extends BaseUser
      */
     public function setEnvironments(Environment $environment)
     {
-        $this->environments->clear();
+        if ($this->environments !== null) {
+            $this->environments->clear();
+        }
 
         return $this->addEnvironment($environment);
     }

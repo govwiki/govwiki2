@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Form;
 
+use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -42,6 +43,9 @@ class UserForm extends AbstractType
             $fieldOptions = [];
         }
 
+        /** @var User $user */
+        $user = $builder->getData();
+
         $builder
             ->add('username', null)
             ->add('email', null)
@@ -59,32 +63,34 @@ class UserForm extends AbstractType
             )
             ->add('plainPassword', 'password', $fieldOptions);
         if ($this->show_roles_and_envs_field) {
-            $builder
-                ->add(
-                    'roles',
-                    'choice',
-                    [
-                        'choices' => [
-                            'ROLE_ADMIN' => 'admin',
-                            'ROLE_MANAGER' => 'manager',
-                            'ROLE_USER' => 'user',
-                        ],
-                        'expanded' => false,
-                        'multiple' => true,
-                    ]
-                )
-                ->add(
+            $builder->add(
+                'roles',
+                'choice',
+                [
+                    'choices' => [
+                        'ROLE_ADMIN'   => 'admin',
+                        'ROLE_MANAGER' => 'manager',
+                        'ROLE_USER'    => 'user',
+                    ],
+                    'expanded' => false,
+                    'multiple' => true,
+                ]
+            );
+
+            if (($user === null) || (! $user->isAdmin())) {
+                $builder->add(
                     'environments',
                     'entity',
                     [
-                        'class' => 'GovWikiDbBundle:Environment',
+                        'class'        => 'GovWikiDbBundle:Environment',
                         'choice_label' => 'name',
-                        'expanded' => false,
-                        'multiple' => false,
-                        'required' => false,
+                        'expanded'     => false,
+                        'multiple'     => false,
+                        'required'     => false,
+                        'data'         => ($user !== null) ? $user->getEnvironments()[0] : null,
                     ]
-                )
-            ;
+                );
+            }
         }
     }
 
