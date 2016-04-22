@@ -6,8 +6,8 @@
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
     {{
         macro.breadcrumbElement(
-        admin_environment|capitalize ~' environment',
-            'govwiki_admin_main_show',
+            environment.name ~' environment',
+            'govwiki_admin_environment_show',
             { 'environment': environment.slug }
         )
     }}
@@ -15,65 +15,40 @@
 {% endblock breadcrumb %}
 
 {% block panel_title %}
+    {{ environment.name }} templates
 {% endblock panel_title %}
 
 {% block panel_body %}
-{% endblock panel_body %}
-
-{% block body %}
-
-    <div class="row">
-        <div class="col-md-12">
-
-            {# Panel #}
-            <div class="panel panel-primary">
-
-                {# Header #}
-                <div class="panel-heading">
-                    <h3 class="panel-title">Templates</h3>
-                </div>
-
-                {# Body #}
-                <div class="panel-body">
-                    <div>
-                        <h4>Available parameters:</h4>
+    <div>
+        <h4>Available parameters:</h4>
+        <ul>
+            <li>
+                vote:
+                <ul>
+                    <li>vote</li>
+                    <li>didElectedOfficialProposeThis</li>
+                    <li>
+                        legislation
                         <ul>
-                            <li>
-                                vote:
-                                <ul>
-                                    <li>vote</li>
-                                    <li>didElectedOfficialProposeThis</li>
-                                    <li>
-                                        legislation
-                                        <ul>
-                                            <li>name</li>
-                                            <li>issueCategory</li>
-                                            <li>summary</li>
-                                            <li>govAssignedNumber</li>
-                                            <li>dateConsidered</li>
-                                            <li>government</li>
-                                            <li>displayTime</li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>profileUrl</li>
-                            <li>addCommentUrl</li>
+                            <li>name</li>
+                            <li>issueCategory</li>
+                            <li>summary</li>
+                            <li>govAssignedNumber</li>
+                            <li>dateConsidered</li>
+                            <li>government</li>
+                            <li>displayTime</li>
                         </ul>
-                    </div>
-
-
-                    {{ form_start(form) }}
-                    {{ form_widget(form) }}
-                    <button type="submit" class="btn btn-success">Update</button>
-                    {{ form_end(form) }}
-
-
-                </div>
-
-            </div>
-
-        </div>
+                    </li>
+                </ul>
+            </li>
+            <li>profileUrl</li>
+            <li>addCommentUrl</li>
+        </ul>
     </div>
 
-{% endblock %}
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button type="submit" class="btn btn-success">Update</button>
+    {{ form_end(form) }}
+{% endblock panel_body %}

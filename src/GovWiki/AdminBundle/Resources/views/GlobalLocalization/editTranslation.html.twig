@@ -1,26 +1,17 @@
-{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
 
 {% block title %}{{ parent() }} - Edit translation{% endblock %}
 
 {% block breadcrumb %}
     {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
     {{- macro.breadcrumbElement(
-    environment.name ~' environment',
-    'govwiki_admin_environment_show',
-    { 'environment': environment.slug }
-    ) -}}
-    {{- macro.breadcrumbElement(
     'Localizations',
-    'govwiki_admin_localization_index',
-    { 'environment': environment.slug }
+    'govwiki_admin_globallocalization_index'
     ) -}}
     {{- macro.breadcrumbElement(
         locale_name|upper~' locale',
-        'govwiki_admin_localization_showlocale',
-        {
-            'environment': environment.slug,
-            'locale_name': locale_name
-        }
+        'govwiki_admin_globallocalization_showlocale',
+        { 'locale_name': locale_name }
     ) -}}
     {{ macro.breadcrumbElement('Edit translation') }}
 {% endblock breadcrumb %}

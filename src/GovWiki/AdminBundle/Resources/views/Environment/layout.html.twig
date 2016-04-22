@@ -27,13 +27,13 @@
 
     {{- macro.submenuElement(
         'Map',
-        'govwiki_admin_map_edit',
+        'govwiki_admin_environment_map',
         { 'environment': environment.slug }
     )-}}
 
-    {#{{- macro.submenuElement(#}
-        {#'Format',#}
-        {#'govwiki_admin_format_list',#}
-        {#{ 'environment': environment.slug }#}
-    {#)-}}#}
+    {{- macro.submenuElement(
+        'Format',
+        'govwiki_admin_format_list',
+        { 'environment': environment.slug }
+    )-}}
 {% endblock submenu %}

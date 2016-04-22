@@ -12,12 +12,13 @@
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
-        <header class="container">
+        {% set _submenu = block('submenu') %}
+
+        <header class="container" {% if _submenu %}style="margin-bottom: 0"{% endif %}>
             {% block header %}{% endblock header %}
         </header>
 
         {# Submenu #}
-        {% set _submenu = block('submenu') %}
         {% if _submenu %}
             <div class="submenu container">
                 <div class="row">

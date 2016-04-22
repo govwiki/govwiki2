@@ -44,7 +44,10 @@ class EnvironmentListener
             ($controller[0] instanceof AbstractGovWikiAdminController)) {
             $attr = $event->getRequest()->attributes->get('environment');
 
-            if ($attr !== null) {
+            if ($attr === null) {
+                // Remove environment.
+                $this->storage->set(null);
+            } else {
                 $repository = $this->em
                     ->getRepository('GovWikiDbBundle:Environment');
 

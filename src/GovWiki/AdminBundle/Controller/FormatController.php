@@ -205,7 +205,8 @@ class FormatController extends Controller
                 $translation->setLocale($locale);
                 $em->persist($translation);
             } elseif ('edit' == $action) {
-                $translation = $this->getTranslationManager()->getTranslationsBySettings($locale->getShortName(), $trans_key_settings, null, $needOneResult);
+                $translation = $this->getTranslationManager()
+                    ->getEnvironmentTranslations($locale->getShortName(), $trans_key_settings, null, $needOneResult);
                 if (!empty($translation)) {
                     $translation->setTranslation($format_name);
                 } else {
@@ -216,7 +217,8 @@ class FormatController extends Controller
                     $em->persist($translation);
                 }
             } elseif ('remove' == $action) {
-                $translation = $this->getTranslationManager()->getTranslationsBySettings($locale->getShortName(), $trans_key_settings, null, $needOneResult);
+                $translation = $this->getTranslationManager()
+                    ->getEnvironmentTranslations($locale->getShortName(), $trans_key_settings, null, $needOneResult);
                 if (!empty($translation)) {
                     $em->remove($translation);
                 }

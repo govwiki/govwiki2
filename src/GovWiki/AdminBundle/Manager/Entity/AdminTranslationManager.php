@@ -11,12 +11,60 @@ use GovWiki\DbBundle\Entity\Repository\TranslationRepository;
  */
 class AdminTranslationManager extends AbstractAdminEntityManager
 {
+
     /**
-     * {@inheritdoc}
+     * @param string  $locale        Locale short name ('en', 'fr' etc.).
+     * @param array   $keySettings   Array with Matching type and
+     *                               Translation Keys array
+     * @param string  $translation   Translation text.
+     * @param boolean $needOneResult If true, return object, else return
+     *                               array.
+     *
+     * @return array
      */
-    protected function getEntityClassName()
-    {
-        return 'GovWiki\DbBundle\Entity\Translation';
+    public function getGlobalTranslations(
+        $locale,
+        $keySettings = null,
+        $translation = null,
+        $needOneResult = false
+    ) {
+        /** @var TranslationRepository $repository */
+        $repository = $this->getRepository();
+
+        return $repository->getGlobalTranslations(
+            $locale,
+            $keySettings,
+            $translation,
+            $needOneResult
+        );
+    }
+
+    /**
+     * @param string  $locale        Locale short name ('en', 'fr' etc.).
+     * @param array   $keySettings   Array with Matching type and
+     *                               Translation Keys array
+     * @param string  $translation   Translation text.
+     * @param boolean $needOneResult If true, return object, else return
+     *                               array.
+     *
+     * @return array
+     */
+    public function getEnvironmentTranslations(
+        $locale,
+        $keySettings = null,
+        $translation = null,
+        $needOneResult = false
+    ) {
+        /** @var TranslationRepository $repository */
+        $repository = $this->getRepository();
+
+        return $repository->getEnvironmentTranslations(
+            $this->getEnvironment()->getId(),
+            $locale,
+            $keySettings,
+            $translation,
+            $needOneResult
+        );
     }
 
     /**
@@ -31,7 +79,7 @@ class AdminTranslationManager extends AbstractAdminEntityManager
     {
         /** @var TranslationRepository $repository */
         $repository = $this->getRepository();
-        return $repository->getTranslationsBySettings($this->getEnvironment()->getSlug(), $locale_name, $trans_key_settings, $translation, $needOneResult);
+        return $repository->getTranslationsBySettings($this->getEnvironment()->getId(), $locale_name, $trans_key_settings, $translation, $needOneResult);
     }
 
     /**
@@ -51,5 +99,13 @@ class AdminTranslationManager extends AbstractAdminEntityManager
         }
 
         return $repository->getTransInfoByLocale($environment, $locale_name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getEntityClassName()
+    {
+        return 'GovWiki\DbBundle\Entity\Translation';
     }
 }

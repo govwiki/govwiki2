@@ -1,18 +1,12 @@
-{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
 
 {% block title %}{{ parent() }} - translations{% endblock %}
 
 {% block breadcrumb %}
     {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
     {{- macro.breadcrumbElement(
-        environment.name ~' environment',
-        'govwiki_admin_environment_show',
-        { 'environment': environment.slug }
-    ) -}}
-    {{- macro.breadcrumbElement(
         'Localizations',
-        'govwiki_admin_localization_index',
-        { 'environment': environment.slug }
+        'govwiki_admin_globallocalization_index'
     ) -}}
     {{- macro.breadcrumbElement(locale_name|upper) -}}
 {% endblock breadcrumb %}
@@ -77,15 +71,13 @@
         <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3 text-center text-right-sm">
             <div class="btn-group controls">
                 <a class="btn btn-sm btn-default" href="{{-
-                    path('govwiki_admin_localization_exportlocale', {
-                        'environment': environment.slug,
+                    path('govwiki_admin_globallocalization_exportlocale', {
                         'locale_name': locale_name
                     })
                 -}}">Export</a>
                 <button class="btn btn-sm btn-default" id="import">Import</button>
                 <a class="btn btn-sm btn-primary" href="{{-
-                    path('govwiki_admin_localization_createtranslation', {
-                        'environment': environment.slug,
+                    path('govwiki_admin_globallocalization_createtranslation', {
                         'locale_name': locale_name
                     })
                 -}}">Create</a>
@@ -108,8 +100,7 @@
             <div class="modal-content">
                 <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
                 <div class="modal-body">
-                    {{- render(controller('GovWikiAdminBundle:Localization:importLocale', {
-                        'environment': environment.slug,
+                    {{- render(controller('GovWikiAdminBundle:GlobalLocalization:importLocale', {
                         'locale_name': locale_name
                     })) -}}
                 </div>
@@ -173,14 +164,14 @@
                             <td>{{ translation.translation }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{- path('govwiki_admin_localization_edittranslation',
-                                    { 'environment': environment.slug, transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-default">
+                                    <a href="{{- path('govwiki_admin_globallocalization_edittranslation',
+                                    { transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-default">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                         Edit
                                     </a>
                                     {% if translation.transTextareaType != 'ckeditor' %}
-                                        <button data-url="{{- path('govwiki_admin_localization_removetranslation',
-                                        { 'environment': environment.slug, transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete this translation? Remember that translations with key &quot{{ translation.transKey }}&quot will be removed from all localizations.">
+                                        <button data-url="{{- path('govwiki_admin_globallocalization_removetranslation',
+                                        { transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete this translation? Remember that translations with key &quot{{ translation.transKey }}&quot will be removed from all localizations.">
                                             <span class="glyphicon glyphicon-remove"></span> Remove
                                         </button>
                                     {% endif %}

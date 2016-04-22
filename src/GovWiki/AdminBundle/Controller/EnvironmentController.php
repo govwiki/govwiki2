@@ -6,10 +6,10 @@ use CartoDbBundle\CartoDbServices;
 use Gedmo\Translator\Entity\Translation;
 use GovWiki\AdminBundle\Form\Type\DelayType;
 use GovWiki\AdminBundle\GovWikiAdminServices;
-use GovWiki\DbBundle\Entity\Environment;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -24,13 +24,7 @@ class EnvironmentController extends AbstractGovWikiAdminController
      * @Configuration\Route()
      * @Configuration\Template()
      *
-     * @Configuration\ParamConverter(
-     *  "environment",
-     *  converter="environment_converter"
-     * )
-     *
-     * @param Request     $request     A Request instance.
-     * @param Environment $environment A Environment entity instance..
+     * @param Request $request A Request instance.
      *
      * @return array
      *
@@ -39,9 +33,9 @@ class EnvironmentController extends AbstractGovWikiAdminController
      * @throws \LogicException Some required bundle not registered.
      * @throws \InvalidArgumentException Unknown entity manager.
      */
-    public function showAction(Request $request, Environment $environment)
+    public function showAction(Request $request)
     {
-        dump($this->getCurrentEnvironment());
+        $environment = $this->getCurrentEnvironment();
 
         $locale = $environment->getLocales()[0];
         $trans_key_settings = [
@@ -49,7 +43,8 @@ class EnvironmentController extends AbstractGovWikiAdminController
             'transKeys' => ['map.greeting_text', 'general.bottom_text'],
         ];
         /** @var Translation $translation */
-        $translations = $this->getTranslationManager()->getTranslationsBySettings($locale->getShortName(), $trans_key_settings);
+        $translations = $this->getTranslationManager()
+            ->getEnvironmentTranslations($locale->getShortName(), $trans_key_settings);
         $greetingText = '';
         $bottomText = '';
         foreach ($translations as $translation) {
@@ -112,12 +107,6 @@ class EnvironmentController extends AbstractGovWikiAdminController
 
     /**
      * @Configuration\Route("/delete")
-     * @Configuration\ParamConverter(
-     *  "environment",
-     *  converter="environment_converter"
-     * )
-     *
-     * @param Environment $environment A Environment entity instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
@@ -126,8 +115,10 @@ class EnvironmentController extends AbstractGovWikiAdminController
      * @throws \Doctrine\DBAL\DBALException Can't delete government related
      *                                      table.
      */
-    public function removeAction(Environment $environment)
+    public function removeAction()
     {
+        $environment = $this->getCurrentEnvironment();
+
         // Delete environment related tables.
         $this->getGovernmentManager()->removeTable($environment);
         $this->getMaxRankManager()->removeTable($environment);
@@ -248,29 +239,28 @@ class EnvironmentController extends AbstractGovWikiAdminController
             $con->commit();
             $this->successMessage('Environment removed.');
         } catch (\Exception $e) {
-            $this->errorMessage("Can't remove environemnt: ". $e->getMessage());
+            $this->errorMessage("Can't remove environment: ". $e->getMessage());
             $con->rollBack();
         } finally {
             $con->exec('SET foreign_key_checks = 1');
         }
 
-        return $this->redirectToRoute('govwiki_admin_environment_show');
+        $this->setCurrentEnvironment(null);
+
+        return $this->redirectToRoute('govwiki_admin_main_home');
     }
 
     /**
      * @Configuration\Route("/enable")
-     * @Configuration\ParamConverter(
-     *  "environment",
-     *  converter="environment_converter"
-     * )
      *
-     * @param Request     $request     A Request instance.
-     * @param Environment $environment A Environment entity instance.
+     * @param Request $request A Request instance.
      *
      * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function enableAction(Request $request, Environment $environment)
+    public function enableAction(Request $request)
     {
+        $environment = $this->getCurrentEnvironment();
+
         $em = $this->getDoctrine()->getManager();
         $environment->setEnabled(true);
 
@@ -281,23 +271,22 @@ class EnvironmentController extends AbstractGovWikiAdminController
             return new JsonResponse();
         }
 
-        return $this->redirectToRoute('govwiki_admin_environment_show');
+        return $this->redirectToRoute('govwiki_admin_environment_show', [
+            'environment' => $environment->getSlug(),
+        ]);
     }
 
     /**
      * @Configuration\Route("/disable")
-     * @Configuration\ParamConverter(
-     *  "environment",
-     *  converter="environment_converter"
-     * )
      *
-     * @param Request     $request     A Request instance.
-     * @param Environment $environment A Environment entity instance.
+     * @param Request $request A Request instance.
      *
      * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function disableAction(Request $request, Environment $environment)
+    public function disableAction(Request $request)
     {
+        $environment = $this->getCurrentEnvironment();
+
         $em = $this->getDoctrine()->getManager();
         $environment->setEnabled(false);
 
@@ -308,24 +297,23 @@ class EnvironmentController extends AbstractGovWikiAdminController
             return new JsonResponse();
         }
 
-        return $this->redirectToRoute('govwiki_admin_environment_show');
+        return $this->redirectToRoute('govwiki_admin_environment_show', [
+            'environment' => $environment->getSlug(),
+        ]);
     }
 
     /**
      * @Configuration\Route("/template")
      * @Configuration\Template()
-     * @Configuration\ParamConverter(
-     *  "environment",
-     *  converter="environment_converter"
-     * )
      *
-     * @param Request     $request     A Request instance.
-     * @param Environment $environment A Environment entity instance.
+     * @param Request $request A Request instance.
      *
      * @return array
      */
-    public function templateAction(Request $request, Environment $environment)
+    public function templateAction(Request $request)
     {
+        $environment = $this->getCurrentEnvironment();
+
         $template = $this->getDoctrine()
             ->getRepository('GovWikiAdminBundle:Template')
             ->getVoteEmailTemplate($this->getCurrentEnvironment()->getSlug());
@@ -359,6 +347,119 @@ class EnvironmentController extends AbstractGovWikiAdminController
         }
 
         return [ 'form' => $form->createView() ];
+    }
+
+    /**
+     * @Configuration\Route("/map")
+     * @Configuration\Template()
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return array
+     *
+     * @throws NotFoundHttpException Can't find map for given environment.
+     * @throws \LogicException If DoctrineBundle is not available.
+     * @throws \InvalidArgumentException Unknown manager.
+     */
+    public function mapAction(Request $request)
+    {
+        /** @var Map $map */
+        $map = $this->getCurrentEnvironment()->getMap();
+        if (null === $map) {
+            throw new NotFoundHttpException();
+        }
+
+        $form = $this->createForm(new MapType(), $map);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            $data = $request->request->get('ccc');
+
+            if (array_key_exists('colorized', $data)) {
+                $data['colorized'] = true;
+                $conditions = ColoringConditions::fromArray($data);
+                $values = $this->adminEnvironmentManager()
+                    ->getGovernmentsFiledValues($conditions->getFieldName());
+                $environment = $this->getCurrentEnvironment()->getSlug();
+
+                $values = array_map(
+                    function (array $row) {
+                        $data = explode(',', $row['data']);
+                        $data = array_map(
+                            function ($element) { return (float) $element; },
+                            $data
+                        );
+                        $years = explode(',', $row['years']);
+
+                        unset($row['years']);
+                        $row['data'] = json_encode(array_combine($years, $data));
+                        return $row;
+                    },
+                    $values
+                );
+
+                /*
+                 * Prepare sql parts for CartoDB sql request.
+                 */
+                $sqlParts = [];
+                foreach ($values as $row) {
+                    if (null === $row['data']) {
+                        $row['data'] = 'null';
+                    }
+
+                    $slug = CartoDbApi::escapeString($row['slug']);
+                    $altTypeSlug = CartoDbApi::escapeString($row['alt_type_slug']);
+                    $data = $row['data'];
+
+                    $sqlParts[] = "
+                        ('{$slug}', '{$altTypeSlug}', '{$data}')
+                    ";
+                }
+
+
+                $api = $this->get(CartoDbServices::CARTO_DB_API);
+                $api
+                    // Create temporary dataset.
+                    ->createDataset($environment.'_temporary', [
+                        'alt_type_slug' => 'VARCHAR(255)',
+                        'slug' => 'VARCHAR(255)',
+                        'data_json' => 'VARCHAR(255)',
+                    ], true)
+                    ->sqlRequest("
+                        INSERT INTO {$environment}_temporary
+                            (slug, alt_type_slug, data_json)
+                        VALUES ". implode(',', $sqlParts));
+                // Update concrete environment dataset from temporary
+                // dataset.
+                $api->sqlRequest("
+                    UPDATE {$environment} e
+                    SET data_json = t.data_json
+                    FROM {$environment}_temporary t
+                    WHERE e.slug = t.slug AND
+                        e.alt_type_slug = t.alt_type_slug
+                ");
+                // Remove temporary dataset.
+                $api->dropDataset($environment.'_temporary');
+            } else {
+                $data['colorized'] = false;
+                $conditions = ColoringConditions::fromArray($data);
+            }
+
+
+            $map->setColoringConditions($conditions);
+            $em->persist($map);
+            $em->flush();
+        }
+
+        return [
+            'form' => $form->createView(),
+            'conditions' => $map->getColoringConditions(),
+            'fields' => $this
+                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
+                ->getGovernmentFields(),
+        ];
     }
 
     /**

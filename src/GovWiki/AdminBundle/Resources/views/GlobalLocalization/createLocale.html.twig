@@ -1,18 +1,12 @@
-{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
 
 {% block title %}{{ parent() }} - Create localization{% endblock %}
 
 {% block breadcrumb %}
     {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
     {{- macro.breadcrumbElement(
-        environment.name ~' environment',
-        'govwiki_admin_environment_show',
-        { 'environment': environment.slug }
-    ) -}}
-    {{- macro.breadcrumbElement(
         'Localizations',
-        'govwiki_admin_localization_index',
-        { 'environment': environment.slug }
+        'govwiki_admin_globallocalization_index'
     ) -}}
     {{ macro.breadcrumbElement('Create locale') }}
 {% endblock breadcrumb %}

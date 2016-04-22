@@ -22,7 +22,10 @@ use Symfony\Component\HttpFoundation\Response;
  * Class StyleController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/style")
+ * @Configuration\Route(
+ *  "/{environment}/style",
+ *  requirements={ "environment": "\w+" }
+ * )
  */
 class StyleController extends AbstractGovWikiAdminController
 {
@@ -177,7 +180,9 @@ class StyleController extends AbstractGovWikiAdminController
                 $em->flush();
             }
 
-            return $this->redirectToRoute('govwiki_admin_style_index');
+            return $this->redirectToRoute('govwiki_admin_style_index', [
+                'environment' => $environment->getSlug(),
+            ]);
         }
 
         return [ 'form' => $form->createView() ];

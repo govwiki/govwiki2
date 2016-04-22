@@ -7,10 +7,6 @@
 
 /* Temporary styles (start) */
 
-body > header {
-   margin-bottom: 0;
-}
-
 .submenu {
    background-color: white;
    -webkit-box-shadow: 2px 5px 22px -1px rgba(0,0,0,0.49);
@@ -195,7 +191,7 @@ table td.button-row {
    & h5 {
       display: inline-block;
    }
-   
+
    & input {
       font-size: 12px;
       box-shadow: none;

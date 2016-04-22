@@ -166,7 +166,8 @@ class CategoryController extends AbstractGovWikiAdminController
             $translation->setLocale($locale);
             $em->persist($translation);
         } elseif ('edit' == $action) {
-            $translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
+            $translation = $this->getTranslationManager()
+                ->getEnvironmentTranslations('en', $trans_key_settings, null, $needOneResult);
             if (!empty($translation)) {
                 $translation->setTranslation($cat_name);
             } else {
@@ -177,7 +178,8 @@ class CategoryController extends AbstractGovWikiAdminController
                 $em->persist($translation);
             }
         } elseif ('remove' == $action) {
-            $translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
+            $translation = $this->getTranslationManager()
+                ->getEnvironmentTranslations('en', $trans_key_settings, null, $needOneResult);
             if (!empty($translation)) {
                 $em->remove($translation);
             }

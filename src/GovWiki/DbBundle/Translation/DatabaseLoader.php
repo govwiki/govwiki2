@@ -47,7 +47,8 @@ class DatabaseLoader implements LoaderInterface
     public function load($resource, $locale, $messageDomain = 'messages')
     {
         // get our translations, obviously
-        $translations = $this->translationRepository->getTranslationsBySettings($this->environment->getId(), $locale);
+        $translations = $this->translationRepository
+            ->getAllTranslations($this->environment->getId(), $locale);
 
         $catalogue = new MessageCatalogue($locale);
 
