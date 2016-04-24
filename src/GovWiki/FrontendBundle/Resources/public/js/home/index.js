@@ -1,4 +1,5 @@
 var sublayer = require('./map/sublayer.js');
+require('typeahead.js');
 require('./map/main.js');
 
 $('#year-selector').change(function change() {

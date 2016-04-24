@@ -51,8 +51,6 @@ RankPopover.prototype.init = function init() {
   });
 
   $statistics.on('click', function click(e) {
-    var $popoverContent = self.$popoverContent;
-    var rankFieldName = self.rankFieldName;
     var $element = $(e.target);
     var $popover = $element.hasClass('rank') ? $element : $element.closest('.rank');
 
@@ -78,23 +76,23 @@ RankPopover.prototype.init = function init() {
       self.noMoreData = false;
     });
 
-    if (rankFieldName) {
+    if (self.rankFieldName) {
       self.loading = true;
 
       $.ajax({
         url: window.gw.urls.popover,
         dataType: 'json',
         data: {
-          field_name: rankFieldName,
+          field_name: self.rankFieldName,
           year: self.year
         },
         success: function success(data) {
           if (data.data.length !== 0) {
             self.formatData.call(self, data);
             // Render rankTable template
-            $popoverContent.html(Handlebars.templates.rankTable(data));
-            self.$rankTable = $popoverContent.find('table tbody');
-            self.$preloader = $popoverContent.find('.loader');
+            self.$popoverContent.html(Handlebars.templates.rankTable(data));
+            self.$rankTable = self.$popoverContent.find('table tbody');
+            self.$preloader = self.$popoverContent.find('.loader');
             // Initialize scroll and sort handlers
             self.scrollHandler.call(self);
             self.sortHandler.call(self);
@@ -120,19 +118,17 @@ RankPopover.prototype.scrollHandler = function scrollHandler() {
   var self = this;
 
   var $rankTable = self.$rankTable;
-  var $popoverContent = self.$popoverContent;
 
-  var rankFieldName = self.rankFieldName;
   var order = self.order;
 
   self.previousScrollTop = 0;
   self.currentPage = 0;
 
-  $popoverContent.scroll(function scroll() {
-    var currentScrollTop = $popoverContent.scrollTop();
+  self.$popoverContent.scroll(function scroll() {
+    var currentScrollTop = self.$popoverContent.scrollTop();
 
     if (self.previousScrollTop < currentScrollTop &&
-          currentScrollTop > 0.5 * $popoverContent[0].scrollHeight &&
+          currentScrollTop > 0.5 * self.$popoverContent[0].scrollHeight &&
           !self.noMoreData) {
       self.previousScrollTop = currentScrollTop;
       if (self.loading === false) {
@@ -145,7 +141,7 @@ RankPopover.prototype.scrollHandler = function scrollHandler() {
             page: ++self.currentPage,
             order: order.rank,
             name_order: order.altType,
-            field_name: rankFieldName,
+            field_name: self.rankFieldName,
             year: self.year
           },
           success: function success(data) {
@@ -176,10 +172,9 @@ RankPopover.prototype.scrollHandler = function scrollHandler() {
  */
 RankPopover.prototype.sortHandler = function sortHandler() {
   var self = this;
-  var $popoverContent = self.$popoverContent;
   var order = self.order;
 
-  $popoverContent.on('click', 'th', function click(e) {
+  self.$popoverContent.on('click', 'th', function click(e) {
     var $sortIcon;
     var $column;
     e.stopPropagation();
@@ -230,7 +225,6 @@ RankPopover.prototype.loadNewRows = function loadNewRows(order) {
   self.$preloader.show();
   self.loading = true;
 
-  console.log(self.rankFieldName);
   $.ajax({
     url: window.gw.urls.popover,
     dataType: 'json',

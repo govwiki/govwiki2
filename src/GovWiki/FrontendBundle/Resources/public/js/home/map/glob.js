@@ -1,3 +1,3 @@
 module.exports = {
-    isTest: global && global.isTest
+  isTest: global && global.isTest
 };

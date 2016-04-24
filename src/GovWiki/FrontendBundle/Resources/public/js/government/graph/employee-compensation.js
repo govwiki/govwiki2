@@ -66,43 +66,22 @@ function employeeCompensationFirstChart() {
   formatter.format(visData, 1);
   formatter.format(visData, 2);
 
-
-  if (isMobileBrowser()) {
-    container = 'mobile-median-comp-graph';
-    options = {
-      title: 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
-      titleTextStyle: {
+  container = 'median-comp-graph';
+  options = {
+    title: 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
+    titleTextStyle: {
+      fontSize: 12
+    },
+    tooltip: {
+      textStyle: {
         fontSize: 12
-      },
-      tooltip: {
-        textStyle: {
-          fontSize: 12
-        }
-      },
-      width: '100%',
-      height: '100%',
-      isStacked: true,
-      colors: ['#005ce6', '#009933']
-    };
-  } else {
-    container = 'median-comp-graph';
-    options = {
-      title: 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
-      titleTextStyle: {
-        fontSize: 12
-      },
-      tooltip: {
-        textStyle: {
-          fontSize: 12
-        }
-      },
-      width: 340,
-      height: 300,
-      isStacked: true,
-      colors: ['#005ce6', '#009933']
-    };
-  }
-
+      }
+    },
+    width: 340,
+    height: 300,
+    isStacked: true,
+    colors: ['#005ce6', '#009933']
+  };
 
   chart = new google.visualization.ColumnChart(document.getElementById(container));
   chart.draw(visData, options);
@@ -146,41 +125,22 @@ function employeeCompensationSecondChart() {
   });
   formatter.format(visData, 1);
 
-  if (isMobileBrowser()) {
-    container = 'mobile-median-pension-graph';
-    options = {
-      title: 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
-      titleTextStyle: {
+  container = 'median-pension-graph';
+  options = {
+    title: 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
+    titleTextStyle: {
+      fontSize: 12
+    },
+    tooltip: {
+      textStyle: {
         fontSize: 12
-      },
-      tooltip: {
-        textStyle: {
-          fontSize: 12
-        }
-      },
-      width: '100%',
-      height: '100%',
-      isStacked: 'true',
-      colors: ['#005ce6', '#009933']
-    };
-  } else {
-    container = 'median-pension-graph';
-    options = {
-      title: 'Median Total Compensation - Full Time Workers: \n Government vs. Private Sector',
-      titleTextStyle: {
-        fontSize: 12
-      },
-      tooltip: {
-        textStyle: {
-          fontSize: 12
-        }
-      },
-      width: 340,
-      height: 300,
-      isStacked: 'true',
-      colors: ['#005ce6', '#009933']
-    };
-  }
+      }
+    },
+    width: 340,
+    height: 300,
+    isStacked: 'true',
+    colors: ['#005ce6', '#009933']
+  };
 
   chart = new google.visualization.ColumnChart(document.getElementById(container));
   chart.draw(visData, options);

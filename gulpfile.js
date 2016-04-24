@@ -67,6 +67,7 @@ gulp.task('lint', function () {
             fix: true
         }))
         .pipe(eslint.format())
+        .pipe(eslint.failAfterError())
         .pipe(gulpIf(isFixed, gulp.dest('src/GovWiki/FrontendBundle/Resources/public/js')));
 });
 

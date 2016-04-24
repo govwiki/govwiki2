@@ -14,19 +14,16 @@ var chart = {
   financialHealth_three: {
     init: false
   },
-  financialStatements_expenditures: {
+  expendituresPie: {
     init: false
   },
-  financialStatements_revenues: {
+  revenuePie: {
     init: false
   },
-  financialStatementsTree: {
+  expendituresTree: {
     init: false
   },
-  financialStatementsTree_expenditures: {
-    init: false
-  },
-  financialStatementsTree_revenues: {
+  revenuesTree: {
     init: false
   }
 };

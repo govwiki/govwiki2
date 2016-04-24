@@ -1,5 +1,3 @@
-var glob = require('./glob');
-
 var map;
 var legend;
 var baseLayer;
@@ -9,10 +7,6 @@ var layersData;
 var tooltips = {};
 var defaultConditions;
 var debug;
-
-if (glob.isTest) {
-  window = {};
-}
 
 /**
  * Map object

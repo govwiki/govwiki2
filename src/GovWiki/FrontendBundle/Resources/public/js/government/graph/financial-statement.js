@@ -70,54 +70,27 @@ function revenuePie() {
   rows.sort(rowSortFunction);
 
   visData.addRows(rows);
-  if (isMobileBrowser()) {
-    container = 'mobile-total-revenue-pie';
-    options = {
-      title: data.translations.total_revenue,
-      titleTextStyle: {
-        fontSize: 16
-      },
-      tooltip: {
-        textStyle: {
-          fontSize: 12
-        }
-      },
-      width: '100%',
-      height: '100%',
-      sliceVisibilityThreshold: 0,
-      forceIFrame: true,
-      chartArea: {
-        left: '3%',
-        top: '13%',
-        height: '94%',
-        width: '94%'
-      },
-      legend: {
-        position: 'top', maxLines: '6'
+
+  container = 'total-revenue-pie';
+  options = {
+    title: data.translations.total_revenue,
+    titleTextStyle: {
+      fontSize: 16
+    },
+    tooltip: {
+      textStyle: {
+        fontSize: 12
       }
-    };
-  } else {
-    container = 'total-revenue-pie';
-    options = {
-      title: data.translations.total_revenue,
-      titleTextStyle: {
-        fontSize: 16
-      },
-      tooltip: {
-        textStyle: {
-          fontSize: 12
-        }
-      },
-      width: 470,
-      height: 350,
-      sliceVisibilityThreshold: 0,
-      forceIFrame: true,
-      chartArea: {
-        width: '90%',
-        height: '75%'
-      }
-    };
-  }
+    },
+    width: 470,
+    height: 350,
+    sliceVisibilityThreshold: 0,
+    forceIFrame: true,
+    chartArea: {
+      width: '90%',
+      height: '75%'
+    }
+  };
 
   chart = new google.visualization.PieChart(document.getElementById(container));
   chart.draw(visData, options);
@@ -177,54 +150,26 @@ function expendituresPie() {
 
   visData.addRows(rows);
 
-  if (isMobileBrowser()) {
-    container = 'mobile-total-expenditures-pie';
-    options = {
-      title: data.translations.total_revenue,
-      titleTextStyle: {
-        fontSize: 16
-      },
-      tooltip: {
-        textStyle: {
-          fontSize: 12
-        }
-      },
-      width: '100%',
-      height: '100%',
-      sliceVisibilityThreshold: 0,
-      forceIFrame: true,
-      chartArea: {
-        left: '3%',
-        top: '13%',
-        height: '94%',
-        width: '94%'
-      },
-      legend: {
-        position: 'top', maxLines: '6'
+  container = 'total-expenditures-pie';
+  options = {
+    title: data.translations.total_revenue,
+    titleTextStyle: {
+      fontSize: 16
+    },
+    tooltip: {
+      textStyle: {
+        fontSize: 12
       }
-    };
-  } else {
-    container = 'total-expenditures-pie';
-    options = {
-      title: data.translations.total_revenue,
-      titleTextStyle: {
-        fontSize: 16
-      },
-      tooltip: {
-        textStyle: {
-          fontSize: 12
-        }
-      },
-      width: 470,
-      height: 350,
-      sliceVisibilityThreshold: 0,
-      forceIFrame: true,
-      chartArea: {
-        width: '90%',
-        height: '75%'
-      }
-    };
-  }
+    },
+    width: 470,
+    height: 350,
+    sliceVisibilityThreshold: 0,
+    forceIFrame: true,
+    chartArea: {
+      width: '90%',
+      height: '75%'
+    }
+  };
 
   chart = new google.visualization.PieChart(document.getElementById(container));
   chart.draw(visData, options);
@@ -275,44 +220,23 @@ function revenuesTree() {
     }
   }
 
-  if (isMobileBrowser()) {
-    container = 'mobile-total-revenue-tree';
-    options = {
-      highlightOnMouseOver: true,
-      maxDepth: 1,
-      maxPostDepth: 2,
-      minHighlightColor: '#8c6bb1',
-      midHighlightColor: '#9ebcda',
-      maxHighlightColor: '#edf8fb',
-      minColor: '#009688',
-      midColor: '#f7f7f7',
-      maxColor: '#ee8100',
-      headerHeight: 15,
-      showScale: true,
-      width: '100%',
-      height: 500,
-      useWeightedAverageForAggregation: true,
-      generateTooltip: revenuesTooltip
-    };
-  } else {
-    container = 'total-revenue-tree';
-    options = {
-      highlightOnMouseOver: true,
-      maxDepth: 1,
-      maxPostDepth: 2,
-      minHighlightColor: '#8c6bb1',
-      midHighlightColor: '#9ebcda',
-      maxHighlightColor: '#edf8fb',
-      minColor: '#009688',
-      midColor: '#f7f7f7',
-      maxColor: '#ee8100',
-      headerHeight: 15,
-      showScale: true,
-      height: 500,
-      useWeightedAverageForAggregation: true,
-      generateTooltip: revenuesTooltip
-    };
-  }
+  container = 'total-revenue-tree';
+  options = {
+    highlightOnMouseOver: true,
+    maxDepth: 1,
+    maxPostDepth: 2,
+    minHighlightColor: '#8c6bb1',
+    midHighlightColor: '#9ebcda',
+    maxHighlightColor: '#edf8fb',
+    minColor: '#009688',
+    midColor: '#f7f7f7',
+    maxColor: '#ee8100',
+    headerHeight: 15,
+    showScale: true,
+    height: 500,
+    useWeightedAverageForAggregation: true,
+    generateTooltip: revenuesTooltip
+  };
 
   function revenuesTooltip(row) {
     var caption = visData.getValue(row, 0);
@@ -372,43 +296,23 @@ function expendituresTree() {
     }
   }
 
-  if (isMobileBrowser()) {
-    container = 'mobile-total-expenditures-tree';
-    options = {
-      highlightOnMouseOver: true,
-      maxDepth: 1,
-      maxPostDepth: 2,
-      minHighlightColor: '#8c6bb1',
-      midHighlightColor: '#9ebcda',
-      maxHighlightColor: '#edf8fb',
-      minColor: '#009688',
-      midColor: '#f7f7f7',
-      maxColor: '#ee8100',
-      headerHeight: 15,
-      showScale: true,
-      height: 500,
-      useWeightedAverageForAggregation: true,
-      generateTooltip: expendituresTooltip
-    };
-  } else {
-    container = 'total-expenditures-tree';
-    options = {
-      highlightOnMouseOver: true,
-      maxDepth: 1,
-      maxPostDepth: 2,
-      minHighlightColor: '#8c6bb1',
-      midHighlightColor: '#9ebcda',
-      maxHighlightColor: '#edf8fb',
-      minColor: '#009688',
-      midColor: '#f7f7f7',
-      maxColor: '#ee8100',
-      headerHeight: 15,
-      showScale: true,
-      height: 500,
-      useWeightedAverageForAggregation: true,
-      generateTooltip: expendituresTooltip
-    };
-  }
+  container = 'total-expenditures-tree';
+  options = {
+    highlightOnMouseOver: true,
+    maxDepth: 1,
+    maxPostDepth: 2,
+    minHighlightColor: '#8c6bb1',
+    midHighlightColor: '#9ebcda',
+    maxHighlightColor: '#edf8fb',
+    minColor: '#009688',
+    midColor: '#f7f7f7',
+    maxColor: '#ee8100',
+    headerHeight: 15,
+    showScale: true,
+    height: 500,
+    useWeightedAverageForAggregation: true,
+    generateTooltip: expendituresTooltip
+  };
 
   function expendituresTooltip(row) {
     var caption = visData.getValue(row, 0);
@@ -428,12 +332,11 @@ function expendituresTree() {
  * #Financial_Statements (.chart-controls .btn)
  */
 function handlerSwitchChart() {
-  var mobile = isMobileBrowser() ? 'mobile-' : '';
   hideChartGroup('pie-charts', false);
   hideChartGroup('compare-charts', true);
   hideChartGroup('tree-charts', true);
 
-  $('#' + mobile + 'Financial_Statements').on('click', '.chart-controls .btn', function click() {
+  $('#Financial_Statements').on('click', '.chart-controls .btn', function click() {
     var chartType = this.getElementsByTagName('input')[0].id;
 
     if (chartType === 'chart') {
@@ -493,33 +396,33 @@ function handlerSwitchChart() {
     var display = hide ? { display: 'none' } : { display: 'block' };
 
     if (chartGroup === 'pie-charts') {
-      $('#' + mobile + 'total-expenditures-pie').css(display);
-      $('#' + mobile + 'total-revenue-pie').css(display);
+      $('#total-expenditures-pie').css(display);
+      $('#total-revenue-pie').css(display);
     } else if (chartGroup === 'compare-charts') {
       if (hide) {
-        $('#' + mobile + 'total-compare-pie').css(display);
-        $('#' + mobile + 'total-compare-first-pie').css(display);
-        $('#' + mobile + 'total-compare-second-pie').css(display);
-        $('#' + mobile + 'total-compare-column').css(display);
+        $('#total-compare-pie').css(display);
+        $('#total-compare-first-pie').css(display);
+        $('#total-compare-second-pie').css(display);
+        $('#total-compare-column').css(display);
       } else {
         $selected = $('.government-categories .selected');
         category = $selected.hasClass('category');
         caption = $selected.hasClass('caption');
         if (category) {
-          $('#' + mobile + 'total-compare-first-pie').css(display);
-          $('#' + mobile + 'total-compare-second-pie').css(display);
+          $('#total-compare-first-pie').css(display);
+          $('#total-compare-second-pie').css(display);
         } else if (caption) {
-          $('#' + mobile + 'total-compare-column').css(display);
+          $('#total-compare-column').css(display);
         } else {
-          $('#' + mobile + 'total-compare-first-pie').css(display);
-          $('#' + mobile + 'total-compare-second-pie').css(display);
+          $('#total-compare-first-pie').css(display);
+          $('#total-compare-second-pie').css(display);
         }
 
-        $('#' + mobile + 'total-compare-pie').css(display);
+        $('#total-compare-pie').css(display);
       }
     } else if (chartGroup === 'tree-charts') {
-      $('#' + mobile + 'total-expenditures-tree').css(display);
-      $('#' + mobile + 'total-revenue-tree').css(display);
+      $('#total-expenditures-tree').css(display);
+      $('#total-revenue-tree').css(display);
     }
   }
 }
