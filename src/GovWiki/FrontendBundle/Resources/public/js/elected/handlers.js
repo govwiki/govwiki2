@@ -36,7 +36,7 @@ function handlerSortAndPagination(selector) {
       if (firstElement === 'app_dev.php') {
         path = url.substr(url.indexOf('/') + 1, url.length);
         url = '/' + firstElement + '/api/v1/elected-official/' + path +
-          '&entity=' + entity;
+                '&entity=' + entity;
       } else {
         url = '/api/v1/elected-official/' + url + '&entity=' + entity;
       }
@@ -108,7 +108,7 @@ $pane.on('click', '.vote', function click() {
   var electedName = $('.electedController').attr('data-elected-name');
   var name = $element.attr('data-legislation-name');
 
-  // Remove existing Facebook Comment form
+    // Remove existing Facebook Comment form
   var fbCommentElemExistList = $('.fb-comments', $commentWindow);
 
   var i = 0;
@@ -117,7 +117,7 @@ $pane.on('click', '.vote', function click() {
     fbCommentElemExist.parentNode.removeChild(fbCommentElemExist);
   }
 
-  // Create new Facebook Comment form
+    // Create new Facebook Comment form
   fbCommentPrevElem = $('.modal-body', $commentWindow);
   fbCommentElem = document.createElement('DIV');
   fbCommentUrl = clearUrl(window.location.href);
@@ -147,7 +147,7 @@ $pane.on('save', 'a', function save(e, params) {
   var field = Object.keys($(this).closest('td')[0].dataset)[0];
 
   if (field === 'vote' || field === 'didElectedOfficialProposeThis') {
-    // Current field owned by ElectedOfficialVote
+        // Current field owned by ElectedOfficialVote
     entityType = 'ElectedOfficialVote';
     id = $(e.currentTarget).parent().find('span')[0].dataset.id;
   }
@@ -204,9 +204,9 @@ $pane.on('click', 'table .add', function click(e) {
     currentEntity = 'PublicStatement';
     $('#addStatements').modal('toggle').find('form')[0].reset();
 
-    /*
-     Set get url callback.
-     */
+        /*
+         Set get url callback.
+         */
     $('.url-input').on('keyup', function keyup() {
       var matchUrl;
       matchUrl = /\b(https?):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#\/%=~_|!:,.;]*)?/i;
@@ -214,37 +214,37 @@ $pane.on('click', 'table .add', function click(e) {
         return $.ajax(window.gw.urls.check_url, {
           method: 'GET',
           data: {
-            url: $(this).val().match(matchUrl)[0]
-          },
+              url: $(this).val().match(matchUrl)[0]
+            },
           success: function success(response) {
-            var urlContent;
-            console.log(response);
-            urlContent = $('#url-statement');
-            urlContent.find('.url-content-title').text('');
-            urlContent.find('.url-content-body').text('');
-            urlContent.find('.url-content-img').attr('src', '');
-            urlContent.find('.url-content-title').text(response.data.title);
-            if (response.type === 'html') {
-              urlContent.find('.url-content-img').hide();
-              urlContent.find('.url-content-body').text(response.data.body);
-            }
-            if (response.type === 'youtube') {
-              urlContent.find('.url-content-img').attr('src', response.data.preview);
-            }
-            if (response.type === 'image') {
-              urlContent.find('.url-content-img').attr('src', response.data.preview);
-            }
-            return urlContent.slideDown();
-          },
+              var urlContent;
+              console.log(response);
+              urlContent = $('#url-statement');
+              urlContent.find('.url-content-title').text('');
+              urlContent.find('.url-content-body').text('');
+              urlContent.find('.url-content-img').attr('src', '');
+              urlContent.find('.url-content-title').text(response.data.title);
+              if (response.type === 'html') {
+                urlContent.find('.url-content-img').hide();
+                urlContent.find('.url-content-body').text(response.data.body);
+              }
+              if (response.type === 'youtube') {
+                urlContent.find('.url-content-img').attr('src', response.data.preview);
+              }
+              if (response.type === 'image') {
+                urlContent.find('.url-content-img').attr('src', response.data.preview);
+              }
+              return urlContent.slideDown();
+            },
           error: function error(err) {
-            var urlContent;
-            urlContent = $('#url-statement');
-            urlContent.find('.url-content-title').text('');
-            urlContent.find('.url-content-body').text('');
-            urlContent.find('.url-content-img').attr('src', '');
-            urlContent.find('.url-content-body').text(err.responseText);
-            return urlContent.slideDown();
-          }
+              var urlContent;
+              urlContent = $('#url-statement');
+              urlContent.find('.url-content-title').text('');
+              urlContent.find('.url-content-body').text('');
+              urlContent.find('.url-content-img').attr('src', '');
+              urlContent.find('.url-content-body').text(err.responseText);
+              return urlContent.slideDown();
+            }
         });
       }
       return true;
@@ -261,8 +261,8 @@ $pane.on('click', 'table .add', function click(e) {
     $('#addVotes').find('[data-provide="datepicker"]').on('changeDate', function changeDate() {
       return $(this).datepicker('hide');
     });
-    // compiledTemplate = Handlebars.compile($('#legislation-vote').html());
-    // return $('#electedVotes').html(compiledTemplate(JSON.parse(window.gw.electedOfficial)));
+        // compiledTemplate = Handlebars.compile($('#legislation-vote').html());
+        // return $('#electedVotes').html(compiledTemplate(JSON.parse(window.gw.electedOfficial)));
   } else if (currentEntity === 'PublicStatement') {
     return $('#addStatements').find('[data-provide="datepicker"]').on('changeDate', function changeDate() {
       return $(this).datepicker('hide');
@@ -303,9 +303,9 @@ window.addItem = function addItem(e) {
   modalType = modal[0].id;
   entityType = modal[0].dataset.entityType;
 
-  /*
-   Get value from input fields.
-   */
+    /*
+     Get value from input fields.
+     */
   modal.find('input[type="text"]').each(function loop(index, element) {
     var fieldName;
     fieldName = Object.keys(element.dataset)[0];
@@ -313,9 +313,9 @@ window.addItem = function addItem(e) {
     return element.value;
   });
 
-  /*
-   Get value from texarea's.
-   */
+    /*
+     Get value from texarea's.
+     */
   modal.find('textarea').each(function loop(index, element) {
     var fieldName;
     fieldName = Object.keys(element.dataset)[0];
@@ -323,9 +323,9 @@ window.addItem = function addItem(e) {
     return element.value;
   });
 
-  /*
-   Get value from hidden input fields.
-   */
+    /*
+     Get value from hidden input fields.
+     */
   modal.find('input[type="hidden"]').each(function loop(index, element) {
     var fieldName;
     fieldName = Object.keys(element.dataset)[0];
@@ -348,9 +348,9 @@ window.addItem = function addItem(e) {
       return false;
     }
 
-    /*
-     Add information about votes.
-     */
+        /*
+         Add information about votes.
+         */
     modal.find('#electedVotes').find('tr[data-elected]').each(function loop(idx, element) {
       var childEntityName;
       var fields;
@@ -364,9 +364,9 @@ window.addItem = function addItem(e) {
         return el.value;
       });
 
-      /*
-       Add only if all fields is set.
-       */
+            /*
+             Add only if all fields is set.
+             */
       if (Object.keys(data).length === 2) {
         oneChildFieldFilled = true;
         fields = Object.create(null, {});
@@ -444,27 +444,24 @@ window.addItem = function addItem(e) {
     }
   };
 
-        /*
-            Send create request to api.
-         */
-        console.log(sendObject);
-        $.ajax({
-            url: window.gw.urls.create_request,
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: sendObject,
-            success: function(data) {
-                return console.log(data);
-            }
-        });
-        return modal.modal('hide');
-    };
-
     /*
-     Check if user specified how current elected official voted.
+     Append new entity to table.
      */
+  rowTemplate = Handlebars.compile($('#row-' + modalType).html());
+  data = Object.create(null, {});
+  ref = sendObject.createRequest.fields.fields;
+  for (key in ref) {
+    if (ref.hasOwnProperty(key)) {
+      value = ref[key];
+      data[key] = value;
+    }
+  }
+  data.username = window.gw.username;
+  console.log(person);
+  if (modalType === 'addVotes') {
+        /*
+         Check if user specified how current elected official voted.
+         */
     add = false;
     ref1 = sendObject.createRequest.fields.childs;
     for (i = 0, len = ref1.length; i < len; i++) {
@@ -486,9 +483,9 @@ window.addItem = function addItem(e) {
       $('#Votes tr:last-child').before(rowTemplate(data));
     }
   } else if (modalType === 'addContributions') {
-    /*
-     Format contribution amount.
-     */
+        /*
+         Format contribution amount.
+         */
     data.contributorType = selectedText;
     data.contributionAmount = numeral(data.contributionAmount).format('0,000');
     $('#Contributions tr:last-child').before(rowTemplate(data));
@@ -500,9 +497,9 @@ window.addItem = function addItem(e) {
     $('#Statements tr:last-child').before(rowTemplate(data));
   }
 
-  /*
-   Send create request to api.
-   */
+    /*
+     Send create request to api.
+     */
   console.log(sendObject);
   $.ajax({
     url: window.gw.urls.create_request,
@@ -513,7 +510,8 @@ window.addItem = function addItem(e) {
     data: sendObject,
     success: function success(res) {
       if (modalType === 'addVotes') {
-        alert('Thanks for your submission. Your entry will appear on the elected official profiles within 3-5 business days');
+        alert('Thanks for your submission. Your entry will appear' +
+                ' on the elected official profiles within 3-5 business days');
       }
       console.log(res);
     }
