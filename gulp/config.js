@@ -1,14 +1,18 @@
+var argv = require('yargs').argv;
+var path = require('path');
 
-var path = {
-    base: './src/GovWiki/FrontendBundle/Resources/public/js',
-    mobile: './src/GovWiki/MobileBundle/Resources/public/js',
-};
+var frontendPath = path.resolve('./src/GovWiki/FrontendBundle/Resources/public');
+var mobilePath = path.resolve('./src/GovWiki/MobileBundle/Resources/public');
 
-var config = {
+var webpackDesktopPath = path.resolve('./webpack.config.js');
+var webpackMobilePath = path.resolve('./webpack.config.mobile.js');
 
-};
+var config = {};
 
 module.exports = {
-    path: path,
+    path: {
+        base: argv.mobile ? mobilePath : frontendPath,
+        webpack: argv.mobile ? webpackMobilePath : webpackDesktopPath,
+    },
     config: config
 };

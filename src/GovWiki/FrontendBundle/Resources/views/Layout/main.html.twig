@@ -130,11 +130,15 @@
             {#<div class="loader"></div>#}
         {#</div>#}
 
-        {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/jquery.min.js'
-            output='js/jquery.js' %}
+        {#{% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/jquery.min.js' output='js/jquery.js' %}#}
+            {#<script src="{{ asset_url }}"></script>#}
+        {#{% endjavascripts %}#}
+
+        {# TODO: Uncomment on prod#}
+        {#<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.1/lodash.min.js"></script>#}
+        {% javascripts '@GovWikiFrontendBundle/Resources/public/js/vendor/lodash.min.js'%}
             <script src="{{ asset_url }}"></script>
         {% endjavascripts %}
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
         {% block javascripts %}
             {# Govwiki namespace #}

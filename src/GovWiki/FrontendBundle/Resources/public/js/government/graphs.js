@@ -6,59 +6,54 @@ var financialStatementGraphs = require('./graph/financial-statement');
  * Initialization
  */
 function init(callback) {
-    return function() {
-        handler_onTabSwitch();
-        callback();
-    };
+  return function cb() {
+    handlerOnTabSwitch();
+    callback();
+  };
 }
 
 /**
  * (Handler)
  * On tab switch
  */
-function handler_onTabSwitch() {
+function handlerOnTabSwitch() {
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function shownTab(e) {
+    var tabname = $(e.target).attr('data-tabname');
 
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-
-        var tabname = $(e.target).attr('data-tabname');
-
-        /**
-         * Init graphs
-         */
-        switch (tabname) {
-            case 'Quality of Services':
-                break;
-            case 'Employee Compensation':
-                employeeCompensationGraphs.initAll();
-                break;
-            case 'Financial Health':
-                financialHealthGraphs.initAll();
-                break;
-            case 'Financial Financial_Statements':
-                financialStatementGraphs.initAll();
-                break;
-        }
-
-    });
-
+    /**
+     * Init graphs
+     */
+    switch (tabname) {
+      case 'Quality of Services':
+        break;
+      case 'Employee Compensation':
+        employeeCompensationGraphs.initAll();
+        break;
+      case 'Financial Health':
+        financialHealthGraphs.initAll();
+        break;
+      case 'Financial Financial_Statements':
+        financialStatementGraphs.initAll();
+        break;
+      default:
+    }
+  });
 }
 
 function forceInit() {
-    employeeCompensationGraphs.initAll();
-    financialHealthGraphs.initAll();
-    financialStatementGraphs.initAll();
-
+  employeeCompensationGraphs.initAll();
+  financialHealthGraphs.initAll();
+  financialStatementGraphs.initAll();
 }
 
 function initGoogleViz(callback) {
-
-    google.load('visualization', '1.0', {
-        'packages': ['treemap', 'corechart'],
-        'callback': init(callback)
-    });
+  google.load('visualization', '1.0', {
+    packages: ['treemap', 'corechart'],
+    callback: init(callback)
+  });
 }
 
 module.exports = {
-    init: initGoogleViz,
-    forceInit: forceInit
+  init: initGoogleViz,
+  forceInit: forceInit
 };

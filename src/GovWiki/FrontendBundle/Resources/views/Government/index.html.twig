@@ -27,13 +27,6 @@
                         </a>
                     {% endif %}
 
-                    {#{% if government.transparentCaliforniaPageName %}
-                        <a target="_blank" href="{{government.transparentCaliforniaPageName}}" style="margin-left:20px;">
-                            Transparent California
-                            <img src="http://us.cdn2.123rf.com/168nwm/blankstock/blankstock1409/blankstock140900218/31369868-text-edit-sign-icon-letter-t-button-circle-flat-button-with-shadow-modern-ui-website-navigation-vect.jpg" style="width:36px; height:36px">
-                        </a>
-                    {% endif %}#}
-
                 </div>
 
             </nav>
@@ -100,8 +93,6 @@
                     {# Tab content #}
                     <div class="tab-content">
 
-                        <div class="loader"></div>
-                        {% set tab_id_list = [] %}
                         {% if (formats is defined) and (formats is not empty) %}
 
                             {% for tabName, categories in formats %}
@@ -257,7 +248,6 @@
         </script>
     {% endif %}
 
-    <script src="/js/vendor/typeahead.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/government.js"></script>
 
