@@ -1,6 +1,8 @@
+var glob = require('../../global.js');
 var config = require('./config.js');
 var sublayer = require('./sublayer.js');
 var Style = require('./style.js');
+var methods;
 
 function init(showOnTop) {
   var $legend;
@@ -100,7 +102,7 @@ function handlerToggleConditions($container) {
     }
 
     if (activeConditions.length > 0) {
-      disabledConditions = findDisabledConditions(activeConditions);
+      disabledConditions = findDisabledConditions(activeConditions, config.defaultConditions);
       addActiveConditions(completeConditions, activeConditions);
       addDisabledConditions(completeConditions, disabledConditions);
     } else {
@@ -167,8 +169,10 @@ function addDisabledConditions(completeConditions, disabledConditions) {
  * @param activeConditions
  * @returns {*}
  */
-function findDisabledConditions(activeConditions) {
-  return config.defaultConditions.filter(function loop(condition) {
+function findDisabledConditions(activeConditions, defaultConditions) {
+  return defaultConditions.filter(function loop(condition) {
+    // console.log(condition);
+    // console.log(findCondition(activeConditions, condition));
     return findCondition(activeConditions, condition) === -1;
   });
 }
@@ -187,15 +191,15 @@ function findCondition(conditions, oneCondition) {
 
   if (conditions.length > 0) {
     conditions.forEach(function loop(condition, index) {
-      if (oneCondition.type === 'simple') {
+      if (oneCondition.type === 'simple' && oneCondition.type === condition.type) {
         if (condition.operation === oneCondition.operation && condition.value === oneCondition.value) {
           findIndex = index;
         }
-      } else if (oneCondition.type === 'period') {
+      } else if (oneCondition.type === 'period' && oneCondition.type === condition.type) {
         if (condition.min === oneCondition.min && condition.max === oneCondition.max) {
           findIndex = index;
         }
-      } else if (oneCondition.type === 'null') {
+      } else if (oneCondition.type === 'null' && oneCondition.type === condition.type) {
         if (condition.color === oneCondition.color) {
           findIndex = index;
         }
@@ -205,14 +209,18 @@ function findCondition(conditions, oneCondition) {
   return findIndex !== null ? findIndex : -1;
 }
 
-module.exports = {
+methods = {
   init: init
 };
 
-module.forTests = {
-  findDisabledConditions: findDisabledConditions,
-  addDisabledConditions: addDisabledConditions,
-  addActiveConditions: addActiveConditions,
-  addActiveCondition: addActiveCondition,
-  removeActiveCondition: removeActiveCondition
-};
+if (glob.isTest) {
+  methods = {
+    findDisabledConditions: findDisabledConditions,
+    addDisabledConditions: addDisabledConditions,
+    addActiveConditions: addActiveConditions,
+    addActiveCondition: addActiveCondition,
+    removeActiveCondition: removeActiveCondition
+  };
+}
+
+module.exports = methods;

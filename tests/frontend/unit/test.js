@@ -1,51 +1,111 @@
-var requireFrom = require('require-from');
 var path = require('path');
+var gutil = require('gulp-util');
 
 var assert = require('chai').assert;
-var window = {};
 
 var config = require('../config');
 
-
 describe('test', function describe() {
 
-    var legendRange = requireFrom('forTests', path.resolve(config.baseDir)+'/home/map/legend_range.js');
+    var legendRange = require(path.resolve(config.baseDir)+'/home/map/legend_range.js');
 
-    it('should be test', function it() {
-        assert.equal('abc', 'abc');
+    // All available conditions
+    var defaultConditions;
+
+    // Enabled conditions, by click
+    var activeConditions = [];
+
+    // Others must be placed there (diff defaultConditions, activeConditions)
+    var disabledConditions = [];
+
+
+    /**
+     * Initialize variables before tests
+     */
+    before(function(){
+
+        // App starts with set (All available conditions)
+        defaultConditions = [
+            {"type":"simple","color":"#ff0000","value":"4","operation":"<="},
+            {"type":"simple","color":"#dddddd","value":"2","operation":"<="},
+            {"type":"simple","color":"#dddddd","value":"1","operation":"<="},
+            {"type":"simple","color":"#dddddd","value":"0","operation":"<="},
+            {"type":"null","color":"#dddddd"}
+        ];
+
     });
 
-    it('blabla', function() {
+    it('should enabled two layers (with value 4 and 1)', function() {
+        activeConditions = [];
+        disabledConditions = [];
 
-        var defaultConditions = [
+        var expectedDisabledConditions = [
+            {"type":"simple","color":"#dddddd","value":"2","operation":"<="},
+            {"type":"simple","color":"#dddddd","value":"0","operation":"<="},
+            {"type":"null","color":"#dddddd"}
+        ];
+
+        // Click on layer button
+        legendRange.addActiveCondition(activeConditions, defaultConditions[0]);
+        // Click on layer button
+        legendRange.addActiveCondition(activeConditions, defaultConditions[2]);
+
+        disabledConditions = legendRange.findDisabledConditions(activeConditions, defaultConditions);
+
+        assert.deepEqual(expectedDisabledConditions, disabledConditions);
+
+    });
+
+    it('should enabled null layer', function() {
+        activeConditions = [];
+        disabledConditions = [];
+
+        var expectedDisabledConditions = [
             {"type":"simple","color":"#ff0000","value":"4","operation":"<="},
             {"type":"simple","color":"#dddddd","value":"2","operation":"<="},
             {"type":"simple","color":"#dddddd","value":"1","operation":"<="},
-            {"type":"null","color":"#dddddd"},
-            {"type":"simple","color":"#dddddd","value":"0","operation":"<="}
+            {"type":"simple","color":"#dddddd","value":"0","operation":"<="},
         ];
 
-        var activeConditions = [];
+        // Click on layer button
+        legendRange.addActiveCondition(activeConditions, defaultConditions[4]);
 
-        var disabledConditions = [
-            {"type":"simple","color":"#ff0000","value":"4","operation":"<="},
-            {"type":"simple","color":"#ffff00","value":"2","operation":"<="},
-            {"type":"simple","color":"#80ff00","value":"1","operation":"<="},
-            {"type":"null","color":"#dddddd"},
-            {"type":"simple","color":"#e300ff","value":"0","operation":"<="}
-        ];
-        
-        var completeConditions = [
+        disabledConditions = legendRange.findDisabledConditions(activeConditions, defaultConditions);
+
+        assert.deepEqual(expectedDisabledConditions, disabledConditions);
+
+    });
+
+    it('should disabled three layers (with value 2 and 1)', function() {
+        activeConditions = [
             {"type":"simple","color":"#ff0000","value":"4","operation":"<="},
             {"type":"simple","color":"#dddddd","value":"2","operation":"<="},
             {"type":"simple","color":"#dddddd","value":"1","operation":"<="},
-            {"type":"null","color":"#dddddd"},
-            {"type":"simple","color":"#dddddd","value":"0","operation":"<="}
+            {"type":"simple","color":"#dddddd","value":"0","operation":"<="},
+            {"type":"null","color":"#dddddd"}
         ];
-        
-        legendRange.removeActiveCondition();
+        disabledConditions = [];
 
-        assert.deepEqual();
+        var expectedActiveConditions = [
+            {"type":"simple","color":"#ff0000","value":"4","operation":"<="},
+            {"type":"simple","color":"#dddddd","value":"0","operation":"<="},
+            {"type":"null","color":"#dddddd"}
+        ];
 
-    })
+        var expectedDisabledConditions = [
+            {"type":"simple","color":"#dddddd","value":"2","operation":"<="},
+            {"type":"simple","color":"#dddddd","value":"1","operation":"<="},
+        ];
+
+        // Click on layer button
+        legendRange.removeActiveCondition(activeConditions, defaultConditions[1]);
+        legendRange.removeActiveCondition(activeConditions, defaultConditions[2]);
+
+        disabledConditions = legendRange.findDisabledConditions(activeConditions, defaultConditions);
+
+        assert.deepEqual(expectedDisabledConditions, disabledConditions);
+        assert.deepEqual(expectedActiveConditions, activeConditions);
+
+    });
+
 });

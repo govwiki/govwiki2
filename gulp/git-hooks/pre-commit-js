@@ -9,7 +9,7 @@ var spawn = require('child_process').spawn,
     notifier = require('node-notifier'),
 
     gulpTasks = {
-        examineAll: ['lint'],
+        examineAll: ['lint', 'unit'],
         examineOnlyModified: ['pre-commit']
     },
     gulpArgs = gulpTasks.examineAll;

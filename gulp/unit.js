@@ -7,6 +7,8 @@ var options = {
 };
 
 gulp.task('unit', function() {
+    gulp.start('check-install');
+
     return gulp.src('tests/frontend/unit/**/*.js', {read: false})
         .pipe(mocha(options));
 });

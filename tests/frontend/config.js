@@ -1,3 +1,3 @@
 module.exports = {
-    baseDir: 'src/GovWiki/FrontendBundle/Resources/public/js/'
+    baseDir: 'src/GovWiki/FrontendBundle/Resources/public/js'
 };
