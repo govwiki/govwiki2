@@ -3,10 +3,11 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\DbBundle\Entity\Map;
+use GovWiki\DbBundle\Entity\Shape;
 use GovWiki\DbBundle\Form\LegendRowType;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use GovWiki\DbBundle\Form\NewShapeType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
@@ -15,7 +16,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
  * Class LegendController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/legend")
+ * @Configuration\Route(
+ *  "/{environment}/legend",
+ *  requirements={ "environment": "\w+" }
+ * )
  */
 class LegendController extends AbstractGovWikiAdminController
 {
@@ -93,6 +97,44 @@ class LegendController extends AbstractGovWikiAdminController
 
             $em->persist($map);
             $em->flush();
+        }
+
+        return [ 'form' => $form->createView() ];
+    }
+
+    /**
+     * @Configuration\Route("/shape")
+     * @Configuration\Template()
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return array
+     *
+     * @throws \LogicException Some required bundle not registered.
+     */
+    public function shapeAction(Request $request)
+    {
+        $shape = new Shape();
+        $form = $this->createForm(new NewShapeType(), $shape, [
+            'action' => $this->generateUrl('govwiki_admin_legend_shape', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+            ]),
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager = $this->get(GovWikiAdminServices::SHAPE_MANAGER);
+            $em = $this->getDoctrine()->getManager();
+
+            $manager->move($shape);
+
+            $em->persist($shape);
+            $em->flush();
+
+            return new JsonResponse([
+                'id' => $shape->getId(),
+                'name' => $shape->getName(),
+            ]);
         }
 
         return [ 'form' => $form->createView() ];

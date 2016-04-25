@@ -3,12 +3,35 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use GovWiki\DbBundle\Entity\Tab;
 
 /**
  * TabRepository
  */
 class TabRepository extends EntityRepository
 {
+
+    /**
+     * @param integer $environment A Environment entity id.
+     *
+     * @return Tab[]
+     */
+    public function get($environment)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        return $this->createQueryBuilder('Tab')
+            ->addSelect('Category, Format')
+            ->leftJoin('Tab.categories', 'Category')
+            ->leftJoin('Category.formats', 'Format')
+            ->where($expr->eq('Tab.environment', ':environment'))
+            ->setParameter('environment', $environment)
+            ->orderBy($expr->asc('Tab.orderNumber'))
+            ->addOrderBy($expr->asc('Category.orderNumber'))
+            ->getQuery()
+            ->getResult();
+    }
+
     /**
      * @param string $environment Environment name.
      *

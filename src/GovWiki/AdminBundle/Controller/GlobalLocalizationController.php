@@ -3,7 +3,6 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\DbBundle\Entity\GlobalLocale;
-use GovWiki\DbBundle\Entity\Locale;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;

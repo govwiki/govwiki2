@@ -86,14 +86,16 @@ class EnvironmentDeterminatorListener
                 $this->environmentStorage->set($environment);
             }
 
-            // Set site default locale.
-            $defaultLocale = $environment
-                ->getDefaultLocale()
-                ->getShortName();
+            if ($environment !== null) {
+                // Set site default locale.
+                $defaultLocale = $environment
+                    ->getDefaultLocale()
+                    ->getShortName();
 
-            $request->setLocale(
-                $request->getSession()->get('_locale', $defaultLocale)
-            );
+                $request->setLocale(
+                    $request->getSession()->get('_locale', $defaultLocale)
+                );
+            }
         }
     }
 }

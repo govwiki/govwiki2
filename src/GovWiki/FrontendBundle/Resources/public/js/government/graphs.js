@@ -6,9 +6,9 @@ var financialStatementGraphs = require('./graph/financial-statement');
  * Initialization
  */
 function init(callback) {
-    return function() {
-        handler_onTabSwitch();
-        callback();
+  return function() {
+      handler_onTabSwitch();
+      callback();
     };
 }
 
@@ -18,25 +18,25 @@ function init(callback) {
  */
 function handler_onTabSwitch() {
 
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
 
-        var tabname = $(e.target).attr('data-tabname');
+      var tabname = $(e.target).attr('data-tabname');
 
         /**
          * Init graphs
          */
-        switch (tabname) {
-            case 'Quality of Services':
-                break;
-            case 'Employee Compensation':
-                employeeCompensationGraphs.initAll();
-                break;
-            case 'Financial Health':
-                financialHealthGraphs.initAll();
-                break;
-            case 'Financial Financial_Statements':
-                financialStatementGraphs.initAll();
-                break;
+      switch (tabname) {
+        case 'Quality of Services':
+          break;
+        case 'Employee Compensation':
+          employeeCompensationGraphs.initAll();
+          break;
+        case 'Financial Health':
+          financialHealthGraphs.initAll();
+          break;
+        case 'Financial Financial_Statements':
+          financialStatementGraphs.initAll();
+          break;
         }
 
     });
@@ -44,21 +44,21 @@ function handler_onTabSwitch() {
 }
 
 function forceInit() {
-    employeeCompensationGraphs.initAll();
-    financialHealthGraphs.initAll();
-    financialStatementGraphs.initAll();
+  employeeCompensationGraphs.initAll();
+  financialHealthGraphs.initAll();
+  financialStatementGraphs.initAll();
 
 }
 
 function initGoogleViz(callback) {
 
-    google.load('visualization', '1.0', {
-        'packages': ['treemap', 'corechart'],
-        'callback': init(callback)
+  google.load('visualization', '1.0', {
+      'packages': ['treemap', 'corechart'],
+      'callback': init(callback)
     });
 }
 
 module.exports = {
-    init: initGoogleViz,
-    forceInit: forceInit
+  init: initGoogleViz,
+  forceInit: forceInit
 };

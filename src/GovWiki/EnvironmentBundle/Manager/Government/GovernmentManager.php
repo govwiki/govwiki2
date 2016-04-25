@@ -614,6 +614,93 @@ class GovernmentManager implements GovernmentManagerInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function addColumn(Environment $environment, $name, $type)
+    {
+        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
+        $type = DataTypeConverter::abstract2database($type);
+
+        $this->em->getConnection()->exec("
+            ALTER TABLE `{$tableName}` ADD `{$name}` {$type} DEFAULT NULL
+        ");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function changeColumn(
+        Environment $environment,
+        $oldName,
+        $newName,
+        $newType
+    )
+    {
+        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
+        $newType = DataTypeConverter::abstract2database($newType);
+
+        $this->em->getConnection()->exec("
+            ALTER TABLE `{$tableName}`
+            CHANGE `{$oldName}` `{$newName}` {$newType} DEFAULT NULL
+        ");
+    }
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $name        Column name.
+     *
+     * @return void
+     */
+    public function deleteColumn(Environment $environment, $name)
+    {
+        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
+
+        $this->em->getConnection()->exec("
+            ALTER TABLE `{$tableName}` DROP `{$name}`
+        ");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getUsedAltTypes(Environment $environment)
+    {
+        $expr = $this->em->getExpressionBuilder();
+
+        $result = $this->em->createQueryBuilder()
+            ->select('Government.altType')
+            ->from('GovWikiDbBundle:Government', 'Government')
+            ->where($expr->eq('Government.environment', ':environment'))
+            ->setParameter('environment', $environment->getId())
+            ->groupBy('Government.altType')
+            ->orderBy('Government.altType')
+            ->getQuery()
+            ->getArrayResult();
+
+
+        $result = array_map(
+            function (array $row) {
+                return $row['altType'];
+            },
+            $result
+        );
+        $result = array_filter($result);
+
+        $altTypes = [];
+        foreach ($result as $altType) {
+            $altTypes[$altType] = $altType;
+        }
+
+        return $altTypes;
+    }
+
+    /**
      * @param array $result Raw fin data result.
      *
      * @return array

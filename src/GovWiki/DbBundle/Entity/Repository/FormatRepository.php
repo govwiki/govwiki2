@@ -11,6 +11,7 @@ use GovWiki\DbBundle\Utils\Functions;
  */
 class FormatRepository extends EntityRepository
 {
+
     /**
      * @param integer $environment Environment entity id.
      * @param boolean $full        Flag.

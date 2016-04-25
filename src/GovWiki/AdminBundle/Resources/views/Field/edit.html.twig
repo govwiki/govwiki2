@@ -1,6 +1,6 @@
 {% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
-{% block title %}{{ parent() }} - new category{% endblock title %}
+{% block title %}{{ parent() }} - edit field{% endblock title %}
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
@@ -14,20 +14,27 @@
         'govwiki_admin_environment_format',
         { 'environment': environment.slug }
     ) -}}
-    {{- macro.breadcrumbELement('New category') -}}
+    {{- macro.breadcrumbELement('Edit field '~ format.name) -}}
 {% endblock breadcrumb %}
 
 {% block panel_title %}
-    New category
+    Edit field {{ format.name }}
 {% endblock panel_title %}
 
 {% block panel_body %}
     {{ form_start(form) }}
     {{ form_widget(form) }}
-    <button class="btn btn-success">Create</button>
+    <button class="btn btn-success">Update</button>
     <a class="btn btn-default" href="{{- path(
         'govwiki_admin_environment_format',
         { 'environment': environment.slug }
     ) -}}">Back</a>
     {{ form_end(form) }}
 {% endblock panel_body %}
+
+{% block javascripts %}
+    {% javascripts '@GovWikiAdminBundle/Resources/public/js/Format/fieldname.js'
+    output='js/format.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock javascripts %}

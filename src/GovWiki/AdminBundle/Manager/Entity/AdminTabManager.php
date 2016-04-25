@@ -41,40 +41,4 @@ class AdminTabManager extends AbstractAdminEntityManager
 
         return $tab;
     }
-
-    /**
-     * @param Tab $tab A Tab instance.
-     *
-     * @return void
-     */
-    public function pullUp(Tab $tab)
-    {
-        /** @var TabRepository $repository */
-        $repository = $this->getRepository();
-
-        $tab->setOrderNumber($repository->getPreviousOrderNumber(
-            $this->getEnvironment()->getSlug(),
-            $tab->getOrderNumber()
-        ));
-
-        $this->update($tab);
-    }
-
-    /**
-     * @param Tab $tab A Tab instance.
-     *
-     * @return void
-     */
-    public function pullDown(Tab $tab)
-    {
-        /** @var TabRepository $repository */
-        $repository = $this->getRepository();
-
-        $tab->setOrderNumber($repository->getNextOrderNumber(
-            $this->getEnvironment()->getSlug(),
-            $tab->getOrderNumber()
-        ));
-
-        $this->update($tab);
-    }
 }

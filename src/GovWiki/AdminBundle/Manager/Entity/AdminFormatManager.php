@@ -33,6 +33,13 @@ class AdminFormatManager extends AbstractAdminEntityManager
         return $repository->getListQuery($this->getEnvironment()->getId());
     }
 
+    public function getAvailableTabs()
+    {
+        $repository = $this->em->getRepository('GovWikiDbBundle:Tab');
+
+        return $repository->get($this->getEnvironment()->getId());
+    }
+
     /**
      * @return Format
      */
