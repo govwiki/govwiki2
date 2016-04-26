@@ -41,40 +41,4 @@ class AdminCategoryManager extends AbstractAdminEntityManager
 
         return $tab;
     }
-
-    /**
-     * @param Category $tab A Category instance.
-     *
-     * @return void
-     */
-    public function pullUp(Category $tab)
-    {
-        /** @var CategoryRepository $repository */
-        $repository = $this->getRepository();
-
-        $tab->setOrderNumber($repository->getPreviousOrderNumber(
-            $this->getEnvironment()->getSlug(),
-            $tab->getOrderNumber()
-        ));
-
-        $this->update($tab);
-    }
-
-    /**
-     * @param Category $tab A Category instance.
-     *
-     * @return void
-     */
-    public function pullDown(Category $tab)
-    {
-        /** @var CategoryRepository $repository */
-        $repository = $this->getRepository();
-
-        $tab->setOrderNumber($repository->getNextOrderNumber(
-            $this->getEnvironment()->getSlug(),
-            $tab->getOrderNumber()
-        ));
-
-        $this->update($tab);
-    }
 }

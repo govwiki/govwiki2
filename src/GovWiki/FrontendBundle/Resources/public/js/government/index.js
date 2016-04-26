@@ -16,7 +16,7 @@ var government = JSON.parse(window.gw.government);
 
 var graphs = require('./graphs.js');
 var popover = new (require('./rank-popover.js'))({  // eslint-disable-line
-  year: JSON.parse(window.gw.government).currentYear
+    year: JSON.parse(window.gw.government).currentYear
 });
 
 Step1 = require('./form/compare/step-1.js');
@@ -25,7 +25,7 @@ Step3 = require('./form/compare/step-3.js');
 Step31 = require('./form/compare/step-3-1.js');
 
 graphs.init(function init() {
-  graphs.forceInit();
+    graphs.forceInit();
 });
 
 /**
@@ -36,74 +36,74 @@ graphs.init(function init() {
  * @type {{firstStep: boolean, secondStep: boolean, thirdStep: boolean}}
  */
 FormState = {
-  firstStep: {
-    completed: true,
-    data: {},
-    complete: function complete() {
-      this.completed = true;
+    firstStep: {
+        completed: true,
+        data: {},
+        complete: function complete() {
+            this.completed = true;
 
-      step2.unlock();
+            step2.unlock();
 
-      // If first step
-      if (FormState.firstStep.completed && FormState.secondStep.completed) {
-        // Default action if thirdSteps not initialized
-        if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
-          step31.loadComparedData('Financial Statement', 'Revenues', true);
+            // If first step
+            if (FormState.firstStep.completed && FormState.secondStep.completed) {
+                // Default action if thirdSteps not initialized
+                if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
+                    step31.loadComparedData('Financial Statement', 'Revenues', true);
+                }
+                step31.unlock();
+                step3.unlock();
+            }
+        },
+        incomplete: function incomplete() {
+            this.completed = false;
+
+            step2.lock();
+            step3.lock();
+            step31.lock();
         }
-        step31.unlock();
-        step3.unlock();
-      }
     },
-    incomplete: function incomplete() {
-      this.completed = false;
+    secondStep: {
+        completed: false,
+        data: {},
+        complete: function complete() {
+            this.completed = true;
 
-      step2.lock();
-      step3.lock();
-      step31.lock();
-    }
-  },
-  secondStep: {
-    completed: false,
-    data: {},
-    complete: function complete() {
-      this.completed = true;
+            if (FormState.firstStep.completed && FormState.secondStep.completed) {
+                // Default action if thirdSteps not initialized
+                if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
+                    step31.loadComparedData('Financial Statement', 'Revenues', true);
+                }
+                step31.unlock();
+                step3.unlock();
+            }
+        },
+        incomplete: function incomplete() {
+            this.completed = false;
 
-      if (FormState.firstStep.completed && FormState.secondStep.completed) {
-        // Default action if thirdSteps not initialized
-        if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
-          step31.loadComparedData('Financial Statement', 'Revenues', true);
+            step31.lock();
+            step3.lock();
         }
-        step31.unlock();
-        step3.unlock();
-      }
     },
-    incomplete: function incomplete() {
-      this.completed = false;
-
-      step31.lock();
-      step3.lock();
-    }
-  },
-  thirdStep: {
-    completed: false,
-    data: {},
-    complete: function complete() {
-      this.completed = false;
+    thirdStep: {
+        completed: false,
+        data: {},
+        complete: function complete() {
+            this.completed = false;
+        },
+        incomplete: function incomplete() {
+            this.completed = true;
+        }
     },
-    incomplete: function incomplete() {
-      this.completed = true;
+    thirdOneStep: {
+        completed: false,
+        data: {},
+        complete: function complete() {
+            this.completed = false;
+        },
+        incomplete: function incomplete() {
+            this.completed = true;
+        }
     }
-  },
-  thirdOneStep: {
-    completed: false,
-    data: {},
-    complete: function complete() {
-      this.completed = false;
-    },
-    incomplete: function incomplete() {
-      this.completed = true;
-    }
-  }
 };
 
 
@@ -123,16 +123,16 @@ step31.lock();
  * Change fin statement year.
  */
 $('#fin-stmt-year').change(function change() {
-  var $this = $(this);
-  $this.closest('form').submit();
-  window.localStorage.setItem('tab', 'Financial_Statements');
+    var $this = $(this);
+    $this.closest('form').submit();
+    window.localStorage.setItem('tab', 'Financial_Statements');
 });
 
 
 tab = window.localStorage.getItem('tab');
 if (tab) {
-  window.localStorage.removeItem('tab');
-  $('.nav-pills a[href="' + tab + '"]').tab('show');
+    window.localStorage.removeItem('tab');
+    $('.nav-pills a[href="' + tab + '"]').tab('show');
 }
 
 /*
@@ -141,47 +141,47 @@ if (tab) {
 $subscribeBtn = $('#subscribe');
 
 if ($subscribeBtn.hasClass('subscribe')) {
-  $('#chat_message_container').hide();
+    $('#chat_message_container').hide();
 } else {
-  $('#chat_message_container').show();
+    $('#chat_message_container').show();
 }
 
 $subscribeBtn.click(function click(event) {
-  event.preventDefault();
-  event.stopPropagation();
+    event.preventDefault();
+    event.stopPropagation();
 
-  $.ajax({
-    url: $subscribeBtn.attr('href')
-  }).done(function load() {
-    if ($subscribeBtn.hasClass('subscribe')) {
-      $('#chat_message_container').show();
-      $subscribeBtn
-        .text('Unsubscribe')
-        .removeClass('subscribe')
-        .removeClass('btn-success')
-        .addClass('unsubscribe')
-        .addClass('btn-danger');
-    } else {
-      $('#chat_message_container').hide();
-      $subscribeBtn
-        .text('Subscribe')
-        .removeClass('unsubscribe')
-        .removeClass('btn-danger')
-        .addClass('subscribe')
-        .addClass('btn-success');
-    }
-  });
+    $.ajax({
+        url: $subscribeBtn.attr('href')
+    }).done(function load() {
+        if ($subscribeBtn.hasClass('subscribe')) {
+            $('#chat_message_container').show();
+            $subscribeBtn
+                .text('Unsubscribe')
+                .removeClass('subscribe')
+                .removeClass('btn-success')
+                .addClass('unsubscribe')
+                .addClass('btn-danger');
+        } else {
+            $('#chat_message_container').hide();
+            $subscribeBtn
+                .text('Subscribe')
+                .removeClass('unsubscribe')
+                .removeClass('btn-danger')
+                .addClass('subscribe')
+                .addClass('btn-success');
+        }
+    });
 });
 
 /*
  Reload data for government by given year.
  */
 $('#year-selector').change(function change() {
-  var selectedYear = $(this).find(':selected').val();
-  var openedTab = $('.tab-titles').find('li.active').find('a').attr('href');
+    var selectedYear = $(this).find(':selected').val();
+    var openedTab = $('.tab-titles').find('li.active').find('a').attr('href');
 
-  window.location.search = '?year=' + selectedYear;
-  window.localStorage.setItem('tab', openedTab);
+    window.location.search = '?year=' + selectedYear;
+    window.localStorage.setItem('tab', openedTab);
 });
 
 // Table pagination handler.
@@ -189,79 +189,79 @@ $('#year-selector').change(function change() {
 $pane = $('.paginate');
 
 $pane.on('click', '.pagination a', function click(e) {
-  var $loader;
-  var $mainContent;
-  var query;
-  var firstElement;
-  var url;
-  var type;
-  var $closestPane;
-  var $this;
-  e.preventDefault();
-  e.stopPropagation();
+    var $loader;
+    var $mainContent;
+    var query;
+    var firstElement;
+    var url;
+    var type;
+    var $closestPane;
+    var $this;
+    e.preventDefault();
+    e.stopPropagation();
 
-  $this = $(this);
-  $closestPane = $this.closest('.tab-pane');
-  type = $closestPane.data('type');
-  url = $this.attr('href');
+    $this = $(this);
+    $closestPane = $this.closest('.tab-pane');
+    type = $closestPane.data('type');
+    url = $this.attr('href');
 
-  if (url.indexOf('api') === -1) {
-    url = url.substr(1, url.length);
-    firstElement = url.substr(0, url.indexOf('/'));
-    query = url.substr(url.indexOf('?') + 1, url.length);
+    if (url.indexOf('api') === -1) {
+        url = url.substr(1, url.length);
+        firstElement = url.substr(0, url.indexOf('/'));
+        query = url.substr(url.indexOf('?') + 1, url.length);
 
-    if (firstElement === 'app_dev.php') {
-      url = '/' + firstElement + '/api/v1/government/' + government.id
-        + '/' + type + '?' + query;
-    } else {
-      url = '/api/v1/government/' + government.id + '/' + type + '?' + query;
+        if (firstElement === 'app_dev.php') {
+            url = '/' + firstElement + '/api/v1/government/' + government.id
+            + '/' + type + '?' + query;
+        } else {
+            url = '/api/v1/government/' + government.id + '/' + type + '?' + query;
+        }
     }
-  }
 
-  $mainContent = $closestPane.find('.tab-pane-main');
-  $mainContent.html('');
+    $mainContent = $closestPane.find('.tab-pane-main');
+    $mainContent.html('');
 
-  $loader = $('.tab-content').find('.loader');
-  $loader.show();
-  $.ajax(url).success(function load(data) {
-    $loader.hide();
-    $mainContent.html(data);
-  });
+    $loader = $('.tab-content').find('.loader');
+    $loader.show();
+    $.ajax(url).success(function load(data) {
+        $loader.hide();
+        $mainContent.html(data);
+    });
 });
 
 $pane.on('click', '.sortable a', function click(e) {
-  var $loader;
-  var $mainContent;
-  var query;
-  var firstElement;
-  var $this = $(this);
-  var $closestPane = $this.closest('.tab-pane');
-  var type = $closestPane.data('type');
-  var url = $this.attr('href');
+    var $loader;
+    var $mainContent;
+    var query;
+    var firstElement;
+    var $this = $(this);
+    var $closestPane = $this.closest('.tab-pane');
+    var type = $closestPane.data('type');
+    var url = $this.attr('href');
 
-  e.preventDefault();
-  e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
 
-  if (url.indexOf('api') === -1) {
-    url = url.substr(1, url.length);
-    firstElement = url.substr(0, url.indexOf('/'));
-    query = url.substr(url.indexOf('?') + 1, url.length);
+    if (url.indexOf('api') === -1) {
+        url = url.substr(1, url.length);
+        firstElement = url.substr(0, url.indexOf('/'));
+        query = url.substr(url.indexOf('?') + 1, url.length);
 
-    if (firstElement === 'app_dev.php') {
-      url = '/' + firstElement + '/api/v1/government/' + government.id
-        + '/' + type + '?' + query;
-    } else {
-      url = '/api/v1/government/' + government.id + '/' + type + '?' + query;
+        if (firstElement === 'app_dev.php') {
+            url = '/' + firstElement + '/api/v1/government/' + government.id
+            + '/' + type + '?' + query;
+        } else {
+            url = '/api/v1/government/' + government.id + '/' + type + '?' + query;
+        }
     }
-  }
 
-  $mainContent = $closestPane.find('.tab-pane-main');
-  $mainContent.html('');
+    $mainContent = $closestPane.find('.tab-pane-main');
+    $mainContent.html('');
 
-  $loader = $('.tab-content').find('.loader');
-  $loader.show();
-  $.ajax(url).success(function load(data) {
-    $loader.hide();
-    $mainContent.html(data);
-  });
+    $loader = $('.tab-content').find('.loader');
+    $loader.show();
+    $.ajax(url).success(function load(data) {
+        $loader.hide();
+        $mainContent.html(data);
+    });
 });

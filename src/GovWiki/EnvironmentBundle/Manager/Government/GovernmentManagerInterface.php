@@ -148,4 +148,48 @@ interface GovernmentManagerInterface
      * @throws \Doctrine\DBAL\DBALException Can't execute query.
      */
     public function updateGovernment(Environment $environment, array $data);
+
+    /**
+     * Add new column to environment related government table.
+     *
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $name        Column name.
+     * @param string      $type        Column type like 'string', 'integer' and
+     *                                 etc.
+     *
+     * @return void
+     */
+    public function addColumn(Environment $environment, $name, $type);
+
+    /**
+     * Change column name and type.
+     *
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $oldName     Old column name.
+     * @param string      $newName     New column name.
+     * @param string      $newType     New column type.
+     *
+     * @return void
+     */
+    public function changeColumn(
+        Environment $environment,
+        $oldName,
+        $newName,
+        $newType
+    );
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $name        Column name.
+     *
+     * @return void
+     */
+    public function deleteColumn(Environment $environment, $name);
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     *
+     * @return string[]
+     */
+    public function getUsedAltTypes(Environment $environment);
 }

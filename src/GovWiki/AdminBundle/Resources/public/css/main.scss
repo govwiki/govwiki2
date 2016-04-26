@@ -252,3 +252,8 @@ body .container a.btn-primary:hover {
    &:focus {
    }
 }
+
+.delete-anchor {
+   cursor: pointer;
+   color: red;
+}

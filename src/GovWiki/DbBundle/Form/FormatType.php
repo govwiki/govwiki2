@@ -15,63 +15,24 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class FormatType extends AbstractType
 {
-    /**
-     * @var EnvironmentStorageInterface
-     */
-    private $storage;
-
-    /**
-     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
-     *                                             instance.
-     */
-    public function __construct(EnvironmentStorageInterface $storage)
-    {
-        $this->storage = $storage;
-    }
 
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+
         $availableTypes = array_combine(
             Format::availableTypes(),
             Format::availableTypes()
         );
 
+//        $format = $builder->getData();
+//        if (($format instanceof Format) && ($format->getId() === null)) {
+//            $builder->add('field');
+//        }
+
         $builder
-            ->add('tab', 'entity', [
-                'class' => 'GovWiki\DbBundle\Entity\Tab',
-                'query_builder' => function (EntityRepository $repository) {
-                    $qb = $repository->createQueryBuilder('Tab');
-                    $expr = $qb->expr();
-
-                    return $qb
-                        ->select('partial Tab.{id, name}')
-                        ->join('Tab.environment', 'Environment')
-                        ->where($expr->eq(
-                            'Environment.slug',
-                            $expr->literal($this->storage->get()->getSlug())
-                        ));
-                }
-            ])
-            ->add('category', 'entity', [
-                'class' => 'GovWiki\DbBundle\Entity\Category',
-                'empty_data' => null,
-                'required' => false,
-                'query_builder' => function (EntityRepository $repository) {
-                    $qb = $repository->createQueryBuilder('Category');
-                    $expr = $qb->expr();
-
-                    return $qb
-                        ->select('partial Category.{id, name}')
-                        ->join('Category.environment', 'Environment')
-                        ->where($expr->eq(
-                            'Environment.slug',
-                            $expr->literal($this->storage->get()->getSlug())
-                        ));
-                },
-            ])
             ->add('field')
             ->add('name')
             ->add('type', 'choice', [ 'choices' => $availableTypes ])

@@ -32,8 +32,14 @@
     )-}}
 
     {{- macro.submenuElement(
+        'Legend',
+        'govwiki_admin_legend_edit',
+        { 'environment': environment.slug }
+    )-}}
+
+    {{- macro.submenuElement(
         'Format',
-        'govwiki_admin_format_list',
+        'govwiki_admin_environment_format',
         { 'environment': environment.slug }
     )-}}
 {% endblock submenu %}

@@ -1,116 +1,87 @@
-{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - edit map{% endblock title %}
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-    macro.breadcrumbElement(
-    admin_environment|capitalize ~' environment',
-    'govwiki_admin_main_show',
-    { 'environment': admin_environment }
-    )
-    }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
     {{ macro.breadcrumbElement('Map') }}
 {% endblock breadcrumb %}
 
-{% block body %}
+{% block panel_title %}
+    {{ environment.name }} map
+{% endblock panel_title %}
 
-    <div class="container">
+{% block panel_body %}
+    {{ form_start(form) }}
 
-        <div class="row">
-            <div class="col-md-12">
-
-                <div class="panel panel-success">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Map edit</h3>
-                    </div>
-                    <div class="panel-body">
-
-                        <div class="col-md-12">
-                            <a class="btn btn-primary pull-right" href="{{-
-                                path('govwiki_admin_legend_edit')
-                            -}}">
-                                Edit legend
-                            </a>
-                        </div>
-                        <br>
-
-                        {{ form_start(form) }}
-
-                        {# Map position, coordinates of center and zoom. #}
-                        <div class="col-md-6 col-lg-6 col-xs-12">
-                            {{- form_row(form.centerLatitude) -}}
-                            {{- form_row(form.centerLongitude) -}}
-                            {{- form_row(form.zoom) -}}
-                        </div>
-
-                        <div class="col-md-6 col-lg-6 col-xs-12">
-                            {{- form_row(form.position) -}}
-                            {{- form_row(form.legendTypes) -}}
-                            {{- form_row(form.debug) -}}
-                        </div>
-
-                        {# Colorized county conditions. #}
-                        <div class="col-md-12 col-lg-12 col-xs-12">
-                            <h3>Colorized conditions</h3>
-
-                            <div class="form-group">
-                                <label class="control-label" for="colorized">
-                                    Colorized
-                                </label>
-                                <input type="checkbox" id="colorized" name="ccc[colorized]"
-                                        {%- if (conditions.colorized) %} checked{%- endif -%}>
-                            </div>
-
-                            <div id="conditions-main"
-                                    {%- if not (conditions.colorized) -%} style="display: none"{%- endif -%}>
-
-                                {# Field name selector. #}
-                                <div class="form-group">
-                                    <label for="condition-field-name">Field name</label>
-                                    <select class="form-control" id="condition-field-name" name="ccc[fieldName]">
-                                        {% for field, name in fields %}
-                                            <option value="{{ field }}"
-                                                    {%- if (field == conditions.fieldName) -%} selected
-                                                    {%- endif -%}
-                                                    >{{ name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-
-                                {# Conditions. #}
-                                <div class="form-group">
-                                    <label class="control-label">Conditions</label>
-                                    <div id="conditions-list"></div>
-                                </div>
-
-                                <button type="button" class="pull-right btn btn-default" id="condition-add">Add new conditions</button>
-                            </div>
-                        </div>
-                        {# Colorized county conditions. #}
-                       {# <div class="col-md-6 col-lg-6 col-xs-12">
-                            {{- form_row(form.colorizedCountyConditions) -}}
-                        </div>#}
-                        <div class="col-md-12 col-lg-12 col-xs-12">
-                            <button class="btn btn-success">Update</button>
-                            <a class="btn btn-default" href="{{- path
-                            ('govwiki_admin_main_show') -}}">Back</a>
-                        </div>
-                        {#<a class="btn btn-primary{%- if not canExport %} disabled{%- endif -%}" href="{{ path('map_export', {name: name}) }}">
-                            Export to CartoDB
-                        </a>#}
-                        {{ form_end(form) }}
-
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
+    {# Map position, coordinates of center and zoom. #}
+    <div class="col-md-6 col-lg-6 col-xs-12">
+        {{- form_row(form.centerLatitude) -}}
+        {{- form_row(form.centerLongitude) -}}
+        {{- form_row(form.zoom) -}}
     </div>
 
-{% endblock body %}
+    <div class="col-md-6 col-lg-6 col-xs-12">
+        {{- form_row(form.position) -}}
+        {{- form_row(form.legendTypes) -}}
+        {{- form_row(form.debug) -}}
+    </div>
+
+    {# Coloring conditions. #}
+    <div class="col-md-12 col-lg-12 col-xs-12">
+        <h3>Coloring conditions</h3>
+
+        <div class="form-group">
+            <label class="control-label" for="colorized">
+                Coloring
+            </label>
+            <input type="checkbox" id="colorized" name="ccc[colorized]"
+                    {%- if (conditions.colorized) %} checked{%- endif -%}>
+        </div>
+
+        <div id="conditions-main"
+            {%- if not (conditions.colorized) -%}
+                style="display: none"
+            {%- endif -%}>
+
+            {# Field name selector. #}
+            <div class="form-group">
+                <label for="condition-field-name">Field name</label>
+                <select class="form-control" id="condition-field-name" name="ccc[fieldName]">
+                    {% for field, name in fields %}
+                        <option value="{{ field }}"
+                        {%- if (field == conditions.fieldName) -%}
+                            selected
+                        {%- endif -%}>
+                            {{- name -}}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            {# Conditions. #}
+            <div class="form-group">
+                <label class="control-label">Conditions</label>
+                <div id="conditions-list"></div>
+            </div>
+
+            <button type="button" class="pull-right btn btn-default" id="condition-add">Add new conditions</button>
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-12 col-xs-12">
+        <button class="btn btn-success">Update</button>
+        <a class="btn btn-default" href="{{- path(
+            'govwiki_admin_environment_show',
+            { 'environment': environment.slug }
+        )-}}">Back</a>
+    </div>
+    {{ form_end(form) }}
+{% endblock panel_body %}
 
 {% block stylesheets %}
     {{ parent() }}

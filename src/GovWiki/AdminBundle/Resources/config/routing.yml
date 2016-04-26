@@ -50,8 +50,8 @@ map:
     resource: "@GovWikiAdminBundle/Controller/MapController.php"
     type:     annotation
 
-format:
-    resource: "@GovWikiAdminBundle/Controller/FormatController.php"
+field:
+    resource: "@GovWikiAdminBundle/Controller/FieldController.php"
     type:     annotation
 
 tab:

@@ -3,9 +3,13 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
+use CartoDbBundle\Service\CartoDbApi;
 use Gedmo\Translator\Entity\Translation;
 use GovWiki\AdminBundle\Form\Type\DelayType;
 use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditions;
+use GovWiki\DbBundle\Entity\Map;
+use GovWiki\DbBundle\Form\MapType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -460,6 +464,21 @@ class EnvironmentController extends AbstractGovWikiAdminController
                 ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
                 ->getGovernmentFields(),
         ];
+    }
+
+    /**
+     * @Configuration\Route("/format")
+     * @Configuration\Template()
+     *
+     * @return array
+     */
+    public function formatAction()
+    {
+        // Get all available tabs.
+        $tabs = $this->getDoctrine()->getRepository('GovWikiDbBundle:Tab')
+            ->get($this->getCurrentEnvironment());
+
+        return [ 'tabs' => $tabs ];
     }
 
     /**

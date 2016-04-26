@@ -3,6 +3,8 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\DbBundle\Entity\Category;
+use GovWiki\DbBundle\Entity\Locale;
 use GovWiki\DbBundle\Entity\Tab;
 use GovWiki\DbBundle\Entity\Translation;
 use GovWiki\DbBundle\Form\AbstractGroupType;
@@ -14,82 +16,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
  * Class TabController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/tab")
+ * @Configuration\Route(
+ *  "{environment}/tab",
+ *  requirements={ "environment": "\w+" }
+ * )
  */
 class TabController extends AbstractGovWikiAdminController
 {
-    /**
-     * List available tabs.
-     *
-     * @Configuration\Route("/")
-     * @Configuration\Template()
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return array
-     */
-    public function listAction(Request $request)
-    {
-        return [
-            'tabs' => $this->paginate(
-                $this->getManager()->getListQuery(),
-                $request->query->getInt('page', 1),
-                25
-            ),
-        ];
-    }
-
-    /**
-     * Remove given tab.
-     *
-     * @Configuration\Route("/{id}/remove", requirements={"id": "\d+"})
-     * @param Tab $tab A Tab instance.
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function removeAction(Tab $tab)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $this->changeTabTranslation('remove', $tab->getId());
-
-        $em->remove($tab);
-        $em->flush();
-
-        return $this->redirectToRoute('govwiki_admin_tab_list');
-    }
-
-    /**
-     * Move given tab up.
-     *
-     * @Configuration\Route("/{id}/up", requirements={"id": "\d+"})
-     *
-     * @param Tab $tab A Tab instance.
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function upAction(Tab $tab)
-    {
-        $this->getManager()->pullUp($tab);
-
-        return $this->redirectToRoute('govwiki_admin_tab_list');
-    }
-
-    /**
-     * Move given tab down.
-     *
-     * @Configuration\Route("/{id}/down", requirements={"id": "\d+"})
-     *
-     * @param Tab $tab A Tab instance.
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function downAction(Tab $tab)
-    {
-        $this->getManager()->pullDown($tab);
-
-        return $this->redirectToRoute('govwiki_admin_tab_list');
-    }
 
     /**
      * Create new tab.
@@ -105,10 +38,30 @@ class TabController extends AbstractGovWikiAdminController
     {
         $tab = $this->getManager()->create();
         $form = $this->createForm(new AbstractGroupType(), $tab);
+        $form->handleRequest($request);
 
-        $this->processForm($request, $form);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
 
-        $this->changeTabTranslation('new', $tab->getId(), $tab->getName());
+            $category = new Category();
+            $category
+                ->setTab($tab)
+                ->setOrderNumber(99)
+                ->setEnvironment($this->getCurrentEnvironment())
+                ->setName('Main');
+            $tab->addCategory($category);
+
+            $em->persist($category);
+            $em->persist($tab);
+            $em->flush();
+
+            $this->changeTabTranslation('new', $tab->getId(), $tab->getName());
+            $this->changeTabTranslation('new', $category->getId(), $category->getName());
+
+            return $this->redirectToRoute('govwiki_admin_environment_format', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+            ]);
+        }
 
         return [ 'form' => $form->createView() ];
     }
@@ -116,41 +69,129 @@ class TabController extends AbstractGovWikiAdminController
     /**
      * Edit given tab.
      *
-     * @Configuration\Route("/{id}/edit", requirements={"id": "\d+"})
+     * @Configuration\Route(
+     *  "/{tab}/edit",
+     *  requirements={"tab": "\d+"}
+     * )
      * @Configuration\Template
      *
      * @param Request $request A Request instance.
-     * @param Tab     $tab     A Tab instance.
+     * @param Tab     $tab     A Tab entity instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editAction(Request $request, Tab $tab)
     {
         $form = $this->createForm(new AbstractGroupType(), $tab);
+        $form->handleRequest($request);
 
-        $this->processForm($request, $form);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
 
-        $this->changeTabTranslation('edit', $tab->getId(), $tab->getName());
+            $em->persist($tab);
+            $em->flush();
 
-        return [ 'form' => $form->createView() ];
+            $this->changeTabTranslation('edit', $tab->getId(), $tab->getName());
+
+            return $this->redirectToRoute('govwiki_admin_environment_format', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+            ]);
+        }
+
+        return [
+            'form' => $form->createView(),
+            'tab' => $tab,
+        ];
     }
 
     /**
-     * Process tab form.
+     * Remove given tab.
      *
-     * @param Request       $request A Request instance.
-     * @param FormInterface $form    A Form instance.
+     * @Configuration\Route(
+     *  "/{tab}/remove",
+     *  requirements={"tab": "\d+"}
+     * )
+     * @param integer $tab A Tab entity id.
      *
-     * @return void
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    private function processForm(Request $request, FormInterface $form)
+    public function removeAction($tab)
     {
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getManager()->update($form->getData());
-        }
-    }
+        $em = $this->get('doctrine.orm.default_entity_manager');
 
+        $this->changeTabTranslation('remove', $tab);
+
+        $expr = $em->getExpressionBuilder();
+
+        // Remove category taranslations.
+        $categories = $em->getRepository('GovWikiDbBundle:Category')
+            ->createQueryBuilder('Category')
+            ->select('Category.id')
+            ->where($expr->eq('Category.tab', ':tab'))
+            ->setParameter('tab', $tab)
+            ->getQuery()
+            ->getArrayResult();
+
+        $categories = array_map(
+            function (array $row) {
+                return $row['id'];
+            },
+            $categories
+        );
+
+        foreach ($categories as $category) {
+            $this->changeTabTranslation('remove', $category);
+        }
+
+        // Remove field from government environment related table.
+        $formats = $em->getRepository('GovWikiDbBundle:Format')
+            ->createQueryBuilder('Format')
+            ->select('Format.field')
+            ->where($expr->in('Format.category', $categories))
+            ->getQuery()
+            ->getArrayResult();
+        $formats = array_map(
+            function (array $row) {
+                return $row['field'];
+            },
+            $formats
+        );
+
+        $manager = $this->getGovernmentManager();
+        $environment = $this->getCurrentEnvironment();
+        foreach ($formats as $format) {
+            $manager->deleteColumn($environment, $format);
+            $this->changeFormatTranslation('remove', $format);
+        }
+
+        $em->getConnection()->exec("
+            DELETE f FROM `formats` f
+            JOIN `groups` c ON c.id = f.category_id
+            WHERE
+                c.tab_id = {$tab} AND
+                c.type = 'category'
+        ");
+
+        $em->getRepository('GovWikiDbBundle:Category')
+            ->createQueryBuilder('Category')
+            ->delete()
+            ->where($expr->eq('Category.tab', ':tab'))
+            ->setParameter('tab', $tab)
+            ->getQuery()
+            ->execute();
+
+        $em->getRepository('GovWikiDbBundle:Tab')
+            ->createQueryBuilder('Tab')
+            ->delete()
+            ->where($expr->eq('Tab.id', ':tab'))
+            ->setParameter('tab', $tab)
+            ->getQuery()
+            ->execute();
+
+        return $this->redirectToRoute('govwiki_admin_environment_format', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+        ]);
+    }
     /**
      * @param string $action Action that will be executed on tab translation.
      * @param integer $tab_id Tab ID for TransKey
@@ -165,10 +206,10 @@ class TabController extends AbstractGovWikiAdminController
         $needOneResult = true;
         $trans_key_settings = null;
         if (!empty($transKey)) {
-            $trans_key_settings = array(
+            $trans_key_settings = [
                 'matching' => 'eq',
-                'transKeys' => array($transKey)
-            );
+                'transKeys' => [$transKey]
+            ];
         }
 
         /** @var Translation $translation */
@@ -193,6 +234,59 @@ class TabController extends AbstractGovWikiAdminController
             $translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
             if (!empty($translation)) {
                 $em->remove($translation);
+            }
+        }
+        $em->flush();
+    }
+
+    /**
+     * @param string $action Action that will be executed on tab translation.
+     * @param integer $format_field Format Field for TransKey
+     * @param string $format_name Format Name for Translation's text
+     */
+    private function changeFormatTranslation($action, $format_field, $format_name = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $transKey = 'format.' . $format_field;
+        $needOneResult = true;
+        $trans_key_settings = null;
+        if (!empty($transKey)) {
+            $trans_key_settings = [
+                'matching' => 'eq',
+                'transKeys' => [$transKey]
+            ];
+        }
+
+        $locale_list = $this->getLocaleManager()->getListLocales();
+
+        /** @var Locale $locale */
+        foreach ($locale_list as $locale) {
+            /** @var Translation $translation */
+            if ('new' == $action) {
+                $translation = new Translation();
+                $translation->setTransKey($transKey);
+                $translation->setTranslation($format_name);
+                $translation->setLocale($locale);
+                $em->persist($translation);
+            } elseif ('edit' == $action) {
+                $translation = $this->getTranslationManager()
+                    ->getEnvironmentTranslations($locale->getShortName(), $trans_key_settings, null, $needOneResult);
+                if (!empty($translation)) {
+                    $translation->setTranslation($format_name);
+                } else {
+                    $translation = new Translation();
+                    $translation->setTransKey($transKey);
+                    $translation->setTranslation($format_name);
+                    $translation->setLocale($locale);
+                    $em->persist($translation);
+                }
+            } elseif ('remove' == $action) {
+                $translation = $this->getTranslationManager()
+                    ->getEnvironmentTranslations($locale->getShortName(), $trans_key_settings, null, $needOneResult);
+                if (!empty($translation)) {
+                    $em->remove($translation);
+                }
             }
         }
         $em->flush();

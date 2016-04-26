@@ -8,7 +8,9 @@ services:
 
     govwiki_db.form.type.alt_type:
         class: GovWiki\DbBundle\Form\Type\AltTypeType
-        arguments: [@govwiki_admin.manager.environment]
+        arguments:
+            - @govwiki_environment.storage
+            - @govwiki_environment.manager.government
         tags:
             - { name: form.type, alias: alt_type }
 
@@ -46,12 +48,6 @@ services:
             - @govwiki_environment.storage
         tags:
             - { name: form.type, alias: government }
-
-    govwiki_db.form.format:
-        class: GovWiki\DbBundle\Form\FormatType
-        arguments: [ @govwiki_environment.storage ]
-        tags:
-            - { name: form.type, alias: format }
 
     govwiki_db.form.shape:
         class: GovWiki\DbBundle\Form\Type\ShapeType

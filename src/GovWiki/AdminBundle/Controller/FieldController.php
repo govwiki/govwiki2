@@ -6,52 +6,81 @@ use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Locale;
 use GovWiki\DbBundle\Entity\Translation;
-use GovWiki\DbBundle\Form\AbstractGroupType;
 use GovWiki\DbBundle\Form\FormatType;
+use GovWiki\EnvironmentBundle\Strategy\DefaultNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class FormatController
+ * Class FieldController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/format")
- * @deprecated To remove
- * todo remove
+ * @Configuration\Route(
+ *  "/{environment}/category/{category}/field",
+ *  requirements={
+ *      "environment": "\w+",
+ *      "category": "\d+"
+ *  }
+ * )
  */
-class FormatController extends Controller
+class FieldController extends AbstractGovWikiAdminController
 {
+
     /**
-     * @Configuration\Route("/")
+     * @Configuration\Route(
+     *  "/new",
+     *  requirements={ "category": "\d+" }
+     * )
      * @Configuration\Template()
      *
-     * @param Request $request A Request instance.
+     * @param Request $request  A Request instance.
+     * @param integer $category A Category entity id.
      *
-     * @return array
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function listAction(Request $request)
+    public function newAction(Request $request, $category)
     {
-        $fields = $this->get('knp_paginator')->paginate(
-            $this->getManager()->getListQuery(),
-            $request->query->getInt('page', 1),
-            25
+        $em = $this->get('doctrine.orm.default_entity_manager');
+        $categoryReference = $em->getReference(
+            'GovWikiDbBundle:Category',
+            $category
         );
 
-        $form = $this->createForm(new AbstractGroupType());
+        $format = $this->getManager()->create();
+        $format->setCategory($categoryReference);
 
-        return [
-            'fields' => $fields,
-            'form' => $form->createView(),
-        ];
+        $form = $this->createForm(new FormatType(), $format);
+        $form->handleRequest($request);
+
+        if ($form->isValid() && $form->isSubmitted()) {
+            $environment = $this->getCurrentEnvironment();
+
+            $this->getManager()->update($format);
+
+            $this->getGovernmentManager()->addColumn(
+                $environment,
+                $format->getField(),
+                $format->getType()
+            );
+
+            $this->changeFormatTranslation('new', $format->getField(), $format->getName());
+            if (!is_null($format->getHelpText())) {
+                $this->changeFormatTranslation('new', $format->getField() . '.help_text', $format->getHelpText());
+            }
+
+            return $this->redirectToRoute('govwiki_admin_environment_format', [
+                'environment' => $environment->getSlug(),
+            ]);
+        }
+
+        return [ 'form' => $form->createView() ];
     }
 
     /**
      * @Configuration\Route(
-     *  "/{id}/edit",
-     *  requirements={"id": "\d+"}
+     *  "/{format}/edit",
+     *  requirements={ "format": "\d+" }
      * )
      * @Configuration\Template()
      *
@@ -62,32 +91,42 @@ class FormatController extends Controller
      */
     public function editAction(Request $request, Format $format)
     {
-        $form = $this->createForm('format', $format);
+        $form = $this->createForm(new FormatType(), $format);
 
         $oldFieldName = $format->getField();
         $oldIsRanked = $format->isRanked();
 
         $form->handleRequest($request);
-        if ($this->processForm($form) ) {
-            $manager = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
+        if ($form->isSubmitted() && $form->isValid() ) {
+            $this->getManager()->update($format);
+
+            $environment = $this->getCurrentEnvironment();
+            $manager = $this->getGovernmentManager();
+
             if ($format->isRanked()) {
                 if ($oldIsRanked) {
-                    $manager->changeColumnInGovernment(
-                        $oldFieldName . '_rank',
-                        $format->getField() . '_rank',
+                    $manager->changeColumn(
+                        $environment,
+                        DefaultNamingStrategy::rankedFieldName($oldFieldName),
+                        DefaultNamingStrategy::rankedFieldName($format->getField()),
                         'integer'
                     );
                 } else {
-                    $manager->addColumnToGovernment(
-                        $format->getField() . '_rank',
+                    $manager->addColumn(
+                        $environment,
+                        DefaultNamingStrategy::rankedFieldName($format->getField()),
                         'integer'
                     );
                 }
             } elseif ($oldIsRanked) {
-                $manager->deleteColumnFromGovernment($oldFieldName . '_rank');
+                $manager->deleteColumn(
+                    $environment,
+                    DefaultNamingStrategy::rankedFieldName($format->getField())
+                );
             }
 
-            $manager->changeColumnInGovernment(
+            $manager->changeColumn(
+                $environment,
                 $oldFieldName,
                 $format->getField(),
                 $format->getType()
@@ -95,51 +134,22 @@ class FormatController extends Controller
 
             $this->changeFormatTranslation('edit', $format->getField(), $format->getName());
             $this->changeFormatTranslation('edit', $format->getField() . '.help_text', $format->getHelpText());
-        }
 
-        return [ 'form' => $form->createView() ];
-    }
-
-    /**
-     * @Configuration\Route("/new")
-     * @Configuration\Template()
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function newAction(Request $request)
-    {
-        $format = $this->getManager()->create();
-
-        $form = $this->createForm('format', $format);
-        $form->handleRequest($request);
-        if ($this->processForm($form)) {
-            $manager = $this
-                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
-
-            $manager->addColumnToGovernment(
-                $format->getField(),
-                $format->getType()
-            );
-
-            $this->changeFormatTranslation('new', $format->getField(), $format->getName());
-            if (!is_null($format->getHelpText())) {
-                $this->changeFormatTranslation('new', $format->getField() . '.help_text', $format->getHelpText());
-            }
-
-            return $this->redirectToRoute('govwiki_admin_format_edit', [
-                'id' => $format->getId(),
+            return $this->redirectToRoute('govwiki_admin_environment_format', [
+                'environment' => $environment->getSlug(),
             ]);
         }
 
-        return [ 'form' => $form->createView() ];
+        return [
+            'form' => $form->createView(),
+            'format' => $format,
+        ];
     }
 
     /**
      * @Configuration\Route(
-     *  "/{id}/delete",
-     *  requirements={"id": "\d+"}
+     *  "/{format}/delete",
+     *  requirements={"format": "\d+"}
      * )
      *
      * @param Format $format A Format instance.
@@ -150,28 +160,27 @@ class FormatController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
+        $environment = $this->getCurrentEnvironment();
+        $manager = $this->getGovernmentManager();
+
+        $manager->deleteColumn($environment, $format->getField());
+
+        if ($format->isRanked()) {
+            $manager->deleteColumn(
+                $environment,
+                DefaultNamingStrategy::rankedFieldName($format->getField())
+            );
+        }
+
         $this->changeFormatTranslation('remove', $format->getField());
         $this->changeFormatTranslation('remove', $format->getField() . '.help_text');
 
         $em->remove($format);
         $em->flush();
 
-        return $this->redirectToRoute('govwiki_admin_format_list');
-    }
-
-    /**
-     * @param FormInterface $form A FormInterface instance.
-     *
-     * @return boolean
-     */
-    private function processForm(FormInterface $form)
-    {
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getManager()->update($form->getData());
-            return true;
-        }
-
-        return false;
+        return $this->redirectToRoute('govwiki_admin_environment_format', [
+            'environment' => $environment->getSlug(),
+        ]);
     }
 
     /**
@@ -187,10 +196,10 @@ class FormatController extends Controller
         $needOneResult = true;
         $trans_key_settings = null;
         if (!empty($transKey)) {
-            $trans_key_settings = array(
+            $trans_key_settings = [
                 'matching' => 'eq',
-                'transKeys' => array($transKey)
-            );
+                'transKeys' => [$transKey]
+            ];
         }
 
         $locale_list = $this->getLocaleManager()->getListLocales();
