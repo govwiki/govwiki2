@@ -134,10 +134,7 @@ class UserController extends Controller
     {
         $this->checkUserBelongsToEnvironment($user);
 
-        $show_roles_and_envs_field = true;
-        if ($this->isGranted('ROLE_MANAGER') && !$this->isGranted('ROLE_ADMIN')) {
-            $show_roles_and_envs_field = false;
-        }
+        $show_roles_and_envs_field = $this->isGranted('ROLE_ADMIN');
 
         $form = $this->createForm(new UserForm(false, $show_roles_and_envs_field), $user);
 
@@ -146,6 +143,8 @@ class UserController extends Controller
             $userManager = $this->get('fos_user.user_manager');
             $userManager->updateUser($user);
         }
+
+        dump($form);
 
         return [
             'form' => $form->createView(),

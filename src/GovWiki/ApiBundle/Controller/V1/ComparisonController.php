@@ -2,7 +2,6 @@
 
 namespace GovWiki\ApiBundle\Controller\V1;
 
-use Doctrine\Common\Annotations\Annotation\Required;
 use GovWiki\ApiBundle\GovWikiApiServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;

@@ -175,6 +175,15 @@ class CreateRequestManager implements CreateRequestManagerInterface
         $argument,
         $collection = false
     ) {
+        // todo refactor js code to send boolean values not 'Yes' or 'No'.
+        if ($fieldName === 'didElectedOfficialProposeThis') {
+            if (strtolower($argument) === 'yes') {
+                $argument = true;
+            } elseif (strtolower($argument) === 'no') {
+                $argument = false;
+            }
+        }
+
         $fieldName = ucfirst($fieldName);
 
         $prefix = 'set';

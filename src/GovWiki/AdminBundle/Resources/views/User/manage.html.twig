@@ -18,6 +18,8 @@
 {% endblock body %}
 
 {% block javascripts %}
+    {{ parent() }}
+
     {% javascripts '@GovWikiAdminBundle/Resources/public/js/User/form.js'
     output='js/form.js' %}
     <script src="{{ asset_url }}"></script>
