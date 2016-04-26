@@ -144,8 +144,6 @@ class UserController extends Controller
             $userManager->updateUser($user);
         }
 
-        dump($form);
-
         return [
             'form' => $form->createView(),
             'btn_caption' => 'Update',
