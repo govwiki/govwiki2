@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Form;
 
 use GovWiki\DbBundle\Entity\Government;
+use GovWiki\EnvironmentBundle\Manager\Government\GovernmentManagerInterface;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -24,17 +25,15 @@ class GovernmentType extends AbstractType
     private $uploadDir = '/img/government';
 
     /**
-     * @var EnvironmentStorageInterface
+     * @param string                      $webDir  Path to web directory.
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
      */
-    private $storage;
-
-    /**
-     * @param string $webDir Path to web directory.
-     */
-    public function __construct($webDir, EnvironmentStorageInterface $storage)
-    {
+    public function __construct(
+        $webDir,
+        EnvironmentStorageInterface $storage
+    ) {
         $this->webDir = $webDir;
-        $this->storage = $storage;
         $this->uploadDir .= '/'. $storage->get()->getSlug();
     }
 
@@ -46,15 +45,31 @@ class GovernmentType extends AbstractType
         $listener = function (FormEvent $event) {
             /** @var Government $government */
             $government = $event->getData();
-            /** @var UploadedFile $file */
+            $governmentFileName = strtolower($government->getAltTypeSlug() .'_'
+                . $government->getSlug());
+
+            // Upload government image.
             $file = $event->getForm()->get('imageFile')->getData();
 
-            if ($file !== null) {
-                $name = $government->getSlug() .'.'. $file->getClientOriginalExtension();
+            if ($file instanceof UploadedFile) {
+                $filename = 'image_'. $governmentFileName .'.'
+                    . $file->getClientOriginalExtension();
 
-                $file->move($this->webDir . $this->uploadDir, $name);
+                $file->move($this->webDir . $this->uploadDir, $filename);
 
-                $government->setImage($this->uploadDir .'/'. $name);
+                $government->setImage($this->uploadDir .'/'. $filename);
+            }
+
+            // Upload government logo.
+            $file = $event->getForm()->get('secondaryLogo')->getData();
+
+            if ($file instanceof UploadedFile) {
+                $filename = 'logo_'. $governmentFileName .'.'
+                    . $file->getClientOriginalExtension();
+
+                $file->move($this->webDir . $this->uploadDir, $filename);
+
+                $government->setSecondaryLogoPath($this->uploadDir .'/'. $filename);
             }
 
             $event->setData($government);
@@ -62,7 +77,7 @@ class GovernmentType extends AbstractType
 
         $builder
             ->add('name')
-            ->add('altType')
+            ->add('altType', 'alt_type', [ 'multiple' => false ])
             ->add('wikipediaPageName')
             ->add('secondaryLogo', 'file', [ 'required' => false ])
             ->add('secondaryLogoUrl')
@@ -72,6 +87,8 @@ class GovernmentType extends AbstractType
                 'mapped' => false,
             ])
             ->addEventListener(FormEvents::POST_SUBMIT, $listener);
+
+        $builder->get('altType')->resetViewTransformers();
     }
 
     /**

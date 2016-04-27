@@ -48,30 +48,32 @@
                 {% for category in tab.categories %}
                     <h5>
                         {{- category.name -}}
-                        <small>
+                        {% if category.name != 'Main' %}
+                            <small>
 
-                            <a href="{{- path(
-                            'govwiki_admin_category_edit',
-                            {
-                                'environment': environment.slug,
-                                'tab': tab.id,
-                                'category': category.id
-                            }
-                            ) -}}">
-                                <i class="glyphicon glyphicon-pencil"></i>
-                            </a>
-
-                            <span data-url="{{- path(
-                                'govwiki_admin_category_remove',
+                                <a href="{{- path(
+                                'govwiki_admin_category_edit',
                                 {
                                     'environment': environment.slug,
                                     'tab': tab.id,
                                     'category': category.id
                                 }
-                            ) -}}" class="btn-delete delete-anchor" data-description="Are you sure want to delete category '{{ category.name }}'?">
-                                <i class="glyphicon glyphicon-remove"></i>
-                            </span>
-                        </small>
+                                ) -}}">
+                                    <i class="glyphicon glyphicon-pencil"></i>
+                                </a>
+
+                                <span data-url="{{- path(
+                                    'govwiki_admin_category_remove',
+                                    {
+                                        'environment': environment.slug,
+                                        'tab': tab.id,
+                                        'category': category.id
+                                    }
+                                ) -}}" class="btn-delete delete-anchor" data-description="Are you sure want to delete category '{{ category.name }}'?">
+                                    <i class="glyphicon glyphicon-remove"></i>
+                                </span>
+                            </small>
+                        {% endif %}
                     </h5>
 
                     <table class="table table-bordered">

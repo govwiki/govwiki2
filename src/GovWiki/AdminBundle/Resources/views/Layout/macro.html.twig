@@ -45,3 +45,7 @@
         </li>
     {% endspaceless %}
 {% endmacro %}
+
+{%- macro filterValue(name) -%}
+    {{ app.request.query.get('filter') ? app.request.query.get('filter')[name] }}
+{%- endmacro -%}

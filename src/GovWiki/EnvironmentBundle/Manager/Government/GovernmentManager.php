@@ -3,13 +3,15 @@
 namespace GovWiki\EnvironmentBundle\Manager\Government;
 
 use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\DbBundle\Entity\Delta;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\EnvironmentBundle\Converter\DataTypeConverter;
 use GovWiki\EnvironmentBundle\Manager\Format\FormatManagerInterface;
 use GovWiki\EnvironmentBundle\Manager\MaxRank\MaxRankManagerInterface;
-use GovWiki\EnvironmentBundle\Strategy\DefaultNamingStrategy;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 
 /**
  * Class GovernmentManager
@@ -54,19 +56,32 @@ class GovernmentManager implements GovernmentManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getAvailableYears(Environment $environment)
-    {
+    public function getAvailableYears(
+        Environment $environment,
+        Government $government = null
+    ) {
         $con = $this->em->getConnection();
-        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
             $environment
         );
 
-        $years = $con->fetchAll("
-            SELECT year
-            FROM {$tableName}
-            GROUP BY year
-            ORDER BY year DESC
-        ");
+        if ($government === null) {
+            // Get available years for all government's in specified environment.
+            $years = $con->fetchAll("
+                SELECT year
+                FROM {$tableName}
+                GROUP BY year
+                ORDER BY year DESC
+            ");
+        } else {
+            // Get available years for specified government.
+            $years = $con->fetchAll("
+                SELECT year
+                FROM `{$tableName}`
+                WHERE government_id = {$government->getId()}
+                GROUP BY year
+            ");
+        }
 
         return array_map(
             function (array $result) {
@@ -91,7 +106,7 @@ class GovernmentManager implements GovernmentManagerInterface
             $columnSqlDefinition .= "`{$fieldName}` {$type} DEFAULT NULL";
         }
 
-        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
             $environment
         );
 
@@ -116,7 +131,7 @@ class GovernmentManager implements GovernmentManagerInterface
      */
     public function removeTable(Environment $environment)
     {
-        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
             $environment
         );
         $this->em->getConnection()
@@ -140,10 +155,10 @@ class GovernmentManager implements GovernmentManagerInterface
         $nameOrder = $parameters['name_order'];
         $year = $parameters['year'];
 
-        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
             $environment
         );
-        $fieldName = DefaultNamingStrategy::originalFromRankFieldName(
+        $fieldName = GovwikiNamingStrategy::originalFromRankFieldName(
             $rankFieldName
         );
 
@@ -501,7 +516,7 @@ class GovernmentManager implements GovernmentManagerInterface
         foreach ($fields as $field) {
             $dataFields[$field['field']] = $field['type'];
             if ($field['ranked'] === true) {
-                $name = DefaultNamingStrategy::rankedFieldName($field['field']);
+                $name = GovwikiNamingStrategy::rankedFieldName($field['field']);
                 $dataFields[$name] = 'integer';
             }
         }
@@ -536,7 +551,7 @@ class GovernmentManager implements GovernmentManagerInterface
             unset($data['alt_type_slug'], $data['year']);
             foreach ($data as $field => $value) {
                 if (array_key_exists($field, $government)) {
-                    $rankName = DefaultNamingStrategy::rankedFieldName($field);
+                    $rankName = GovwikiNamingStrategy::rankedFieldName($field);
                     $government['ranks'][$rankName] = [
                         $government[$rankName],
                         $value,
@@ -569,7 +584,7 @@ class GovernmentManager implements GovernmentManagerInterface
         $year,
         array $fields = null
     ) {
-        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
             $environment
         );
 
@@ -589,15 +604,105 @@ class GovernmentManager implements GovernmentManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function updateGovernment(Environment $environment, array $data)
+    public function getConditionValuesForGovernment(
+        Environment $environment,
+        $government,
+        $fieldName
+    ) {
+        $tabName = GovwikiNamingStrategy::environmentRelatedTableName($environment);
+
+        return $this->em->getConnection()->fetchAll("
+            SELECT
+                year,
+                {$fieldName} AS data
+            FROM {$tabName}
+            WHERE government_id = {$government}
+        ");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConditionValues(Environment $environment, $fieldName) {
+        $tabName = GovwikiNamingStrategy::environmentRelatedTableName($environment);
+
+        return $this->em->getConnection()->fetchAll("
+            SELECT
+                g.slug, g.alt_type_slug, g.name, GROUP_CONCAT(eg.year) AS years,
+                 GROUP_CONCAT(eg.{$fieldName}) AS data
+            FROM {$tabName} eg
+            JOIN governments g ON g.id = eg.government_id
+            GROUP BY g.alt_type_slug, g.slug
+            ORDER BY g.alt_type_slug, g.slug
+        ");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeData(Environment $environment, $government)
     {
-        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName($environment);
+        $this->em->getConnection()->exec("
+            DELETE FROM {$tableName}
+            WHERE government_id = {$government}
+        ");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function persistGovernmentData(
+        Environment $environment,
+        Government $government,
+        array $data
+    ) {
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
+
+        if (array_key_exists('id', $data)) {
+            unset($data['id']);
+        }
+
+        // Add government to fields.
+        $data['government_id'] = $government->getId();
+
+        $fields = implode(',', array_keys($data));
+        $values = array_map(
+            function ($value) {
+                $value = (! is_numeric($value)) ? "'{$value}'" : $value;
+                $value = ($value === null) ? 'NULL' : $value;
+
+                return $value;
+            },
+            array_values($data)
+        );
+        $values = implode(',', $values);
+
+        $this->em->getConnection()->exec("
+            INSERT INTO `{$tableName}` ({$fields})
+            VALUES ({$values})
+        ");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateGovernmentData(
+        Environment $environment,
+        Government $government,
+        $year,
+        array $data
+    ) {
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
             $environment
         );
 
         $stmt = '';
-        $id = $data['id'];
-        unset($data['id']);
+        if (array_key_exists('id', $data)) {
+            unset($data['id']);
+        }
 
         foreach ($data as $field => $value) {
             if (is_string($value)) {
@@ -612,7 +717,9 @@ class GovernmentManager implements GovernmentManagerInterface
 
         $this->em->getConnection()->exec("
             UPDATE `{$tableName}` SET {$stmt}
-            WHERE id = {$id}
+            WHERE
+                government_id = {$government->getId()} AND
+                year = {$year}
         ");
     }
 
@@ -621,7 +728,7 @@ class GovernmentManager implements GovernmentManagerInterface
      */
     public function addColumn(Environment $environment, $name, $type)
     {
-        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
             $environment
         );
         $type = DataTypeConverter::abstract2database($type);
@@ -641,7 +748,7 @@ class GovernmentManager implements GovernmentManagerInterface
         $newType
     )
     {
-        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
             $environment
         );
         $newType = DataTypeConverter::abstract2database($newType);
@@ -660,7 +767,7 @@ class GovernmentManager implements GovernmentManagerInterface
      */
     public function deleteColumn(Environment $environment, $name)
     {
-        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
             $environment
         );
 

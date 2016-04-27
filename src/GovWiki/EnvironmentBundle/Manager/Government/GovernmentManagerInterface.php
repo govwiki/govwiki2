@@ -3,6 +3,7 @@
 namespace GovWiki\EnvironmentBundle\Manager\Government;
 
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Government;
 
 /**
  * Interface GovernmentManagerInterface
@@ -15,10 +16,14 @@ interface GovernmentManagerInterface
      * Return available years for current environment.
      *
      * @param Environment $environment A Environment entity instance.
+     * @param Government  $government  A Government entity instance.
      *
      * @return integer[]
      */
-    public function getAvailableYears(Environment $environment);
+    public function getAvailableYears(
+        Environment $environment,
+        Government $government = null
+    );
 
     /**
      * @param Environment $environment       A Environment entity instance.
@@ -126,7 +131,7 @@ interface GovernmentManagerInterface
     );
 
     /**
-     * @param Environment $environment A Environment entity instance
+     * @param Environment $environment A Environment entity instance.
      * @param integer     $government  A Government entity id.
      * @param integer     $year        Data year.
      * @param array       $fields      List of fetched field names. If null -
@@ -141,13 +146,65 @@ interface GovernmentManagerInterface
 
     /**
      * @param Environment $environment A Environment entity instance.
-     * @param array       $data        New data.
+     * @param integer     $government  A Government entity id or null. If null
+     *                                 get for all government.
+     * @param string      $fieldName   Condition field.
+     *
+     * @return array
+     */
+    public function getConditionValuesForGovernment(
+        Environment $environment,
+        $government,
+        $fieldName
+    );
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $fieldName   Condition field.
+     *
+     * @return array
+     */
+    public function getConditionValues(Environment $environment, $fieldName);
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param integer     $government  A Government entity id.
+     *
+     * @return void
+     */
+    public function removeData(Environment $environment, $government);
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param Government  $government  Updated government entity instance.
+     * @param array       $data        Environment related data.
      *
      * @return void
      *
      * @throws \Doctrine\DBAL\DBALException Can't execute query.
      */
-    public function updateGovernment(Environment $environment, array $data);
+    public function persistGovernmentData(
+        Environment $environment,
+        Government $government,
+        array $data
+    );
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param Government  $government  Updated government entity instance.
+     * @param integer     $year        Data year.
+     * @param array       $data        Environment related data.
+     *
+     * @return void
+     *
+     * @throws \Doctrine\DBAL\DBALException Can't execute query.
+     */
+    public function updateGovernmentData(
+        Environment $environment,
+        Government $government,
+        $year,
+        array $data
+    );
 
     /**
      * Add new column to environment related government table.

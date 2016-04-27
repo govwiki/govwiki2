@@ -97,51 +97,51 @@ class FinDataController extends AbstractGovWikiAdminController
         return [ 'form' => $form->createView() ];
     }
 
-    /**
-     * @Configuration\Route("/import/{environment}")
-     * @Configuration\Template()
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return array
-     */
-    public function importAction(Request $request)
-    {
-        $form = $this->createFormBuilder(null, [
-            'action' => $this->generateUrl(
-                'govwiki_admin_findata_import',
-                [ 'environment' => $this->getManager()->getEnvironment()->getSlug() ]
-            ),
-        ])
-            ->add('csv_file', 'file')
-            ->getForm();
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                /** @var UploadedFile $file */
-                $file = $form->getData()['csv_file'];
-
-                $filePath = $file->getPathname();
-
-                try {
-                    $this->get(GovWikiDbServices::FIN_DATA_IMPORTER)
-                        ->import(new CsvReader($filePath));
-                } catch (\Exception $e) {
-                    $this->errorMessage('Can\'t import new financial statements');
-                    return $this->redirectToRoute('govwiki_admin_government_index');
-                }
-
-                $this->successMessage('Financial statements imported successfully');
-
-                return $this->redirectToRoute('govwiki_admin_government_index');
-            }
-
-            $this->errorMessage('Can\'t import new financial statements');
-        }
-
-        return [ 'form' => $form->createView() ];
-    }
+//    /**
+//     * @Configuration\Route("/import/{environment}")
+//     * @Configuration\Template()
+//     *
+//     * @param Request $request A Request instance.
+//     *
+//     * @return array
+//     */
+//    public function importAction(Request $request)
+//    {
+//        $form = $this->createFormBuilder(null, [
+//            'action' => $this->generateUrl(
+//                'govwiki_admin_findata_import',
+//                [ 'environment' => $this->getManager()->getEnvironment()->getSlug() ]
+//            ),
+//        ])
+//            ->add('csv_file', 'file')
+//            ->getForm();
+//
+//        $form->handleRequest($request);
+//        if ($form->isSubmitted()) {
+//            if ($form->isValid()) {
+//                /** @var UploadedFile $file */
+//                $file = $form->getData()['csv_file'];
+//
+//                $filePath = $file->getPathname();
+//
+//                try {
+//                    $this->get(GovWikiDbServices::FIN_DATA_IMPORTER)
+//                        ->import(new CsvReader($filePath));
+//                } catch (\Exception $e) {
+//                    $this->errorMessage('Can\'t import new financial statements');
+//                    return $this->redirectToRoute('govwiki_admin_government_index');
+//                }
+//
+//                $this->successMessage('Financial statements imported successfully');
+//
+//                return $this->redirectToRoute('govwiki_admin_government_index');
+//            }
+//
+//            $this->errorMessage('Can\'t import new financial statements');
+//        }
+//
+//        return [ 'form' => $form->createView() ];
+//    }
 
     /**
      * @return \GovWiki\AdminBundle\Manager\Entity\AdminFinDataManager

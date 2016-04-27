@@ -10,6 +10,10 @@ government:
     resource: "@GovWikiAdminBundle/Controller/GovernmentController.php"
     type:     annotation
 
+government_data:
+    resource: "@GovWikiAdminBundle/Controller/GovernmentDataController.php"
+    type:     annotation
+
 electedofficial:
     resource: "@GovWikiAdminBundle/Controller/ElectedOfficialController.php"
     type:     annotation

@@ -39,8 +39,8 @@ class FormatRepository extends EntityRepository
                 'Category.id AS category_id, Category.name AS category_name',
                 'Category.decoration as category_decoration'
             )
-            ->leftJoin('Format.category', 'Category')
-            ->leftJoin('Category.tab', 'Tab')
+            ->join('Format.category', 'Category')
+            ->join('Category.tab', 'Tab')
             ->where($expr->eq('Format.environment', ':environment'))
             ->setParameter('environment', $environment)
             ->orderBy($expr->asc('Tab.orderNumber'))

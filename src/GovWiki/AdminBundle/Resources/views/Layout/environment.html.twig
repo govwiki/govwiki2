@@ -49,7 +49,10 @@
     {#</li>#}
 
     <li class="{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} active{% endif %}">
-        <a class="link" href="{{- path('govwiki_admin_government_index') -}}">
+        <a class="link" href="{{- path(
+            'govwiki_admin_government_index',
+            { 'environment': environment.slug }
+        ) -}}">
             Governments
         </a>
     </li>

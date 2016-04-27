@@ -5,10 +5,10 @@ namespace GovWiki\EnvironmentBundle\Strategy;
 use GovWiki\DbBundle\Entity\Environment;
 
 /**
- * Interface DefaultNamingStrategy
+ * Interface GovwikiNamingStrategy
  * @package GovWiki\EnvironmentBundle\Strategy
  */
-final class DefaultNamingStrategy
+final class GovwikiNamingStrategy
 {
     /**
      * @param Environment $environment A Environment entity instance.
@@ -48,5 +48,15 @@ final class DefaultNamingStrategy
     public static function maxRanksTableName(Environment $environment)
     {
         return $environment->getSlug() .'_max_ranks';
+    }
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     *
+     * @return string
+     */
+    public static function cartoDbDatasetName(Environment $environment)
+    {
+        return self::environmentRelatedTableName($environment);
     }
 }

@@ -5,7 +5,7 @@ namespace GovWiki\EnvironmentBundle\Manager\MaxRank;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\Environment;
-use GovWiki\EnvironmentBundle\Strategy\DefaultNamingStrategy;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 
 /**
  * Class MaxRankManager
@@ -55,7 +55,7 @@ class MaxRankManager implements MaxRankManagerInterface
         $insertParts = array_map(
             function (array $field) {
                 $name = $field['field'];
-                $rankName = DefaultNamingStrategy::rankedFieldName($name);
+                $rankName = GovwikiNamingStrategy::rankedFieldName($name);
                 return "MAX(e.{$rankName}) AS {$name}";
             },
             $fields
@@ -72,10 +72,10 @@ class MaxRankManager implements MaxRankManagerInterface
         $updateParts = implode(',', $updateParts);
 
         $con = $this->em->getConnection();
-        $maxRankTableName = DefaultNamingStrategy::maxRanksTableName(
+        $maxRankTableName = GovwikiNamingStrategy::maxRanksTableName(
             $environment
         );
-        $governmentTableName = DefaultNamingStrategy::environmentRelatedTableName(
+        $governmentTableName = GovwikiNamingStrategy::environmentRelatedTableName(
             $environment
         );
 
@@ -120,7 +120,7 @@ class MaxRankManager implements MaxRankManagerInterface
         $altTypeSlug,
         $year
     ) {
-        $tableName = DefaultNamingStrategy::maxRanksTableName(
+        $tableName = GovwikiNamingStrategy::maxRanksTableName(
             $environment
         );
 
@@ -145,7 +145,7 @@ class MaxRankManager implements MaxRankManagerInterface
      */
     public function removeTable(Environment $environment)
     {
-        $tableName = DefaultNamingStrategy::maxRanksTableName($environment);
+        $tableName = GovwikiNamingStrategy::maxRanksTableName($environment);
         $this->em->getConnection()->exec("DROP TABLE IF EXISTS `{$tableName}``");
     }
 }

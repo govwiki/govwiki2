@@ -1,0 +1,67 @@
+{% extends "GovWikiAdminBundle:Government:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - Edit government{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Governments',
+        'govwiki_admin_government_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        government.name,
+        'govwiki_admin_government_edit',
+        {
+            'environment': environment.slug,
+            'government': government.id
+        }
+    ) -}}
+    {{- macro.breadcrumbElement('New data') -}}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    New data
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{ form_start(form) }}
+    {% if errors|length > 0 %}
+        {% for error in errors %}
+            <p class="alert alert-danger">{{ error.message }}</p>
+        {% endfor %}
+    {% endif %}
+    {% for tab, fields in formats %}
+        {% set panel_id = 'tab_fields_' ~ loop.index %}
+        {{ form_row(form.year) }}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#fields-accordions" href="#{{ panel_id }}">{{ tab }}</a>
+                </h4>
+            </div>
+            <div id="{{ panel_id }}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    {# Iterate over fields in tab. #}
+                    {% dump(fields) %}
+                    {% for name in fields|keys %}
+                        {{ form_row(form[name]) }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="btn-group">
+        <button type="submit" class="btn btn-success">Create</button>
+        <a href="{{- path('govwiki_admin_government_edit', {
+            'environment': environment.slug,
+            'government': government.id
+        }) -}}" class="btn btn-default">Back</a>
+    </div>
+    {{ form_end(form) }}
+{% endblock panel_body %}

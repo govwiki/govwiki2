@@ -4,7 +4,7 @@ namespace GovWiki\ApiBundle\Controller\V1;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
-use GovWiki\EnvironmentBundle\Strategy\DefaultNamingStrategy;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -83,7 +83,7 @@ class GovernmentController extends AbstractGovWikiApiController
          */
         $fields = $this->getFormatManager()->getRankedFields($environment);
         $found = false;
-        $tmp = DefaultNamingStrategy::originalFromRankFieldName($fieldName);
+        $tmp = GovwikiNamingStrategy::originalFromRankFieldName($fieldName);
         foreach ($fields as $field) {
             if ($field['field'] === $tmp) {
                 $found = true;

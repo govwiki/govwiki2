@@ -46,6 +46,7 @@ services:
         arguments:
             - %kernel.root_dir%/../web
             - @govwiki_environment.storage
+            - @govwiki_environment.manager.government
         tags:
             - { name: form.type, alias: government }
 
@@ -62,6 +63,23 @@ services:
         arguments: [ @govwiki_environment.storage ]
         tags:
             - { name: form.type, alias: fin_data }
+
+    govwiki_db.form.ext_government:
+        class: GovWiki\DbBundle\Form\ExtGovernmentType
+        arguments:
+            - @govwiki_environment.storage
+            - @govwiki_environment.manager.format
+        tags:
+            - { name: form.type, alias: ext_government }
+
+    govwiki_db.form.new_ext_government:
+        class: GovWiki\DbBundle\Form\NewExtGovernmentType
+        arguments:
+            - @govwiki_environment.storage
+            - @govwiki_environment.manager.format
+            - @govwiki_environment.manager.government
+        tags:
+            - { name: form.type, alias: new_ext_government }
 
     govwiki_db.form.document:
         class: GovWiki\DbBundle\Form\DocumentType

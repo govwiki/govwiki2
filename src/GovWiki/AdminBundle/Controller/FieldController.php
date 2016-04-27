@@ -7,7 +7,7 @@ use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Locale;
 use GovWiki\DbBundle\Entity\Translation;
 use GovWiki\DbBundle\Form\FormatType;
-use GovWiki\EnvironmentBundle\Strategy\DefaultNamingStrategy;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -107,21 +107,21 @@ class FieldController extends AbstractGovWikiAdminController
                 if ($oldIsRanked) {
                     $manager->changeColumn(
                         $environment,
-                        DefaultNamingStrategy::rankedFieldName($oldFieldName),
-                        DefaultNamingStrategy::rankedFieldName($format->getField()),
+                        GovwikiNamingStrategy::rankedFieldName($oldFieldName),
+                        GovwikiNamingStrategy::rankedFieldName($format->getField()),
                         'integer'
                     );
                 } else {
                     $manager->addColumn(
                         $environment,
-                        DefaultNamingStrategy::rankedFieldName($format->getField()),
+                        GovwikiNamingStrategy::rankedFieldName($format->getField()),
                         'integer'
                     );
                 }
             } elseif ($oldIsRanked) {
                 $manager->deleteColumn(
                     $environment,
-                    DefaultNamingStrategy::rankedFieldName($format->getField())
+                    GovwikiNamingStrategy::rankedFieldName($format->getField())
                 );
             }
 
@@ -168,7 +168,7 @@ class FieldController extends AbstractGovWikiAdminController
         if ($format->isRanked()) {
             $manager->deleteColumn(
                 $environment,
-                DefaultNamingStrategy::rankedFieldName($format->getField())
+                GovwikiNamingStrategy::rankedFieldName($format->getField())
             );
         }
 
