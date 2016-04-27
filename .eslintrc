@@ -16,6 +16,7 @@
   "rules": {
     "no-alert": 0,
     "no-console": 0,
+    "no-debugger": 0,
     "max-len": ["error", 120],
     "vars-on-top": "error", // or 0 to disable
     "no-use-before-define": [ "error", { "functions": false, "classes": false}]

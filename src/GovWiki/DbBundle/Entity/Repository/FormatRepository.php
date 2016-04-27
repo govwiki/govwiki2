@@ -35,11 +35,12 @@ class FormatRepository extends EntityRepository
 
         return $qb
             ->addSelect(
-                'Tab.id AS tab_id, Tab.name AS tab_name, Category.id AS category_id, Category.name AS category_name',
+                'Tab.id AS tab_id, Tab.name AS tab_name',
+                'Category.id AS category_id, Category.name AS category_name',
                 'Category.decoration as category_decoration'
             )
             ->leftJoin('Format.category', 'Category')
-            ->leftJoin('Format.tab', 'Tab')
+            ->leftJoin('Category.tab', 'Tab')
             ->where($expr->eq('Format.environment', ':environment'))
             ->setParameter('environment', $environment)
             ->orderBy($expr->asc('Tab.orderNumber'))
@@ -102,12 +103,10 @@ class FormatRepository extends EntityRepository
                     'Format.helpText, Format.dataOrFormula, Format.name',
                     'Format.mask, Format.field, Format.ranked, Format.showIn',
                     'Format.type',
-                    'Tab.id AS tab_id, Tab.name AS tab_name',
                     'Category.id AS category_id, Category.name AS category_name',
                     'Category.decoration as category_decoration'
                 )
                 ->leftJoin('Format.category', 'Category')
-                ->leftJoin('Format.tab', 'Tab')
                 ->where($expr->andX(
                     $expr->eq('Format.environment', ':environment'),
                     $expr->eq('Format.field', ':name')

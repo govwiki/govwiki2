@@ -1,5 +1,7 @@
 {% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
 
+{% import _self as self %}
+
 {% block main %}
 
     <section class="governmentController">
@@ -57,6 +59,21 @@
                         <ul class="nav nav-pills tab-titles">
                             {% if (formats is defined) and (formats is not empty) %}
                                 {% for tabName, categories in formats %}
+                                    {% set tab_id = categories|first|first.tab_id %}
+                                    {% set slug = self.tabSlug(tabName) %}
+
+                                    <li class="{{ loop.first ? 'active' : '' }}">
+                                        <a class="tabs tab_{{ slug|lower }}" href="#{{ slug }}"
+                                           aria-controls="{{ slug }}"
+                                           role="tab" data-toggle="tab" data-tabname="{{ tabName }}">
+                                            {{- ('groups.group_id_'~tab_id)|trans -}}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+
+                            {#{% if (formats is defined) and (formats is not empty) %}
+                                {% for tabName, categories in formats %}
                                     {% if categories[""] is defined %}
                                         {% set tab_id = categories[""]|first.tab_id %}
                                     {% else %}
@@ -64,16 +81,16 @@
                                     {% endif %}
 
                                     <li class="{{ loop.first ? 'active' : '' }}">
-                                        {# TODO: Hardcoded, for new db, must be replaced #}
+                                        &#123;&#35; TODO: Hardcoded, for new db, must be replaced &#35;&#125;
                                         <a class="tabs tab_{{ tabName | replace(' ', '_') | replace('+', 'a')|lower }}" href="#{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
                                            aria-controls="{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
                                            role="tab" data-toggle="tab" data-tabname="{{ tabName }}">
                                             {{ ('groups.group_id_'~tab_id)|trans }}
-                                            {#{{ tabName }}#}
+                                            &#123;&#35;{{ tabName }}&#35;&#125;
                                         </a>
                                     </li>
                                 {% endfor %}
-                            {% endif %}
+                            {% endif %}#}
 
                             {% if hasSalaries %}
                                 <li><a class="tabs tab_salaries" href="#Salaries" aria-controls="Salaries" role="tab" data-toggle="tab">Salaries</a></li>
@@ -96,16 +113,16 @@
                         {% if (formats is defined) and (formats is not empty) %}
 
                             {% for tabName, categories in formats %}
-                                {% if categories[""] is defined %}
-                                    {% set tab_id = categories[""]|first.tab_id %}
+                                {% if categories["Main"] is defined %}
+                                    {% set tab_id = categories["Main"]|first.tab_id %}
                                 {% else %}
                                     {% set tab_id = categories|first|first.tab_id %}
                                 {% endif %}
 
-                                <div class="tab-pane {{ loop.first ? 'active' : '' }}" id="{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
+                                <div class="tab-pane {{ loop.first ? 'active' : '' }}" id="{{ self.tabSlug(tabName) }}">
 
                                     <h4>{{ ('groups.group_id_'~tab_id)|trans }}</h4>
-                                    {#<h4>{{ tabName }}</h4>#}
+
                                     <br>
                                     <div class="row">
                                         {# Statistics #}
@@ -252,3 +269,7 @@
     <script src="/js/government.js"></script>
 
 {% endblock %}
+
+{%- macro tabSlug(tabName) -%}
+    {{ tabName | replace(' ', '_') | replace('+', 'a') }}
+{%- endmacro -%}

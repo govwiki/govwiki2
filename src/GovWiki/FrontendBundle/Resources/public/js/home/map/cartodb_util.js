@@ -30,7 +30,7 @@ cdb.geo.ui.Tooltip.prototype.setMask = function setMask(mask) {
 origRender = cdb.geo.ui.Tooltip.prototype.render;
 cdb.geo.ui.Tooltip.prototype.render = function render(data) {
   var tmp = $.extend({}, data);
-  if (tmp.data !== null && tmp.data !== 'undefined' && this.options.gw.mask) {
+  if (tmp.data !== null && tmp.data !== undefined && this.options.gw.mask) {
     tmp.dataFormatted = numeral(tmp.data).format(this.options.gw.mask);
   }
   return origRender.call(this, tmp);

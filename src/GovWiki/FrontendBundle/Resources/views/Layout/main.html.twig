@@ -134,11 +134,13 @@
             {#<script src="{{ asset_url }}"></script>#}
         {#{% endjavascripts %}#}
 
-        {# TODO: Uncomment on prod#}
-        {#<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.1/lodash.min.js"></script>#}
-        {% javascripts '@GovWikiFrontendBundle/Resources/public/js/vendor/lodash.min.js'%}
-            <script src="{{ asset_url }}"></script>
-        {% endjavascripts %}
+        {% if app.environment == 'prod' %}
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.1/lodash.min.js"></script>
+        {% else %}
+            {% javascripts '@GovWikiFrontendBundle/Resources/public/js/vendor/lodash.min.js'%}
+                <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+        {% endif %}
 
         {% block javascripts %}
             {# Govwiki namespace #}

@@ -140,6 +140,9 @@ class GovernmentManager implements GovernmentManagerInterface
         $nameOrder = $parameters['name_order'];
         $year = $parameters['year'];
 
+        $tableName = DefaultNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
         $fieldName = DefaultNamingStrategy::originalFromRankFieldName(
             $rankFieldName
         );
@@ -149,8 +152,8 @@ class GovernmentManager implements GovernmentManagerInterface
                 government.slug AS name,
                 extra.{$fieldName} AS amount,
                 extra.{$rankFieldName} AS value
-            FROM {$environment} extra
-            INNER JOIN governments government ON extra.government_id = government.id
+            FROM {$tableName} extra
+            JOIN governments government ON extra.government_id = government.id
         ";
 
         $wheres = [
@@ -169,8 +172,8 @@ class GovernmentManager implements GovernmentManagerInterface
 
             $sql = "
                 SELECT extra.{$rankFieldName}
-                FROM {$environment} extra
-                INNER JOIN governments government ON extra.government_id = government.id
+                FROM {$tableName} extra
+                JOIN governments government ON extra.government_id = government.id
                 WHERE
                     government.alt_type_slug = '{$altTypeSlug}' AND
                     government.slug = '{$governmentSlug}'

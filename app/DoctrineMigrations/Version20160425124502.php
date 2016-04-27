@@ -76,6 +76,20 @@ class Version20160425124502 extends AbstractMigration
                 f.category_id IS NULL
         ");
 
+        $this->addSql("
+            UPDATE `governments` SET
+                  state = 'PR'
+                , type = ''
+            WHERE
+                environment_id = (
+                    SELECT id
+                    FROM `environments`
+                    WHERE slug = 'puerto_rico'
+                ) AND
+                state IS NULL AND
+                type IS NULL
+        ");
+
         $this->addSql('ALTER TABLE formats DROP FOREIGN KEY FK_DBCBA3C8D0C9323');
         $this->addSql('DROP INDEX IDX_DBCBA3C8D0C9323 ON formats');
         $this->addSql('ALTER TABLE formats DROP tab_id');

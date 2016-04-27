@@ -1,5 +1,5 @@
 var Handlebars = require('handlebars');
-require('typeahead.js');
+require('typeahead');
 
 /**
  * Typeahead search

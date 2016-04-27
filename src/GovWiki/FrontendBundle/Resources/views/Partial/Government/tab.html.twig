@@ -6,7 +6,7 @@
 <div class="statistics-categories">
     {% for categoryName, fields in categories %}
 
-        {% if categoryName != '' %}
+        {% if categoryName != 'Main' %}
             {% set element = fields|first %}
             <div class="f-nam f-nam__{{- element.category_decoration -}}">{{- ('groups.group_id_'~fields|first.category_id)|trans -}}</div>
             {#<div class="f-nam f-nam__{{- element.category_decoration -}}">{{- categoryName -}}</div>#}
@@ -16,9 +16,9 @@
 
     {% endfor %}
 
-    {% if categories[""] is defined %}
+    {% if categories["Main"] is defined %}
         {% include '@GovWikiFrontend/Partial/Government/category.html.twig' with {
-            fields: categories[""]
+            fields: categories["Main"]
         } %}
     {% endif %}
 </div>

@@ -40,8 +40,8 @@ function lint() {
         ])
         .pipe(eslint(eslintOptions))
         .pipe(eslint.format())
-        .pipe(gulpIf(!isWatch, eslint.failAfterError()))
-        .pipe(gulpIf(isFixed, gulp.dest('src/GovWiki/FrontendBundle/Resources/public/js')));
+        .pipe(gulpIf(!isWatch, eslint.failAfterError()));
+        //.pipe(gulpIf(isFixed, gulp.dest('src/GovWiki/FrontendBundle/Resources/public/js')));
 }
 
 function isFixed(file) {

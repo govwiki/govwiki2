@@ -163,6 +163,7 @@ class GovernmentController extends AbstractGovWikiController
         }
 
         $data['years'] = $years;
+        $data['currentYear'] = $currentYear;
         $data['government']['translations'] = [
             'total_revenue' => $translator->trans('general.findata.main.total_revenue'),
             'total_expenditure' => $translator->trans('general.findata.main.total_expenditure'),
