@@ -9,8 +9,11 @@ use GovWiki\AdminBundle\Form\Type\DelayType;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditions;
 use GovWiki\DbBundle\Entity\Map;
+use GovWiki\DbBundle\File\CsvReader;
 use GovWiki\DbBundle\Form\MapType;
+use GovWiki\DbBundle\GovWikiDbServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -479,6 +482,59 @@ class EnvironmentController extends AbstractGovWikiAdminController
             ->get($this->getCurrentEnvironment());
 
         return [ 'tabs' => $tabs ];
+    }
+
+    /**
+     * @Configuration\Route("/fin_data/")
+     * @Configuration\Template()
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return array
+     */
+    public function finAction(Request $request)
+    {
+        $form = $this->createFormBuilder(null, [
+            'action' => $this->generateUrl(
+                'govwiki_admin_environment_fin',
+                [ 'environment' => $this->getCurrentEnvironment()->getSlug() ]
+            ),
+        ])
+            ->add('csv_file', 'file')
+            ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                /** @var UploadedFile $file */
+                $file = $form->getData()['csv_file'];
+
+                $filePath = $file->getPathname();
+
+                try {
+                    $this->get(GovWikiDbServices::FIN_DATA_IMPORTER)
+                        ->import(new CsvReader($filePath));
+                } catch (\Exception $e) {
+                    $this->errorMessage('Can\'t import new financial statements');
+
+                    return $this->redirectToRoute(
+                        'govwiki_admin_environment_show',
+                        [ 'environment' => $this->getCurrentEnvironment()->getSlug() ]
+                    );
+                }
+
+                $this->successMessage('Financial statements imported successfully');
+
+                return $this->redirectToRoute(
+                    'govwiki_admin_environment_show',
+                    [ 'environment' => $this->getCurrentEnvironment()->getSlug() ]
+                );
+            }
+
+            $this->errorMessage('Can\'t import new financial statements');
+        }
+
+        return [ 'form' => $form->createView() ];
     }
 
     /**

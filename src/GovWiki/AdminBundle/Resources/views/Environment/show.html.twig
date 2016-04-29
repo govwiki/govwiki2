@@ -17,6 +17,10 @@
         {# Information about environment. #}
         <div class="col-md-2">
 
+            <button class="btn btn-sm btn-default" id="import-fin-stmt">Import fin. stmt.</button>
+
+            <hr>
+
             <h6>Status:
                 <small>
                     {%- if environment.enabled -%}
@@ -125,6 +129,27 @@
             {{ form_end(form) }}
         </div>
     </div>
+
+    <div id="modal-import" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
+                <div class="modal-body">
+                    {{- render(controller('GovWikiAdminBundle:Environment:fin', {
+                        'environment': environment.slug
+                    })) -}}
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-right">
+                        <a id="import-confirm" class="btn btn-success">
+                            Import
+                        </a>
+                        <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock panel_body %}
 
 {% block panel_footer %}
@@ -134,7 +159,20 @@
     {{ parent() }}
     <script type="text/javascript" src="/bundles/ivoryckeditor/ckeditor.js"></script>
     <script type="text/javascript">
-        CKEDITOR.replace('content_greetingText');
-        CKEDITOR.replace('content_bottomText');
+        {% if environment.locales|length == 1 %}
+            CKEDITOR.replace('content_greetingText');
+            CKEDITOR.replace('content_bottomText');
+        {% endif %}
+
+        $(function() {
+
+            $('#import-fin-stmt').click(function () {
+                $('#modal-import').modal('show');
+            });
+
+            $('#import-confirm').click(function () {
+                $('form', '#modal-import').submit();
+            });
+        });
     </script>
 {% endblock javascripts %}

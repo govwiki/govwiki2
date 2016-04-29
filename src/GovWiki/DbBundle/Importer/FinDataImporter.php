@@ -68,9 +68,8 @@ class FinDataImporter extends AbstractImporter
         $columnChecked = false;
 
         foreach ($reader->read() as $row) {
-            /*
-             * Check required keys exists, if don't do it before.
-             */
+            /// Check required keys exists, if don't do it before.
+
             if (! $columnChecked) {
                 $notFounded = array_diff(
                     array_keys($this->columns),
@@ -86,19 +85,16 @@ class FinDataImporter extends AbstractImporter
                 }
                 $columnChecked = true;
 
-                $environment = $this->ge;
+                $environment = $this->storage->get();
 
-                /*
-                 * Remove the old information for the year.
-                 */
-                $this->con
+                // Remove the old information for the year.
+                $this->em->getConnection()
                     ->exec("
                         DELETE f FROM findata f
                         INNER JOIN governments g ON g.id = f.government_id
-                        INNER JOIN environments e ON e.id = g.environment_id
                         WHERE
                             year = '{$row['year']}' AND
-                            e.slug = '{$environment}'
+                            g.environment_id = '{$environment->getId()}'
 
                     ");
             }
@@ -149,7 +145,7 @@ class FinDataImporter extends AbstractImporter
      */
     private function update(array $sql)
     {
-        $this->con->exec(
+        $this->em->getConnection()->exec(
             'INSERT IGNORE INTO findata ('. implode(',', array_keys($this->columns)) .
             ') VALUES '. implode(',', $sql)
         );

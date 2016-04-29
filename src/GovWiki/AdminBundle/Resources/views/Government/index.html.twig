@@ -52,7 +52,6 @@
                 {#<a class="btn btn-sm btn-default" href="{{-#}
                 {#path('govwiki_admin_government_export')#}
                 {#-}}">Export</a>#}
-                <button class="btn btn-sm btn-default" id="import">Import fin. stmt.</button>
                 {#<a class="btn btn-sm btn-primary" href="{{-#}
                     {#path('govwiki_admin_government_create', {#}
                         {#'environment': environment.slug#}
@@ -130,41 +129,6 @@
 
     </div>
 
-    <div id="modal-import" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
-                <div class="modal-body">
-                    {#{{- render(controller('GovWikiAdminBundle:FinData:import')) -}}#}
-                </div>
-                <div class="modal-footer">
-                    <div class="pull-right">
-                        <a id="import-confirm" class="btn btn-success">
-                            Import
-                        </a>
-                        <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     {{ knp_pagination_render(governments) }}
 
 {% endblock panel_body %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script>
-        $(function() {
-
-            $('#import').click(function () {
-               $('#modal-import').modal('show');
-            });
-
-            $('#import-confirm').click(function () {
-                $('form', '#modal-import').submit();
-            });
-        });
-    </script>
-{% endblock javascripts %}
