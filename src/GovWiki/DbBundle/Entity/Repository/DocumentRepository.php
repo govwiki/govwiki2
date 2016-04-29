@@ -18,11 +18,11 @@ class DocumentRepository extends EntityRepository
     /**
      * @param integer $government A government entity id.
      * @param string  $type       Filter by document type.
-     * @param integer $year       Filter by document year.
+     * @param integer $date       Filter by document date.
      *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getListQuery($government, $type = null, $year = null)
+    public function getListQuery($government, $type = null, $date = null)
     {
         $expr = $this->_em->getExpressionBuilder();
         $qb = $this->createQueryBuilder('Document')
@@ -36,11 +36,11 @@ class DocumentRepository extends EntityRepository
                 ->setParameter('type', $type);
         }
 
-        // Filter by year.
-        if ($year) {
+        // Filter by date.
+        if ($date) {
             $qb
-                ->andWhere($expr->eq('YEAR(Document.date)', ':year'))
-                ->setParameter('year', $year);
+                ->andWhere($expr->eq('Document.date', ':date'))
+                ->setParameter('date', $date);
         }
 
         return $qb;
