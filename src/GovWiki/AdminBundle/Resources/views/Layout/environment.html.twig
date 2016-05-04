@@ -1,53 +1,6 @@
 {% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
 {% block enviroment_menu %}
 
-    {# Environment menu #}
-    {#<li class="dropdown">#}
-        {#<a href="#" class="dropdown-toggle" data-toggle="dropdowninner" role="button" aria-haspopup="true" aria-expanded="false">Environment<span class="caret"></span></a>#}
-        {#<ul class="dropdown-menu">#}
-
-            {#<li{% if app.request.attributes.get('_route') == 'govwiki_admin_main_show' %} class="active"{% endif %}>#}
-                {#<a href="{{- path('govwiki_admin_main_show') -}}">Details</a>#}
-            {#</li>#}
-
-
-            {#<li{% if app.request.attributes.get('_route') == 'govwiki_admin_map_edit' %} class="active"{% endif %}>#}
-                {#<a href="{{- path('govwiki_admin_map_edit') -}}">Map</a>#}
-            {#</li>#}
-
-            {#<li{% if app.request.attributes.get('_route') == 'govwiki_admin_main_style' %} class="active"{% endif %}>#}
-                {#<a href="{{- path('govwiki_admin_main_style') -}}">Style</a>#}
-            {#</li>#}
-
-            {#<li{% if app.request.attributes.get('_route') == 'govwiki_admin_format_list' %} class="active"{% endif %}>#}
-                {#<a href="{{- path('govwiki_admin_format_list') -}}">Format</a>#}
-            {#</li>#}
-
-        {#</ul>#}
-    {#</li>#}
-
-    {# Government menu #}
-    {#<li class="dropdown">#}
-        {#<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Data<span class="caret"></span></a>#}
-        {#<ul class="dropdown-menu">#}
-            {#<li{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} class="active"{% endif %}>#}
-                {#<a href="{{- path('govwiki_admin_government_index') -}}">#}
-                    {#Governments#}
-                {#</a>#}
-            {#</li>#}
-            {#<li{% if app.request.attributes.get('_route') == 'govwiki_admin_electedofficial_index' %} class="active"{% endif %}>#}
-                {#<a href="{{- path('govwiki_admin_electedofficial_index') -}}">#}
-                    {#Elected Officials#}
-                {#</a>#}
-            {#</li>#}
-            {#<li{% if app.request.attributes.get('_route') == 'govwiki_admin_legislation_index' %} class="active"{% endif %}>#}
-                {#<a href="{{- path('govwiki_admin_legislation_index') -}}">#}
-                    {#Legislation#}
-                {#</a>#}
-            {#</li>#}
-        {#</ul>#}
-    {#</li>#}
-
     <li class="{% if app.request.attributes.get('_route') == 'govwiki_admin_government_index' %} active{% endif %}">
         <a class="link" href="{{- path(
             'govwiki_admin_government_index',
@@ -57,7 +10,9 @@
         </a>
     </li>
     <li class="{% if app.request.attributes.get('_route') == 'govwiki_admin_electedofficial_index' %} active{% endif %}">
-        <a class="link" href="{{- path('govwiki_admin_electedofficial_index') -}}">
+        <a class="link" href="{{- path('govwiki_admin_electedofficial_index', {
+            'environment': environment.slug
+        }) -}}">
             Elected Officials
         </a>
     </li>

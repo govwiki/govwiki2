@@ -3,7 +3,6 @@
 namespace GovWiki\DbBundle\Form;
 
 use Doctrine\ORM\EntityRepository;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\DbBundle\Entity\ElectedOfficialVote;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -21,6 +20,22 @@ class ElectedOfficialVoteType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $vote = $builder->getData();
+        if ($vote instanceof ElectedOfficialVote) {
+            $builder->add('legislation', 'entity', [
+                'query_builder' => function (EntityRepository $repository) use ($vote) {
+                    $qb = $repository->createQueryBuilder('Legislation');
+                    $expr = $qb->expr();
+
+                    return $qb
+                        ->join('Legislation.government', 'Government')
+                        ->join('Government.electedOfficials', 'Elected')
+                        ->where($expr->eq('Elected.id', ':elected'))
+                        ->setParameter('elected', $vote->getElectedOfficial()->getId());
+                },
+            ]);
+        }
+
         $builder
             ->add('didElectedOfficialProposeThis', 'choice', [
                 'choices' => [

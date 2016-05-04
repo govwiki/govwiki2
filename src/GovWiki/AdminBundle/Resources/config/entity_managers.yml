@@ -20,13 +20,6 @@ services:
             - @carto_db.api
 
     #
-    # ElectedOfficial admin entity manager.
-    #
-    govwiki_admin.entity_manager.elected_official:
-        class: GovWiki\AdminBundle\Manager\Entity\AdminElectedOfficialManager
-        parent: govwiki_admin.entity_manager.abstract
-
-    #
     # Legislation admin entity manager.
     #
     govwiki_admin.entity_manager.legislation:

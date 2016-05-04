@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use GovWiki\CommentBundle\Entity\VoteComment;
+use GovWiki\DbBundle\Form\ElectedOfficialVoteType;
 use JMS\Serializer\Annotation\Groups;
 
 /**
@@ -15,7 +16,7 @@ use JMS\Serializer\Annotation\Groups;
  *  repositoryClass="GovWiki\DbBundle\Entity\Repository\ElectedOfficialVoteRepository"
  * )
  */
-class ElectedOfficialVote
+class ElectedOfficialVote implements StaffEntityInterface
 {
 
     const YES = 'Yes';
@@ -223,5 +224,13 @@ class ElectedOfficialVote
     public function getComments()
     {
         return $this->comments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getFormType()
+    {
+        return new ElectedOfficialVoteType();
     }
 }

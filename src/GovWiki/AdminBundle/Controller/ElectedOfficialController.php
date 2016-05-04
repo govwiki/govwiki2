@@ -3,6 +3,9 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\DbBundle\Entity\Repository\ListedEntityRepositoryInterface;
+use GovWiki\DbBundle\Entity\StaffEntityInterface;
+use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
@@ -11,7 +14,10 @@ use GovWiki\DbBundle\Entity\ElectedOfficial;
  * Class ElectedOfficialController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/elected-official")
+ * @Configuration\Route(
+ *  "/{environment}/elected-official",
+ *  requirements={ "environment": "\w+" }
+ * )
  */
 class ElectedOfficialController extends AbstractGovWikiAdminController
 {
@@ -36,30 +42,30 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
 
         $session_filter = $session->get('filter');
         if (!$session_filter) {
-            $session_filter = array();
-            $session_filter[$environment] = array(
-                'elected' => array(
+            $session_filter = [];
+            $session_filter[$environment] = [
+                'elected' => [
                     'id' => null,
                     'fullName' => null,
                     'governmentName' => null
-                ),
-                'government' => array(
+                ],
+                'government' => [
                     'id' => null,
                     'name' => null
-                )
-            );
+                ]
+            ];
         } elseif (!isset($session_filter[$environment])) {
-            $session_filter[$environment] = array(
-                'elected' => array(
+            $session_filter[$environment] = [
+                'elected' => [
                     'id' => null,
                     'fullName' => null,
                     'governmentName' => null
-                ),
-                'government' => array(
+                ],
+                'government' => [
                     'id' => null,
                     'name' => null
-                )
-            );
+                ]
+            ];
         } else {
             $id = $session_filter[$environment]['elected']['id'];
             $fullName = $session_filter[$environment]['elected']['fullName'];
@@ -91,8 +97,16 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
             $session->set('filter', $session_filter);
         }
 
+        $electedOfficials = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:ElectedOfficial')
+            ->getListQuery(
+                $this->getCurrentEnvironment()->getSlug(),
+                $id,
+                $fullName,
+                $governmentName
+            );
         $electedOfficials = $this->paginate(
-            $this->getManager()->getListQuery($id, $fullName, $governmentName),
+            $electedOfficials,
             $request->query->getInt('page', 1),
             50
         );
@@ -111,7 +125,7 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
     public function createAction(Request $request)
     {
         /** @var ElectedOfficial $electedOfficial */
-        $electedOfficial = $this->getManager()->create();
+        $electedOfficial = new ElectedOfficial();
 
         $form = $this->createForm('govwiki_dbbundle_electedofficial', $electedOfficial);
         $form->handleRequest($request);
@@ -132,41 +146,174 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{id}/edit", requirements={"id": "\d+"})
+     * @Configuration\Route(
+     *  "/{elected}/edit",
+     *  requirements={"elected": "\d+"}
+     * )
      * @Configuration\Template()
      *
-     * @param Request         $request         A Request instance.
-     * @param ElectedOfficial $electedOfficial A ElectedOfficial instance.
+     * @param Request         $request A Request instance.
+     * @param ElectedOfficial $elected A ElectedOfficial entity instance.
      *
      * @return array
      */
-    public function editAction(
-        Request $request,
-        ElectedOfficial $electedOfficial
-    ) {
-        $form = $this->createForm('govwiki_dbbundle_electedofficial', $electedOfficial);
+    public function editAction(Request $request, ElectedOfficial $elected)
+    {
+        $form = $this->createForm('govwiki_dbbundle_electedofficial', $elected);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
-            $this->addFlash('info', 'Elected official updated');
+            $this->successMessage(
+                'Elected official '. $elected->getFullName() .' updated'
+            );
 
             return $this->redirectToRoute(
-                'govwiki_admin_electedofficial_index'
+                'govwiki_admin_electedofficial_index',
+                [ 'environment' => $this->getCurrentEnvironment()->getSlug() ]
             );
         }
 
         return [
             'form' => $form->createView(),
-            'electedOfficial' => $electedOfficial,
+            'elected' => $elected,
         ];
     }
 
     /**
-     * @return \GovWiki\AdminBundle\Manager\Entity\AdminElectedOfficialManager
+     * @Configuration\Route(
+     *  "/{elected}/{staff}",
+     *  requirements={
+     *      "elected": "\d+",
+     *      "staff": "\w+"
+     *  }
+     * )
+     *
+     * @param Request         $request A Request instance.
+     * @param ElectedOfficial $elected A ElectedOfficial entity instance.
+     * @param string          $staff   Vote, Contribution, Endorsements or
+     *                                 PublicStatements.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    private function getManager()
+    public function staffAction(Request $request, ElectedOfficial $elected, $staff)
     {
-        return $this->get(GovWikiAdminServices::ELECTED_OFFICIAL_MANAGER);
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $data = $this->getStaffRepository($staff)
+            ->getListQuery($elected->getId(), $user->getId());
+        $data = $this->paginate(
+            $data,
+            $request->query->get('page', 1),
+            25
+        );
+
+        return $this->getStaffTemplate($staff, 'index', [
+            'data' => $data,
+            'elected' => $elected,
+        ]);
+    }
+
+    /**
+     * @Configuration\Route(
+     *  "/{elected}/{staff}/new",
+     *  requirements={
+     *      "elected": "\d+",
+     *      "staff": "\w+"
+     *  }
+     * )
+     *
+     * @param Request         $request A Request instance.
+     * @param ElectedOfficial $elected A ElectedOfficial entity instance.
+     * @param string          $staff   Vote, Contribution, Endorsements or
+     *                                 PublicStatements.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function staffCreateAction(
+        Request $request,
+        ElectedOfficial $elected,
+        $staff
+    ) {
+        $entityClassName = $this->getStaffRepository($staff)->getClassName();
+        /** @var StaffEntityInterface $entity */
+        $entity = new $entityClassName();
+        $formType = $entity::getFormType();
+
+        $form = $this->createForm($formType, $entity);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+        }
+
+        return $this->getStaffTemplate($staff, 'create', [
+            'form' => $form->createView(),
+            'elected' => $elected,
+        ]);
+    }
+
+    /**
+     * @Configuration\Route(
+     *  "/{elected}/{staff}/{id}/remove",
+     *  requirements={
+     *      "elected": "\d+",
+     *      "staff": "\w+",
+     *      "id": "\d+"
+     *  }
+     * )
+     *
+     * @param ElectedOfficial $elected A ElectedOfficial entity instance.
+     * @param string          $staff   Vote, Contribution, Endorsements or
+     *                                 PublicStatements.
+     * @param integer         $id      Deleted staff id.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function staffRemoveAction(ElectedOfficial $elected, $staff, $id)
+    {
+        $entityClassName = $this->getStaffRepository($staff)->getClassName();
+        $em = $this->get('doctrine.orm.default_entity_manager');
+
+        $entity = $em->getReference($entityClassName, $id);
+        $em->remove($entity);
+        $em->flush();
+
+        return $this->redirectToRoute('govwiki_admin_electedofficial_staff', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+            'elected' => $elected->getId(),
+            'staff' => $staff,
+        ]);
+    }
+
+    /**
+     * @param string $staff Vote, Contribution, Endorsements or PublicStatements.
+     *
+     * @return ListedEntityRepositoryInterface
+     */
+    private function getStaffRepository($staff)
+    {
+        // Legacy reason.
+        $repositoryName = 'GovWikiDbBundle:'. $staff;
+        if ($staff === 'Vote') {
+            $repositoryName = 'GovWikiDbBundle:ElectedOfficial'. $staff;
+        }
+
+        return $this->getDoctrine()->getRepository($repositoryName);
+    }
+
+    /**
+     * @param string $staff      Vote, Contribution, Endorsements or PublicStatements.
+     * @param string $action     Index, create or edit.
+     * @param array  $parameters Template parameters.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    private function getStaffTemplate($staff, $action, $parameters = [])
+    {
+        $templatePath = 'ElectedOfficial/Partial/'. $staff;
+
+        return $this->render('GovWikiAdminBundle:'. $templatePath .':'
+            . $action .'.html.twig', $parameters);
     }
 }
