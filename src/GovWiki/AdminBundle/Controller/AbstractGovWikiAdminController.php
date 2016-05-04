@@ -50,26 +50,6 @@ class AbstractGovWikiAdminController extends AbstractGovWikiController
     }
 
     /**
-     * @param string $name  Event name.
-     * @param Event  $event A Event instance.
-     *
-     * @return Event
-     */
-    protected function dispatch($name, Event $event)
-    {
-        $dispatcher = $this->get('event_dispatcher');
-        return $dispatcher->dispatch($name, $event);
-    }
-
-    /**
-     * @return \GovWiki\AdminBundle\Manager\AdminEnvironmentManager
-     */
-    protected function adminEnvironmentManager()
-    {
-        return $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
-    }
-
-    /**
      * @param string $message Message.
      *
      * @return void

@@ -45,4 +45,11 @@ interface FormatManagerInterface
      * @return array
      */
     public function getList(Environment $environment, $altType = null);
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     *
+     * @return array
+     */
+    public function getGovernmentFields(Environment $environment);
 }

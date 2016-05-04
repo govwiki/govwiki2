@@ -72,26 +72,6 @@
                                 {% endfor %}
                             {% endif %}
 
-                            {#{% if (formats is defined) and (formats is not empty) %}
-                                {% for tabName, categories in formats %}
-                                    {% if categories[""] is defined %}
-                                        {% set tab_id = categories[""]|first.tab_id %}
-                                    {% else %}
-                                        {% set tab_id = categories|first|first.tab_id %}
-                                    {% endif %}
-
-                                    <li class="{{ loop.first ? 'active' : '' }}">
-                                        &#123;&#35; TODO: Hardcoded, for new db, must be replaced &#35;&#125;
-                                        <a class="tabs tab_{{ tabName | replace(' ', '_') | replace('+', 'a')|lower }}" href="#{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
-                                           aria-controls="{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
-                                           role="tab" data-toggle="tab" data-tabname="{{ tabName }}">
-                                            {{ ('groups.group_id_'~tab_id)|trans }}
-                                            &#123;&#35;{{ tabName }}&#35;&#125;
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                            {% endif %}#}
-
                             {% if hasSalaries %}
                                 <li><a class="tabs tab_salaries" href="#Salaries" aria-controls="Salaries" role="tab" data-toggle="tab">Salaries</a></li>
                             {% endif %}

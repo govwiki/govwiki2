@@ -12,6 +12,7 @@ use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\File\CsvReader;
 use GovWiki\DbBundle\Form\MapType;
 use GovWiki\DbBundle\GovWikiDbServices;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -370,6 +371,8 @@ class EnvironmentController extends AbstractGovWikiAdminController
      */
     public function mapAction(Request $request)
     {
+        $environment = $this->getCurrentEnvironment();
+
         /** @var Map $map */
         $map = $this->getCurrentEnvironment()->getMap();
         if (null === $map) {
@@ -382,78 +385,59 @@ class EnvironmentController extends AbstractGovWikiAdminController
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
+            // Get all coloring conditions.
             $data = $request->request->get('ccc');
 
             if (array_key_exists('colorized', $data)) {
+                // Add coloring conditions for given map.
                 $data['colorized'] = true;
                 $conditions = ColoringConditions::fromArray($data);
-                $values = $this->adminEnvironmentManager()
-                    ->getGovernmentsFiledValues($conditions->getFieldName());
-                $environment = $this->getCurrentEnvironment()->getSlug();
 
-                $values = array_map(
-                    function (array $row) {
-                        $data = explode(',', $row['data']);
-                        $data = array_map(
-                            function ($element) { return (float) $element; },
-                            $data
-                        );
-                        $years = explode(',', $row['years']);
+                // Get values for field from coloring conditions.
+                $values = $this->getGovernmentManager()
+                    ->getConditionValues($environment, $conditions->getFieldName());
 
-                        unset($row['years']);
-                        $row['data'] = json_encode(array_combine($years, $data));
-                        return $row;
-                    },
-                    $values
-                );
-
-                /*
-                 * Prepare sql parts for CartoDB sql request.
-                 */
+                // Prepare sql parts for CartoDB sql request.
                 $sqlParts = [];
                 foreach ($values as $row) {
-                    if (null === $row['data']) {
-                        $row['data'] = 'null';
-                    }
-
                     $slug = CartoDbApi::escapeString($row['slug']);
                     $altTypeSlug = CartoDbApi::escapeString($row['alt_type_slug']);
                     $data = $row['data'];
+                    $data = ($data === null) ? 'null' : $data;
 
                     $sqlParts[] = "
                         ('{$slug}', '{$altTypeSlug}', '{$data}')
                     ";
                 }
 
-
+                $dataset = GovwikiNamingStrategy::cartoDbDatasetName($environment);
                 $api = $this->get(CartoDbServices::CARTO_DB_API);
                 $api
                     // Create temporary dataset.
-                    ->createDataset($environment.'_temporary', [
+                    ->createDataset($dataset .'_temporary', [
                         'alt_type_slug' => 'VARCHAR(255)',
                         'slug' => 'VARCHAR(255)',
                         'data_json' => 'VARCHAR(255)',
                     ], true)
                     ->sqlRequest("
-                        INSERT INTO {$environment}_temporary
+                        INSERT INTO {$dataset}_temporary
                             (slug, alt_type_slug, data_json)
                         VALUES ". implode(',', $sqlParts));
                 // Update concrete environment dataset from temporary
                 // dataset.
                 $api->sqlRequest("
-                    UPDATE {$environment} e
+                    UPDATE {$dataset} e
                     SET data_json = t.data_json
-                    FROM {$environment}_temporary t
+                    FROM {$dataset}_temporary t
                     WHERE e.slug = t.slug AND
                         e.alt_type_slug = t.alt_type_slug
                 ");
                 // Remove temporary dataset.
-                $api->dropDataset($environment.'_temporary');
+                $api->dropDataset($dataset .'_temporary');
             } else {
                 $data['colorized'] = false;
                 $conditions = ColoringConditions::fromArray($data);
             }
-
 
             $map->setColoringConditions($conditions);
             $em->persist($map);
@@ -463,9 +447,8 @@ class EnvironmentController extends AbstractGovWikiAdminController
         return [
             'form' => $form->createView(),
             'conditions' => $map->getColoringConditions(),
-            'fields' => $this
-                ->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)
-                ->getGovernmentFields(),
+            'fields' => $this->getFormatManager()
+                ->getGovernmentFields($environment),
         ];
     }
 

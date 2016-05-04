@@ -19,61 +19,85 @@
 {% block panel_body %}
     {{ form_start(form) }}
 
-    {# Map position, coordinates of center and zoom. #}
-    <div class="col-md-6 col-lg-6 col-xs-12">
-        {{- form_row(form.centerLatitude) -}}
-        {{- form_row(form.centerLongitude) -}}
-        {{- form_row(form.zoom) -}}
-    </div>
+    <nav>
+        <ul class="nav nav-pills">
+            <li class="active">
+                <a href="#general" aria-controls="general" role="tab" data-toggle="tab">
+                    General
+                </a>
+            </li>
 
-    <div class="col-md-6 col-lg-6 col-xs-12">
-        {{- form_row(form.position) -}}
-        {{- form_row(form.legendTypes) -}}
-        {{- form_row(form.debug) -}}
-    </div>
+            <li>
+                <a href="#coloring-conditions" aria-controls="general" role="tab" data-toggle="tab">
+                    Coloring conditions
+                </a>
+            </li>
+        </ul>
+    </nav>
 
-    {# Coloring conditions. #}
-    <div class="col-md-12 col-lg-12 col-xs-12">
-        <h3>Coloring conditions</h3>
+    <div class="tab-content">
 
-        <div class="form-group">
-            <label class="control-label" for="colorized">
-                Coloring
-            </label>
-            <input type="checkbox" id="colorized" name="ccc[colorized]"
-                    {%- if (conditions.colorized) %} checked{%- endif -%}>
+        {# Map position, coordinates of center and zoom. #}
+        <div class="tab-pane active" id="general">
+            <div class="col-md-6 col-lg-6 col-xs-12">
+                {{- form_row(form.centerLatitude) -}}
+                {{- form_row(form.centerLongitude) -}}
+                {{- form_row(form.zoom) -}}
+            </div>
+
+            <div class="col-md-6 col-lg-6 col-xs-12">
+                {{- form_row(form.position) -}}
+                {{- form_row(form.legendTypes) -}}
+                {{- form_row(form.debug) -}}
+            </div>
         </div>
 
-        <div id="conditions-main"
-            {%- if not (conditions.colorized) -%}
-                style="display: none"
-            {%- endif -%}>
+        {# Coloring conditions. #}
+        <div class="tab-pane" id="coloring-conditions">
+            <div class="col-md-12 col-lg-12 col-xs-12">
+                <h3>Coloring conditions</h3>
 
-            {# Field name selector. #}
-            <div class="form-group">
-                <label for="condition-field-name">Field name</label>
-                <select class="form-control" id="condition-field-name" name="ccc[fieldName]">
-                    {% for field, name in fields %}
-                        <option value="{{ field }}"
-                        {%- if (field == conditions.fieldName) -%}
-                            selected
+                <div class="form-group">
+                    <label class="control-label" for="colorized">
+                        Coloring
+                    </label>
+                    <input type="checkbox" id="colorized" name="ccc[colorized]"
+                            {%- if (conditions.colorized) %} checked{%- endif -%}>
+                </div>
+
+                <div id="conditions-main"
+                        {%- if not (conditions.colorized) -%}
+                    style="display: none"
                         {%- endif -%}>
-                            {{- name -}}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
 
-            {# Conditions. #}
-            <div class="form-group">
-                <label class="control-label">Conditions</label>
-                <div id="conditions-list"></div>
-            </div>
+                    {# Field name selector. #}
+                    <div class="form-group">
+                        <label for="condition-field-name">Field name</label>
+                        <select class="form-control" id="condition-field-name" name="ccc[fieldName]">
+                            {% for field, name in fields %}
+                                <option value="{{ field }}"
+                                        {%- if (field == conditions.fieldName) -%}
+                                selected
+                                        {%- endif -%}>
+                                    {{- name -}}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-            <button type="button" class="pull-right btn btn-default" id="condition-add">Add new conditions</button>
+                    {# Conditions. #}
+                    <div class="form-group">
+                        <label class="control-label">Conditions</label>
+                        <div id="conditions-list"></div>
+                    </div>
+
+                    <button type="button" class="pull-right btn btn-default" id="condition-add">Add new conditions</button>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-md-12 col-lg-12 col-xs-12">
+
+    <div class="btn-group">
         <button class="btn btn-success">Update</button>
         <a class="btn btn-default" href="{{- path(
             'govwiki_admin_environment_show',

@@ -9,17 +9,6 @@ services:
         class: GovWiki\AdminBundle\Transformer\Service\TransformerManager
         arguments: [@service_container]
 
-    govwiki_admin.manager.government_table:
-        class: GovWiki\AdminBundle\Manager\GovernmentTableManager
-        arguments: [@doctrine.orm.default_entity_manager]
-
-    govwiki_admin.manager.environment:
-        class: GovWiki\AdminBundle\Manager\AdminEnvironmentManager
-        arguments:
-            - @doctrine.orm.default_entity_manager
-            - @govwiki_admin.manager.government_table
-            - @carto_db.api
-
     govwiki_admin.manager.style:
         class: GovWiki\AdminBundle\Manager\AdminStyleManager
         arguments: [ @doctrine.orm.default_entity_manager ]
@@ -31,19 +20,6 @@ services:
             - @govwiki_environment.storage
         tags:
             - { name: kernel.event_listener, event: kernel.controller}
-
-    govwiki_admin.listener.government_sync:
-        class: GovWiki\AdminBundle\Listener\GovernmentUpdateListener
-        arguments: [@carto_db.api]
-        tags:
-            -
-                name: kernel.event_listener
-                event: gowviki.event.government.add
-                method: onGovernmentAdd
-            -
-                name: kernel.event_listener
-                event: govwiki.event.government.update
-                method:
 
     goviki_admin.param_converter.environment:
         class: GovWiki\AdminBundle\Request\ParamConverter\EnvironmentParamConverter

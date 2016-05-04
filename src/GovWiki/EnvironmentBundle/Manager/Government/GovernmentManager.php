@@ -626,14 +626,14 @@ class GovernmentManager implements GovernmentManagerInterface
     public function getConditionValues(Environment $environment, $fieldName) {
         $tabName = GovwikiNamingStrategy::environmentRelatedTableName($environment);
 
+        // Get values for specified field as json string.
         return $this->em->getConnection()->fetchAll("
-            SELECT
-                g.slug, g.alt_type_slug, g.name, GROUP_CONCAT(eg.year) AS years,
-                 GROUP_CONCAT(eg.{$fieldName}) AS data
-            FROM {$tabName} eg
+            SELECT g.slug, g.alt_type_slug, g.name,
+            CONCAT ('{', GROUP_CONCAT( CONCAT ('\"', eg.year, '\":', eg.{$fieldName}) ), '}') AS data
+            FROM `{$tabName}` eg
             JOIN governments g ON g.id = eg.government_id
             GROUP BY g.alt_type_slug, g.slug
-            ORDER BY g.alt_type_slug, g.slug
+            ORDER BY g.alt_type_slug, g.slug;
         ");
     }
 

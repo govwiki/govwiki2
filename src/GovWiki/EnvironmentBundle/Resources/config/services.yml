@@ -35,7 +35,6 @@ services:
         arguments:
             - '' # Set from configuration.
             - @govwiki_environment.storage
-            - @session
             - @doctrine.orm.default_entity_manager
         tags:
             - { name: kernel.event_listener, event: kernel.request, priority: -50 }

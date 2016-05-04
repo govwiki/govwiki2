@@ -50,10 +50,6 @@ user:
     resource: "@GovWikiAdminBundle/Controller/UserController.php"
     type:     annotation
 
-map:
-    resource: "@GovWikiAdminBundle/Controller/MapController.php"
-    type:     annotation
-
 field:
     resource: "@GovWikiAdminBundle/Controller/FieldController.php"
     type:     annotation

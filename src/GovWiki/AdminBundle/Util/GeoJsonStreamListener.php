@@ -8,6 +8,7 @@ use GovWiki\AdminBundle\Manager\GovernmentTableManager;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Government;
+use GovWiki\EnvironmentBundle\Converter\DataTypeConverter;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 
 /**
@@ -637,7 +638,7 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                      * Generate alter table sqls for environment related government
                      * table.
                      */
-                    $type = GovernmentTableManager::resolveType($data['type']);
+                    $type = DataTypeConverter::abstract2database($data['type']);
                     $tableFields[] = "ADD {$field} {$type} DEFAULT NULL";
 
                     $this->envRelatedGovernmentFields[] = $field;

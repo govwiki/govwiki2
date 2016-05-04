@@ -60,4 +60,27 @@ class FormatManager implements FormatManagerInterface
         return $this->em->getRepository('GovWikiDbBundle:Format')
                 ->getList($environment->getId(), $altType);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getGovernmentFields(Environment $environment)
+    {
+        $expr = $this->em->getExpressionBuilder();
+
+        $tmp = $this->em->getRepository('GovWikiDbBundle:Format')
+            ->createQueryBuilder('Format')
+            ->select('Format.name, Format.field')
+            ->where($expr->eq('Format.environment', ':environment'))
+            ->setParameter('environment', $environment->getId())
+            ->getQuery()
+            ->getArrayResult();
+
+        $result = [];
+        foreach ($tmp as $row) {
+            $result[$row['field']] = $row['name'];
+        }
+
+        return $result;
+    }
 }
