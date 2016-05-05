@@ -12,42 +12,46 @@
         margin-top: 10px;
     }
 
-    header {
-
-        h3 {
-            color: $main-text;
-
-            /*
-               todo hardcode for puerto.
-            */
-            &.puerto {
-                color: #f15a29;
-            }
-        }
-
-    }
-
     .header {
         /* TODO hardcode */
         &.california {
             background-image: url('/img/mobile/California.jpg');
+
+            a {
+                color: white;
+            }
+
+            .statistics-table td {
+                color: white;
+            }
+
+            h3 {
+                color: $main-text
+            }
         }
 
         &.puerto_rico {
             background: white;
+
+            a {
+                color: black;
+            }
+
+            .statistics-table td {
+                color: black;
+            }
+
+            h3 {
+                color: black
+            }
         }
         background-size: cover;
         background-repeat: no-repeat;
-
-        a {
-            color: white;
-        }
 
         .statistics-table {
             margin: 0;
 
             td {
-                color: white;
                 padding: 0 8px;
 
                 &:nth-child(1) {

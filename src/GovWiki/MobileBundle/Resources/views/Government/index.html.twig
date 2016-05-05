@@ -21,11 +21,12 @@
 
             {# TMP MOBILE LAYOUT (START) #}
                 <header class="header {{ environment }}">
-                    <h6 style="color: white;padding: 15px;margin: 0;">{{government.name}}</h6>
+                    <h6 style="{{ (environment == 'california') ? 'color: white' : 'color: black'}}padding: 15px;margin: 0;">{{government.name}}</h6>
 
                     <div class="header-content {{ environment }}">
                         {% for tabName, categories in formats %}
-                        {% if tabName == 'Overview + Elected Officials' %}
+                        {% if (tabName == 'Overview + Elected Officials') or
+                            (tabName == 'General Information') %}
                             {% for categoryName, fields in categories %}
                                 <table class="statistics-table table">
                                     {% for fieldName, format in fields %}
@@ -105,7 +106,7 @@
                     {% endif %}
 
                     {% if hasSalaries %}
-                        <li class="tab">
+                        <li class="tab {{ environment }}">
                             <span class="prev_tab">
                                 <i class="glyphicon glyphicon-chevron-left"></i>
                             </span>
@@ -117,7 +118,7 @@
                     {% endif %}
 
                     {% if hasPensions %}
-                        <li class="tab">
+                        <li class="tab {{ environment }}">
                             <span class="prev_tab">
                                 <i class="glyphicon glyphicon-chevron-left"></i>
                             </span>
@@ -129,7 +130,7 @@
                     {% endif %}
 
                     {% if showFinStmt %}
-                        <li class="tab">
+                        <li class="tab {{ environment }}">
                             <span class="prev_tab">
                                 <i class="glyphicon glyphicon-chevron-left"></i>
                             </span>
