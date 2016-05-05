@@ -67,7 +67,8 @@ class ElectedOfficialVote implements StaffEntityInterface
      *
      * @ORM\OneToMany(
      *  targetEntity="GovWiki\CommentBundle\Entity\VoteComment",
-     *  mappedBy="subject"
+     *  mappedBy="subject",
+     *  cascade={"persist", "remove"}
      * )
      */
     private $comments;

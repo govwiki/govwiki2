@@ -1,7 +1,7 @@
 {% extends "GovWikiAdminBundle:ElectedOfficial:layout.html.twig" %}
 
 {% block title %}
-    {{ parent() }} - {{ elected.fullName }} votes
+    {{ parent() }} - {{ elected.fullName }} contribution
 {% endblock title %}
 
 {% block breadcrumb %}
@@ -24,11 +24,11 @@
             'elected': elected.id
         }
     ) -}}
-    {{- macro.breadcrumbElement('Vote') -}}
+    {{- macro.breadcrumbElement('Contributions') -}}
 {% endblock breadcrumb %}
 
 {% block panel_title %}
-    Votes
+    Contributions
 {% endblock panel_title %}
 
 {% block panel_body %}
@@ -42,7 +42,7 @@
                 {
                     'environment': environment.slug,
                     'elected': elected.id,
-                    'staff': 'Vote'
+                    'staff': 'Contribution'
                 }
             ) -}}">
                 Create
@@ -54,47 +54,43 @@
         <table class="table">
         <thead>
             <tr>
-                <th>{{ knp_pagination_sortable(data, 'Id', 'Vote.id') }}</th>
+                <th>{{ knp_pagination_sortable(data, 'Id', 'Contribution.id') }}</th>
                 <th>{{- knp_pagination_sortable(
-                    data, 'Date', 'Legislarion.dateConsidered'
+                    data, 'Election Year', 'Contribution.electionYear'
                 ) -}}</th>
                 <th>{{- knp_pagination_sortable(
-                    data, 'Name', 'Legislarion.name'
+                    data, 'Name', 'Contribution.contributorName'
                 ) -}}</th>
                 <th>{{- knp_pagination_sortable(
-                    data, 'Summary of Measure', 'Legislarion.summary'
+                    data, 'Ind. Exp. Desc.', 'Contribution.independentExpenditureDesc'
                 ) -}}</th>
                 <th>{{- knp_pagination_sortable(
-                    data, 'How official Voted', 'Vote.vote'
+                    data, 'Amount', 'Contribution.contributionAmount'
                 ) -}}</th>
                 <th>{{- knp_pagination_sortable(
-                    data, 'Sponsored by this official?', 'Vote.didElectedOfficialProposeThis'
-                ) -}}</th>
-                <th>{{- knp_pagination_sortable(
-                    data, 'Category', 'Vote.legislation.issueCategory.name'
+                    data, 'Contributor type', 'Contribution.contributorType'
                 ) -}}</th>
                 <th>Actions</th>
             </tr>
         </thead>
 
         <tbody>
-            {% for vote in data %}
+            {% for contribution in data %}
                 <tr>
-                    <td>{{ vote.id }}</td>
-                    <td>{{ vote.legislation.dateConsidered|date('m/d/Y') }}</td>
-                    <td>{{ vote.legislation.name }}</td>
-                    <td>{{ vote.legislation.summary }}</td>
-                    <td>{{ vote.vote }}</td>
-                    <td>{{ (vote.didElectedOfficialProposeThis == 1) ? "Yes" : "No" }}</td>
-                    <td>{{ vote.legislation.issueCategory.name }}</td>
+                    <td>{{ contribution.id }}</td>
+                    <td>{{ contribution.electionYear|date('m/d/Y') }}</td>
+                    <td>{{ contribution.contributorName }}</td>
+                    <td>{{ contribution.independentExpenditureDesc }}</td>
+                    <td>{{ contribution.contributionAmount }}</td>
+                    <td>{{ contribution.contributorType }}</td>
                     <td>
                         <a href="{{- path(
                         'govwiki_admin_electedofficial_staffedit',
                         {
                             'environment': environment.slug,
                             'elected': elected.id,
-                            'staff': 'Vote',
-                            'id': vote.id
+                            'staff': 'Contribution',
+                            'id': contribution.id
                         }
                         ) -}}" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
                         <button data-url="{{- path(
@@ -102,11 +98,11 @@
                             {
                                 'environment': environment.slug,
                                 'elected': elected.id,
-                                'staff': 'Vote',
-                                'id': vote.id
+                                'staff': 'Contribution',
+                                'id': contribution.id
                             }
                         ) -}}" class="btn btn-sm btn-danger btn-delete"
-                                data-description="Are you sure want to delete vote '{{ vote.id }}'?">
+                                data-description="Are you sure want to delete contribution '{{ contribution.contributorName }}'?">
                             <span class="glyphicon glyphicon-remove"></span> Remove
                         </button>
                     </td>

@@ -21,16 +21,27 @@ class ElectedOfficialVoteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $vote = $builder->getData();
-        if ($vote instanceof ElectedOfficialVote) {
+        if (($vote instanceof ElectedOfficialVote) && ($vote->getId() === null)) {
             $builder->add('legislation', 'entity', [
+                'class' => 'GovWikiDbBundle:Legislation',
                 'query_builder' => function (EntityRepository $repository) use ($vote) {
                     $qb = $repository->createQueryBuilder('Legislation');
                     $expr = $qb->expr();
 
+                    // Show only not voted legislations.
+                    $subDql = $repository->createQueryBuilder('Legislation2')
+                        ->select('Legislation2.id')
+                        ->join('Legislation2.electedOfficialVotes', 'Vote')
+                        ->where($expr->eq('Vote.electedOfficial', ':elected'))
+                        ->getDQL();
+
                     return $qb
                         ->join('Legislation.government', 'Government')
                         ->join('Government.electedOfficials', 'Elected')
-                        ->where($expr->eq('Elected.id', ':elected'))
+                        ->where($expr->andX(
+                            $expr->eq('Elected.id', ':elected'),
+                            $expr->notIn('Legislation.id', $subDql)
+                        ))
                         ->setParameter('elected', $vote->getElectedOfficial()->getId());
                 },
             ]);

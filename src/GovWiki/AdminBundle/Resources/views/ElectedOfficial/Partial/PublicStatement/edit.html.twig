@@ -1,7 +1,7 @@
 {% extends "GovWikiAdminBundle:ElectedOfficial:layout.html.twig" %}
 
 {% block title %}
-    {{ parent() }} - {{ elected.fullName }} votes
+    {{ parent() }} - {{ elected.fullName }} public statements
 {% endblock title %}
 
 {% block breadcrumb %}
@@ -25,19 +25,19 @@
         }
     ) -}}
     {{- macro.breadcrumbElement(
-        'Votes',
+        'Public statements',
         'govwiki_admin_electedofficial_staff',
         {
             'environment': environment.slug,
             'elected': elected.id,
-            'staff': 'Vote'
+            'staff': 'PublicStatement'
         }
-        ) -}}
-    {{- macro.breadcrumbElement('Update vote ' ~ entity.id) -}}
+    ) -}}
+    {{- macro.breadcrumbElement('Update public statement ' ~ entity.id) -}}
 {% endblock breadcrumb %}
 
 {% block panel_title %}
-    Update vote {{ entity.id }}
+    Update public statement {{ entity.id }}
 {% endblock panel_title %}
 
 {% block panel_body %}
@@ -50,7 +50,7 @@
         {
             'environment': environment.slug,
             'elected': elected.id,
-            'staff': 'Vote'
+            'staff': 'PublicStatement'
         }
         ) -}}">
             Back

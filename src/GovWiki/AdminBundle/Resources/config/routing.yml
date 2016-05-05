@@ -22,10 +22,6 @@ legislation:
     resource: "@GovWikiAdminBundle/Controller/LegislationController.php"
     type:     annotation
 
-electedofficialvote:
-    resource: "@GovWikiAdminBundle/Controller/ElectedOfficialVoteController.php"
-    type:     annotation
-
 contribution:
     resource: "@GovWikiAdminBundle/Controller/ContributionController.php"
     type:     annotation

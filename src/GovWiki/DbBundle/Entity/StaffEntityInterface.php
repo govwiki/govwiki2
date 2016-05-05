@@ -11,7 +11,19 @@ use Symfony\Component\Form\AbstractType;
 interface StaffEntityInterface
 {
     /**
+     * @return integer
+     */
+    public function getId();
+
+    /**
      * @return AbstractType|string
      */
     public static function getFormType();
+
+    /**
+     * @param ElectedOfficial $elected  A ElectedOfficial entity instance.
+     *
+     * @return StaffEntityInterface
+     */
+    public function setElectedOfficial(ElectedOfficial $elected);
 }

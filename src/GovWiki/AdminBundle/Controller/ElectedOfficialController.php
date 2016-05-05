@@ -2,7 +2,6 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Repository\ListedEntityRepositoryInterface;
 use GovWiki\DbBundle\Entity\StaffEntityInterface;
 use GovWiki\UserBundle\Entity\User;
@@ -239,17 +238,82 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
         $entityClassName = $this->getStaffRepository($staff)->getClassName();
         /** @var StaffEntityInterface $entity */
         $entity = new $entityClassName();
+        $entity->setElectedOfficial($elected);
+
         $formType = $entity::getFormType();
 
         $form = $this->createForm($formType, $entity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            $em->persist($entity);
+            $em->flush();
+
+            $this->successMessage('New '. $staff .' created.');
+            return $this->redirectToRoute('govwiki_admin_electedofficial_staff', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+                'elected' => $elected->getId(),
+                'staff' => $staff,
+            ]);
         }
 
         return $this->getStaffTemplate($staff, 'create', [
             'form' => $form->createView(),
             'elected' => $elected,
+        ]);
+    }
+
+    /**
+     * @Configuration\Route(
+     *  "/{elected}/{staff}/{id}/edit",
+     *  requirements={
+     *      "elected": "\d+",
+     *      "staff": "\w+",
+     *      "id": "\d+"
+     *  }
+     * )
+     *
+     * @param Request         $request A Request instance.
+     * @param ElectedOfficial $elected A ElectedOfficial entity instance.
+     * @param string          $staff   Vote, Contribution, Endorsements or
+     *                                 PublicStatements.
+     * @param integer         $id      Edited entity id.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function staffEditAction(
+        Request $request,
+        ElectedOfficial $elected,
+        $staff,
+        $id
+    ) {
+        $entity = $this->getStaffRepository($staff)->getOne($id);
+
+        $formType = $entity::getFormType();
+
+        $form = $this->createForm($formType, $entity);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            $em->persist($entity);
+            $em->flush();
+
+            $this->successMessage($staff .' '. $entity->getId() .'updated');
+            return $this->redirectToRoute('govwiki_admin_electedofficial_staff', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+                'elected' => $elected->getId(),
+                'staff' => $staff,
+            ]);
+        }
+
+        return $this->getStaffTemplate($staff, 'edit', [
+            'form' => $form->createView(),
+            'elected' => $elected,
+            'entity' => $entity,
         ]);
     }
 

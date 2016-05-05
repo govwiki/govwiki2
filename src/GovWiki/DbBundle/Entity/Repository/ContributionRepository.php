@@ -3,14 +3,31 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
 
 /**
  * ContributionRepository
  */
-class ContributionRepository extends EntityRepository implements ListedEntityRepositoryInterface
+class ContributionRepository extends EntityRepository implements
+    ListedEntityRepositoryInterface
 {
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOne($id)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        return $this->createQueryBuilder('Contribution')
+            ->addSelect('Request, Creator')
+            ->leftJoin('Contribution.request', 'Request')
+            ->leftJoin('Request.creator', 'Creator')
+            ->where($expr->eq('Contribution.id', ':id'))
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
     /**
      * @param integer $electedOfficial Elected official entity id.

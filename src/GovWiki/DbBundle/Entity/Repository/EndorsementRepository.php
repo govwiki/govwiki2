@@ -3,7 +3,6 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
 
 /**
@@ -13,10 +12,25 @@ class EndorsementRepository extends EntityRepository implements ListedEntityRepo
 {
 
     /**
-     * @param integer $electedOfficial Elected official entity id.
-     * @param integer $user            User entity id.
-     *
-     * @return \Doctrine\ORM\QueryBuilder
+     * {@inheritdoc}
+     */
+    public function getOne($id)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        return $this->createQueryBuilder('Endorsement')
+            ->addSelect('IssueCategory, Request, Creator')
+            ->leftJoin('Endorsement.request', 'Request')
+            ->leftJoin('Request.creator', 'Creator')
+            ->leftJoin('Endorsement.issueCategory', 'IssueCategory')
+            ->where($expr->eq('Endorsement.id', ':id'))
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getListQuery($electedOfficial, $user = null)
     {

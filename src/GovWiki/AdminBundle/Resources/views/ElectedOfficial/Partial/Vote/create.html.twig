@@ -32,26 +32,26 @@
             'elected': elected.id,
             'staff': 'Vote'
         }
-        ) -}}
-    {{- macro.breadcrumbElement('Update vote ' ~ entity.id) -}}
+    ) -}}
+    {{- macro.breadcrumbElement('New vote') -}}
 {% endblock breadcrumb %}
 
 {% block panel_title %}
-    Update vote {{ entity.id }}
+    New vote
 {% endblock panel_title %}
 
 {% block panel_body %}
     {{ form_start(form) }}
     {{ form_widget(form) }}
     <div class="btn-group">
-        <button type="submit" class="btn btn-success">Update</button>
+        <button type="submit" class="btn btn-success">Create</button>
         <a class="btn btn-danger" href="{{- path(
-        'govwiki_admin_electedofficial_staff',
-        {
-            'environment': environment.slug,
-            'elected': elected.id,
-            'staff': 'Vote'
-        }
+            'govwiki_admin_electedofficial_staff',
+            {
+                'environment': environment.slug,
+                'elected': elected.id,
+                'staff': 'Vote'
+            }
         ) -}}">
             Back
         </a>

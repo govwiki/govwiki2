@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\Common\Persistence\ObjectRepository;
+use GovWiki\DbBundle\Entity\StaffEntityInterface;
 
 /**
  * Interface ListedEntityRepositoryInterface
@@ -10,6 +11,13 @@ use Doctrine\Common\Persistence\ObjectRepository;
  */
 interface ListedEntityRepositoryInterface extends ObjectRepository
 {
+    /**
+     * @param integer $id Entity id.
+     *
+     * @return StaffEntityInterface
+     */
+    public function getOne($id);
+
     /**
      * @param integer $electedOfficial Elected official entity id.
      * @param integer $user            User entity id.
