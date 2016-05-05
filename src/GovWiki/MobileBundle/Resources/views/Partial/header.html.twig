@@ -2,7 +2,9 @@
 
     {# Return to map #}
     {% if app.request.attributes.get('_route') != "map" %}
-        <a href="{{ govwiki_path('map') }}" class="home-icon"><img src="/img/mobile/header/house.png" /></a>
+        <a href="{{ govwiki_path('map') }}" class="home-icon">
+            <i class="glyphicon glyphicon-home {{ environment }}"></i>
+        </a>
     {% endif %}
 
     {# Logo #}
@@ -35,10 +37,13 @@
     {% endif %}
 
     {# Menu button (cog) for mobile devices #}
-    <a type="button" class="menu collapsed" data-toggle="collapse"
-            data-target="#bs-navigation-collapse" aria-expanded="false">
-        <img src="/img/mobile/header/cog.png" />
-    </a>
+    {# TODO hardcoded replace then new style editor complited #}
+    <span class="{{ environment }}">
+        <a type="button" class="menu collapsed" data-toggle="collapse"
+                data-target="#bs-navigation-collapse" aria-expanded="false">
+            <i class="glyphicon glyphicon-cog"></i>
+        </a>
+    </span>
 
 </div>
 
@@ -49,14 +54,14 @@
 
         {% if app.user %}
             {# Show User name (Athorized) #}
-            <li>
-                <a href="javascript:void(0)" class="link">
+            <li class="{{ environment }}">
+                <a href="javascript:void(0)" class="link govwiki-link">
                     Logged in as {{ app.user.username }}
                 </a>
             </li>
 
             {# Logout button #}
-            <li>
+            <li class="{{ environment }}">
                 <a href="{{path('fos_user_security_logout')}}" class="link">
                     Sign Out
                 </a>
@@ -64,7 +69,7 @@
 
         {% else %}
             {# Login button#}
-            <li>
+            <li class="{{ environment }}">
                 <a href="#" onclick="$('#modal-window').modal('show')" class="link">
                     Login / Sign Up
                 </a>
@@ -74,7 +79,7 @@
 
         {# Return to map #}
         {% if app.request.attributes.get('_route') != "map" %}
-            <li>
+            <li class="{{ environment }}">
                 <a href="{{ govwiki_path('map') }}" class="link">
                     {{ 'header.links.return_to_map'|trans }}
                     {#Return to Map#}
@@ -84,7 +89,7 @@
 
         {# Return to some government #}
         {% if app.request.attributes.get('_route') == "elected" %}
-            <li>
+            <li class="{{ environment }}">
                 <a href="{{ govwiki_path('government', {
                     altTypeSlug: altTypeSlug,
                     slug: slug
