@@ -51,6 +51,8 @@
 <nav>
 
     <ul class="navigation navbar-collapse collapse" id="bs-navigation-collapse">
+        {{ render(controller('GovWikiMobileBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) }}
+
 
         {% if app.user %}
             {# Show User name (Athorized) #}

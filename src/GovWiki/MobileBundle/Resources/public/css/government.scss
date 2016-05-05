@@ -28,7 +28,14 @@
     }
 
     .header {
-//        background-image: url('/img/mobile/California.jpg');
+        /* TODO hardcode */
+        &.california {
+            background-image: url('/img/mobile/California.jpg');
+        }
+
+        &.puerto_rico {
+            background: white;
+        }
         background-size: cover;
         background-repeat: no-repeat;
 
