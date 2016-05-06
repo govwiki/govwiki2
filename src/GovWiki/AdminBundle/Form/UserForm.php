@@ -2,9 +2,11 @@
 
 namespace GovWiki\AdminBundle\Form;
 
+use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class UserForm
@@ -12,24 +14,18 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class UserForm extends AbstractType
 {
-    /**
-     * @var boolean
-     */
-    private $new;
 
     /**
-     * @var boolean
+     * @var TokenStorageInterface
      */
-    private $show_roles_and_envs_field;
+    private $storage;
 
     /**
-     * @param boolean $new If set, all fields required. Otherwise, optional.
-     * @param boolean $show_roles_and_envs_field If true, show fields for roles and environments.
+     * @param TokenStorageInterface $storage A TokenStorageInterface instance.
      */
-    public function __construct($new = true, $show_roles_and_envs_field = true)
+    public function __construct(TokenStorageInterface $storage)
     {
-        $this->new = $new;
-        $this->show_roles_and_envs_field = $show_roles_and_envs_field;
+        $this->storage = $storage;
     }
 
     /**
@@ -37,9 +33,13 @@ class UserForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $fieldOptions = [ 'required' => false ];
-        if ($this->new) {
-            $fieldOptions = [];
+
+        /** @var User $user */
+        $user = $builder->getData();
+
+        $options = [];
+        if ($user->getId() !== null) {
+            $options = [ 'required' => false ];
         }
 
         $builder
@@ -57,35 +57,37 @@ class UserForm extends AbstractType
                     'expanded' => false,
                 ]
             )
-            ->add('plainPassword', 'password', $fieldOptions);
-        if ($this->show_roles_and_envs_field) {
-            $builder
-                ->add(
-                    'roles',
-                    'choice',
-                    [
-                        'choices' => [
-                            'ROLE_ADMIN' => 'admin',
-                            'ROLE_MANAGER' => 'manager',
-                            'ROLE_USER' => 'user',
-                        ],
-                        'expanded' => false,
-                        'multiple' => true,
-                    ]
-                )
-                ->add(
-                    'environments',
-                    'entity',
-                    [
-                        'class' => 'GovWikiDbBundle:Environment',
-                        'choice_label' => 'name',
-                        'expanded' => false,
-                        'multiple' => false,
-                        'required' => false,
-                    ]
-                )
-            ;
+            ->add('plainPassword', 'password', $options);
+
+        if ($this->getUser()->hasRole('ROLE_ADMIN')) {
+            $builder->add(
+                'roles',
+                'choice',
+                [
+                    'choices' => [
+                        'ROLE_ADMIN' => 'admin',
+                        'ROLE_MANAGER' => 'manager',
+                        'ROLE_USER' => 'user',
+                    ],
+                    'expanded' => false,
+                    'multiple' => true,
+                ]
+            );
         }
+
+        $builder
+            ->add(
+                'environments',
+                'entity',
+                [
+                    'class' => 'GovWikiDbBundle:Environment',
+                    'choice_label' => 'name',
+                    'expanded' => false,
+                    'multiple' => false,
+                    'required' => false,
+                    'data' => $user->getEnvironments()[0],
+                ]
+            );
     }
 
     /**
@@ -102,5 +104,24 @@ class UserForm extends AbstractType
     public function getName()
     {
         return 'govwiki_admin_form_user';
+    }
+
+    /**
+     * Get current user.
+     *
+     * @return User|null
+     */
+    private function getUser()
+    {
+        if (null === $token = $this->storage->getToken()) {
+            return null;
+        }
+
+        if (!is_object($user = $token->getUser())) {
+            // e.g. anonymous authentication
+            return null;
+        }
+
+        return $user;
     }
 }

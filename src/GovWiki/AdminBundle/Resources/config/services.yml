@@ -52,3 +52,9 @@ services:
         class: GovWiki\AdminBundle\Form\Type\DelayType
         tags:
             - { name: form.type, alias: delay }
+
+    govwiki_admin.form.user:
+        class: GovWiki\AdminBundle\Form\UserForm
+        arguments: [ @security.token_storage ]
+        tags:
+            - { name: form.type, alias: govwiki_admin_form_user }

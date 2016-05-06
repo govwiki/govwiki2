@@ -1,4 +1,4 @@
-{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - Show edit request{% endblock %}
 
@@ -12,7 +12,7 @@
     {{- macro.breadcrumbElement(
         'Edit Requests',
         'govwiki_admin_editrequest_index',
-        { environment: environment.slug }
+        { 'environment': environment.slug }
     ) -}}
     {{ macro.breadcrumbElement(
         editRequest.user.username ~' at '~ editRequest.created|date('m/d/y g:i a')

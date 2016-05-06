@@ -1,21 +1,16 @@
-{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+{% extends 'GovWikiAdminBundle:Layout:main.html.twig' %}
 
 {% import 'GovWikiAdminBundle:User:show.html.twig' as user_macro %}
 
-{% block title %}{{ parent() }} - users{% endblock %}
+{% block title %}{{ parent() }} - admins{% endblock %}
 
 {% block breadcrumb %}
-    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{- macro.breadcrumbElement(
-        environment.name ~' environment',
-        'govwiki_admin_environment_show',
-        { 'environment': environment.slug }
-    ) -}}
-    {{- macro.breadcrumbElement('Users') -}}
+    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
+    {{- macro.breadcrumbElement('Admins') -}}
 {% endblock breadcrumb %}
 
 {% block panel_title %}
-    Users
+    Admins
 {% endblock panel_title %}
 
 {% block panel_body %}
@@ -62,20 +57,14 @@
                 <td>
                     <div class="btn-group">
                         <a href="{{- path(
-                            'govwiki_admin_user_show',
-                            {
-                                'environment': environment.slug,
-                                'id': user.id
-                            }
+                            'govwiki_admin_adminuser_show',
+                            { 'id': user.id }
                         ) -}}" class="btn btn-default">
                             <span class="glyphicon glyphicon-search"></span> Show
                         </a>
                         <a href="{{- path(
-                            'govwiki_admin_user_edit',
-                            {
-                                'environment': environment.slug,
-                                'id': user.id
-                            }
+                            'govwiki_admin_adminuser_edit',
+                            { 'id': user.id }
                         ) -}}" class="btn btn-default">
                             <i class="glyphicon glyphicon-pencil"></i> Edit
                         </a>
@@ -86,11 +75,8 @@
                             {% set title = 'Enable' %}
                         {% endif %}
                         <a href="{{- path(
-                            'govwiki_admin_user_enabletoggle',
-                            {
-                                'environment': environment.slug,
-                                'id': user.id
-                            }
+                            'govwiki_admin_adminuser_enabletoggle',
+                            { 'id': user.id }
                         ) -}}" class="btn btn-default">
                             <i class="glyphicon {{ glyph }}"> {{ title }}</i>
                         </a>
@@ -107,8 +93,7 @@
     </div>
     <div class="btn-group">
         <a class="btn btn-primary" href="{{- path(
-            'govwiki_admin_user_new',
-            { 'environment': environment.slug }
+            'govwiki_admin_adminuser_new'
         ) -}}">Add new user</a>
     </div>
 {% endblock panel_body %}

@@ -42,4 +42,10 @@
         'govwiki_admin_environment_format',
         { 'environment': environment.slug }
     )-}}
+
+    {{- macro.submenuElement(
+        'Users',
+        'govwiki_admin_user_index',
+        { 'environment': environment.slug }
+    )-}}
 {% endblock submenu %}

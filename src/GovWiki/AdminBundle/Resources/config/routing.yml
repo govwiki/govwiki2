@@ -46,6 +46,10 @@ user:
     resource: "@GovWikiAdminBundle/Controller/UserController.php"
     type:     annotation
 
+admin_user:
+    resource: "@GovWikiAdminBundle/Controller/AdminUserController.php"
+    type:     annotation
+
 field:
     resource: "@GovWikiAdminBundle/Controller/FieldController.php"
     type:     annotation

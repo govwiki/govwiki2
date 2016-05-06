@@ -2,23 +2,19 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\AdminBundle\Form\AdminUserForm;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Class UserController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route(
- *  "/{environment}/user",
- *  requirements={ "environment": "\w+" }
- * )
+ * @Configuration\Route("/user")
  */
-class UserController extends AbstractGovWikiAdminController
+class AdminUserController extends AbstractGovWikiAdminController
 {
 
     /**
@@ -31,7 +27,7 @@ class UserController extends AbstractGovWikiAdminController
      *
      * @Configuration\Route("/", methods={"GET"})
      * @Configuration\Template
-     * @Configuration\Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')")
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param Request $request A Request instance.
      *
@@ -41,27 +37,13 @@ class UserController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request)
     {
-        /** @var User $user */
-        $user = $this->getUser();
-
         /** @var \GovWiki\UserBundle\Entity\Repository\UserRepository $repository */
         $repository = $this->getDoctrine()->getRepository('GovWikiUserBundle:User');
 
         $users = $repository->getListQueryForEnvironment(
-            $this->getCurrentEnvironment()->getId()
+            $this->getCurrentEnvironment()->getId(),
+            true
         );
-
-        if ($user->hasRole('ROLE_MANAGER') && ! $user->hasRole('ROLE_ADMIN')) {
-            // Manager can see only ordinary users.
-            $expr = $users->expr();
-
-            $users
-                ->andWhere($expr->orX(
-                    "REGEXP('/ROLE_MANAGER/', User.roles) = 0",
-                    $expr->eq('User.id', ':user')
-                ))
-                ->setParameter('user', $user->getId());
-        }
 
         $users = $this->get('knp_paginator')->paginate(
             $users,
@@ -77,7 +59,7 @@ class UserController extends AbstractGovWikiAdminController
      *
      * @Configuration\Route("/{id}/show", requirements={"id": "\d+"})
      * @Configuration\Template
-     * @Configuration\Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')")
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param User $user User to show.
      *
@@ -85,8 +67,6 @@ class UserController extends AbstractGovWikiAdminController
      */
     public function showAction(User $user)
     {
-        $this->checkUserBelongsToEnvironment($user);
-
         return [ 'user' => $user ];
     }
 
@@ -94,6 +74,7 @@ class UserController extends AbstractGovWikiAdminController
      * Toggle given user enable.
      *
      * @Configuration\Route("{id}/enable", requirements={"id": "\d+"})
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param Request $request A Request instance.
      * @param User    $user    User to enable\disable.
@@ -120,6 +101,7 @@ class UserController extends AbstractGovWikiAdminController
      *
      * @Configuration\Route(path="/{id}/edit", requirements={"id": "\d+"})
      * @Configuration\Template()
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param Request $request A Request instance.
      * @param User    $user    Update user.
@@ -128,18 +110,14 @@ class UserController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, User $user)
     {
-        $this->checkUserBelongsToEnvironment($user);
-
-        $form = $this->createForm('govwiki_admin_form_user', $user);
+        $form = $this->createForm(new AdminUserForm(), $user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $userManager = $this->get('fos_user.user_manager');
             $userManager->updateUser($user);
 
-            return $this->redirectToRoute('govwiki_admin_user_index', [
-                'environment' => $this->getCurrentEnvironment()->getSlug(),
-            ]);
+            return $this->redirectToRoute('govwiki_admin_adminuser_index');
         }
 
         return [
@@ -153,6 +131,7 @@ class UserController extends AbstractGovWikiAdminController
      *
      * @Configuration\Route(path="/new")
      * @Configuration\Template()
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
      *
      * @param Request $request A Request instance.
      *
@@ -160,44 +139,22 @@ class UserController extends AbstractGovWikiAdminController
      */
     public function newAction(Request $request)
     {
-        $environment = $this->getCurrentEnvironment();
         $userManager = $this->get('fos_user.user_manager');
         /** @var User $user */
         $user = $userManager->createUser();
-        $user->addEnvironment($environment);
+        $user->addRole('ROLE_ADMIN');
 
-        $form = $this->createForm('govwiki_admin_form_user', $user);
+        $form = $this->createForm(new AdminUserForm(), $user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setEnabled(true);
+
             $userManager->updateUser($user);
 
-            return $this->redirectToRoute('govwiki_admin_user_index', [
-                'environment' => $environment->getSlug(),
-            ]);
+            return $this->redirectToRoute('govwiki_admin_adminuser_index');
         }
 
         return [ 'form' => $form->createView() ];
-    }
-
-    /**
-     * @param User $user User
-     */
-    private function checkUserBelongsToEnvironment(User $user)
-    {
-        // If $current_user is manager of environment, do not show him admin pages and pages of users that belong to other environments
-        if ($this->isGranted('ROLE_MANAGER') && !$this->isGranted('ROLE_ADMIN')) {
-            /** @var User $current_user */
-            /** @var Collection $environment_users_list */
-            $current_user = $this->getUser();
-            $environments = $current_user->getEnvironments();
-            if (!$environments->isEmpty()) {
-                $environment_users_list = $environments[0]->getUsers();
-                if ($user->hasRole('ROLE_ADMIN') || !$environment_users_list->contains($user)) {
-                    throw new AccessDeniedException();
-                }
-            }
-        }
     }
 }
