@@ -2,20 +2,21 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use GovWiki\AdminBundle\GovWikiAdminServices;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use GovWiki\DbBundle\Entity\Repository\LegislationRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\DbBundle\Entity\Legislation;
-use GovWiki\DbBundle\Form\LegislationType;
 
 /**
  * Class LegislationController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/legislation")
+ * @Configuration\Route(
+ *  "/{environment}/legislation",
+ *  requirements={ "environment": "\w+" }
+ * )
  */
-class LegislationController extends Controller
+class LegislationController extends AbstractGovWikiAdminController
 {
     /**
      * @Configuration\Route("/")
@@ -27,10 +28,18 @@ class LegislationController extends Controller
      */
     public function indexAction(Request $request)
     {
+        /** @var LegislationRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Legislation');
+
+        $legislations = $repository->getListQuery(
+            $this->getCurrentEnvironment()->getId()
+        );
+
         $legislations = $this->get('knp_paginator')->paginate(
-            $this->getManager()->getListQuery(),
+            $legislations,
             $request->query->getInt('page', 1),
-            50
+           25
         );
 
         return [ 'legislations' => $legislations ];
@@ -46,21 +55,22 @@ class LegislationController extends Controller
      */
     public function createAction(Request $request)
     {
-        $manager = $this->getManager();
         /** @var Legislation $legislation */
-        $legislation = $manager->create();
+        $legislation = new Legislation();
 
-        $form = $this->createForm(
-            new LegislationType($this->getManager()->getEnvironment()->getSlug()),
-            $legislation
-        );
+        $form = $this->createForm('govwiki_dbbundle_legislation', $legislation);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $manager->update($legislation);
-            $this->addFlash('admin_success', 'New legislation created');
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($legislation);
+            $em->flush();
 
-            return $this->redirectToRoute('govwiki_admin_legislation_index');
+            $this->successMessage('Legislation created');
+
+            return $this->redirectToRoute('govwiki_admin_legislation_index', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+            ]);
         }
 
         return [ 'form' => $form->createView() ];
@@ -80,27 +90,46 @@ class LegislationController extends Controller
      */
     public function editAction(Request $request, Legislation $legislation)
     {
-        $form = $this->createForm(
-            new LegislationType($this->getManager()->getEnvironment()->getSlug()),
-            $legislation
-        );
+        $form = $this->createForm('govwiki_dbbundle_legislation', $legislation);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->getManager()->update($legislation);
-            $this->addFlash('admin_success', 'Legislation updated');
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($legislation);
+            $em->flush();
 
-            return $this->redirectToRoute('govwiki_admin_legislation_index');
+            $this->successMessage('Legislation '. $legislation->getId() .' updated');
+
+            return $this->redirectToRoute('govwiki_admin_legislation_index', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+            ]);
         }
 
-        return [ 'form' => $form->createView() ];
+        return [
+            'form' => $form->createView(),
+            'legislation' => $legislation,
+        ];
     }
 
     /**
-     * @return \GovWiki\AdminBundle\Manager\Entity\AdminLegislationManager
+     * @Configuration\Route(
+     *  "/{id}/remove",
+     *  requirements={"id": "\d+"}
+     * )
+     *
+     * @param Legislation $legislation A Legislation entity instance.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function getManager()
+    public function removeAction(Legislation $legislation)
     {
-        return $this->get(GovWikiAdminServices::LEGISLATION_MANAGER);
+        $em = $this->getDoctrine()->getManager();
+
+        $em->remove($legislation);
+        $em->flush();
+
+        return $this->redirectToRoute('govwiki_admin_legislation_index', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+        ]);
     }
 }

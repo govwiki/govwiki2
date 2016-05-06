@@ -72,3 +72,9 @@ services:
             - 'documents'
         tags:
             - { name: form.type, alias: document }
+
+    govwiki_db.form.legislation:
+        class: GovWiki\DbBundle\Form\LegislationType
+        arguments: [ @govwiki_environment.storage ]
+        tags:
+            - { name: form.type, alias: govwiki_dbbundle_legislation }

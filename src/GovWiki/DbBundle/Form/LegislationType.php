@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Form;
 
 use Doctrine\ORM\EntityRepository;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -14,28 +15,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class LegislationType extends AbstractType
 {
     /**
-     * @var string
+     * @var EnvironmentStorageInterface
      */
-    private $environment;
+    private $storage;
 
     /**
-     * @param string $environment Environment name.
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
      */
-    public function __construct($environment = null)
+    public function __construct(EnvironmentStorageInterface $storage)
     {
-        $this->environment = $environment;
-    }
-
-    /**
-     * @param string $environment Environment name.
-     *
-     * @return LegislationType
-     */
-    public function setEnvironment($environment)
-    {
-        $this->environment = $environment;
-
-        return $this;
+        $this->storage = $storage;
     }
 
     /**
@@ -43,8 +33,6 @@ class LegislationType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $environment = $this->environment;
-
         $builder
             ->add('govAssignedNumber')
             ->add('dateConsidered', 'date')
@@ -57,18 +45,13 @@ class LegislationType extends AbstractType
                 'class' => 'GovWiki\DbBundle\Entity\IssueCategory',
                 'choice_label' => 'name',
             ])
-            ->add('electedOfficialVotes', 'collection', [
-                'type' => new ElectedOfficialVoteType(),
-                'by_reference' => 'false',
-            ])
             ->add('government', 'entity', [
                 'class' => 'GovWiki\DbBundle\Entity\Government',
                 'choice_label' => 'name',
                 'attr' => [
                     'class' => 'government',
                 ],
-                'query_builder' => function (EntityRepository $repository)
-                    use ($environment) {
+                'query_builder' => function (EntityRepository $repository) {
                     /*
                      * Select governments only from given environment.
                      */
@@ -77,11 +60,8 @@ class LegislationType extends AbstractType
 
                     return $qb
                         ->select('partial Government.{id,name}')
-                        ->leftJoin('Government.environment', 'Environment')
-                        ->where($expr->eq(
-                            'Environment.slug',
-                            $expr->literal($environment)
-                        ));
+                        ->where($expr->eq('Government.environment', ':environment'))
+                        ->setParameter('environment', $this->storage->get()->getId());
                 },
             ]);
     }

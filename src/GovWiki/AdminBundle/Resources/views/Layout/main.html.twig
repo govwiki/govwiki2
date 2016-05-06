@@ -83,7 +83,7 @@
 
                         {% if app.user.hasRole('ROLE_ADMIN') %}
                             <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_adminuser_index' ? 'active' }}">
-                                <a class="link" href="{{ path('govwiki_admin_adminuser_index') }}"> Users </a>
+                                <a class="link" href="{{ path('govwiki_admin_adminuser_index') }}"> Admins </a>
                             </li>
                         {% endif %}
                     </ul>
@@ -97,7 +97,7 @@
                 {# Visibility: sm or less #}
                 {% if app.user.hasRole('ROLE_ADMIN') %}
                     <li class="{{ app.request.attributes.get('_route') == 'govwiki_admin_adminuser_index' ? 'active' }} visible-xs visible-sm">
-                        <a class="link" href="{{ path('govwiki_admin_adminuser_index') }}"> Users </a>
+                        <a class="link" href="{{ path('govwiki_admin_adminuser_index') }}"> Admins </a>
                     </li>
                 {% endif %}
 
