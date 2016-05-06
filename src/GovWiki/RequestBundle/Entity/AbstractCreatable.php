@@ -13,15 +13,20 @@ use GovWiki\RequestBundle\Entity\Interfaces\CreatableInterface;
 abstract class AbstractCreatable implements CreatableInterface
 {
 
+    /**
+     * @var AbstractCreateRequest
+     */
     protected $request;
 
     /**
      * {@inheritdoc}
      */
-    public function setRequest(AbstractCreateRequest $request)
+    public function setRequest(AbstractCreateRequest $request = null)
     {
         $this->request = $request;
-        $request->setSubject($this);
+        if ($request !== null) {
+            $request->setSubject($this);
+        }
 
         return $this;
     }

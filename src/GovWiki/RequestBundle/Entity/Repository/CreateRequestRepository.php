@@ -5,7 +5,6 @@ namespace GovWiki\RequestBundle\Entity\Repository;
 use Doctrine\ORM\EntityRepository;
 use GovWiki\RequestBundle\Entity\Interfaces\CreatableInterface;
 use GovWiki\RequestBundle\Entity\Interfaces\CreateRequestRepositoryInterface;
-use GovWiki\RequestBundle\Entity\LegislationCreateRequest;
 
 /**
  * CreateRequestRepository
@@ -13,20 +12,20 @@ use GovWiki\RequestBundle\Entity\LegislationCreateRequest;
 class CreateRequestRepository extends EntityRepository
 {
     /**
-     * @param string $environment Environment name.
+     * @param integer $environment A Environment entity id.
      *
      * @return \Doctrine\ORM\Query
      */
     public function getListQuery($environment)
     {
-        $qb = $this->createQueryBuilder('CreateRequest');
-        $expr = $qb->expr();
+        $expr = $this->_em->getExpressionBuilder();
 
-        return $qb
+        return $this->createQueryBuilder('CreateRequest')
             ->addSelect('Creator')
             ->join('CreateRequest.environment', 'Environment')
             ->join('CreateRequest.creator', 'Creator')
-            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
+            ->where($expr->eq('CreateRequest.environment', ':environment'))
+            ->setParameter('environment', $environment)
             ->orderBy($expr->asc('CreateRequest.createdAt'))
             ->getQuery();
     }

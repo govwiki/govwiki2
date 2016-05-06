@@ -4,19 +4,16 @@
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-        macro.breadcrumbElement(
-            admin_environment|capitalize ~' environment',
-            'govwiki_admin_main_show',
-            { 'environment': admin_environment }
-        )
-    }}
-    {{
-        macro.breadcrumbElement(
-            'Edit Requests',
-            'govwiki_admin_editrequest_index'
-        )
-    }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Edit Requests',
+        'govwiki_admin_editrequest_index',
+        { environment: environment.slug }
+    ) -}}
     {{ macro.breadcrumbElement(
         editRequest.user.username ~' at '~ editRequest.created|date('m/d/y g:i a')
     ) }}
@@ -26,11 +23,10 @@
     <div class="container">
         {% if errors %}
             <div class="col-md-2">
-                <a href="{{-
-                    path(
-                        'govwiki_admin_editrequest_index'
-                    )
-                -}}" class="btn btn-default">
+                <a href="{{- path(
+                    'govwiki_admin_editrequest_index',
+                    { 'environment': environment.slug }
+                ) -}}" class="btn btn-default">
                     <span class="glyphicon glyphicon-chevron-left"></span>
                     Go back
                 </a>
@@ -74,14 +70,16 @@
                                 path(
                                     'govwiki_admin_editrequest_apply',
                                     {
-                                        id: editRequest.id
+                                        'environment': environment.slug,
+                                        'id': editRequest.id
                                     }
                                 )-}}" style="width:50%;" class="btn btn-success ajax-choice{% if editRequest.status != 'pending' %} disabled{% endif %}">Apply</span>
                             <span data-link="{{-
                                 path(
                                     'govwiki_admin_editrequest_discard',
                                     {
-                                        id: editRequest.id
+                                        'environment': environment.slug,
+                                        'id': editRequest.id
                                     }
                                 )-}}" style="width:50%;" class="btn btn-danger ajax-choice{% if editRequest.status != 'pending' %} disabled{% endif %}">Discard</span>
                         </div>
@@ -133,9 +131,9 @@
                     $.post($(this).data('link'), function(response) {
                         if (response.redirect) {
                             location = response.redirect;
-                        };
+                        }
                     });
-                };
+                }
             });
         });
     </script>

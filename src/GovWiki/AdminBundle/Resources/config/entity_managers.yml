@@ -27,20 +27,6 @@ services:
         parent: govwiki_admin.entity_manager.abstract
 
     #
-    # CreareRequest admin entity manager.
-    #
-    govwiki_admin.entity_manager.create_request:
-        class: GovWiki\AdminBundle\Manager\Entity\AdminCreateRequestManager
-        parent: govwiki_admin.entity_manager.abstract
-
-    #
-    # EditRequest admin entity manager.
-    #
-    govwiki_admin.entity_manager.edit_request:
-        class: GovWiki\AdminBundle\Manager\Entity\AdminEditRequestManager
-        parent: govwiki_admin.entity_manager.abstract
-
-    #
     # Format admin entity manager.
     #
     govwiki_admin.entity_manager.format:
