@@ -9,10 +9,6 @@ services:
         class: GovWiki\AdminBundle\Transformer\Service\TransformerManager
         arguments: [@service_container]
 
-    govwiki_admin.manager.style:
-        class: GovWiki\AdminBundle\Manager\AdminStyleManager
-        arguments: [ @doctrine.orm.default_entity_manager ]
-
     govwiki_admin.listener.environment:
         class: GovWiki\AdminBundle\Listener\EnvironmentListener
         arguments:

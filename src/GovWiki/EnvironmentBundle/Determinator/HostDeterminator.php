@@ -36,6 +36,11 @@ class HostDeterminator implements EnvironmentDeterminatorInterface
     {
         $host = $request->getHost();
 
+        if (strpos($host, 'm.') === 0) {
+            // In mobile environment, remove 'm.' prefix from the host.
+            $host = substr($host, 2);
+        }
+
         return $this->em->getRepository('GovWikiDbBundle:Environment')
             ->getByDomain($host);
     }

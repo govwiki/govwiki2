@@ -20,9 +20,21 @@
     )-}}
 
     {{- macro.submenuElement(
-        'Styles',
+        'Desktop styles',
         'govwiki_admin_style_index',
-        { 'environment': environment.slug }
+        {
+            'environment': environment.slug,
+            'type': 'desktop'
+        }
+    )-}}
+
+    {{- macro.submenuElement(
+        'Mobile styles',
+        'govwiki_admin_style_index',
+        {
+            'environment': environment.slug,
+            'type': 'mobile'
+        }
     )-}}
 
     {{- macro.submenuElement(
@@ -46,6 +58,12 @@
     {{- macro.submenuElement(
         'Users',
         'govwiki_admin_user_index',
+        { 'environment': environment.slug }
+    )-}}
+
+    {{- macro.submenuElement(
+        'Advertising',
+        'govwiki_admin_advertising_index',
         { 'environment': environment.slug }
     )-}}
 {% endblock submenu %}

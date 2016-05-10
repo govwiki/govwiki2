@@ -24,12 +24,6 @@
         </a>
     </li>
 
-    <li class="{% if app.request.attributes.get('_route') == 'govwiki_admin_advertising_index' %} active{% endif %}">
-        <a class="link" href="{{- path('govwiki_admin_advertising_index', {
-            'environment': environment.slug
-        }) -}}"> Advertising </a>
-    </li>
-
     {# Requests menu #}
     {# Visibility: sm or more #}
     <li class="dropdown hidden-xs hidden-sm">

@@ -74,6 +74,15 @@ class Environment
     protected $style;
 
     /**
+     * CSS styles for mobile view.
+     *
+     * @var string
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    protected $mobileStyle;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
@@ -537,10 +546,11 @@ class Environment
     /**
      * Add locales
      *
-     * @param \GovWiki\DbBundle\Entity\Locale $locales
+     * @param Locale $locales A Locale entity instance.
+     *
      * @return Environment
      */
-    public function addLocale(\GovWiki\DbBundle\Entity\Locale $locales)
+    public function addLocale(Locale $locales)
     {
         $this->locales[] = $locales;
 
@@ -550,11 +560,15 @@ class Environment
     /**
      * Remove locales
      *
-     * @param \GovWiki\DbBundle\Entity\Locale $locales
+     * @param Locale $locales A Locale entity instance.
+     *
+     * @return Environment
      */
-    public function removeLocale(\GovWiki\DbBundle\Entity\Locale $locales)
+    public function removeLocale(Locale $locales)
     {
         $this->locales->removeElement($locales);
+
+        return $this;
     }
 
     /**
@@ -668,6 +682,8 @@ class Environment
     public function setLogo($logo)
     {
         $this->logo = $logo;
+
+        return $this;
     }
 
     /**
@@ -683,7 +699,7 @@ class Environment
      *
      * @return Environment
      */
-    public function setFile($file)
+    public function setFile(UploadedFile $file)
     {
         $this->file = $file;
 
@@ -694,6 +710,7 @@ class Environment
      * Set subscribable
      *
      * @param boolean $subscribable
+     *
      * @return Environment
      */
     public function setSubscribable($subscribable)
@@ -789,5 +806,62 @@ class Environment
     public function getAdvertising()
     {
         return $this->advertising;
+    }
+
+    /**
+     * Set mobileStyle
+     *
+     * @param string $mobileStyle Css rules.
+     *
+     * @return Environment
+     */
+    public function setMobileStyle($mobileStyle)
+    {
+        $this->mobileStyle = $mobileStyle;
+
+        return $this;
+    }
+
+    /**
+     * Get mobileStyle
+     *
+     * @return string
+     */
+    public function getMobileStyle()
+    {
+        return $this->mobileStyle;
+    }
+
+    /**
+     * Generate css rules.
+     *
+     * @param array|EnvironmentStyles[] $styles List of styles.
+     * @param string                    $type   Style type: desktop or mobile.
+     *
+     * @return Environment
+     */
+    public function updateStyle(array $styles, $type)
+    {
+        $css = '';
+
+        foreach ($styles as $style) {
+            $css .= $style->getClassName() .'{';
+            foreach ($style->getProperties() as $property) {
+                $css .= $property[0] .':'. $property[1] .';';
+            }
+            $css .= '}';
+        }
+
+        switch ($type) {
+            case 'desktop':
+                $this->setStyle($css);
+                break;
+
+            case 'mobile':
+                $this->setMobileStyle($css);
+                break;
+        }
+
+        return $this;
     }
 }

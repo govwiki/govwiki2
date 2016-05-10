@@ -1,18 +1,18 @@
 localization:
     resource: "@GovWikiMobileBundle/Controller/LocalizationController.php"
-    type:     govwiki
+    type:     annotation
 
 elected:
     resource: "@GovWikiMobileBundle/Controller/ElectedController.php"
-    type:     govwiki
+    type:     annotation
 
 government:
     resource: "@GovWikiMobileBundle/Controller/GovernmentController.php"
-    type:     govwiki
+    type:     annotation
 
 main:
     resource: "@GovWikiMobileBundle/Controller/MainController.php"
-    type:     govwiki
+    type:     annotation
     prefix:   /
 
 robots:

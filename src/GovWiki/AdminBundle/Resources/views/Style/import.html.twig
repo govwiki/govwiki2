@@ -10,15 +10,18 @@
         { 'environment': environment.slug }
     ) -}}
     {{- macro.breadcrumbElement(
-        'Styles',
+        type|capitalize ~ ' styles',
         'govwiki_admin_style_index',
-        { 'environment': environment.slug }
+        {
+            'environment': environment.slug,
+            'type': type
+        }
     ) -}}
     {{ macro.breadcrumbElement('Import') }}
 {% endblock breadcrumb %}
 
 {% block panel_title %}
-    {{ environment.name }} - import styles
+    {{ environment.name }} - import {{ type }} styles
 {% endblock panel_title %}
 
 {% block panel_body %}
@@ -27,7 +30,10 @@
     <button class="btn btn-primary">Import</button>
     <a class="btn btn-default" href="{{- path(
         'govwiki_admin_style_index',
-        { 'environment': environment.slug }
+        {
+            'environment': environment.slug,
+            'type': type
+        }
     ) -}}">Back</a>
     {{ form_end(form) }}
 {% endblock panel_body %}

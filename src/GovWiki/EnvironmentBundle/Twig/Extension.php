@@ -3,7 +3,6 @@
 namespace GovWiki\EnvironmentBundle\Twig;
 
 use GovWiki\EnvironmentBundle\Manager\ElectedOfficial\ElectedOfficialManagerInterface;
-use GovWiki\EnvironmentBundle\Manager\Environment\EnvironmentManagerInterface;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Translation\MessageCatalogue;

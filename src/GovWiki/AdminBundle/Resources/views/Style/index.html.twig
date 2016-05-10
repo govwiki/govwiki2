@@ -1,6 +1,6 @@
 {% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
-{% block title %}{{ parent() }} - style{% endblock %}
+{% block title %}{{ parent() }} - {{ type }} styles{% endblock %}
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
@@ -9,24 +9,30 @@
         'govwiki_admin_environment_show',
         { 'environment': environment.slug }
     ) -}}
-    {{ macro.breadcrumbElement('Styles') }}
+    {{ macro.breadcrumbElement(type|capitalize ~ ' styles') }}
 {% endblock breadcrumb %}
 
 {% block panel_title %}
-    {{ environment.name }} styles
+    {{ environment.name }} {{ type }} styles
 {% endblock panel_title %}
 
 {% block panel_body %}
     <div class="buttons pull-right">
         <a class="btn btn-default" href="{{- path(
             'govwiki_admin_style_import',
-            { 'environment': environment.slug }
+            {
+                'environment': environment.slug,
+                'type': type
+            }
         ) -}}">
             Import
         </a>
         <a class="btn btn-default" href="{{- path(
             'govwiki_admin_style_export',
-            { 'environment': environment.slug }
+            {
+                'environment': environment.slug,
+                'type': type
+            }
         ) -}}">
             Export
         </a>

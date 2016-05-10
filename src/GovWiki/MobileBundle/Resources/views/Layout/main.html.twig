@@ -12,7 +12,7 @@
         {% block stylesheets %}{% endblock %}
     {% if environment is defined %}
         <link rel="icon" href="{{ asset('/img/'~environment~'/favicon.ico') }}" type="image/x-icon" />
-        <style>{{ styles }}</style>
+        <style>{{ environment.mobileStyle }}</style>
     {% else %}
         <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
     {% endif %}
