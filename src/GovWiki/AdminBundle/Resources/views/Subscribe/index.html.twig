@@ -1,94 +1,85 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
 
-{% block title %}{{ parent() }} - edit format{% endblock title %}
+{% block title %}{{ parent() }} - {{ government.name }} subscribers{% endblock title %}
 
 {% block breadcrumb %}
-    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
-    {{-
-    macro.breadcrumbElement(
-    admin_environment|capitalize ~' environment',
-    'govwiki_admin_main_show',
-    { 'environment': admin_environment }
-    )
-    -}}
-    {{- macro.breadcrumbElement('Governments', 'govwiki_admin_government_index') -}}
-    {{-
-        macro.breadcrumbElement('Edit ' ~ government.name, 'govwiki_admin_government_edit',
-        { 'id': government.id })
-    -}}
-    {{- macro.breadcrumbElement('Subscribers') -}}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Governments',
+        'govwiki_admin_government_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(government.name ~ ' subscribers') -}}
 {% endblock breadcrumb %}
 
-{% block body %}
+{% block panel_title %}
+    {{ government.name }} subscribers
+{% endblock panel_title %}
 
-    <div class="container" id="subscribers">
-
-        {# Panel #}
-        <div class="panel panel-success">
-
-            {# Header #}
-            <div class="panel-heading">
-                <h3 class="panel-title">Subscribers</h3>
-            </div>
-
-            {# Body #}
-            <div class="panel-body">
-
-                {{ form_start(form) }}
-                {{ form_errors(form.message) }}
-                {{ form_widget(form.message) }}
-                <div>
-                    <button type="submit" class="btn btn-success">Send</button>
-                </div>
-                {{ form_end(form) }}
-
-
-                {{- knp_pagination_render(subscribers) -}}
-
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>
-                                {{- knp_pagination_sortable(subscribers, 'Name', 'User.username') -}}
-                            </th>
-                            <th>
-                                {{- knp_pagination_sortable(subscribers, 'Email', 'User.email') -}}
-                            </th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for subscriber in subscribers %}
-                            <tr>
-                                <td>{{- subscriber.username -}}</td>
-                                <td>{{- subscriber.email -}}</td>
-                                <td>
-                                    <a class="btn btn-danger" href="{{-
-                                        path('govwiki_admin_subscribe_remove', {
-                                            'government': government.id,
-                                            'subscriber': subscriber.id
-                                        })
-                                    -}}">Remove</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        <tr>
-                            <td colspan="3" class="button-row">
-                                <a class="btn btn-success" href="{{-
-                                    path('govwiki_admin_subscribe_add',
-                                    { 'government': government.id })
-                                -}}">Add new subscriber</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                {{- knp_pagination_render(subscribers) -}}
-
-            </div>
-
-        </div>
-
+{% block panel_body %}
+    {{ form_start(form) }}
+    {{ form_errors(form.message) }}
+    {{ form_widget(form.message) }}
+    <div class="pull-right">
+        <button type="submit" class="btn btn-success">Send</button>
     </div>
+    {{ form_end(form) }}
 
-{% endblock body %}
+    {{- knp_pagination_render(subscribers) -}}
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>
+                {{- knp_pagination_sortable(
+                subscribers,
+                'Name',
+                'User.username'
+                ) -}}
+            </th>
+            <th>
+                {{- knp_pagination_sortable(
+                subscribers,
+                'Email',
+                'User.email'
+                ) -}}
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for subscriber in subscribers %}
+            <tr>
+                <td>{{- subscriber.username -}}</td>
+                <td>{{- subscriber.email -}}</td>
+                <td>
+                    <a class="btn btn-danger" href="{{-
+                    path('govwiki_admin_subscribe_remove', {
+                        'environment': environment.slug,
+                        'government': government.id,
+                        'subscriber': subscriber.id
+                    })
+                    -}}">Remove</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {{- knp_pagination_render(subscribers) -}}
+
+    <div>
+        <a class="btn btn-success" href="{{-path(
+            'govwiki_admin_subscribe_add',
+            {
+                'environment': environment.slug,
+                'government': government.id
+            }
+        )-}}">Add new subscriber</a>
+    </div>
+{% endblock panel_body %}

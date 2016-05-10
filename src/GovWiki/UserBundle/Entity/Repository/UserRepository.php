@@ -26,33 +26,6 @@ class UserRepository extends EntityRepository
     }
 
     /**
-     * Get all subscribers for given government.
-     *
-     * @param integer $government Government entity id.
-     *
-     * @return array
-     */
-    public function getSubscriberIds($government)
-    {
-        $expr = $this->_em->getExpressionBuilder();
-
-        $result = $this->createQueryBuilder('User')
-            ->select('User.id')
-            ->innerJoin('User.subscribedTo', 'Government')
-            ->where($expr->eq('Government.id', ':government'))
-            ->setParameter('government', $government)
-            ->getQuery()
-            ->getArrayResult();
-
-        return array_map(
-            function (array $row) {
-                return $row['id'];
-            },
-            $result
-        );
-    }
-
-    /**
      * @param integer $environment A Environment entity id.
      * @param boolean $onlyAdmins  Show only admins.
      *

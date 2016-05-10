@@ -106,10 +106,10 @@
                                 <span class="glyphicon glyphicon-pencil"></span>
                                 Edit
                             </a>
-                            {#<a href="{{- path('govwiki_admin_subscribe_index', { #}
-                                {#'environment': environment.slug,#}
-                                {#'government': government.id#}
-                            {#}) -}}" class="btn btn-sm btn-primary">Messages</a>#}
+                            <a href="{{- path('govwiki_admin_subscribe_index', {
+                                'environment': environment.slug,
+                                'government': government.id
+                            }) -}}" class="btn btn-sm btn-primary">Messages</a>
                             <button data-url="{{- path(
                                 'govwiki_admin_government_remove',
                                 {
