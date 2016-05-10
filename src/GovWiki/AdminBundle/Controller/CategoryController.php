@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use CartoDbBundle\Service\CartoDbApi;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Category;
 use GovWiki\DbBundle\Entity\Translation;
@@ -36,10 +37,13 @@ class CategoryController extends AbstractGovWikiAdminController
     public function newAction(Request $request, $tab)
     {
         $em = $this->get('doctrine.orm.default_entity_manager');
+        $environment = $this->getCurrentEnvironment();
         $tabReference = $em->getReference('GovWikiDbBundle:Tab', $tab);
 
-        $category = $this->getManager()->create();
-        $category->setTab($tabReference);
+        $category = new Category();
+        $category
+            ->setTab($tabReference)
+            ->setEnvironment($environment);
 
         $form = $this->createForm(new AbstractGroupType(), $category);
         $form->handleRequest($request);
@@ -51,7 +55,7 @@ class CategoryController extends AbstractGovWikiAdminController
             $this->changeCategoryTranslation('new', $category->getId(), $category->getName());
 
             return $this->redirectToRoute('govwiki_admin_environment_format', [
-                'environment' => $this->getCurrentEnvironment()->getSlug(),
+                'environment' => $environment->getSlug(),
             ]);
         }
 
@@ -183,14 +187,6 @@ class CategoryController extends AbstractGovWikiAdminController
             }
         }
         $em->flush();
-    }
-
-    /**
-     * @return \GovWiki\AdminBundle\Manager\Entity\AdminCategoryManager
-     */
-    private function getManager()
-    {
-        return $this->get(GovWikiAdminServices::CATEGORY_MANAGER);
     }
 
     /**

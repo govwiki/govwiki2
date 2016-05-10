@@ -204,6 +204,13 @@ class Environment
     protected $mainImage;
 
     /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Advertising", mappedBy="environment")
+     */
+    protected $advertising;
+
+    /**
      *
      */
     public function __construct()
@@ -211,6 +218,7 @@ class Environment
         $this->governments = new ArrayCollection();
         $this->formats = new ArrayCollection();
         $this->locales = new ArrayCollection();
+        $this->advertising = new ArrayCollection();
     }
 
     /**
@@ -743,5 +751,43 @@ class Environment
         $this->mainImage = $mainImage;
 
         return $this;
+    }
+
+    /**
+     * Add advertising
+     *
+     * @param Advertising $advertising A Advertising entity instance.
+     *
+     * @return Environment
+     */
+    public function addAdvertising(Advertising $advertising)
+    {
+        $this->advertising[] = $advertising;
+
+        return $this;
+    }
+
+    /**
+     * Remove advertising
+     *
+     * @param Advertising $advertising A Advertising entity instance.
+     *
+     * @return Environment
+     */
+    public function removeAdvertising(Advertising $advertising)
+    {
+        $this->advertising->removeElement($advertising);
+
+        return $this;
+    }
+
+    /**
+     * Get advertising
+     *
+     * @return Collection
+     */
+    public function getAdvertising()
+    {
+        return $this->advertising;
     }
 }

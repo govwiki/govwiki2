@@ -25,7 +25,7 @@ class Advertising
     /**
      * @var Environment
      *
-     * @ORM\ManyToOne(targetEntity="Environment")
+     * @ORM\ManyToOne(targetEntity="Environment", inversedBy="advertising")
      */
     private $environment;
 
