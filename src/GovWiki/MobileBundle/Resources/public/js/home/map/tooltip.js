@@ -1,4 +1,5 @@
 var config = require('./config.js');
+
 /**
  * Init tooltip
  * @param altType

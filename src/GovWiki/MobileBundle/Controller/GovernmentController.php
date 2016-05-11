@@ -178,7 +178,7 @@ class GovernmentController extends AbstractGovWikiController
             $env_name = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)->getEnvironment();
             /** @var Government $government */
             $government = $em->getRepository('GovWikiDbBundle:Government')
-                ->getListQuery($env_name, $data['government']['id'])
+                ->getListQuery($environment->getId(), $data['government']['id'])
                 ->getOneOrNullResult();
 
             if ($government) {
@@ -248,9 +248,49 @@ From ' . $user_email;
             ->getRepository('GovWikiDbBundle:Pension')
             ->has($data['government']['id'], $data['government']['currentYear']);
 
-        $data['environment_is_subscribable'] = $manager->getEntity()->getSubscribable();
+        $data['environment_is_subscribable'] = $environment->getSubscribable();
 
         return $data;
+    }
+
+    /**
+     * @Route("/{altTypeSlug}/{slug}/documents", name="documents")
+     * @Template()
+     *
+     * @param Request $request     A Request instance.
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
+     *
+     * @return array
+     */
+    public function documentAction(Request $request, $altTypeSlug, $slug)
+    {
+        $manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
+
+        $years = $manager->getAvailableYears();
+        $currentYear = $request->query->getInt('year', $years[0]);
+
+        $government = $manager->getGovernmentWithoutData($altTypeSlug, $slug);
+        $government->currentYear = $currentYear;
+
+        $parameters = [
+            'years' => $years,
+            'government' => $government,
+        ];
+
+        if ($manager->getEntity()->isShowDocuments()) {
+            $documentsQuery = $this->getDoctrine()
+                ->getRepository('GovWikiDbBundle:Document')
+                ->getListQuery($government->getId(), null, $currentYear);
+            $paginator = $this->get('knp_paginator');
+            $parameters['documents'] = $paginator->paginate(
+                $documentsQuery,
+                $request->query->getInt('page', 1),
+                25
+            );
+        }
+
+        return $parameters;
     }
 
     /**

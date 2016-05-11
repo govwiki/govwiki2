@@ -25,10 +25,7 @@
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) return;
             js = d.createElement(s); js.id = id;
-            var currentLocale = 'en_US';
-            {% if app.request.locale == 'es' %}
-                currentLocale = 'es_ES';
-            {% endif %}
+            var currentLocale = '{{ (app.request.locale == 'es') ? 'es_ES' : 'en_US' }}';
             js.src = "https://connect.facebook.net/" + currentLocale + "/sdk.js#xfbml=1&version=v2.5";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));</script>

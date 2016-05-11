@@ -167,11 +167,12 @@ function addDisabledConditions(completeConditions, disabledConditions) {
 
 /**
  * @param activeConditions
- * @param defaultConditions
  * @returns {*}
  */
 function findDisabledConditions(activeConditions, defaultConditions) {
   return defaultConditions.filter(function loop(condition) {
+    // console.log(condition);
+    // console.log(findCondition(activeConditions, condition));
     return findCondition(activeConditions, condition) === -1;
   });
 }

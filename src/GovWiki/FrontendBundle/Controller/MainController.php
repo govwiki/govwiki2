@@ -49,6 +49,9 @@ class MainController extends AbstractGovWikiController
 
         $environment = $this->getCurrentEnvironment();
 
+        $years = $this->getGovernmentManager()->getAvailableYears($environment);
+        $currentYear = (count($years) > 0) ? $years[0] : 0;
+
         $map = $environment->getMap();
         $coloringConditions = $map->getColoringConditions();
         $fieldMask = $this->getFormatManager()
@@ -60,6 +63,7 @@ class MainController extends AbstractGovWikiController
         $map['coloringConditions']['field_mask'] = $fieldMask;
         $map['coloringConditions']['localized_name'] = $localizedName;
         $map['username'] = $this->getParameter('carto_db.account');
+        $map['year'] = $currentYear;
 
         /** @var MessageCatalogue $catalogue */
         $catalogue = $translator->getCatalogue();
@@ -70,13 +74,11 @@ class MainController extends AbstractGovWikiController
             $greetingText = $translator->trans($transKey);
         }
 
-        $years = $this->getGovernmentManager()->getAvailableYears($environment);
-
         return [
             'map' => json_encode($map),
             'greetingText' => $greetingText,
             'years' => $years,
-            'currentYear' => (count($years) > 0) ? $years[0] : 0,
+            'currentYear' => $currentYear,
         ];
     }
 

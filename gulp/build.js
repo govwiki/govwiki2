@@ -10,7 +10,7 @@ gulp.task('build:vendor', function() {
     gulp.src(path.base + '/js/vendor/*').pipe(gulp.dest('./web/js/vendor/'));
 });
 
-gulp.task('build:js', ['lint', 'build:vendor'], function(callback) {
+gulp.task('build:js', ['build:vendor'], function(callback) {
 
     gulp.start('check-install');
 

@@ -26,9 +26,8 @@ var $typeahead = $('.typeahead_government').typeahead({
   templates: {
     empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
     suggestion: Handlebars.compile('<div class="sugg-box">' +
-    '<div class="sugg-state">{{state}}</div>' +
+        '<div class="sugg-state">{{state}}</div>' +
         '<div class="sugg-name">{{name}}</div>' +
-        // '<div class="sugg-type">{{type}}</div>' +
         '</div>')
   },
   updater: function updater(item) {

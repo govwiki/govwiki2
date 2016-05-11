@@ -26,3 +26,7 @@ comparison:
 twilio_sms:
     resource: "@GovWikiApiBundle/Controller/V1/TwilioSmsController.php"
     type:     annotation
+
+search:
+    resource: "@GovWikiApiBundle/Controller/V1/SearchController.php"
+    type:     annotation

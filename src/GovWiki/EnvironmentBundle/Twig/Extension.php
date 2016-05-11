@@ -2,8 +2,10 @@
 
 namespace GovWiki\EnvironmentBundle\Twig;
 
+use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\EnvironmentBundle\Manager\ElectedOfficial\ElectedOfficialManagerInterface;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
@@ -78,5 +80,28 @@ class Extension extends \Twig_Extension
             'hasElectedOfficials' => $this->electedOfficialManager
                 ->computeElectedOfficialsCount($environment) > 0,
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFilters()
+    {
+        return [
+            new \Twig_SimpleFilter('cartoDbDataset', [
+                $this,
+                'getCartoDbDataset',
+            ]),
+        ];
+    }
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     *
+     * @return string
+     */
+    public function getCartoDbDataset(Environment $environment)
+    {
+        return GovwikiNamingStrategy::cartoDbDatasetName($environment);
     }
 }

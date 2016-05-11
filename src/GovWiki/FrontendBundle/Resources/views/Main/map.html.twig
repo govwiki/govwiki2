@@ -94,14 +94,14 @@
 
     <script>
         window.gw.map = '{{ map | escape('js') }}';
-        window.gw.environment = '{{ environment.slug }}';
+        window.gw.environment = '{{ environment|cartoDbDataset }}';
         window.gw.urls = {};
         window.gw.urls.search_government = '{{ path('govwiki_api_v1_government_search') }}';
         window.gw.urls.search_elected = '{{ path('govwiki_api_v1_electedofficial_search') }}';
     </script>
 
-    {#<script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>#}
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.uncompressed.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
+    {#<script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.uncompressed.js"></script>#}
     <script src="/js/common.js"></script>
     <script src="/js/map.js"></script>
 

@@ -23,9 +23,7 @@ module.exports = {
     },
     devtool: 'eval',
     resolve: {
-        root: [
-            pathUtil.join(__dirname, 'bower_components')
-        ],
+        root: [ pathUtil.join(__dirname, 'bower_components') ],
         alias: {
             typeahead: pathUtil.join(__dirname, path.base, '/vendor/typeahead.js'),
             handlebars: pathUtil.join(__dirname, path.base, '/vendor/handlebars.js')

@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;

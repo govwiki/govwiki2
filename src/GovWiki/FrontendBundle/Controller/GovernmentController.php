@@ -9,7 +9,6 @@ use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\DbBundle\Entity\Message;
 use GovWiki\DbBundle\Form\MessageType;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
-use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

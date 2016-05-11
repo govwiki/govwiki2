@@ -24,10 +24,16 @@ module.exports = {
     resolve: {
         root: [pathUtil.join(__dirname, 'bower_components')],
         alias: {
+            typeahead: pathUtil.join(__dirname, path.base, '/vendor/typeahead.js'),
             handlebars: pathUtil.join(__dirname, path.base, '/vendor/handlebars.js')
         }
     },
     plugins: [
+        new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery",
+            "window.jQuery": "jquery"
+        }),
         new webpack.DefinePlugin({
             'process.env': {
                 // This has effect on the react lib size

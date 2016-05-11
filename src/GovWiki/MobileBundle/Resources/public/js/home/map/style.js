@@ -3,7 +3,7 @@ var config = require('./config');
 /**
  * Get period conditions as css string
  *
- * @param conditions - window.gw.map.coloringConditions
+ * @param conditions - window.gw.map.coloringConditions.conditions
  * @param options
  * @returns {string} CSS String || ''
  */

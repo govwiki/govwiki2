@@ -23,15 +23,16 @@ class ElectedController extends AbstractGovWikiController
      * @Route("/{altTypeSlug}/{slug}/{electedSlug}", name="elected")
      * @Template("GovWikiMobileBundle:Elected:index.html.twig")
      *
-     * @param string $altTypeSlug Slugged government alt type.
-     * @param string $slug        Slugged government name.
-     * @param string $electedSlug Slugged elected official full name.
+     * @param Request $request     A Request instance.
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
+     * @param string  $electedSlug Slugged elected official full name.
      *
      * @return array
      *
      * @throws \LogicException Some required bundle not registered.
      */
-    public function showAction($altTypeSlug, $slug, $electedSlug, Request $request)
+    public function showAction(Request $request, $altTypeSlug, $slug, $electedSlug)
     {
         $user = $this->getUser();
 
@@ -93,14 +94,14 @@ class ElectedController extends AbstractGovWikiController
 
         $electedOfficialCommentForm = $this->createForm(new ElectedOfficialCommentType(), [
             'current_text' => $data['electedOfficial']['electedOfficialComments'],
-            'electedOfficialId' => $data['electedOfficial']['id']
+            'electedOfficialId' => $data['electedOfficial']['id'],
         ]);
 
         $data = array_merge($data, [
             'altTypeSlug' => $altTypeSlug,
             'slug' => $slug,
             'electedOfficialJSON' => $electedOfficialJSON,
-            'electedOfficialCommentForm' => $electedOfficialCommentForm->createView()
+            'electedOfficialCommentForm' => $electedOfficialCommentForm->createView(),
         ]);
 
         $template = $request->query->get('template', 'index');
