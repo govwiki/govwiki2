@@ -10,16 +10,6 @@ services:
         abstract: true
 
     #
-    # Government admin entity manager.
-    #
-    govwiki_admin.entity_manager.government:
-        class: GovWiki\AdminBundle\Manager\Entity\AdminGovernmentManager
-        arguments:
-            - @doctrine.orm.default_entity_manager
-            - @govwiki_environment.storage
-            - @carto_db.api
-
-    #
     # Format admin entity manager.
     #
     govwiki_admin.entity_manager.format:

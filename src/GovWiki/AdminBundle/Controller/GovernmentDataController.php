@@ -106,7 +106,8 @@ class GovernmentDataController extends AbstractGovWikiAdminController
                     $data
                 );
 
-                // Remove old max ranks table.
+                // Remove max ranks table, max ranks values will be recalculated
+                // on demand.
                 $this->getMaxRankManager()->removeTable($environment);
 
                 return $this->redirectToRoute('govwiki_admin_governmentdata_edit', [
@@ -217,6 +218,10 @@ class GovernmentDataController extends AbstractGovWikiAdminController
                         $year,
                         $form->getData()
                     );
+
+                // Remove max ranks table, max ranks values will be recalculated
+                // on demand.
+                $this->getMaxRankManager()->removeTable($environment);
 
                 // Dataset successfully updated.
                 $this->successMessage('Government updated');

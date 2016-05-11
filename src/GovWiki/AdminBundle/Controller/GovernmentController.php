@@ -4,7 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
 use CartoDbBundle\Service\CartoDbApi;
-use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,9 +46,18 @@ class GovernmentController extends AbstractGovWikiAdminController
             }
         }
 
+        /** @var GovernmentRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Government');
+
+        $governments = $repository->getListQuery(
+            $this->getCurrentEnvironment()->getId(),
+            $id,
+            $name
+        );
+
         $governments = $this->paginate(
-            $this->getManager()
-                ->getListQuery($id, $name),
+            $governments,
             $request->query->getInt('page', 1),
             50
         );
@@ -109,8 +118,11 @@ class GovernmentController extends AbstractGovWikiAdminController
                 $this->errorMessage("Can't update CartoDB: ". $response['error'][0]);
             } else {
                 // Government successfully updated, save changes to our database.
+                $em = $this->getDoctrine()->getManager();
 
-                $this->getManager()->update($government);
+                $em->persist($government);
+                $em->flush();
+
                 $this->successMessage('Government updated');
 
                 return $this->redirectToRoute('govwiki_admin_government_edit', [
@@ -161,17 +173,13 @@ class GovernmentController extends AbstractGovWikiAdminController
         $em->remove($government);
         $em->flush();
 
+        // Remove max ranks table, max ranks values will be recalculated
+        // on demand.
+        $this->getMaxRankManager()->removeTable($environment);
+
         $this->successMessage("Government {$name} removed");
         return $this->redirectToRoute('govwiki_admin_government_index', [
             'environment' => $environment->getSlug(),
         ]);
-    }
-
-    /**
-     * @return \GovWiki\AdminBundle\Manager\Entity\AdminGovernmentManager
-     */
-    private function getManager()
-    {
-        return $this->get(GovWikiAdminServices::GOVERNMENT_MANAGER);
     }
 }
