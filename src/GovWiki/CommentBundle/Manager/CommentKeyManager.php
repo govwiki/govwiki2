@@ -38,8 +38,9 @@ class CommentKeyManager
         $key
             ->setVote($vote)
             ->setKey(md5(
-                $vote->getElectedOfficial()->getId() .'_v'.
-                $vote->getId()
+                $vote->getElectedOfficial()->getId()
+                . $vote->getId()
+                . (string) time()
             ));
 
         return $key;

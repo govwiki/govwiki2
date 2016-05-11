@@ -32,12 +32,12 @@
                 <tr>
                     <td>{{ elected.fullName }}</td>
                     <td>
-                        {{ form_errors(vote.didElectedOfficialProposeThis) }}
-                        {{ form_widget(vote.didElectedOfficialProposeThis) }}
-                    </td>
-                    <td>
                         {{ form_errors(vote.vote) }}
                         {{ form_widget(vote.vote) }}
+                    </td>
+                    <td>
+                        {{ form_errors(vote.didElectedOfficialProposeThis) }}
+                        {{ form_widget(vote.didElectedOfficialProposeThis) }}
                     </td>
                     <td>
                          <input type="checkbox" id="send_email-{{ loop.index0 }}" name="send_email[{{ loop.index0 }}]" value="{{ elected.id }}" checked>
