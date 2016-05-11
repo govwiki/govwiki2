@@ -230,14 +230,16 @@ class User extends BaseUser
     /**
      * Add environment
      *
-     * @param Environment $environment A Environment instance.
+     * @param Environment $environment A Environment instance or null.
      *
      * @return User
      */
-    public function setEnvironments(Environment $environment)
+    public function setEnvironments(Environment $environment = null)
     {
         if ($this->environments !== null) {
             $this->environments->clear();
+
+            return $this;
         }
 
         return $this->addEnvironment($environment);
