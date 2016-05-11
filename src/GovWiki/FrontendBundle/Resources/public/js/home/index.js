@@ -765,36 +765,30 @@ $(function(){
          * @return {Number}
          */
         function findCondition (conditions, oneCondition) {
-            if (!conditions) {
-                return false;
-            }
+          var findIndex = null;
+          if (!conditions) {
+            return -1;
+          }
 
-            var findIndex, filteredConditionsByType;
-            var conditionType = oneCondition.type;
-
-            filteredConditionsByType = conditions.filter(function(condition) {
-                return condition.type == conditionType;
+          if (conditions.length > 0) {
+            conditions.forEach(function loop(condition, index) {
+              if (oneCondition.type === 'simple' && oneCondition.type === condition.type) {
+                if (condition.operation === oneCondition.operation && condition.value === oneCondition.value) {
+                  findIndex = index;
+                }
+              } else if (oneCondition.type === 'period' && oneCondition.type === condition.type) {
+                if (condition.min === oneCondition.min && condition.max === oneCondition.max) {
+                  findIndex = index;
+                }
+              } else if (oneCondition.type === 'null' && oneCondition.type === condition.type) {
+                if (condition.color === oneCondition.color) {
+                  findIndex = index;
+                }
+              }
             });
+          }
 
-            if (filteredConditionsByType.length > 0) {
-
-                filteredConditionsByType.forEach(function(condition, index) {
-                    switch (conditionType) {
-                        case 'simple':
-                            if (condition.operation == oneCondition.operation && condition.value == oneCondition.value) findIndex = index;
-                            break;
-                        case 'period':
-                            if (condition.min == oneCondition.min && condition.max == oneCondition.max) findIndex = index;
-                            break;
-                        case 'null':
-                            if (condition.color == oneCondition.color) findIndex = index;
-                            break;
-                    }
-                })
-
-            }
-
-            return findIndex != null ? findIndex : -1;
+          return findIndex !== null ? findIndex : -1;
         }
 
         function initRangeLegend(showOnTop) {
