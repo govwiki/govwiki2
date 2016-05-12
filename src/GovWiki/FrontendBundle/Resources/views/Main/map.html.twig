@@ -76,9 +76,11 @@
 {# Stylesheets #}
 {% block stylesheets %}
 
-    {{parent()}}
+    {{ parent() }}
 
-    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/map.scss' filter='scss, cssrewrite' %}
+    {% stylesheets
+        '@GovWikiFrontendBundle/Resources/public/css/map.scss'
+        filter='scss, cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 

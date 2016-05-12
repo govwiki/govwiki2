@@ -1,31 +1,31 @@
 var Handlebars = require('../vendor/handlebars.js');
-
-Handlebars.registerHelper('if_eq', function(a, b, opts) {
-    if (a == b) {
-        return opts.fn(this);
-    } else {
-        return opts.inverse(this);
-    }
-});
+var searchValue;
+var $typeahead;
 
 /**
  * Typeahead search
  */
-
 var findMatches = function findMatches(query, syncCallback, asyncCallback) {
-  $.ajax({
-    method: 'GET',
-    url: window.gw.urls.search + '?search=' + query
-  }).success(function success(data) {
-    console.log(data);
-    asyncCallback(data);
-  });
+    $.ajax({
+        method: 'GET',
+        url: window.gw.urls.search + '?search=' + query
+    }).success(function success(data) {
+        console.log(data);
+        asyncCallback(data);
+    });
 };
 
-var searchValue = '';
+Handlebars.registerHelper('if_eq', function ifEq(a, b, opts) {
+    if (a === b) {
+        return opts.fn(this);
+    }
+
+    return opts.inverse(this);
+});
+searchValue = '';
 
 // Init typeahead
-var $typeahead = $('.typeahead_custom').typeahead({
+$typeahead = $('.typeahead_custom').typeahead({
   hint: true,
   highlight: true,
   minLength: 3
@@ -34,7 +34,7 @@ var $typeahead = $('.typeahead_custom').typeahead({
   source: findMatches,
   templates: {
     empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
-    suggestion: Handlebars.compile(template())
+    suggestion: Handlebars.compile(searchResultTemplate())
   },
   updater: function updater(item) {
     alert(item);
@@ -43,9 +43,10 @@ var $typeahead = $('.typeahead_custom').typeahead({
 
 // Pressed mouse or enter button
 $typeahead.bind('typeahead:selected', function selected(obj, selectedItemData) {
-  var name, location;
+  var name;
+  var location;
 
-  if (selectedItemData.type == 'government') {
+  if (selectedItemData.type === 'government') {
       // Selected item is government.
       name = selectedItemData.name;
       location = [
@@ -82,8 +83,7 @@ $typeahead.attr('disabled', false);
  * Generate and return handlebars template.
  * @return {string}
  */
-function template()
-{
+function searchResultTemplate() {
     var template = '<div class="sugg-box">';
 
     template += "{{#if_eq type 'government'}}";
