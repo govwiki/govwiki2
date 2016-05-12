@@ -102,7 +102,6 @@ if (!glob.isTest) {
   });
 
   debug = window.localStorage.getItem('debug');
-
 }
 
 module.exports = {

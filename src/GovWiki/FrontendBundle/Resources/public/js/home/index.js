@@ -4,6 +4,7 @@ require('./map/main.js');
 
 $('#year-selector').change(function change() {
   $('#map').hide();
+  gw.map.year = $(this).find('option:selected').text();
   sublayer.removeAllSubLayers();
   sublayer.reInit();
 });

@@ -34,6 +34,24 @@
         </a>
     {% endif %}
 
+    {# show year selector. #}
+    {% if years is defined and years|length > 1 %}
+        <span class="mobile-year-selector">
+            <label for="year-selector">Year</label>
+            <select id="year-selector">
+                {% for year in years %}
+                    <option value="{{ year }}" {%-
+                    if (currentYear == year)
+                    -%}
+                        selected
+                    {%- endif -%}>
+                        {{- year -}}
+                    </option>
+                {% endfor %}
+            </select>
+        </span>
+    {% endif %}
+
     {# Menu button (cog) for mobile devices #}
     <a type="button" class="menu collapsed" data-toggle="collapse"
             data-target="#bs-navigation-collapse" aria-expanded="false">
@@ -71,6 +89,8 @@
             </li>
 
         {% endif %}
+
+        {{ render(controller('GovWikiMobileBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) }}
 
         {# Return to map #}
         {% if app.request.attributes.get('_route') != "map" %}
