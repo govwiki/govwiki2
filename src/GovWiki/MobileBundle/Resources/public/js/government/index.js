@@ -292,7 +292,7 @@ $('.next_tab').on('click', function nextTabClick() {
 
   if ($mobileTab) {
     $mobileTab.toggleClass('active');
-	$nextMobileTab = nextTab();
+    $nextMobileTab = nextTab();
     gotoTab($nextMobileTab);
   }
 

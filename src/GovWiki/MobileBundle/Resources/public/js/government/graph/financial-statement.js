@@ -372,41 +372,41 @@ function handlerSwitchChart() {
   hideTableGroup('compareTables', false);
 
   $('#' + mobile + 'Financial_Statements').on('click', '.chart-controls .btn',
-      function mobileFinancialStatementClick() {
-    var chartType = this.getElementsByTagName('input')[0].id;
+    function mobileFinancialStatementClick() {
+      var chartType = this.getElementsByTagName('input')[0].id;
 
-    if (chartType === 'chart') {
-      hideTableGroup('financialTable', true);
-      hideTableGroup('compareTables', false);
-      hideChartGroup('pie-charts', false);
-      hideChartGroup('compare-charts', true);
-      hideChartGroup('tree-charts', true);
-      if (!chartStatus.revenuePie.init ||
-        !chartStatus.expendituresPie.init) {
-        revenuePie();
-        expendituresPie();
-      }
-    } else if (chartType === 'tree-charts') {
-      hideTableGroup('financialTable', true);
-      hideTableGroup('compareTables', false);
-      hideChartGroup('pie-charts', true);
-      hideChartGroup('compare-charts', true);
-      hideChartGroup('tree-charts', false);
-      if (!chartStatus.expendituresTree.init ||
-        !chartStatus.revenuesTree.init) {
-        expendituresTree();
-        revenuesTree();
-      }
-    } else if (chartType === 'compare-charts') {
-      hideTableGroup('financialTable', false);
-      hideTableGroup('compareTables', true);
-      hideChartGroup('pie-charts', true);
-      hideChartGroup('compare-charts', false);
-      hideChartGroup('tree-charts', true);
-      if (!chartStatus.expendituresTree.init ||
-        !chartStatus.revenuesTree.init) {
-        expendituresTree();
-        revenuesTree();
+      if (chartType === 'chart') {
+        hideTableGroup('financialTable', true);
+        hideTableGroup('compareTables', false);
+        hideChartGroup('pie-charts', false);
+        hideChartGroup('compare-charts', true);
+        hideChartGroup('tree-charts', true);
+        if (!chartStatus.revenuePie.init ||
+          !chartStatus.expendituresPie.init) {
+          revenuePie();
+          expendituresPie();
+        }
+      } else if (chartType === 'tree-charts') {
+        hideTableGroup('financialTable', true);
+        hideTableGroup('compareTables', false);
+        hideChartGroup('pie-charts', true);
+        hideChartGroup('compare-charts', true);
+        hideChartGroup('tree-charts', false);
+        if (!chartStatus.expendituresTree.init ||
+          !chartStatus.revenuesTree.init) {
+          expendituresTree();
+          revenuesTree();
+        }
+      } else if (chartType === 'compare-charts') {
+        hideTableGroup('financialTable', false);
+        hideTableGroup('compareTables', true);
+        hideChartGroup('pie-charts', true);
+        hideChartGroup('compare-charts', false);
+        hideChartGroup('tree-charts', true);
+        if (!chartStatus.expendituresTree.init ||
+          !chartStatus.revenuesTree.init) {
+          expendituresTree();
+          revenuesTree();
       }
     }
   });

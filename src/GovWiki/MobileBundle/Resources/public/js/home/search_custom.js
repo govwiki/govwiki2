@@ -6,21 +6,20 @@ var $typeahead;
  * Typeahead search
  */
 var findMatches = function findMatches(query, syncCallback, asyncCallback) {
-    $.ajax({
-        method: 'GET',
-        url: window.gw.urls.search + '?search=' + query
-    }).success(function success(data) {
-        console.log(data);
-        asyncCallback(data);
-    });
+  $.ajax({
+    method: 'GET',
+    url: window.gw.urls.search + '?search=' + query
+  }).success(function success(data) {
+    asyncCallback(data);
+  });
 };
 
 Handlebars.registerHelper('if_eq', function ifEq(a, b, opts) {
-    if (a === b) {
-        return opts.fn(this);
-    }
+  if (a === b) {
+    return opts.fn(this);
+  }
 
-    return opts.inverse(this);
+  return opts.inverse(this);
 });
 searchValue = '';
 
@@ -47,20 +46,20 @@ $typeahead.bind('typeahead:selected', function selected(obj, selectedItemData) {
   var location;
 
   if (selectedItemData.type === 'government') {
-      // Selected item is government.
-      name = selectedItemData.name;
-      location = [
-          selectedItemData.altTypeSlug,
-          selectedItemData.slug
-      ].join('/');
+    // Selected item is government.
+    name = selectedItemData.name;
+    location = [
+      selectedItemData.altTypeSlug,
+      selectedItemData.slug
+    ].join('/');
   } else {
-      // Selected item is electedOfficials.
-      name = selectedItemData.fullName;
-      location = [
-          selectedItemData.government.altTypeSlug,
-          selectedItemData.government.slug,
-          selectedItemData.slug
-      ].join('/');
+    // Selected item is electedOfficials.
+    name = selectedItemData.fullName;
+    location = [
+      selectedItemData.government.altTypeSlug,
+      selectedItemData.government.slug,
+      selectedItemData.slug
+    ].join('/');
   }
 
   $typeahead.typeahead('val', name);
@@ -84,16 +83,16 @@ $typeahead.attr('disabled', false);
  * @return {string}
  */
 function searchResultTemplate() {
-    var template = '<div class="sugg-box">';
+  var template = '<div class="sugg-box">';
 
-    template += "{{#if_eq type 'government'}}";
-    template += '<div class="sugg-state">{{state}}</div>';
-    template += '<div class="sugg-name">{{name}}</div>';
-    template += '{{else}}';
-    template += '<div class="sugg-name">{{fullName}}</div>';
-    template += '<div class="sugg-govname">{{government.name}}</div>';
-    template += '{{/if_eq}}';
-    template += '</div>';
+  template += "{{#if_eq type 'government'}}";
+  template += '<div class="sugg-state">{{state}}</div>';
+  template += '<div class="sugg-name">{{name}}</div>';
+  template += '{{else}}';
+  template += '<div class="sugg-name">{{fullName}}</div>';
+  template += '<div class="sugg-govname">{{government.name}}</div>';
+  template += '{{/if_eq}}';
+  template += '</div>';
 
-    return template;
+  return template;
 }
