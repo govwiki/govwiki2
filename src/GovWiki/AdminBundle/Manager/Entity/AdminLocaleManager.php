@@ -27,7 +27,7 @@ class AdminLocaleManager extends AbstractAdminEntityManager
         /** @var LocaleRepository $repository */
         $repository = $this->getRepository();
 
-        $environment = $this->environment;
+        $environment = $this->getEnvironment()->getSlug();
         if ($global) {
             $environment = null;
         }
@@ -43,7 +43,7 @@ class AdminLocaleManager extends AbstractAdminEntityManager
         /** @var LocaleRepository $repository */
         $repository = $this->getRepository();
 
-        $environment = $this->environment;
+        $environment = $this->getEnvironment()->getSlug();
         if ($global) {
             $environment = null;
         }
@@ -61,7 +61,7 @@ class AdminLocaleManager extends AbstractAdminEntityManager
         /** @var LocaleRepository $repository */
         $repository = $this->getRepository();
 
-        $environment = $this->environment;
+        $environment = $this->getEnvironment()->getSlug();
         if ($global) {
             $environment = null;
         }

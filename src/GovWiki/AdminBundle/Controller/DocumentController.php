@@ -4,7 +4,6 @@ namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\DbBundle\Entity\Document;
 use GovWiki\DbBundle\Entity\Government;
-use GovWiki\DbBundle\Form\DocumentType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,8 +13,11 @@ use Symfony\Component\HttpFoundation\Request;
  * @package GovWiki\AdminBundle\Controller
  *
  * @Configuration\Route(
- *  "/{government}/documents",
- *  requirements={ "government": "\d+" }
+ *  "/{environment}/government/{government}/documents",
+ *  requirements={
+ *      "environment": "\w+",
+ *      "government": "\d+"
+ *  }
  * )
  */
 class DocumentController extends AbstractGovWikiAdminController
@@ -37,13 +39,13 @@ class DocumentController extends AbstractGovWikiAdminController
     public function indexAction(Request $request, Government $government)
     {
         $type = null;
-        $year = null;
+        $date = null;
         if ($filter = $request->query->get('filter')) {
             if (!empty($filter['type'])) {
                 $type = (int) $filter['type'];
             }
-            if (!empty($filter['year'])) {
-                $year = $filter['year'];
+            if (!empty($filter['date'])) {
+                $date = $filter['date'];
             }
         }
 
@@ -51,7 +53,7 @@ class DocumentController extends AbstractGovWikiAdminController
             'government' => $government,
             'documents' => $this->paginate(
                 $this->getDoctrine()->getRepository('GovWikiDbBundle:Document')
-                    ->getListQuery($government->getId(), $type, $year),
+                    ->getListQuery($government->getId(), $type, $date),
                 $request->query->getInt('page', 1),
                 self::MAX_PER_PAGE
             ),
@@ -78,7 +80,13 @@ class DocumentController extends AbstractGovWikiAdminController
         $form = $this->createForm('document', $document);
 
         $form->handleRequest($request);
-        $this->manageForm($form);
+        if ($this->manageForm($form)) {
+            return $this->redirectToRoute('govwiki_admin_document_edit', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+                'government' => $government->getId(),
+                'document' => $document->getId(),
+            ]);
+        }
 
         return [
             'government' => $government,
@@ -110,7 +118,12 @@ class DocumentController extends AbstractGovWikiAdminController
         $form = $this->createForm('document', $document);
 
         $form->handleRequest($request);
-        $this->manageForm($form);
+        if ($this->manageForm($form)) {
+            return $this->redirectToRoute('govwiki_admin_document_index', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+                'government' => $government->getId()
+            ]);
+        }
 
         return [
             'government' => $government,
@@ -140,6 +153,7 @@ class DocumentController extends AbstractGovWikiAdminController
         $em->flush();
 
         return $this->redirectToRoute('govwiki_admin_document_index', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
             'government' => $government,
         ]);
     }
@@ -147,7 +161,7 @@ class DocumentController extends AbstractGovWikiAdminController
     /**
      * @param FormInterface $form A FormInterface instance.
      *
-     * @return void
+     * @return boolean
      *
      * @throws \LogicException Some required bundle not registered.
      * @throws \InvalidArgumentException Invalid entity manager.
@@ -159,6 +173,10 @@ class DocumentController extends AbstractGovWikiAdminController
 
             $em->persist($form->getData());
             $em->flush();
+
+            return true;
         }
+
+        return false;
     }
 }

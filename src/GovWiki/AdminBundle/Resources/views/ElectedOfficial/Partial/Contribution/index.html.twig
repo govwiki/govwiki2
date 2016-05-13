@@ -1,0 +1,116 @@
+{% extends "GovWikiAdminBundle:ElectedOfficial:layout.html.twig" %}
+
+{% block title %}
+    {{ parent() }} - {{ elected.fullName }} contribution
+{% endblock title %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Elected Officials',
+        'govwiki_admin_electedofficial_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Edit '~ elected.fullName,
+        'govwiki_admin_electedofficial_edit',
+        {
+            'environment': environment.slug,
+            'elected': elected.id
+        }
+    ) -}}
+    {{- macro.breadcrumbElement('Contributions') -}}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    Contributions
+{% endblock panel_title %}
+
+{% block panel_body %}
+    <div class="row">
+        <div class="col-md-6">
+            {{ knp_pagination_render(data) }}
+        </div>
+        <div class="col-md-6">
+            <a class="btn btn-primary pull-right" href="{{- path(
+                'govwiki_admin_electedofficial_staffcreate',
+                {
+                    'environment': environment.slug,
+                    'elected': elected.id,
+                    'staff': 'Contribution'
+                }
+            ) -}}">
+                Create
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+        <thead>
+            <tr>
+                <th>{{ knp_pagination_sortable(data, 'Id', 'Contribution.id') }}</th>
+                <th>{{- knp_pagination_sortable(
+                    data, 'Election Year', 'Contribution.electionYear'
+                ) -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    data, 'Name', 'Contribution.contributorName'
+                ) -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    data, 'Ind. Exp. Desc.', 'Contribution.independentExpenditureDesc'
+                ) -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    data, 'Amount', 'Contribution.contributionAmount'
+                ) -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    data, 'Contributor type', 'Contribution.contributorType'
+                ) -}}</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for contribution in data %}
+                <tr>
+                    <td>{{ contribution.id }}</td>
+                    <td>{{ contribution.electionYear|date('m/d/Y') }}</td>
+                    <td>{{ contribution.contributorName }}</td>
+                    <td>{{ contribution.independentExpenditureDesc }}</td>
+                    <td>{{ contribution.contributionAmount }}</td>
+                    <td>{{ contribution.contributorType }}</td>
+                    <td>
+                        <a href="{{- path(
+                        'govwiki_admin_electedofficial_staffedit',
+                        {
+                            'environment': environment.slug,
+                            'elected': elected.id,
+                            'staff': 'Contribution',
+                            'id': contribution.id
+                        }
+                        ) -}}" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
+                        <button data-url="{{- path(
+                            'govwiki_admin_electedofficial_staffremove',
+                            {
+                                'environment': environment.slug,
+                                'elected': elected.id,
+                                'staff': 'Contribution',
+                                'id': contribution.id
+                            }
+                        ) -}}" class="btn btn-sm btn-danger btn-delete"
+                                data-description="Are you sure want to delete contribution '{{ contribution.contributorName }}'?">
+                            <span class="glyphicon glyphicon-remove"></span> Remove
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+
+        {{ knp_pagination_render(data) }}
+    </div>
+{% endblock panel_body %}

@@ -1,31 +1,30 @@
-{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
-{% block title %}Advertising{% endblock %}
+{% block title %}{{ parent() }} - advertising{% endblock %}
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-    macro.breadcrumbElement(
-    admin_environment|capitalize ~' environment',
-    'govwiki_admin_main_show',
-    { 'environment': admin_environment }
-    )
-    }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
     {{ macro.breadcrumbElement('Advertising') }}
 {% endblock breadcrumb %}
 
-{% block body %}
-<div class="col-md-6">
-    <h3>Advertising</h3>
-    <br>
+{% block panel_title %}
+    Advertising
+{% endblock panel_title %}
+
+{% block panel_body %}
     {{ form_start(form) }}
-        <div class="row">
-            <div class="hidden">{{ form_row(form.environment) }}</div>
-            <div class="col-md-6">{{ form_row(form.advertingType) }}</div>
-            <div class="col-md-6">{{ form_row(form.advertingEnable) }}</div>
-        </div>
-        {{ form_row(form.advertingCode) }}
-        {{ form_row(form.submit, { 'label': 'Save' }) }}
-    {{ form_end(form) }}
+    <div class="row">
+        <div class="col-md-6">{{ form_row(form.advertingType) }}</div>
+        <div class="col-md-6">{{ form_row(form.advertingEnable) }}</div>
     </div>
-{% endblock body %}
+    {{ form_row(form.advertingCode) }}
+    <div>
+        <button type="submit" class="btn btn-success">Save</button>
+    </div>
+    {{ form_end(form) }}
+{% endblock panel_body %}

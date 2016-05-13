@@ -3,7 +3,6 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
 
 /**
@@ -11,26 +10,31 @@ use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
  */
 class PublicStatementRepository extends EntityRepository implements ListedEntityRepositoryInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getOne($id)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        return $this->getQueryBuilder()
+            ->where($expr->eq('PublicStatement.id', ':id'))
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
     /**
-     * @param integer $electedOfficial Elected official entity id.
-     * @param integer $user            User entity id.
-     *
-     * @return \Doctrine\ORM\QueryBuilder
+     * {@inheritdoc}
      */
     public function getListQuery($electedOfficial, $user = null)
     {
-        $qb = $this->createQueryBuilder('PublicStatement');
+        $qb = $this->getQueryBuilder();
         $expr = $qb->expr();
 
-        $qb
-            ->addSelect('IssueCategory, Request, Creator')
-            ->leftJoin('PublicStatement.request', 'Request')
-            ->leftJoin('Request.creator', 'Creator')
-            ->leftJoin('PublicStatement.issueCategory', 'IssueCategory')
-            ->where(
-                $expr->eq('PublicStatement.electedOfficial', $electedOfficial)
-            );
+        $qb->where(
+            $expr->eq('PublicStatement.electedOfficial', $electedOfficial)
+        );
 
         if ($user) {
             $qb->andWhere($expr->orX(
@@ -58,14 +62,10 @@ class PublicStatementRepository extends EntityRepository implements ListedEntity
      */
     public function getListQueryBySlugs($govAltTypeSlug, $govSlug, $eoSlug, $user = null)
     {
-        $qb = $this->createQueryBuilder('PublicStatement');
+        $qb = $this->getQueryBuilder();
         $expr = $qb->expr();
 
         $qb
-            ->addSelect('IssueCategory, Request, Creator')
-            ->leftJoin('PublicStatement.request', 'Request')
-            ->leftJoin('Request.creator', 'Creator')
-            ->leftJoin('PublicStatement.issueCategory', 'IssueCategory')
             ->join('PublicStatement.electedOfficial', 'ElectedOfficial')
             ->join('ElectedOfficial.government', 'Government')
             ->where($expr->andX(
@@ -93,5 +93,17 @@ class PublicStatementRepository extends EntityRepository implements ListedEntity
         }
 
         return $qb;
+    }
+
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    private function getQueryBuilder()
+    {
+        return $this->createQueryBuilder('PublicStatement')
+            ->addSelect('IssueCategory, Request, Creator')
+            ->leftJoin('PublicStatement.request', 'Request')
+            ->leftJoin('Request.creator', 'Creator')
+            ->leftJoin('PublicStatement.issueCategory', 'IssueCategory');
     }
 }

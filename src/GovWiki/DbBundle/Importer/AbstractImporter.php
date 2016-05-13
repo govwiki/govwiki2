@@ -2,11 +2,11 @@
 
 namespace GovWiki\DbBundle\Importer;
 
-use Doctrine\DBAL\Connection;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Exception\GovWikiDbBundleException;
 use GovWiki\DbBundle\File\ReaderInterface;
 use GovWiki\DbBundle\File\WriterInterface;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 
 /**
  * Class AbstractImporter
@@ -16,26 +16,27 @@ abstract class AbstractImporter
 {
 
     /**
-     * @var Connection
+     * @var EntityManagerInterface
      */
-    protected $con;
+    protected $em;
 
     /**
-     * @var AdminEnvironmentManager
+     * @var EnvironmentStorageInterface
      */
-    protected $manager;
+    protected $storage;
 
     /**
-     * @param Connection              $con     A Connection instance.
-     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
-     *                                         instance.
+     * @param EntityManagerInterface      $em      A EntityManagerInterface
+     *                                             instance.
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
      */
     public function __construct(
-        Connection $con,
-        AdminEnvironmentManager $manager
+        EntityManagerInterface $em,
+        EnvironmentStorageInterface $storage
     ) {
-        $this->con = $con;
-        $this->manager = $manager;
+        $this->em = $em;
+        $this->storage = $storage;
     }
 
     /**

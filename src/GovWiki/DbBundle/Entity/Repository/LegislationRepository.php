@@ -11,21 +11,20 @@ use Doctrine\ORM\EntityRepository;
 class LegislationRepository extends EntityRepository
 {
     /**
-     * @param string $environment Environment name.
+     * @param integer $environment A Environment entity id.
      *
      * @return \Doctrine\ORM\Query
      */
     public function getListQuery($environment)
     {
-        $qb = $this->createQueryBuilder('Legislation');
-        $expr = $qb->expr();
+        $expr = $this->_em->getExpressionBuilder();
 
-        return $qb
+        return $this->createQueryBuilder('Legislation')
             ->addSelect('IssueCategory')
             ->leftJoin('Legislation.government', 'Government')
             ->leftJoin('Legislation.issueCategory', 'IssueCategory')
-            ->leftJoin('Government.environment', 'Environment')
-            ->where($expr->eq('Environment.slug', $expr->literal($environment)))
+            ->where($expr->eq('Government.environment', ':environment'))
+            ->setParameter('environment', $environment)
             ->getQuery();
     }
 }

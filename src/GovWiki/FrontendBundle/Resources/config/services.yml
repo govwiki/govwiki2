@@ -1,27 +1,15 @@
 services:
     govwiki.frontend_bundle.twig_extension:
         class: GovWiki\FrontendBundle\Twig\Extension
-        arguments:
-            - @jms_serializer
-            - %determinator.name%
-            - @service_container
-            - @translator
         tags:
             - { name: twig.extension }
 
     govwiki.frontend_bundle.advertising:
         class: GovWiki\FrontendBundle\Service\GetAdvertising
-        arguments: ["@doctrine", "@templating"]
+        arguments:
+            - @doctrine.orm.default_entity_manager
+            - @templating
 
     govwiki.frontend_bundle.environment_content:
         class: GovWiki\FrontendBundle\Service\EnvironmentContent
         arguments: ["@doctrine", "@templating"]
-
-    govwiki.forntend_bundle.listener.defaul_locale:
-        class: GovWiki\FrontendBundle\EventListener\DefaultLocaleListener
-        arguments: [@service_container]
-        tags:
-            -
-                name: kernel.event_listener
-                event: kernel.request
-                priority: 15

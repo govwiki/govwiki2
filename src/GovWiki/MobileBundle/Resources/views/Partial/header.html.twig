@@ -2,9 +2,7 @@
 
     {# Return to map #}
     {% if app.request.attributes.get('_route') != "map" %}
-        <a href="{{ govwiki_path('map') }}" class="home-icon">
-            <i class="glyphicon glyphicon-home {{ environment }}"></i>
-        </a>
+        <a href="{{ path('map') }}" class="home-icon"><img src="/img/mobile/header/house.png" /></a
     {% endif %}
 
     {# Logo #}
@@ -31,9 +29,27 @@
             <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
         {% endif %}
     {% else %}
-        <a class="anchor" href="{{ entity.logoHref }}">
-            <img src="{{ entity.logo }}" class="logo">
+        <a class="anchor" href="{{ environment.logoHref }}">
+            <img src="{{ environment.logo }}" class="logo">
         </a>
+    {% endif %}
+
+    {# show year selector. #}
+    {% if years is defined and years|length > 1 %}
+        <span class="mobile-year-selector">
+            <label for="year-selector">Year</label>
+            <select id="year-selector">
+                {% for year in years %}
+                    <option value="{{ year }}" {%-
+                    if (currentYear == year)
+                    -%}
+                        selected
+                    {%- endif -%}>
+                        {{- year -}}
+                    </option>
+                {% endfor %}
+            </select>
+        </span>
     {% endif %}
 
     {# Menu button (cog) for mobile devices #}
@@ -79,10 +95,12 @@
 
         {% endif %}
 
+        {{ render(controller('GovWikiMobileBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) }}
+
         {# Return to map #}
         {% if app.request.attributes.get('_route') != "map" %}
             <li class="{{ environment }}">
-                <a href="{{ govwiki_path('map') }}" class="link">
+                <a href="{{ path('map') }}" class="link">
                     {{ 'header.links.return_to_map'|trans }}
                     {#Return to Map#}
                 </a>
@@ -92,7 +110,7 @@
         {# Return to some government #}
         {% if app.request.attributes.get('_route') == "elected" %}
             <li class="{{ environment }}">
-                <a href="{{ govwiki_path('government', {
+                <a href="{{ path('government', {
                     altTypeSlug: altTypeSlug,
                     slug: slug
                 }) }}" class="link">

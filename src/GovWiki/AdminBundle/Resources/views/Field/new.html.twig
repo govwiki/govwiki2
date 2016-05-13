@@ -1,0 +1,40 @@
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - new field{% endblock title %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Formats',
+        'govwiki_admin_environment_format',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbELement('New field') -}}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    New field
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn btn-success">Create</button>
+    <a class="btn btn-default" href="{{- path(
+        'govwiki_admin_environment_format',
+        { 'environment': environment.slug }
+    ) -}}">Back</a>
+    {{ form_end(form) }}
+{% endblock panel_body %}
+
+{% block javascripts %}
+    {% javascripts '@GovWikiAdminBundle/Resources/public/js/Format/fieldname.js'
+        output='js/format.js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock javascripts %}

@@ -27,3 +27,25 @@
         {% endif %}
     {% endspaceless %}
 {% endmacro %}
+
+{#
+    Add new submenu element.
+
+    title - title of new element.
+    route - route name for url generation.
+    parameters - route generation parameters.
+#}
+{% macro submenuElement(title, route, parameters) %}
+    {% set isCurrent = app.request.attributes.get('_route') == route %}
+    {% spaceless %}
+        <li {% if isCurrent %}class="active"{% endif %}>
+            <a href="{{ path(route, parameters) }}">
+                {{ title }}
+            </a>
+        </li>
+    {% endspaceless %}
+{% endmacro %}
+
+{%- macro filterValue(name) -%}
+    {{ app.request.query.get('filter') ? app.request.query.get('filter')[name] }}
+{%- endmacro -%}

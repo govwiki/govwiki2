@@ -7,7 +7,7 @@
             <div class="person-photo">
 
                 {% if elected.photoUrl %}
-                    <a href="{{ govwiki_path('elected', {
+                    <a href="{{ path('elected', {
                         'altTypeSlug': government.altTypeSlug,
                         'slug': government.slug,
                         'electedSlug': elected.slug
@@ -25,7 +25,7 @@
                 </p>
 
                 <p>
-                    <a href="{{ govwiki_path('elected', {
+                    <a href="{{ path('elected', {
                     'altTypeSlug': government.altTypeSlug,
                     'slug': government.slug,
                     'electedSlug': elected.slug

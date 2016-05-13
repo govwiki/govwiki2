@@ -1,31 +1,33 @@
-{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - edit category{% endblock title %}
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-    macro.breadcrumbElement(
-    admin_environment|capitalize ~' environment',
-    'govwiki_admin_main_show',
-    { 'environment': admin_environment }
-    )
-    }}
-    {{ macro.breadcrumbElement('Formats', 'govwiki_admin_format_list') }}
-    {{ macro.breadcrumbElement('Categories', 'govwiki_admin_category_list')}}
-    {{ macro.breadcrumbElement('Edit '~ form.name.vars.data)}}
+    {{- macro.breadcrumbElement(
+    environment.name ~' environment',
+    'govwiki_admin_environment_show',
+    { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+    'Formats',
+    'govwiki_admin_environment_format',
+    { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbELement('Edit category '~ category.name) -}}
 {% endblock breadcrumb %}
 
-{% block body %}
-    <div class="container-fluid">
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn btn-success">Update</button>
-        <a class="btn btn-default" href="{{-
-            path(
-                'govwiki_admin_category_list'
-            )
-        -}}">Back</a>
-        {{ form_end(form) }}
-    </div>
-{% endblock body %}
+{% block panel_title %}
+    Edit category {{ category.name }}
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn btn-success">Update</button>
+    <a class="btn btn-default" href="{{- path(
+        'govwiki_admin_environment_format',
+        { 'environment': environment.slug }
+    ) -}}">Back</a>
+    {{ form_end(form) }}
+{% endblock panel_body %}

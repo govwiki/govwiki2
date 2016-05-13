@@ -1,242 +1,267 @@
+var $subscribeBtn;
+var $pane;
+var tab;
 
-$(function() {
-    var government = JSON.parse(window.gw.government);
+var step1;
+var step2;
+var step3;
+var step31;
 
-    var graphs = require('./graphs.js');
-    new (require('./rank-popover.js'))({
-        year: JSON.parse(window.gw.government).currentYear
-    });
-    var Step1 = require('./form/compare/step-1.js');
-    var Step2 = require('./form/compare/step-2.js');
-    var Step3 = require('./form/compare/step-3.js');
-    var Step31 = require('./form/compare/step-3-1.js');
+var FormState;
+var Step31;
+var Step3;
+var Step2;
+var Step1;
+var government = JSON.parse(window.gw.government);
 
-    graphs.init(function () {
-        graphs.forceInit();
-    });
+var graphs = require('./graphs.js');
+var popover = new (require('./rank-popover.js'))({  // eslint-disable-line
+  year: JSON.parse(window.gw.government).currentYear
+});
 
-    /**
-     * Status of form steps
-     * If step isn't completed - dependency fields will be .disabled
-     *
-     * @typedef FormState
-     * @type {{firstStep: boolean, secondStep: boolean, thirdStep: boolean}}
-     */
-    var FormState = {
-        firstStep: {
-            completed: true,
-            data: {},
-            complete: function() {
-                this.completed = true;
+Step1 = require('./form/compare/step-1.js');
+Step2 = require('./form/compare/step-2.js');
+Step3 = require('./form/compare/step-3.js');
+Step31 = require('./form/compare/step-3-1.js');
 
-                step2.unlock();
+graphs.init(function init() {
+  graphs.forceInit();
+});
 
-                // If first step
-                if (FormState.firstStep.completed && FormState.secondStep.completed) {
-                    // Default action if thirdSteps not initialized
-                    if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
-                        step31.loadComparedData('Financial Statement', 'Revenues', true);
-                    }
-                    step31.unlock();
-                    step3.unlock();
-                }
-            },
-            incomplete: function() {
-                this.completed = false;
+/**
+ * Status of form steps
+ * If step isn't completed - dependency fields will be .disabled
+ *
+ * @typedef FormState
+ * @type {{firstStep: boolean, secondStep: boolean, thirdStep: boolean}}
+ */
+FormState = {
+  firstStep: {
+    completed: true,
+    data: {},
+    complete: function complete() {
+      this.completed = true;
 
-                step2.lock();
-                step3.lock();
-                step31.lock();
-            }
-        },
-        secondStep: {
-            completed: false,
-            data: {},
-            complete: function() {
-                this.completed = true;
+      step2.unlock();
 
-                if (FormState.firstStep.completed && FormState.secondStep.completed) {
-                    // Default action if thirdSteps not initialized
-                    if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
-                        step31.loadComparedData('Financial Statement', 'Revenues', true);
-                    }
-                    step31.unlock();
-                    step3.unlock();
-                }
-            },
-            incomplete: function() {
-                this.completed = false;
-
-                step31.lock();
-                step3.lock();
-            }
-        },
-        thirdStep: {
-            completed: false,
-            data: {},
-            complete: function() {
-                this.completed = false;
-            },
-            incomplete: function() {
-                this.completed = true;
-            }
-        },
-        thirdOneStep: {
-            completed: false,
-            data: {},
-            complete: function() {
-                this.completed = false;
-            },
-            incomplete: function() {
-                this.completed = true;
-            }
+            // If first step
+      if (FormState.firstStep.completed && FormState.secondStep.completed) {
+                // Default action if thirdSteps not initialized
+        if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
+          step31.loadComparedData('Financial Statement', 'Revenues', true);
         }
-    };
+        step31.unlock();
+        step3.unlock();
+      }
+    },
+    incomplete: function incomplete() {
+      this.completed = false;
 
-    var step1, step2, step3, step31;
-    step1 = new Step1(FormState, '.first-condition');
-    step1.unlock();
-
-    step2 = new Step2(FormState, '.second-condition');
-    step2.lock();
-
-    step3 = new Step3(FormState, '.government-categories .caption');
-    step3.lock();
-
-    step31 = new Step31(FormState, '.government-categories .category');
-    step31.lock();
-
-    /**
-     * Change fin statement year.
-     */
-    $('#fin-stmt-year').change(function() {
-        var $this = $(this);
-        $this.closest('form').submit();
-        window.localStorage.setItem('tab', 'Financial_Statements');
-    });
-
-    var tab = window.localStorage.getItem('tab');
-    if (tab) {
-        window.localStorage.removeItem('tab');
-        $('.nav-pills a[href="' + tab + '"]').tab('show');
+      step2.lock();
+      step3.lock();
+      step31.lock();
     }
+  },
+  secondStep: {
+    completed: false,
+    data: {},
+    complete: function complete() {
+      this.completed = true;
 
-    /*
-        Subscribe to government
-     */
-    var $subscribeBtn = $('#subscribe');
+      if (FormState.firstStep.completed && FormState.secondStep.completed) {
+                // Default action if thirdSteps not initialized
+        if (!FormState.thirdStep.completed || !FormState.thirdOneStep.completed) {
+          step31.loadComparedData('Financial Statement', 'Revenues', true);
+        }
+        step31.unlock();
+        step3.unlock();
+      }
+    },
+    incomplete: function incomplete() {
+      this.completed = false;
 
+      step31.lock();
+      step3.lock();
+    }
+  },
+  thirdStep: {
+    completed: false,
+    data: {},
+    complete: function complete() {
+      this.completed = false;
+    },
+    incomplete: function incomplete() {
+      this.completed = true;
+    }
+  },
+  thirdOneStep: {
+    completed: false,
+    data: {},
+    complete: function complete() {
+      this.completed = false;
+    },
+    incomplete: function incomplete() {
+      this.completed = true;
+    }
+  }
+};
+
+
+step1 = new Step1(FormState, '.first-condition');
+step1.unlock();
+
+step2 = new Step2(FormState, '.second-condition');
+step2.lock();
+
+step3 = new Step3(FormState, '.government-categories .caption');
+step3.lock();
+
+step31 = new Step31(FormState, '.government-categories .category');
+step31.lock();
+
+/**
+ * Change fin statement year.
+ */
+$('#fin-stmt-year').change(function change() {
+  var $this = $(this);
+  $this.closest('form').submit();
+  window.localStorage.setItem('tab', 'Financial_Statements');
+});
+
+
+tab = window.localStorage.getItem('tab');
+if (tab) {
+  window.localStorage.removeItem('tab');
+  $('.nav-pills a[href="' + tab + '"]').tab('show');
+}
+
+/*
+ Subscribe to government
+ */
+$subscribeBtn = $('#subscribe');
+
+if ($subscribeBtn.hasClass('subscribe')) {
+  $('#chat_message_container').hide();
+} else {
+  $('#chat_message_container').show();
+}
+
+$subscribeBtn.click(function click(event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  $.ajax({
+    url: $subscribeBtn.attr('href')
+  }).done(function load() {
     if ($subscribeBtn.hasClass('subscribe')) {
-        $('#chat_message_container').hide();
+      $('#chat_message_container').show();
+      $subscribeBtn
+                .text('Unsubscribe')
+                .removeClass('subscribe')
+                .removeClass('btn-success')
+                .addClass('unsubscribe')
+                .addClass('btn-danger');
     } else {
-        $('#chat_message_container').show();
+      $('#chat_message_container').hide();
+      $subscribeBtn
+                .text('Subscribe')
+                .removeClass('unsubscribe')
+                .removeClass('btn-danger')
+                .addClass('subscribe')
+                .addClass('btn-success');
     }
+  });
+});
 
-    $subscribeBtn.click(function(event) {
-        event.preventDefault();
-        event.stopPropagation();
+/*
+ Reload data for government by given year.
+ */
+$('#year-selector').change(function change() {
+  var selectedYear = $(this).find(':selected').val();
+  var openedTab = $('.tab-titles').find('li.active').find('a').attr('href');
 
-        $.ajax({
-            url: $subscribeBtn.attr('href')
-        }).done(function() {
+  window.location.search = '?year=' + selectedYear;
+  window.localStorage.setItem('tab', openedTab);
+});
 
-            if ($subscribeBtn.hasClass('subscribe')) {
-                $('#chat_message_container').show();
-                $subscribeBtn
-                    .text('Unsubscribe')
-                    .removeClass('subscribe')
-                    .removeClass('btn-success')
-                    .addClass('unsubscribe')
-                    .addClass('btn-danger')
-            } else {
-                $('#chat_message_container').hide();
-                $subscribeBtn
-                    .text('Subscribe')
-                    .removeClass('unsubscribe')
-                    .removeClass('btn-danger')
-                    .addClass('subscribe')
-                    .addClass('btn-success')
-            }
-        });
-    });
+// Table pagination handler.
 
-    /*
-        Reload data for government by given year.
-     */
-    $('#year-selector').change(function() {
-        var selectedYear = $(this).find(':selected').val();
-        var openedTab = $('.tab-titles').find('li.active').find('a').attr('href');
+$pane = $('.paginate');
 
-        window.location.search = '?year=' + selectedYear;
-        window.localStorage.setItem('tab', openedTab);
-    });
+$pane.on('click', '.pagination a', function click(e) {
+  var $loader;
+  var $mainContent;
+  var query;
+  var firstElement;
+  var url;
+  var type;
+  var $closestPane;
+  var $this;
+  e.preventDefault();
+  e.stopPropagation();
 
-    // Table pagination handler.
-    var $pane = $('.paginate');
+  $this = $(this);
+  $closestPane = $this.closest('.tab-pane');
+  type = $closestPane.data('type');
+  url = $this.attr('href');
 
-    $pane.on('click', '.pagination a', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+  if (url.indexOf('api') === -1) {
+    url = url.substr(1, url.length);
+    firstElement = url.substr(0, url.indexOf('/'));
+    query = url.substr(url.indexOf('?') + 1, url.length);
 
-        var $this = $(this);
-        var $pane = $this.closest('.tab-pane');
-        var type = $pane.data('type');
-        var url = $this.attr('href');
+    if (firstElement === 'app_dev.php') {
+      url = '/' + firstElement + '/api/v1/government/' + government.id
+            + '/' + type + '?' + query;
+    } else {
+      url = '/api/v1/government/' + government.id + '/' + type + '?' + query;
+    }
+  }
 
-        if (url.indexOf('api') == -1) {
-            url = url.substr(1, url.length);
-            var firstElement = url.substr(0, url.indexOf('/'));
-            var query = url.substr(url.indexOf('?') + 1, url.length);
+  $mainContent = $closestPane.find('.tab-pane-main');
+  $mainContent.html('');
 
-            if ('app_dev.php' == firstElement) {
-                url = '/'+ firstElement +'/api/v1/government/'+ government.id
-                    +'/'+ type +'?'+ query;
-            } else {
-                url = '/api/v1/government/'+ government.id +'/'+ type +'?'+ query;
-            }
-        }
+  $loader = $('.tab-content').find('.loader');
+  $loader.show();
+  $.ajax(url).success(function load(data) {
+    $loader.hide();
+    $mainContent.html(data);
+  });
+});
 
-        var $mainContent = $pane.find('.tab-pane-main');
-        $mainContent.html('');
+$pane.on('click', '.sortable a', function click(e) {
+  var $loader;
+  var $mainContent;
+  var query;
+  var firstElement;
+  var $this = $(this);
+  var $closestPane = $this.closest('.tab-pane');
+  var type = $closestPane.data('type');
+  var url = $this.attr('href');
 
-        var $loader = $('.tab-content').find('.loader');
-        $loader.show();
-        $.ajax(url).success(function(data) {
-            $loader.hide();
-            $mainContent.html(data);
-        });
-    });
+  e.preventDefault();
+  e.stopPropagation();
 
-    $pane.on('click', '.sortable a', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+  if (url.indexOf('api') === -1) {
+    url = url.substr(1, url.length);
+    firstElement = url.substr(0, url.indexOf('/'));
+    query = url.substr(url.indexOf('?') + 1, url.length);
 
-        var $this = $(this);
-        var $pane = $this.closest('.tab-pane');
-        var type = $pane.data('type');
-        var url = $this.attr('href');
+    if (firstElement === 'app_dev.php') {
+      url = '/' + firstElement + '/api/v1/government/' + government.id
+            + '/' + type + '?' + query;
+    } else {
+      url = '/api/v1/government/' + government.id + '/' + type + '?' + query;
+    }
+  }
 
-        if (url.indexOf('api') == -1) {
-            url = url.substr(1, url.length);
-            var firstElement = url.substr(0, url.indexOf('/'));
-            var query = url.substr(url.indexOf('?') + 1, url.length);
+  $mainContent = $closestPane.find('.tab-pane-main');
+  $mainContent.html('');
 
-            if ('app_dev.php' == firstElement) {
-                url = '/' + firstElement + '/api/v1/government/'+ government.id
-                +'/'+ type +'?'+ query;
-            } else {
-                url = '/api/v1/government/'+ government.id +'/'+ type +'?'+ query;
-            }
-        }
-
-        var $mainContent = $pane.find('.tab-pane-main');
-        $mainContent.html('');
-
-        var $loader = $('.tab-content').find('.loader');
-        $loader.show();
-        $.ajax(url).success(function(data) {
-            $loader.hide();
-            $mainContent.html(data);
-        });
-    });
+  $loader = $('.tab-content').find('.loader');
+  $loader.show();
+  $.ajax(url).success(function load(data) {
+    $loader.hide();
+    $mainContent.html(data);
+  });
 });

@@ -12,48 +12,52 @@ class EnvironmentStylesRepository extends EntityRepository
 {
 
     /**
-     * @param integer $environment Environment entity id.
+     * Get list of environment styles.
      *
-     * @return \Doctrine\ORM\QueryBuilder
+     * @param integer $environment Environment entity id.
+     * @param string  $type        Style type: desktop or mobile.
+     *
+     * @return EnvironmentStyles[]
      */
-    public function getListQuery($environment)
+    public function get($environment, $type)
     {
         $expr = $this->_em->getExpressionBuilder();
 
         return $this
             ->createQueryBuilder('Style')
-            ->where($expr->eq('Style.environment', ':environment'))
-            ->setParameter('environment', $environment);
-    }
-
-    /**
-     * Get list of environment styles.
-     *
-     * @param integer $environment Environment entity id.
-     *
-     * @return EnvironmentStyles[]
-     */
-    public function get($environment)
-    {
-        return $this->getListQuery($environment)
+            ->where($expr->andX(
+                $expr->eq('Style.environment', ':environment'),
+                $expr->eq('Style.type', ':type')
+            ))
+            ->setParameters([
+                'environment' => $environment,
+                'type' => $type,
+            ])
             ->getQuery()
             ->getResult();
     }
 
     /**
-     * Remove all styles for givern environment.
+     * Remove all styles for given environment.
      *
      * @param integer $environment Environment entity id.
+     * @param string  $type        Style type: desktop or mobile.
      *
      * @return void
      */
-    public function purge($environment)
+    public function purge($environment, $type)
     {
         $expr = $this->_em->getExpressionBuilder();
         $this->createQueryBuilder('Style')
             ->delete()
-            ->where($expr->eq('Style.environment', ':environment'))
-            ->setParameter('environment', $environment)
+            ->where($expr->andX(
+                $expr->eq('Style.environment', ':environment'),
+                $expr->eq('Style.type', ':type')
+            ))
+            ->setParameters([
+                'environment' => $environment,
+                'type' => $type,
+            ])
             ->getQuery()
             ->execute();
     }

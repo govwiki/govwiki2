@@ -12,12 +12,28 @@
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
-        <header class="container">
-            {% block header %}{% endblock %}
+        {% set _submenu = block('submenu') %}
+
+        <header class="container" {% if _submenu %}style="margin-bottom: 0"{% endif %}>
+            {% block header %}{% endblock header %}
         </header>
+
+        {# Submenu #}
+        {% if _submenu %}
+            <div class="submenu container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul class="nav navbar-nav">
+                            {{ _submenu|raw }}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
 
         {# Main content #}
         <main class="container">
+
             {# breadcrumb #}
             {% set _breadcrumb = block('breadcrumb') %}
             {% if (_breadcrumb) %}

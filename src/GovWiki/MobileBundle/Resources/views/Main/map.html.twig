@@ -4,55 +4,80 @@
     <section class="mapController">
 
         <div>
-            {# Typeahead Search #}
 
-            <header class="{{ environment }}"></header>
-
-            {% if environment == 'california' %}
-                <div class="clearfix">
-                    <div class="btn_custom">
-                        <span>Comparative Search</span>
-                    </div>
-                    <div class="btn_custom enable">
-                        <span>Single Item Search</span>
-                    </div>
-                </div>
+            {# Show environment main image. #}
+            {% if environment.mainImage %}
+                <img class="page-image" src="{{ environment.mainImage }}">
             {% endif %}
 
+            {#<div class="clearfix">
+                <div class="btn_custom">
+                    <span>Comparative Search</span>
+                </div>
+                <div class="btn_custom enable">
+                    <span>Single Item Search</span>
+                </div>
+            </div>#}
+
+            {# Typeahead Search #}
             <div>
                 <div class="search_custom" style="border: 1px solid darkgray; border-radius: 5px;padding: 5px;margin-top: 10px;margin-bottom: 10px;">
-                    <label for="search_government">
+                    <label for="search_custom">
                         <i class="glyphicon glyphicon-search" style="margin-left: 5px;font-size: 1.5em;color: silver;vertical-align: middle;"></i>
                     </label>
-                    <input id="search_government" type="text" placeholder="{{ 'map.government.name'|trans }}" class="text-uppercase typeahead_government form-control" disabled>
+                    <input id="search_custom" type="text" placeholder="{{ 'mobile.map.selector.name'|trans }}" class="text-uppercase typeahead_custom form-control" disabled>
                 </div>
             </div>
 
-            {% if environment == 'california' %}
-            <div style="margin: 10px;">
-                <p style="color: #345369;text-align: center;">
-                    Type city or official's name to get statistics or use map below
-                </p>
-            </div>
-
-            <div>
-                <div class="legend_title">
-                    <span style="margin-left: 10px;">SELECT OBJECTS TYPES TO SHOW</span>
-                    <a data-toggle="collapse" href="#menu" aria-expanded="false" style="float: right;padding: 0 5px;">
-                        <i class="glyphicon glyphicon-menu-up" style="color:white"></i>
-                    </a>
+            {% if 'altTypes' in environment.map.legendTypes %}
+                <div>
+                    <div class="legend_title">
+                        <div class="text">SELECT OBJECTS TYPES TO SHOW</div>
+                        <a class="button" data-toggle="collapse" href="#menu" aria-expanded="false">
+                            <i class="glyphicon glyphicon-menu-up" style="color:white"></i>
+                        </a>
+                    </div>
                 </div>
-            </div>
-            {% else %}
-            <div style="margin: 10px" class="text-center">
-                {{ 'map.type_part_agency_name'|trans }}
-            </div>
+
             {% endif %}
-
         </div>
 
         <div>
-            {{ include('@GovWikiMobile/Partial/Main/'~ mapEntity.position ~'.html.twig') }}
+            <div>
+
+                {# Map wrapper #}
+                <div id="map_wrap">
+
+                    {# Preloader #}
+                    <div class="loader"></div>
+
+                    {# Notification message#}
+                    <div class="mapOnProcessing">
+                        <h5>Please wait, map recently created</h5>
+                        <h5>Please refresh page later</h5>
+                    </div>
+
+                    {# Legend #}
+                    {% if 'altTypes' in environment.map.legendTypes %}
+                        <ul id='menu' class="collapse in">
+                        </ul>
+                    {% endif %}
+
+                    {# Map #}
+                    <div id="map"></div>
+
+                </div>
+
+            </div>
+
+            {# Intro text #}
+            <div>
+
+                <div class="intro-text">
+                    {{- greetingText|raw -}}
+                </div>
+
+            </div>
         </div>
 
     </section>
@@ -81,13 +106,10 @@
 
     <script>
         window.gw.map = '{{ map | escape('js') }}';
-        window.gw.environment = '{{ environment }}';
+        window.gw.environment = '{{ environment|cartoDbDataset }}';
         window.gw.urls = {};
-        window.gw.urls.search_government = '{{ govwiki_path('govwiki_api_v1_government_search') }}';
-        window.gw.urls.search_elected = '{{ govwiki_path('govwiki_api_v1_electedofficial_search') }}';
+        window.gw.urls.search = '{{ path('govwiki_api_v1_search_search') }}';
     </script>
-
-    <script src="/js/vendor/typeahead.js"></script>
 
     <script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
     {#<script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.uncompressed.js"></script>#}

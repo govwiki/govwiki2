@@ -7,6 +7,24 @@
 
 /* Temporary styles (start) */
 
+.submenu {
+   background-color: white;
+   -webkit-box-shadow: 2px 5px 22px -1px rgba(0,0,0,0.49);
+   -moz-box-shadow: 2px 5px 22px -1px rgba(0,0,0,0.49);
+   box-shadow: 2px 5px 22px -1px rgba(0,0,0,0.49);
+   margin-bottom: 25px;
+   height: 32px;
+
+   ul, li {
+      height: 32px;
+   }
+
+   li a {
+      line-height: 32px;
+      padding: 0 5px;
+   }
+}
+
 .index-page-head {
    margin-bottom: 16px;
 }
@@ -173,7 +191,7 @@ table td.button-row {
    & h5 {
       display: inline-block;
    }
-   
+
    & input {
       font-size: 12px;
       box-shadow: none;
@@ -233,4 +251,9 @@ body .container a.btn-primary:hover {
 
    &:focus {
    }
+}
+
+.delete-anchor {
+   cursor: pointer;
+   color: red;
 }

@@ -1,8 +1,7 @@
 {% extends "GovWikiMobileBundle:Layout:main.html.twig" %}
+{% import _self as self %}
 
 {% block main %}
-
-
     {% for flash_message in app.session.flashbag.get('message_saved_success') %}
         <div class="row">
             <div class="alert alert-success alert-dismissible" role="alert">
@@ -18,55 +17,52 @@
 
             {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
 
-
             {# TMP MOBILE LAYOUT (START) #}
                 <header class="header {{ environment }}">
                     <h6 style="{{ (environment == 'california') ? 'color: white' : 'color: black'}}padding: 15px;margin: 0;">{{government.name}}</h6>
 
                     <div class="header-content {{ environment }}">
-                        {% for tabName, categories in formats %}
-                        {% if (tabName == 'Overview + Elected Officials') or
-                            (tabName == 'General Information') %}
-                            {% for categoryName, fields in categories %}
-                                <table class="statistics-table table">
-                                    {% for fieldName, format in fields %}
+                        {# Get first tab and show on top. #}
+                        {% set tabName = formats|keys|first %}
+                        {% set categories = formats|first %}
+                        {% for categoryName, fields in categories %}
+                            <table class="statistics-table table">
+                                {% for fieldName, format in fields %}
 
-                                        {% if format is viewed(government) %}
-                                            {% set value = government|applay_mask(fieldName, format) %}
-                                            {% if not value is null %}
-                                                <tr>
-                                                    {# Field name #}
-                                                    <td>
-                                                        {{- ('format.'~format.field)|trans -}}
-                                                        {#{{- format.name -}}#}
-                                                        {% if ('format.'~format.field~'.help_text')|trans != 'format.'~format.field~'.help_text' %}
-                                                            <img src="{{ asset('bundles/govwikimobile/img/help.png') }}" title="{{- ('format.'~format.field~'.help_text')|trans -}}">
-                                                        {% endif %}
-                                                    </td>
-                                                    {# Field value #}
-                                                    <td>
-                                                        {{- value|display|raw -}}
-                                                        {% set rankName = "#{fieldName}_rank" %}
-                                                        {%- if (government.ranks[rankName] is defined) -%}
-                                                            <a class='rank'
-                                                               data-field='{{- rankName -}}'
-                                                               data-mask='{{- format.mask -}}'
-                                                               title='{{- ('format.'~format.field)|trans }}'>
-                                                                ({{- government.ranks[rankName][0] }} {{ 'preposition.of'|trans }} {{ government.ranks[rankName][1] -}})
-                                                                {#({{- government.ranks[rankName][0] }} of {{ government.ranks[rankName][1] -}})#}
-                                                            </a>
-                                                        {%- endif -%}
+                                    {% if format is viewed(government) %}
+                                        {% set value = government|applay_mask(fieldName, format) %}
+                                        {% if not value is null %}
+                                            <tr>
+                                                {# Field name #}
+                                                <td>
+                                                    {{- ('format.'~format.field)|trans -}}
+                                                    {#{{- format.name -}}#}
+                                                    {% if ('format.'~format.field~'.help_text')|trans != 'format.'~format.field~'.help_text' %}
+                                                        <img data-triger="click" class src="{{ asset('bundles/govwikimobile/img/help.png') }}" title="{{- ('format.'~format.field~'.help_text')|trans -}}">
+                                                    {% endif %}
+                                                </td>
+                                                {# Field value #}
+                                                <td>
+                                                    {{- value|display|raw -}}
+                                                    {% set rankName = "#{fieldName}_rank" %}
+                                                    {%- if (government.ranks[rankName] is defined) -%}
+                                                        <a class='rank'
+                                                           data-field='{{- rankName -}}'
+                                                           data-mask='{{- format.mask -}}'
+                                                           title='{{- ('format.'~format.field)|trans }}'>
+                                                            ({{- government.ranks[rankName][0] }} {{ 'preposition.of'|trans }} {{ government.ranks[rankName][1] -}})
+                                                            {#({{- government.ranks[rankName][0] }} of {{ government.ranks[rankName][1] -}})#}
+                                                        </a>
+                                                    {%- endif -%}
 
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
+                                                </td>
+                                            </tr>
                                         {% endif %}
+                                    {% endif %}
 
-                                    {% endfor %}
-                                </table>
-                            {% endfor %}
-                        {% endif %}
-                    {% endfor %}
+                                {% endfor %}
+                            </table>
+                        {% endfor %}
 
                         <div class="header-icons">
                             <img src="data:image/png;base64,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"
@@ -79,85 +75,76 @@
                 </header>
 
                 {# Tabs control #}
-                <ul class="nav">
-                    {% if (formats is defined) and (formats is not empty) %}
-                        {% for tabName, categories in formats %}
-                            {% if categories[""] is defined %}
-                                {% set tab_id = categories[""]|first.tab_id %}
-                            {% else %}
+                <div id="tabs-control">
+                    <ul class="nav">
+                        {% if (formats is defined) and (formats is not empty) %}
+                            {% for tabName, categories in formats %}
                                 {% set tab_id = categories|first|first.tab_id %}
-                            {% endif %}
+                                {% set slug = self.tabSlug(tabName) %}
 
-                            <li class="{{ loop.first ? 'active' : '' }} tab {{ environment }}">
+                                <li class="{{ loop.first ? 'active' : '' }} tab  {{ environment }}">
+                                    <span class="prev_tab">
+                                        <i class="glyphicon glyphicon-chevron-left"></i>
+                                    </span>
+                                    <a class="tab_{{ slug|lower }}"
+                                       href="#{{ slug }}">
+                                                {{- ('groups.group_id_'~tab_id)|trans -}}
+                                    </a>
+                                    <span class="next_tab">
+                                        <i class="glyphicon glyphicon-chevron-right"></i>
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if hasSalaries %}
+                            <li class="tab" {{ environment }}>
                                 <span class="prev_tab">
                                     <i class="glyphicon glyphicon-chevron-left"></i>
                                 </span>
-                                {# TODO: Hardcoded, for new db, must be replaced #}
-                                <a class="tab_{{ tabName | replace(' ', '_') | replace('+', 'a')|lower }}"
-                                   href="#{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
-                                            {{- ('groups.group_id_'~tab_id)|trans -}}
-                                            {#{{ tabName }}#}
-                                </a>
+                                <a class="tab_salaries" href="#Salaries">Salaries</a>
                                 <span class="next_tab">
                                     <i class="glyphicon glyphicon-chevron-right"></i>
                                 </span>
                             </li>
-                        {% endfor %}
-                    {% endif %}
+                        {% endif %}
 
-                    {% if hasSalaries %}
-                        <li class="tab {{ environment }}">
-                            <span class="prev_tab">
-                                <i class="glyphicon glyphicon-chevron-left"></i>
-                            </span>
-                            <a class="tab_salaries" href="#Salaries">Salaries</a>
-                            <span class="next_tab">
-                                <i class="glyphicon glyphicon-chevron-right"></i>
-                            </span>
-                        </li>
-                    {% endif %}
+                        {% if hasPensions %}
+                            <li class="tab {{ environment }}">
+                                <span class="prev_tab">
+                                    <i class="glyphicon glyphicon-chevron-left"></i>
+                                </span>
+                                <a class="tab_pensions" href="#Pensions">Pensions</a>
+                                <span class="next_tab">
+                                    <i class="glyphicon glyphicon-chevron-right"></i>
+                                </span>
+                            </li>
+                        {% endif %}
 
-                    {% if hasPensions %}
-                        <li class="tab {{ environment }}">
-                            <span class="prev_tab">
-                                <i class="glyphicon glyphicon-chevron-left"></i>
-                            </span>
-                            <a class="tab_pensions" href="#Pensions">Pensions</a>
-                            <span class="next_tab">
-                                <i class="glyphicon glyphicon-chevron-right"></i>
-                            </span>
-                        </li>
-                    {% endif %}
-
-                    {% if showFinStmt %}
-                        <li class="tab {{ environment }}">
-                            <span class="prev_tab">
-                                <i class="glyphicon glyphicon-chevron-left"></i>
-                            </span>
-                            <a class="tab_financial_statements" href="#Financial_Statements">{{ 'gov.financial_statements'|trans }}</a>
-                            <span class="next_tab">
-                                <i class="glyphicon glyphicon-chevron-right"></i>
-                            </span>
-                        </li>
-                    {% endif %}
-
-                </ul>
+                        {% if showFinStmt %}
+                            <li class="tab {{ environment }}">
+                                <span class="prev_tab">
+                                    <i class="glyphicon glyphicon-chevron-left"></i>
+                                </span>
+                                <a class="tab_financial_statements" href="#Financial_Statements">{{ 'gov.financial_statements'|trans }}</a>
+                                <span class="next_tab">
+                                    <i class="glyphicon glyphicon-chevron-right"></i>
+                                </span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
 
                 {# Tab content #}
                 <div>
 
                     {% if (formats is defined) and (formats is not empty) %}
-
                         {% set tab_id_list = [] %}
 
                         {% for tabName, categories in formats %}
-                            {% if categories[""] is defined %}
-                                {% set tab_id = categories[""]|first.tab_id %}
-                            {% else %}
-                                {% set tab_id = categories|first|first.tab_id %}
-                            {% endif %}
+                            {% set tab_id = categories|first|first.tab_id %}
 
-                            <div class="tab-pane active" id="{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
+                            <div class="tab-pane active" id="{{ self.tabSlug(tabName) }}">
 
                                 <div class="tab-title {{ environment }}">
                                     {{ ('groups.group_id_'~tab_id)|trans }}
@@ -190,7 +177,7 @@
                         {% endfor %}
 
 
-                            {% if hasSalaries %}
+                            {#{% if hasSalaries %}
                                 <div class="tab-pane active" id="Salaries">
 
                                     <div class="tab-title">
@@ -203,9 +190,9 @@
                                         })) }}
                                     </div>
                                 </div>
-                            {% endif %}
+                            {% endif %}#}
 
-                            {% if hasPensions %}
+                           {# {% if hasPensions %}
                                 <div class="tab-pane active" id="Pensions">
 
                                     <div class="tab-title">
@@ -219,7 +206,7 @@
                                     </div>
 
                                 </div>
-                            {% endif %}
+                            {% endif %}#}
 
                             {# Financial Statements (if exists) #}
                             {% if showFinStmt %}
@@ -249,7 +236,7 @@
         {% if app.user and environment_is_subscribable %}
             <div class="subscribe-row">
                 <a href="{{-
-                    govwiki_path('govwiki_frontend_government_subscribe', {
+                    path('govwiki_frontend_government_subscribe', {
                         'government': government.id
                     })
                 -}}" class="btn {% if isSubscriber -%}btn-danger unsubscribe{%- else -%}btn-success subscribe{%- endif -%}" id="subscribe">
@@ -310,18 +297,21 @@
         <script>
             window.gw.government = '{{ government_json|escape('js') }}';
             window.gw.urls = {};
-            window.gw.urls.popover = '{{ govwiki_path('govwiki_api_v1_government_getranks', {
+            window.gw.urls.popover = '{{ path('govwiki_api_v1_government_getranks', {
                 'altTypeSlug': government.altTypeSlug,
                 'slug': government.slug,
             }) }}';
-            window.gw.urls.search = '{{ govwiki_path('govwiki_api_v1_comparison_search') }}';
-            window.gw.urls.captions = '{{ govwiki_path('govwiki_api_v1_comparison_captions') }}';
-            window.gw.urls.compare = '{{ govwiki_path('govwiki_api_v1_comparison_compare') }}';
+            window.gw.urls.search = '{{ path('govwiki_api_v1_comparison_search') }}';
+            window.gw.urls.captions = '{{ path('govwiki_api_v1_comparison_captions') }}';
+            window.gw.urls.compare = '{{ path('govwiki_api_v1_comparison_compare') }}';
         </script>
     {% endif %}
 
-    <script src="/js/vendor/typeahead.js"></script>
     <script src="/js/mobile/common.js"></script>
     <script src="/js/mobile/government.js"></script>
 
 {% endblock %}
+
+{%- macro tabSlug(tabName) -%}
+    {{- tabName | replace(' ', '_') | replace('+', 'a') -}}
+{%- endmacro -%}

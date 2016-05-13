@@ -2,12 +2,12 @@
 
 namespace GovWiki\DbBundle\Importer;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\DbBundle\Exception\RequiredColumnsNotFoundException;
 use GovWiki\DbBundle\File\ReaderInterface;
 use GovWiki\DbBundle\File\WriterInterface;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 
 /**
  * Class FinDataImporter
@@ -30,17 +30,17 @@ class FinDataImporter extends AbstractImporter
      * {@inheritdoc}
      */
     public function __construct(
-        Connection $con,
-        AdminEnvironmentManager $manager
+        EntityManagerInterface $em,
+        EnvironmentStorageInterface $storage
     ) {
-        parent::__construct($con, $manager);
+        parent::__construct($em, $storage);
 
         /*
          * Get FinData entity metadata in order to generate required column
          * names and get they types.
          */
         /** @var \Doctrine\Orm\Mapping\ClassMetadata $metadata */
-        $metadata = $this->manager->getMetadata('GovWikiDbBundle:FinData');
+        $metadata = $this->em->getClassMetadata('GovWikiDbBundle:FinData');
 
         $fields = $metadata->getFieldNames();
         $associationFields = $metadata->getAssociationMappings();
@@ -68,9 +68,8 @@ class FinDataImporter extends AbstractImporter
         $columnChecked = false;
 
         foreach ($reader->read() as $row) {
-            /*
-             * Check required keys exists, if don't do it before.
-             */
+            /// Check required keys exists, if don't do it before.
+
             if (! $columnChecked) {
                 $notFounded = array_diff(
                     array_keys($this->columns),
@@ -86,19 +85,16 @@ class FinDataImporter extends AbstractImporter
                 }
                 $columnChecked = true;
 
-                $environment = $this->manager->getEnvironment();
+                $environment = $this->storage->get();
 
-                /*
-                 * Remove the old information for the year.
-                 */
-                $this->con
+                // Remove the old information for the year.
+                $this->em->getConnection()
                     ->exec("
                         DELETE f FROM findata f
                         INNER JOIN governments g ON g.id = f.government_id
-                        INNER JOIN environments e ON e.id = g.environment_id
                         WHERE
                             year = '{$row['year']}' AND
-                            e.slug = '{$environment}'
+                            g.environment_id = '{$environment->getId()}'
 
                     ");
             }
@@ -149,7 +145,7 @@ class FinDataImporter extends AbstractImporter
      */
     private function update(array $sql)
     {
-        $this->con->exec(
+        $this->em->getConnection()->exec(
             'INSERT IGNORE INTO findata ('. implode(',', array_keys($this->columns)) .
             ') VALUES '. implode(',', $sql)
         );

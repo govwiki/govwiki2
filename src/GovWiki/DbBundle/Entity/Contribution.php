@@ -4,9 +4,11 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\QueryBuilder;
+use GovWiki\DbBundle\Form\ContributionType;
 use GovWiki\RequestBundle\Entity\AbstractCreatable;
 use GovWiki\RequestBundle\Entity\ContributionCreateRequest;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Form\AbstractType;
 
 /**
  * Contribution
@@ -16,7 +18,8 @@ use JMS\Serializer\Annotation\Groups;
  *  repositoryClass="GovWiki\DbBundle\Entity\Repository\ContributionRepository"
  * )
  */
-class Contribution extends AbstractCreatable
+class Contribution extends AbstractCreatable implements
+    StaffEntityInterface
 {
     const CANDIDATE_COMMITEE = 'Candidate Committee';
     const CORPORATE = 'Corporate';
@@ -257,5 +260,13 @@ class Contribution extends AbstractCreatable
     public function getElectedOfficial()
     {
         return $this->electedOfficial;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getFormType()
+    {
+        return new ContributionType();
     }
 }

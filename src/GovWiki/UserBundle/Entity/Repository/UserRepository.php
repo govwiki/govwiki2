@@ -26,55 +26,29 @@ class UserRepository extends EntityRepository
     }
 
     /**
-     * @param integer $government Government id.
+     * @param integer $environment A Environment entity id.
+     * @param boolean $onlyAdmins  Show only admins.
      *
-     * @return array
+     * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getGovernmentSubscribersEmailData($government)
-    {
-        return $this->getGovernmentSubscribersQuery($government)
-            ->select('User.email, User.username')
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @return array
-     */
-    public function getAdminsList()
-    {
-        return $this->createQueryBuilder('User')
-            ->select('User')
-            ->where('User.roles LIKE :role')
-            ->setParameter('role', '%ROLE_ADMIN%')
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * Get all subscribers for given government.
-     *
-     * @param integer $government Government entity id.
-     *
-     * @return array
-     */
-    public function getSubscriberIds($government)
+    public function getListQueryForEnvironment($environment, $onlyAdmins = false)
     {
         $expr = $this->_em->getExpressionBuilder();
 
-        $result = $this->createQueryBuilder('User')
-            ->select('User.id')
-            ->innerJoin('User.subscribedTo', 'Government')
-            ->where($expr->eq('Government.id', ':government'))
-            ->setParameter('government', $government)
-            ->getQuery()
-            ->getArrayResult();
+        $qb = $this->createQueryBuilder('User');
 
-        return array_map(
-            function (array $row) {
-                return $row['id'];
-            },
-            $result
-        );
+        if ($onlyAdmins) {
+            $qb->where("REGEXP('ROLE_ADMIN', User.roles) = 1");
+        } else {
+            $qb
+                ->join('User.environments', 'Environment')
+                ->where($expr->andX(
+                    $expr->eq('Environment.id', ':environment'),
+                    "REGEXP('ROLE_ADMIN', User.roles) = 0"
+                ))
+                ->setParameter('environment', $environment);
+        }
+
+        return $qb;
     }
 }

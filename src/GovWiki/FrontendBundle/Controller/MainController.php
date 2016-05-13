@@ -2,18 +2,16 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
-use GovWiki\ApiBundle\GovWikiApiServices;
-use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * MainController
  */
-class MainController extends Controller
+class MainController extends AbstractGovWikiController
 {
 
     /**
@@ -47,56 +45,48 @@ class MainController extends Controller
     public function mapAction()
     {
         $this->clearTranslationsCache();
+        $translator = $this->get('translator');
 
-        $environmentManager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
+        $environment = $this->getCurrentEnvironment();
 
-        $environment = $environmentManager->getEnvironment();
+        $years = $this->getGovernmentManager()->getAvailableYears($environment);
+        $currentYear = (count($years) > 0) ? $years[0] : 0;
 
-        $map = $environmentManager->getMap();
+        $map = $environment->getMap();
+        $coloringConditions = $map->getColoringConditions();
+        $fieldMask = $this->getFormatManager()
+            ->getFieldFormat($environment, $coloringConditions->getFieldName());
+        $localizedName = $translator
+            ->trans('format.'. $coloringConditions->getFieldName());
 
-            /** @var ColorizedCountyConditions $colorizedCountyConditions */
-            $colorizedCountyConditions = $map['colorizedCountyConditions'];
-            $map['colorizedCountyConditions'] = $colorizedCountyConditions
-                ->toArray();
-            $map['colorizedCountyConditions']['field_mask'] = $environmentManager
-                ->getFieldFormat($colorizedCountyConditions->getFieldName())['mask'];
-            $map['colorizedCountyConditions']['localized_name'] = $this->get('translator.default')
-                ->trans('format.' . $colorizedCountyConditions->getFieldName());
+        $map = $map->toArray();
+        $map['coloringConditions']['field_mask'] = $fieldMask;
+        $map['coloringConditions']['localized_name'] = $localizedName;
+        $map['username'] = $this->getParameter('carto_db.account');
+        $map['year'] = $currentYear;
 
-            $mapEntity = $map;
-            if (null === $map) {
-                throw new NotFoundHttpException();
-            }
-            $map['username'] = $this->getParameter('carto_db.account');
-            $years = $environmentManager->getAvailableYears();
-            $map['year'] = $years[0];
+        /** @var MessageCatalogue $catalogue */
+        $catalogue = $translator->getCatalogue();
+        $transKey = 'map.greeting_text';
 
-            $map = json_encode($map);
+        $greetingText = '';
+        if ($catalogue->has($transKey)) {
+            $greetingText = $translator->trans($transKey);
+        }
 
-            /** @var MessageCatalogue $catalogue */
-            $translator = $this->get('translator');
-            $catalogue = $translator->getCatalogue();
-            $transKey = 'map.greeting_text';
-
-            $greetingText = '';
-            if ($catalogue->has($transKey)) {
-                $greetingText = $translator->trans($transKey);
-            }
-
-            return [
-                'environment' => $environment,
-                'map' => $map,
-                'years' => $years,
-                'mapEntity' => $mapEntity,
-                'greetingText' => $greetingText
-            ];
+        return [
+            'map' => json_encode($map),
+            'greetingText' => $greetingText,
+            'years' => $years,
+            'currentYear' => $currentYear,
+        ];
     }
 
     private function clearTranslationsCache()
     {
         $cacheDir = __DIR__ . "/../../../../app/cache";
         $finder = new \Symfony\Component\Finder\Finder();
-        $finder->in(array($cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"))->files();
+        $finder->in([$cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"])->files();
         foreach($finder as $file){
             unlink($file->getRealpath());
         }

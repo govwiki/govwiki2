@@ -1,139 +1,125 @@
-{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - Create requests{% endblock %}
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-        macro.breadcrumbElement(
-            admin_environment|capitalize ~' environment',
-            'govwiki_admin_main_show',
-            { 'environment': admin_environment }
-        )
-    }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
     {{ macro.breadcrumbElement('Create Requests') }}
 {% endblock breadcrumb %}
 
-{% block body %}
+{% block panel_title %}
+    Create Requests
+{% endblock panel_title %}
 
-    <div class="container">
+{% block panel_body %}
+    {# Navigation controls #}
+    <div class="row">
+        <div class="col-md-12">
 
-        {# Panel #}
-        <div class="panel panel-primary">
-
-            {# Header #}
-            <div class="panel-heading">
-                <h3 class="panel-title">Create requests</h3>
-            </div>
-
-            {# Body #}
-            <div class="panel-body">
-
-                {# Navigation controls #}
-                <div class="row">
-                    <div class="col-md-12">
-
-                        <div class="index-page-head">
-                            <div class="navigation">
-                                <div class="row">
-                                    <div class="col-md-5">
-                                        {{ knp_pagination_render(createRequests) }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                {# Table #}
-                <div class="row">
-                    <div class="col-md-12">
-
-                        <div class="table-responsive">
-
-                            <table class="table table-bordered table-hover text-center">
-                                <thead>
-                                <tr>
-                                    <td>{{ knp_pagination_sortable(createRequests, 'Id',        'CreateRequest.id') }}</td>
-                                    <td>{{ knp_pagination_sortable(createRequests, 'Created',   'CreateRequest.createdAt') }}</td>
-                                    <td>{{ knp_pagination_sortable(createRequests, 'Status',    'CreateRequest.status') }}</td>
-                                    <td>{{ knp_pagination_sortable(createRequests, 'User',      'Creator.username') }}</td>
-                                    <td>{{ knp_pagination_sortable(createRequests, 'Data Type', 'CreateRequest.entityName') }}</td>
-                                    <td>Actions</td>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for createRequest in createRequests %}
-                                    <tr>
-                                        <td>{{ createRequest.id }}</td>
-                                        <td>{{ createRequest.createdAt|date('m/d/y g:i a') }}</td>
-                                        <td>{{ createRequest.status|capitalize }}</td>
-                                        <td>{% if createRequest.creator %}{{ createRequest.creator.username }}{% endif %}</td>
-                                        <td>{{ createRequest.entityName }}</td>
-                                        <td>
-                                            <div class="btn-group">
-                                                <a href="{{-
-                                                path(
-                                                'govwiki_admin_createrequest_show',
-                                                {
-                                                    id: createRequest.id
-                                                }
-                                                )
-                                                -}}" class="btn btn-sm btn-default">
-                                                    <span class="glyphicon glyphicon-search"></span> Show
-                                                </a>
-                                                <span class="btn btn-sm btn-danger remove-action" data-link="{{-
-                                                path(
-                                                'govwiki_admin_createrequest_remove',
-                                                {
-                                                    id: createRequest.id
-                                                }
-                                                ) -}}">
-                                                    <span class="glyphicon glyphicon-remove"></span> Remove
-                                                </span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12 text-center">
-
-                        <div class="navigation">
+            <div class="index-page-head">
+                <div class="navigation">
+                    <div class="row">
+                        <div class="col-md-5">
                             {{ knp_pagination_render(createRequests) }}
                         </div>
-
                     </div>
                 </div>
+            </div>
 
         </div>
-
     </div>
 
+    {# Table #}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover text-center">
+                    <thead>
+                    <tr>
+                        <td>{{- knp_pagination_sortable(
+                            createRequests,
+                            'Id',
+                            'CreateRequest.id'
+                        ) -}}</td>
+                        <td>{{- knp_pagination_sortable(
+                            createRequests,
+                            'Created',
+                            'CreateRequest.createdAt'
+                        ) -}}</td>
+                        <td>{{- knp_pagination_sortable(
+                            createRequests,
+                            'Status',
+                            'CreateRequest.status'
+                        ) -}}</td>
+                        <td>{{- knp_pagination_sortable(
+                            createRequests,
+                            'User',
+                            'Creator.username'
+                        ) -}}</td>
+                        <td>{{- knp_pagination_sortable(
+                            createRequests,
+                            'Data Type',
+                            'CreateRequest.entityName'
+                        ) -}}</td>
+                        <td>Actions</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for createRequest in createRequests %}
+                        <tr>
+                            <td>{{ createRequest.id }}</td>
+                            <td>{{ createRequest.createdAt|date('m/d/y g:i a') }}</td>
+                            <td>{{ createRequest.status|capitalize }}</td>
+                            <td>{% if createRequest.creator %}{{ createRequest.creator.username }}{% endif %}</td>
+                            <td>{{ createRequest.entityName }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{- path(
+                                        'govwiki_admin_createrequest_show',
+                                        {
+                                            'environment': environment.slug,
+                                            'id': createRequest.id
+                                        }
+                                    ) -}}" class="btn btn-sm btn-default">
+                                        <span class="glyphicon glyphicon-search"></span> Show
+                                    </a>
+                                    <button class="btn btn-sm btn-danger btn-delete" data-url="{{-
+                                        path(
+                                            'govwiki_admin_createrequest_remove',
+                                            {
+                                                'environment': environment.slug,
+                                                'id': createRequest.id
+                                            }
+                                        ) -}}"
+                                            data-description="Are you sure want to delete CreateRequest '{{ createRequest.id }}'?">
+                                        <i class="glyphicon glyphicon-remove"></i> Remove
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
     </div>
-{% endblock %}
-{% block javascripts %}
-    {{ parent() }}
-    <script type="text/javascript">
-        $(function() {
-            $('span.remove-action').on('click', function() {
-                $this = $(this);
-                if (confirm('Are you sure?')) {
-                    $.post($(this).data('link'), function(response) {
-                        if (response.status == 'ok') {
-                            $this.closest('tr').remove();
-                        };
-                    });
-                };
-            });
-        });
-    </script>
-{% endblock %}
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            <div class="navigation">
+                {{ knp_pagination_render(createRequests) }}
+            </div>
+
+        </div>
+    </div>
+{% endblock panel_body %}

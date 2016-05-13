@@ -2,18 +2,19 @@
 
 namespace GovWiki\MobileBundle\Controller;
 
-use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Form\ElectedOfficialCommentType;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
+use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\SerializationContext;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * MainController
+ * Class ElectedController
+ * @package GovWiki\MobileBundle\Controller
  */
-class ElectedController extends Controller
+class ElectedController extends AbstractGovWikiController
 {
 
     const ROWS_PER_PAGE = 15;
@@ -22,20 +23,35 @@ class ElectedController extends Controller
      * @Route("/{altTypeSlug}/{slug}/{electedSlug}", name="elected")
      * @Template("GovWikiMobileBundle:Elected:index.html.twig")
      *
-     * @param string $altTypeSlug Slugged government alt type.
-     * @param string $slug        Slugged government name.
-     * @param string $electedSlug Slugged elected official full name.
+     * @param Request $request     A Request instance.
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
+     * @param string  $electedSlug Slugged elected official full name.
      *
      * @return array
      *
      * @throws \LogicException Some required bundle not registered.
      */
-    public function showAction($altTypeSlug, $slug, $electedSlug, Request $request)
+    public function showAction(Request $request, $altTypeSlug, $slug, $electedSlug)
     {
+        $user = $this->getUser();
+
+        if ($user instanceof User) {
+            $user = $user->getId();
+        } else {
+            $user = null;
+        }
+
         $this->clearTranslationsCache();
 
-        $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-            ->getElectedOfficial($altTypeSlug, $slug, $electedSlug);
+        $data = $this->getElectedOfficialManager()
+            ->getElectedOfficial(
+                $this->getCurrentEnvironment(),
+                $altTypeSlug,
+                $slug,
+                $electedSlug,
+                $user
+            );
 
         if (null === $data) {
             return [];
@@ -76,16 +92,16 @@ class ElectedController extends Controller
         $electedOfficialJSON = $this->get('jms_serializer')
             ->serialize($data['electedOfficial'], 'json', $context);
 
-        $electedOfficialCommentForm = $this->createForm(new ElectedOfficialCommentType(), array(
+        $electedOfficialCommentForm = $this->createForm(new ElectedOfficialCommentType(), [
             'current_text' => $data['electedOfficial']['electedOfficialComments'],
-            'electedOfficialId' => $data['electedOfficial']['id']
-        ));
+            'electedOfficialId' => $data['electedOfficial']['id'],
+        ]);
 
         $data = array_merge($data, [
             'altTypeSlug' => $altTypeSlug,
             'slug' => $slug,
             'electedOfficialJSON' => $electedOfficialJSON,
-            'electedOfficialCommentForm' => $electedOfficialCommentForm->createView()
+            'electedOfficialCommentForm' => $electedOfficialCommentForm->createView(),
         ]);
 
         $template = $request->query->get('template', 'index');
@@ -100,7 +116,7 @@ class ElectedController extends Controller
     {
         $cacheDir = __DIR__ . "/../../../../app/cache";
         $finder = new \Symfony\Component\Finder\Finder();
-        $finder->in(array($cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"))->files();
+        $finder->in([$cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"])->files();
         foreach($finder as $file){
             unlink($file->getRealpath());
         }

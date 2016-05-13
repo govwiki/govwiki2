@@ -30,6 +30,6 @@ $(function() {
  */
 function slugify(str)
 {
-    str = str.replace(/\W/, '_');
+    str = str.replace(/\W/g, '_');
     return str.toLowerCase();
 }

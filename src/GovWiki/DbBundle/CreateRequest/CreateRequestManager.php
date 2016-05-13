@@ -32,7 +32,7 @@ class CreateRequestManager implements CreateRequestManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function process(array $data, $environment = null)
+    public function process(array $data, Environment $environment = null)
     {
         /*
          * Get all parameters from array.
@@ -93,10 +93,7 @@ class CreateRequestManager implements CreateRequestManagerInterface
             $request
                 ->setCreator($user)
                 ->setSubject($entity)
-                ->setEnvironment(
-                    $this->em->getRepository('GovWikiDbBundle:Environment')
-                        ->getReferenceByName($environment)
-                );
+                ->setEnvironment($environment);
 
             $entity->setRequest($request);
         }

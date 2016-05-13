@@ -6,86 +6,58 @@
     {{ macro.breadcrumbElement('Main') }}
 {% endblock breadcrumb %}
 
-{% block body %}
+{% block panel_title %}
+    Environment list
+{% endblock panel_title %}
 
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-8 col-md-offset-2">
+{% block panel_body %}
+    {{ knp_pagination_render(environments) }}
 
-            {# Panel #}
-            <div class="panel panel-primary">
+    <table id="environments-list" class="table table-bordered text-center">
+        <tr>
+            <th>Name</th>
+            <th>Domain</th>
+            <th class="favicon">Favicon</th>
+            <th class="actions">Actions</th>
+        </tr>
+        {%- for environment in environments -%}
+            <tr>
+                <td>
+                    <a href="{{ path('govwiki_admin_environment_show',
+                    { environment: environment.slug}) }}">
+                        {{ environment.name }}
+                    </a>
+                </td>
+                <td>{{ environment.domain }}</td>
+                <td>
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+                        <form data-environment="{{ environment.slug }}" action="{{ path('govwiki_admin_main_faviconload') }}" class="upload-favicon-form" enctype="multipart/form-data">
+                            <input type="hidden" name="environment" value="{{ environment.slug }}" />
+                            <input class="upload-favicon" type="file" name="upload-favicon" />
+                        </form>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_environment_show', { environment: environment.slug }) -}}" data-description="Delete environment with all governments?">
+                            Delete
+                        </button>
+                    {% endif %}
+                </td>
+            </tr>
+        {%- endfor -%}
+    </table>
 
-                {# Header #}
-                <div class="panel-heading">
-                    <h3 class="panel-title">Environment list</h3>
-                </div>
+    {{ knp_pagination_render(environments) }}
+{% endblock panel_body %}
 
-                {# Body #}
-                <div class="panel-body">
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h3>Environments</h3>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            {{ knp_pagination_render(environments) }}
-
-                            <table id="environments-list" class="table table-bordered text-center">
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Domain</th>
-                                    <th class="favicon">Favicon</th>
-                                    <th class="actions">Actions</th>
-                                </tr>
-                                {%- for environment in environments -%}
-                                    <tr>
-                                        <td>
-                                            <a href="{{ path('govwiki_admin_main_show',
-                                                { environment: environment.slug}) }}">
-                                                {{ environment.name }}
-                                            </a>
-                                        </td>
-                                        <td>{{ environment.domain }}</td>
-                                        <td>
-                                            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-                                                <form data-environment="{{ environment.slug }}" action="{{ path('govwiki_admin_main_faviconload') }}" class="upload-favicon-form" enctype="multipart/form-data">
-                                                    <input type="hidden" name="environment" value="{{ environment.slug }}" />
-                                                    <input class="upload-favicon" type="file" name="upload-favicon" />
-                                                </form>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {% if is_granted('ROLE_ADMIN') %}
-                                                <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_main_remove', { environment: environment.slug }) -}}" data-description="Delete environment with all governments?">
-                                                    Delete
-                                                </button>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {%- endfor -%}
-                            </table>
-
-                            {{ knp_pagination_render(environments) }}
-
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <a class="btn btn-primary" href="{{ path('govwiki_admin_wizard_start') }}">
-                                    Add environment
-                                </a>
-                            {% endif %}
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-
-{% endblock %}
+{% block panel_footer %}
+    {% if is_granted('ROLE_ADMIN') %}
+        <a class="btn btn-primary" href="{{ path('govwiki_admin_wizard_start') }}">
+            Add environment
+        </a>
+    {% endif %}
+{% endblock panel_footer %}
 
 {% block javascripts %}
     {{ parent() }}

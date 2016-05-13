@@ -3,26 +3,21 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
-use GovWiki\AdminBundle\Event\GovernmentAddEvent;
-use GovWiki\AdminBundle\GovWikiAdminEvents;
-use GovWiki\AdminBundle\GovWikiAdminServices;
-use GovWiki\DbBundle\Form\ExtGovernmentType;
-use GovWiki\DbBundle\GovWikiDbServices;
-use GovWiki\DbBundle\Reader\CsvReader;
-use GovWiki\DbBundle\Writer\CsvWriter;
+use CartoDbBundle\Service\CartoDbApi;
+use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\DbBundle\Entity\Government;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Class GovernmentController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/government")
+ * @Configuration\Route(
+ *  "/{environment}/government",
+ *  requirements={ "environment": "\w+" }
+ * )
  */
 class GovernmentController extends AbstractGovWikiAdminController
 {
@@ -51,9 +46,18 @@ class GovernmentController extends AbstractGovWikiAdminController
             }
         }
 
+        /** @var GovernmentRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Government');
+
+        $governments = $repository->getListQuery(
+            $this->getCurrentEnvironment()->getId(),
+            $id,
+            $name
+        );
+
         $governments = $this->paginate(
-            $this->getManager()
-                ->getListQuery($id, $name),
+            $governments,
             $request->query->getInt('page', 1),
             50
         );
@@ -62,76 +66,9 @@ class GovernmentController extends AbstractGovWikiAdminController
     }
 
     /**
-     * Create new government in current environment.
-     *
-     * @Configuration\Route("/create")
-     * @Configuration\Template()
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException If entity is not supported.
-     * @throws \LogicException Some required bundle not registered.
-     */
-    public function createAction(Request $request)
-    {
-        $manager = $this->getManager();
-        $government = $manager->create();
-
-        $form = $this->createFormBuilder()
-            ->add('main', 'government')
-            ->add(
-                'extension',
-                new ExtGovernmentType($this->adminEnvironmentManager())
-            )
-            ->setData([ 'main' => $government, 'extension' => [] ])
-            ->getForm();
-        $form->handleRequest($request);
-
-        if ($form->isValid()) {
-            $manager->update($government);
-
-            $colorizedCountyConditions = $this->adminEnvironmentManager()->getMap()
-                ->getColorizedCountyConditions();
-            $colorizedFieldName = $colorizedCountyConditions->getFieldName();
-            $isColorized = $colorizedCountyConditions->isColorized();
-
-            $extraGovernmentData = $form->getData()['extension'];
-            $data = null;
-            if ($isColorized && $colorizedFieldName &&
-                array_key_exists($colorizedFieldName, $extraGovernmentData)) {
-                $data = $extraGovernmentData[$colorizedFieldName];
-            }
-
-            $this->dispatch(
-                GovWikiAdminEvents::GOVERNMENT_ADD,
-                new GovernmentAddEvent($government, $data)
-            );
-
-            $data = $form->getData()['extension'];
-            $data['government_id'] = $government->getId();
-
-            $this->adminEnvironmentManager()->addToGovernment($data);
-
-            $this->addFlash(
-                'success',
-                'Government '. $government->getName() .' successfully created'
-            );
-
-            return $this->redirectToRoute('govwiki_admin_government_index');
-        }
-
-        return [
-            'form' => $form->createView(),
-            'formats' => $this->adminEnvironmentManager()->getFormats(),
-        ];
-    }
-
-    /**
      * @Configuration\Route(
-     *  "/{id}/edit",
-     *  requirements={"id": "\d+"}
+     *  "/{government}/edit",
+     *  requirements={"government": "\d+"}
      * )
      * @Configuration\Template()
      *
@@ -145,101 +82,71 @@ class GovernmentController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, Government $government)
     {
-        $data = $this->adminEnvironmentManager()
-            ->getGovernment($government->getId());
+        $environment = $this->getCurrentEnvironment();
 
-        $form = $this->createFormBuilder()
-            ->add('main', 'government')
-            ->add(
-                'extension',
-                new ExtGovernmentType(
-                    $this->adminEnvironmentManager(),
-                    $government->getAltType()
-                )
-            )
-            ->setData([ 'main' => $government, 'extension' => $data ])
-            ->getForm();
+        $form = $this->createForm('government', $government);
         $form->handleRequest($request);
 
-        /*
-         * For cartodb update.
-         */
-        $oldSlug = $government->getSlug();
-        $oldAltTypeSlug = $government->getAltTypeSlug();
+        // Store old slug's for for further updates.
+        $oldSlug = CartoDbApi::escapeString($government->getSlug());
+        $oldAltTypeSlug = CartoDbApi::escapeString($government->getAltTypeSlug());
 
         if ($form->isValid()) {
-            $file = $government->getSecondaryLogo();
+            // Escape updated fields.
+            $newName = CartoDbApi::escapeString($government->getName());
+            $newSlug = CartoDbApi::escapeString($government->getSlug());
+            $newAltTypeSlug = CartoDbApi::escapeString($government->getAltTypeSlug());
 
-            if ($file instanceof UploadedFile) {
-                $filename = strtolower(
-                    $government->getAltTypeSlug() .'_'. $government->getSlug() .
-                    '.'. $file->getClientOriginalExtension()
-                );
+            // Get dataset name.
+            $dataset = GovwikiNamingStrategy::cartoDbDatasetName($environment);
 
-                $file->move(
-                    $this->getParameter('kernel.root_dir') .'/../web/img/upload',
-                    $filename
-                );
-
-                $government->setSecondaryLogoPath('/img/upload/'. $filename);
-            }
-
-
-            $this->getManager()->update($government);
-
-            /*
-            * Update government record in CartoDB dataset.
-            */
-            $colorizedCountyConditions = $this->adminEnvironmentManager()->getMap()
-                ->getColorizedCountyConditions();
-            $colorizedFieldName = $colorizedCountyConditions->getFieldName();
-            $isColorized = $colorizedCountyConditions->isColorized();
-
-            $sql = "
-                UPDATE {$government->getEnvironment()->getSlug()}
+            // Update CartoDB dataset.
+            $response = $this->get(CartoDbServices::CARTO_DB_API)->sqlRequest("
+                UPDATE {$dataset}
                 SET
-                    alt_type_slug = '{$government->getAltTypeSlug()}',
-                    slug = '{$government->getSlug()}'
-            ";
+                    name = '{$newName}',
+                    slug = '{$newSlug}',
+                    alt_type_slug = '{$newAltTypeSlug}'
+                WHERE
+                    slug = '{$oldSlug}' AND
+                    alt_type_slug = '{$oldAltTypeSlug}'
+            ");
 
-            $extraGovernmentData = $form->getData()['extension'];
-            $data = null;
-            if ($isColorized && $colorizedFieldName &&
-                array_key_exists($colorizedFieldName, $extraGovernmentData)) {
-                $data = $extraGovernmentData[$colorizedFieldName];
+            if (array_key_exists('error', $response)) {
+                // Display error received from CartoDB.
+
+                $this->errorMessage("Can't update CartoDB: ". $response['error'][0]);
+            } else {
+                // Government successfully updated, save changes to our database.
+                $em = $this->getDoctrine()->getManager();
+
+                $em->persist($government);
+                $em->flush();
+
+                $this->successMessage('Government updated');
+
+                return $this->redirectToRoute('govwiki_admin_government_edit', [
+                    'environment' => $environment->getSlug(),
+                    'government' => $government->getId(),
+                ]);
             }
-//            $this->dispatch(
-//                GovWikiAdminEvents::GOVERNMENT_ADD,
-//                new GovernmentAddEvent($government, $data)
-//            );
-
-            $this->get(CartoDbServices::CARTO_DB_API)
-                ->sqlRequest($sql ." WHERE
-                    alt_type_slug = '{$oldAltTypeSlug}' AND
-                    slug = '{$oldSlug}'
-                ");
-
-            $this->adminEnvironmentManager()
-                ->updateGovernment($extraGovernmentData);
-
-            $this->addFlash('admin_success', 'Government '.
-                $government->getName() .' saved');
-
-            return $this->redirectToRoute('govwiki_admin_government_index');
         }
 
         return [
-            'id' => $government->getId(),
+            'government' => $government,
             'form' => $form->createView(),
-            'formats' => $this->adminEnvironmentManager()
-                ->getFormats(false, $government->getAltType()),
+            'availableYears' => $this->getGovernmentManager()
+                ->getAvailableYears($environment, $government),
         ];
     }
 
     /**
-     * @Configuration\Route("/{id}/remove")
+     * @Configuration\Route(
+     *  "/{government}/remove",
+     *  requirements={ "government": "\d+" }
+     * )
      *
-     * @param Government $government A Government instance.
+     * @param Government $government A Government entity instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
@@ -247,124 +154,32 @@ class GovernmentController extends AbstractGovWikiAdminController
      */
     public function removeAction(Government $government)
     {
-        /*
-         * Update carto db service.
-         */
+        $name = $government->getName();
+        $environment = $this->getCurrentEnvironment();
+        $dataset = GovwikiNamingStrategy::cartoDbDatasetName($environment);
+
+        // Update carto db service.
         $this->get(CartoDbServices::CARTO_DB_API)
             ->sqlRequest("
-                DELETE FROM {$this->adminEnvironmentManager()->getSlug()}
+                DELETE FROM {$dataset}
                 WHERE alt_type_slug = '{$government->getAltTypeSlug()}' AND
                     slug = '{$government->getSlug()}'
             ");
 
-        $em = $this->getDoctrine()->getManager();
+        $this->getGovernmentManager()
+            ->removeData($environment, $government->getId());
 
+        $em = $this->getDoctrine()->getManager();
         $em->remove($government);
-        $this->adminEnvironmentManager()
-            ->deleteFromGovernment($government->getId());
         $em->flush();
 
-        $this->addFlash('admin_success', 'Government removed');
-        return $this->redirectToRoute('govwiki_admin_government_index');
-    }
+        // Remove max ranks table, max ranks values will be recalculated
+        // on demand.
+        $this->getMaxRankManager()->removeTable($environment);
 
-    /**
-     * @Configuration\Route("/import")
-     * @Configuration\Template()
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return array
-     */
-    public function importAction(Request $request)
-    {
-        /*
-         * Build form.
-         */
-        $form = $this->createFormBuilder()
-                ->add('file', 'file', [
-                    'label' => 'CSV file'
-                ])
-            ->getForm();
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $file */
-            $file = $form->getData()['file'];
-            $file->move($this->getParameter('kernel.logs_dir'), $file->getFilename());
-            $filePath = $this->getParameter('kernel.logs_dir').'/'.$file->getFilename();
-
-            $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
-                ->import(
-                    new CsvReader($filePath)
-                );
-            unlink($filePath);
-
-
-//            $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
-//                ->import(
-//                    $file->getPath() .'/'. $file->getFilename(),
-//                    $manager->getTransformer('csv')
-//                );
-
-//            /*
-//             * Send to CartoDB;
-//             */
-//            $environmentManager = $this->adminEnvironmentManager();
-//
-//            $environment = $environmentManager->getEnvironment();
-//            $filePath = $this->getParameter('kernel.logs_dir').'/'.
-//                $environment.'.json';
-//
-//            $transformerManager = $this
-//                ->get(GovWikiAdminServices::TRANSFORMER_MANAGER);
-//
-//            $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
-//                ->export(
-//                    $filePath,
-//                    $transformerManager->getTransformer('geo_json'),
-//                    [ 'id', 'altTypeSlug', 'slug', 'latitude', 'longitude' ]
-//                );
-//
-//            $this->get(CartoDbServices::CARTO_DB_API)
-//                ->dropDataset($environment)
-//                ->importDataset($filePath);
-            return $this->redirectToRoute('govwiki_admin_government_index');
-        }
-
-        return [ 'form' => $form->createView() ];
-    }
-
-    /**
-     * @Configuration\Route("/export")
-     * @Configuration\Template()
-     *
-     * @return array|BinaryFileResponse
-     */
-    public function exportAction()
-    {
-        $filePath = $this->getParameter('kernel.logs_dir') . '/government.csv';
-
-        $this->get(GovWikiDbServices::GOVERNMENT_IMPORTER)
-            ->export(new CsvWriter($filePath));
-
-        //$response = new BinaryFileResponse($filePath);
-        $response = new Response(file_get_contents($filePath));
-        $response->headers->set('Cache-Control', 'public');
-        $response->headers->set(
-            'Content-Disposition',
-            'attachment; filename=government.csv'
-        );
-
-        unlink($filePath);
-        return $response;
-    }
-
-    /**
-     * @return \GovWiki\AdminBundle\Manager\Entity\AdminGovernmentManager
-     */
-    private function getManager()
-    {
-        return $this->get(GovWikiAdminServices::GOVERNMENT_MANAGER);
+        $this->successMessage("Government {$name} removed");
+        return $this->redirectToRoute('govwiki_admin_government_index', [
+            'environment' => $environment->getSlug(),
+        ]);
     }
 }

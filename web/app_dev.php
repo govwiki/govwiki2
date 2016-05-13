@@ -17,7 +17,7 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
     exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information.');
 }
 
-$environment = 'prod';
+$environment = 'dev';
 if (strpos(getenv('HTTP_HOST'), 'm.') === 0) {
     $environment = 'mobile';
 }

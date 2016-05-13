@@ -4,178 +4,131 @@
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-        macro.breadcrumbElement(
-            admin_environment|capitalize ~' environment',
-            'govwiki_admin_main_show',
-            { 'environment': admin_environment }
-        )
-    }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
     {{ macro.breadcrumbElement('Governments') }}
 {% endblock breadcrumb %}
 
-{% block body %}
+{% block panel_title %}
+    {{ environment.name }} governments
+{% endblock panel_title %}
 
+{% block panel_body %}
+
+    {# Navigation #}
     <div class="row">
-        <div class="col-md-12">
 
-            {# Panel #}
-            <div class="panel panel-primary">
+        {# Pagination #}
+        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center">
+            {{ knp_pagination_render(governments) }}
+        </div>
 
-                {# Header #}
-                <div class="panel-heading">
-                    <h3 class="panel-title">Governments</h3>
-                </div>
+        {# Filter #}
+        <div class="col-xs-8 col-sm-9 col-md-5 col-lg-5 text-center text-left-sm">
 
-                {# Body #}
-                <div class="panel-body">
+            <div class="row">
+                <form action="" method="get" class="form-inline controls">
+                    <div class="col-xs-10">
+                        <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id" value="{{ macro.filterValue('id') }}">
 
-                    {# Navigation #}
-                    <div class="row">
+                        <input name="filter[name]" type="text" class="form-control input-sm" placeholder="Name" value="{{ macro.filterValue('name') }}">
 
-                        {# Pagination #}
-                        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center">
-                            {{ knp_pagination_render(governments) }}
-                        </div>
-
-                        {# Filter #}
-                        <div class="col-xs-8 col-sm-9 col-md-5 col-lg-5 text-center text-left-sm">
-
-                            <div class="row">
-                                <form action="" method="get" class="form-inline controls">
-                                    <div class="col-xs-10">
-
-
-                                            <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id"
-                                                   value="{{ app.request.query.get('filter') ? app.request.query.get('filter').id}}">
-
-                                            <input name="filter[name]" type="text" class="form-control input-sm" placeholder="Name"
-                                                   value="{{app.request.query.get('filter') ? app.request.query.get('filter').name}}">
-
-                                    </div>
-
-                                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
-                                        <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
-                                    </div>
-                                </form>
-                            </div>
-
-                        </div>
-
-                        {# Controls #}
-                        <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3 text-center text-right-sm">
-                            <div class="btn-group controls">
-                                {#<a class="btn btn-sm btn-default" href="{{-#}
-                                    {#path('govwiki_admin_government_export')#}
-                                {#-}}">Export</a>#}
-                                <button class="btn btn-sm btn-default" id="import">Import fin. stmt.</button>
-                                <a class="btn btn-sm btn-primary" href="{{-
-                                path('govwiki_admin_government_create')
-                                -}}">Create</a>
-                            </div>
-                        </div>
                     </div>
 
-                    {# Table #}
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            <div class="table-responsive">
-
-                                <table class="table table-bordered table-hover text-center">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ knp_pagination_sortable(governments, 'Id',        'Government.id') }}</th>
-                                            <th>{{ knp_pagination_sortable(governments, 'Name',      'Government.name') }}</th>
-                                            <th>{{ knp_pagination_sortable(governments, 'Slug',      'Government.slug') }}</th>
-                                            <th>{{ knp_pagination_sortable(governments, 'Alt. type', 'Government.altType') }}</th>
-                                            <th class="actions">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for government in governments %}
-                                            <tr>
-                                                <td>{{ government.id }}</td>
-                                                <td>{{ government.name }}</td>
-                                                <td>{{ government.slug }}</td>
-                                                <td>{{ government.altType }}</td>
-                                                <td>
-                                                    <div class="btn-group">
-                                                        <a href="{{- path('govwiki_admin_government_edit',
-                                                            { id: government.id }) -}}" class="btn btn-sm btn-default">
-                                                                <span class="glyphicon glyphicon-pencil"></span>
-                                                                Edit
-                                                        </a>
-                                                        <a href="{{-
-                                                            path('govwiki_admin_subscribe_index', { 'government': government.id })
-                                                        -}}" class="btn btn-sm btn-primary">Message</a>
-                                                        <button data-url="{{- path('govwiki_admin_government_remove',
-                                                        { id: government.id }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete government '{{ government.name }}'?">
-                                                            <span class="glyphicon glyphicon-remove"></span> Remove
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-
-                            </div>
-
-                        </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
+                        <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
                     </div>
-
-
-                    {# Navigation #}
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-
-                            {# Pagination #}
-                            <div class="navigation">
-                                {{ knp_pagination_render(governments) }}
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
+                </form>
             </div>
 
         </div>
-    </div>
 
-    <div id="modal-import" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
-                <div class="modal-body">
-                    {{- render(controller('GovWikiAdminBundle:FinData:import')) -}}
-                </div>
-                <div class="modal-footer">
-                    <div class="pull-right">
-                        <a id="import-confirm" class="btn btn-success">
-                            Import
-                        </a>
-                        <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
+        {# Controls #}
+        <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3 text-center text-right-sm">
+            <div class="btn-group controls">
+                {#<a class="btn btn-sm btn-default" href="{{-#}
+                {#path('govwiki_admin_government_export')#}
+                {#-}}">Export</a>#}
+                {#<a class="btn btn-sm btn-primary" href="{{-#}
+                    {#path('govwiki_admin_government_create', {#}
+                        {#'environment': environment.slug#}
+                    {#})#}
+                {#-}}">Create</a>#}
             </div>
         </div>
     </div>
-{% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-    <script>
-        $(function() {
 
-            $('#import').click(function () {
-               $('#modal-import').modal('show');
-            });
+    <div class="table-responsive">
 
-            $('#import-confirm').click(function () {
-                $('form', '#modal-import').submit();
-            });
-        });
-    </script>
-{% endblock javascripts %}
+        <table class="table table-bordered table-hover text-center">
+            <thead>
+            <tr>
+                <th>{{- knp_pagination_sortable(
+                    governments,
+                    'Id',
+                    'Government.id')
+                -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    governments,
+                    'Name',
+                    'Government.name')
+                -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    governments,
+                    'Slug',
+                    'Government.slug')
+                -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    governments,
+                    'Alt. type',
+                    'Government.altType')
+                -}}</th>
+                <th class="actions">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for government in governments %}
+                <tr>
+                    <td>{{ government.id }}</td>
+                    <td>{{ government.name }}</td>
+                    <td>{{ government.slug }}</td>
+                    <td>{{ government.altType }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="{{- path('govwiki_admin_government_edit', {
+                                'environment': environment.slug,
+                                'government': government.id
+                            }) -}}" class="btn btn-sm btn-default">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                Edit
+                            </a>
+                            <a href="{{- path('govwiki_admin_subscribe_index', {
+                                'environment': environment.slug,
+                                'government': government.id
+                            }) -}}" class="btn btn-sm btn-primary">Messages</a>
+                            <button data-url="{{- path(
+                                'govwiki_admin_government_remove',
+                                {
+                                    'environment': environment.slug,
+                                    'government': government.id
+                                }
+                            ) -}}" class="btn btn-sm btn-danger btn-delete"
+                                    data-description="Are you sure want to delete government '{{ government.name }}'?">
+                                <span class="glyphicon glyphicon-remove"></span> Remove
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    {{ knp_pagination_render(governments) }}
+
+{% endblock panel_body %}

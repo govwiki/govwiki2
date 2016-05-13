@@ -3,6 +3,9 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -10,8 +13,22 @@ use Symfony\Component\EventDispatcher\Event;
  * Class AbstractGovWikiAdminController
  * @package GovWiki\AdminBundle\Controller
  */
-class AbstractGovWikiAdminController extends Controller
+class AbstractGovWikiAdminController extends AbstractGovWikiController
 {
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     *
+     * @return void
+     */
+    protected function setCurrentEnvironment(Environment $environment = null)
+    {
+        $this->get(GovWikiEnvironmentService::STORAGE)->set($environment);
+        if ($environment !== null) {
+            $this->get('session')->set('environment', $environment->getSlug());
+        }
+    }
+
     /**
      * Helper method for pagination.
      *
@@ -30,26 +47,6 @@ class AbstractGovWikiAdminController extends Controller
             $page,
             $limit
         );
-    }
-
-    /**
-     * @param string $name  Event name.
-     * @param Event  $event A Event instance.
-     *
-     * @return Event
-     */
-    protected function dispatch($name, Event $event)
-    {
-        $dispatcher = $this->get('event_dispatcher');
-        return $dispatcher->dispatch($name, $event);
-    }
-
-    /**
-     * @return \GovWiki\AdminBundle\Manager\AdminEnvironmentManager
-     */
-    protected function adminEnvironmentManager()
-    {
-        return $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER);
     }
 
     /**

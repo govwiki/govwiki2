@@ -1,0 +1,77 @@
+{% extends 'GovWikiAdminBundle:Layout:main.html.twig' %}
+
+{% import _self as user_macro %}
+
+{% block title %}{{ parent() }} - {{ user.username }}{% endblock %}
+
+{% block breadcrumb %}
+    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
+    {{- macro.breadcrumbElement('Admins', 'govwiki_admin_adminuser_index') -}}
+    {{- macro.breadcrumbElement(user.username) -}}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    user.username
+{% endblock panel_title %}
+
+{% block panel_body %}
+    <table class="table">
+        <tr>
+            <td>Username</td>
+            <td>{{ user.username }}</td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>{{ user.email }}</td>
+        </tr>
+        {% if user.phone %}
+            <tr>
+                <td>Phone</td>
+                <td>{{ user.phone }} ({% if user.phoneConfirmed %}confirmed{% else %}not confirmed{% endif %})</td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td>Locked</td>
+            <td>
+                {{ user_macro.renderBoolean(user.locked) }}
+            </td>
+        </tr>
+        <tr>
+            <td>Roles</td>
+            <td>
+                {{ user.roles|roles_beautify|join(', ') }}
+            </td>
+        </tr>
+        <tr>
+            <td>Last login at:</td>
+            <td>{{ user.lastLogin|date('m/d/y g:i a') }}</td>
+        </tr>
+    </table>
+
+    <div style="padding: 10px" class="btn-group">
+        <a href="{{- path(
+            'govwiki_admin_adminuser_edit',
+            { 'id': user.id }
+        ) -}}" class="btn btn-default">
+            <i class="glyphicon glyphicon-pencil"></i> Edit
+        </a>
+        {% set glyph = 'glyphicon-ban-circle' %}
+        {% set title = 'Disable' %}
+        {% if user.locked %}
+            {% set glyph = 'glyphicon-ok-circle' %}
+            {% set title = 'Enable' %}
+        {% endif %}
+        <a href="{{- path(
+            'govwiki_admin_adminuser_enabletoggle',
+            { 'id': user.id }
+        ) -}}" class="btn btn-default">
+            <i class="glyphicon {{ glyph }}"> {{ title }}</i>
+        </a>
+    </div>
+{% endblock panel_body %}
+
+{% macro renderBoolean(value) %}
+    <span class="label {{ (value) ? 'label-success' : 'label-danger' }}">
+        {{ (value) ? 'Yes' : 'No' }}
+    </span>
+{% endmacro %}

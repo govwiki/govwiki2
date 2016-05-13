@@ -1,9 +1,129 @@
-<div role="tabpanel" class="tab-pane" id="Statements">
+{% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+{% import _self as helper %}
+
+<div role="tabpanel" class="tab-pane" id="Statements"
+     xmlns="http://www.w3.org/1999/html">
     <div class="tab-pane-main">
+
+        <div class="add_action">
+            <span>Add new Public Statement</span>
+            <span class="glyphicon glyphicon-plus"></span>
+        </div>
 
         {{ knp_pagination_render(publicStatements) }}
 
-        <table class="table table-hover" data-entity-type="Statements">
+        {%- for publicStatement in publicStatements -%}
+            {% set blockId = 'publicStatementCollapse' ~ loop.index %}
+
+            {# Card #}
+            <div class="card">
+
+                {# Header #}
+                <div class="card__header text-justify" data-toggle="collapse"
+                     data-target="#{{ blockId }}"
+                     aria-expanded="false" aria-controls="{{ blockId }}"
+                    {%-
+                        if macro.isPendingRequest(publicStatement)
+                    -%}
+                        style="background: rgba(80, 0, 0, 0.1)"
+                    {%- endif -%}>
+
+                    <p class="card__header-title">
+                        {{- publicStatement.summary -}}
+                    </p>
+
+                    <div class="card__group card__group_offset">
+                        <span class="card__group-item">
+                            Date:
+                            <span>
+                                {{- publicStatement.date | date("m/d/Y") -}}
+                            </span>
+                        </span>
+                        <span class="card__group-item card__group-item_right">
+                            Category:
+                            <span>
+                                {{- publicStatement.issueCategory.name -}}
+                            </span>
+                        </span>
+                    </div>
+
+                    <div class="card__group card__group_offset">
+                        <div class="card__group-item">
+                            Url:
+                            <span>
+                                {{- publicStatement.url -}}
+                            </span>
+                        </div>
+                    </div>
+
+                    {# Expand icon #}
+                    <div class="card__header-expand" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false"
+                         aria-controls="{{ blockId }}">
+                        <i class="glyphicon glyphicon-chevron-down"></i>
+                    </div>
+
+                </div>
+
+                {# Content (Collapsable) #}
+                <div class="collapse" id="{{ blockId }}">
+                    <div class="card__block">
+
+                        <h4>
+                            {{- macro.dataElement(publicStatement, 'summary') -}}
+                        </h4>
+
+                        <div class="card__group card__group_offset">
+                            <span class="card__group-item">
+                                Date:
+                                <span>
+                                    {{- macro.dataElement(
+                                        publicStatement,
+                                        'date'
+                                    ) -}}
+                                </span>
+                            </span>
+                            <span class="card__group-item card__group-item_right">
+                                Category:
+                                <span>
+                                    {{- macro.dataSubElement(
+                                        publicStatement,
+                                        'issueCategory',
+                                        'name',
+                                        {
+                                            type: 'select',
+                                            source: issuesCategoriesSource() | json_encode | replace('"', '\'')
+                                        }
+                                    ) -}}
+                                </span>
+                            </span>
+                        </div>
+
+                        <div class="card__group card__group_offset">
+                            <div class="card__group-item">
+                                Url:
+                                <span>
+                                    {{- macro.dataElement(
+                                        publicStatement,
+                                        'url'
+                                    ) -}}
+                                </span>
+                            </div>
+                        </div>
+
+                        {%- if not macro.isPendingRequest(publicStatement) -%}
+                            {# Comment icon #}
+                            <p class="card__block-footer">
+                                <a href="#"><i class="glyphicon glyphicon-comment"></i> 0</a>
+                            </p>
+                        {%- endif -%}
+
+                    </div>
+                </div>
+            </div>{# Card end #}
+
+        {%- endfor -%}
+
+        {#<table class="table table-hover" data-entity-type="Statements">
             <tr>
                 <th>Date</th>
                 <th>Summary</th>
@@ -18,19 +138,7 @@
                 {%- endif -%}
                 >
 
-                    <td data-date="{{statement.date | date("m/d/Y")  }}">
-                        <a href="javascript:void(0);" data-type="date" data-pk="1"
-                           data-placeholder="Please edit" data-title="Please edit"
-                           class="editable editable-pre-wrapped editable-click" data-original-title=""  data-format="mm/dd/yyyy"
-                           title="">{{statement.date | date("m/d/Y") }}<span class="glyphicon glyphicon-pencil edit"></span></a>
-                    </td>
-                    <td data-summary="{{statement.summary}}">
-                        <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-                           data-placeholder="Please edit" data-title="Please edit"
-                           class="editable editable-pre-wrapped editable-click" data-original-title=""
-                           title="">{{statement.summary}}</a>
-                        <span class="glyphicon glyphicon-pencil edit"></span>
-                    </td>
+
                     <td data-url="{{statement.url}}">
                         <a href="javascript:void(0);" data-type="text" data-pk="1"
                            data-placeholder="Please edit" data-title="Please edit"
@@ -60,15 +168,7 @@
                 </tr>
 
             {% endfor %}
-
-            <tr class="add_action">
-                <td colspan="5" class="add">
-                    Add new Statement
-                    <span class="glyphicon glyphicon-plus"></span>
-                </td>
-            </tr>
-
-        </table>
+        </table>#}
 
 
     </div>

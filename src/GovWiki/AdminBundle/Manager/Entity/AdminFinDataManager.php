@@ -33,6 +33,7 @@ class AdminFinDataManager extends AbstractAdminEntityManager
     {
         /** @var FinDataRepository $repository */
         $repository = $this->getRepository();
+
         return $repository->getAvailableYears($government);
     }
 
@@ -81,7 +82,7 @@ class AdminFinDataManager extends AbstractAdminEntityManager
     public function create()
     {
         $tab = new Category();
-        $tab->setEnvironment($this->getEnvironmentReference());
+        $tab->setEnvironment($this->getEnvironment());
 
         return $tab;
     }
@@ -97,7 +98,7 @@ class AdminFinDataManager extends AbstractAdminEntityManager
         $repository = $this->getRepository();
 
         $tab->setOrderNumber($repository->getPreviousOrderNumber(
-            $this->environment,
+            $this->getEnvironment()->getSlug(),
             $tab->getOrderNumber()
         ));
 
@@ -115,7 +116,7 @@ class AdminFinDataManager extends AbstractAdminEntityManager
         $repository = $this->getRepository();
 
         $tab->setOrderNumber($repository->getNextOrderNumber(
-            $this->environment,
+            $this->getEnvironment()->getSlug(),
             $tab->getOrderNumber()
         ));
 

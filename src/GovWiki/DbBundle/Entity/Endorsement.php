@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\QueryBuilder;
+use GovWiki\DbBundle\Form\EndorsementType;
 use GovWiki\RequestBundle\Entity\AbstractCreatable;
 use GovWiki\RequestBundle\Entity\EndorsementCreateRequest;
 use JMS\Serializer\Annotation\Groups;
@@ -16,7 +17,8 @@ use JMS\Serializer\Annotation\Groups;
  *  repositoryClass="GovWiki\DbBundle\Entity\Repository\EndorsementRepository"
  * )
  */
-class Endorsement extends AbstractCreatable
+class Endorsement extends AbstractCreatable implements
+    StaffEntityInterface
 {
     const ELECTED_OFFICIAL = 'Elected Official';
     const ORGANIZATION = 'Organization';
@@ -218,5 +220,13 @@ class Endorsement extends AbstractCreatable
     public function getIssueCategory()
     {
         return $this->issueCategory;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getFormType()
+    {
+        return new EndorsementType();
     }
 }

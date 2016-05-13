@@ -1,149 +1,166 @@
-{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% extends "GovWikiAdminBundle:Government:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - governments{% endblock %}
 
 {% block breadcrumb %}
-    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
-    {{-
-        macro.breadcrumbElement(
-            admin_environment|capitalize ~' environment',
-            'govwiki_admin_main_show',
-            { 'environment': admin_environment }
-        )
-    -}}
-    {{- macro.breadcrumbElement('Governments', 'govwiki_admin_government_index') -}}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
     {{- macro.breadcrumbElement(
-            'Edit '~ government.name,
-            'govwiki_admin_government_index',
-            { 'government': government.id }
-        )
-    -}}
-    {{-  macro.breadcrumbElement('Documents') -}}
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Governments',
+        'govwiki_admin_government_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        government.name,
+        'govwiki_admin_government_edit',
+        {
+            'environment': environment.slug,
+            'government': government.id
+        }
+    ) -}}
+    {{- macro.breadcrumbElement(government.name ~ ' documents') -}}
 {% endblock breadcrumb %}
 
-{% block body %}
+{% block panel_title %}
+    {{ government.name}} documents
+{% endblock panel_title %}
 
+{% block panel_body %}
+    {# Navigation #}
+    <div class="row">
+
+        {# Pagination #}
+        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center">
+            {{ knp_pagination_render(documents) }}
+        </div>
+
+        {# Filter #}
+        <div class="col-xs-8 col-sm-9 col-md-5 col-lg-5 text-center text-left-sm">
+
+            <div class="row">
+                <form action="" method="get" class="form-inline controls">
+                    <div class="col-xs-10">
+
+
+                        <input name="filter[type]" type="text" class="form-control input-sm"
+                               placeholder="Type" value="{{ macro.filterValue('type') }}">
+
+                        <input name="filter[date]" type="text" class="form-control input-sm"
+                               placeholder="Date" value="{{ macro.filterValue('date') }}">
+
+                    </div>
+
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
+                        <button type="submit" class="btn btn-sm btn-primary controls"
+                                value="Filter">Filter</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        {# Controls #}
+        <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3 text-center text-right-sm">
+            <div class="btn-group controls">
+                <a class="btn btn-sm btn-primary" href="{{-
+                path('govwiki_admin_document_new', {
+                    'environment': environment.slug,
+                    'government': government.id
+                })
+                -}}">Create</a>
+            </div>
+        </div>
+
+    </div>
+
+    {# Table #}
     <div class="row">
         <div class="col-md-12">
 
-            {# Panel #}
-            <div class="panel panel-primary">
+            <div class="table-responsive">
 
-                {# Header #}
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ government.name}} documents</h3>
-                </div>
+                <table class="table table-bordered table-hover text-center">
+                    <thead>
+                    <tr>
+                        <th>{{- knp_pagination_sortable(
+                            documents,
+                            'Id',
+                            'Document.id'
+                        ) -}}</th>
+                        <th>{{- knp_pagination_sortable(
+                            documents,
+                            'Type',
+                            'Document.type'
+                        ) -}}</th>
+                        <th>{{- knp_pagination_sortable(
+                            documents,
+                            'Description',
+                            'Document.description'
+                        ) -}}</th>
+                        <th>{{- knp_pagination_sortable(
+                            documents,
+                            'Link',
+                            'Document.link'
+                        ) -}}</th>
+                        <th>{{- knp_pagination_sortable(
+                            documents,
+                            'Date',
+                            'Document.date'
+                        ) -}}</th>
+                        <th class="actions">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for document in documents %}
+                        <tr>
+                            <td>{{ document.id }}</td>
+                            <td>{{ document.type|capitalize }}</td>
+                            <td>{{ document.description }}</td>
+                            <td>{{ document.link }}</td>
+                            <td>{{ document.date|date('Y-m-d') }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{- path('govwiki_admin_document_edit', {
+                                        'environment': environment.slug,
+                                        'government': government.id,
+                                        'document': document.id
+                                    }) -}}" class="btn btn-sm btn-default">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                        Edit
+                                    </a>
+                                    <button data-url="{{- path('govwiki_admin_document_delete', {
+                                        'environment': environment.slug,
+                                        'government': government.id,
+                                        'document': document.id
+                                    }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete document '{{ document.link }}'?">
+                                        <span class="glyphicon glyphicon-remove"></span> Remove
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
 
-                {# Body #}
-                <div class="panel-body">
-
-                    {# Navigation #}
-                    <div class="row">
-
-                        {# Pagination #}
-                        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center">
-                            {{ knp_pagination_render(documents) }}
-                        </div>
-
-                        {# Filter #}
-                        <div class="col-xs-8 col-sm-9 col-md-5 col-lg-5 text-center text-left-sm">
-
-                            <div class="row">
-                                <form action="" method="get" class="form-inline controls">
-                                    <div class="col-xs-10">
-
-
-                                            <input name="filter[type]" type="text" class="form-control input-sm" placeholder="Type"
-                                                   value="{{ app.request.query.get('filter') ? app.request.query.get('filter').type}}">
-
-                                            <input name="filter[date]" type="text" class="form-control input-sm" placeholder="Date"
-                                                   value="{{app.request.query.get('filter') ? app.request.query.get('filter').date}}">
-
-                                    </div>
-
-                                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
-                                        <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
-                                    </div>
-                                </form>
-                            </div>
-
-                        </div>
-
-                        {# Controls #}
-                        <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3 text-center text-right-sm">
-                            <div class="btn-group controls">
-                                <a class="btn btn-sm btn-primary" href="{{-
-                                path('govwiki_admin_document_new', {
-                                    'government': government.id
-                                })
-                                -}}">Create</a>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    {# Table #}
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            <div class="table-responsive">
-
-                                <table class="table table-bordered table-hover text-center">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ knp_pagination_sortable(documents, 'Id',        'Document.id') }}</th>
-                                            <th>{{ knp_pagination_sortable(documents, 'Type',      'Document.type') }}</th>
-                                            <th>{{ knp_pagination_sortable(documents, 'Description','Document.description') }}</th>
-                                            <th>{{ knp_pagination_sortable(documents, 'Link',      'Document.link') }}</th>
-                                            <th>{{ knp_pagination_sortable(documents, 'Date',      'Document.date') }}</th>
-                                            <th class="actions">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for document in documents %}
-                                            <tr>
-                                                <td>{{ document.id }}</td>
-                                                <td>{{ document.type|capitalize }}</td>
-                                                <td>{{ document.description }}</td>
-                                                <td>{{ document.link }}</td>
-                                                <td>{{ document.date|date('Y-m-d') }}</td>
-                                                <td>
-                                                    <div class="btn-group">
-                                                        <a href="{{- path('govwiki_admin_document_edit', { 'government': government.id, 'document': document.id }) -}}" class="btn btn-sm btn-default">
-                                                                <span class="glyphicon glyphicon-pencil"></span>
-                                                                Edit
-                                                        </a>
-                                                        <button data-url="{{- path('govwiki_admin_document_delete', { 'government': government.id, 'document': document.id }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete government '{{ document.link }}'?">
-                                                            <span class="glyphicon glyphicon-remove"></span> Remove
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-
-                            </div>
-
-                        </div>
-                    </div>
-
-
-                    {# Navigation #}
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-
-                            {# Pagination #}
-                            <div class="navigation">
-                                {{ knp_pagination_render(documents) }}
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
             </div>
 
         </div>
     </div>
-{% endblock %}
+
+
+    {# Navigation #}
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            {# Pagination #}
+            <div class="navigation">
+                {{ knp_pagination_render(documents) }}
+            </div>
+
+        </div>
+    </div>
+{% endblock panel_body %}

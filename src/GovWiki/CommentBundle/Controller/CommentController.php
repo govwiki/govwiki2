@@ -5,6 +5,7 @@ namespace GovWiki\CommentBundle\Controller;
 use GovWiki\CommentBundle\Entity\VoteComment;
 use GovWiki\CommentBundle\Form\VoteCommentType;
 use GovWiki\CommentBundle\GovWikiCommentServices;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +18,7 @@ use GovWiki\AdminBundle\GovWikiAdminServices;
  *
  * @Configuration\Route("/comment")
  */
-class CommentController extends Controller
+class CommentController extends AbstractGovWikiController
 {
 
     /**
@@ -69,7 +70,7 @@ class CommentController extends Controller
                 $setFrom = explode('@', 'user1@mail1.dev');
                 $setFrom = 'robot@'.$setFrom[1];
             } else {
-                $adminEmail = $this->adminEnvironmentManager()->getEntity()->getAdminEmail();
+                $adminEmail = $this->getCurrentEnvironment()->getAdminEmail();
                 $message->setTo($adminEmail);
                 $setFrom = explode('@', $adminEmail);
                 $setFrom = 'robot@'.$setFrom[1];

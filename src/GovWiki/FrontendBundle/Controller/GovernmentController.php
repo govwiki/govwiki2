@@ -8,18 +8,18 @@ use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\DbBundle\Entity\Message;
 use GovWiki\DbBundle\Form\MessageType;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * MainController
  */
-class GovernmentController extends Controller
+class GovernmentController extends AbstractGovWikiController
 {
 
     /**
@@ -78,14 +78,16 @@ class GovernmentController extends Controller
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
         $this->clearTranslationsCache();
-        $manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
+        $manager = $this->getGovernmentManager();
         $user = $this->getUser();
+        $environment = $this->getCurrentEnvironment();
 
-        $years = $manager->getAvailableYears();
+        $years = $manager->getAvailableYears($environment);
         $currentYear = $request->query->getInt('year', $years[0]);
 
         $data = $manager
             ->getGovernment(
+                $environment,
                 $altTypeSlug,
                 $slug,
                 $currentYear
@@ -143,7 +145,8 @@ class GovernmentController extends Controller
                         return 0;
                     }
 
-                    return ($a < $b) ? 1: -1; }
+                    return ($a < $b) ? 1: -1;
+                }
 
                 return 0;
             });
@@ -159,6 +162,7 @@ class GovernmentController extends Controller
         }
 
         $data['years'] = $years;
+        $data['currentYear'] = $currentYear;
         $data['government']['translations'] = [
             'total_revenue' => $translator->trans('general.findata.main.total_revenue'),
             'total_expenditure' => $translator->trans('general.findata.main.total_expenditure'),
@@ -174,7 +178,7 @@ class GovernmentController extends Controller
             $env_name = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)->getEnvironment();
             /** @var Government $government */
             $government = $em->getRepository('GovWikiDbBundle:Government')
-                ->getListQuery($env_name, $data['government']['id'])
+                ->getListQuery($environment->getId(), $data['government']['id'])
                 ->getOneOrNullResult();
 
             if ($government) {
@@ -244,7 +248,7 @@ From ' . $user_email;
             ->getRepository('GovWikiDbBundle:Pension')
             ->has($data['government']['id'], $data['government']['currentYear']);
 
-        $data['environment_is_subscribable'] = $manager->getEntity()->getSubscribable();
+        $data['environment_is_subscribable'] = $environment->getSubscribable();
 
         return $data;
     }

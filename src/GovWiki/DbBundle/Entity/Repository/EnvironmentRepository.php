@@ -18,6 +18,63 @@ class EnvironmentRepository extends EntityRepository
     private $style;
 
     /**
+     * @param string $domain Domain name.
+     *
+     * @return Environment|null
+     */
+    public function getByDomain($domain)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+        try {
+            return $this->getQueryBuilder()
+                ->where($expr->andX(
+                    $expr->eq('Environment.domain', ':domain'),
+                    $expr->eq('Environment.enabled', 1)
+                ))
+                ->setParameter('domain', $domain)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
+    }
+
+    /**
+     * @param string $slug Slugged environment name.
+     *
+     * @return Environment|null
+     */
+    public function getBySlug($slug)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+        try {
+            return $this->getQueryBuilder()
+                ->where($expr->andX(
+                    $expr->eq('Environment.slug', ':slug'),
+                    $expr->eq('Environment.enabled', 1)
+                ))
+                ->setParameter('slug', $slug)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
+    }
+
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getQueryBuilder()
+    {
+        return $this->createQueryBuilder('Environment')
+            ->addSelect('Map, DefaultLocale, Locale')
+            ->leftJoin('Environment.map', 'Map')
+            ->leftJoin('Environment.users', 'User')
+            ->leftJoin('Environment.defaultLocale', 'DefaultLocale')
+            ->leftJoin('Environment.locales', 'Locale');
+    }
+
+    /**
      * @param integer $id User id, if set get environment where given user is
      *                    manager.
      *
@@ -44,6 +101,7 @@ class EnvironmentRepository extends EntityRepository
      * @param integer $user        User id.
      *
      * @return Environment|null
+     * @deprecated
      */
     public function getByName($environment, $user = null)
     {
@@ -78,6 +136,7 @@ class EnvironmentRepository extends EntityRepository
      * @param integer $user        User id.
      *
      * @return boolean|\Doctrine\Common\Proxy\Proxy|null|object
+     * @deprecated
      */
     public function getReferenceByName($environment, $user = null)
     {
@@ -111,6 +170,7 @@ class EnvironmentRepository extends EntityRepository
      * @param string $domain Environment domain name.
      *
      * @return string|null
+     * @deprecated
      */
     public function getNameByDomain($domain)
     {
@@ -138,6 +198,7 @@ class EnvironmentRepository extends EntityRepository
      * @param string $environment A Environment name.
      *
      * @return string
+     * @deprecated
      */
     public function getStyle($environment)
     {

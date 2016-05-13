@@ -1,92 +1,66 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - Localizations{% endblock %}
 
 {% block breadcrumb %}
-    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {% if admin_environment is not null %}
-        {{
-        macro.breadcrumbElement(
-        admin_environment|capitalize ~' environment',
-        'govwiki_admin_main_show',
-        { 'environment': admin_environment }
-        )
-        }}
-    {% endif %}
+    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
     {{ macro.breadcrumbElement('Localizations') }}
 {% endblock breadcrumb %}
 
-{% block body %}
+{% block panel_title %}
+    {{ environment.name }} locales
+{% endblock panel_title %}
 
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-8 col-md-offset-2">
+{% block panel_body %}
+    {{ knp_pagination_render(locale_names_list) }}
 
-            {# Panel #}
-            <div class="panel panel-primary">
+    <table class="table table-bordered text-center">
+        <tr>
+            <th>Name</th>
+            <th class="actions">Actions</th>
+        </tr>
+        {%- for locale in locale_names_list -%}
+            <tr>
+                <td>
+                    <a href="{{ path('govwiki_admin_localization_showlocale',
+                    { 'environment': environment.slug, locale_name: locale.shortName}) }}">
+                        {{ locale.shortName|upper }}
+                    </a>
+                </td>
+                <td>
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+                        {% if locale.shortName != 'en' %}
+                            <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_localization_removelocale', {
+                                    'environment': environment.slug,
+                                    locale_name: locale.shortName
+                                }) -}}" data-description="Delete localization?">
+                                Delete
+                            </button>
+                        {% endif %}
+                        <a class="btn btn-sm btn-default" href="{{-
+                            path('govwiki_admin_localization_exportlocale', {
+                                'environment': environment.slug,
+                                'locale_name': locale.shortName
+                            })
+                        -}}">Export</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {%- endfor -%}
+    </table>
 
-                {# Header #}
-                <div class="panel-heading">
-                    <h3 class="panel-title">Localization list</h3>
-                </div>
+    {{ knp_pagination_render(locale_names_list) }}
 
-                {# Body #}
-                <div class="panel-body">
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h3>Localizations</h3>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            {{ knp_pagination_render(locale_names_list) }}
-
-                            <table class="table table-bordered text-center">
-                                <tr>
-                                    <th>Name</th>
-                                    <th class="actions">Actions</th>
-                                </tr>
-                                {%- for locale in locale_names_list -%}
-                                    <tr>
-                                        <td>
-                                            <a href="{{ path('govwiki_admin_localization_showlocale',
-                                                { locale_name: locale.shortName}) }}">
-                                                {{ locale.shortName|upper }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-                                                {% if locale.shortName != 'en' %}
-                                                    <button class="btn btn-danger btn-delete" data-url="{{- path('govwiki_admin_localization_removelocale', { locale_name: locale.shortName }) -}}" data-description="Delete localization?">
-                                                        Delete
-                                                    </button>
-                                                {% endif %}
-                                                <a class="btn btn-sm btn-default" href="{{-
-                                                path('govwiki_admin_localization_exportlocale', {'locale_name': locale.shortName})
-                                                -}}">Export</a>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {%- endfor -%}
-                            </table>
-
-                            {{ knp_pagination_render(locale_names_list) }}
-
-                            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-                                <a class="btn btn-primary" href="{{ path('govwiki_admin_localization_createlocale') }}">
-                                    Add localization
-                                </a>
-                            {% endif %}
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-
-{% endblock %}
+    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+        <a class="btn btn-primary" href="{{- path('govwiki_admin_localization_createlocale', {
+            'environment': environment.slug
+        }) -}}">
+            Add localization
+        </a>
+    {% endif %}
+{% endblock panel_body %}

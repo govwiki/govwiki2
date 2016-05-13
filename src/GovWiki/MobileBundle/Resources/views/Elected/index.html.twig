@@ -62,8 +62,8 @@
 
     </section>
 
-    <!-- Disqus Modal -->
-    {% include 'GovWikiMobileBundle:Partial/Elected/Modals:disqus.html.twig' %}
+    <!-- Facebook Comment Modal -->
+    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:facebook_comment.html.twig' %}
 
     <!-- Votes Modal -->
     {% include 'GovWikiMobileBundle:Partial/Elected/Modals:votes.html.twig' %}
@@ -172,11 +172,12 @@
 {# Stylesheets #}
 {% block stylesheets %}
 
-    {{parent()}}
+    {{ parent() }}
 
-    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
-
-    {% stylesheets '@GovWikiMobileBundle/Resources/public/css/elected.scss' filter='scss' %}
+    {% stylesheets
+        '@GovWikiMobileBundle/Resources/public/css/elected.scss'
+        '@GovWikiMobileBundle/Resources/public/css/bootstrap-editable.css'
+        filter='scss, cssrewrite' %}
         <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 
@@ -192,21 +193,13 @@
         window.gw.electedOfficial = '{{ electedOfficialJSON | escape('js') }}';
 
         window.gw.urls = {};
-        window.gw.urls.create_request = '{{ govwiki_path('govwiki_api_v1_createrequest_create') }}'
-        window.gw.urls.edit_request = '{{ govwiki_path('govwiki_api_v1_editrequest_create') }}'
-        window.gw.urls.check_url = '{{ govwiki_path('govwiki_api_v1_url_extract') }}'
+        window.gw.urls.create_request = '{{ path('govwiki_api_v1_createrequest_create') }}';
+        window.gw.urls.edit_request = '{{ path('govwiki_api_v1_editrequest_create') }}';
+        window.gw.urls.check_url = '{{ path('govwiki_api_v1_url_extract') }}';
     </script>
-
-    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
-    <script id="dsq-embed-scr" src="//cpc-civicprofiles.disqus.com/embed.js"></script>
-    <script id="dsq-count-scr" src="//cpc-civicprofiles.disqus.com/count.js"></script>
 
-    {% javascripts  '@GovWikiMobileBundle/Resources/public/js/vendor/handlebars.js'
-                    '@GovWikiMobileBundle/Resources/public/js/script.js'
-                    '@GovWikiMobileBundle/Resources/public/js/elected/handlers.js'
-                    output='js/mobile_elected.js' %}
-        <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+    <script src="/js/mobile/common.js"></script>
+    <script src="/js/mobile/elected.js"></script>
 
 {% endblock %}

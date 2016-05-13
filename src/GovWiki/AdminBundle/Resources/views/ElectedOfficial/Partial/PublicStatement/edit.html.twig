@@ -1,0 +1,60 @@
+{% extends "GovWikiAdminBundle:ElectedOfficial:layout.html.twig" %}
+
+{% block title %}
+    {{ parent() }} - {{ elected.fullName }} public statements
+{% endblock title %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Elected Officials',
+        'govwiki_admin_electedofficial_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Edit '~ elected.fullName,
+        'govwiki_admin_electedofficial_edit',
+        {
+            'environment': environment.slug,
+            'elected': elected.id
+        }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Public statements',
+        'govwiki_admin_electedofficial_staff',
+        {
+            'environment': environment.slug,
+            'elected': elected.id,
+            'staff': 'PublicStatement'
+        }
+    ) -}}
+    {{- macro.breadcrumbElement('Update public statement ' ~ entity.id) -}}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    Update public statement {{ entity.id }}
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <div class="btn-group">
+        <button type="submit" class="btn btn-success">Update</button>
+        <a class="btn btn-danger" href="{{- path(
+        'govwiki_admin_electedofficial_staff',
+        {
+            'environment': environment.slug,
+            'elected': elected.id,
+            'staff': 'PublicStatement'
+        }
+        ) -}}">
+            Back
+        </a>
+    </div>
+    {{ form_end(form) }}
+{% endblock panel_body %}

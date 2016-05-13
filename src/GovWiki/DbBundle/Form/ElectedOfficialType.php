@@ -3,7 +3,7 @@
 namespace GovWiki\DbBundle\Form;
 
 use Doctrine\ORM\EntityRepository;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -14,18 +14,19 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class ElectedOfficialType extends AbstractType
 {
-    /**
-     * @var AdminEnvironmentManager
-     */
-    private $manager;
 
     /**
-     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
-     *                                         instance.
+     * @var EnvironmentStorageInterface
      */
-    public function __construct(AdminEnvironmentManager $manager)
+    private $storage;
+
+    /**
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
+     */
+    public function __construct(EnvironmentStorageInterface $storage)
     {
-        $this->manager = $manager;
+        $this->storage = $storage;
     }
 
     /**
@@ -53,7 +54,7 @@ class ElectedOfficialType extends AbstractType
                         ->join('Government.environment', 'Environment')
                         ->where($expr->eq(
                             'Environment.slug',
-                            $expr->literal($this->manager->getSlug())
+                            $expr->literal($this->storage->get()->getSlug())
                         ));
                 },
             ]);

@@ -2,10 +2,14 @@
 
 namespace GovWiki\DbBundle\Form;
 
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\DbBundle\Entity\Government;
+use GovWiki\EnvironmentBundle\Manager\Format\FormatManagerInterface;
+use GovWiki\EnvironmentBundle\Manager\Government\GovernmentManagerInterface;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -14,25 +18,29 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class ExtGovernmentType extends AbstractType
 {
-    /**
-     * @var AdminEnvironmentManager
-     */
-    private $manager;
 
     /**
-     * @var string
+     * @var EnvironmentStorageInterface
      */
-    private $altType;
+    protected $storage;
 
     /**
-     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
-     *                                         instance.
-     * @param string                  $altType Government alt type.
+     * @var FormatManagerInterface
      */
-    public function __construct(AdminEnvironmentManager $manager, $altType = null)
-    {
-        $this->manager = $manager;
-        $this->altType = $altType;
+    protected $formatManage;
+
+    /**
+     * @param EnvironmentStorageInterface $storage       A EnvironmentStorageInterface
+     *                                                   instance.
+     * @param FormatManagerInterface      $formatManager A FormatManagerInterface
+     *                                                   instance.
+     */
+    public function __construct(
+        EnvironmentStorageInterface $storage,
+        FormatManagerInterface $formatManager
+    ) {
+        $this->storage = $storage;
+        $this->formatManage = $formatManager;
     }
 
     /**
@@ -40,47 +48,42 @@ class ExtGovernmentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $formats = $this->manager
-            ->getFormats(true);
+        /** @var Government $government */
+        $government = $options['government'];
+        $environment = $this->storage->get();
 
-        if ($this->altType) {
-            foreach ($formats as $format) {
-                if (in_array($this->altType, $format['showIn'], true)) {
-                    $format['type'] = ('string' === $format['type']) ? 'text' : 'number';
+        $formats = $this->formatManage
+            ->getList($environment, $government->getAltType());
 
-                    $builder->add(
-                        $format['field'],
-                        $format['type'],
-                        [ 'required' => false ]
-                    );
-                    if ($format['ranked']) {
-                        $builder->add(
-                            $format['field'] . '_rank',
-                            'integer',
-                            [ 'required' => false ]
-                        );
-                    }
-                }
+        foreach ($formats as $format) {
+            // Generate form field parameters.
+            $parameters = [ 'required' => false ];
+            if ($format['type'] === 'float') {
+                $parameters['attr'] = [ 'step' => 0.01 ];
             }
-        } else {
-            foreach ($formats as $format) {
-                $format['type'] = ('string' === $format['type']) ? 'text' : 'number';
 
-                $builder->add(
-                    $format['field'],
-                    $format['type'],
-                    [ 'required' => false ]
-                );
-                if ($format['ranked']) {
-                    $builder->add(
-                        $format['field'] . '_rank',
-                        'integer',
-                        [ 'required' => false ]
-                    );
-                }
-            }
+            $builder->add(
+                $format['field'],
+                ('string' === $format['type']) ? 'text' : 'number',
+                $parameters
+            );
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        // Require Government entity as option.
+        $resolver
+            ->setDefaults([
+                'government' => null,
+            ])
+            ->addAllowedTypes('government', 'GovWiki\DbBundle\Entity\Government')
+            ->setRequired('government');
+    }
+
 
     /**
      * {@inheritdoc}

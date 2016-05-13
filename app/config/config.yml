@@ -52,6 +52,7 @@ twig:
 
 # Assetic Configuration
 assetic:
+    ruby: ~
     debug:          "%kernel.debug%"
     use_controller: false
     bundles:
@@ -78,9 +79,8 @@ doctrine:
         password: "%database_password%"
         charset:  UTF8
         types:
-            colorized_county_condition: GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditionsType
-        mapping_types:
-            colorized_county_condition: text
+            coloring_conditions: GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditionsType
+            ColoringConditions: GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditionsType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"

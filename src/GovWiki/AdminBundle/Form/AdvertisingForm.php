@@ -12,18 +12,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class AdvertisingForm extends AbstractType
 {
-    /**
-     * @var string
-     */
-    private $currentEnvironment;
-
-    /**
-     * @param string $currentEnvironment
-     */
-    public function __construct($currentEnvironment)
-    {
-        $this->currentEnvironment = $currentEnvironment;
-    }
 
     /**
      * {@inheritdoc}
@@ -31,15 +19,6 @@ class AdvertisingForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add(
-                'environment',
-                'entity',
-                [
-                    'class' => 'GovWikiDbBundle:Environment',
-                    'property' => 'name',
-                    'data' => $this->currentEnvironment,
-                ]
-            )
             ->add(
                 'advertingType',
                 'choice',
@@ -70,8 +49,7 @@ class AdvertisingForm extends AbstractType
                     'required' => true,
                     'label' => 'Code',
                 ]
-            )
-            ->add('submit', 'submit');
+            );
     }
 
     /**

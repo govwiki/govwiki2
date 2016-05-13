@@ -10,23 +10,19 @@ use Doctrine\ORM\EntityRepository;
 class EditRequestRepository extends EntityRepository
 {
     /**
-     * @param string $environment Environment name.
+     * @param integer $environment A Environment entity id.
      *
      * @return \Doctrine\ORM\Query
      */
     public function getListQuery($environment)
     {
-        $qb = $this->createQueryBuilder('EditRequest');
-        $expr = $qb->expr();
+        $expr = $this->_em->getExpressionBuilder();
 
-        return $qb
+        return $this->createQueryBuilder('EditRequest')
             ->addSelect('User')
             ->leftJoin('EditRequest.user', 'User')
-            ->leftJoin('EditRequest.environment', 'Environment')
-            ->where($expr->andX(
-                $expr->neq('EditRequest.status', $expr->literal('discarded')),
-                $expr->eq('Environment.slug', $expr->literal($environment))
-            ))
+            ->where($expr->eq('EditRequest.environment', ':environment'))
+            ->setParameter('environment', $environment)
             ->orderBy($expr->desc('EditRequest.created'))
             ->getQuery();
     }

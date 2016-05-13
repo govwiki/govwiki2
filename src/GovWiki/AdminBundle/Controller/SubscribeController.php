@@ -2,7 +2,6 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use GovWiki\DbBundle\Entity\Chat;
@@ -17,8 +16,11 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  * @package GovWiki\AdminBundle\Controller
  *
  * @Configuration\Route(
- *  "/{government}/subscribers",
- *  requirements={ "governments": "\d+" }
+ *  "/{environment}/{government}/subscribers",
+ *  requirements={
+ *      "environment": "\w+",
+ *      "governments": "\d+"
+ *  }
  * )
  */
 class SubscribeController extends AbstractGovWikiAdminController
@@ -38,7 +40,10 @@ class SubscribeController extends AbstractGovWikiAdminController
     {
         $em = $this->getDoctrine()->getManager();
         $form = $this->createFormBuilder()
-            ->add('message', 'textarea', [ 'constraints' => new NotBlank() ])
+            ->add('message', 'textarea', [
+                'attr' => [ 'style' => 'height: 140px;' ],
+                'constraints' => new NotBlank(),
+            ])
             ->getForm();
 
         $form->handleRequest($request);
@@ -77,7 +82,7 @@ From ' . $user_email;
                 [
                     'author' => $user_email,
                     'government_name' => $government->getName(),
-                    'message_text' => $body
+                    'message_text' => $body,
                 ]
             );
 
@@ -113,26 +118,27 @@ From ' . $user_email;
      */
     public function addAction(Request $request, Government $government)
     {
-        $subscribers = $this->getDoctrine()
-            ->getRepository('GovWikiUserBundle:User')
-            ->getSubscriberIds($government->getId());
-
         $form = $this->createFormBuilder()
             ->add('users', 'entity', [
                 'class' => 'GovWiki\UserBundle\Entity\User',
                 'multiple' => true,
-                'query_builder' => function(EntityRepository $repository) use ($subscribers) {
+                'query_builder' => function (EntityRepository $repository) use ($government) {
                     $qb = $repository->createQueryBuilder('User');
                     $expr = $qb->expr();
 
-                    if (count($subscribers) > 0) {
-                        $qb
-                            ->where($expr->notIn('User.id', ':alreadySubscribed'))
-                            ->setParameter('alreadySubscribed', $subscribers);
-                    }
+                    // Remove user already subscribed to specified government.
+                    $filterDql = $repository->createQueryBuilder('User2')
+                        ->select('User2.id')
+                        ->innerJoin('User2.subscribedTo', 'Government')
+                        ->where($expr->eq('Government.id', ':government'))
+                        ->getDQL();
+
+                    $qb
+                        ->where($expr->notIn('User.id', $filterDql))
+                        ->setParameter('government', $government->getId());
 
                     return $qb;
-                }
+                },
             ])
             ->getForm();
 
@@ -160,6 +166,7 @@ From ' . $user_email;
             $this->successMessage('New subscribers added.');
 
             return $this->redirectToRoute('govwiki_admin_subscribe_index', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
                 'government' => $government->getId(),
             ]);
         }
@@ -188,7 +195,10 @@ From ' . $user_email;
         $em->persist($government);
         $em->flush();
 
+        $this->successMessage('User '. $subscriber->getUsername(). ' unsubscribed.');
+
         return $this->redirectToRoute('govwiki_admin_subscribe_index', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
             'government' => $government->getId(),
         ]);
     }

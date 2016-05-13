@@ -1,1 +1,1 @@
-window.changeLocale = require('./localization/localization.js');
+require('bootstrap');

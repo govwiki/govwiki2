@@ -2,9 +2,8 @@
 
 namespace GovWiki\MobileBundle\Controller;
 
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
-use GovWiki\ApiBundle\GovWikiApiServices;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -13,25 +12,27 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @Configuration\Route("/localization")
  */
-class LocalizationController extends Controller
+class LocalizationController extends AbstractGovWikiController
 {
     /**
      * Change locale
      *
-     * @Configuration\Route("/change_locale")
+     * @Configuration\Route(
+     *  "/change_locale/{locale}",
+     *  requirements={ "locale": "\w+" }
+     * )
      *
      * @param Request $request Request.
+     * @param string  $locale  Locale short name.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function changeLocaleAction(Request $request)
+    public function changeLocaleAction(Request $request, $locale)
     {
         $this->clearTranslationsCache();
 
-        $url = $request->get('current_url');
-        $locale_name = $request->get('locale_short_name');
-
-        $this->get('session')->set('_locale', $locale_name);
+        $url = $request->server->get('HTTP_REFERER');
+        $this->get('session')->set('_locale', $locale);
 
         return $this->redirect($url);
     }
@@ -39,7 +40,7 @@ class LocalizationController extends Controller
     /**
      * Show all environment locales in header
      *
-     * @param string $current_page_route Current page route
+     * @param string $current_page_route Current page route.
      *
      * @Configuration\Template()
      *
@@ -47,19 +48,23 @@ class LocalizationController extends Controller
      */
     public function showLocalesInHeaderAction($current_page_route)
     {
-        $environment_manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
-        $environment = $environment_manager->getEnvironment();
+        $environment = $this->getCurrentEnvironment()->getSlug();
 
-        $locale_names_list = $this->getDoctrine()->getRepository('GovWikiDbBundle:AbstractLocale')->getListLocaleNames($environment);
+        $locale_names_list = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:AbstractLocale')
+            ->getListLocaleNames($environment);
 
-        return [ 'locale_names_list' => $locale_names_list, 'current_page_route' => $current_page_route ];
+        return [
+            'locale_names_list' => $locale_names_list,
+            'current_page_route' => $current_page_route,
+        ];
     }
 
     private function clearTranslationsCache()
     {
         $cacheDir = __DIR__ . "/../../../../app/cache";
         $finder = new \Symfony\Component\Finder\Finder();
-        $finder->in(array($cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"))->files();
+        $finder->in([$cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"])->files();
         foreach($finder as $file){
             unlink($file->getRealpath());
         }

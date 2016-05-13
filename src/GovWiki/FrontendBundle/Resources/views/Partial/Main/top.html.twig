@@ -6,7 +6,7 @@
         {# Preloader #}
         <div class="loader"></div>
 
-        {# Notification message#}
+        {# Notification message #}
         <div class="mapOnProcessing">
             <h5>Please wait, map recently created</h5>
             <h5>Please refresh page later</h5>
@@ -15,7 +15,7 @@
         {# Legend #}
         <ul id='menu'>
 
-            {% if 'altTypes' in mapEntity.legendTypes %}
+            {% if 'altTypes' in environment.map.legendTypes %}
                 <li class="legend-header">
                     <span>{{ 'map.select.types'|trans }}:</span>
                     {#<span>Select type(s):</span>#}

@@ -5,13 +5,13 @@ namespace GovWiki\AdminBundle\Manager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 
 /**
  * Class AbstractAdminEntityManager
  * @package GovWiki\AdminBundle\Manager
  */
-abstract class AbstractAdminEntityManager implements
-    AdminEntityManagerAwareInterface
+abstract class AbstractAdminEntityManager
 {
     /**
      * @var EntityManagerInterface
@@ -19,44 +19,30 @@ abstract class AbstractAdminEntityManager implements
     protected $em;
 
     /**
-     * @var string
+     * @var EnvironmentStorageInterface
      */
-    protected $environment;
+    protected $storage;
 
     /**
-     * @var integer
+     * @param EntityManagerInterface      $em      A EntityManagerInterface
+     *                                             instance.
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
      */
-    private $environmentId;
-
-    /**
-     * @param EntityManagerInterface $em A EntityManagerInterface instance.
-     */
-    public function __construct(EntityManagerInterface $em) {
+    public function __construct(
+        EntityManagerInterface $em,
+        EnvironmentStorageInterface $storage
+    ) {
         $this->em = $em;
+        $this->storage = $storage;
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function setEnvironment($environment)
-    {
-        $this->environment = $environment;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setEnvironmentId($id)
-    {
-        $this->environmentId = $id;
-    }
-
-    /**
-     * @return string
+     * @return Environment
      */
     public function getEnvironment()
     {
-        return $this->environment;
+        return $this->storage->get();
     }
 
     /**
@@ -67,6 +53,7 @@ abstract class AbstractAdminEntityManager implements
     public function create()
     {
         $className = $this->getEntityClassName();
+
         return new $className();
     }
 
@@ -109,6 +96,57 @@ abstract class AbstractAdminEntityManager implements
     abstract protected function getEntityClassName();
 
     /**
+     * @param array $columns Array of columns name for fetching data from
+     *                       repository.
+     *
+     * @return array
+     */
+    public function getAll(array $columns = null, $offset = 0, $limit = null)
+    {
+        /** @var EntityRepository $repository */
+        $repository = $this->getRepository();
+
+        $alias = substr(
+            $this->getEntityClassName(),
+            strrpos($this->getEntityClassName(), '\\') + 1
+        );
+
+        $qb = $repository->createQueryBuilder($alias);
+        if (count($columns) > 0) {
+//            foreach ($columns as &$column) {
+//                $column = "$alias.$column";
+//            }
+            $columns = array_map(
+                function ($column) use ($alias) {
+                    return "$alias.$column";
+                },
+                $columns
+            );
+            $qb->select(implode(',', $columns));
+        }
+
+        $expr = $qb->expr();
+
+        if (null !== $limit) {
+            $qb->setMaxResults($limit);
+        }
+
+        return $qb
+            ->join($alias.'.environment', 'Environment')
+            ->where(
+                $expr->eq('Environment.slug', ':environment')
+            )
+            ->setParameter('environment', $this->getEnvironment()->getSlug())
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
+     * @param string $entityName Get for specified entity. If null get repository
+     *                           for manged entity
+     *                           {@see AbstractAdminEntityManager::getEntityClassName}.
+     *
      * @return \Doctrine\ORM\EntityRepository
      */
     protected function getRepository($entityName = null)
@@ -118,16 +156,6 @@ abstract class AbstractAdminEntityManager implements
         }
 
         return $this->em->getRepository($entityName);
-    }
-
-    /**
-     * @param integer $id Entity id.
-     *
-     * @return object
-     */
-    public function getReference($id)
-    {
-        return $this->em->getReference($this->getEntityClassName(), $id);
     }
 
     /**
@@ -148,56 +176,5 @@ abstract class AbstractAdminEntityManager implements
     protected function createQuery($dql)
     {
         return $this->em->createQuery($dql);
-    }
-
-    /**
-     * @return Environment
-     */
-    public function getEnvironmentReference()
-    {
-        return $this->em->getReference(
-            'GovWiki\DbBundle\Entity\Environment',
-            $this->environmentId
-        );
-    }
-
-    /**
-     * @param array $columns Array of columns name for fetching data from
-     *                       repository.
-     *
-     * @return array
-     */
-    public function getAll(array $columns = null, $offset = 0, $limit = null)
-    {
-        /** @var EntityRepository $repository */
-        $repository = $this->getRepository();
-
-        $alias = substr(
-            $this->getEntityClassName(),
-            strrpos($this->getEntityClassName(), '\\') + 1
-        );
-
-        $qb = $repository->createQueryBuilder($alias);
-        if (count($columns) > 0) {
-            foreach ($columns as &$column) {
-                $column = "$alias.$column";
-            }
-            $qb->select(implode(',', $columns));
-        }
-
-        $expr = $qb->expr();
-
-        if (null !== $limit) {
-            $qb->setMaxResults($limit);
-        }
-
-        return $qb
-            ->join($alias.'.environment', 'Environment')
-            ->where(
-                $expr->eq('Environment.slug', $expr->literal($this->environment))
-            )
-            ->setFirstResult($offset)
-            ->getQuery()
-            ->getArrayResult();
     }
 }
