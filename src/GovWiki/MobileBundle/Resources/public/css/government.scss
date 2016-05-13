@@ -12,35 +12,46 @@
         margin-top: 10px;
     }
 
-    header {
+    .header {
+        /* TODO hardcode */
+        &.california {
+            background-image: url('/img/mobile/California.jpg');
 
-        h3 {
-            color: $main-text;
+            a {
+                color: white;
+            }
 
-            /*
-               todo hardcode for puerto.
-            */
-            &.puerto {
-                color: #f15a29;
+            .statistics-table td {
+                color: white;
+            }
+
+            h3 {
+                color: $main-text
             }
         }
 
-    }
+        &.puerto_rico {
+            background: white;
 
-    .header {
-        background-image: url('/img/mobile/California.jpg');
+            a {
+                color: black;
+            }
+
+            .statistics-table td {
+                color: black;
+            }
+
+            h3 {
+                color: black
+            }
+        }
         background-size: cover;
         background-repeat: no-repeat;
-
-        a {
-            color: white;
-        }
 
         .statistics-table {
             margin: 0;
 
             td {
-                color: white;
                 padding: 0 8px;
 
                 &:nth-child(1) {
@@ -56,7 +67,14 @@
         }
 
         .header-content {
-            background-color: rgba(0, 55, 122, 0.55);
+            /* TODO hardcode */
+            &.california {
+                background-color: rgba(0, 55, 122, 0.55);
+            }
+
+            &.puerto_rico {
+                background-color: white;
+            }
         }
 
         .header-icons {
@@ -81,8 +99,17 @@
             display: none;
             padding: 0 15px;
             text-align: center;
-            background-color: #0B4D70;
-            color: white;
+
+            /* TODO hardcode */
+            &.california {
+                background-color: #0B4D70;
+                color: white;
+            }
+
+            &.puerto_rico {
+                background-color: #a1928d;
+                color: white;
+            }
 
             a {
                 color: white;
@@ -117,10 +144,19 @@
     .tab-pane {
 
         .tab-title {
-            background-color: #65A7D6;
+//            background-color: #65A7D6;
             color: white;
             margin-bottom: 15px;
             padding: 0 15px;
+
+            /* TODO hardcode */
+            &.california {
+                background-color: #65A7D6;
+            }
+
+            &.puerto_rico {
+                background-color: #a1928d;
+            }
         }
 
         .tab-content {

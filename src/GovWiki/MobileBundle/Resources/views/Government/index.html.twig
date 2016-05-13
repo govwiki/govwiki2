@@ -20,10 +20,10 @@
 
 
             {# TMP MOBILE LAYOUT (START) #}
-                <header class="header">
-                    <h6 style="color: white;padding: 15px;margin: 0;">{{government.name}}</h6>
+                <header class="header {{ environment }}">
+                    <h6 style="{{ (environment == 'california') ? 'color: white' : 'color: black'}}padding: 15px;margin: 0;">{{government.name}}</h6>
 
-                    <div class="header-content">
+                    <div class="header-content {{ environment }}">
                         {# Get first tab and show on top. #}
                         {% set tabName = formars|keys|first %}
                         {% set categories = formats|first %}
@@ -88,7 +88,7 @@
                                 {% set tab_id = categories|first|first.tab_id %}
                             {% endif %}
 
-                            <li class="{{ loop.first ? 'active' : '' }} tab">
+                            <li class="{{ loop.first ? 'active' : '' }} tab {{ environment }}">
                                 <span class="prev_tab">
                                     <i class="glyphicon glyphicon-chevron-left"></i>
                                 </span>
@@ -106,7 +106,7 @@
                     {% endif %}
 
                     {% if hasSalaries %}
-                        <li class="tab">
+                        <li class="tab {{ environment }}">
                             <span class="prev_tab">
                                 <i class="glyphicon glyphicon-chevron-left"></i>
                             </span>
@@ -118,7 +118,7 @@
                     {% endif %}
 
                     {% if hasPensions %}
-                        <li class="tab">
+                        <li class="tab {{ environment }}">
                             <span class="prev_tab">
                                 <i class="glyphicon glyphicon-chevron-left"></i>
                             </span>
@@ -130,7 +130,7 @@
                     {% endif %}
 
                     {% if showFinStmt %}
-                        <li class="tab">
+                        <li class="tab {{ environment }}">
                             <span class="prev_tab">
                                 <i class="glyphicon glyphicon-chevron-left"></i>
                             </span>
@@ -159,7 +159,7 @@
 
                             <div class="tab-pane active" id="{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
 
-                                <div class="tab-title">
+                                <div class="tab-title {{ environment }}">
                                     {{ ('groups.group_id_'~tab_id)|trans }}
                                 </div>
 
