@@ -93,11 +93,7 @@
                         {% if (formats is defined) and (formats is not empty) %}
 
                             {% for tabName, categories in formats %}
-                                {% if categories["Main"] is defined %}
-                                    {% set tab_id = categories["Main"]|first.tab_id %}
-                                {% else %}
-                                    {% set tab_id = categories|first|first.tab_id %}
-                                {% endif %}
+                                {% set tab_id = categories|first|first.tab_id %}
 
                                 <div class="tab-pane {{ loop.first ? 'active' : '' }}" id="{{ self.tabSlug(tabName) }}">
 

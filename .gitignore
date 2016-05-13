@@ -19,6 +19,8 @@
 !/web/img/locales/
 !/web/img/upload/.gitkeep
 !/web/img/upload/shape/.gitkeep
+!/web/img/loading.gif
+!/web/img/clear.png
 
 /web/css/*
 !/web/css/.gitkeep

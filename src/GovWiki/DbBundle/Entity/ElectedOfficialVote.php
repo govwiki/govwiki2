@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use GovWiki\CommentBundle\Entity\VoteComment;
 use GovWiki\DbBundle\Form\ElectedOfficialVoteType;
+use GovWiki\RequestBundle\Entity\LegislationCreateRequest;
 use JMS\Serializer\Annotation\Groups;
 
 /**
@@ -57,6 +58,8 @@ class ElectedOfficialVote implements StaffEntityInterface
     private $electedOfficial;
 
     /**
+     * @var Legislation
+     *
      * @ORM\ManyToOne(targetEntity="Legislation", inversedBy="electedOfficialVotes")
      * @Groups({"elected_official"})
      */
@@ -87,6 +90,7 @@ class ElectedOfficialVote implements StaffEntityInterface
      * Set vote
      *
      * @param string $vote
+     *
      * @return ElectedOfficialVote
      */
     public function setVote($vote)
@@ -124,6 +128,7 @@ class ElectedOfficialVote implements StaffEntityInterface
      * Set didElectedOfficialProposeThis
      *
      * @param boolean $didElectedOfficialProposeThis
+     *
      * @return ElectedOfficialVote
      */
     public function setDidElectedOfficialProposeThis($didElectedOfficialProposeThis)
@@ -146,10 +151,11 @@ class ElectedOfficialVote implements StaffEntityInterface
     /**
      * Set electedOfficial
      *
-     * @param \GovWiki\DbBundle\Entity\ElectedOfficial $electedOfficial
+     * @param ElectedOfficial $electedOfficial A ElectedOfficial entity instance.
+     *
      * @return ElectedOfficialVote
      */
-    public function setElectedOfficial(\GovWiki\DbBundle\Entity\ElectedOfficial $electedOfficial = null)
+    public function setElectedOfficial(ElectedOfficial $electedOfficial = null)
     {
         $this->electedOfficial = $electedOfficial;
 
@@ -159,7 +165,7 @@ class ElectedOfficialVote implements StaffEntityInterface
     /**
      * Get electedOfficial
      *
-     * @return \GovWiki\DbBundle\Entity\ElectedOfficial
+     * @return ElectedOfficial
      */
     public function getElectedOfficial()
     {
@@ -169,10 +175,11 @@ class ElectedOfficialVote implements StaffEntityInterface
     /**
      * Set legislation
      *
-     * @param \GovWiki\DbBundle\Entity\Legislation $legislation
+     * @param Legislation $legislation A Legislation entity instance.
+     *
      * @return ElectedOfficialVote
      */
-    public function setLegislation(\GovWiki\DbBundle\Entity\Legislation $legislation = null)
+    public function setLegislation(Legislation $legislation = null)
     {
         $this->legislation = $legislation;
 
@@ -192,7 +199,8 @@ class ElectedOfficialVote implements StaffEntityInterface
     /**
      * Add comment
      *
-     * @param VoteComment $comment A VoteComment instance.
+     * @param VoteComment $comment A VoteComment entity instance.
+     *
      * @return Legislation
      */
     public function addComment(VoteComment $comment)
@@ -206,7 +214,7 @@ class ElectedOfficialVote implements StaffEntityInterface
     /**
      * Remove comment
      *
-     * @param VoteComment $comment A VoteComment instance.
+     * @param VoteComment $comment A VoteComment entity instance.
      *
      * @return ElectedOfficialVote
      */
@@ -233,5 +241,13 @@ class ElectedOfficialVote implements StaffEntityInterface
     public static function getFormType()
     {
         return new ElectedOfficialVoteType();
+    }
+
+    /**
+     * @return \GovWiki\RequestBundle\Entity\LegislationCreateRequest
+     */
+    public function getRequest()
+    {
+        return $this->legislation->getRequest();
     }
 }

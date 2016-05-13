@@ -1,5 +1,7 @@
 {% extends "GovWikiMobileBundle:Layout:main.html.twig" %}
 
+{% import _self as self %}
+
 {% block main %}
 
 
@@ -27,8 +29,6 @@
                         {# Get first tab and show on top. #}
                         {% set tabName = formars|keys|first %}
                         {% set categories = formats|first %}
-                        {# Remove first tab from list. #}
-                        {% set formats = formats[1:formats|length] %}
                         {% for categoryName, fields in categories %}
                             <table class="statistics-table table">
                                 {% for fieldName, format in fields %}
@@ -79,85 +79,76 @@
                 </header>
 
                 {# Tabs control #}
-                <ul class="nav">
-                    {% if (formats is defined) and (formats is not empty) %}
-                        {% for tabName, categories in formats %}
-                            {% if categories[""] is defined %}
-                                {% set tab_id = categories[""]|first.tab_id %}
-                            {% else %}
+                <div id="tabs-control">
+                    <ul class="nav">
+                        {% if (formats is defined) and (formats is not empty) %}
+                            {% for tabName, categories in formats %}
                                 {% set tab_id = categories|first|first.tab_id %}
-                            {% endif %}
+                                {% set slug = self.tabSlug(tabName) %}
 
-                            <li class="{{ loop.first ? 'active' : '' }} tab">
+                                <li class="{{ loop.first ? 'active' : '' }} tab">
+                                    <span class="prev_tab">
+                                        <i class="glyphicon glyphicon-chevron-left"></i>
+                                    </span>
+                                    <a class="tab_{{ slug|lower }}"
+                                       href="#{{ slug }}">
+                                                {{- ('groups.group_id_'~tab_id)|trans -}}
+                                    </a>
+                                    <span class="next_tab">
+                                        <i class="glyphicon glyphicon-chevron-right"></i>
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if hasSalaries %}
+                            <li class="tab">
                                 <span class="prev_tab">
                                     <i class="glyphicon glyphicon-chevron-left"></i>
                                 </span>
-                                {# TODO: Hardcoded, for new db, must be replaced #}
-                                <a class="tab_{{ tabName | replace(' ', '_') | replace('+', 'a')|lower }}"
-                                   href="#{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
-                                            {{- ('groups.group_id_'~tab_id)|trans -}}
-                                            {#{{ tabName }}#}
-                                </a>
+                                <a class="tab_salaries" href="#Salaries">Salaries</a>
                                 <span class="next_tab">
                                     <i class="glyphicon glyphicon-chevron-right"></i>
                                 </span>
                             </li>
-                        {% endfor %}
-                    {% endif %}
+                        {% endif %}
 
-                    {% if hasSalaries %}
-                        <li class="tab">
-                            <span class="prev_tab">
-                                <i class="glyphicon glyphicon-chevron-left"></i>
-                            </span>
-                            <a class="tab_salaries" href="#Salaries">Salaries</a>
-                            <span class="next_tab">
-                                <i class="glyphicon glyphicon-chevron-right"></i>
-                            </span>
-                        </li>
-                    {% endif %}
+                        {% if hasPensions %}
+                            <li class="tab">
+                                <span class="prev_tab">
+                                    <i class="glyphicon glyphicon-chevron-left"></i>
+                                </span>
+                                <a class="tab_pensions" href="#Pensions">Pensions</a>
+                                <span class="next_tab">
+                                    <i class="glyphicon glyphicon-chevron-right"></i>
+                                </span>
+                            </li>
+                        {% endif %}
 
-                    {% if hasPensions %}
-                        <li class="tab">
-                            <span class="prev_tab">
-                                <i class="glyphicon glyphicon-chevron-left"></i>
-                            </span>
-                            <a class="tab_pensions" href="#Pensions">Pensions</a>
-                            <span class="next_tab">
-                                <i class="glyphicon glyphicon-chevron-right"></i>
-                            </span>
-                        </li>
-                    {% endif %}
-
-                    {% if showFinStmt %}
-                        <li class="tab">
-                            <span class="prev_tab">
-                                <i class="glyphicon glyphicon-chevron-left"></i>
-                            </span>
-                            <a class="tab_financial_statements" href="#Financial_Statements">{{ 'gov.financial_statements'|trans }}</a>
-                            <span class="next_tab">
-                                <i class="glyphicon glyphicon-chevron-right"></i>
-                            </span>
-                        </li>
-                    {% endif %}
-
-                </ul>
+                        {% if showFinStmt %}
+                            <li class="tab">
+                                <span class="prev_tab">
+                                    <i class="glyphicon glyphicon-chevron-left"></i>
+                                </span>
+                                <a class="tab_financial_statements" href="#Financial_Statements">{{ 'gov.financial_statements'|trans }}</a>
+                                <span class="next_tab">
+                                    <i class="glyphicon glyphicon-chevron-right"></i>
+                                </span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
 
                 {# Tab content #}
                 <div>
 
                     {% if (formats is defined) and (formats is not empty) %}
-
                         {% set tab_id_list = [] %}
 
                         {% for tabName, categories in formats %}
-                            {% if categories[""] is defined %}
-                                {% set tab_id = categories[""]|first.tab_id %}
-                            {% else %}
-                                {% set tab_id = categories|first|first.tab_id %}
-                            {% endif %}
+                            {% set tab_id = categories|first|first.tab_id %}
 
-                            <div class="tab-pane active" id="{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
+                            <div class="tab-pane active" id="{{ self.tabSlug(tabName) }}">
 
                                 <div class="tab-title">
                                     {{ ('groups.group_id_'~tab_id)|trans }}
@@ -324,3 +315,7 @@
     <script src="/js/mobile/government.js"></script>
 
 {% endblock %}
+
+{%- macro tabSlug(tabName) -%}
+    {{- tabName | replace(' ', '_') | replace('+', 'a') -}}
+{%- endmacro -%}

@@ -1,12 +1,15 @@
+{% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
 {% import _self as helper %}
 
 <div role="tabpanel" class="tab-pane active" id="Votes">
 	<div class="tab-pane-main">
 
 		<div class="add_action">
-			<span class="add">Add new Vote</span>
+			<span>Add new Vote</span>
 			<span class="glyphicon glyphicon-plus"></span>
 		</div>
+
+        {{ knp_pagination_render(endorsements) }}
 
 		{% for vote in votes %}
 			{% set blockId = 'voteCollapse' ~ loop.index %}
@@ -15,8 +18,14 @@
 				<div class="card">
 
 					{# Header #}
-					<div class="card__header text-justify" data-toggle="collapse" data-target="#{{ blockId }}"
-					     aria-expanded="false" aria-controls="{{ blockId }}">
+					<div class="card__header text-justify" data-toggle="collapse"
+                         data-target="#{{ blockId }}"
+					     aria-expanded="false" aria-controls="{{ blockId }}"
+                        {%-
+                           if macro.isPendingRequest(vote.legislation)
+                        -%}
+                            style="background: rgba(80, 0, 0, 0.1)"
+                        {%- endif -%}>
 
 						{# Legislation Name#}
 						<p class="card__header-title">{{ vote.legislation.name }}</p>
@@ -67,10 +76,12 @@
 								</tr>
 							</table>
 
-							{# Comment icon #}
-							<p class="card__block-footer">
-								<a href="#"><i class="glyphicon glyphicon-comment"></i> 0</a>
-							</p>
+                            {%- if not macro.isPendingRequest(vote.legislation) -%}
+                                {# Comment icon #}
+                                <p class="card__block-footer">
+                                    <a href="#"><i class="glyphicon glyphicon-comment"></i> 0</a>
+                                </p>
+                            {%- endif -%}
 
 						</div>
 					</div>
@@ -82,64 +93,119 @@
 	</div>
 </div>
 
-{% macro legislationDate (vote) %}
+{% macro legislationDate(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
 	<div data-date-considered="{{ vote.legislation.dateConsidered | date("m/d/Y") }}" class="card__group-item">
-		<a href="javascript:void(0);"
-		   data-type="date"
-		   data-pk="1"
-		   data-format="mm/dd/yyyy"
-		   data-placeholder="Please edit"
-		   data-title="Please edit"
-		   data-original-title="" title=""
-		   class="editable editable-pre-wrapped editable-click">{{ vote.legislation.dateConsidered | date("m/d/Y") }}</a>
-		<span class="glyphicon glyphicon-pencil edit"></span>
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.legislation.dateConsidered | date("m/d/Y") -}}
+        {%- else -%}
+            <a href="javascript:void(0);"
+               data-type="date"
+               data-pk="1"
+               data-format="mm/dd/yyyy"
+               data-placeholder="Please edit"
+               data-title="Please edit"
+               data-original-title="" title=""
+               class="editable editable-pre-wrapped editable-click">
+                {{- vote.legislation.dateConsidered | date("m/d/Y") -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
 	</div>
 {% endmacro %}
 
-
-{% macro legislationIssueCategory (vote) %}
+{% macro legislationIssueCategory(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
 	<div data-gov-assigned-number="{{ vote.legislation.govAssignedNumber }}" class="card__group-item card__group-item_right" >
-		<a href="javascript:void(0);"
-		   data-type="textarea"
-		   data-pk="1"
-		   data-placeholder="Please edit"
-		   data-title="Please edit"
-		   data-original-title="" title=""
-		   class="editable editable-pre-wrapped editable-click">{{ vote.legislation.issueCategory.name }}: {{ vote.legislation.govAssignedNumber }}</a> <span class="glyphicon glyphicon-pencil edit"></span>
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.legislation.issueCategory.name -}}
+        {%- else -%}
+            <a href="javascript:void(0);"
+               data-type="textarea"
+               data-pk="1"
+               data-placeholder="Please edit"
+               data-title="Please edit"
+               data-original-title="" title=""
+               class="editable editable-pre-wrapped editable-click">
+                {{- vote.legislation.issueCategory.name -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+            {# : {{ vote.legislation.govAssignedNumber }} #}
+        {%- endif -%}
 	</div>
 {% endmacro %}
 
-{% macro legislationName (vote) %}
+{% macro legislationName(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
 	<div data-name="{{ vote.legislation.name }}">
-		<a href="javascript:void(0);" data-type="textarea" data-pk="1" data-placeholder="Please edit"
-		   data-title="Please edit" class="editable editable-pre-wrapped editable-click" data-original-title=""
-		   title="">{{ vote.legislation.name }}</a> <span class="glyphicon glyphicon-pencil edit"></span>
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.legislation.name -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title=""
+               title="">
+                {{- vote.legislation.name -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
 	</div>
 {% endmacro %}
 
-{% macro legislationSummary (vote) %}
+{% macro legislationSummary(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
 	<div data-summary="{{ vote.legislation.summary }}" class="card__block-content">
-		<a href="javascript:void(0);" data-type="textarea" data-pk="1" data-placeholder="Please edit"
-		   data-title="Please edit" class="editable editable-pre-wrapped editable-click" data-original-title=""
-		   title="">{{ vote.legislation.summary }}</a> <span class="glyphicon glyphicon-pencil edit"></span>
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.legislation.summary -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title=""
+               title="">
+                {{- vote.legislation.summary -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
 	</div>
 {% endmacro %}
 
-{% macro legislationVote (vote) %}
+{% macro legislationVote(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
 	<div data-vote="{{ vote.vote }}">
-		<a href="javascript:void(0);" data-type="select"
-		   data-source="{'Yes': 'Yes', 'No': 'No', 'Abstain': 'Abstain', 'Absence': 'Absence', 'Not in Office': 'Not in Office'}"
-		   data-pk="1" data-placeholder="Please edit" data-title="Please edit"
-		   class="editable editable-pre-wrapped editable-click" data-original-title="" title="">{{ vote.vote }}</a>
-		<span data-id="{{ vote.id }}" class="glyphicon glyphicon-pencil edit"></span>
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.vote -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="select"
+               data-source="{'Yes': 'Yes', 'No': 'No', 'Abstain': 'Abstain', 'Absence': 'Absence', 'Not in Office': 'Not in Office'}"
+               data-pk="1" data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title="" title="">
+                {{- vote.vote -}}
+                <span data-id="{{ vote.id }}"
+                      class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
 	</div>
 {% endmacro %}
 
-{% macro legislationSponsor (vote) %}
+{% macro legislationSponsor(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
 	<div data-did-elected-official-propose-this="{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}"
 	     align="center">
-		<a href="javascript:void(0);" data-type="select" data-source="{'0': 'No', '1': 'Yes'}" data-pk="1"
-		   data-placeholder="Please edit" data-title="Please edit"
-		   class="editable editable-pre-wrapped editable-click" data-original-title="" title="">{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}</a> <span data-id="{{ vote.id }}" class="glyphicon glyphicon-pencil edit"></span>
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.didElectedOfficialProposeThis ? 'Yes' : 'No' -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="select"
+               data-source="{'0': 'No', '1': 'Yes'}" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title="" title="">
+                {{- vote.didElectedOfficialProposeThis ? 'Yes' : 'No' -}}
+                <span data-id="{{ vote.id }}"
+                      class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}#}
 	</div>
 {% endmacro %}

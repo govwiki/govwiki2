@@ -13,7 +13,8 @@ module.exports = {
     entry: {
         map: './' + path.base + '/home/index.js',
         government: './' + path.base + '/government/index.js',
-        common: './' + path.base + '/common.js'
+        common: './' + path.base + '/common.js',
+        elected: './' + path.base + '/elected/handlers.js'
     },
     output: {
         path: __dirname + path.web,
@@ -22,7 +23,7 @@ module.exports = {
     },
     devtool: 'eval',
     resolve: {
-        root: [pathUtil.join(__dirname, 'bower_components')],
+        root: [ pathUtil.join(__dirname, 'bower_components') ],
         alias: {
             typeahead: pathUtil.join(__dirname, path.base, '/vendor/typeahead.js'),
             handlebars: pathUtil.join(__dirname, path.base, '/vendor/handlebars.js')
@@ -36,7 +37,6 @@ module.exports = {
         }),
         new webpack.DefinePlugin({
             'process.env': {
-                // This has effect on the react lib size
                 'NODE_ENV': JSON.stringify('production')
             }
         }),

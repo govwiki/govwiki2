@@ -312,7 +312,7 @@ function gotoTab($mobileTab) {
   window.scrollBy(0, -45);
 }
 
-// Sticky header
+// Sticky header.
 $(window).scroll(function windowScroll() {
   if (window.pageYOffset > 147) {
     $mobileNav.addClass("nav_fixed");
@@ -321,6 +321,19 @@ $(window).scroll(function windowScroll() {
   }
 });
 
+// Init tooltip.
 $('[data-toggle=tooltip]').tooltip({
   trigger: 'click'
+});
+
+// Change table value row.
+$('.fin-stmt-select').change(function finStmtCaptionChange() {
+  var $this = $(this);
+  var $table = $this.closest('table');
+  var value = $this.find(':selected').val();
+
+  $table.find('td:nth-child(2)').hide();
+  $table.find('td:nth-child(3)').hide();
+  $table.find('td:nth-child(4)').hide();
+  $table.find('td:nth-child('+ value +')').show();
 });
