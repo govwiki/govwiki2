@@ -5,6 +5,7 @@ services:
             - @govwiki_environment.storage
             - @govwiki_environment.manager.elected_official
             - @translator
+            - @doctrine.orm.default_entity_manager
         tags:
             - { name: twig.extension }
 

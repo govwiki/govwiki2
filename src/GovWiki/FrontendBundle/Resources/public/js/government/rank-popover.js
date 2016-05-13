@@ -193,10 +193,12 @@ RankPopover.prototype.sortHandler = function sortHandler() {
             $column.attr('data-sort-type') === 'name_order' ? order.altType = '' : order.rank = '';
             $column.removeClass('desc').removeClass('asc');
             $sortIcon.removeClass('icon__bottom').removeClass('icon__top');
+
         } else if ($column.hasClass('asc')) {
             $column.attr('data-sort-type') === 'name_order' ? order.altType = 'desc' : order.rank = 'desc';
             $column.removeClass('asc').addClass('desc');
             $sortIcon.removeClass('icon__top').addClass('icon__bottom');
+
         } else {
             $column.attr('data-sort-type') === 'name_order' ? order.altType = 'asc' : order.rank = 'asc';
             $column.addClass('asc');

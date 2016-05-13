@@ -121,7 +121,7 @@
     }
 %}
 
-{% for categoryName, fields in financialStatements %}
+{%- for categoryName, fields in financialStatements -%}
     <table class="financial-table table table-striped">
 
         {% set showTotalAndOver = (fields|first).otherfunds is defined %}
@@ -131,46 +131,50 @@
                 {# Category caption #}
                 <th><b>{{ ('caption_categories.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></th>
                 <th>
-                    <select>
-                        <option value="2">
-                            {{ 'funds.general_fund'|trans }}
-                        </option>
-                        <option value="3">
-                            {{ 'funds.other'|trans }}
-                        </option>
-                        <option value="4">
-                            {{ 'funds.total'|trans }}
-                        </option>
-                    </select>
+                    {%- if showTotalAndOver -%}
+                        <select class="fin-stmt-select">
+                            <option value="2">
+                                {{- 'funds.general_fund'|trans -}}
+                            </option>
+                            <option value="3">
+                                {{- 'funds.other'|trans -}}
+                            </option>
+                            <option value="4">
+                                {{- 'funds.total'|trans -}}
+                            </option>
+                        </select>
+                    {%- else -%}
+                        {{- 'funds.general_fund'|trans -}}
+                    {%- endif -%}
                 </th>
             </tr>
         </thead>
         <tbody>
 
             {# Category fields #}
-            {% for name, data in fields %}
+            {%- for name, data in fields -%}
                 <tr>
 
                     <td>
-                        {{ ('findata.captions.' ~ name | replace(finDataReplacements) | lower) | trans }}
+                        {{- ('findata.captions.' ~ name | replace(finDataReplacements) | lower) | trans -}}
                     </td>
                     <td>
                         {%- if not showTotalAndOver or loop.first -%}
                             $&nbsp;
                         {%- endif -%}
-                        {% if data.genfund is defined %}
+                        {%- if data.genfund is defined -%}
                             {{- macro.displayValue(data.genfund) -}}
                         {%- else -%}
                             0
                         {%- endif -%}
                     </td>
 
-                    {% if showTotalAndOver %}
+                    {%- if showTotalAndOver -%}
                         <td>
                             {%- if loop.first -%}
                                 $&nbsp;
                             {%- endif -%}
-                            {% if data.otherfunds is defined %}
+                            {%- if data.otherfunds is defined -%}
                                 {{- macro.displayValue(data.otherfunds) -}}
                             {%- else -%}
                                 0
@@ -181,27 +185,27 @@
                                 $&nbsp;
                             {%- endif -%}
 
-                            {% if data.totalfunds is defined %}
+                            {%- if data.totalfunds is defined -%}
                                 {{- macro.displayValue(data.totalfunds) -}}
                             {%- else -%}
                                 0
                             {%- endif -%}
                         </td>
-                    {% endif %}
+                    {%- endif -%}
 
                 </tr>
-            {% endfor %}
+            {%- endfor -%}
 
         </tbody>
 
     </table>
-{% endfor %}
+{%- endfor -%}
 
 
-{% macro displayValue(value) %}
-    {% if value < 0 %}
-        ({{ value|abs|number_format }})
-    {% else %}
-        {{ value |number_format}}
-    {% endif %}
-{% endmacro %}
+{%- macro displayValue(value) -%}
+    {%- if value < 0 -%}
+        ({{- value|abs|number_format -}})
+    {%- else -%}
+        {{- value |number_format -}}
+    {%- endif -%}
+{%- endmacro -%}

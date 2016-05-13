@@ -1,0 +1,69 @@
+{%- macro isPendingRequest(staf) -%}
+    {{- (staf.request is not null) and (staf.request.status == 'pending') -}}
+{%- endmacro -%}
+
+{%- macro dataElement(staf, field, options) -%}
+    {% import _self as self %}
+    {%- set type = options.type|default('text') -%}
+    {%- set placeholder = options.placeholder|default('Please edit') -%}
+    {%- set title = options.title|default('Please edit') -%}
+    {%- set class = 'editable editable-pre-wrapped editable-click '
+        ~ options.class|default('') -%}
+    {%- set selectSource = options.source|default(null) -%}
+    {%- set dateFormat = options.dateFormat|default('m/d/Y') -%}
+
+    {%- set value = attribute(staf, field) -%}
+    {%- if value is instanceof('DateTime') -%}
+        {%- set value = value|date(dateFormat) -%}
+    {%- endif -%}
+
+    {# Data attribute name. #}
+    {%- set dataName = field|regexpReplace('/([A-Z])/', '-$1')|lower -%}
+
+    <span data-{{ dataName -}}="{{- value -}}">
+        {%- if self.isPendingRequest(staf) -%}
+            {{- value -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="{{- type -}}" data-pk="1"
+               data-placeholder="{{- placeholder -}}" data-title="{{- title -}}"
+               class="{{- class -}}" data-original-title=""
+               title="" data-source="{{- selectSource -}}">
+                {{- value -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+    </span>
+{%- endmacro -%}
+
+{%- macro dataSubElement(staf, sub, field, options) -%}
+    {% import _self as self %}
+    {%- set type = options.type|default('text') -%}
+    {%- set placeholder = options.placeholder|default('Please edit') -%}
+    {%- set title = options.title|default('Please edit') -%}
+    {%- set class = 'editable editable-pre-wrapped editable-click '
+        ~ options.class|default('') -%}
+    {%- set selectSource = options.source|default(null) -%}
+    {%- set dateFormat = options.dateFormat|default('m/d/Y') -%}
+
+    {%- set value = attribute(attribute(staf, sub), field) -%}
+    {%- if value is instanceof('DateTime') -%}
+    {   %- set value = value|date(dateFormat) -%}
+    {%- endif -%}
+
+    {# Data attribute name. #}
+    {%- set dataName = field|regexpReplace('/([A-Z])/', '-$1')|lower -%}
+
+    <span data-{{ dataName -}}="{{- value -}}">
+        {%- if self.isPendingRequest(staf) -%}
+            {{- value -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="{{- type -}}" data-pk="1"
+               data-placeholder="{{- placeholder -}}" data-title="{{- title -}}"
+               class="{{- class -}}" data-original-title=""
+               title="" data-source="{{- selectSource -}}">
+                {{- value -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+    </span>
+{%- endmacro -%}

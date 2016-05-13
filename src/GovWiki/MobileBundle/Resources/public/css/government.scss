@@ -344,7 +344,7 @@
             padding: 0;
 
             &:nth-child(1) {
-                width: 60%;
+                width: 50%;
                 text-align: left;
             }
 
@@ -369,8 +369,16 @@
         }
 
         select {
-            font-size: 0.8em;
+            background-position: left center;
             background-color: white;
+            font-size: 1em;
+            box-shadow: none;
+            padding-left: 14px;
+            direction: rtl;
+
+            option {
+               direction: ltr;
+            }
         }
     }
 

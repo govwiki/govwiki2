@@ -2,11 +2,15 @@ var authorized = window.gw.authorized;
 var $commentWindow = $('#conversation');
 var $editable = $('.editable');
 var tableType = window.sessionStorage.getItem('tableType');
+var $pane = $('.tab-content');
+var Handlebars = require('../vendor/handlebars.js');
+
+require(__dirname + '/../../../../../../../'
+    + 'bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js');
 
 /*
  Pagination and sorting.
  */
-var $pane = $('.tab-pane');
 
 handlerSortAndPagination('.pagination a');
 handlerSortAndPagination('.sortable a');
@@ -59,7 +63,7 @@ function handlerSortAndPagination(selector) {
 $('[data-toggle="tooltip"]').tooltip();
 
 $editable.editable({ stylesheets: false, type: 'textarea', showbuttons: 'bottom', display: true, emptytext: ' ' });
-$editable.off('click');
+//$editable.off('click');
 
 $pane.on('click', 'table .glyphicon-pencil', function click(e) {
   e.preventDefault();
@@ -178,7 +182,7 @@ $pane.on('save', 'a', function save(e, params) {
   });
 });
 
-$pane.on('click', 'table .add', function click(e) {
+$pane.on('click', '.tab-pane .add_action', function click(e) {
   var tabPane;
   var currentEntity;
 
@@ -204,9 +208,9 @@ $pane.on('click', 'table .add', function click(e) {
     currentEntity = 'PublicStatement';
     $('#addStatements').modal('toggle').find('form')[0].reset();
 
-        /*
-         Set get url callback.
-         */
+    /*
+     Set get url callback.
+     */
     $('.url-input').on('keyup', function keyup() {
       var matchUrl;
       matchUrl = /\b(https?):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#\/%=~_|!:,.;]*)?/i;
@@ -303,9 +307,9 @@ window.addItem = function addItem(e) {
   modalType = modal[0].id;
   entityType = modal[0].dataset.entityType;
 
-    /*
-     Get value from input fields.
-     */
+  /*
+    Get value from input fields.
+   */
   modal.find('input[type="text"]').each(function loop(index, element) {
     var fieldName;
     fieldName = Object.keys(element.dataset)[0];
@@ -354,12 +358,13 @@ window.addItem = function addItem(e) {
     modal.find('#electedVotes').find('tr[data-elected]').each(function loop(idx, element) {
       var childEntityName;
       var fields;
+      data = {};
 
       $(element).find('select').each(function loop2(index, el) {
         var fieldName;
         if (el.value) {
           fieldName = Object.keys(el.dataset)[0];
-          newRecord[fieldName] = el.value;
+          data[fieldName] = el.value;
         }
         return el.value;
       });
@@ -372,8 +377,8 @@ window.addItem = function addItem(e) {
         fields = Object.create(null, {});
         fields.fields = data;
         fields.associations = Object.create(null, {});
-        fields.associations[element.attr('data-entity-type')] = element.attr('data-elected');
-        childEntityName = element.parent().parent().attr('data-entity-type');
+        fields.associations[element.dataset.entityType] = element.dataset.elected;
+        childEntityName = $(element).parent().parent().attr('data-entity-type');
         return childs.push({
           entityName: childEntityName,
           fields: fields

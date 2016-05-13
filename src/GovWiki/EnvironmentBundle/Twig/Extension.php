@@ -2,6 +2,7 @@
 
 namespace GovWiki\EnvironmentBundle\Twig;
 
+use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\EnvironmentBundle\Manager\ElectedOfficial\ElectedOfficialManagerInterface;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
@@ -32,6 +33,11 @@ class Extension extends \Twig_Extension
     private $translator;
 
     /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    /**
      * @param EnvironmentStorageInterface     $storage                A
      *                                                                EnvironmentStorageInterface
      *                                                                instance.
@@ -41,15 +47,20 @@ class Extension extends \Twig_Extension
      * @param TranslatorInterface             $translator             A
      *                                                                TranslatorInterface
      *                                                                instance.
+     * @param EntityManagerInterface          $em                     A
+     *                                                                EntityManagerInterface
+     *                                                                instance.
      */
     public function __construct(
         EnvironmentStorageInterface $storage,
         ElectedOfficialManagerInterface $electedOfficialManager,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        EntityManagerInterface $em
     ) {
         $this->storage = $storage;
         $this->electedOfficialManager = $electedOfficialManager;
         $this->translator = $translator;
+        $this->em = $em;
     }
 
     /**
@@ -92,6 +103,37 @@ class Extension extends \Twig_Extension
                 $this,
                 'getCartoDbDataset',
             ]),
+
+            new \Twig_SimpleFilter('regexpReplace', [
+                $this,
+                'regexpReplace',
+            ]),
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFunctions()
+    {
+        return [
+            new \Twig_SimpleFunction('issuesCategoriesSource', [
+                $this,
+                'getIssuesCategoriesSource',
+            ]),
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTests()
+    {
+        return [
+            new \Twig_SimpleTest('instanceof', [
+                $this,
+                'isInstanceOf',
+            ]),
         ];
     }
 
@@ -103,5 +145,47 @@ class Extension extends \Twig_Extension
     public function getCartoDbDataset(Environment $environment)
     {
         return GovwikiNamingStrategy::cartoDbDatasetName($environment);
+    }
+
+    /**
+     * @param mixed $subject     The string or an array with strings to search
+     *                           and replace.
+     * @param mixed $pattern     The pattern to search for. It can be either a
+     *                           string or an array with strings.
+     * @param mixed $replacement The string or an array with strings to replace.
+     *
+     * @return string
+     */
+    public function regexpReplace($subject, $pattern, $replacement)
+    {
+        return preg_replace($pattern, $replacement, $subject);
+    }
+
+    /**
+     * @param mixed  $subject  Some object to test.
+     * @param string $instance Class name.
+     *
+     * @return boolean
+     */
+    public function isInstanceOf($subject, $instance)
+    {
+        return $subject instanceof $instance;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIssuesCategoriesSource()
+    {
+        $categories = $this->em->getRepository('GovWikiDbBundle:IssueCategory')
+            ->findAll();
+
+        $source = [];
+        /** @var \GovWiki\DbBundle\Entity\IssueCategory $category */
+        foreach ($categories as $category) {
+            $source[$category->getId()] = $category->getName();
+        }
+
+        return $source;
     }
 }
