@@ -61,7 +61,10 @@
                 {% for user in environment.users %}
                     {% if user.hasRole('ROLE_MANAGER') %}
                         <li>
-                            <a href="{{ path('govwiki_admin_user_edit', {'id': user.id}) }}">{{ user }}</a>
+                            <a href="{{- path('govwiki_admin_user_edit', {
+                                'environment': environment.slug,
+                                'id': user.id
+                            }) -}}">{{ user }}</a>
                         </li>
                     {% endif %}
                 {% endfor %}
