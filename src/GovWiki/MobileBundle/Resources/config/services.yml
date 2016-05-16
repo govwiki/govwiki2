@@ -1,4 +1,9 @@
 services:
+    govwiki.mobile_bundle.twig_extension:
+        class: GovWiki\MobileBundle\Twig\Extension
+        tags:
+            - { name: twig.extension }
+
     govwiki.mobile_bundle.advertising:
         class: GovWiki\MobileBundle\Service\GetAdvertising
         arguments: ["@doctrine", "@templating"]

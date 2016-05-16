@@ -22,13 +22,23 @@
 
 
             {# TMP MOBILE LAYOUT (START) #}
-                <header class="header {{ environment }}">
-                    <h6 style="{{ (environment == 'california') ? 'color: white' : 'color: black'}}padding: 15px;margin: 0;">{{government.name}}</h6>
+            {%- set image = (government.mainImage) ? government.mainImage : environment.mainImage -%}
 
-                    <div class="header-content {{ environment }}">
+            {%- if (image) -%}
+                <header class="header" style="background-image: url({{- image -}})">
+            {%- else -%}
+                <header class="header">
+            {%- endif -%}
+                    <h6 style="padding: 15px;margin: 0;">{{government.name}}</h6>
+
+                    <div class="header-content">
                         {# Get first tab and show on top. #}
-                        {% set tabName = formars|keys|first %}
-                        {% set categories = formats|first %}
+                        {%- set tabName = formats|keys|first -%}
+                        {%- set categories = formats|first -%}
+                        {%- if tabName != 'Overview + Elected Officials' -%}
+                            {%- set formats = formats[1:] -%}
+                        {%- endif -%}
+
                         {% for categoryName, fields in categories %}
                             <table class="statistics-table table">
                                 {% for fieldName, format in fields %}
@@ -92,7 +102,7 @@
                                     </span>
                                     <a class="tab_{{ slug|lower }}"
                                        href="#{{ slug }}">
-                                                {{- ('groups.group_id_'~tab_id)|trans -}}
+                                        {{- ('groups.group_id_'~tab_id)|trans -}}
                                     </a>
                                     <span class="next_tab">
                                         <i class="glyphicon glyphicon-chevron-right"></i>
@@ -114,7 +124,7 @@
                         {% endif %}
 
                         {% if hasPensions %}
-                            <li class="tab {{ environment }}">
+                            <li class="tab">
                                 <span class="prev_tab">
                                     <i class="glyphicon glyphicon-chevron-left"></i>
                                 </span>
@@ -126,7 +136,7 @@
                         {% endif %}
 
                         {% if showFinStmt %}
-                            <li class="tab {{ environment }}">
+                            <li class="tab">
                                 <span class="prev_tab">
                                     <i class="glyphicon glyphicon-chevron-left"></i>
                                 </span>
@@ -150,18 +160,19 @@
 
                             <div class="tab-pane active" id="{{ self.tabSlug(tabName) }}">
 
-                                <div class="tab-title {{ environment }}">
+                                <div class="tab-title">
                                     {{ ('groups.group_id_'~tab_id)|trans }}
                                 </div>
 
                                 <div class="tab-content">
 
                                     {# Statistics #}
-                                    {% if not loop.first %}
+
+                                    {%- if tabName != 'Overview + Elected Officials' -%}
                                         <div class="statistics col-sm-8">
                                             {{ include('@GovWikiMobile/Partial/Government/tab.html.twig') }}
                                         </div>
-                                    {% endif %}
+                                    {%- endif -%}
 
                                     {# Overview + Elected Officials #}
                                     {{ include('GovWikiMobileBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
