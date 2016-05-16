@@ -1,10 +1,7 @@
 {% extends "GovWikiMobileBundle:Layout:main.html.twig" %}
-
 {% import _self as self %}
 
 {% block main %}
-
-
     {% for flash_message in app.session.flashbag.get('message_saved_success') %}
         <div class="row">
             <div class="alert alert-success alert-dismissible" role="alert">
@@ -19,7 +16,6 @@
         {% if government is defined %}
 
             {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
-
 
             {# TMP MOBILE LAYOUT (START) #}
             {%- set image = (government.mainImage) ? government.mainImage : environment.mainImage -%}

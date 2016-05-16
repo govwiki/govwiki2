@@ -169,8 +169,10 @@ class GovernmentController extends AbstractGovWikiApiController
         $paginator = $this->get('knp_paginator');
         $year = $request->query->get(
             'year',
-            $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-                ->getAvailableYears()[0]
+            $this->getGovernmentManager()
+                ->getAvailableYears(
+                    $this->getCurrentEnvironment()
+                )[0]
         );
 
         $salaries = $this->getDoctrine()
@@ -179,8 +181,8 @@ class GovernmentController extends AbstractGovWikiApiController
         $salaries = $paginator->paginate(
             $salaries,
             $request->query->get('page', 1),
-            5
-        ); // TODO: Hardcoded max itemps per page
+            self::MAX_SALARIES_PER_PAGE
+        );
 
         return [ 'salaries' => $salaries ];
     }
@@ -231,8 +233,10 @@ class GovernmentController extends AbstractGovWikiApiController
         $paginator = $this->get('knp_paginator');
         $year = $request->query->get(
             'year',
-            $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-                ->getAvailableYears()[0]
+            $this->getGovernmentManager()
+                ->getAvailableYears(
+                    $this->getCurrentEnvironment()
+                )[0]
         );
 
         $pensions = $this->getDoctrine()
@@ -241,8 +245,8 @@ class GovernmentController extends AbstractGovWikiApiController
         $pensions = $paginator->paginate(
             $pensions,
             $request->query->get('page', 1),
-            5
-        ); // TODO: Hardcoded max itemps per page
+            self::MAX_PENSIONS_PER_PAGE
+        );
 
         return [ 'pensions' => $pensions ];
     }
