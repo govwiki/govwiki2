@@ -1,12 +1,11 @@
 var authorized = window.gw.authorized;
 var $commentWindow = $('#conversation');
 var $editable = $('.editable');
+var $pane = $('.tab-pane');
 var tableType = window.sessionStorage.getItem('tableType');
 
-/*
- Pagination and sorting.
- */
-var $pane = $('.tab-pane');
+require(__dirname + '/../../../../../../../'
+    + 'bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js');
 
 handlerSortAndPagination('.pagination a');
 handlerSortAndPagination('.sortable a');
@@ -121,6 +120,7 @@ $pane.on('click', '.vote', function click() {
   fbCommentPrevElem = $('.modal-body', $commentWindow);
   fbCommentElem = document.createElement('DIV');
   fbCommentUrl = clearUrl(window.location.href);
+  console.log(fbCommentUrl);
 
   $(fbCommentElem).addClass('fb-comments');
   fbCommentElem.setAttribute('id', 'comment-form');

@@ -112,10 +112,15 @@
       cursor: pointer;
       font-size: 12px;
    }
+
    .editable {
       text-decoration: none !important;
       color: #000 !important;
       border-bottom: none !important;
+
+      position: relative;
+      top: 20px;
+      left: 10px;
    }
 
    .person {

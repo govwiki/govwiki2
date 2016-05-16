@@ -14,6 +14,7 @@ module.exports = {
         map: './' + path.base + '/home/index.js',
         government: './' + path.base + '/government/index.js',
         common: './' + path.base + '/common.js',
+        elected: './' + path.base + '/elected/handlers.js',
         document: './'+ path.base +'/document/document.js'
     },
     output: {

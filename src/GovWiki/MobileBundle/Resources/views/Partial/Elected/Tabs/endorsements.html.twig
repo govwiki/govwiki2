@@ -54,27 +54,49 @@
                     <div class="card__block">
                         {# Legislation info #}
                         <h4 class="card__block-title">
-                            {{- helper.nameOfEndorser(endorsement) -}}
+                            {{- macro.dataElement(
+                                endorsement,
+                                'nameOfEndorser',
+                                { type: 'textarea' }
+                            ) -}}
                         </h4>
 
                         {# How legislation vote (as table) #}
                         <table class="table table-stripped">
                             <tr>
                                 <th>Election Year</th>
-                                <td>{{ helper.electionYear(endorsement) }}</td>
+                                <td>
+                                    {{- macro.dataElement(
+                                        endorsement,
+                                        'electionYear'
+                                    ) -}}
+                                    {#{{- helper.electionYear(endorsement) -}}#}
+                                </td>
                             </tr>
                             <tr>
                                 <th>Type</th>
-                                <td>{{ helper.endorserType(endorsement) }}</td>
+                                <td>
+                                    {{- macro.dataElement(
+                                        endorsement,
+                                        'endorserType',
+                                        {
+                                            type: 'select',
+                                            source: "{'Elected Official': 'Elected Official', 'Organization': 'Organization', 'Political Party': 'Political Party', 'Union': 'Union', 'Other': 'Other'}"
+                                        }
+                                    ) -}}
+                                    {#{{- helper.endorserType(endorsement) -}}#}
+                                </td>
                             </tr>
                         </table>
 
-                        {% if not macro.isPendingRequest(endorsement) %}
-                            {# Comment icon #}
+                        {#{% if not macro.isPendingRequest(endorsement) %}
+                            &#123;&#35; Comment icon &#35;&#125;
                             <p class="card__block-footer">
-                                <a href="#"><i class="glyphicon glyphicon-comment"></i> 0</a>
+                                <span class="vote-public-comment">
+                                    <i class="glyphicon glyphicon-comment"></i>
+                                </span>
                             </p>
-                        {% endif %}
+                        {% endif %}#}
 
                     </div>
                 </div>
@@ -83,59 +105,3 @@
 
     </div>
 </div>
-
-{%- macro electionYear(endorsement) -%}
-    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
-    <div data-election-year="{{ endorsement.electionYear }}"
-         style="display: inline-block">
-        {%- if macro.isPendingRequest(endorsement) -%}
-            {{- environment.electionYear -}}
-        {%- else -%}
-            <a href="javascript:void(0);" data-type="text" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click" data-original-title=""
-               title="">
-                {{- endorsement.electionYear -}}
-                <span class="glyphicon glyphicon-pencil edit"></span>
-            </a>
-        {%- endif -%}
-    </div>
-{%- endmacro -%}
-
-{%- macro nameOfEndorser(endorsement) -%}
-    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
-    <div data-name-of-endorser="{{ endorsement.nameOfEndorser }}"
-         style="display: inline-block">
-        {%- if macro.isPendingRequest(endorsement) -%}
-            {{- endorsement.nameOfEndorser -}}
-        {%- else -%}
-            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click"
-               data-original-title=""
-               title="">
-                {{- endorsement.nameOfEndorser -}}
-                <span class="glyphicon glyphicon-pencil edit"></span>
-            </a>
-        {%- endif -%}
-    </div>
-{%- endmacro -%}
-
-{%- macro endorserType(endorsement) -%}
-    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
-    <div data-endorser-type="{{ endorsement.endorserType }}" style="display: inline-block">
-        {%- if macro.isPendingRequest(endorsement) -%}
-            {{- endorsement.endorserType -}}
-        {%- else -%}
-            <a href="javascript:void(0);" data-type="select" data-pk="1"
-               data-placeholder="Please edit" data-title="Please edit"
-               class="editable editable-pre-wrapped editable-click"
-               data-original-title=""
-               data-source="{'Elected Official': 'Elected Official', 'Organization': 'Organization', 'Political Party': 'Political Party', 'Union': 'Union', 'Other': 'Other'}"
-               title="">
-                {{- endorsement.endorserType -}}
-                <span class="glyphicon glyphicon-pencil edit"></span>
-            </a>
-        {%- endif -%}
-    </div>
-{%- endmacro -%}

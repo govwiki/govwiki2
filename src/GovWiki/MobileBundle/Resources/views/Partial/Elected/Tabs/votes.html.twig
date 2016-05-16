@@ -56,12 +56,14 @@
 
 							{# Vote date & issue category #}
 							<div class="card__group">
-								{{ helper.legislationDate(vote) }}
-								{{ helper.legislationIssueCategory(vote) }}
+								{{- helper.legislationDate(vote) -}}
+								{{- helper.legislationIssueCategory(vote) -}}
 							</div>
 
 							{# Legislation info #}
-							<h4 class="card__block-title">{{ helper.legislationName(vote) }}</h4>
+							<h4 class="card__block-title">
+                                {{- helper.legislationName(vote) -}}
+                            </h4>
 							{{ helper.legislationSummary(vote) }}
 
 							{# How legislation vote (as table) #}
@@ -79,7 +81,11 @@
                             {%- if not macro.isPendingRequest(vote.legislation) -%}
                                 {# Comment icon #}
                                 <p class="card__block-footer">
-                                    <a href="#"><i class="glyphicon glyphicon-comment"></i> 0</a>
+                                    <span class="vote-public-comment"
+                                        data-legislation-name="{{- vote.legislation.name -}}"
+                                        id="{{ vote.electedOfficial.id }}_v{{ vote.id }}">
+                                        <i class="glyphicon glyphicon-comment"></i>
+                                    </span>
                                 </p>
                             {%- endif -%}
 
@@ -206,6 +212,6 @@
                 <span data-id="{{ vote.id }}"
                       class="glyphicon glyphicon-pencil edit"></span>
             </a>
-        {%- endif -%}#}
+        {%- endif -%}
 	</div>
 {% endmacro %}

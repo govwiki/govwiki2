@@ -54,30 +54,54 @@
                     <div class="card__block">
 
                         <div class="card__group">
-                            <span class="card__group-item">Election year: {{ helper.contributionYear(contribution) }}</span>
+                            <span class="card__group-item">
+                                Election year:
+                                {{- macro.dataElement(
+                                    contribution,
+                                    'electionYear'
+                                ) -}}
+                            </span>
                         </div>
 
                         {# Vote date & issue category #}
                         <div class="card__group">
                             <span class="card__group-item">
-                                Ind. Exp. Desc : {{ helper.independentExpenditureDesc(contribution) }}
+                                Ind. Exp. Desc:
+                                {{- macro.dataElement(
+                                    contribution,
+                                    'independentExpenditureDesc',
+                                    { type: 'textarea' }
+                                ) -}}
                             </span>
                             <span class="card__group-item card__group-item_right">
-                                Amount: {{ helper.contributionAmount(contribution) }}
+                                Amount:
+                                {{- macro.dataElement(
+                                    contribution,
+                                    'contributionAmount',
+                                    { type: 'number' }
+                                ) -}}
                             </span>
                         </div>
 
                         {# Legislation info #}
-                        <h4 class="card-title">{{ helper.contributionName(contribution) }}</h4>
+                        <h4 class="card-title">
+                            {{- macro.dataElement(
+                                contribution,
+                                'contributorName',
+                                { type: 'textarea' }
+                            ) -}}
+                        </h4>
 
                     </div>
 
-                    {%- if not macro.isPendingRequest(contribution) -%}
-                        {# Comment icon #}
+                    {#{%- if not macro.isPendingRequest(contribution) -%}
+                        &#123;&#35; Comment icon &#35;&#125;
                         <p class="card__block-footer">
-                            <a href="#"><i class="glyphicon glyphicon-comment"></i> 0</a>
+                            <span class="vote-public-comment">
+                                <i class="glyphicon glyphicon-comment"></i>
+                            </span>
                         </p>
-                    {%- endif -%}
+                    {%- endif -%}#}
 
                 </div>
 

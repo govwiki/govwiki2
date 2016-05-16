@@ -94,13 +94,14 @@ function clearUrl(url) {
     result = result.substring(0, indexOfQuestionMark);
   }
 
-  return result;
+  // Remove 'm.' prefix from domain name.
+  return result.replace(/\/\/m\./, '//');
 }
 
 /**
  * Click on comment icon.
  */
-$pane.on('click', '.vote', function click() {
+$pane.on('click', '.vote-public-comment', function click() {
   var fbCommentPrevElem;
   var fbCommentElem;
   var fbCommentUrl;
@@ -121,15 +122,17 @@ $pane.on('click', '.vote', function click() {
     fbCommentElemExist.parentNode.removeChild(fbCommentElemExist);
   }
 
-    // Create new Facebook Comment form
+  // Create new Facebook Comment form
   fbCommentPrevElem = $('.modal-body', $commentWindow);
   fbCommentElem = document.createElement('DIV');
   fbCommentUrl = clearUrl(window.location.href);
+  console.log(fbCommentUrl);
 
   $(fbCommentElem).addClass('fb-comments');
   fbCommentElem.setAttribute('id', 'comment-form');
   fbCommentElem.setAttribute('data-href', fbCommentUrl + '#vote_' + id);
   fbCommentElem.setAttribute('data-numposts', 5);
+  fbCommentElem.setAttribute('data-mobile', 1);
   fbCommentPrevElem.append(fbCommentElem);
 
   FB.XFBML.parse(null, function load() {
