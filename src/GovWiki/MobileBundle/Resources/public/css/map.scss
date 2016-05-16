@@ -26,6 +26,15 @@
       height: 150px;
       background-size: cover;
       background-repeat: no-repeat;
+
+      /* TODO hardcoded */
+      &.california {
+          background-image: url('/img/mobile/California.jpg');
+      }
+
+      &.puerto_rico {
+          background: white;
+      }
    }
 
    .btn_custom {
