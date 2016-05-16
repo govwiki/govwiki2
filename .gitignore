@@ -13,21 +13,25 @@
 /node_modules/
 /bower_components/
 
-#/web/img/*
-#
-#!/web/img/.gitkeep
-#!/web/img/locales/
-#!/web/img/upload/.gitkeep
-#!/web/img/upload/shape/.gitkeep
-#!/web/img/government/.gitkeep
-#!/web/img/loading.gif
-#!/web/img/clear.png
+/web/img/*
+
+!/web/img/.gitkeep
+!/web/img/locales/
+!/web/img/loading.gif
+!/web/img/clear.png
 
 /web/css/*
 !/web/css/.gitkeep
 
 /web/documents
 !/web/documents/.gitkeep
+
+/web/government
+!/web/government/.gitkeep
+
+/web/upload
+!/web/upload/.gitkeep
+!/web/upload/shape/.gitkeep
 
 /web/bundles/
 

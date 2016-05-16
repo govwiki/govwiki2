@@ -22,7 +22,7 @@ class GovernmentType extends AbstractType
     /**
      * @var string
      */
-    private $uploadDir = '/img/government';
+    private $uploadDir = '/government';
 
     /**
      * @param string                      $webDir  Path to web directory.

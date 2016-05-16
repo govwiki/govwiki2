@@ -42,7 +42,7 @@ services:
         arguments:
             - @doctrine.orm.default_entity_manager
             - %kernel.root_dir%/../web/
-            - img/upload/shape/
+            - upload/shape/
 
     govwiki_admin.form.type.delay:
         class: GovWiki\AdminBundle\Form\Type\DelayType

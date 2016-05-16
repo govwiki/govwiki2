@@ -21,7 +21,7 @@ class EnvironmentType extends AbstractType
     /**
      * Directory for environment main image upload.
      */
-    const DIRECTORY = '/img/mobile';
+    const DIRECTORY = '/mobile';
 
     /**
      * @var string
