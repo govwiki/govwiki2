@@ -22,6 +22,83 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class GovernmentController extends AbstractGovWikiController
 {
 
+    const MAX_SALARIES_PER_PAGE = 25;
+    const MAX_PENSIONS_PER_PAGE = 25;
+
+    /**
+     * @Route("/{government}/salaries", requirements={
+     *  "government": "\d+"
+     * })
+     * @Template
+     *
+     * @param Request $request    A Request instance.
+     * @param integer $government Government entity id.
+     *
+     * @return array
+     */
+    public function salariesAction(Request $request, $government)
+    {
+        $paginator = $this->get('knp_paginator');
+        $year = $request->query->get(
+            'year',
+            $this->getGovernmentManager()
+                ->getAvailableYears(
+                    $this->getCurrentEnvironment()
+                )[0]
+        );
+
+        $salaries = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Salary')
+            ->getListQuery($government, $year);
+        $salaries = $paginator->paginate(
+            $salaries,
+            $request->query->get('page', 1),
+            self::MAX_SALARIES_PER_PAGE
+        );
+        /** @var \Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination $salaries */
+        $salaries->setUsedRoute('govwiki_frontend_government_salaries');
+        $salaries->setParam('government', $government);
+
+        return [ 'salaries' => $salaries ];
+    }
+
+    /**
+     * @Route("/{government}/pensions", requirements={
+     *  "government": "\d+"
+     * })
+     * @Template
+     *
+     * @param Request $request    A Request instance.
+     * @param integer $government Government entity id.
+     *
+     * @return array
+     */
+    public function pensionsAction(Request $request, $government)
+    {
+        $paginator = $this->get('knp_paginator');
+        $year = $request->query->get(
+            'year',
+            $this->getGovernmentManager()
+                ->getAvailableYears(
+                    $this->getCurrentEnvironment()
+                )[0]
+        );
+
+        $pensions = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Pension')
+            ->getListQuery($government, $year);
+        $pensions = $paginator->paginate(
+            $pensions,
+            $request->query->get('page', 1),
+            self::MAX_PENSIONS_PER_PAGE
+        );
+        /** @var \Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination $pensions */
+        $pensions->setUsedRoute('govwiki_frontend_government_pensions');
+        $pensions->setParam('government', $government);
+
+        return [ 'pensions' => $pensions ];
+    }
+
     /**
      * Toggle government subscribe.
      *
@@ -66,7 +143,10 @@ class GovernmentController extends AbstractGovWikiController
     }
 
     /**
-     * @Route("/{altTypeSlug}/{slug}", name="government")
+     * @Route("/{altTypeSlug}/{slug}", name="government", requirements={
+     *  "altTypeSlug": "\w+",
+     *  "slug": "\w+"
+     * })
      * @Template("GovWikiFrontendBundle:Government:index.html.twig")
      *
      * @param Request $request     A Request instance.

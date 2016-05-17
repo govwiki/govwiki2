@@ -12,7 +12,7 @@ var Step31;
 var Step3;
 var Step2;
 var Step1;
-var government = JSON.parse(window.gw.government);
+// var government = JSON.parse(window.gw.government);
 
 var graphs = require('./graphs.js');
 var popover = new (require('./rank-popover.js'))({  // eslint-disable-line
@@ -191,37 +191,21 @@ $pane = $('.paginate');
 $pane.on('click', '.pagination a', function click(e) {
   var $loader;
   var $mainContent;
-  var query;
-  var firstElement;
   var url;
-  var type;
   var $closestPane;
   var $this;
+
   e.preventDefault();
   e.stopPropagation();
 
   $this = $(this);
   $closestPane = $this.closest('.tab-pane');
-  type = $closestPane.data('type');
   url = $this.attr('href');
-
-  if (url.indexOf('api') === -1) {
-    url = url.substr(1, url.length);
-    firstElement = url.substr(0, url.indexOf('/'));
-    query = url.substr(url.indexOf('?') + 1, url.length);
-
-    if (firstElement === 'app_dev.php') {
-      url = '/' + firstElement + '/api/v1/government/' + government.id
-            + '/' + type + '?' + query;
-    } else {
-      url = '/api/v1/government/' + government.id + '/' + type + '?' + query;
-    }
-  }
 
   $mainContent = $closestPane.find('.tab-pane-main');
   $mainContent.html('');
 
-  $loader = $('.tab-content').find('.loader');
+  $loader = $closestPane.find('.loader');
   $loader.show();
   $.ajax(url).success(function load(data) {
     $loader.hide();
@@ -232,33 +216,21 @@ $pane.on('click', '.pagination a', function click(e) {
 $pane.on('click', '.sortable a', function click(e) {
   var $loader;
   var $mainContent;
-  var query;
-  var firstElement;
-  var $this = $(this);
-  var $closestPane = $this.closest('.tab-pane');
-  var type = $closestPane.data('type');
-  var url = $this.attr('href');
+  var $this;
+  var $closestPane;
+  var url;
 
   e.preventDefault();
   e.stopPropagation();
 
-  if (url.indexOf('api') === -1) {
-    url = url.substr(1, url.length);
-    firstElement = url.substr(0, url.indexOf('/'));
-    query = url.substr(url.indexOf('?') + 1, url.length);
-
-    if (firstElement === 'app_dev.php') {
-      url = '/' + firstElement + '/api/v1/government/' + government.id
-            + '/' + type + '?' + query;
-    } else {
-      url = '/api/v1/government/' + government.id + '/' + type + '?' + query;
-    }
-  }
+  $this = $(this);
+  $closestPane = $this.closest('.tab-pane');
+  url = $this.attr('href');
 
   $mainContent = $closestPane.find('.tab-pane-main');
   $mainContent.html('');
 
-  $loader = $('.tab-content').find('.loader');
+  $loader = $closestPane.find('.loader');
   $loader.show();
   $.ajax(url).success(function load(data) {
     $loader.hide();

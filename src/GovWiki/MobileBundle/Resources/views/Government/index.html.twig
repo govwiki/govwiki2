@@ -189,29 +189,33 @@
 
 
                             {% if hasSalaries %}
-                                <div class="tab-pane active" id="Salaries">
+                                <div class="tab-pane paginate" id="Salaries">
+
+                                    <div class="loader" style="display: none"></div>
 
                                     <div class="tab-title">
                                         Salaries
                                     </div>
 
                                     <div class="tab-content">
-                                        {{ render(controller('GovWikiApiBundle:V1/Government:mobileSalaries', {
+                                        {{- render(controller('GovWikiMobileBundle:Government:salaries', {
                                         'government': government.id
-                                        })) }}
+                                        })) -}}
                                     </div>
                                 </div>
                             {% endif %}
 
                             {% if hasPensions %}
-                                <div class="tab-pane active" id="Pensions">
+                                <div class="tab-pane paginate" id="Pensions">
+
+                                    <div class="loader" style="display: none"></div>
 
                                     <div class="tab-title">
                                         Pensions
                                     </div>
 
                                     <div class="tab-content">
-                                        {{ render(controller('GovWikiApiBundle:V1/Government:mobilePensions', {
+                                        {{ render(controller('GovWikiMobileBundle:Government:pensions', {
                                         'government': government.id
                                         })) }}
                                     </div>

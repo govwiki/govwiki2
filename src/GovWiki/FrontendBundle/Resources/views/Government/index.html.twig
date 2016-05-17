@@ -124,8 +124,9 @@
 
                             {% if hasSalaries %}
                                 <div class="tab-pane paginate" data-type="salaries" id="Salaries">
+                                    <div class="loader" style="display: none"></div>
                                     <div class="tab-pane-main">
-                                        {{ render(controller('GovWikiApiBundle:V1/Government:salaries', {
+                                        {{ render(controller('GovWikiFrontendBundle:Government:salaries', {
                                             'government': government.id
                                         }))}}
                                     </div>
@@ -134,8 +135,9 @@
 
                             {% if hasPensions %}
                                 <div class="tab-pane paginate" data-type="pensions"  id="Pensions">
+                                    <div class="loader" style="display: none"></div>
                                     <div class="tab-pane-main">
-                                        {{ render(controller('GovWikiApiBundle:V1/Government:pensions', {
+                                        {{ render(controller('GovWikiFrontendBundle:Government:pensions', {
                                             'government': government.id
                                         }))}}
                                     </div>

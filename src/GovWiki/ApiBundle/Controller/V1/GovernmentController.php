@@ -2,14 +2,10 @@
 
 namespace GovWiki\ApiBundle\Controller\V1;
 
-use GovWiki\ApiBundle\GovWikiApiServices;
-use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * GovernmentController
@@ -122,134 +118,4 @@ class GovernmentController extends AbstractGovWikiApiController
             'alt_type' => str_replace('_', ' ', $altTypeSlug),
         ]);
     }
-
-    /**
-     * @Route("/{government}/salaries")
-     * @Template()
-     *
-     * @param Request $request    A Request instance.
-     * @param integer $government Government entity id.
-     *
-     * @return array
-     */
-    public function salariesAction(Request $request, $government)
-    {
-        $paginator = $this->get('knp_paginator');
-        $year = $request->query->get(
-            'year',
-            $this->getGovernmentManager()
-                ->getAvailableYears(
-                    $this->getCurrentEnvironment()
-                )[0]
-        );
-
-        $salaries = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Salary')
-            ->getListQuery($government, $year);
-        $salaries = $paginator->paginate(
-            $salaries,
-            $request->query->get('page', 1),
-            self::MAX_SALARIES_PER_PAGE
-        );
-
-        return [ 'salaries' => $salaries ];
-    }
-
-    /**
-     * @Route("/{government}/mobileSalaries")
-     * @Template("GovWikiApiBundle:V1/Government/Mobile:salaries.html.twig")
-     *
-     * @param Request $request    A Request instance.
-     * @param integer $government Government entity id.
-     *
-     * @return array
-     */
-    public function mobileSalariesAction(Request $request, $government)
-    {
-        $paginator = $this->get('knp_paginator');
-        $year = $request->query->get(
-            'year',
-            $this->getGovernmentManager()
-                ->getAvailableYears(
-                    $this->getCurrentEnvironment()
-                )[0]
-        );
-
-        $salaries = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Salary')
-            ->getListQuery($government, $year);
-        $salaries = $paginator->paginate(
-            $salaries,
-            $request->query->get('page', 1),
-            self::MAX_SALARIES_PER_PAGE
-        );
-
-        return [ 'salaries' => $salaries ];
-    }
-
-    /**
-     * @Route("/{government}/pensions")
-     * @Template()
-     *
-     * @param Request $request    A Request instance.
-     * @param integer $government Government entity id.
-     *
-     * @return array
-     */
-    public function pensionsAction(Request $request, $government)
-    {
-        $paginator = $this->get('knp_paginator');
-        $year = $request->query->get(
-            'year',
-            $this->getGovernmentManager()
-                ->getAvailableYears(
-                    $this->getCurrentEnvironment()
-                )[0]
-        );
-
-        $pensions = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Pension')
-            ->getListQuery($government, $year);
-        $pensions = $paginator->paginate(
-            $pensions,
-            $request->query->get('page', 1),
-            self::MAX_PENSIONS_PER_PAGE
-        );
-
-        return [ 'pensions' => $pensions ];
-    }
-
-    /**
-     * @Route("/{government}/pensions")
-     * @Template("GovWikiApiBundle:V1/Government/Mobile:pensions.html.twig")
-     *
-     * @param Request $request    A Request instance.
-     * @param integer $government Government entity id.
-     *
-     * @return array
-     */
-    public function mobilePensionsAction(Request $request, $government)
-    {
-        $paginator = $this->get('knp_paginator');
-        $year = $request->query->get(
-            'year',
-            $this->getGovernmentManager()
-                ->getAvailableYears(
-                    $this->getCurrentEnvironment()
-                )[0]
-        );
-
-        $pensions = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Pension')
-            ->getListQuery($government, $year);
-        $pensions = $paginator->paginate(
-            $pensions,
-            $request->query->get('page', 1),
-            self::MAX_PENSIONS_PER_PAGE
-        );
-
-        return [ 'pensions' => $pensions ];
-    }
-
-
 }
