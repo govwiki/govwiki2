@@ -13,6 +13,9 @@ function typeahead(container) {
     return true;
   }
 
+  // Request delay.
+  self.delay = 750;
+  self.timer = undefined;
   self.governmentData = {};
   self.$typeahead = $(container + ' .typeahead_government');
   self.searchValue = '';
@@ -49,6 +52,11 @@ function typeahead(container) {
     // Store search value on typing
   self.$typeahead.keyup(function keyup(event) {
     self.searchValue = $(event.target).val();
+
+    // Remove request
+    if (self.searchValue.length < 3) {
+      clearTimeout(self.timer)
+    }
   });
 
     /**
@@ -60,12 +68,18 @@ function typeahead(container) {
      * @param asyncCallback
      **/
   function findMatches(query, syncCallback, asyncCallback) {
-    $.ajax({
-      method: 'GET',
-      url: window.gw.urls.search + '?search=' + query
-    }).success(function success(data) {
-      asyncCallback(data);
-    });
+    if (self.timer) {
+      clearTimeout(self.timer);
+    }
+
+    self.timer = setTimeout(function request() {
+      $.ajax({
+        method: 'GET',
+        url: window.gw.urls.search + '?search=' + query
+      }).success(function success(data) {
+        asyncCallback(data);
+      });
+    }, self.delay);
   }
 
   return self;

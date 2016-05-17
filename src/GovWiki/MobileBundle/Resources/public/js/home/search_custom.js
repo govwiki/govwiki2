@@ -1,17 +1,27 @@
 var Handlebars = require('../vendor/handlebars.js');
 var searchValue;
 var $typeahead;
+var timer;
+
+// Request delay.
+var delay = 750;
 
 /**
  * Typeahead search
  */
 var findMatches = function findMatches(query, syncCallback, asyncCallback) {
-  $.ajax({
-    method: 'GET',
-    url: window.gw.urls.search + '?search=' + query
-  }).success(function success(data) {
-    asyncCallback(data);
-  });
+  if (timer) {
+    clearTimeout(timer);
+  }
+
+  timer = setTimeout(function request() {
+    $.ajax({
+      method: 'GET',
+      url: window.gw.urls.search + '?search=' + query
+    }).success(function success(data) {
+      asyncCallback(data);
+    });
+  }, delay);
 };
 
 Handlebars.registerHelper('if_eq', function ifEq(a, b, opts) {
@@ -74,6 +84,9 @@ $typeahead.bind('typeahead:cursorchange', function cursorchange() {
 // Store search value on typing
 $typeahead.keyup(function keyup(event) {
   searchValue = $(event.target).val();
+  if (searchValue.length < 3) {
+    clearTimeout(timer);
+  }
 });
 
 $typeahead.attr('disabled', false);
