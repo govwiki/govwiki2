@@ -3,9 +3,14 @@ var $commentWindow = $('#conversation');
 var $editable = $('.editable');
 var $pane = $('.tab-pane');
 var tableType = window.sessionStorage.getItem('tableType');
+var Handlebars = require('../vendor/handlebars.js');
 
 require(__dirname + '/../../../../../../../'
     + 'bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js');
+
+/*
+ Pagination and sorting.
+ */
 
 handlerSortAndPagination('.pagination a');
 handlerSortAndPagination('.sortable a');
@@ -116,7 +121,7 @@ $pane.on('click', '.vote', function click() {
     fbCommentElemExist.parentNode.removeChild(fbCommentElemExist);
   }
 
-    // Create new Facebook Comment form
+  // Create new Facebook Comment form
   fbCommentPrevElem = $('.modal-body', $commentWindow);
   fbCommentElem = document.createElement('DIV');
   fbCommentUrl = clearUrl(window.location.href);
@@ -204,9 +209,9 @@ $pane.on('click', 'table .add', function click(e) {
     currentEntity = 'PublicStatement';
     $('#addStatements').modal('toggle').find('form')[0].reset();
 
-        /*
-         Set get url callback.
-         */
+    /*
+     Set get url callback.
+     */
     $('.url-input').on('keyup', function keyup() {
       var matchUrl;
       matchUrl = /\b(https?):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#\/%=~_|!:,.;]*)?/i;
@@ -303,9 +308,9 @@ window.addItem = function addItem(e) {
   modalType = modal[0].id;
   entityType = modal[0].dataset.entityType;
 
-    /*
-     Get value from input fields.
-     */
+  /*
+    Get value from input fields.
+   */
   modal.find('input[type="text"]').each(function loop(index, element) {
     var fieldName;
     fieldName = Object.keys(element.dataset)[0];
@@ -354,26 +359,27 @@ window.addItem = function addItem(e) {
     modal.find('#electedVotes').find('tr[data-elected]').each(function loop(idx, element) {
       var childEntityName;
       var fields;
+      data = {};
 
       $(element).find('select').each(function loop2(index, el) {
         var fieldName;
         if (el.value) {
           fieldName = Object.keys(el.dataset)[0];
-          newRecord[fieldName] = el.value;
+          data[fieldName] = el.value;
         }
         return el.value;
       });
 
-            /*
-             Add only if all fields is set.
-             */
+      /*
+       Add only if all fields is set.
+       */
       if (Object.keys(data).length === 2) {
         oneChildFieldFilled = true;
         fields = Object.create(null, {});
         fields.fields = data;
         fields.associations = Object.create(null, {});
-        fields.associations[element.attr('data-entity-type')] = element.attr('data-elected');
-        childEntityName = element.parent().parent().attr('data-entity-type');
+        fields.associations[element.dataset.entityType] = element.dataset.elected;
+        childEntityName = $(element).parent().parent().attr('data-entity-type');
         return childs.push({
           entityName: childEntityName,
           fields: fields

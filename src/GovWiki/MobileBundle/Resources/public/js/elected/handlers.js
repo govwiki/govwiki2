@@ -1,8 +1,8 @@
 var authorized = window.gw.authorized;
 var $commentWindow = $('#conversation');
 var $editable = $('.editable');
-var tableType = window.sessionStorage.getItem('tableType');
 var $pane = $('.tab-content');
+var tableType = window.sessionStorage.getItem('tableType');
 var Handlebars = require('../vendor/handlebars.js');
 
 require(__dirname + '/../../../../../../../'
@@ -372,9 +372,9 @@ window.addItem = function addItem(e) {
         return el.value;
       });
 
-            /*
-             Add only if all fields is set.
-             */
+      /*
+       Add only if all fields is set.
+       */
       if (Object.keys(data).length === 2) {
         oneChildFieldFilled = true;
         fields = Object.create(null, {});
