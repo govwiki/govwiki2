@@ -127,9 +127,9 @@ function expendituresPie() {
   visData.addColumn({ type: 'string', role: 'tooltip' });
   rows = [];
 
-  // Prepare Revenues data to Google Tree Chart
+  // Prepare Expenditures data to Google Tree Chart
   for (rKey in expenditures) {
-    if (expenditures.hasOwnProperty(rKey) && (expenditures[rKey].caption !== 'Total Revenues')) {
+    if (expenditures.hasOwnProperty(rKey) && (expenditures[rKey].caption !== 'Total Expenditures')) {
       subCategory = expenditures[rKey];
       subCatValue = getSubCatValue(subCategory);
       if (!subCatValue) {
@@ -150,7 +150,7 @@ function expendituresPie() {
     if (expenditures.hasOwnProperty(key) && (expenditures[key].caption !== 'Total Expenditures')) {
       caption = expenditures[key].translatedCaption;
       totalfunds = parseInt(expenditures[key].totalfunds, 10);
-      tooltip = renderTooltip(caption, totalfunds);
+      tooltip = renderTooltip(caption, totalfunds, totalAmount);
       r = [caption, totalfunds, tooltip];
       rows.push(r);
     }
