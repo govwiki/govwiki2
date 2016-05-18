@@ -11,7 +11,7 @@
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
         {% block stylesheets %}{% endblock %}
     {% if environment is defined %}
-        <link rel="icon" href="{{ asset('/img/'~environment~'/favicon.ico') }}" type="image/x-icon" />
+        <link rel="icon" href="{{ asset('/img/'~environment.slug~'/favicon.ico') }}" type="image/x-icon" />
         <style>
             {{- environment.style|raw -}}
             {{- environment.mobileStyle|raw -}}
