@@ -36,6 +36,10 @@ class TabController extends AbstractGovWikiAdminController
      */
     public function newAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $tab = $this->getManager()->create();
         $form = $this->createForm(new AbstractGroupType(), $tab);
         $form->handleRequest($request);
@@ -82,6 +86,10 @@ class TabController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, Tab $tab)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm(new AbstractGroupType(), $tab);
         $form->handleRequest($request);
 
@@ -117,6 +125,10 @@ class TabController extends AbstractGovWikiAdminController
      */
     public function removeAction($tab)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->get('doctrine.orm.default_entity_manager');
 
         $this->changeTabTranslation('remove', $tab);

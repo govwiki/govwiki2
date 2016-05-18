@@ -38,6 +38,10 @@ class SubscribeController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request, Government $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $form = $this->createFormBuilder()
             ->add('message', 'textarea', [
@@ -118,6 +122,10 @@ From ' . $user_email;
      */
     public function addAction(Request $request, Government $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createFormBuilder()
             ->add('users', 'entity', [
                 'class' => 'GovWiki\UserBundle\Entity\User',
@@ -187,6 +195,10 @@ From ' . $user_email;
      */
     public function removeAction(Government $government, User $subscriber)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $government->removeSubscriber($subscriber);

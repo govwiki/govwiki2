@@ -29,6 +29,10 @@ class EditRequestController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         /** @var EditRequestRepository $repository */
         $repository = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:EditRequest');
@@ -58,6 +62,10 @@ class EditRequestController extends AbstractGovWikiAdminController
      */
     public function showAction(EditRequest $editRequest)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $errors = [];
 
@@ -114,6 +122,10 @@ class EditRequestController extends AbstractGovWikiAdminController
      */
     public function applyAction(EditRequest $editRequest)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $targetEntity = $em
@@ -150,6 +162,10 @@ class EditRequestController extends AbstractGovWikiAdminController
      */
     public function discardAction(EditRequest $editRequest)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $editRequest->setStatus('discarded');
         $em->flush();
@@ -173,6 +189,10 @@ class EditRequestController extends AbstractGovWikiAdminController
      */
     public function removeAction(EditRequest $editRequest)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($editRequest);
         $em->flush();

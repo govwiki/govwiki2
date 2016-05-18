@@ -135,6 +135,7 @@ class User extends BaseUser
         $this->createRequests = new ArrayCollection();
         $this->editRequests   = new ArrayCollection();
         $this->messages       = new ArrayCollection();
+        $this->environments   = new ArrayCollection();
     }
 
     /**
@@ -234,10 +235,12 @@ class User extends BaseUser
      *
      * @return User
      */
-    public function setEnvironments(Environment $environment)
+    public function setEnvironments(Environment $environment = null)
     {
-        if ($this->environments !== null) {
-            $this->environments->clear();
+        $this->environments->clear();
+
+        if (($environment === null) || $this->isAdmin()) {
+            return $this;
         }
 
         return $this->addEnvironment($environment);
@@ -431,7 +434,7 @@ class User extends BaseUser
     /**
      * Get chats
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getChats()
     {

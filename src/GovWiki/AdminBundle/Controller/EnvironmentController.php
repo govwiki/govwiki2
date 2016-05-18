@@ -43,6 +43,10 @@ class EnvironmentController extends AbstractGovWikiAdminController
      */
     public function showAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
 
         $locale = $environment->getLocales()[0];
@@ -125,6 +129,10 @@ class EnvironmentController extends AbstractGovWikiAdminController
      */
     public function removeAction()
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
 
         // Delete environment related tables.
@@ -267,6 +275,10 @@ class EnvironmentController extends AbstractGovWikiAdminController
      */
     public function enableAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
 
         $em = $this->getDoctrine()->getManager();
@@ -293,6 +305,10 @@ class EnvironmentController extends AbstractGovWikiAdminController
      */
     public function disableAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
 
         $em = $this->getDoctrine()->getManager();
@@ -320,6 +336,10 @@ class EnvironmentController extends AbstractGovWikiAdminController
      */
     public function templateAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
 
         $template = $this->getDoctrine()
@@ -371,6 +391,10 @@ class EnvironmentController extends AbstractGovWikiAdminController
      */
     public function mapAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
 
         /** @var Map $map */
@@ -460,6 +484,10 @@ class EnvironmentController extends AbstractGovWikiAdminController
      */
     public function formatAction()
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         // Get all available tabs.
         $tabs = $this->getDoctrine()->getRepository('GovWikiDbBundle:Tab')
             ->get($this->getCurrentEnvironment());
@@ -477,6 +505,10 @@ class EnvironmentController extends AbstractGovWikiAdminController
      */
     public function finAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createFormBuilder(null, [
             'action' => $this->generateUrl(
                 'govwiki_admin_environment_fin',

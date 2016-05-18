@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\AdminBundle\Form\UserForm;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -41,6 +42,10 @@ class UserController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         /** @var User $user */
         $user = $this->getUser();
 
@@ -85,6 +90,10 @@ class UserController extends AbstractGovWikiAdminController
      */
     public function showAction(User $user)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $this->checkUserBelongsToEnvironment($user);
 
         return [ 'user' => $user ];
@@ -105,6 +114,10 @@ class UserController extends AbstractGovWikiAdminController
      */
     public function enableToggleAction(Request $request, User $user)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $user->setLocked(! $user->isLocked());
@@ -128,9 +141,13 @@ class UserController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, User $user)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $this->checkUserBelongsToEnvironment($user);
 
-        $form = $this->createForm('govwiki_admin_form_user', $user);
+        $form = $this->createForm(new UserForm(), $user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -160,13 +177,17 @@ class UserController extends AbstractGovWikiAdminController
      */
     public function newAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
         $userManager = $this->get('fos_user.user_manager');
         /** @var User $user */
         $user = $userManager->createUser();
         $user->addEnvironment($environment);
 
-        $form = $this->createForm('govwiki_admin_form_user', $user);
+        $form = $this->createForm(new UserForm(), $user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

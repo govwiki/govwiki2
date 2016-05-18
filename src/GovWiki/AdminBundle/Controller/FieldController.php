@@ -41,6 +41,10 @@ class FieldController extends AbstractGovWikiAdminController
      */
     public function newAction(Request $request, $category)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->get('doctrine.orm.default_entity_manager');
         $categoryReference = $em->getReference(
             'GovWikiDbBundle:Category',
@@ -91,6 +95,10 @@ class FieldController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, Format $format)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm(new FormatType(), $format);
 
         $oldFieldName = $format->getField();
@@ -158,6 +166,10 @@ class FieldController extends AbstractGovWikiAdminController
      */
     public function removeAction(Format $format)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $environment = $this->getCurrentEnvironment();

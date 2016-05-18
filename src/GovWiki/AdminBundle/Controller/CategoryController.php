@@ -36,6 +36,10 @@ class CategoryController extends AbstractGovWikiAdminController
      */
     public function newAction(Request $request, $tab)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->get('doctrine.orm.default_entity_manager');
         $environment = $this->getCurrentEnvironment();
         $tabReference = $em->getReference('GovWikiDbBundle:Tab', $tab);
@@ -75,6 +79,10 @@ class CategoryController extends AbstractGovWikiAdminController
      */
     public function removeAction($tab, $category)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->get('doctrine.orm.default_entity_manager');
 
         $this->changeCategoryTranslation('remove', $category);
@@ -114,6 +122,10 @@ class CategoryController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, $tab, Category $category)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         if ($category->getTab()->getId() === (int)$tab) {
             $form = $this->createForm(new AbstractGroupType(), $category);
             $form->handleRequest($request);

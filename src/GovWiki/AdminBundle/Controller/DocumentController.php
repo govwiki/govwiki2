@@ -38,6 +38,10 @@ class DocumentController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request, Government $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $type = null;
         $date = null;
         if ($filter = $request->query->get('filter')) {
@@ -75,6 +79,10 @@ class DocumentController extends AbstractGovWikiAdminController
      */
     public function newAction(Request $request, Government $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $document = new Document();
         $document->setGovernment($government);
         $form = $this->createForm('document', $document);
@@ -115,6 +123,10 @@ class DocumentController extends AbstractGovWikiAdminController
         Government $government,
         Document $document
     ) {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm('document', $document);
 
         $form->handleRequest($request);
@@ -148,6 +160,10 @@ class DocumentController extends AbstractGovWikiAdminController
      */
     public function deleteAction($government, Document $document)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($document);
         $em->flush();

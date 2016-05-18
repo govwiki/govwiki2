@@ -16,7 +16,7 @@ use GovWiki\DbBundle\Form\EndorsementType;
  *
  * @package GovWiki\AdminBundle\Controller
  */
-class EndorsementController extends Controller
+class EndorsementController extends AbstractGovWikiAdminController
 {
     /**
      * @Configuration\Route(
@@ -32,6 +32,10 @@ class EndorsementController extends Controller
      */
     public function createAction(Request $request, ElectedOfficial $electedOfficial)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $endorsement = new Endorsement();
 
         $form = $this->createForm(new EndorsementType(), $endorsement);
@@ -70,6 +74,10 @@ class EndorsementController extends Controller
      */
     public function editAction(Request $request, Endorsement $endorsement)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm(new EndorsementType(), $endorsement);
         $form->handleRequest($request);
 
@@ -97,6 +105,10 @@ class EndorsementController extends Controller
      */
     public function removeAction(Endorsement $endorsement)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($endorsement);
         $em->flush();

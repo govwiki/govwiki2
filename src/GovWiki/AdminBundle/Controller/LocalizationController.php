@@ -40,6 +40,10 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $locale_names_list = $this->getLocaleManager()->getListLocaleNames();
 
         $locale_names_pagination = $this->get('knp_paginator')->paginate(
@@ -67,6 +71,10 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function showLocaleAction(Request $request, $locale_name)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $filter_trans_key = null;
         $filter_translation = null;
         if ($filter = $request->query->get('filter')) {
@@ -134,6 +142,10 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function createLocaleAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $trans_info_list_en = $this->getTranslationManager()->getTransInfoByLocale('en');
@@ -223,6 +235,10 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function removeLocaleAction($locale_name)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $locale = $this->getLocaleManager()->getOneLocaleByShortName($locale_name);
@@ -245,6 +261,10 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function exportLocaleAction($locale_name)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $env_name = $this->getCurrentEnvironment()->getSlug();
         if (null === $env_name) {
             $env_name = 'global';
@@ -285,6 +305,10 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function importLocaleAction(Request $request, $locale_name)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         /*
          * Build form.
@@ -373,6 +397,10 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function createTranslationAction(Request $request, $locale_name)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $new_translation = new Translation();
@@ -458,6 +486,10 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function editTranslationAction(Request $request, $transKey, $locale_name)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $needOneResult = true;
@@ -510,6 +542,10 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function removeTranslationAction($transKey, $locale_name)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $trans_key_settings = null;
@@ -541,6 +577,10 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function createInitialEnTranslationAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $trans_key = $request->get('trans_key');
         $trans_text = $request->get('trans_text');
 

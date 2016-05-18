@@ -15,6 +15,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * MainController
@@ -38,6 +39,11 @@ class GovernmentController extends AbstractGovWikiController
      */
     public function salariesAction(Request $request, $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            // Return empty response.
+            return new Response();
+        }
+
         $paginator = $this->get('knp_paginator');
         $year = $request->query->get(
             'year',
@@ -75,6 +81,11 @@ class GovernmentController extends AbstractGovWikiController
      */
     public function pensionsAction(Request $request, $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            // Return empty response.
+            return new Response();
+        }
+
         $paginator = $this->get('knp_paginator');
         $year = $request->query->get(
             'year',
@@ -116,6 +127,10 @@ class GovernmentController extends AbstractGovWikiController
      */
     public function subscribeAction(Government $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return new JsonResponse([], 400);
+        }
+
         /** @var User $user */
         $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
@@ -157,6 +172,10 @@ class GovernmentController extends AbstractGovWikiController
      */
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('disabled');
+        }
+
         $this->clearTranslationsCache();
         $manager = $this->getGovernmentManager();
         $user = $this->getUser();
@@ -345,6 +364,10 @@ From ' . $user_email;
      */
     public function documentAction(Request $request, $altTypeSlug, $slug)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('disabled');
+        }
+
         $manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
 
         $years = $manager->getAvailableYears();

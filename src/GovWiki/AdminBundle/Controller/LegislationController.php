@@ -28,6 +28,10 @@ class LegislationController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         /** @var LegislationRepository $repository */
         $repository = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:Legislation');
@@ -55,6 +59,10 @@ class LegislationController extends AbstractGovWikiAdminController
      */
     public function createAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         /** @var Legislation $legislation */
         $legislation = new Legislation();
 
@@ -90,6 +98,10 @@ class LegislationController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, Legislation $legislation)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm('govwiki_dbbundle_legislation', $legislation);
         $form->handleRequest($request);
 
@@ -123,6 +135,10 @@ class LegislationController extends AbstractGovWikiAdminController
      */
     public function removeAction(Legislation $legislation)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $em->remove($legislation);

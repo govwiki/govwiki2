@@ -1,6 +1,6 @@
 $(function() {
-    var selectRoles = $('#govwiki_admin_form_user_roles')[0];
-    var selectEnvs = $('#govwiki_admin_form_user_environments')[0];
+    var selectRoles = $('.role-select')[0];
+    var selectEnvs = $('.environment-select')[0];
     var optionsList = selectRoles.options;
 
     // Hide Environments selection if ROLE_MANAGER is not selected
@@ -23,9 +23,6 @@ $(function() {
                     break;
                 } else {
                     $(selectEnvs.parentNode).hide();
-                    for (var j = 0; j < selectEnvs.options.length; j++) {
-                        selectEnvs.options[j].selected = false;
-                    }
                     break;
                 }
             }

@@ -55,7 +55,7 @@ class EnvironmentDeterminatorListener
         $request = $event->getRequest();
 
         // Prevent determination if environment already setup.
-        if ($this->environmentStorage->get()->getId() === -1) {
+        if ($this->environmentStorage->get() === null) {
             $environment = $this->determinator->determine($request);
             $this->environmentStorage->set($environment);
 

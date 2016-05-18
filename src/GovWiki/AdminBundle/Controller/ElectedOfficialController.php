@@ -32,6 +32,10 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $session = $this->container->get('session');
         $environment = $this->getCurrentEnvironment()->getSlug();
 
@@ -123,6 +127,10 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
      */
     public function createAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         /** @var ElectedOfficial $electedOfficial */
         $electedOfficial = new ElectedOfficial();
 
@@ -158,6 +166,10 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, ElectedOfficial $elected)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm('govwiki_dbbundle_electedofficial', $elected);
         $form->handleRequest($request);
 
@@ -197,6 +209,10 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
      */
     public function staffAction(Request $request, ElectedOfficial $elected, $staff)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         /** @var User $user */
         $user = $this->getUser();
 
@@ -235,6 +251,10 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
         ElectedOfficial $elected,
         $staff
     ) {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $entityClassName = $this->getStaffRepository($staff)->getClassName();
         /** @var StaffEntityInterface $entity */
         $entity = new $entityClassName();
@@ -289,6 +309,10 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
         $staff,
         $id
     ) {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $entity = $this->getStaffRepository($staff)->getOne($id);
 
         $formType = $entity::getFormType();
@@ -336,6 +360,10 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
      */
     public function staffRemoveAction(ElectedOfficial $elected, $staff, $id)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $entityClassName = $this->getStaffRepository($staff)->getClassName();
         $em = $this->get('doctrine.orm.default_entity_manager');
 

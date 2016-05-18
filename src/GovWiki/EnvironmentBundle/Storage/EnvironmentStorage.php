@@ -22,14 +22,6 @@ class EnvironmentStorage implements EnvironmentStorageInterface
      */
     public function get()
     {
-        if ($this->environment === null) {
-            $this->environment = new Environment();
-            $reflection = new \ReflectionProperty($this->environment, 'id');
-            $reflection->setAccessible(true);
-            $reflection->setValue($this->environment, -1);
-            $reflection->setAccessible(false);
-        }
-
         return $this->environment;
     }
 

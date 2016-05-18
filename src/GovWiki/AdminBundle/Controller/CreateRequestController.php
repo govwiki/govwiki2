@@ -41,6 +41,10 @@ class CreateRequestController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         /** @var CreateRequestRepository $repository */
         $repository = $this->getDoctrine()
             ->getRepository('GovWikiRequestBundle:AbstractCreateRequest');
@@ -82,6 +86,10 @@ class CreateRequestController extends AbstractGovWikiAdminController
         Request $request,
         AbstractCreateRequest $createRequest
     ) {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
         $em = $this->getDoctrine()->getManager();
 
@@ -167,6 +175,10 @@ class CreateRequestController extends AbstractGovWikiAdminController
      */
     public function removeAction(AbstractCreateRequest $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         /** @var AbstractCreatable $subject */

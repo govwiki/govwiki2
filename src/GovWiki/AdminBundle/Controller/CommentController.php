@@ -32,6 +32,10 @@ class CommentController extends AbstractGovWikiAdminController
      */
     public function listAction(Request $request, ElectedOfficial $elected)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $comments = $this->getDoctrine()->getRepository('GovWikiCommentBundle:VoteComment')
             ->getListQuery($elected->getId());
 
@@ -55,6 +59,10 @@ class CommentController extends AbstractGovWikiAdminController
      */
     public function removeAction(VoteComment $comment, $elected)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $em->remove($comment);
@@ -76,6 +84,10 @@ class CommentController extends AbstractGovWikiAdminController
      */
     public function newAction(Request $request, ElectedOfficial $elected)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         /** @var VoteComment $comment */
         $comment = $this->getManager()->create();
         $comment->setElected($elected);
@@ -107,6 +119,10 @@ class CommentController extends AbstractGovWikiAdminController
         ElectedOfficial $elected,
         VoteComment $comment
     ) {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm(new VoteCommentType(), $comment);
         if ($this->processForm($request, $form)) {
             return $this->redirectToRoute('govwiki_admin_comment_list', [

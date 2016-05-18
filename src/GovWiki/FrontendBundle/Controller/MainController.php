@@ -37,6 +37,17 @@ class MainController extends AbstractGovWikiController
     }
 
     /**
+     * @Route("/not-found", name="disabled")
+     * @Template
+     *
+     * @return array
+     */
+    public function disabledAction()
+    {
+        return [];
+    }
+
+    /**
      * @Route("/", name="map")
      * @Template("GovWikiFrontendBundle:Main:map.html.twig")
      *
@@ -44,6 +55,10 @@ class MainController extends AbstractGovWikiController
      */
     public function mapAction()
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('disabled');
+        }
+
         $this->clearTranslationsCache();
         $translator = $this->get('translator');
 

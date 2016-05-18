@@ -35,6 +35,10 @@ class GovernmentController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $id = null;
         $name = null;
         if ($filter = $request->query->get('filter')) {
@@ -82,6 +86,10 @@ class GovernmentController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, Government $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
 
         $form = $this->createForm('government', $government);
@@ -154,6 +162,10 @@ class GovernmentController extends AbstractGovWikiAdminController
      */
     public function removeAction(Government $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $name = $government->getName();
         $environment = $this->getCurrentEnvironment();
         $dataset = GovwikiNamingStrategy::cartoDbDatasetName($environment);

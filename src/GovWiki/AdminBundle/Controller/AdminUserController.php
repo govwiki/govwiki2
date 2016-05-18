@@ -2,7 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use GovWiki\AdminBundle\Form\AdminUserForm;
+use GovWiki\AdminBundle\Form\UserForm;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -110,7 +110,7 @@ class AdminUserController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, User $user)
     {
-        $form = $this->createForm(new AdminUserForm(), $user);
+        $form = $this->createForm(new UserForm(), $user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -144,7 +144,7 @@ class AdminUserController extends AbstractGovWikiAdminController
         $user = $userManager->createUser();
         $user->addRole('ROLE_ADMIN');
 
-        $form = $this->createForm(new AdminUserForm(), $user);
+        $form = $this->createForm(new UserForm(), $user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

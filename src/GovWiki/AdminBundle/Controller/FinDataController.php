@@ -41,6 +41,10 @@ class FinDataController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request, Government $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $filter = $request->query->get('filter', []);
 
         $year = null;
@@ -84,6 +88,10 @@ class FinDataController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, FinData $finData)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm('fin_data', $finData);
 
         $form->handleRequest($request);

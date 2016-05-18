@@ -37,6 +37,10 @@ class GovernmentDataController extends AbstractGovWikiAdminController
      */
     public function newAction(Request $request, Government $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
         $formats = $this->getFormatManager()
             ->getList($environment, $government->getAltType());
@@ -148,6 +152,10 @@ class GovernmentDataController extends AbstractGovWikiAdminController
         Government $government,
         $year
     ) {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
         $allowUpdate = true;
 

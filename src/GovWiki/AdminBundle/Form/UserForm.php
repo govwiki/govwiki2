@@ -4,9 +4,9 @@ namespace GovWiki\AdminBundle\Form;
 
 use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class UserForm
@@ -14,19 +14,6 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class UserForm extends AbstractType
 {
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $storage;
-
-    /**
-     * @param TokenStorageInterface $storage A TokenStorageInterface instance.
-     */
-    public function __construct(TokenStorageInterface $storage)
-    {
-        $this->storage = $storage;
-    }
 
     /**
      * {@inheritdoc}
@@ -37,15 +24,18 @@ class UserForm extends AbstractType
         /** @var User $user */
         $user = $builder->getData();
 
-        $options = [];
+        $options = [ 'attr' => [ 'autocomplete' => 'off' ] ];
         if ($user->getId() !== null) {
-            $options = [ 'required' => false ];
+            $options = array_merge($options, [ 'required' => false ]);
         }
 
         $builder
-            ->add('username', null)
-            ->add('email', null)
-            ->add('phone', 'text', [ 'required' => false ])
+            ->add('username', null, [ 'attr' => [ 'autocomplete' => 'off' ] ])
+            ->add('email', null, [ 'attr' => [ 'autocomplete' => 'off' ] ])
+            ->add('phone', 'text', [
+                'required' => false,
+                'attr' => [ 'autocomplete' => 'off' ],
+            ])
             ->add(
                 'phoneConfirmed',
                 'choice',
@@ -57,10 +47,8 @@ class UserForm extends AbstractType
                     'expanded' => false,
                 ]
             )
-            ->add('plainPassword', 'password', $options);
-
-        if ($this->getUser()->hasRole('ROLE_ADMIN')) {
-            $builder->add(
+            ->add('plainPassword', 'password', $options)
+            ->add(
                 'roles',
                 'choice',
                 [
@@ -69,25 +57,36 @@ class UserForm extends AbstractType
                         'ROLE_MANAGER' => 'manager',
                         'ROLE_USER' => 'user',
                     ],
+                    'attr' => [ 'class' => 'role-select' ],
                     'expanded' => false,
-                    'multiple' => true,
+                    'multiple' => false,
                 ]
-            );
-        }
-
-        $builder
+            )
             ->add(
                 'environments',
                 'entity',
                 [
-                    'class' => 'GovWikiDbBundle:Environment',
+                    'class'        => 'GovWikiDbBundle:Environment',
+                    'attr' => [ 'class' => 'environment-select' ],
                     'choice_label' => 'name',
-                    'expanded' => false,
-                    'multiple' => false,
-                    'required' => false,
-                    'data' => $user->getEnvironments()[0],
+                    'expanded'     => false,
+                    'multiple'     => false,
+                    'required'     => false,
+                    'data'         => $user->getEnvironments()[0],
                 ]
             );
+
+        $builder->get('roles')
+            ->addModelTransformer(new CallbackTransformer(
+                function (array $original) {
+                    // Get one top role.
+                    return array_shift($original);
+                },
+                function ($new) {
+                    // Convert to array.
+                    return [ $new ];
+                }
+            ));
     }
 
     /**
@@ -104,24 +103,5 @@ class UserForm extends AbstractType
     public function getName()
     {
         return 'govwiki_admin_form_user';
-    }
-
-    /**
-     * Get current user.
-     *
-     * @return User|null
-     */
-    private function getUser()
-    {
-        if (null === $token = $this->storage->getToken()) {
-            return null;
-        }
-
-        if (!is_object($user = $token->getUser())) {
-            // e.g. anonymous authentication
-            return null;
-        }
-
-        return $user;
     }
 }

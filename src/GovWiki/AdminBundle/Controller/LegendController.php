@@ -37,6 +37,10 @@ class LegendController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment()->getSlug();
 
         /** @var Map $map */
@@ -114,6 +118,10 @@ class LegendController extends AbstractGovWikiAdminController
      */
     public function shapeAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $shape = new Shape();
         $form = $this->createForm(new NewShapeType(), $shape, [
             'action' => $this->generateUrl('govwiki_admin_legend_shape', [

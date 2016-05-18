@@ -35,6 +35,10 @@ class StyleController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request, $type)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
 
         // Get current exists styles for current environment.
@@ -93,6 +97,10 @@ class StyleController extends AbstractGovWikiAdminController
      */
     public function exportAction($type)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         // Get current exists styles for current environment.
         $styles = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:EnvironmentStyles')
@@ -137,6 +145,10 @@ class StyleController extends AbstractGovWikiAdminController
      */
     public function importAction(Request $request, $type)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $environment = $this->getCurrentEnvironment();
 
         $form = $this->createFormBuilder()

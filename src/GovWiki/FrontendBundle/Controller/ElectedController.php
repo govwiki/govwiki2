@@ -34,6 +34,10 @@ class ElectedController extends AbstractGovWikiController
      */
     public function showAction(Request $request, $altTypeSlug, $slug, $electedSlug)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('disabled');
+        }
+
         $user = $this->getUser();
 
         if ($user instanceof User) {
