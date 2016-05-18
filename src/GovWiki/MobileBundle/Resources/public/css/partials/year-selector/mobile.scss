@@ -1,22 +1,8 @@
 .mobile-year-selector {
-   label {
-      color: white;
-   }
-
    select {
       width: 50px;
       padding: 2px 5px;
       box-shadow: none;
-      color: white;
       background: transparent;
-
-      &:focus {
-         background: #54829b;
-      }
-
-      option {
-         background: #54829b;
-         color: white;
-      }
    }
 }
