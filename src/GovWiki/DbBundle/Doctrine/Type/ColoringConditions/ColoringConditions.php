@@ -67,15 +67,18 @@ class ColoringConditions
         /*
          * Check array keys and value types.
          */
-        if (! array_key_exists('fieldName', $array) ||
-            ! array_key_exists('conditions', $array) ||
-            ! array_key_exists('colorized', $array) ||
-            ! is_string($array['fieldName']) ||
-            ! is_array($array['conditions']) ||
-            ! is_bool($array['colorized'])) {
-            throw new \InvalidArgumentException(
-                'Wrong serialized data, expect array with two keys: \'fieldName\' with string value, \'conditions\' with array value and \'colorized\' with boolean value.'
-            );
+        if (! array_key_exists('colorized', $array)) {
+            $array['colorized'] = false;
+        }
+
+        if (! array_key_exists('fieldName', $array)) {
+            $array['fieldName'] = '';
+            $array['colorized'] = false;
+        }
+
+        if (! array_key_exists('conditions', $array)) {
+            $array['conditions'] = [];
+            $array['colorized'] = false;
         }
 
         /*

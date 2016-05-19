@@ -46,8 +46,8 @@ class ColoringConditionsType extends Type
     {
         try {
             return ColoringConditions::unserialize($value);
-        } catch (\InvalidArgumentException $e) {
-            // Some error while unserialize Colorized conditions.
+        } catch (\Exception $e) {
+            // Some error while unserialize Coloring conditions.
             return new ColoringConditions();
         }
     }
