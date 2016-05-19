@@ -64,8 +64,11 @@ class EnvironmentType extends AbstractType
             $event->setData($data);
         };
 
+        if (! $subject->getId()) {
+            $builder->add('name');
+        }
+
         $builder
-            ->add('name')
             ->add('domain')
             ->add('title')
             ->add('logoHref', 'url', [ 'required' => false ])
@@ -78,9 +81,10 @@ class EnvironmentType extends AbstractType
                 'required' => false,
                 'mapped' => false,
             ])
-            ->add('adminEmail')
-            ->add('defaultLocale', 'entity', [
-                'class' => 'GovWiki\DbBundle\Entity\Locale',
+            ->add('adminEmail');
+        if ($subject->getId()) {
+            $builder->add('defaultLocale', 'entity', [
+                'class'         => 'GovWiki\DbBundle\Entity\Locale',
                 'query_builder' => function (EntityRepository $repository) use ($id) {
                     $qb = $repository->createQueryBuilder('Locale');
                     $expr = $qb->expr();
@@ -90,7 +94,9 @@ class EnvironmentType extends AbstractType
                         ->where($expr->eq('Locale.environment', ':id'))
                         ->setParameter('id', $id);
                 },
-            ])
+            ]);
+        }
+        $builder
             ->add('subscribable', 'checkbox', [ 'required' => false ])
             ->addEventListener(FormEvents::PRE_SUBMIT, $listener);
     }

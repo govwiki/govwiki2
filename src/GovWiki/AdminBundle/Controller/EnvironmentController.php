@@ -9,6 +9,7 @@ use GovWiki\AdminBundle\Form\Type\DelayType;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditions;
 use GovWiki\DbBundle\Entity\Map;
+use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\File\CsvReader;
 use GovWiki\DbBundle\Form\MapType;
 use GovWiki\DbBundle\GovWikiDbServices;
@@ -378,6 +379,114 @@ class EnvironmentController extends AbstractGovWikiAdminController
     }
 
     /**
+     * @Configuration\Route("/sync", methods={ "GET" })
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function syncAction()
+    {
+        $environment = $this->getCurrentEnvironment();
+        $api = $this->get(CartoDbServices::CARTO_DB_API);
+        $redirect = $this->redirectToRoute('govwiki_admin_environment_show', [
+            'environment' => $environment->getSlug(),
+        ]);
+
+        $datasetName = GovwikiNamingStrategy::cartoDbDatasetName($environment);
+        // Dataset name for backup.
+        $backupDatasetName = $datasetName .'_backup';
+
+        // Remove previous backup.
+        $response = $api->sqlRequest("DROP TABLE IF EXISTS {$backupDatasetName}");
+
+        $error = CartoDbApi::getErrorFromResponse($response);
+        if ($error) {
+            $this->errorMessage('Can\'t remove previous backup dataset: '. $error);
+
+            return $redirect;
+        }
+
+        // Rename current dataset to backup data set name.
+        $response = $api->sqlRequest("
+            ALTER TABLE {$datasetName}
+            RENAME TO {$backupDatasetName}
+        ");
+
+        $error = CartoDbApi::getErrorFromResponse($response);
+        if ($error) {
+            $this->errorMessage('Can\'t backup dataset: '. $error);
+
+            return $redirect;
+        }
+
+        // Create new dataset.
+        $response = $api->createDataset($datasetName, [
+            'alt_type_slug' => 'VARCHAR(255)',
+            'slug' => 'VARCHAR(255)',
+            'data_json' => 'VARCHAR(255)',
+            'name' => 'VARCHAR(255)',
+        ]);
+
+        $error = CartoDbApi::getErrorFromResponse($response);
+        if ($error) {
+            $this->errorMessage('Can\'t create new dataset: '. $error);
+
+            return $redirect;
+        }
+
+        $conditions = $environment->getMap()->getColoringConditions();
+        // Get governments and values for field from coloring conditions.
+        $values = $this->getGovernmentManager()
+            ->getConditionValues($environment, $conditions->getFieldName());
+
+        // Prepare sql parts for CartoDB sql request.
+        $sqlParts = [];
+        foreach ($values as $row) {
+            $slug = CartoDbApi::escapeString($row['slug']);
+            $altTypeSlug = CartoDbApi::escapeString($row['alt_type_slug']);
+            $name = CartoDbApi::escapeString($row['name']);
+            $data = ($row['data'] === null) ? 'null' : $row['data'];
+
+            $sqlParts[] = "
+                ('{$slug}', '{$altTypeSlug}', '{$data}', '{$name}')
+            ";
+        }
+
+        // Export data to new dataset.
+        $response = $api->sqlRequest("
+            INSERT INTO {$datasetName}
+                (slug, alt_type_slug, data_json, name)
+            VALUES ". implode(',', $sqlParts));
+
+        $error = CartoDbApi::getErrorFromResponse($response);
+        if ($error) {
+            $this->errorMessage('Can\'t export data from previous dataset: '. $error);
+
+            return $redirect;
+        }
+
+        // Export geometry information from backup dataset.
+        $response = $api->sqlRequest("
+            UPDATE {$datasetName} new_dataset
+            SET
+                the_geom = backup_dataset.the_geom,
+                the_geom_webmercator = backup_dataset.the_geom_webmercator
+            FROM {$backupDatasetName} backup_dataset
+            WHERE
+                new_dataset.slug = backup_dataset.slug AND
+                new_dataset.alt_type_slug = backup_dataset.alt_type_slug
+        ");
+
+        $error = CartoDbApi::getErrorFromResponse($response);
+        if ($error) {
+            $this->errorMessage('Can\'t export geometry from previous dataset: '. $error);
+
+            return $redirect;
+        }
+
+        return $redirect;
+    }
+
+    /**
      * @Configuration\Route("/map")
      * @Configuration\Template()
      *
@@ -436,17 +545,17 @@ class EnvironmentController extends AbstractGovWikiAdminController
 
                 $dataset = GovwikiNamingStrategy::cartoDbDatasetName($environment);
                 $api = $this->get(CartoDbServices::CARTO_DB_API);
-                $api
-                    // Create temporary dataset.
-                    ->createDataset($dataset .'_temporary', [
-                        'alt_type_slug' => 'VARCHAR(255)',
-                        'slug' => 'VARCHAR(255)',
-                        'data_json' => 'VARCHAR(255)',
-                    ], true)
-                    ->sqlRequest("
-                        INSERT INTO {$dataset}_temporary
-                            (slug, alt_type_slug, data_json)
-                        VALUES ". implode(',', $sqlParts));
+                // Create temporary dataset.
+                $api->createDataset($dataset .'_temporary', [
+                    'alt_type_slug' => 'VARCHAR(255)',
+                    'slug' => 'VARCHAR(255)',
+                    'data_json' => 'VARCHAR(255)',
+                ], true);
+                // Export data to temporary dataset.
+                $api->sqlRequest("
+                    INSERT INTO {$dataset}_temporary
+                        (slug, alt_type_slug, data_json)
+                    VALUES ". implode(',', $sqlParts));
                 // Update concrete environment dataset from temporary
                 // dataset.
                 $api->sqlRequest("
@@ -496,7 +605,7 @@ class EnvironmentController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/fin_data/")
+     * @Configuration\Route("/fin_data")
      * @Configuration\Template()
      *
      * @param Request $request A Request instance.

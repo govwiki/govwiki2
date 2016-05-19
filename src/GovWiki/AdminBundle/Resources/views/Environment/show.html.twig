@@ -17,7 +17,16 @@
         {# Information about environment. #}
         <div class="col-md-2">
 
-            <button class="btn btn-sm btn-default" id="import-fin-stmt">Import fin. stmt.</button>
+            <button class="btn btn-sm btn-default" id="import-fin-stmt">
+                Import fin. stmt.
+            </button>
+
+            <a class="btn btn-sm btn-default" href="{{- path(
+                'govwiki_admin_environment_sync',
+                { environment: environment.slug }
+            ) -}}">
+                Update CartoDB
+            </a>
 
             <hr>
 
@@ -86,7 +95,6 @@
 
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="general">
-                    {{ form_row(form.name) }}
                     {{ form_row(form.domain) }}
                     {{ form_row(form.title) }}
                     {{ form_row(form.adminEmail) }}

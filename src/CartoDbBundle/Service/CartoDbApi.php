@@ -49,7 +49,7 @@ class CartoDbApi
      *                           and value if field type.
      * @param boolean $temporary Flag, if set don't cartodbfy.
      *
-     * @return CartoDbApi
+     * @return array
      */
     public function createDataset($name, array $fields = [], $temporary = false)
     {
@@ -58,13 +58,18 @@ class CartoDbApi
             $sqlParts[] = $field .' '. $type;
         }
 
-        $this->sqlRequest("CREATE TABLE {$name} (". implode(',', $sqlParts) .
+        $response = $this->sqlRequest("CREATE TABLE {$name} (". implode(',', $sqlParts) .
             ')');
-        if (! $temporary) {
-            $this->sqlRequest("SELECT cdb_cartodbfytable('{$name}')");
+
+        if (self::getErrorFromResponse($response)) {
+            return $response;
         }
 
-        return $this;
+        if (! $temporary) {
+            $response = $this->sqlRequest("SELECT cdb_cartodbfytable('{$name}')");
+        }
+
+        return $response;
     }
 
     /**
@@ -87,6 +92,20 @@ class CartoDbApi
     public static function escapeString($string)
     {
         return str_replace([ "'" ], [ "''" ], $string);
+    }
+
+    /**
+     * @param array $response Response from CartoDB.
+     *
+     * @return string|null
+     */
+    public static function getErrorFromResponse(array $response)
+    {
+        if (array_key_exists('error', $response)) {
+            return $response['error'][0];
+        }
+
+        return null;
     }
 
     /**

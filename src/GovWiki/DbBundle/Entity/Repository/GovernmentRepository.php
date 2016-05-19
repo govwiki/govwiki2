@@ -416,6 +416,27 @@ class GovernmentRepository extends EntityRepository
     }
 
     /**
+     * @param integer $environment A Environment entity id.
+     * @param integer $page        Start page.
+     * @param integer $limit       Max Government per page.
+     *
+     * @return array
+     */
+    public function getForExport($environment, $page, $limit = 1000)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        return $this->createQueryBuilder('Government')
+            ->select('Government.slug, Government.altTypeSlug, Government.name')
+            ->where($expr->eq('Government.environment', ':environment'))
+            ->setParameter('environment', $environment)
+            ->setFirstResult($page * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
      * @param array $finData Government financial statements.
      *
      * @return array

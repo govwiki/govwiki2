@@ -12,6 +12,7 @@ use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Fund;
 use GovWiki\DbBundle\Entity\CaptionCategory;
 use GovWiki\DbBundle\Form\MapType;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -166,13 +167,13 @@ class WizardController extends AbstractGovWikiAdminController
             /*
              * Create dataset for environments.
              */
-            $api
-                ->createDataset($environment->getSlug(), [
-                    'alt_type_slug' => 'VARCHAR(255)',
-                    'slug' => 'VARCHAR(255)',
-                    'data_json' => 'VARCHAR(255)',
-                    'name' => 'VARCHAR(255)',
-                ]);
+            $datasetName = GovwikiNamingStrategy::cartoDbDatasetName($environment);
+            $api->createDataset($datasetName, [
+                'alt_type_slug' => 'VARCHAR(255)',
+                'slug' => 'VARCHAR(255)',
+                'data_json' => 'VARCHAR(255)',
+                'name' => 'VARCHAR(255)',
+            ]);
 
             $environment->setEnabled(true);
 
@@ -404,16 +405,16 @@ class WizardController extends AbstractGovWikiAdminController
         $em->persist($locale);
 
         // Translations for Greeting text and Bottom text are initially set into '' and can be changed in ckeditor
-        $texts_list = array(
+        $texts_list = [
             'map.greeting_text' => $greeting_text,
             'general.bottom_text' => $bottom_text
-        );
+        ];
         foreach ($texts_list as $transKey => $transText) {
             $this->newTranslation($locale, $transKey, $transText, 'ckeditor');
         }
 
         // General translations
-        $general_trans_list = array(
+        $general_trans_list = [
             'map.government.name' => 'Government Name',
             'map.select.types' => 'Select type(s)',
             'map.type_part_agency_name' => 'Type part of the agency’s name',
@@ -422,23 +423,23 @@ class WizardController extends AbstractGovWikiAdminController
             'gov.links.latest_audit' => 'Latest Audit',
             'gov.financial_statements' => 'Financial Statements',
             'preposition.of' => 'of'
-        );
+        ];
         foreach ($general_trans_list as $transKey => $transText) {
             $this->newTranslation($locale, $transKey, $transText);
         }
 
         /** @var Fund $fund */
-        $fund_list = array(
+        $fund_list = [
             'funds.general_fund' => 'General Fund',
             'funds.other' => 'Other Funds',
             'funds.total' => 'Total Gov. Funds'
-        );
+        ];
         foreach ($fund_list as $transKey => $transText) {
             $this->preSaveTranslation($locale, $transKey, $transText);
         }
 
-        $search  = array(' ', '-'  , '&'  , ','  , '(' , ')' , '/' , '%'   , "'");
-        $replace = array('_', '_d_', 'amp', '_c_', 'lb', 'rb', 'sl', 'proc', "_apos_");
+        $search  = [' ', '-'  , '&'  , ','  , '(' , ')' , '/' , '%'   , "'"];
+        $replace = ['_', '_d_', 'amp', '_c_', 'lb', 'rb', 'sl', 'proc', "_apos_"];
         /** @var CaptionCategory $captionCategory */
         $captionCategories = $em->getRepository('GovWikiDbBundle:CaptionCategory')->findAll();
         foreach ($captionCategories as $captionCategory) {
@@ -465,10 +466,10 @@ class WizardController extends AbstractGovWikiAdminController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $exist_translation = $em->getRepository('GovWikiDbBundle:Translation')->findOneBy(array(
+        $exist_translation = $em->getRepository('GovWikiDbBundle:Translation')->findOneBy([
             'locale' => $locale,
             'transKey' => $transKey
-        ));
+        ]);
 
         if (!empty($exist_translation)) {
             $exist_translation->setTranslation($transText);
