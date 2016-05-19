@@ -2,16 +2,12 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use CartoDbBundle\CartoDbServices;
-use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use GovWiki\DbBundle\Entity\Translation;
 
 /**
  * Class MainController
@@ -24,6 +20,7 @@ class MainController extends AbstractGovWikiAdminController
     /**
      * @Configuration\Route("/")
      * @Configuration\Template()
+     * @Configuration\Security("is_granted('ROLE_MANAGER')")
      *
      * @param Request $request A Request instance.
      *

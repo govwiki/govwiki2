@@ -89,4 +89,34 @@ class LocaleRepository extends EntityRepository
 
         return $qb->getQuery()->getOneOrNullResult();
     }
+
+    /**
+     * @param integer $environment A Environment entity id.
+     * @param array   $localeList  List of available locales.
+     *
+     * @return array
+     */
+    public function checkAvailableLocales($environment, array $localeList)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        $currentLocales = $this->createQueryBuilder('Locale')
+            ->select('Locale.shortName')
+            ->where($expr->andX(
+                'Locale INSTANCE OF GovWikiDbBundle:Locale',
+                $expr->eq('Locale.environment', ':environment')
+            ))
+            ->setParameter('environment', $environment)
+            ->getQuery()
+            ->getArrayResult();
+        $currentLocales = array_map(
+            function (array $locale) {
+                return $locale['shortName'];
+            },
+            $currentLocales
+        );
+        $currentLocales = array_flip($currentLocales);
+
+        return array_diff_key($localeList, $currentLocales);
+    }
 }

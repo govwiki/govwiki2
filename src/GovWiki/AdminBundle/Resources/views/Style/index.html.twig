@@ -79,7 +79,7 @@
                         {# Foreground color. #}
                         <div class="form-group">
                             <label for="foreground">Color</label>
-                            <div class="input-group color-picker colorpicker-element">
+                            <div id="foreground-group" class="input-group color-picker colorpicker-element">
                                 <span class="input-group-addon"><i></i></span>
                                 <input type="text" id="foreground" name="foreground" required="required" class="form-control" value="#000000">
                             </div>
@@ -88,7 +88,7 @@
                         {# Background color. #}
                         <div class="form-group">
                             <label for="background">Background</label>
-                            <div class="input-group color-picker colorpicker-element">
+                            <div id="background-group" class="input-group color-picker colorpicker-element">
                                 <span class="input-group-addon"><i></i></span>
                                 <input type="text" id="background" name="background" required="required" class="form-control" value="#000000">
                             </div>
@@ -128,49 +128,136 @@
                 align: 'left'
             });
 
-            /*
-                Add new style.
-              */
-            $('#new-style').click(function () {
-                $modalWindow.modal('show');
-            });
-            $('#add-new-style').click(function (){
+            function getFormValues() {
                 var $newStyleForm = $('#style-form');
                 var data = $newStyleForm.serializeArray();
 
                 // Convert array to object.
-                data = data.reduce(function (map, object) {
+                return data.reduce(function (map, object) {
                     map[object.name] = object.value;
                     return map;
                 }, {});
+            }
 
-                // Add new row to collection form.
-                prototype = prototype
-                        .replace(/__property_name__/g, data.name)
-                        .replace(/__name__/g, count)
-                        // Change property display name.
-                        .replace(/(\[name\]")/, '$1 value="'+ data.name +'"')
-                        // Change property class name.
-                        .replace(/(\[className\]")/, '$1 value="'+ data.class_name +'"')
-                        // Change foreground color.
-                        .replace(/(\[color\]".*?value=")[^"]*"/, '$1'+ data.foreground + '"')
-                        // Change background color.
-                        .replace(/(\[background\]".*?value=")[^"]*"/, '$1'+ data.background + '"');
-                count++;
-                $collectionContainer.append(prototype);
+            $modalWindow.on('hidden.bs.modal', function modalHide() {
+                document.getElementById('style-form').reset();
+                $modalWindow.find('.color-picker').colorpicker('setValue', '');
+            });
+            /*
+                Add new style.
+              */
+            $('#new-style').click(function () {
+                $('#add-new-style')
+                    .text('Add')
+                    .off('click')
+                    .click(function (){
+                        var data;
+                        var row;
 
-                $modalWindow.modal('hide');
-                $('.color-picker').colorpicker({
-                    format: 'hex',
-                    align: 'left'
-                });
+                        data = getFormValues();
+
+                        // Add new row to collection form.
+                        row = prototype
+                                .replace(/__property_name__/g, data.name)
+                                .replace(/__name__/g, count)
+                            // Change property display name.
+                                .replace(/(\[name\]")/, '$1 value="'+ data.name +'"')
+                            // Change property class name.
+                                .replace(/(\[className\]")/, '$1 value="'+ data.class_name +'"')
+                            // Change foreground color.
+                                .replace(/(\[color\]".*?value=")[^"]*"/, '$1'+ data.foreground + '"')
+                            // Change background color.
+                                .replace(/(\[background\]".*?value=")[^"]*"/, '$1'+ data.background + '"');
+                        count++;
+                        $collectionContainer.append(row);
+
+                        $modalWindow.modal('hide');
+                        $('.color-picker').colorpicker({
+                            format: 'hex',
+                            align: 'left'
+                        });
+                    });
+
+                $modalWindow.modal('show');
             });
 
             /*
                 Remove styles.
              */
-            $('.style-remove-button').click(function() {
+            $(document).on('click', '.style-remove-button', function() {
                 $(this).closest('.form-group').remove();
+            });
+
+            /*
+                Edit styles.
+             */
+            $(document).on('click', '.style-edit-button', function() {
+                var data = {};
+                var formGroup = $(this).closest('.form-group');
+                var formInputs = formGroup.find('input');
+
+                function getInputName(input) {
+                    var name = input.name;
+                    return name.substring(name.lastIndexOf('[') + 1, name.length - 1);
+                }
+
+                formInputs.each(function (idx, element) {
+                    var name = getInputName(element);
+                    data[name] = element.value;
+                });
+
+                $modalWindow.find('#name').val(data.name);
+                $modalWindow.find('#class_name').val(data.className);
+                $modalWindow.find('#foreground-group')
+                    .colorpicker('setValue', data.color);
+                $modalWindow.find('#background-group')
+                    .colorpicker('setValue', data.background);
+
+                var $button = $modalWindow.find('#add-new-style');
+
+                /*
+                    Set Update callback.
+                 */
+                $button
+                    .text('Update')
+                    .off('click')
+                    .click(function () {
+                        var data;
+                        var header;
+
+                        data = getFormValues();
+
+                        formInputs.each(function (idx, element) {
+                            var name = getInputName(element);
+                            var $element = $(element);
+
+                            switch (name) {
+                                case 'name':
+                                    element.value = data.name;
+                                    break;
+
+                                case 'className':
+                                    element.value = data.class_name;
+                                    break;
+
+                                case 'color':
+                                    $element.parent().colorpicker('setValue', data.foreground);
+                                    break;
+
+                                case 'background':
+                                    $element.parent().colorpicker('setValue', data.background);
+                                    break;
+                            }
+                        });
+
+                        header = formGroup.find('h4').html();
+                        header = header.substring(header.indexOf('<'), header.length);
+                        formGroup.find('h4').html(data.name + ' ' + header);
+
+                        $modalWindow.modal('hide');
+                    });
+
+                $modalWindow.modal('show');
             });
         })
     </script>

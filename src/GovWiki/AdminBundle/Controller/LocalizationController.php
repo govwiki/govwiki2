@@ -6,6 +6,7 @@ use GovWiki\AdminBundle\Form\TranslationForm;
 use GovWiki\DbBundle\Entity\GlobalLocale;
 use GovWiki\DbBundle\Entity\Locale;
 use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\DbBundle\Entity\Repository\LocaleRepository;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
@@ -142,7 +143,9 @@ class LocalizationController extends AbstractGovWikiAdminController
      */
     public function createLocaleAction(Request $request)
     {
-        if ($this->getCurrentEnvironment() === null) {
+        $environment = $this->getCurrentEnvironment();
+
+        if ($environment === null) {
             return $this->redirectToRoute('govwiki_admin_main_home');
         }
 
@@ -155,8 +158,13 @@ class LocalizationController extends AbstractGovWikiAdminController
             'es' => 'Spanish',
             'fr' => 'French',
             'de' => 'German',
-            'it' => 'Italian'
+            'it' => 'Italian',
         ];
+
+        /** @var LocaleRepository $localeRepository */
+        $localeRepository = $em->getRepository('GovWikiDbBundle:AbstractLocale');
+        $language_list = $localeRepository
+            ->checkAvailableLocales($environment->getId(), $language_list);
 
         $form = $this->createFormBuilder()
             ->add('locale_name', 'choice', [
@@ -173,8 +181,6 @@ class LocalizationController extends AbstractGovWikiAdminController
             if (!$locale) {
                 $global_locale = $this->getLocaleManager()
                     ->getOneLocaleByShortName($locale_name, true);
-
-                $environment = $this->getCurrentEnvironment();
 
                 $new_locale = new Locale();
                 $new_locale->setShortName($locale_name);
@@ -436,7 +442,7 @@ class LocalizationController extends AbstractGovWikiAdminController
 
             $create_translations_locale_names = array_diff($all_env_locale_names, $existing_translations_locale_names);
 
-            if (!in_array($locale_name, $existing_translations_locale_names)) {
+            if (!in_array($locale_name, $existing_translations_locale_names, true)) {
                 $locale = $this->getLocaleManager()->getOneLocaleByShortName($locale_name);
 
                 $new_translation->setLocale($locale);
@@ -504,7 +510,7 @@ class LocalizationController extends AbstractGovWikiAdminController
             ->getEnvironmentTranslations($locale_name, $trans_key_settings, null, $needOneResult);
 
         $type = null;
-        if ($translation->getTransTextareaType() == 'ckeditor') {
+        if ($translation->getTransTextareaType() === 'ckeditor') {
             $type = 'ckeditor';
         }
         $form = $this->createForm(new TranslationForm($type), $translation);

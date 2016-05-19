@@ -257,3 +257,18 @@ body .container a.btn-primary:hover {
    cursor: pointer;
    color: red;
 }
+
+.style-buttons {
+   a {
+      font-size: 12px;
+      margin-right: 5px;
+
+      &.style-remove-button {
+         color: #ff0000;
+      }
+
+      &.style-edit-button {
+         color: green;
+      }
+   }
+}

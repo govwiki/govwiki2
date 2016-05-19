@@ -85,12 +85,16 @@ class Extension extends \Twig_Extension
             $bottomText = '';
         }
 
-        return [
-            'environment' => $environment,
-            'bottomText' => $bottomText,
-            'hasElectedOfficials' => $this->electedOfficialManager
-                ->computeElectedOfficialsCount($environment) > 0,
-        ];
+        if ($environment) {
+            return [
+                'environment'         => $environment,
+                'bottomText'          => $bottomText,
+                'hasElectedOfficials' => $this->electedOfficialManager
+                        ->computeElectedOfficialsCount($environment) > 0,
+            ];
+        }
+
+        return [];
     }
 
     /**

@@ -31,7 +31,7 @@ class ElectedOfficialManager implements ElectedOfficialManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function computeElectedOfficialsCount(Environment $environment)
+    public function computeElectedOfficialsCount(Environment $environment = null)
     {
         $expr = $this->em->getExpressionBuilder();
         try {
