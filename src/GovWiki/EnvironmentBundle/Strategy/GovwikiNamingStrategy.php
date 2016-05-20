@@ -59,4 +59,14 @@ final class GovwikiNamingStrategy
     {
         return self::environmentRelatedTableName($environment);
     }
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     *
+     * @return string
+     */
+    public static function cartoDbBackupDatasetName(Environment $environment)
+    {
+        return self::environmentRelatedTableName($environment) . '_backup';
+    }
 }

@@ -169,10 +169,12 @@ interface GovernmentManagerInterface
     /**
      * @param Environment $environment A Environment entity instance.
      * @param integer     $government  A Government entity id.
+     * @param integer     $year        A data year, if null delete data for all
+     *                                 years.
      *
      * @return void
      */
-    public function removeData(Environment $environment, $government);
+    public function removeData(Environment $environment, $government, $year = null);
 
     /**
      * @param Environment $environment A Environment entity instance.

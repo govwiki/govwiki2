@@ -233,7 +233,9 @@ class Government
     /**
      * @var Collection
      *
-     * @ORM\OneToMany(targetEntity="Document", mappedBy="government")
+     * @ORM\OneToMany(targetEntity="Document", mappedBy="government", cascade={
+     *  "remove"
+     * })
      */
     private $documents;
 

@@ -92,12 +92,12 @@ class GovernmentController extends AbstractGovWikiAdminController
 
         $environment = $this->getCurrentEnvironment();
 
-        $form = $this->createForm('government', $government);
-        $form->handleRequest($request);
-
         // Store old slug's for for further updates.
         $oldSlug = CartoDbApi::escapeString($government->getSlug());
         $oldAltTypeSlug = CartoDbApi::escapeString($government->getAltTypeSlug());
+
+        $form = $this->createForm('government', $government);
+        $form->handleRequest($request);
 
         if ($form->isValid()) {
             // Escape updated fields.
@@ -120,10 +120,10 @@ class GovernmentController extends AbstractGovWikiAdminController
                     alt_type_slug = '{$oldAltTypeSlug}'
             ");
 
-            if (array_key_exists('error', $response)) {
+            $error = CartoDbApi::getErrorFromResponse($response);
+            if ($error) {
                 // Display error received from CartoDB.
-
-                $this->errorMessage("Can't update CartoDB: ". $response['error'][0]);
+                $this->errorMessage("Can't update CartoDB: ". $error);
             } else {
                 // Government successfully updated, save changes to our database.
                 $em = $this->getDoctrine()->getManager();

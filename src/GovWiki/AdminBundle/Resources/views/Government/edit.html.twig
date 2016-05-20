@@ -36,7 +36,14 @@
                 <div class="input-group">
                     <select class="form-control" id="years">
                         {% for year in availableYears %}
-                            <option value="{{- path(
+                            <option data-remove-url="{{- path(
+                                'govwiki_admin_governmentdata_remove',
+                                {
+                                    'environment': environment.slug,
+                                    'government': government.id,
+                                    'year': year
+                                }
+                            ) -}}" data-edit-url="{{- path(
                                 'govwiki_admin_governmentdata_edit',
                                 {
                                     'environment': environment.slug,
@@ -50,6 +57,10 @@
                         <button type="button" id="data-edit" class="btn btn-primary">
                             <i class="glyphicon glyphicon-pencil"></i>
                         </button>
+
+                        <button type="button" id="data-remove" class="btn btn-danger">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -60,7 +71,7 @@
                         'environment': environment.slug,
                         'government': government.id
                     }
-                ) -}}">Add data for new year</a>
+                ) -}}">&plus; Add data for new year</a>
             </div>
         {% endif %}
     </div>
@@ -87,7 +98,28 @@
     <script>
         $(function() {
             $('#data-edit').click(function() {
-                window.location = $('#years').find(':selected').val();
+                window.location = $('#years').find(':selected').data('edit-url');
+            });
+
+            $('#data-remove').click(function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                var $modal = $('#modal-delete');
+                var $selected = $('#years').find(':selected');
+
+                $('#delete-confirm').attr(
+                        'href',
+                        $selected.data('remove-url')
+                );
+
+                $modal
+                    .find('.modal-body')
+                    .find('.text-center')
+                    .html('Are you sure wont to delete data for '
+                        + $selected.val() + ' year?'
+                    );
+                $modal.modal('show');
             });
         });
     </script>

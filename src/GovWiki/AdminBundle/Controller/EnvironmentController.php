@@ -8,6 +8,7 @@ use Gedmo\Translator\Entity\Translation;
 use GovWiki\AdminBundle\Form\Type\DelayType;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditions;
+use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\File\CsvReader;
@@ -392,8 +393,9 @@ class EnvironmentController extends AbstractGovWikiAdminController
         ]);
 
         $datasetName = GovwikiNamingStrategy::cartoDbDatasetName($environment);
-        // Dataset name for backup.
-        $backupDatasetName = $datasetName .'_backup';
+        $backupDatasetName = GovwikiNamingStrategy::cartoDbBackupDatasetName(
+            $environment
+        );
 
         // Remove previous backup.
         $response = $api->sqlRequest("DROP TABLE IF EXISTS {$backupDatasetName}");
@@ -405,10 +407,10 @@ class EnvironmentController extends AbstractGovWikiAdminController
             return $redirect;
         }
 
-        // Rename current dataset to backup data set name.
+        // Backup current dataset.
         $response = $api->sqlRequest("
-            ALTER TABLE {$datasetName}
-            RENAME TO {$backupDatasetName}
+            CREATE TABLE {$backupDatasetName} AS
+            SELECT * FROM {$datasetName}
         ");
 
         $error = CartoDbApi::getErrorFromResponse($response);
@@ -418,17 +420,14 @@ class EnvironmentController extends AbstractGovWikiAdminController
             return $redirect;
         }
 
-        // Create new dataset.
-        $response = $api->createDataset($datasetName, [
-            'alt_type_slug' => 'VARCHAR(255)',
-            'slug' => 'VARCHAR(255)',
-            'data_json' => 'VARCHAR(255)',
-            'name' => 'VARCHAR(255)',
-        ]);
+        // Remove all data.
+        $response = $api->sqlRequest("
+            DELETE FROM {$datasetName}
+        ");
 
         $error = CartoDbApi::getErrorFromResponse($response);
         if ($error) {
-            $this->errorMessage('Can\'t create new dataset: '. $error);
+            $this->errorMessage('Can\'t clean dataset: '. $error);
 
             return $redirect;
         }
@@ -461,6 +460,7 @@ class EnvironmentController extends AbstractGovWikiAdminController
         if ($error) {
             $this->errorMessage('Can\'t export data from previous dataset: '. $error);
 
+            $api->restore($datasetName, $backupDatasetName);
             return $redirect;
         }
 
@@ -480,9 +480,11 @@ class EnvironmentController extends AbstractGovWikiAdminController
         if ($error) {
             $this->errorMessage('Can\'t export geometry from previous dataset: '. $error);
 
+            $api->restore($datasetName, $backupDatasetName);
             return $redirect;
         }
 
+        $this->successMessage('CartoDB dataset updated');
         return $redirect;
     }
 

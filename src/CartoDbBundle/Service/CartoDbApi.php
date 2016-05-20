@@ -108,6 +108,39 @@ class CartoDbApi
         return null;
     }
 
+
+    /**
+     * Restore dataset from backup.
+     *
+     * @param string $dataset Main dataset name.
+     * @param string $backup  Backup dataset name.
+     *
+     * @return null|string
+     */
+    public function restore($dataset, $backup)
+    {
+        // Clean dataset.
+        $response = $this->sqlRequest("DELETE FROM {$dataset}");
+
+        $error = self::getErrorFromResponse($response);
+        if ($error) {
+            return $error;
+        }
+
+        // Restore old values.
+        $response = $this->sqlRequest("
+            INSERT INTO {$dataset}
+            SELECT * FROM {$backup}
+        ");
+
+        $error = self::getErrorFromResponse($response);
+        if ($error) {
+            return $error;
+        }
+
+        return null;
+    }
+
     /**
      * Wrapper under curl for making request to CartoDB api.
      *

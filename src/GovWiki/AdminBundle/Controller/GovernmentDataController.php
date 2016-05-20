@@ -95,9 +95,10 @@ class GovernmentDataController extends AbstractGovWikiAdminController
                         alt_type_slug = '{$altTypeSlug}'
                 ");
 
-                if (array_key_exists('error', $response)) {
+                $error = CartoDbApi::getErrorFromResponse($response);
+                if ($error) {
                     // Display error received from CartoDB.
-                    $this->errorMessage("Can't update CartoDB: ". $response['error'][0]);
+                    $this->errorMessage("Can't update CartoDB: ". $error);
                     $allowCreate = false;
                 }
             }
@@ -134,7 +135,7 @@ class GovernmentDataController extends AbstractGovWikiAdminController
      * Edit extended government fields for selected year.
      *
      * @Configuration\Route(
-     *  "/{year}",
+     *  "/{year}/edit",
      *  requirements={ "year": "\d+" }
      * )
      * @Configuration\Template()
@@ -174,6 +175,19 @@ class GovernmentDataController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Update government in our database.
+            $this->getGovernmentManager()
+                ->updateGovernmentData(
+                    $environment,
+                    $government,
+                    $year,
+                    $form->getData()
+                );
+
+            // Remove max ranks table, max ranks values will be recalculated
+            // on demand.
+            $this->getMaxRankManager()->removeTable($environment);
+
             // Collect coloring conditions data for given government and update
             // CartoDB dataset, if it's need.
             $conditions = $environment->getMap()->getColoringConditions();
@@ -210,27 +224,15 @@ class GovernmentDataController extends AbstractGovWikiAdminController
                         alt_type_slug = '{$altTypeSlug}'
                 ");
 
-                if (array_key_exists('error', $response)) {
+                $error = CartoDbApi::getErrorFromResponse($response);
+                if ($error) {
                     // Display error received from CartoDB.
-                    $this->errorMessage("Can't update CartoDB: ". $response['error'][0]);
+                    $this->errorMessage("Can't update CartoDB: ". $error);
                     $allowUpdate = false;
                 }
             }
 
             if ($allowUpdate) {
-                // Update government in our database.
-                $this->getGovernmentManager()
-                    ->updateGovernmentData(
-                        $environment,
-                        $government,
-                        $year,
-                        $form->getData()
-                    );
-
-                // Remove max ranks table, max ranks values will be recalculated
-                // on demand.
-                $this->getMaxRankManager()->removeTable($environment);
-
                 // Dataset successfully updated.
                 $this->successMessage('Government updated');
 
@@ -248,5 +250,78 @@ class GovernmentDataController extends AbstractGovWikiAdminController
             'government' => $government,
             'year' => $year,
         ];
+    }
+
+    /**
+     * @Configuration\Route(
+     *  "/{year}/remove",
+     *  requirements={ "year": "\d+" }
+     * )
+     *
+     * @param Government $government A Government entity instance.
+     * @param integer    $year       Data year.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function removeAction(Government $government, $year)
+    {
+        $environment = $this->getCurrentEnvironment();
+
+        if ($environment === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        // Remove extended data for specified year.
+        $this->getGovernmentManager()
+            ->removeData($environment, $government->getId(), $year);
+
+        // Collect coloring conditions data for given government and update
+        // CartoDB dataset, if it's need.
+        $conditions = $environment->getMap()->getColoringConditions();
+
+        if ($conditions->isColorized()) {
+            // Escape government slug and altTypeSlug for CartoDB.
+            $slug = CartoDbApi::escapeString($government->getSlug());
+            $altTypeSlug = CartoDbApi::escapeString($government->getAltTypeSlug());
+
+            // Get condition field values for current government.
+            $values = $this->getGovernmentManager()
+                ->getConditionValuesForGovernment(
+                    $environment,
+                    $government->getId(),
+                    $conditions->getFieldName()
+                );
+
+            // Format values.
+            $data = [];
+            foreach ($values as $row) {
+                $data[$row['year']] = (float) $row['data'];
+            }
+            $dataJson = json_encode($data);
+
+            // Get dataset name.
+            $dataset = GovwikiNamingStrategy::cartoDbDatasetName($environment);
+
+            // Update CartoDB dataset.
+            $response = $this->get(CartoDbServices::CARTO_DB_API)->sqlRequest("
+                    UPDATE {$dataset}
+                    SET data_json = '{$dataJson}'
+                    WHERE
+                        slug = '{$slug}' AND
+                        alt_type_slug = '{$altTypeSlug}'
+                ");
+
+            if (array_key_exists('error', $response)) {
+                // Display error received from CartoDB.
+                $this->errorMessage("Can't update CartoDB: ". $response['error'][0]);
+            } else {
+                $this->successMessage("Data for {$year} deleted");
+            }
+        }
+
+        return $this->redirectToRoute('govwiki_admin_government_edit', [
+            'environment' => $environment->getSlug(),
+            'government' => $government->getId(),
+        ]);
     }
 }

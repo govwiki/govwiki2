@@ -640,13 +640,21 @@ class GovernmentManager implements GovernmentManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function removeData(Environment $environment, $government)
+    public function removeData(Environment $environment, $government, $year = null)
     {
         $tableName = GovwikiNamingStrategy::environmentRelatedTableName($environment);
-        $this->em->getConnection()->exec("
+
+        $sql = "
             DELETE FROM {$tableName}
             WHERE government_id = {$government}
-        ");
+        ";
+
+        if ($year) {
+            // Delete data only for specified year.
+            $sql .= " AND year = {$year}";
+        }
+
+        $this->em->getConnection()->exec($sql);
     }
 
     /**
