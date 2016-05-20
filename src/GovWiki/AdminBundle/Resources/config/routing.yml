@@ -1,3 +1,7 @@
+wizard:
+    resource: @GovWikiAdminBundle/Controller/WizardController.php
+    type:     annotation
+
 main:
     resource: "@GovWikiAdminBundle/Controller/MainController.php"
     type:     annotation
@@ -60,10 +64,6 @@ tab:
 
 category:
     resource: "@GovWikiAdminBundle/Controller/CategoryController.php"
-    type:     annotation
-
-wizard:
-    resource: @GovWikiAdminBundle/Controller/WizardController.php
     type:     annotation
 
 fin_data:

@@ -13,24 +13,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class MapType extends AbstractType
 {
-    /**
-     * @var boolean
-     */
-    private $isNew;
-
-    /**
-     * @param boolean $isNew Flag, is set build form for new map creation.
-     */
-    public function __construct($isNew = false)
-    {
-        $this->isNew = $isNew;
-    }
 
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var Map $map */
+        $map = $builder->getData();
+
         $builder
             ->add('centerLatitude', 'number', [
                 'attr' => [
@@ -45,7 +36,7 @@ class MapType extends AbstractType
                 ]
             ]);
 
-        if (! $this->isNew) {
+        if ($map->getId()) {
             $builder
                 ->add('zoom', 'integer')
                 ->add('position', 'choice', [

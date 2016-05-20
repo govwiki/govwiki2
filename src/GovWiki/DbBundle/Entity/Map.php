@@ -203,7 +203,7 @@ class Map
      */
     public function setCenterLongitude($centerLongitude)
     {
-        $this->centerLongitude = $centerLongitude;
+        $this->centerLongitude = (float) $centerLongitude;
 
         return $this;
     }
@@ -223,7 +223,7 @@ class Map
      */
     public function setCenterLatitude($centerLatitude)
     {
-        $this->centerLatitude = $centerLatitude;
+        $this->centerLatitude = (float) $centerLatitude;
 
         return $this;
     }

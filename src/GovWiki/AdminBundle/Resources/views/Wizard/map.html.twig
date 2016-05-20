@@ -1,15 +1,18 @@
 {% extends "GovWikiAdminBundle:Layout:wizard.html.twig" %}
 
+{% import "GovWikiAdminBundle:Layout:macro.html.twig" as macro %}
+
+{% block breadcrumb %}
+    {{- parent() -}}
+    {{- macro.breadcrumbElement('Environment', 'step1') -}}
+    {{- macro.breadcrumbElement('Map') -}}
+{% endblock breadcrumb %}
+
 {% block panel_title %}
     Map
 {% endblock panel_title %}
 
-{% block breadcrumb %}
-    <li><a href="{{ path('step1') }}">Setup environment</a></li>
-    <li class="active">Setup map</li>
-{% endblock breadcrumb %}
-
-{% block content %}
+{% block panel_body %}
     {{ form_start(form) }}
         {{ form_widget(form) }}
 
@@ -20,4 +23,4 @@
         </div>
 
     {{ form_end(form) }}
-{% endblock content %}
+{% endblock panel_body %}

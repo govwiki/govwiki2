@@ -1,16 +1,17 @@
 {% extends "GovWikiAdminBundle:Layout:wizard.html.twig" %}
 
+{% import "GovWikiAdminBundle:Layout:macro.html.twig" as macro %}
+
+{% block breadcrumb %}
+    {{- parent() -}}
+    {{- macro.breadcrumbElement('Environment') -}}
+{% endblock breadcrumb %}
+
 {% block panel_title %}
     Environment
 {% endblock panel_title %}
 
-{% block breadcrumb %}
-    <li class="active">New environment</li>
-{% endblock breadcrumb %}
-
-{% block content %}
-    <h3>New environment</h3>
-
+{% block panel_body %}
     {{ form_start(form) }}
     {{ form_row(form.name) }}
     {{ form_row(form.domain) }}
@@ -42,7 +43,7 @@
         <button class="btn btn-primary" type="submit">Next</button>
     </div>
     {{ form_end(form) }}
-{% endblock content %}
+{% endblock panel_body %}
 
 {% block javascripts %}
     {{ parent() }}

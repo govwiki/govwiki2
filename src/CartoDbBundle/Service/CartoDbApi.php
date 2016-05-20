@@ -79,7 +79,7 @@ class CartoDbApi
      */
     public function dropDataset($name)
     {
-        $this->sqlRequest("DROP TABLE {$name}");
+        $this->sqlRequest("DROP TABLE IF EXISTS {$name}");
 
         return $this;
     }

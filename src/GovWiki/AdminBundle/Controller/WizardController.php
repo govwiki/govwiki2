@@ -3,6 +3,7 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
+use CartoDbBundle\Service\CartoDbApi;
 use GovWiki\AdminBundle\Util\GeoJsonStreamListener;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Map;
@@ -123,9 +124,6 @@ class WizardController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
-            /*
-             * Proceed to next step.
-             */
             $this->storeEnvironmentEntity($environment);
             $this->setGreetingText($request->request->get('greetingText'));
             $this->setBottomText($request->request->get('bottomText'));
@@ -153,7 +151,7 @@ class WizardController extends AbstractGovWikiAdminController
         }
         $map->setEnvironment($environment);
 
-        $form = $this->createForm(new MapType(true), $map);
+        $form = $this->createForm(new MapType(), $map);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -168,12 +166,18 @@ class WizardController extends AbstractGovWikiAdminController
              * Create dataset for environments.
              */
             $datasetName = GovwikiNamingStrategy::cartoDbDatasetName($environment);
-            $api->createDataset($datasetName, [
+            $response = $api->createDataset($datasetName, [
                 'alt_type_slug' => 'VARCHAR(255)',
                 'slug' => 'VARCHAR(255)',
                 'data_json' => 'VARCHAR(255)',
                 'name' => 'VARCHAR(255)',
             ]);
+
+            $error = CartoDbApi::getErrorFromResponse($response);
+            if ($error) {
+                $this->errorMessage('Can\'t create new dataset: '. $error);
+                return $this->redirectToRoute('step2');
+            }
 
             $environment->setEnabled(true);
 
@@ -183,6 +187,7 @@ class WizardController extends AbstractGovWikiAdminController
             $em->flush();
 
             $this->getGovernmentManager()->createTable($environment);
+            $this->createLocale($environment);
             $this->setCurrentEnvironment($environment);
             $this->storeEnvironmentEntity($environment);
 
@@ -228,8 +233,6 @@ class WizardController extends AbstractGovWikiAdminController
                 $parser = new \JsonStreamingParser_Parser($stream, $listener);
                 $parser->parse();
             }
-
-            $this->createLocale();
 
             return $this->nextStep();
         }
@@ -391,11 +394,9 @@ class WizardController extends AbstractGovWikiAdminController
      *
      * @return void
      */
-    private function createLocale()
+    private function createLocale(Environment $environment)
     {
         $em = $this->getDoctrine()->getManager();
-        $session_env_id = $this->getEnvironmentEntity()->getId();
-        $environment = $em->getRepository('GovWikiDbBundle:Environment')->find($session_env_id);
         $greeting_text = $this->getGreetingText();
         $bottom_text = $this->getBottomText();
 
@@ -457,7 +458,6 @@ class WizardController extends AbstractGovWikiAdminController
         }
 
         $environment->setDefaultLocale($locale);
-        $em->persist($environment);
 
         $em->flush();
     }
