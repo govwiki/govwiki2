@@ -4,7 +4,6 @@ namespace GovWiki\DbBundle\Form\Type;
 
 use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\AdminBundle\Services\ShapeManagerInterface;
-use GovWiki\DbBundle\Form\Transformer\ShapeToNameTransformer;
 use GovWiki\DbBundle\Form\Transformer\ShapeToPathTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

@@ -127,7 +127,8 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
      */
     public function createAction(Request $request)
     {
-        if ($this->getCurrentEnvironment() === null) {
+        $environment = $this->getCurrentEnvironment();
+        if ($environment === null) {
             return $this->redirectToRoute('govwiki_admin_main_home');
         }
 
@@ -145,7 +146,9 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
             $this->addFlash('admin_success', 'New elected official created');
 
             return $this->redirectToRoute(
-                'govwiki_admin_electedofficial_index'
+                'govwiki_admin_electedofficial_index', [
+                    'environment' => $environment->getSlug(),
+                ]
             );
         }
 

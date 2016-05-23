@@ -2,7 +2,6 @@
 
 namespace GovWiki\DbBundle\Form\Type;
 
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
 use GovWiki\EnvironmentBundle\Manager\Government\GovernmentManagerInterface;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
