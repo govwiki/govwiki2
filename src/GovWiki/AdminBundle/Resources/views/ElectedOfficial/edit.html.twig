@@ -89,249 +89,44 @@
     </div>
     {{ form_end(form) }}
     <hr>
-    {#<div class="row">
-        <div class="col-md-12">
-            <ul class="nav nav-pills tabs-navigate">
-                <li{% if app.request.query.get('tab') == 'votes' or not app.request.query.get('tab') %} class="active"{% endif %} data-link="{{- path(
-                    'govwiki_admin_electedofficial_edit',
-                    {
-                        'environment': environment.slug,
-                        'elected': elected.id,
-                        'tab': 'votes'
-                    }
-                ) -}}">
-                    <a href="#eo-votes" data-toggle="pill">Votes</a>
-                </li>
-                <li{% if app.request.query.get('tab') == 'contributions' %} class="active"{% endif %} data-link="{{- path(
-                    'govwiki_admin_electedofficial_edit',
-                    {
-                        'environment': environment.slug,
-                        'elected': elected.id,
-                        'tab': 'contributions'
-                    }
-                ) -}}">
-                    <a href="#eo-contributions" data-toggle="pill">Contributions</a>
-                </li>
-                <li{% if app.request.query.get('tab') == 'endorsements' %} class="active"{% endif %} data-link="{{- path(
-                    'govwiki_admin_electedofficial_edit',
-                    {
-                        'environment': environment.slug,
-                        'elected': elected.id,
-                        'tab': 'endorsements'
-                    }
-                ) -}}">
-                    <a href="#eo-endorsements" data-toggle="pill">Endorsements</a>
-                </li>
-                <li{% if app.request.query.get('tab') == 'public-statements' %} class="active"{% endif %} data-link="{{- path(
-                    'govwiki_admin_electedofficial_edit',
-                    {
-                        'environment': environment.slug,
-                        'elected': elected.id,
-                        'tab': 'public-statements'
-                    }
-                ) -}}">
-                    <a href="#eo-public-statements" data-toggle="pill">Public Statements</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="tab-content">
-        <div class="tab-pane{% if app.request.query.get('tab') == 'votes' or not app.request.query.get('tab') %} active{% endif %}" id="eo-votes">
-            <div class="row">
-                <div class="col-md-12">
-                        <span data-link="{{- path(
-                            'govwiki_admin_electedofficialvote_create',
-                            {
-                                id: elected.id
-                            }
-                        ) -}}" class="ajax-create btn btn-primary pull-right btn-beside-pills">
-                            <span class="glyphicon glyphicon-plus"></span> Add vote
-                        </span>
-                </div>
-            </div>
-            {% if elected.votes %}
-                <div class="row">
-                    <div class="col-md-12">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <td>Date</td>
-                                <td>Title of Measure</td>
-                                <td>Summary of Measure</td>
-                                <td>How official Voted</td>
-                                <td>Sponsored by this official?</td>
-                                <td>Category</td>
-                                <td>Actions</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for vote in elected.votes %}
-                                <tr>
-                                    <td>
-                                        {% if vote.legislation %}
-                                            {{ vote.legislation.dateConsidered|date('m/d/Y') }}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if vote.legislation %}
-                                            {{ vote.legislation.name }}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if vote.legislation %}
-                                            {{ vote.legislation.summary }}
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ vote.vote }}</td>
-                                    <td>{% if vote.didElectedOfficialProposeThis == 1 %}Yes{% else %}No{% endif %}</td>
-                                    <td>
-                                        {% if vote.legislation and vote.legislation.issueCategory %}
-                                            {{ vote.legislation.issueCategory.name }}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <span class="btn btn-default ajax-edit" data-link="{{path('govwiki_admin_electedofficialvote_edit', {'id': vote.id})}}"><span class="glyphicon glyphicon-pencil"></span> Edit</span>
-                                            <span class="btn btn-danger ajax-remove" data-link="{{path('govwiki_admin_electedofficialvote_remove', {'id': vote.id})}}"><span class="glyphicon glyphicon-remove"></span> Remove</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-        <div class="tab-pane{% if app.request.query.get('tab') == 'contributions' %} active{% endif %}" id="eo-contributions">
-            <div class="row">
-                <div class="col-md-12">
-                        <span data-link="{{path('govwiki_admin_contribution_create', {'id': elected.id})}}" class="ajax-create btn btn-primary pull-right btn-beside-pills">
-                            <span class="glyphicon glyphicon-plus"></span> Add contribution
-                        </span>
-                </div>
-            </div>
-            {% if elected.contributions %}
-                <div class="row">
-                    <div class="col-md-12">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <td>Election year</td>
-                                <td>Contributor name</td>
-                                <td>Independent Expenditure Desc</td>
-                                <td>Contribution Amount</td>
-                                <td>Contributor Type</td>
-                                <td>Actions</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for contribution in elected.contributions %}
-                                <tr>
-                                    <td>{{ contribution.electionYear }}</td>
-                                    <td>{{ contribution.contributorName }}</td>
-                                    <td>{{ contribution.independentExpenditureDesc }}</td>
-                                    <td>{{ contribution.contributionAmount }}</td>
-                                    <td>{{ contribution.contributorType }}</td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <span class="btn btn-default ajax-edit" data-link="{{path('govwiki_admin_contribution_edit', {'id': contribution.id})}}"><span class="glyphicon glyphicon-pencil"></span> Edit</span>
-                                            <span class="btn btn-danger ajax-remove" data-link="{{path('govwiki_admin_contribution_remove', {'id': contribution.id})}}"><span class="glyphicon glyphicon-remove"></span> Remove</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-        <div class="tab-pane{% if app.request.query.get('tab') == 'endorsements' %} active{% endif %}" id="eo-endorsements">
-            <div class="row">
-                <div class="col-md-12">
-                        <span data-link="{{path('govwiki_admin_endorsement_create', {'id': elected.id})}}" class="ajax-create btn btn-primary pull-right btn-beside-pills">
-                            <span class="glyphicon glyphicon-plus"></span> Add endorsement
-                        </span>
-                </div>
-            </div>
-            {% if elected.endorsements %}
-                <div class="row">
-                    <div class="col-md-12">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <td>Name of Endorser</td>
-                                <td>Endorser Type</td>
-                                <td>Election Year</td>
-                                <td>Issue Category</td>
-                                <td>Actions</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for endorsement in elected.endorsements %}
-                                <tr>
-                                    <td>{{ endorsement.nameOfEndorser }}</td>
-                                    <td>{{ endorsement.endorserType }}</td>
-                                    <td>{{ endorsement.electionYear }}</td>
-                                    <td>{% if endorsement.issueCategory %}{{ endorsement.issueCategory.name }}{% endif %}</td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <span class="btn btn-default ajax-edit" data-link="{{path('govwiki_admin_endorsement_edit', {'id': endorsement.id})}}"><span class="glyphicon glyphicon-pencil"></span> Edit</span>
-                                            <span class="btn btn-danger ajax-remove" data-link="{{path('govwiki_admin_endorsement_remove', {'id': endorsement.id})}}"><span class="glyphicon glyphicon-remove"></span> Remove</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-        <div class="tab-pane{% if app.request.query.get('tab') == 'public-statements' %} active{% endif %}" id="eo-public-statements">
-            <div class="row">
-                <div class="col-md-12">
-                        <span data-link="{{path('govwiki_admin_publicstatement_create', {'id': elected.id})}}" class="ajax-create btn btn-primary pull-right btn-beside-pills">
-                            <span class="glyphicon glyphicon-plus"></span> Add public statement
-                        </span>
-                </div>
-            </div>
-            {% if elected.publicStatements %}
-                <div class="row">
-                    <div class="col-md-12">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <td>Date</td>
-                                <td>Summary</td>
-                                <td>Url</td>
-                                <td>Issue Category</td>
-                                <td>Actions</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for publicStatement in elected.publicStatements %}
-                                <tr>
-                                    <td>{{ publicStatement.date|date('m/d/Y') }}</td>
-                                    <td>{{ publicStatement.summary }}</td>
-                                    <td>{{ publicStatement.url }}</td>
-                                    <td>{% if publicStatement.issueCategory %}{{ publicStatement.issueCategory.name }}{% endif %}</td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <span class="btn btn-default ajax-edit" data-link="{{path('govwiki_admin_publicstatement_edit', {'id': publicStatement.id})}}"><span class="glyphicon glyphicon-pencil"></span> Edit</span>
-                                            <span class="btn btn-danger ajax-remove" data-link="{{path('govwiki_admin_publicstatement_remove', {'id': publicStatement.id})}}"><span class="glyphicon glyphicon-remove"></span> Remove</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-    </div>#}
 {% endblock panel_body %}
+
+{% block stylesheets %}
+    {{- parent() -}}
+    <link href="{{- asset('bundles/govwikiadmin/css/select2.min.css') -}}" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block javascripts %}
+    {{- parent() -}}
+    <script src="{{- asset('bundles/govwikiadmin/js/select2.min.js') -}}"></script>
+    <script>
+        $(function() {
+            $('#govwiki_dbbundle_electedofficial_government').select2({
+                minimumInputLength: 3,
+                type: 'GET',
+                ajax: {
+                    delay: 750,
+                    url: '{{- path('govwiki_api_v1_government_search') -}}',
+                    data: function (params) {
+                        return {
+                            search: params.term
+                        }
+                    },
+                    processResults: function (data, params) {
+                        return {
+                            results: data
+                        };
+                    }
+                },
+                templateResult: function (data) {
+                    return data.name;
+                },
+                templateSelection: function (data) {
+                    return data.name;
+                }
+            });
+        })
+    </script>
+{% endblock javascripts %}
 
 

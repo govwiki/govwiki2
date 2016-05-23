@@ -4,7 +4,7 @@ namespace GovWiki\DbBundle\Form;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
@@ -49,9 +49,9 @@ class ElectedOfficialType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $id = null;
-        $government = $builder->getData();
-        if ($government instanceof Government) {
-            $id = $government->getId();
+        $elected = $builder->getData();
+        if ($elected instanceof ElectedOfficial) {
+            $id = $elected->getGovernment()->getId();
         }
 
         $builder
