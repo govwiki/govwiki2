@@ -186,6 +186,8 @@ $('#year-selector').change(function change() {
 // Table pagination handler.
 $pane = $('.paginate');
 
+console.log($pane.find('.pagination a'));
+
 $pane.on('click', '.pagination a', function paneClick(e) {
   var $loader;
   var $mainContent;
@@ -200,7 +202,7 @@ $pane.on('click', '.pagination a', function paneClick(e) {
   $closestPane = $this.closest('.tab-pane');
   url = $this.attr('href');
 
-  $mainContent = $closestPane.find('.tab-content');
+  $mainContent = $closestPane.find('.tab-pane-main');
   $mainContent.html('');
 
   $loader = $closestPane.find('.loader');
@@ -225,7 +227,7 @@ $pane.on('click', '.sortable a', function click(e) {
   $closestPane = $this.closest('.tab-pane');
   url = $this.attr('href');
 
-  $mainContent = $closestPane.find('.tab-content');
+  $mainContent = $closestPane.find('.tab-pane-main');
   $mainContent.html('').height();
 
   $loader = $closestPane.find('.loader');

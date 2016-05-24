@@ -51,14 +51,13 @@ class Extension extends \Twig_Extension
 
     /**
      * @param array  $government A Government instance.
-     * @param string $field      Field name.
      * @param array  $format     Format.
      *
      * @return string
      */
-    public function formatGovernmentValue(array $government, $field, array $format)
+    public function formatGovernmentValue(array $government, array $format)
     {
-        $value = $government[$field];
+        $value = $government[$format['field']];
 
         if (is_string($value)) {
             if ('' === $value || '0' === $value) {

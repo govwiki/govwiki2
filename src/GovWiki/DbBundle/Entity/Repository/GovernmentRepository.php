@@ -7,9 +7,9 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
-use GovWiki\DbBundle\Entity\Document;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Entity\Issue;
 
 /**
  * GovernmentRepository
@@ -18,9 +18,9 @@ class GovernmentRepository extends EntityRepository
 {
 
     /**
-     * @param string $environment Environment entity slug.
-     * @param string $altTypeSlug Slugged government alt type.
-     * @param string $slug        Slugged government name.
+     * @param integer $environment A Environment entity id.
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
      *
      * @return Government
      */
@@ -30,21 +30,18 @@ class GovernmentRepository extends EntityRepository
         $slug
     ) {
         $expr = $this->_em->getExpressionBuilder();
+
         return $this->createQueryBuilder('Government')
-            ->leftJoin('Government.environment', 'Environment')
-            ->where(
-                $expr->andX(
-                    $expr->eq(
-                        'Government.altTypeSlug',
-                        $expr->literal($altTypeSlug)
-                    ),
-                    $expr->eq(
-                        'Government.slug',
-                        $expr->literal($slug)
-                    ),
-                    $expr->eq('Environment.slug', $expr->literal($environment))
-                )
-            )
+            ->where($expr->andX(
+                $expr->eq('Government.altTypeSlug', ':altTypeSlug'),
+                $expr->eq('Government.slug', ':slug'),
+                $expr->eq('Government.environment', ':environment')
+            ))
+            ->setParameters([
+                'altTypeSlug' => $altTypeSlug,
+                'slug' => $slug,
+                'environment' => $environment,
+            ])
             ->getQuery()
             ->getSingleResult();
     }
@@ -143,17 +140,17 @@ class GovernmentRepository extends EntityRepository
                 ->select(
                     'Government',
                     'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
-                    'partial Document.{id, description, link, type}'
+                    'partial Issue.{id, description, link, type}'
                 )
                 ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
                 ->leftJoin(
-                    'Government.documents',
-                    'Document',
+                    'Government.issues',
+                    'Issue',
                     JOIN::WITH,
                     $expr->andX(
-                        $expr->eq('Document.government', 'Government.id'),
-                        $expr->eq('YEAR(Document.date)', $year),
-                        $expr->eq('Document.type', $expr->literal(Document::LAST_AUDIT))
+                        $expr->eq('Issue.government', 'Government.id'),
+                        $expr->eq('YEAR(Issue.date)', $year),
+                        $expr->eq('Issue.type', $expr->literal(Issue::LAST_AUDIT))
                     )
                 )
                 ->where($expr->andX(
@@ -202,9 +199,9 @@ class GovernmentRepository extends EntityRepository
 
         // Find latest audit url.
         $government['latestAuditUrl'] = null;
-        foreach ($government['documents'] as $document) {
-            if ($document['type'] === Document::LAST_AUDIT) {
-                $government['latestAuditUrl'] = $document;
+        foreach ($government['issues'] as $issue) {
+            if ($issue['type'] === Issue::LAST_AUDIT) {
+                $government['latestAuditUrl'] = $issue;
                 break;
             }
         }

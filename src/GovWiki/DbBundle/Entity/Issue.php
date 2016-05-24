@@ -10,12 +10,12 @@ use Symfony\Component\Validator\Constraints\Choice;
  * Document.
  * Some document relevant to government.
  *
- * @ORM\Table("documents")
+ * @ORM\Table("issues")
  * @ORM\Entity(
- *  repositoryClass="GovWiki\DbBundle\Entity\Repository\DocumentRepository"
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\IssuesRepository"
  * )
  */
-class Document
+class Issue
 {
 
     const LAST_AUDIT = 'audit';
@@ -33,7 +33,7 @@ class Document
     /**
      * @var Government
      *
-     * @ORM\ManyToOne(targetEntity="Government", inversedBy="documents")
+     * @ORM\ManyToOne(targetEntity="Government", inversedBy="issues")
      */
     private $government;
 
@@ -103,7 +103,7 @@ class Document
      *
      * @param string $description Document description.
      *
-     * @return Document
+     * @return Issue
      */
     public function setDescription($description)
     {
@@ -128,7 +128,7 @@ class Document
      * @param string $type Document type, one of
      *                     {@see Document::availableTypes}.
      *
-     * @return Document
+     * @return Issue
      */
     public function setType($type)
     {
@@ -150,9 +150,9 @@ class Document
     /**
      * Set link
      *
-     * @param string $link Link to document, maybe on our host or internet.
+     * @param string $link Link to Issue, maybe on our host or internet.
      *
-     * @return Document
+     * @return Issue
      */
     public function setLink($link)
     {
@@ -180,9 +180,9 @@ class Document
     }
 
     /**
-     * @param \DateTime $date A Document placement date.
+     * @param \DateTime $date A Issue placement date.
      *
-     * @return Document
+     * @return Issue
      */
     public function setDate(\DateTime $date = null)
     {
@@ -199,7 +199,7 @@ class Document
      *
      * @param Government $government A Government entity id.
      *
-     * @return Document
+     * @return Issue
      */
     public function setGovernment(Government $government = null)
     {

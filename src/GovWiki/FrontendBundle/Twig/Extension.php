@@ -56,9 +56,9 @@ class Extension extends \Twig_Extension
      *
      * @return string
      */
-    public function formatGovernmentValue(array $government, $field, array $format)
+    public function formatGovernmentValue(array $government, array $format)
     {
-        $value = $government[$field];
+        $value = $government[$format['field']];
 
         if (is_string($value)) {
             if ('' === $value || '0' === $value) {

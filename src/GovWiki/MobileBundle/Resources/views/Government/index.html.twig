@@ -15,10 +15,8 @@
 
         {% if government is defined %}
 
-            {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
-
             {# TMP MOBILE LAYOUT (START) #}
-            {%- set image = (government.mainImage) ? government.mainImage : environment.mainImage -%}
+            {%- set image = (government.image) ? government.image : environment.mainImage -%}
 
             {%- if (image) -%}
                 <header class="header" style="background-image: url({{- image -}})">
@@ -29,50 +27,50 @@
 
                     <div class="header-content">
                         {# Get first tab and show on top. #}
-                        {%- set tabName = formats|keys|first -%}
-                        {%- set categories = formats|first -%}
-                        {%- if tabName != 'Overview + Elected Officials' -%}
-                            {%- set formats = formats[1:] -%}
+                        {%- set tab = tabs|first -%}
+                        {%- if tab.name != 'Overview + Elected Officials' -%}
+                            {%- set tabs = tabs[1:] -%}
                         {%- endif -%}
 
-                        {% for categoryName, fields in categories %}
+                        {%- for category in tab.categories -%}
                             <table class="statistics-table table">
-                                {% for fieldName, format in fields %}
+                                {%- for field in category.formats -%}
+                                    {%- set value = government|applay_mask(field) -%}
+                                    {%- if not value is null -%}
+                                        <tr>
+                                            {# Field name #}
+                                            <td>
+                                                {{- ('format.'~ field.field)|trans  -}}
+                                                {%- set helpTextKey = 'format.'~field.field~'.help_text' -%}
+                                                {%- set helpText = helpTextKey|trans -%}
 
-                                    {% if format is viewed(government) %}
-                                        {% set value = government|applay_mask(fieldName, format) %}
-                                        {% if not value is null %}
-                                            <tr>
-                                                {# Field name #}
-                                                <td>
-                                                    {{- ('format.'~format.field)|trans -}}
-                                                    {#{{- format.name -}}#}
-                                                    {% if ('format.'~format.field~'.help_text')|trans != 'format.'~format.field~'.help_text' %}
-                                                        <img data-triger="click" class src="{{ asset('bundles/govwikimobile/img/help.png') }}" title="{{- ('format.'~format.field~'.help_text')|trans -}}">
-                                                    {% endif %}
-                                                </td>
-                                                {# Field value #}
-                                                <td>
-                                                    {{- value|display|raw -}}
-                                                    {% set rankName = "#{fieldName}_rank" %}
-                                                    {%- if (government.ranks[rankName] is defined) -%}
-                                                        <a class='rank'
-                                                           data-field='{{- rankName -}}'
-                                                           data-mask='{{- format.mask -}}'
-                                                           title='{{- ('format.'~format.field)|trans }}'>
-                                                            ({{- government.ranks[rankName][0] }} {{ 'preposition.of'|trans }} {{ government.ranks[rankName][1] -}})
-                                                            {#({{- government.ranks[rankName][0] }} of {{ government.ranks[rankName][1] -}})#}
-                                                        </a>
-                                                    {%- endif -%}
+                                                {{- ('format.'~field.field)|trans -}}
+                                                {%- if helpTextKey != helpTextKey -%}
+                                                    <img data-triger="click" src="{{-
+                                                        asset('bundles/govwikifrontend/img/help.png')
+                                                        -}}"
+                                                         title="{{- helpText -}}">
+                                                {%- endif -%}
+                                            </td>
 
-                                                </td>
-                                            </tr>
-                                        {% endif %}
-                                    {% endif %}
-
-                                {% endfor %}
+                                            {# Field value #}
+                                            <td>
+                                                {{- value|display|raw -}}
+                                                {%- set rankName = field.field|rankName -%}
+                                                {%- if (government.ranks[rankName] is defined) -%}
+                                                    <a class='rank'
+                                                       data-field='{{- rankName -}}'
+                                                       data-mask='{{- field.mask -}}'
+                                                       title='{{- ('format.'~field.field)|trans }}'>
+                                                        ({{- government.ranks[rankName][0] }} {{ 'preposition.of'|trans }} {{ government.ranks[rankName][1] -}})
+                                                    </a>
+                                                {%- endif -%}
+                                            </td>
+                                        </tr>
+                                    {%- endif -%}
+                                {%- endfor -%}
                             </table>
-                        {% endfor %}
+                        {%- endfor -%}
 
                         <div class="header-icons">
                             <img src="data:image/png;base64,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"
@@ -87,163 +85,65 @@
                 {# Tabs control #}
                 <div id="tabs-control">
                     <ul class="nav">
-                        {% if (formats is defined) and (formats is not empty) %}
-                            {% for tabName, categories in formats %}
-                                {% set tab_id = categories|first|first.tab_id %}
-                                {% set slug = self.tabSlug(tabName) %}
+                        {%- if (tabs is defined) and (tabs is not empty) -%}
+                            {%- for tab in tabs -%}
+                                {%- set slug = self.tabSlug(tab.name) -%}
 
-                                <li class="{{ loop.first ? 'active' : '' }} tab {{ environment }}">
+                                <li class="tab {{ loop.first ? 'active' -}}">
                                     <span class="prev_tab">
                                         <i class="glyphicon glyphicon-chevron-left"></i>
                                     </span>
-                                    <a class="tab_{{ slug|lower }}"
-                                       href="#{{ slug }}">
-                                        {{- ('groups.group_id_'~tab_id)|trans -}}
+                                    <a class="tab_{{ slug|lower }}" href="#{{ slug }}">
+                                        {{- ('groups.group_id_'~tab.id)|trans -}}
                                     </a>
                                     <span class="next_tab">
                                         <i class="glyphicon glyphicon-chevron-right"></i>
                                     </span>
                                 </li>
-                            {% endfor %}
-                        {% endif %}
-
-                        {% if hasSalaries %}
-                            <li class="tab">
-                                <span class="prev_tab">
-                                    <i class="glyphicon glyphicon-chevron-left"></i>
-                                </span>
-                                <a class="tab_salaries" href="#Salaries">Salaries</a>
-                                <span class="next_tab">
-                                    <i class="glyphicon glyphicon-chevron-right"></i>
-                                </span>
-                            </li>
-                        {% endif %}
-
-                        {% if hasPensions %}
-                            <li class="tab">
-                                <span class="prev_tab">
-                                    <i class="glyphicon glyphicon-chevron-left"></i>
-                                </span>
-                                <a class="tab_pensions" href="#Pensions">Pensions</a>
-                                <span class="next_tab">
-                                    <i class="glyphicon glyphicon-chevron-right"></i>
-                                </span>
-                            </li>
-                        {% endif %}
-
-                        {% if showFinStmt %}
-                            <li class="tab">
-                                <span class="prev_tab">
-                                    <i class="glyphicon glyphicon-chevron-left"></i>
-                                </span>
-                                <a class="tab_financial_statements" href="#Financial_Statements">{{ 'gov.financial_statements'|trans }}</a>
-                                <span class="next_tab">
-                                    <i class="glyphicon glyphicon-chevron-right"></i>
-                                </span>
-                            </li>
-                        {% endif %}
+                            {%- endfor -%}
+                        {%- endif -%}
                     </ul>
                 </div>
 
                 {# Tab content #}
                 <div>
-
-                    {% if (formats is defined) and (formats is not empty) %}
-                        {% set tab_id_list = [] %}
-
-                        {% for tabName, categories in formats %}
-                            {% set tab_id = categories|first|first.tab_id %}
-
-                            <div class="tab-pane active" id="{{ self.tabSlug(tabName) }}">
+                    {%- if (formats is defined) and (formats is not empty) -%}
+                        {%- for tab in tabs -%}
+                            <div class="tab-pane {{ loop.first ? 'active' : '' -}}"
+                                 id="{{ self.tabSlug(tab.name) }}">
 
                                 <div class="tab-title">
-                                    {{ ('groups.group_id_'~tab_id)|trans }}
+                                    {{- ('groups.group_id_'~tab.id)|trans -}}
                                 </div>
 
                                 <div class="tab-content">
-
                                     {# Statistics #}
-
-                                    {%- if tabName != 'Overview + Elected Officials' -%}
-                                        <div class="statistics col-sm-8">
-                                            {{ include('@GovWikiMobile/Partial/Government/tab.html.twig') }}
-                                        </div>
+                                    {%- if tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}
+                                        {# User defined tab #}
+                                        {%- if tab.name != 'Overview + Elected Officials' -%}
+                                            {{- include(
+                                                '@GovWikiMobile/Partial/Government/tab.html.twig'
+                                            ) -}}
+                                        {%- endif -%}
+                                    {%- else -%}
+                                        {# Special tab #}
+                                        {{-
+                                        include('@GovWikiMobile/Partial/Government/special_tab.html.twig')
+                                        -}}
                                     {%- endif -%}
 
-                                    {# Overview + Elected Officials #}
                                     {{ include('GovWikiMobileBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
 
-                                    {# Employee Compensation #}
                                     {{ include('GovWikiMobileBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
 
-                                    {# Quality of Services #}
-                                    {# Generated from tab.html.twig #}
-
-                                    {# Financial Health #}
                                     {{ include('GovWikiMobileBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
                                 </div>
-
                             </div>
-
-                        {% endfor %}
-
-
-                            {% if hasSalaries %}
-                                <div class="tab-pane paginate" id="Salaries">
-
-                                    <div class="loader" style="display: none"></div>
-
-                                    <div class="tab-title">
-                                        Salaries
-                                    </div>
-
-                                    <div class="tab-content">
-                                        {{- render(controller('GovWikiMobileBundle:Government:salaries', {
-                                        'government': government.id
-                                        })) -}}
-                                    </div>
-                                </div>
-                            {% endif %}
-
-                            {% if hasPensions %}
-                                <div class="tab-pane paginate" id="Pensions">
-
-                                    <div class="loader" style="display: none"></div>
-
-                                    <div class="tab-title">
-                                        Pensions
-                                    </div>
-
-                                    <div class="tab-content">
-                                        {{ render(controller('GovWikiMobileBundle:Government:pensions', {
-                                        'government': government.id
-                                        })) }}
-                                    </div>
-
-                                </div>
-                            {% endif %}
-
-                            {# Financial Statements (if exists) #}
-                            {% if showFinStmt %}
-                                <div class="tab-pane active" id="Financial_Statements">
-
-                                    <div class="tab-title">{{ 'gov.financial_statements'|trans }}</div>
-
-                                    <div class="tab-content">
-                                        {% include 'GovWikiMobileBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
-                                        'financialStatements': government.financialStatements
-                                        } %}
-                                    </div>
-
-                                </div>
-                            {% endif %}
-
-                    {% else %}
+                        {%- endfor -%}
+                    {%- else -%}
                         <h3 class="text-center">No data. Please refresh page later</h3>
-                    {% endif %}
-
+                    {%- endif -%}
                 </div>
-            {% endif %}
 
         {# TMP MOBILE LAYOUT (END) #}
 
@@ -282,6 +182,8 @@
             </div>
             <br>
         {% endif %}
+
+    {% endif %}
 
     </section>
 

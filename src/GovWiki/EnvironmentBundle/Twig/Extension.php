@@ -112,6 +112,11 @@ class Extension extends \Twig_Extension
                 $this,
                 'regexpReplace',
             ]),
+
+            new \Twig_SimpleFilter('rankName', [
+                $this,
+                'rankName',
+            ])
         ];
     }
 
@@ -191,5 +196,15 @@ class Extension extends \Twig_Extension
         }
 
         return $source;
+    }
+
+    /**
+     * @param string $name Original field name.
+     *
+     * @return string
+     */
+    public function rankName($name)
+    {
+        return GovwikiNamingStrategy::rankedFieldName($name);
     }
 }

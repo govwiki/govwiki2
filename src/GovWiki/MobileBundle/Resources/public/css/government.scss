@@ -13,38 +13,6 @@
     }
 
     .header {
-//        /* TODO hardcode */
-//        &.california {
-//            background-image: url('/img/mobile/California.jpg');
-//
-//            a {
-//                color: white;
-//            }
-//
-//            .statistics-table td {
-//                color: white;
-//            }
-//
-//            h3 {
-//                color: $main-text
-//            }
-//        }
-//
-//        &.puerto_rico {
-//            background: white;
-//
-//            a {
-//                color: black;
-//            }
-//
-//            .statistics-table td {
-//                color: black;
-//            }
-//
-//            h3 {
-//                color: black
-//            }
-//        }
         background-size: cover;
         background-repeat: no-repeat;
 
@@ -65,17 +33,6 @@
             }
 
         }
-
-//        .header-content {
-//            /* TODO hardcode */
-//            &.california {
-//                background-color: rgba(0, 55, 122, 0.55);
-//            }
-//
-//            &.puerto_rico {
-//                background-color: white;
-//            }
-//        }
 
         .header-icons {
             text-align: right;
@@ -99,17 +56,6 @@
             display: none;
             padding: 0 15px;
             text-align: center;
-
-//            /* TODO hardcode */
-//            &.california {
-//                background-color: #0B4D70;
-//                color: white;
-//            }
-//
-//            &.puerto_rico {
-//                background-color: #a1928d;
-//                color: white;
-//            }
 
             a {
                 color: white;
@@ -144,19 +90,9 @@
     .tab-pane {
 
         .tab-title {
-//            background-color: #65A7D6;
             color: white;
             margin-bottom: 15px;
             padding: 0 15px;
-
-//            /* TODO hardcode */
-//            &.california {
-//                background-color: #65A7D6;
-//            }
-//
-//            &.puerto_rico {
-//                background-color: #a1928d;
-//            }
         }
 
         .tab-content {

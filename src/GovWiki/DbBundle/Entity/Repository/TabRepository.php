@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 use GovWiki\DbBundle\Entity\Tab;
 
 /**
@@ -30,6 +31,28 @@ class TabRepository extends EntityRepository
             ->addOrderBy($expr->asc('Category.orderNumber'))
             ->getQuery()
             ->getResult();
+    }
+
+    public function getForGovernment($environment, $altType)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        return $this->createQueryBuilder('Tab')
+            ->addSelect('Category, Format')
+            ->leftJoin('Tab.categories', 'Category')
+            ->leftJoin('Category.formats', 'Format')
+            ->where($expr->andX(
+                $expr->eq('Tab.environment', ':environment'),
+                $expr->orX(
+                    "REGEXP('{$altType}', Format.showIn) = 1",
+                    $expr->neq('Tab.tabType', $expr->literal(Tab::USER_DEFINED))
+                )
+            ))
+            ->setParameter('environment', $environment)
+            ->orderBy($expr->asc('Tab.orderNumber'))
+            ->addOrderBy($expr->asc('Category.orderNumber'))
+            ->getQuery()
+            ->getArrayResult();
     }
 
     /**
