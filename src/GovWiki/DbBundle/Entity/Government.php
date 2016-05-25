@@ -10,6 +10,7 @@ use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @ORM\Table(name="governments")
  * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\GovernmentRepository")
  * @ExclusionPolicy("none")
+ *
+ * @UniqueEntity("name")
  */
 class Government
 {

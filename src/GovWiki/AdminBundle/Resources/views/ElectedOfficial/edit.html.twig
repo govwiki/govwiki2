@@ -91,41 +91,82 @@
     <hr>
 {% endblock panel_body %}
 
-{% block stylesheets %}
-    {{- parent() -}}
-    <link href="{{- asset('bundles/govwikiadmin/css/select2.min.css') -}}" rel="stylesheet">
-{% endblock stylesheets %}
-
 {% block javascripts %}
     {{- parent() -}}
-    <script src="{{- asset('bundles/govwikiadmin/js/select2.min.js') -}}"></script>
+    {#<script src="{{- asset('bundles/govwikiadmin/js/select2.min.js') -}}"></script>#}
+    <script src="{{- asset('bundles/govwikifrontend/js/vendor/typeahead.js') -}}"></script>
+    <script src="{{- asset('bundles/govwikifrontend/js/vendor/handlebars.js') -}}"></script>
     <script>
         $(function() {
-            $('#govwiki_dbbundle_electedofficial_government').select2({
-                minimumInputLength: 3,
-                type: 'GET',
-                ajax: {
-                    delay: 750,
-                    url: '{{- path('govwiki_api_v1_government_search') -}}',
-                    data: function (params) {
-                        return {
-                            search: params.term
-                        }
-                    },
-                    processResults: function (data, params) {
-                        return {
-                            results: data
-                        };
-                    }
+            var timer;
+
+            // Request delay.
+            var delay = 750;
+
+            /**
+             * Typeahead search
+             */
+
+            var findMatches = function findMatches(query, syncCallback, asyncCallback) {
+                if (timer) {
+                    clearTimeout(timer);
+                }
+
+                timer = setTimeout(function request() {
+                    $.ajax({
+                        method: 'GET',
+                        url: '{{- path('govwiki_api_v1_government_search') -}}?search=' + query
+                    }).success(function success(data) {
+                        asyncCallback(data);
+                    });
+                }, delay);
+            };
+
+            var searchValue = '';
+            {%- verbatim -%}
+            // Init typeahead
+            var $typeahead = $('#govwiki_dbbundle_electedofficial_government').typeahead({
+                hint: true,
+                highlight: true,
+                minLength: 3
+            }, {
+                name: 'countries',
+                source: findMatches,
+                templates: {
+                    empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
+                    suggestion: Handlebars.compile('<div class="sugg-box">' +
+                                                   '<div class="sugg-state">{{state}}</div>' +
+                                                   '<div class="sugg-name">{{name}}</div>' +
+                                                   '</div>')
                 },
-                templateResult: function (data) {
-                    return data.name;
-                },
-                templateSelection: function (data) {
-                    return data.name;
+                updater: function updater(item) {
+                    alert(item);
                 }
             });
-        })
+            {%- endverbatim -%}
+
+            // Pressed mouse or enter button
+            $typeahead.bind('typeahead:selected', function selected(obj, selectedItemData) {
+                $typeahead.typeahead('val', selectedItemData.name);
+            });
+
+            // Move cursor via arrows keys
+            $typeahead.bind('typeahead:cursorchange', function cursorchange() {
+                $typeahead.typeahead('val', searchValue);
+            });
+
+            // Remove request
+            $typeahead.bind('keyup', function typeaheadChange() {
+                if ($typeahead.val().length < 3) {
+                    clearTimeout(timer);
+                }
+            });
+
+            // Store search value on typing
+            $typeahead.keyup(function keyup(event) {
+                searchValue = $(event.target).val();
+            });
+        });
     </script>
 {% endblock javascripts %}
 

@@ -3,8 +3,8 @@
 namespace GovWiki\DbBundle\Form;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
+use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
@@ -50,7 +50,7 @@ class ElectedOfficialType extends AbstractType
     {
         $id = null;
         $elected = $builder->getData();
-        if ($elected instanceof ElectedOfficial) {
+        if ($elected instanceof ElectedOfficial && ($elected->getId())) {
             $id = $elected->getGovernment()->getId();
         }
 
@@ -63,47 +63,48 @@ class ElectedOfficialType extends AbstractType
             ->add('photoUrl', 'url', [ 'required' => false ])
             ->add('bioUrl', 'url', [ 'required' => false ])
             ->add('termExpires', null, [ 'required' => false ])
-            ->add('government', 'entity', [
-                'class' => 'GovWiki\DbBundle\Entity\Government',
-                'query_builder' => function (EntityRepository $repository) use ($id) {
-                    $qb = $repository->createQueryBuilder('Government');
-                    $expr = $qb->expr();
-
-                    $qb
-                        ->select('partial Government.{id, name}')
-                        ->join('Government.environment', 'Environment')
-                        ->where($expr->eq(
-                            'Environment.slug',
-                            $expr->literal($this->storage->get()->getSlug())
-                        ))
-                        ->orderBy('Government.name');
-
-                    if ($id) {
-                        $qb
-                            ->andWhere($expr->eq('Government.id', ':government'))
-                            ->setParameter('government', $id);
-                    } else {
-                        $qb->setMaxResults(0);
-                    }
-
-                    return $qb;
-                },
-            ]);
+            ->add('government', 'text');
+//            ->add('government', 'entity', [
+//                'class' => 'GovWiki\DbBundle\Entity\Government',
+//                'query_builder' => function (EntityRepository $repository) use ($id) {
+//                    $qb = $repository->createQueryBuilder('Government');
+//                    $expr = $qb->expr();
+//
+//                    $qb
+//                        ->select('partial Government.{id, name}')
+//                        ->join('Government.environment', 'Environment')
+//                        ->where($expr->eq(
+//                            'Environment.slug',
+//                            $expr->literal($this->storage->get()->getSlug())
+//                        ))
+//                        ->orderBy('Government.name');
+//
+//                    if ($id) {
+//                        $qb
+//                            ->andWhere($expr->eq('Government.id', ':government'))
+//                            ->setParameter('government', $id);
+//                    } else {
+//                        $qb->setMaxResults(0);
+//                    }
+//
+//                    return $qb;
+//                },
+//            ]);
 
         $builder->get('government')
             ->resetViewTransformers()
             ->addViewTransformer(new CallbackTransformer(
                 function ($original) {
                     if ($original instanceof Government) {
-                        return $original->getId();
+                        return $original->getName();
                     }
                     return $original;
-                }, function ($id) {
+                }, function ($name) {
                     /** @var GovernmentRepository $repository */
                     $repository = $this->em
                         ->getRepository('GovWikiDbBundle:Government');
 
-                    return $repository->findOneBy([ 'id' => $id ]);
+                    return $repository->findOneBy([ 'name' => $name ]);
                 }
             ));
     }
