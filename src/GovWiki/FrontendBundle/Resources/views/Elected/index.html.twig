@@ -38,9 +38,9 @@
                 <!-- Nav tabs -->
                 <ul class="nav nav-pills" role="tablist">
                     <li role="presentation" class="active"><a href="#Votes" aria-controls="Votes" role="tab" data-toggle="tab">Votes</a></li>
-                    <li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>
+                    {#<li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>#}
                     <li role="presentation"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
-                    <li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>
+                    {#<li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>#}
                 </ul>
 
                 <!-- Tab panes -->
@@ -52,13 +52,13 @@
                     {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:votes.html.twig') }}
 
                     {# Contributions #}
-                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:contributions.html.twig') }}
+                    {#{{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:contributions.html.twig') }}#}
 
                     {# Endorsements #}
                     {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:endorsements.html.twig') }}
 
                     {# Public Statements #}
-                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}
+                    {#{{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}#}
 
                 </div>
 
@@ -67,23 +67,23 @@
 
     </section>
 
-    <!-- Disqus Modal -->
+    {# Disqus Modal #}
     {#{% include 'GovWikiFrontendBundle:Partial/Elected/Modals:disqus.html.twig' %}#}
 
-    <!-- Facebook Comment Modal -->
+    {# Facebook Comment Modal #}
     {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:facebook_comment.html.twig' %}
 
-    <!-- Votes Modal -->
+    {# Votes Modal #}
     {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:votes.html.twig' %}
 
-    <!-- Contributions Modal -->
-    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:contributions.html.twig' %}
+    {# Contributions Modal #}
+    {#{% include 'GovWikiFrontendBundle:Partial/Elected/Modals:contributions.html.twig' %}#}
 
-    <!-- Endorsements Modal -->
+    {# Endorsements Modal #}
     {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:endorsements.html.twig' %}
 
-    <!-- Public Statements Modal -->
-    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:publicStatements.html.twig' %}
+    {# Public Statements Modal #}
+    {#{% include 'GovWikiFrontendBundle:Partial/Elected/Modals:publicStatements.html.twig' %}#}
 
     {% verbatim %}
     <script id="row-addVotes" type="text//x-handlebars-template">
