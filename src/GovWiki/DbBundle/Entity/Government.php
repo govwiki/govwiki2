@@ -236,11 +236,11 @@ class Government
     /**
      * @var Collection
      *
-     * @ORM\OneToMany(targetEntity="Document", mappedBy="government", cascade={
+     * @ORM\OneToMany(targetEntity="Issue", mappedBy="government", cascade={
      *  "remove"
      * })
      */
-    private $documents;
+    private $issues;
 
     /**
      * Constructor
@@ -1083,25 +1083,25 @@ class Government
     }
 
     /**
-     * @param Document $document A Document entity instance.
+     * @param Issue $issue A Issue entity instance.
      *
      * @return Government
      */
-    public function addDocuments(Document $document)
+    public function addDocuments(Issue $issue)
     {
-        $this->documents[] = $document;
+        $this->issues[] = $issue;
 
         return $this;
     }
 
     /**
-     * @param Document $document A Document entity instance.
+     * @param Issue $issue A Issue entity instance.
      *
      * @return Government
      */
-    public function removeDocuments(Document $document)
+    public function removeIssues(Issue $issue)
     {
-        $this->documents->removeElement($document);
+        $this->issues->removeElement($issue);
 
         return $this;
     }
@@ -1109,9 +1109,9 @@ class Government
     /**
      * @return Collection
      */
-    public function getDocuments()
+    public function getIssues()
     {
-        return $this->documents;
+        return $this->issues;
     }
 
     /**
@@ -1130,5 +1130,7 @@ class Government
     public function setImage($image)
     {
         $this->image = $image;
+
+        return $this;
     }
 }

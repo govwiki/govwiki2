@@ -73,16 +73,6 @@
                 </li>
             {% endif %}
 
-            {% if (app.request.attributes.get('_route') == 'government') and
-                (environment.showDocuments) %}
-                <li>
-                    <a href="{{ path('documents', {
-                        'altTypeSlug': app.request.attributes.get('altTypeSlug'),
-                        'slug': app.request.attributes.get('slug')
-                    }) }}">Documents</a>
-                </li>
-            {% endif %}
-
             {# Return to map #}
             {% if app.request.attributes.get('_route') != "map" %}
                 <li>

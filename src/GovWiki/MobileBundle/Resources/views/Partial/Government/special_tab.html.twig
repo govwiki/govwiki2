@@ -1,0 +1,25 @@
+{#
+
+    Template for special tab page.
+
+#}
+{%- if (tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::ISSUES')) -%}
+    {{- render(controller('GovWikiMobileBundle:Government:issues', {
+        'government': government.id
+    })) -}}
+{%- elseif (tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::FINANCIAL_STATEMENTS')) -%}
+    {%- set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 -%}
+    {%- if (showFinStmt) -%}
+        {%- include 'GovWikiMobileBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
+        'financialStatements': government.financialStatements
+        } -%}
+    {%- endif -%}
+{%- elseif (tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::SALARIES')) -%}
+    {{- render(controller('GovWikiMobileBundle:Government:salaries', {
+        'government': government.id
+    })) -}}
+{%- elseif (tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::PENSIONS')) -%}
+    {{- render(controller('GovWikiMobileBundle:Government:pensions', {
+        'government': government.id
+    })) -}}
+{%- endif -%}

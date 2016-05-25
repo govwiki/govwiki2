@@ -45,96 +45,100 @@
             <div role="tabpanel" class="tab-pane {% if loop.first %}active{% endif %}" id="{{ self.tabId(tab) }}">
                 {# Tab categories. #}
 
-                {% for category in tab.categories %}
-                    <h5>
-                        {{- category.name -}}
-                        {% if category.name != 'Main' %}
-                            <small>
+                {%- if (tab.tabType == constant('USER_DEFINED', tab)) -%}
+                    {# Editable tab. #}
 
-                                <a href="{{- path(
-                                'govwiki_admin_category_edit',
-                                {
-                                    'environment': environment.slug,
-                                    'tab': tab.id,
-                                    'category': category.id
-                                }
-                                ) -}}">
-                                    <i class="glyphicon glyphicon-pencil"></i>
-                                </a>
+                    {% for category in tab.categories %}
+                        <h5>
+                            {{- category.name -}}
+                            {% if category.name != 'Main' %}
+                                <small>
 
-                                <span data-url="{{- path(
-                                    'govwiki_admin_category_remove',
+                                    <a href="{{- path(
+                                    'govwiki_admin_category_edit',
                                     {
                                         'environment': environment.slug,
                                         'tab': tab.id,
                                         'category': category.id
                                     }
-                                ) -}}" class="btn-delete delete-anchor" data-description="Are you sure want to delete category '{{ category.name }}'?">
-                                    <i class="glyphicon glyphicon-remove"></i>
-                                </span>
-                            </small>
-                        {% endif %}
-                    </h5>
+                                    ) -}}">
+                                        <i class="glyphicon glyphicon-pencil"></i>
+                                    </a>
 
-                    <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for format in category.formats %}
-                        <tr>
-                            <td>{{ format.name }}</td>
-                            <td>{{ format.type }}</td>
-                            <td>
-                                <a class="btn btn-default" href="{{- path(
-                                    'govwiki_admin_field_edit',
-                                    {
+                                    <span data-url="{{- path(
+                                        'govwiki_admin_category_remove',
+                                        {
+                                            'environment': environment.slug,
+                                            'tab': tab.id,
+                                            'category': category.id
+                                        }
+                                    ) -}}" class="btn-delete delete-anchor" data-description="Are you sure want to delete category '{{ category.name }}'?">
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                    </span>
+                                </small>
+                            {% endif %}
+                        </h5>
+
+                        <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for format in category.formats %}
+                            <tr>
+                                <td>{{ format.name }}</td>
+                                <td>{{ format.type }}</td>
+                                <td>
+                                    <a class="btn btn-default" href="{{- path(
+                                        'govwiki_admin_field_edit',
+                                        {
+                                            'environment': environment.slug,
+                                            'category': category.id,
+                                            'format': format.id
+                                        }
+                                    ) -}}">
+                                        Edit
+                                    </a>
+
+                                    <button class="btn btn-danger btn-delete" data-url="{{- path(
+                                        'govwiki_admin_field_remove',
+                                        {
+                                            'environment': environment.slug,
+                                            'category': category.id,
+                                            'format': format.id
+                                        }
+                                    ) -}}" data-description="Are you sure want to delete field '{{ format.name }}'?">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                            <tr>
+                                <td colspan="3" class="button-row">
+                                    <a href="{{- path('govwiki_admin_field_new', {
                                         'environment': environment.slug,
-                                        'category': category.id,
-                                        'format': format.id
-                                    }
-                                ) -}}">
-                                    Edit
-                                </a>
+                                        'category': category.id
+                                    }) -}}" class="btn btn-primary">
+                                        New field <i class="glyphicon glyphicon-plus"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    {% endfor%}
 
-                                <button class="btn btn-danger btn-delete" data-url="{{- path(
-                                    'govwiki_admin_field_remove',
-                                    {
-                                        'environment': environment.slug,
-                                        'category': category.id,
-                                        'format': format.id
-                                    }
-                                ) -}}" data-description="Are you sure want to delete field '{{ format.name }}'?">
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                        <tr>
-                            <td colspan="3" class="button-row">
-                                <a href="{{- path('govwiki_admin_field_new', {
-                                    'environment': environment.slug,
-                                    'category': category.id
-                                }) -}}" class="btn btn-primary">
-                                    New field <i class="glyphicon glyphicon-plus"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                    </table>
-                {% endfor%}
-
-                {# Add new category for given tab. #}
-                <div>
-                    <a href="{{ path('govwiki_admin_category_new', {
-                        'environment': environment.slug,
-                        'tab': tab.id
-                    }) }}" class="btn btn-primary">Add new category</a>
-                </div>
+                    {# Add new category for given tab. #}
+                    <div>
+                        <a href="{{ path('govwiki_admin_category_new', {
+                            'environment': environment.slug,
+                            'tab': tab.id
+                        }) }}" class="btn btn-primary">Add new category</a>
+                    </div>
+                {%- endif -%}
 
                 {# Tab control. #}
                 <div class="btn-group pull-right">

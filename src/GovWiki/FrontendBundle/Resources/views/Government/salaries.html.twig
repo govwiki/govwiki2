@@ -1,34 +1,39 @@
-{{ knp_pagination_render(salaries) }}
+<div class="paginate">
+    <div class="loader" style="display: none"></div>
+    <div class="tab-pane-main">
+        {{ knp_pagination_render(salaries) }}
 
-<div class="hidden-xs col-sm-12">
+        <div class="hidden-xs col-sm-12">
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th class="sortable">{{knp_pagination_sortable(salaries, 'Employee', 'Employee.name') }}</th>
-                    <th class="sortable">{{knp_pagination_sortable(salaries, 'Job title', 'Job.title') }}</th>
-                    <th class="sortable">{{knp_pagination_sortable(salaries, 'Base pay', 'Salary.base') }}</th>
-                    <th class="sortable">{{knp_pagination_sortable(salaries, 'Overtime pay', 'Salary.overtime') }}</th>
-                    <th class="sortable">{{knp_pagination_sortable(salaries, 'Other pay', 'Salary.other') }}</th>
-                    <th class="sortable">{{knp_pagination_sortable(salaries, 'Benefits pay', 'Salary.benefits') }}</th>
-                    <th class="sortable">{{knp_pagination_sortable(salaries, 'Total pay', 'Salary.total') }}</th>
-                    <th class="sortable">{{knp_pagination_sortable(salaries, 'Total and benefits pay', 'Salary.totalAndBenefits') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for salary in salaries %}
-                <tr>
-                    <td>{{ salary.employee }}</td>
-                    <td>{{ salary.job }}</td>
-                    <td>$ {{ salary.base|number_format(2) }}</td>
-                    <td>$ {{ salary.overtime|number_format(2) }}</td>
-                    <td>$ {{ salary.other|number_format(2) }}</td>
-                    <td>$ {{ salary.benefits|number_format(2) }}</td>
-                    <td>$ {{ salary.total|number_format(2) }}</td>
-                    <td>$ {{ salary.totalAndBenefits|number_format(2) }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="sortable">{{knp_pagination_sortable(salaries, 'Employee', 'Employee.name') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(salaries, 'Job title', 'Job.title') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(salaries, 'Base pay', 'Salary.base') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(salaries, 'Overtime pay', 'Salary.overtime') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(salaries, 'Other pay', 'Salary.other') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(salaries, 'Benefits pay', 'Salary.benefits') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(salaries, 'Total pay', 'Salary.total') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(salaries, 'Total and benefits pay', 'Salary.totalAndBenefits') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for salary in salaries %}
+                        <tr>
+                            <td>{{ salary.employee }}</td>
+                            <td>{{ salary.job }}</td>
+                            <td>$ {{ salary.base|number_format(2) }}</td>
+                            <td>$ {{ salary.overtime|number_format(2) }}</td>
+                            <td>$ {{ salary.other|number_format(2) }}</td>
+                            <td>$ {{ salary.benefits|number_format(2) }}</td>
+                            <td>$ {{ salary.total|number_format(2) }}</td>
+                            <td>$ {{ salary.totalAndBenefits|number_format(2) }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
 
+        </div>
+    </div>
 </div>

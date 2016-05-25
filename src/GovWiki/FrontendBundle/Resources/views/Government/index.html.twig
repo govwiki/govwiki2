@@ -8,7 +8,6 @@
 
         {% if government is defined %}
 
-            {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
 
             {# Government name & wikipedia links #}
             <nav class="row">
@@ -57,109 +56,58 @@
                     {# Tabs control #}
                     <nav>
                         <ul class="nav nav-pills tab-titles">
-                            {% if (formats is defined) and (formats is not empty) %}
-                                {% for tabName, categories in formats %}
-                                    {% set tab_id = categories|first|first.tab_id %}
-                                    {% set slug = self.tabSlug(tabName) %}
+                            {%- if (tabs is defined) and (tabs is not empty) -%}
+                                {%- for tab in tabs -%}
+                                    {%- set slug = self.tabSlug(tab.name) -%}
 
-                                    <li class="{{ loop.first ? 'active' : '' }}">
-                                        <a class="tabs tab_{{ slug|lower }}" href="#{{ slug }}"
-                                           aria-controls="{{ slug }}"
-                                           role="tab" data-toggle="tab" data-tabname="{{ tabName }}">
-                                            {{- ('groups.group_id_'~tab_id)|trans -}}
+                                    <li {{ loop.first ? 'class="active"' -}}>
+                                        <a class="tabs tab_{{ slug|lower }}"
+                                            href="#{{ slug }}" aria-controls="{{ slug }}"
+                                            role="tab" data-toggle="tab"
+                                            data-tabname="{{ tab.name }}">
+                                            {{- ('groups.group_id_'~tab.id)|trans -}}
                                         </a>
                                     </li>
-                                {% endfor %}
-                            {% endif %}
-
-                            {% if hasSalaries %}
-                                <li><a class="tabs tab_salaries" href="#Salaries" aria-controls="Salaries" role="tab" data-toggle="tab">Salaries</a></li>
-                            {% endif %}
-
-                            {% if hasPensions %}
-                                <li><a class="tabs tab_pensions" href="#Pensions" aria-controls="Pensions" role="tab" data-toggle="tab">Pensions</a></li>
-                            {% endif %}
-
-                            {% if showFinStmt %}
-                                <li><a class="tabs tab_financial_statements" href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">{{ 'gov.financial_statements'|trans }}</a></li>
-                            {% endif %}
-
+                                {%- endfor -%}
+                            {%- endif -%}
                         </ul>
                     </nav>
 
                     {# Tab content #}
                     <div class="tab-content">
-
-                        {% if (formats is defined) and (formats is not empty) %}
-
-                            {% for tabName, categories in formats %}
-                                {% set tab_id = categories|first|first.tab_id %}
-
-                                <div class="tab-pane {{ loop.first ? 'active' : '' }}" id="{{ self.tabSlug(tabName) }}">
-
-                                    <h4>{{ ('groups.group_id_'~tab_id)|trans }}</h4>
-
+                        {%- if (formats is defined) and (formats is not empty) -%}
+                            {%- for tab in tabs -%}
+                                <div class="tab-pane {{ loop.first ? 'active' : '' -}}"
+                                    id="{{ self.tabSlug(tab.name) }}">
+                                    <h4>{{ ('groups.group_id_'~tab.id)|trans }}</h4>
                                     <br>
                                     <div class="row">
                                         {# Statistics #}
-                                        <div class="statistics col-sm-8">
-                                            {{ include('@GovWikiFrontend/Partial/Government/tab.html.twig') }}
-                                        </div>
+                                        {%- if tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}
+                                            {# User defined tab #}
+                                            {{-
+                                                include('@GovWikiFrontend/Partial/Government/tab.html.twig')
+                                            -}}
+                                        {%- else -%}
+                                            {# Special tab #}
+                                            {{-
+                                                include('@GovWikiFrontend/Partial/Government/special_tab.html.twig')
+                                            -}}
+                                        {%- endif -%}
 
-                                        {# Overview + Elected Officials #}
                                         {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
 
-                                        {# Employee Compensation #}
                                         {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
 
-                                        {# Quality of Services #}
                                         {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
 
-                                        {# Financial Health #}
                                         {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
                                     </div>
                                 </div>
-
-                            {% endfor %}
-
-                            {% if hasSalaries %}
-                                <div class="tab-pane paginate" data-type="salaries" id="Salaries">
-                                    <div class="loader" style="display: none"></div>
-                                    <div class="tab-pane-main">
-                                        {{ render(controller('GovWikiFrontendBundle:Government:salaries', {
-                                            'government': government.id
-                                        }))}}
-                                    </div>
-                                </div>
-                            {% endif %}
-
-                            {% if hasPensions %}
-                                <div class="tab-pane paginate" data-type="pensions"  id="Pensions">
-                                    <div class="loader" style="display: none"></div>
-                                    <div class="tab-pane-main">
-                                        {{ render(controller('GovWikiFrontendBundle:Government:pensions', {
-                                            'government': government.id
-                                        }))}}
-                                    </div>
-
-                                </div>
-                            {% endif %}
-
-                            {# Financial Statements (if exists) #}
-                            {% if showFinStmt %}
-                                <div class="tab-pane" id="Financial_Statements">
-
-                                    {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
-                                    'financialStatements': government.financialStatements
-                                    } %}
-
-                                </div>
-                            {% endif %}
-
-                        {% else %}
+                            {%- endfor -%}
+                        {%- else -%}
                             <h3 class="text-center">No data. Please refresh page later</h3>
-                        {% endif %}
-
+                        {%- endif -%}
                     </div>
 
                 </div>

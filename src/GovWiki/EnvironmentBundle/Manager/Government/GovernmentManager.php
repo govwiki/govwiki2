@@ -3,6 +3,7 @@
 namespace GovWiki\EnvironmentBundle\Manager\Government;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use GovWiki\DbBundle\Entity\Delta;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Government;
@@ -483,6 +484,7 @@ class GovernmentManager implements GovernmentManagerInterface
         $slug,
         $year = null
     ) {
+
         $altType = str_replace('_', ' ', $altTypeSlug);
         $fields = $this->formatManager->getList($environment, $altType);
 
@@ -566,12 +568,16 @@ class GovernmentManager implements GovernmentManagerInterface
             [ 'tab_name', 'category_name', 'field' ]
         );
 
+        // Get all available tabs.
+        $tabs = $this->em->getRepository('GovWikiDbBundle:Tab')
+            ->getForGovernment($environment->getId(), $altType);
+
         $government['currentYear'] = $year;
 
         return [
             'government' => $government,
-            'formats' => $formats,
-            'tabs' => array_keys($formats),
+            'formats' => $tabs,
+            'tabs' => $tabs,
         ];
     }
 
