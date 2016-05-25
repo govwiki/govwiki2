@@ -13,6 +13,11 @@
                     <tr>
                         <th class="sortable">{{- knp_pagination_sortable(
                             issues,
+                            'Name',
+                            'Issue.name'
+                            ) -}}</th>
+                        <th class="sortable">{{- knp_pagination_sortable(
+                            issues,
                             'Description',
                             'Issue.description'
                             ) -}}</th>
@@ -21,19 +26,14 @@
                             'Link',
                             'Issue.link'
                             ) -}}</th>
-                        <th class="sortable">{{- knp_pagination_sortable(
-                            issues,
-                            'Date',
-                            'Issue.date'
-                            ) -}}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for issue in issues %}
                         <tr>
-                            <td>{{ issue.description }}</td>
-                            <td>{{ issue.link }}</td>
-                            <td>{{ issue.date|date('Y-m-d') }}</td>
+                            <td>{{- issue.name -}}</td>
+                            <td>{{- issue.description -}}</td>
+                            <td>{{- issue.link -}}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

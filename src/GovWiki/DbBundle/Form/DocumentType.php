@@ -2,7 +2,7 @@
 
 namespace GovWiki\DbBundle\Form;
 
-use GovWiki\DbBundle\Entity\Document;
+use GovWiki\DbBundle\Entity\Issue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
@@ -44,7 +44,7 @@ class DocumentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $choices = Document::availableTypes();
+        $choices = Issue::availableTypes();
         $names = array_map(
             function ($type) {
                 return ucfirst($type);
@@ -54,6 +54,7 @@ class DocumentType extends AbstractType
         $choices = array_combine($choices, $names);
 
         $builder
+            ->add('name')
             ->add('description', null, [ 'required' => false ])
             ->add('type', 'choice', [ 'choices' => $choices ])
             ->add('link', null, [ 'required' => false ])
@@ -97,7 +98,7 @@ class DocumentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'GovWiki\DbBundle\Entity\Document',
+            'data_class' => 'GovWiki\DbBundle\Entity\Issue',
         ]);
     }
 

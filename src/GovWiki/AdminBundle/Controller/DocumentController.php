@@ -4,6 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\DbBundle\Entity\Document;
 use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Entity\Issue;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,7 +57,7 @@ class DocumentController extends AbstractGovWikiAdminController
         return [
             'government' => $government,
             'documents' => $this->paginate(
-                $this->getDoctrine()->getRepository('GovWikiDbBundle:Document')
+                $this->getDoctrine()->getRepository('GovWikiDbBundle:Issue')
                     ->getListQuery($government->getId(), $type, $date),
                 $request->query->getInt('page', 1),
                 self::MAX_PER_PAGE
@@ -83,7 +84,7 @@ class DocumentController extends AbstractGovWikiAdminController
             return $this->redirectToRoute('govwiki_admin_main_home');
         }
 
-        $document = new Document();
+        $document = new Issue();
         $document->setGovernment($government);
         $form = $this->createForm('document', $document);
 
@@ -111,7 +112,7 @@ class DocumentController extends AbstractGovWikiAdminController
      *
      * @param Request    $request    A Request instance.
      * @param Government $government A Government entity instance.
-     * @param Document   $document   A Document entity instance.
+     * @param Issue      $document   A Document entity instance.
      *
      * @return array
      *
@@ -121,7 +122,7 @@ class DocumentController extends AbstractGovWikiAdminController
     public function editAction(
         Request $request,
         Government $government,
-        Document $document
+        Issue $document
     ) {
         if ($this->getCurrentEnvironment() === null) {
             return $this->redirectToRoute('govwiki_admin_main_home');
@@ -150,15 +151,15 @@ class DocumentController extends AbstractGovWikiAdminController
      *  requirements={ "document": "\d+"}
      * )
      *
-     * @param integer  $government Government entity id.
-     * @param Document $document   A Document entity instance.
+     * @param integer $government Government entity id.
+     * @param Issue   $document   A Document entity instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
      * @throws \LogicException Some required bundle not registered.
      * @throws \InvalidArgumentException Invalid entity manager.
      */
-    public function deleteAction($government, Document $document)
+    public function deleteAction($government, Issue $document)
     {
         if ($this->getCurrentEnvironment() === null) {
             return $this->redirectToRoute('govwiki_admin_main_home');

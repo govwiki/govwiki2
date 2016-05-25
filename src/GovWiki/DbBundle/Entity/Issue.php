@@ -67,6 +67,13 @@ class Issue
     private $date;
 
     /**
+     * @var string
+     *
+     * @ORM\Column()
+     */
+    private $name;
+
+    /**
      * Return available document types.
      *
      * @return array
@@ -216,5 +223,29 @@ class Issue
     public function getGovernment()
     {
         return $this->government;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name Issue name.
+     *
+     * @return Issue
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }
