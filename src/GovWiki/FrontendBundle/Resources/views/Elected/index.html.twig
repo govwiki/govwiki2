@@ -19,9 +19,9 @@
                 <p>Name: {{elected.fullName}} &nbsp;&nbsp;
                     <span class="disqus-comment-count vote" id="{{elected.id}}" data-disqus-identifier="{{elected.id}}">0</span>
                 <p>Term expiries: {{elected.termExpires}}</p>
-                {% if elected.bioUrl %}
+                {#{% if elected.bioUrl %}
                     <p><a target="_blank" href="{{elected.bioUrl}}">Biographical Highlights</a></p>
-                {% endif %}
+                {% endif %}#}
                 <p>Email: <a href="mailto:{{elected.emailAddress}}">{{elected.emailAddress}}</a></p>
             </div>
 
@@ -198,8 +198,8 @@
         window.gw.electedOfficial = '{{ electedOfficialJSON | escape('js') }}';
 
         window.gw.urls = {};
-        window.gw.urls.create_request = '{{ path('govwiki_api_v1_createrequest_create') }}'
-        window.gw.urls.edit_request = '{{ path('govwiki_api_v1_editrequest_create') }}'
+        window.gw.urls.create_request = '{{ path('govwiki_api_v1_createrequest_create') }}';
+        window.gw.urls.edit_request = '{{ path('govwiki_api_v1_editrequest_create') }}';
         window.gw.urls.check_url = '{{ path('govwiki_api_v1_url_extract') }}'
     </script>
 

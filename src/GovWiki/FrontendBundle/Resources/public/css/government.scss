@@ -12,6 +12,19 @@
         margin-top: 10px;
     }
 
+    table {
+      .add {
+        color: #0b4d70;
+        text-align: center;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #0b4d70;
+          color: #fff;
+        }
+      }
+    }
+
     header {
 
         h3 {
@@ -320,7 +333,6 @@
                     }
 
                 }
-
             }
         }
 

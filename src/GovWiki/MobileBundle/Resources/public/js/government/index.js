@@ -1,5 +1,4 @@
 var $subscribeBtn;
-var $pane;
 var $mobileNav = $('.nav');
 var tab;
 
@@ -13,7 +12,10 @@ var Step31;
 var Step3;
 var Step2;
 var Step1;
-// var government = JSON.parse(window.gw.government);
+var government = JSON.parse(window.gw.government);
+var modal = $('#addIssue');
+var authorized = window.gw.authorized;
+var Handlebars = require('../vendor/handlebars.js');
 
 var graphs = require('./graphs.js');
 var popover = new (require('./rank-popover.js'))({  // eslint-disable-line
@@ -184,11 +186,8 @@ $('#year-selector').change(function change() {
 });
 
 // Table pagination handler.
-$pane = $('.paginate');
 
-console.log($pane.find('.pagination a'));
-
-$pane.on('click', '.pagination a', function paneClick(e) {
+$(document).on('click', '.paginate .pagination a', function click(e) {
   var $loader;
   var $mainContent;
   var url;
@@ -209,11 +208,11 @@ $pane.on('click', '.pagination a', function paneClick(e) {
   $loader.show();
   $.ajax(url).success(function load(data) {
     $loader.hide();
-    $mainContent.html(data);
+    $closestPane.find('.row').html(data);
   });
 });
 
-$pane.on('click', '.sortable a', function click(e) {
+$(document).on('click', '.paginate .sortable a', function click(e) {
   var $loader;
   var $mainContent;
   var url;
@@ -311,3 +310,69 @@ $('.fin-stmt-select').change(function finStmtCaptionChange() {
   $table.find('td:nth-child(4)').hide();
   $table.find('td:nth-child('+ value +')').show();
 });
+
+// Add new document.
+$(document).on('click', '#new-issue', function newDocument() {
+  if (! authorized) {
+    $('#modal-window').modal('show'); // Open login modal window
+    window.sessionStorage.setItem('open', 'issue');
+  } else {
+    modal.modal('show');
+  }
+});
+
+modal.find('[data-provide="datepicker"]').on('changeDate', function changeDate() {
+  return $(this).datepicker('hide');
+});
+
+// Clear document from when modal hide.
+modal.on('hidden.bs.modal', function clean() {
+  (modal.find('form')[0]).reset();
+});
+
+// Document form submit.
+modal.find('form').submit(function  newIssue(event) {
+  var data = new FormData(this);
+
+  event.preventDefault();
+
+  $.ajax({
+    url: this.getAttribute('action'),
+    processData: false,
+    contentType: false,
+    method: 'post',
+    data: data
+  })
+    .done(function success(response) {
+      var template;
+
+      debugger;
+
+      if (government.currentYear === Number(response.date.replace(/^(\d+)-.*/, '$1'))) {
+        template = Handlebars.compile($('#issue-row').html());
+        $('#issues tr:last-child').after(template(response));
+      }
+
+      modal.modal('hide');
+    })
+    .fail(function fail(jqXHR) {
+      alert(JSON.parse(jqXHR.responseText));
+    })
+});
+
+/**
+ * Open proper tab and modal window.
+ *
+ * @return void
+ */
+function openProperTab() {
+  var open = window.sessionStorage.getItem('open');
+
+  if (open) {
+    $('.tab_issues').click();
+    modal.modal('show');
+    window.sessionStorage.removeItem('open');
+  }
+}
+
+openProperTab();

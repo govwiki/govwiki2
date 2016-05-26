@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Form;
 
 use GovWiki\DbBundle\Entity\Issue;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
@@ -59,7 +60,9 @@ class DocumentType extends AbstractType
             ->add('type', 'choice', [ 'choices' => $choices ])
             ->add('link', null, [ 'required' => false ])
             ->add('file', 'file', [ 'required' => false, 'mapped' => false ])
-            ->add('date', 'date', [ 'empty_data' => new \DateTime() ])
+            ->add('date', 'text', [
+                'attr' => [ 'date-provide' => 'datepicker' ],
+            ])
             ->addEventListener(
                 FormEvents::PRE_SUBMIT,
                 function (FormEvent $event) {
@@ -90,6 +93,21 @@ class DocumentType extends AbstractType
                     $event->setData($data);
                 }
             );
+
+        $builder->get('date')
+            ->resetModelTransformers()
+            ->addModelTransformer(new CallbackTransformer(
+                function (\DateTime $original = null) {
+                    if ($original) {
+                        return $original->format('Y-m-d');
+                    }
+
+                    return date('Y-m-d');
+                },
+                function ($view) {
+                    return \DateTime::createFromFormat('Y-m-d', $view);
+                }
+            ));
     }
 
     /**

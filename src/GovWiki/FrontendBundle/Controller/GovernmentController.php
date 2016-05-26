@@ -5,6 +5,7 @@ namespace GovWiki\FrontendBundle\Controller;
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Chat;
 use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Entity\Issue;
 use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\DbBundle\Entity\Message;
 use GovWiki\DbBundle\Form\MessageType;
@@ -115,7 +116,7 @@ class GovernmentController extends AbstractGovWikiController
      * @Route("/{government}/issues", requirements={
      *  "government": "\d+"
      * })
-     * @Template()
+     * @Template
      *
      * @param Request    $request    A Request instance.
      * @param Government $government A Government entity instance.
@@ -129,6 +130,7 @@ class GovernmentController extends AbstractGovWikiController
             return $this->redirectToRoute('disabled');
         }
 
+        $user = $this->getUser();
         $paginator = $this->get('knp_paginator');
         $year = $request->query->get(
             'year',
@@ -141,7 +143,7 @@ class GovernmentController extends AbstractGovWikiController
 
         $issues = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:Issue')
-            ->getListQuery($government->getId(), $year);
+            ->getListQuery($government->getId(), $year, $user instanceof User);
         $issues = $paginator->paginate(
             $issues,
             $request->query->get('page', 1),
@@ -220,10 +222,10 @@ class GovernmentController extends AbstractGovWikiController
         if ($this->getCurrentEnvironment() === null) {
             return $this->redirectToRoute('disabled');
         }
+        $user = $this->getUser();
 
         $this->clearTranslationsCache();
         $manager = $this->getGovernmentManager();
-        $user = $this->getUser();
         $environment = $this->getCurrentEnvironment();
 
         $years = $manager->getAvailableYears($environment);
@@ -368,7 +370,7 @@ From ' . $user_email;
                         [
                             'author' => $user_email,
                             'government_name' => $government->getName(),
-                            'message_text' => $new_message->getText()
+                            'message_text' => $new_message->getText(),
                         ]
                     );
 
@@ -379,7 +381,7 @@ From ' . $user_email;
                     return $this->redirectToRoute('government', [
                         'environment' => $env_name,
                         'altTypeSlug' => $altTypeSlug,
-                        'slug' => $slug
+                        'slug' => $slug,
                     ]);
                 }
             }
@@ -393,6 +395,13 @@ From ' . $user_email;
             ->has($data['government']['id'], $data['government']['currentYear']);
 
         $data['environment_is_subscribable'] = $environment->getSubscribable();
+
+        $form = $this->createForm('document', null, [
+            'action' => $this->generateUrl('govwiki_api_v1_government_issue', [
+                'government' => $data['government']['id'],
+            ]),
+        ]);
+        $data['issueForm'] = $form->createView();
 
         return $data;
     }

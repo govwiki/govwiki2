@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
+use GovWiki\DbBundle\Entity\Issue;
 
 /**
  * IssuesRepository
@@ -17,21 +18,60 @@ class IssuesRepository extends EntityRepository
     /**
      * @param integer $government A government entity id.
      * @param integer $year       Data year.
+     * @param boolean $addPending Add pending issues.
      *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getListQuery($government, $year)
+    public function getListQuery($government, $year, $addPending = false)
     {
         $expr = $this->_em->getExpressionBuilder();
+
+        $stateFilter = $expr->andX(
+            $expr->neq('Issue.state', $expr->literal(Issue::DISCARDED))
+        );
+
+        if (! $addPending) {
+            $stateFilter->add(
+                $expr->neq('Issue.state', $expr->literal(Issue::PENDING))
+            );
+        }
+
         $qb = $this->createQueryBuilder('Issue')
             ->where($expr->andX(
                 $expr->eq('Issue.government', ':government'),
-                'YEAR(Issue.date) = :year'
+                'YEAR(Issue.date) = :year',
+                $expr->orX(
+                    $stateFilter,
+                    $expr->isNull('Issue.state')
+                )
             ))
             ->setParameters([
                 'government' => $government,
                 'year' => $year,
             ]);
+
+        return $qb;
+    }
+
+    /**
+     * @param integer $government A government entity id.
+     * @param integer $year       Issue year.
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getListAllQuery($government, $year = null)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        $qb = $this->createQueryBuilder('Issue')
+            ->where($expr->eq('Issue.government', ':government'))
+            ->setParameter('government', $government);
+
+        if ($year) {
+             $qb
+                 ->andWhere($expr->eq('YEAR(Issue.date)', ':year'))
+                 ->setParameter('year', $year);
+         }
 
         return $qb;
     }

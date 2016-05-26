@@ -2,8 +2,12 @@
 
 namespace GovWiki\ApiBundle\Controller\V1;
 
+use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Entity\Issue;
 use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -117,5 +121,41 @@ class GovernmentController extends AbstractGovWikiApiController
             'data' => $data,
             'alt_type' => str_replace('_', ' ', $altTypeSlug),
         ]);
+    }
+
+    /**
+     * @Route("/{government}/new_issue", methods={ "POST" })
+     * @Security("is_granted('ROLE_USER')")
+     *
+     * @param Request    $request    A Request instance.
+     * @param Government $government A Government entity instance.
+     *
+     * @return JsonResponse
+     */
+    public function issueAction(Request $request, Government $government)
+    {
+        $issue = new Issue();
+        $issue
+            ->setCreator($this->getUser())
+            ->setGovernment($government)
+            ->setState(Issue::PENDING);
+
+        $form = $this->createForm('document', $issue);
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            $em->persist($issue);
+            $em->flush();
+
+            return new JsonResponse([
+                'name' => $issue->getName(),
+                'description' => $issue->getDescription(),
+                'link' => $issue->getLink(),
+                'date' => $issue->getDate()->format('Y-m-d'),
+            ]);
+        }
+
+        return $this->formError($form);
     }
 }

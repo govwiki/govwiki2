@@ -151,7 +151,7 @@
         {% if app.user and environment_is_subscribable %}
             <div class="subscribe-row">
                 <a href="{{-
-                    path('govwiki_frontend_government_subscribe', {
+                    path('govwiki_mobile_government_subscribe', {
                         'government': government.id
                     })
                 -}}" class="btn {% if isSubscriber -%}btn-danger unsubscribe{%- else -%}btn-success subscribe{%- endif -%}" id="subscribe">
@@ -186,6 +186,26 @@
     {% endif %}
 
     </section>
+
+    <div class="modal fade" id="addIssue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Contribution">
+        <div class="modal-dialog" role="document">
+            {{- form_start(issueForm) -}}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add new Issue</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_widget(issueForm) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+            {{- form_end(issueForm) -}}
+        </div>
+    </div>
 
 {% endblock %}
 

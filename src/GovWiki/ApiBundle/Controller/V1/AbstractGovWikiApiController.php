@@ -5,6 +5,8 @@ namespace GovWiki\ApiBundle\Controller\V1;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use JMS\Serializer\SerializationContext;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -102,5 +104,23 @@ abstract class AbstractGovWikiApiController extends AbstractGovWikiController
         $response->setContent($serializer->serialize($data, 'json', $context));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
+    }
+
+    /**
+     * @param FormInterface $form A FormInterface instance.
+     *
+     * @return JsonResponse
+     */
+    protected function formError(FormInterface $form)
+    {
+        $errors = $form->getErrors();
+        $messages = [];
+
+        /** @var FormError $error */
+        foreach ($errors as $error) {
+            $messages[] = $error->getMessage();
+        }
+
+        return new JsonResponse($messages, 400);
     }
 }

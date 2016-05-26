@@ -45,10 +45,6 @@
                 <form action="" method="get" class="form-inline controls">
                     <div class="col-xs-10">
 
-
-                        <input name="filter[type]" type="text" class="form-control input-sm"
-                               placeholder="Type" value="{{ macro.filterValue('type') }}">
-
                         <input name="filter[date]" type="text" class="form-control input-sm"
                                placeholder="Date" value="{{ macro.filterValue('date') }}">
 
@@ -111,6 +107,11 @@
                             'Date',
                             'Document.date'
                         ) -}}</th>
+                        <th>{{- knp_pagination_sortable(
+                            documents,
+                            'State',
+                            'Document.state'
+                            ) -}}</th>
                         <th class="actions">Actions</th>
                     </tr>
                     </thead>
@@ -122,23 +123,37 @@
                             <td>{{ document.description }}</td>
                             <td>{{ document.link }}</td>
                             <td>{{ document.date|date('Y-m-d') }}</td>
+                            <td>{{ document.state }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{- path('govwiki_admin_document_edit', {
-                                        'environment': environment.slug,
-                                        'government': government.id,
-                                        'document': document.id
-                                    }) -}}" class="btn btn-sm btn-default">
-                                        <span class="glyphicon glyphicon-pencil"></span>
-                                        Edit
-                                    </a>
-                                    <button data-url="{{- path('govwiki_admin_document_delete', {
-                                        'environment': environment.slug,
-                                        'government': government.id,
-                                        'document': document.id
-                                    }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete document '{{ document.link }}'?">
-                                        <span class="glyphicon glyphicon-remove"></span> Remove
-                                    </button>
+                                    {%- if document.state is not null and document.state == 'pending' -%}
+                                        <a href="{{-  path('govwiki_admin_document_approve', {
+                                            'environment': environment.slug,
+                                            'government': government.id,
+                                            'issue': document.id
+                                        }) -}}" class="btn btn-sm btn-success">Approve</a>
+                                        <a href="{{-  path('govwiki_admin_document_discard', {
+                                            'environment': environment.slug,
+                                            'government': government.id,
+                                            'issue': document.id
+                                        }) -}}" class="btn btn-sm btn-danger">Discard</a>
+                                    {%- else -%}
+                                        <a href="{{- path('govwiki_admin_document_edit', {
+                                            'environment': environment.slug,
+                                            'government': government.id,
+                                            'document': document.id
+                                        }) -}}" class="btn btn-sm btn-default">
+                                            <span class="glyphicon glyphicon-pencil"></span>
+                                            Edit
+                                        </a>
+                                        <button data-url="{{- path('govwiki_admin_document_delete', {
+                                            'environment': environment.slug,
+                                            'government': government.id,
+                                            'document': document.id
+                                        }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete document '{{ document.link }}'?">
+                                            <span class="glyphicon glyphicon-remove"></span> Remove
+                                        </button>
+                                    {%- endif -%}
                                 </div>
                             </td>
                         </tr>

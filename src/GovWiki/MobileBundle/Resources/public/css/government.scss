@@ -5,6 +5,10 @@
 
 .governmentController {
 
+    .modal {
+        overflow-y: scroll;
+    }
+
     @import "partials/typeahead/typeahead_government";
 
     nav a {

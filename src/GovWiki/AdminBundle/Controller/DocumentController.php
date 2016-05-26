@@ -43,12 +43,8 @@ class DocumentController extends AbstractGovWikiAdminController
             return $this->redirectToRoute('govwiki_admin_main_home');
         }
 
-        $type = null;
         $date = null;
         if ($filter = $request->query->get('filter')) {
-            if (!empty($filter['type'])) {
-                $type = (int) $filter['type'];
-            }
             if (!empty($filter['date'])) {
                 $date = $filter['date'];
             }
@@ -58,7 +54,7 @@ class DocumentController extends AbstractGovWikiAdminController
             'government' => $government,
             'documents' => $this->paginate(
                 $this->getDoctrine()->getRepository('GovWikiDbBundle:Issue')
-                    ->getListQuery($government->getId(), $type, $date),
+                    ->getListAllQuery($government->getId(), $date),
                 $request->query->getInt('page', 1),
                 self::MAX_PER_PAGE
             ),
@@ -85,7 +81,9 @@ class DocumentController extends AbstractGovWikiAdminController
         }
 
         $document = new Issue();
-        $document->setGovernment($government);
+        $document
+            ->setGovernment($government)
+            ->setCreator($this->getUser());
         $form = $this->createForm('document', $document);
 
         $form->handleRequest($request);
@@ -195,5 +193,55 @@ class DocumentController extends AbstractGovWikiAdminController
         }
 
         return false;
+    }
+
+    /**
+     * @Configuration\Route(
+     *  "/{issue}/approve",
+     *  requirements={ "issue": "\d+"}
+     * )
+     *
+     * @param integer $government A Government entity id.
+     * @param Issue   $issue      A Issue entity instance.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function approveAction($government, Issue $issue)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $issue->setState(Issue::APPROVED);
+        $em->persist($issue);
+        $em->flush();
+
+        return $this->redirectToRoute('govwiki_admin_document_index', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+            'government' => $government,
+        ]);
+    }
+
+    /**
+     * @Configuration\Route(
+     *  "/{issue}/discard",
+     *  requirements={ "issue": "\d+"}
+     * )
+     *
+     * @param integer $government A Government entity id.
+     * @param Issue   $issue      A Issue entity instance.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function discardAction($government, Issue $issue)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $issue->setState(Issue::DISCARDED);
+        $em->persist($issue);
+        $em->flush();
+
+        return $this->redirectToRoute('govwiki_admin_document_index', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+            'government' => $government,
+        ]);
     }
 }

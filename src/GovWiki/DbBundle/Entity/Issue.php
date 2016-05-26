@@ -3,7 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\Validator\Constraints\Choice;
 
 /**
@@ -20,6 +20,10 @@ class Issue
 
     const LAST_AUDIT = 'audit';
     const OTHER = 'other';
+
+    const PENDING = 'pending';
+    const APPROVED = 'approved';
+    const DISCARDED = 'discarded';
 
     /**
      * @var integer
@@ -72,6 +76,20 @@ class Issue
      * @ORM\Column()
      */
     private $name;
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="GovWiki\UserBundle\Entity\User")
+     */
+    private $creator;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(nullable=true)
+     */
+    private $state;
 
     /**
      * Return available document types.
@@ -247,5 +265,52 @@ class Issue
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set state
+     *
+     * @param string $state
+     * @return Issue
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Get state
+     *
+     * @return string
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Set creator
+     *
+     * @param User $creator A User entity instance.
+     *
+     * @return Issue
+     */
+    public function setCreator(User $creator = null)
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
+
+    /**
+     * Get creator
+     *
+     * @return User
+     */
+    public function getCreator()
+    {
+        return $this->creator;
     }
 }
