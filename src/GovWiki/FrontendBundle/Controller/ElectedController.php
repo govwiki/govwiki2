@@ -2,8 +2,10 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
+use GovWiki\DbBundle\Entity\SurveyResponse;
 use GovWiki\DbBundle\Form\ElectedOfficialCommentType;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -83,6 +85,12 @@ class ElectedController extends AbstractGovWikiController
 
         $data['publicStatements'] = $paginator->paginate(
             $data['publicStatements'],
+            1,
+            self::ROWS_PER_PAGE
+        );
+
+        $data['surveyResponses'] = $paginator->paginate(
+            $data['surveyResponses'],
             1,
             self::ROWS_PER_PAGE
         );

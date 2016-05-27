@@ -72,8 +72,8 @@ class ElectedOfficialManager implements ElectedOfficialManagerInterface
         $electedOfficial = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
             ->findOne($environment->getId(), $altTypeSlug, $slug, $eoSlug);
 
-        if (null !== $electedOfficial) {
 
+        if (null !== $electedOfficial) {
             /*
             * Create queries for legislations, contributions and etc.
             */
@@ -85,6 +85,8 @@ class ElectedOfficialManager implements ElectedOfficialManagerInterface
                 ->getListQuery($electedOfficial['id'], $user);
             $publicStatements = $this->em->getRepository('GovWikiDbBundle:PublicStatement')
                 ->getListQuery($electedOfficial['id'], $user);
+            $surveyResponses = $this->em->getRepository('GovWikiDbBundle:SurveyResponse')
+                ->getListQuery($electedOfficial['id']);
 
             return [
                 'electedOfficial' => $electedOfficial,
@@ -92,6 +94,7 @@ class ElectedOfficialManager implements ElectedOfficialManagerInterface
                 'contributions' => $contributions,
                 'endorsements' => $endorsements,
                 'publicStatements' => $publicStatements,
+                'surveyResponses' => $surveyResponses,
                 'categories' => $this->em
                     ->getRepository('GovWikiDbBundle:IssueCategory')
                     ->findAll(),

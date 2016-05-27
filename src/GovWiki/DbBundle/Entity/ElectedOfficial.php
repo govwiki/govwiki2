@@ -160,6 +160,13 @@ class ElectedOfficial
     private $votes;
 
     /**
+     * @ORM\OneToMany(targetEntity="SurveyResponse", mappedBy="electedOfficial")
+     * @Groups({"elected_official"})
+     */
+    private $surveyResponses;
+
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -168,6 +175,7 @@ class ElectedOfficial
         $this->endorsements      = new \Doctrine\Common\Collections\ArrayCollection();
         $this->publicStatements  = new \Doctrine\Common\Collections\ArrayCollection();
         $this->votes             = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->surveyResponses   = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -676,5 +684,38 @@ class ElectedOfficial
         $clean = preg_replace("/[\/_|+ -]+/", $delimiter, trim($clean));
 
         return $clean;
+    }
+
+    /**
+     * Add surveyResponses
+     *
+     * @param \GovWiki\DbBundle\Entity\SurveyResponse $surveyResponses
+     * @return ElectedOfficial
+     */
+    public function addSurveyResponse(\GovWiki\DbBundle\Entity\SurveyResponse $surveyResponses)
+    {
+        $this->surveyResponses[] = $surveyResponses;
+
+        return $this;
+    }
+
+    /**
+     * Remove surveyResponses
+     *
+     * @param \GovWiki\DbBundle\Entity\SurveyResponse $surveyResponses
+     */
+    public function removeSurveyResponse(\GovWiki\DbBundle\Entity\SurveyResponse $surveyResponses)
+    {
+        $this->surveyResponses->removeElement($surveyResponses);
+    }
+
+    /**
+     * Get surveyResponses
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getSurveyResponses()
+    {
+        return $this->surveyResponses;
     }
 }

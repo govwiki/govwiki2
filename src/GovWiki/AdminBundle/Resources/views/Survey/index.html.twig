@@ -1,0 +1,79 @@
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - survey{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{ macro.breadcrumbElement('Surveys') }}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    Surveys
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{ knp_pagination_render(survey_list) }}
+
+    <table class="table table-bordered text-center">
+        <tr>
+            <th>Name</th>
+            <th class="actions">Actions</th>
+        </tr>
+        {%- for survey_obj in survey_list -%}
+            <tr>
+                <td>
+                    {{ survey_obj.title }}
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-default" href="{{-
+                    path('govwiki_admin_survey_show', {
+                        'environment': environment.slug,
+                        'survey_id': survey_obj.survey_id
+                    })
+                    -}}">Show</a>
+                    <button class="btn btn-sm btn-primary open-import-modal"
+                        data-survey-id="{{- survey_obj.survey_id -}}">
+                        Import Response
+                    </button>
+                </td>
+            </tr>
+        {%- endfor -%}
+    </table>
+
+    {{ knp_pagination_render(survey_list) }}
+
+    {{- render(controller('GovWikiAdminBundle:Survey:responseImport', {
+        environment: environment.slug,
+        survey_id: 0
+    })) -}}
+
+{% endblock panel_body %}
+
+{% block javascripts %}
+    {{- parent() -}}
+    <script>
+        $(function() {
+            var importModal = $('#modal-import-responses');
+
+            $('.open-import-modal').click(function openImportModal() {
+                var form = importModal.find('form');
+                var action = form.attr('action');
+                action = action.replace('0', this.dataset.surveyId);
+                form.attr('action', action);
+
+                form[0].reset();
+
+                importModal.modal('show');
+            });
+
+            $('#import-responses').click(function submit() {
+                importModal.find('form').submit();
+            });
+        })
+    </script>
+{% endblock javascripts %}

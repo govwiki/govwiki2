@@ -9,7 +9,7 @@
         }
     },
     "require": {
-        "php": ">=5.3.9",
+        "php": ">=5.5",
         "symfony/symfony": "2.7.*",
         "doctrine/orm": "~2.2,>=2.2.3,<2.5",
         "doctrine/dbal": "<2.5",
@@ -29,8 +29,9 @@
         "guzzlehttp/guzzle": "~6.1",
         "egeloen/ckeditor-bundle": "^2.5",
         "salsify/json-streaming-parser": "^4.0",
-        "vresh/twilio-bundle": "1.0.0",
-        "suncat/mobile-detect-bundle": "^1.0"
+        "vresh/twilio-bundle": "^1.0.0",
+        "suncat/mobile-detect-bundle": "^1.0",
+        "ascension/php-surveymonkey": "^1.0.6"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

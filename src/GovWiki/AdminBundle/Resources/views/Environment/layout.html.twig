@@ -66,4 +66,10 @@
         'govwiki_admin_advertising_index',
         { 'environment': environment.slug }
     )-}}
+
+    {{- macro.submenuElement(
+        'Surveys',
+        'govwiki_admin_survey_index',
+        { 'environment': environment.slug }
+    )-}}
 {% endblock submenu %}

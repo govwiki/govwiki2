@@ -64,3 +64,14 @@ services:
             - @doctrine.orm.default_entity_manager
             - @govwiki_environment.manager.max_ranks
             - @govwiki_environment.manager.format
+    govwiki_environment.manager.survey:
+        class: GovWiki\EnvironmentBundle\Survey\SurveyManager
+
+    #
+    # SurveyMonkey gateway.
+    #
+    govwiki_enviornment.survey_gateway.survey_monkey:
+        class: GovWiki\EnvironmentBundle\Survey\Gateway\SurveyMonkeyGateway
+        arguments:
+            - %survey_monkey.api_key%
+            - %survey_monkey.access_token%
