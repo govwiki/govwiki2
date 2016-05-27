@@ -81,10 +81,38 @@
             {{ form_row(form.bioUrl) }}
             {{ form_row(form.termExpires) }}
         </div>
+        <div class="col-md-12">
+            {{ form_row(form.bio) }}
+            {%- if form.newBio is defined -%}
+                {{ form_row(form.newBio) }}
+            {%- endif -%}
+        </div>
     </div>
     <div class="row">
         <div class="col-md-12">
             <input type="submit" class="btn btn-primary">
+            {%- if form.newBio is defined -%}
+                <div class="btn-group pull-right">
+                    <a class="btn btn-success" href="{{- path(
+                        'govwiki_admin_electedofficial_approve',
+                        {
+                            environment: environment.slug,
+                            elected: elected.id
+                        }
+                    ) -}}">
+                        Approve
+                    </a>
+                    <a class="btn btn-danger" href="{{- path(
+                        'govwiki_admin_electedofficial_decline',
+                        {
+                            environment: environment.slug,
+                            elected: elected.id
+                        }
+                    ) -}}">
+                        Decline
+                    </a>
+                </div>
+            {%- endif -%}
         </div>
     </div>
     {{ form_end(form) }}

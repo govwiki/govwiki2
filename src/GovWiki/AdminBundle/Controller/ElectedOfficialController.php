@@ -382,6 +382,57 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
     }
 
     /**
+     * @Configuration\Route(
+     *  "/{elected}/new_bio/approve",
+     *  requirements={ "elected": "\d+" },
+     *  methods={ "GET" }
+     * )
+     *
+     * @param ElectedOfficial $elected A ElectedOfficial entity id.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function approveAction(ElectedOfficial $elected)
+    {
+        $elected->setBio($elected->getNewBio());
+        $elected->setNewBio(null);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($elected);
+        $em->flush();
+
+        return $this->redirectToRoute('govwiki_admin_electedofficial_edit', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+            'elected' => $elected->getId(),
+        ]);
+    }
+
+    /**
+     * @Configuration\Route(
+     *  "/{elected}/new_bio/decline",
+     *  requirements={ "elected": "\d+" },
+     *  methods={ "GET" }
+     * )
+     *
+     * @param ElectedOfficial $elected A ElectedOfficial entity id.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function declineAction(ElectedOfficial $elected)
+    {
+        $elected->setNewBio(null);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($elected);
+        $em->flush();
+
+        return $this->redirectToRoute('govwiki_admin_electedofficial_edit', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+            'elected' => $elected->getId(),
+        ]);
+    }
+
+    /**
      * @param string $staff Vote, Contribution, Endorsements or PublicStatements.
      *
      * @return ListedEntityRepositoryInterface
@@ -391,7 +442,7 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
         // Legacy reason.
         $repositoryName = 'GovWikiDbBundle:'. $staff;
         if ($staff === 'Vote') {
-            $repositoryName = 'GovWikiDbBundle:ElectedOfficial'. $staff;
+            $repositoryName = 'GovWikiDbBundle:ElectedOfficialVote';
         }
 
         return $this->getDoctrine()->getRepository($repositoryName);

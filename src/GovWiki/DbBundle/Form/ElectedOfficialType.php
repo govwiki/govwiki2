@@ -20,26 +20,15 @@ class ElectedOfficialType extends AbstractType
 {
 
     /**
-     * @var EnvironmentStorageInterface
-     */
-    private $storage;
-
-    /**
      * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
-     *                                             instance.
-     * @param EntityManagerInterface      $em      A EntityManagerInterface
-     *                                             instance.
+     * @param EntityManagerInterface $em A EntityManagerInterface instance.
      */
-    public function __construct(
-        EnvironmentStorageInterface $storage,
-        EntityManagerInterface $em
-    ) {
-        $this->storage = $storage;
+    public function __construct(EntityManagerInterface $em)
+    {
         $this->em = $em;
     }
 
@@ -48,11 +37,10 @@ class ElectedOfficialType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $id = null;
         $elected = $builder->getData();
-        if ($elected instanceof ElectedOfficial && ($elected->getId())) {
-            $id = $elected->getGovernment()->getId();
-        }
+
+        $hasChanges = ($elected instanceof ElectedOfficial)
+            && (! empty($elected->getNewBio()));
 
         $builder
             ->add('fullName')
@@ -63,33 +51,17 @@ class ElectedOfficialType extends AbstractType
             ->add('photoUrl', 'url', [ 'required' => false ])
             ->add('bioUrl', 'url', [ 'required' => false ])
             ->add('termExpires', null, [ 'required' => false ])
-            ->add('government', 'text');
-//            ->add('government', 'entity', [
-//                'class' => 'GovWiki\DbBundle\Entity\Government',
-//                'query_builder' => function (EntityRepository $repository) use ($id) {
-//                    $qb = $repository->createQueryBuilder('Government');
-//                    $expr = $qb->expr();
-//
-//                    $qb
-//                        ->select('partial Government.{id, name}')
-//                        ->join('Government.environment', 'Environment')
-//                        ->where($expr->eq(
-//                            'Environment.slug',
-//                            $expr->literal($this->storage->get()->getSlug())
-//                        ))
-//                        ->orderBy('Government.name');
-//
-//                    if ($id) {
-//                        $qb
-//                            ->andWhere($expr->eq('Government.id', ':government'))
-//                            ->setParameter('government', $id);
-//                    } else {
-//                        $qb->setMaxResults(0);
-//                    }
-//
-//                    return $qb;
-//                },
-//            ]);
+            ->add('government', 'text')
+            ->add('bio', 'textarea', [
+                'disabled' => $hasChanges,
+                'label' => ($hasChanges) ? 'Bio (has changes)' :'Bio'
+            ]);
+
+        if ($hasChanges) {
+            $builder->add('newBio', 'textarea', [
+                'disabled' => true,
+            ]);
+        }
 
         $builder->get('government')
             ->resetViewTransformers()

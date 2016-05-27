@@ -4,7 +4,6 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -119,6 +118,22 @@ class ElectedOfficial
      * @Groups({"government", "elected_official"})
      */
     private $electedOfficialComments;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text")
+     */
+    private $bio;
+
+    /**
+     * Contains edited by user `bio`.
+     *
+     * @var string
+     *
+     * @ORM\Column(type="text")
+     */
+    private $newBio;
 
     /**
      * @ORM\OneToMany(targetEntity="Contribution", mappedBy="electedOfficial")
@@ -600,6 +615,46 @@ class ElectedOfficial
         }
 
         return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getBio()
+    {
+        return $this->bio;
+    }
+
+    /**
+     * @param string $bio Bio information.
+     *
+     * @return ElectedOfficial
+     */
+    public function setBio($bio)
+    {
+        $this->bio = $bio;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNewBio()
+    {
+        return $this->newBio;
+    }
+
+    /**
+     * @param string $newBio New bio edited by user.
+     *
+     * @return ElectedOfficial
+     */
+    public function setNewBio($newBio)
+    {
+        $this->newBio = $newBio;
+
+        return $this;
     }
 
     /**

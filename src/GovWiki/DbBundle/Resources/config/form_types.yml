@@ -16,9 +16,7 @@ services:
 
     govwiki_db.form.type.elected_official:
         class: GovWiki\DbBundle\Form\ElectedOfficialType
-        arguments:
-            - @govwiki_environment.storage
-            - @doctrine.orm.default_entity_manager
+        arguments: [ @doctrine.orm.default_entity_manager ]
         tags:
             - { name: form.type, alias: govwiki_dbbundle_electedofficial }
 

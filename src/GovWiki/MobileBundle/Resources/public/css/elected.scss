@@ -36,6 +36,14 @@
       display: none;
    }
 
+    #bio {
+      .loader {
+        position: relative;
+        margin-top: 0;
+        left: 0;
+      }
+    }
+
    /*
       Table for votes, contribution and etc.
    */

@@ -148,6 +148,14 @@
          margin-top: 240px;
          left: 49%;
       }
+
+     #bio {
+       .loader {
+         position: relative;
+         margin-top: 0;
+         left: 0;
+       }
+     }
    }
    /*
       Table for votes, contribution and etc.

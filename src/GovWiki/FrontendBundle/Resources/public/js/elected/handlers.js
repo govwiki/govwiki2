@@ -1,3 +1,7 @@
+var bioInput;
+var bioContent;
+var bioChangeBtn;
+
 var authorized = window.gw.authorized;
 var $commentWindow = $('#conversation');
 var $editable = $('.editable');
@@ -532,3 +536,44 @@ if (tableType) {
   $('.add', '#' + tableType).click();
   window.sessionStorage.removeItem('tableType');
 }
+
+bioInput = $('#elected-bio');
+bioChangeBtn = $('#change-bio');
+
+// Remember bio content.
+bioContent = bioInput.val();
+
+// Toggle button enabled when bio input change.
+bioInput.keyup(function bioChanged() {
+  if ((bioContent === bioInput.val()) && ! bioChangeBtn.hasClass('disabled')) {
+    bioChangeBtn.addClass('disabled');
+  } else if ((bioContent !== bioInput.val()) && bioChangeBtn.hasClass('disabled')) {
+    bioChangeBtn.removeClass('disabled');
+  }
+});
+
+// Change bio.
+bioChangeBtn.click(function bioChange(event) {
+  var loader = $('#bio').find('.loader');
+
+  event.preventDefault();
+
+  loader.show();
+  bioInput.hide();
+  bioChangeBtn.hide();
+
+  $.ajax({
+    url: this.getAttribute('href'),
+    data: { bio: bioInput.val() },
+    method: 'POST'
+  })
+    .done(function changed() {
+      bioChangeBtn.before('<p class="text-info text-center">Bio changed</p>');
+      bioChangeBtn.remove();
+    })
+    .always(function always() {
+      loader.hide();
+      bioInput.show();
+      bioChangeBtn.show();
+    });
+});

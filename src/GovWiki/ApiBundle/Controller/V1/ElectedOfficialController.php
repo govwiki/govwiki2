@@ -2,6 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller\V1;
 
+use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Repository\ListedEntityRepositoryInterface;
 use GovWiki\FrontendBundle\Controller\ElectedController;
 use GovWiki\UserBundle\Entity\User;
@@ -15,6 +16,30 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class ElectedOfficialController extends AbstractGovWikiApiController
 {
+
+    /**
+     * @Route(
+     *  "/{elected}/new_bio",
+     *  requirements={ "elected": "\d+" },
+     *  methods={ "POST" }
+     * )
+     *
+     * @param Request         $request A Request instance.
+     * @param ElectedOfficial $elected A ElectedOfficial instance.
+     *
+     * @return JsonResponse
+     */
+    public function changeBioAction(Request $request, ElectedOfficial $elected)
+    {
+        $bio = $request->request->get('bio');
+
+        $elected->setNewBio($bio);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($elected);
+        $em->flush();
+
+        return new JsonResponse();
+    }
 
     /**
      * @Route("/{govAltTypeSlug}/{govSlug}/{eoSlug}", methods="GET")

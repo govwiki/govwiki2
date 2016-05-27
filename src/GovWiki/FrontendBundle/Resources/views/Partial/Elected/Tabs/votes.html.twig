@@ -1,5 +1,25 @@
 <div role="tabpanel" class="tab-pane active" id="Votes">
     <div class="tab-pane-main">
+        <div id="bio" class="form-group clearfix">
+            <div class="loader"></div>
+            <label for="elected-bio">Bio</label>
+            <textarea style="resize: vertical" id="elected-bio" rows="6" class="form-control">
+                {{- elected.bio -}}
+            </textarea>
+            {%- if (elected.newBio is null or elected.newBio is empty) -%}
+                <a id="change-bio" href="{{- path(
+                    'govwiki_api_v1_electedofficial_changebio',
+                    { 'elected': elected.id }
+                ) -}}" class="btn btn-primary pull-right disabled">Change</a>
+            {%- else -%}
+                <p class="text-info text-center">
+                    Bio changed
+                </p>
+            {%- endif -%}
+        </div>
+
+        <hr>
+
         {% include '@GovWikiFrontend/Partial/Elected/Lists/votes.html.twig' with {
             'list': votes
         } %}
