@@ -135,7 +135,7 @@ class TabController extends AbstractGovWikiAdminController
 
         $expr = $em->getExpressionBuilder();
 
-        // Remove category taranslations.
+        // Remove category translations.
         $categories = $em->getRepository('GovWikiDbBundle:Category')
             ->createQueryBuilder('Category')
             ->select('Category.id')
@@ -144,36 +144,37 @@ class TabController extends AbstractGovWikiAdminController
             ->getQuery()
             ->getArrayResult();
 
-        $categories = array_map(
-            function (array $row) {
-                return $row['id'];
-            },
-            $categories
-        );
+        if ($categories and (count($categories) > 0)) {
+            $categories = array_map(
+                function (array $row) {
+                    return $row['id'];
+                },
+                $categories
+            );
 
-        foreach ($categories as $category) {
-            $this->changeTabTranslation('remove', $category);
-        }
+            foreach ($categories as $category) {
+                $this->changeTabTranslation('remove', $category);
+            }
+            // Remove field from government environment related table.
+            $formats = $em->getRepository('GovWikiDbBundle:Format')
+                ->createQueryBuilder('Format')
+                ->select('Format.field')
+                ->where($expr->in('Format.category', $categories))
+                ->getQuery()
+                ->getArrayResult();
+            $formats = array_map(
+                function (array $row) {
+                    return $row['field'];
+                },
+                $formats
+            );
 
-        // Remove field from government environment related table.
-        $formats = $em->getRepository('GovWikiDbBundle:Format')
-            ->createQueryBuilder('Format')
-            ->select('Format.field')
-            ->where($expr->in('Format.category', $categories))
-            ->getQuery()
-            ->getArrayResult();
-        $formats = array_map(
-            function (array $row) {
-                return $row['field'];
-            },
-            $formats
-        );
-
-        $manager = $this->getGovernmentManager();
-        $environment = $this->getCurrentEnvironment();
-        foreach ($formats as $format) {
-            $manager->deleteColumn($environment, $format);
-            $this->changeFormatTranslation('remove', $format);
+            $manager = $this->getGovernmentManager();
+            $environment = $this->getCurrentEnvironment();
+            foreach ($formats as $format) {
+                $manager->deleteColumn($environment, $format);
+                $this->changeFormatTranslation('remove', $format);
+            }
         }
 
         $em->getConnection()->exec("
