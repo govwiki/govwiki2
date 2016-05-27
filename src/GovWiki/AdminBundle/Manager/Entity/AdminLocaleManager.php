@@ -27,9 +27,9 @@ class AdminLocaleManager extends AbstractAdminEntityManager
         /** @var LocaleRepository $repository */
         $repository = $this->getRepository();
 
-        $environment = $this->getEnvironment()->getSlug();
-        if ($global) {
-            $environment = null;
+        $environment = null;
+        if (! $global && ($this->getEnvironment())) {
+            $environment = $this->getEnvironment()->getSlug();
         }
 
         return $repository->getListLocales($environment);
@@ -43,9 +43,9 @@ class AdminLocaleManager extends AbstractAdminEntityManager
         /** @var LocaleRepository $repository */
         $repository = $this->getRepository();
 
-        $environment = $this->getEnvironment()->getSlug();
-        if ($global) {
-            $environment = null;
+        $environment = null;
+        if (! $global && ($this->getEnvironment())) {
+            $environment = $this->getEnvironment()->getSlug();
         }
 
         return $repository->getListLocaleNames($environment);
@@ -61,9 +61,9 @@ class AdminLocaleManager extends AbstractAdminEntityManager
         /** @var LocaleRepository $repository */
         $repository = $this->getRepository();
 
-        $environment = $this->getEnvironment()->getSlug();
-        if ($global) {
-            $environment = null;
+        $environment = null;
+        if (! $global && ($this->getEnvironment())) {
+            $environment = $this->getEnvironment()->getSlug();
         }
 
         return $repository->getOneLocaleByShortName($environment, $shortName);
