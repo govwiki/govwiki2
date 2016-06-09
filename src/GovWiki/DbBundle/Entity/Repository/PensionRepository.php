@@ -21,9 +21,6 @@ class PensionRepository extends EntityRepository
         $expr = $this->_em->getExpressionBuilder();
 
         return $this->createQueryBuilder('Pension')
-            ->addSelect('Employee, Job')
-            ->join('Pension.employee', 'Employee')
-            ->join('Pension.job', 'Job')
             ->where($expr->andX(
                 $expr->eq('Pension.government', ':government'),
                 $expr->eq('Pension.year', ':year')

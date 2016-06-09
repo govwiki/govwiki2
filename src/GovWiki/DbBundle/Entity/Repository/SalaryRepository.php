@@ -21,9 +21,6 @@ class SalaryRepository extends EntityRepository
         $expr = $this->_em->getExpressionBuilder();
 
         return $this->createQueryBuilder('Salary')
-            ->addSelect('Employee, Job')
-            ->join('Salary.employee', 'Employee')
-            ->join('Salary.job', 'Job')
             ->where($expr->andX(
                 $expr->eq('Salary.government', ':government'),
                 $expr->eq('Salary.year', ':year')
