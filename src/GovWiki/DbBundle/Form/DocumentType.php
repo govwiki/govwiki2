@@ -61,7 +61,7 @@ class DocumentType extends AbstractType
             ->add('link', null, [ 'required' => false ])
             ->add('file', 'file', [ 'required' => false, 'mapped' => false ])
             ->add('date', 'text', [
-                'attr' => [ 'date-provide' => 'datepicker' ],
+                'attr' => [ 'data-provide' => 'datepicker' ],
             ])
             ->addEventListener(
                 FormEvents::PRE_SUBMIT,
@@ -99,13 +99,13 @@ class DocumentType extends AbstractType
             ->addModelTransformer(new CallbackTransformer(
                 function (\DateTime $original = null) {
                     if ($original) {
-                        return $original->format('Y-m-d');
+                        return $original->format('m/d/Y');
                     }
 
                     return date('Y-m-d');
                 },
                 function ($view) {
-                    return \DateTime::createFromFormat('Y-m-d', $view);
+                    return \DateTime::createFromFormat('m/d/Y', $view);
                 }
             ));
     }

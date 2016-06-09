@@ -7,6 +7,7 @@
 /* ===================== */
 /* ====== Loader ======= */
 /* ===================== */
+@import url(partials/datepicker.css);
 .loader {
   margin: 60px auto;
   font-size: 4px;
@@ -379,6 +380,10 @@ div.cartodb-tooltip-content-wrapper p {
     position: absolute;
     margin-top: 240px;
     left: 49%; }
+  .electedController .tab-content #bio .loader {
+    position: relative;
+    margin-top: 0;
+    left: 0; }
   .electedController .table td,
   .electedController .table th {
     vertical-align: middle; }

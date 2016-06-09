@@ -21,6 +21,9 @@ var popover = new (require('./rank-popover.js'))({  // eslint-disable-line
   year: JSON.parse(window.gw.government).currentYear
 });
 
+require(__dirname + '/../../../../../../../'
+    + 'bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js');
+
 Step1 = require('./form/compare/step-1.js');
 Step2 = require('./form/compare/step-2.js');
 Step3 = require('./form/compare/step-3.js');
@@ -273,7 +276,7 @@ modal.find('form').submit(function  newIssue(event) {
 
       if (government.currentYear === Number(response.date.replace(/^(\d+)-.*/, '$1'))) {
         template = Handlebars.compile($('#issue-row').html());
-        $('#issues tr:last-child').before(template(response));
+        $('#issues tbody tr:last-child').before(template(response));
       }
 
       modal.modal('hide');

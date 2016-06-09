@@ -396,7 +396,9 @@ From ' . $user_email;
 
         $data['environment_is_subscribable'] = $environment->getSubscribable();
 
-        $form = $this->createForm('document', null, [
+        $issue = new Issue();
+        $issue->setDate(new \DateTime($currentYear .'-'. date('m-d')));
+        $form = $this->createForm('document', $issue, [
             'action' => $this->generateUrl('govwiki_api_v1_government_issue', [
                 'government' => $data['government']['id'],
             ]),

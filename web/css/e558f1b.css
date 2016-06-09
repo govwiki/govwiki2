@@ -7,6 +7,7 @@
 /* ===================== */
 /* ====== Loader ======= */
 /* ===================== */
+@import url(partials/datepicker.css);
 .loader {
   margin: 60px auto;
   font-size: 4px;
@@ -361,6 +362,13 @@ div.cartodb-tooltip-content-wrapper p {
   .governmentController nav a {
     display: inline-block;
     margin-top: 10px; }
+  .governmentController table .add {
+    color: #0b4d70;
+    text-align: center;
+    cursor: pointer; }
+    .governmentController table .add:hover {
+      background-color: #0b4d70;
+      color: #fff; }
   .governmentController header h3 {
     color: #074d71;
     /*
@@ -466,8 +474,7 @@ div.cartodb-tooltip-content-wrapper p {
 */ }
     .governmentController section .loader {
       margin: 0 auto;
-      margin-bottom: 12px;
-      display: none; }
+      margin-bottom: 12px; }
     .governmentController section .divider {
       color: #DBDBDB;
       margin-top: 7%; }
@@ -529,8 +536,6 @@ div.cartodb-tooltip-content-wrapper p {
           font-style: italic;
           font-size: 75%;
           cursor: pointer; }
-    .governmentController section .compare-first-table, .governmentController section .compare-second-table {
-      width: 49% !important; }
     .governmentController section .financial-table, .governmentController section .compare-first-table, .governmentController section .compare-second-table {
       width: 100%; }
       .governmentController section .financial-table thead > tr > th, .governmentController section .financial-table thead > tr td, .governmentController section .financial-table tbody > tr > th, .governmentController section .financial-table tbody > tr td, .governmentController section .compare-first-table thead > tr > th, .governmentController section .compare-first-table thead > tr td, .governmentController section .compare-first-table tbody > tr > th, .governmentController section .compare-first-table tbody > tr td, .governmentController section .compare-second-table thead > tr > th, .governmentController section .compare-second-table thead > tr td, .governmentController section .compare-second-table tbody > tr > th, .governmentController section .compare-second-table tbody > tr td {
