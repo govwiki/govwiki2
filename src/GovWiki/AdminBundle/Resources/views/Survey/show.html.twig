@@ -1,0 +1,36 @@
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - survey{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{ macro.breadcrumbElement(
+        'Surveys',
+        'govwiki_admin_survey_index',
+        { 'environment': environment.slug }
+    ) }}
+    {{ macro.breadcrumbElement(survey_title) }}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    Surveys
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{ form_start(form) }}
+    <div class="row">
+        <div class="col-md-6">
+            <h4>{{ survey_title }}</h4>
+        </div>
+        <div class="col-md-6">{{ form_row(form.altTypes) }}</div>
+    </div>
+    <div>
+        <button type="submit" class="btn btn-success">Send</button>
+    </div>
+    {{ form_end(form) }}
+{% endblock panel_body %}

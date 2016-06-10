@@ -40,6 +40,7 @@
                     <li role="presentation" class="active"><a href="#Votes" aria-controls="Votes" role="tab" data-toggle="tab">Bio</a></li>
                     {#<li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>#}
                     <li role="presentation"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
+                    <li role="presentation"><a href="#Surveys" aria-controls="Surveys" role="tab" data-toggle="tab">Surveys</a></li>
                     {#<li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>#}
                 </ul>
 
@@ -56,6 +57,9 @@
 
                     {# Endorsements #}
                     {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:endorsements.html.twig') }}
+
+                    {# Endorsements #}
+                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:surveys.html.twig') }}
 
                     {# Public Statements #}
                     {#{{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}#}

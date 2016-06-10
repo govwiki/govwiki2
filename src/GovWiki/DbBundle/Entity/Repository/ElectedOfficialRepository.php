@@ -130,6 +130,37 @@ class ElectedOfficialRepository extends EntityRepository
     }
 
     /**
+     * Get elected officials by government alt_type.
+     *
+     * @param integer $environment A Environment entity id.
+     * @param array  $alt_types Government alt_type.
+     *
+     * @return array
+     */
+    public function getEmailsByAltTypes($environment, $alt_types)
+    {
+        $qb = $this->createQueryBuilder('ElectedOfficial');
+        $expr = $qb->expr();
+        return $qb
+            ->select(
+                'ElectedOfficial.emailAddress as email',
+                'ElectedOfficial.id as custom_id'
+            )
+            ->join('ElectedOfficial.government', 'Government')
+            ->where(
+                $qb->expr()->andX(
+                    $expr->isNotNull('ElectedOfficial.emailAddress'),
+                    $expr->in('Government.altType', $alt_types),
+                    $expr->eq('Government.environment', ':environment')
+                )
+            )
+            ->groupBy('ElectedOfficial.emailAddress')
+            ->setParameter('environment', $environment)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
      * Search elected official with name like given in partOfName parameter.
      *
      * @param integer $environment A Environment entity id.

@@ -31,3 +31,6 @@ parameters:
     twilio.sid: xxx
     twilio.token: xxx
     twilio.from: "+123"
+
+    survey_monkey.api_key: ~
+    survey_monkey.access_token: ~

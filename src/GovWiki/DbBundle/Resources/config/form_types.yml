@@ -78,3 +78,11 @@ services:
         arguments: [ @govwiki_environment.storage ]
         tags:
             - { name: form.type, alias: govwiki_dbbundle_legislation }
+
+    govwiki_db.form.survey:
+        class: GovWiki\DbBundle\Form\SurveyType
+        arguments:
+            - @govwiki_environment.manager.government
+            - @govwiki_environment.storage
+        tags:
+            - { name: form.type, alias: survey }
