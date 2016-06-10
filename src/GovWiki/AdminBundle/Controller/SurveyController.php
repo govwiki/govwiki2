@@ -92,7 +92,7 @@ class SurveyController extends AbstractGovWikiAdminController
         $form = $this->createForm('survey', $survey);
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isValid() && (count($survey->getAltTypes()) > 0)) {
             $em = $this->getDoctrine()->getManager();
 
             // Get elected emails.
@@ -100,16 +100,16 @@ class SurveyController extends AbstractGovWikiAdminController
                 ->getEmailsByAltTypes($environment, $survey->getAltTypes());
 
             // todo: Only for tests.
-            $emails_result = [
-                [
-                    'email' => 'freedemster@yandex.ru',
-                    'custom_id' => '111',
-                ],
-                [
-                    'email' => 'dmitriy.shemin@sibers.com',
-                    'custom_id' => '222',
-                ],
-            ];
+//            $emails_result = [
+//                [
+//                    'email' => 'freedemster@yandex.ru',
+//                    'custom_id' => '111',
+//                ],
+//                [
+//                    'email' => 'dmitriy.shemin@sibers.com',
+//                    'custom_id' => '222',
+//                ],
+//            ];
 
             $params = [
                 'collector'=>[
