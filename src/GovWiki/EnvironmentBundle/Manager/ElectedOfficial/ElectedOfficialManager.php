@@ -79,21 +79,21 @@ class ElectedOfficialManager implements ElectedOfficialManagerInterface
             */
             $votes = $this->em->getRepository('GovWikiDbBundle:ElectedOfficialVote')
                 ->getListQuery($electedOfficial['id'], $user);
-            $contributions = $this->em->getRepository('GovWikiDbBundle:Contribution')
-                ->getListQuery($electedOfficial['id'], $user);
+//            $contributions = $this->em->getRepository('GovWikiDbBundle:Contribution')
+//                ->getListQuery($electedOfficial['id'], $user);
             $endorsements = $this->em->getRepository('GovWikiDbBundle:Endorsement')
                 ->getListQuery($electedOfficial['id'], $user);
-            $publicStatements = $this->em->getRepository('GovWikiDbBundle:PublicStatement')
-                ->getListQuery($electedOfficial['id'], $user);
+//            $publicStatements = $this->em->getRepository('GovWikiDbBundle:PublicStatement')
+//                ->getListQuery($electedOfficial['id'], $user);
             $surveyResponses = $this->em->getRepository('GovWikiDbBundle:SurveyResponse')
                 ->getListQuery($electedOfficial['id']);
 
             return [
                 'electedOfficial' => $electedOfficial,
                 'votes' => $votes,
-                'contributions' => $contributions,
+//                'contributions' => $contributions,
                 'endorsements' => $endorsements,
-                'publicStatements' => $publicStatements,
+//                'publicStatements' => $publicStatements,
                 'surveyResponses' => $surveyResponses,
                 'categories' => $this->em
                     ->getRepository('GovWikiDbBundle:IssueCategory')

@@ -65,11 +65,11 @@ class ElectedController extends AbstractGovWikiController
             self::ROWS_PER_PAGE
         );
 
-        $data['contributions'] = $paginator->paginate(
-            $data['contributions'],
-            1,
-            self::ROWS_PER_PAGE
-        );
+//        $data['contributions'] = $paginator->paginate(
+//            $data['contributions'],
+//            1,
+//            self::ROWS_PER_PAGE
+//        );
 
         $data['endorsements'] = $paginator->paginate(
             $data['endorsements'],
@@ -77,8 +77,14 @@ class ElectedController extends AbstractGovWikiController
             self::ROWS_PER_PAGE
         );
 
-        $data['publicStatements'] = $paginator->paginate(
-            $data['publicStatements'],
+//        $data['publicStatements'] = $paginator->paginate(
+//            $data['publicStatements'],
+//            1,
+//            self::ROWS_PER_PAGE
+//        );
+
+        $data['surveyResponses'] = $paginator->paginate(
+            $data['surveyResponses'],
             1,
             self::ROWS_PER_PAGE
         );

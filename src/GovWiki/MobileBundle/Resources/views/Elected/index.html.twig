@@ -37,6 +37,7 @@
                     {#<li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>#}
                     <li role="presentation"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
                     {#<li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>#}
+                    <li role="presentation"><a href="#Surveys" aria-controls="Surveys" role="tab" data-toggle="tab">Surveys</a></li>
                 </ul>
 
                 <!-- Tab panes -->
@@ -50,6 +51,9 @@
 
                     {# Endorsements #}
                     {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:endorsements.html.twig') }}
+
+                    {# Surveys #}
+                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:surveys.html.twig') }}
 
                     {# Public Statements #}
                     {#{{ include('GovWikiMobileBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}#}
