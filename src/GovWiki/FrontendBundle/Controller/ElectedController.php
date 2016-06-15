@@ -116,12 +116,7 @@ class ElectedController extends AbstractGovWikiController
             'electedOfficialCommentForm' => $electedOfficialCommentForm->createView(),
         ]);
 
-        $template = $request->query->get('template', 'index');
-
-        return $this->render(
-            "GovWikiFrontendBundle:Elected:{$template}.html.twig",
-            $data
-        );
+        return $data;
     }
 
     private function clearTranslationsCache()
