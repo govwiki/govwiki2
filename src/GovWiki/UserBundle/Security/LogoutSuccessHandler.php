@@ -12,16 +12,24 @@ use Symfony\Component\Security\Http\Logout\LogoutSuccessHandlerInterface;
  */
 class LogoutSuccessHandler implements LogoutSuccessHandlerInterface
 {
+
     /**
-     * {@inheritdoc}
+     * Creates a Response object to send upon a successful logout.
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response never null.
+     *
+     * @throws \InvalidArgumentException Can't create RedirectResponse.
      */
     public function onLogoutSuccess(Request $request)
     {
-        $referer = $request->server->get('HTTP_REFERER');
+        $uri = $request->server->get('HTTP_REFERER');
 
-        if (!empty($referer)) {
-            return new RedirectResponse($referer);
+        if (empty($uri)) {
+            $uri = '/';
         }
-        return new RedirectResponse('/');
+
+        return new RedirectResponse($uri);
     }
 }

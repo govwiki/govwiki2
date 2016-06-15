@@ -4,7 +4,6 @@ namespace GovWiki\UserBundle\Manager;
 
 use Doctrine\ORM\EntityManager;
 use FOS\UserBundle\Doctrine\UserManager;
-use GovWiki\ApiBundle\Manager\EnvironmentManager;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
@@ -12,6 +11,10 @@ use FOS\UserBundle\Util\CanonicalizerInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use GovWiki\DbBundle\Entity\Environment;
 
+/**
+ * Class OwnUserManager
+ * @package GovWiki\UserBundle\Manager
+ */
 class OwnUserManager extends UserManager
 {
     /**
