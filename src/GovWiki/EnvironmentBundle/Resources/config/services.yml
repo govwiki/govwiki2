@@ -38,7 +38,7 @@ services:
             - @govwiki_environment.storage
             - @doctrine.orm.default_entity_manager
         tags:
-            - { name: kernel.event_listener, event: kernel.request, priority: -50 }
+            - { name: kernel.event_listener, event: kernel.request, priority: 100 }
 
     #
     # Environment managers.
@@ -64,8 +64,6 @@ services:
             - @doctrine.orm.default_entity_manager
             - @govwiki_environment.manager.max_ranks
             - @govwiki_environment.manager.format
-    govwiki_environment.manager.survey:
-        class: GovWiki\EnvironmentBundle\Survey\SurveyManager
 
     #
     # SurveyMonkey gateway.
