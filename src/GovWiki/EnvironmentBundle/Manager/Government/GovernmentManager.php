@@ -791,26 +791,35 @@ class GovernmentManager implements GovernmentManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param Environment $environment A Environment entity instance.
+     * @param boolean     $slugged     Return altTypeSlug's instead of altType's
+     *                                 if true.
+     *
+     * @return string[]
      */
-    public function getUsedAltTypes(Environment $environment)
+    public function getUsedAltTypes(Environment $environment, $slugged = false)
     {
         $expr = $this->em->getExpressionBuilder();
 
+        $fieldName = 'altType';
+        if ($slugged) {
+            $fieldName = 'altTypeSlug';
+        }
+
         $result = $this->em->createQueryBuilder()
-            ->select('Government.altType')
+            ->select('Government.'. $fieldName)
             ->from('GovWikiDbBundle:Government', 'Government')
             ->where($expr->eq('Government.environment', ':environment'))
             ->setParameter('environment', $environment->getId())
-            ->groupBy('Government.altType')
-            ->orderBy('Government.altType')
+            ->groupBy('Government.'. $fieldName)
+            ->orderBy('Government.'. $fieldName)
             ->getQuery()
             ->getArrayResult();
 
 
         $result = array_map(
-            function (array $row) {
-                return $row['altType'];
+            function (array $row) use ($fieldName) {
+                return $row[$fieldName];
             },
             $result
         );

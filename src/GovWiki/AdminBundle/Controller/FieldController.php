@@ -6,10 +6,8 @@ use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Locale;
 use GovWiki\DbBundle\Entity\Translation;
-use GovWiki\DbBundle\Form\FormatType;
 use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -54,7 +52,7 @@ class FieldController extends AbstractGovWikiAdminController
         $format = $this->getManager()->create();
         $format->setCategory($categoryReference);
 
-        $form = $this->createForm(new FormatType(), $format);
+        $form = $this->createForm('format', $format);
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
@@ -99,7 +97,7 @@ class FieldController extends AbstractGovWikiAdminController
             return $this->redirectToRoute('govwiki_admin_main_home');
         }
 
-        $form = $this->createForm(new FormatType(), $format);
+        $form = $this->createForm('format', $format);
 
         $oldFieldName = $format->getField();
         $oldIsRanked = $format->isRanked();

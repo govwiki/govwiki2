@@ -14,6 +14,14 @@ services:
         tags:
             - { name: form.type, alias: alt_type }
 
+    govwiki_db.form.type.format:
+        class: GovWiki\DbBundle\Form\FormatType
+        arguments:
+            - @govwiki_environment.storage
+            - @govwiki_environment.manager.government
+        tags:
+            - { name: form.type, alias: format }
+
     govwiki_db.form.type.elected_official:
         class: GovWiki\DbBundle\Form\ElectedOfficialType
         arguments: [ @doctrine.orm.default_entity_manager ]

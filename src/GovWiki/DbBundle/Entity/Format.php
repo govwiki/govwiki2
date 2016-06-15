@@ -16,6 +16,17 @@ use Symfony\Component\Validator\Constraints as Asset;
  */
 class Format
 {
+
+    /**
+     * Show rank in range format like (45 of 250).
+     */
+    const RANK_RANGE = 'range';
+
+    /**
+     * Show rank in latter grade like A.
+     */
+    const RANK_LETTER = 'letter';
+
     /**
      * @var integer
      *
@@ -116,11 +127,38 @@ class Format
     private $category;
 
     /**
+     * @var string
+     *
+     * @ORM\Column()
+     */
+    private $rankType = self::RANK_RANGE;
+
+    /**
+     * First key is alt type, second key is grade ('a', 'b', ... etc).
+     *
+     * [
+     *  'City' => [
+     *      'a' => [
+     *          'start' => 20,
+     *          'end' => 40,
+     *      ],
+     *      ...
+     *  ],
+     *  ...
+     * ]
+     *
+     * @var array
+     *
+     * @ORM\Column(type="array")
+     */
+    private $rankLetterRanges = [];
+
+    /**
      * @return array
      */
     public static function availableTypes()
     {
-        return [ 'string', 'integer', 'float' ];
+        return ['string', 'integer', 'float'];
     }
 
     /**
@@ -147,6 +185,7 @@ class Format
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -159,6 +198,7 @@ class Format
     {
         $slug = preg_replace('/\W/', '_', $string);
         $slug = preg_replace('/_+/', '_', $slug);
+
         return trim(strtolower($slug), '_');
     }
 
@@ -345,5 +385,101 @@ class Format
         $this->category = $category;
 
         return $this;
+    }
+
+    /**
+     * Set rankType
+     *
+     * @param string $rankType Rank type one of
+     *                         {@see Format::RANK_RANGE} or
+     *                         {@see Format::RANK_LETTER}.
+     *
+     * @return Format
+     */
+    public function setRankType($rankType)
+    {
+        $this->rankType = $rankType;
+
+        return $this;
+    }
+
+    /**
+     * Get rankType
+     *
+     * @return string
+     */
+    public function getRankType()
+    {
+        return $this->rankType;
+    }
+
+    /**
+     * Set rankLetterRange
+     *
+     * @param array $rankLetterRanges Array of letter ranges.
+     *
+     * @return Format
+     */
+    public function setRankLetterRanges(array $rankLetterRanges = [])
+    {
+        $this->rankLetterRanges = $rankLetterRanges;
+
+        return $this;
+    }
+
+    /**
+     * Get rankLetterRange
+     *
+     * @return array
+     */
+    public function getRankLetterRanges()
+    {
+        return $this->rankLetterRanges;
+    }
+
+    /**
+     * @param string $altType A Government entity altTypeSlug.
+     * @param string $letter  Grade letter.
+     *
+     * @return array
+     */
+    public function getRankLetterRange($altType, $letter)
+    {
+        $letter = strtolower($letter);
+
+        // Check given alt type slug.
+        if (! in_array($altType, $this->rankLetterRanges, true)) {
+            return [];
+        }
+
+        // Check given letter.
+        if (! in_array($letter, $this->rankLetterRanges[$altType], true)) {
+            return [];
+        }
+
+        return $this->rankLetterRanges[$letter];
+    }
+
+    /**
+     * @param string $altType A Government entity altType.
+     * @param string $percent Ratio between current rank and maximum.
+     *
+     * @return string
+     */
+    public function matchRankLetterRange($altType, $percent)
+    {
+        // Check given alt type slug.
+        if (! in_array($altType, $this->rankLetterRanges, true)) {
+            return 'f';
+        }
+
+        foreach ($this->rankLetterRanges[$altType] as $grade => $range) {
+            if (($percent >= $range['start']) && ($percent <= $range['end'])) {
+                return $grade;
+            }
+        }
+
+        // Put bad grade if value don't found.
+        return 'f';
     }
 }

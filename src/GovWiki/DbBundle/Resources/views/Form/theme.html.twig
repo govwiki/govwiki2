@@ -115,3 +115,18 @@
     </div>
 {% endspaceless %}
 {%- endblock _government_altType_widget -%}
+
+{%- block range_widget -%}
+{%- spaceless -%}
+    <div class="rank-letter-range">
+        {{- form_widget(form.start, { attr: { style: 'width: 50%; float: left' }}) -}}
+        {{- form_widget(form.end, { attr: { style: 'width: 50%;float: left' }}) -}}
+    </div>
+{%- endspaceless -%}
+{%- endblock range_widget -%}
+
+{%- block _rank_letter_range_entry_widget -%}
+{%- spaceless -%}
+aa
+{%- endspaceless -%}
+{%- endblock -%}

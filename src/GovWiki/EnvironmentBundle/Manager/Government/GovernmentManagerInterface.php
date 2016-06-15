@@ -247,8 +247,10 @@ interface GovernmentManagerInterface
 
     /**
      * @param Environment $environment A Environment entity instance.
+     * @param boolean     $slugged     Return altTypeSlug's instead of altType's
+     *                                 if true.
      *
      * @return string[]
      */
-    public function getUsedAltTypes(Environment $environment);
+    public function getUsedAltTypes(Environment $environment, $slugged = false);
 }
