@@ -17,12 +17,11 @@ class IssuesRepository extends EntityRepository
 
     /**
      * @param integer $government A government entity id.
-     * @param integer $year       Data year.
      * @param boolean $addPending Add pending issues.
      *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getListQuery($government, $year, $addPending = false)
+    public function getListQuery($government, $addPending = false)
     {
         $expr = $this->_em->getExpressionBuilder();
 
@@ -39,16 +38,13 @@ class IssuesRepository extends EntityRepository
         $qb = $this->createQueryBuilder('Issue')
             ->where($expr->andX(
                 $expr->eq('Issue.government', ':government'),
-                'YEAR(Issue.date) = :year',
                 $expr->orX(
                     $stateFilter,
                     $expr->isNull('Issue.state')
                 )
             ))
-            ->setParameters([
-                'government' => $government,
-                'year' => $year,
-            ]);
+            ->orderBy($expr->desc('Issue.date'))
+            ->setParameter('government', $government);
 
         return $qb;
     }

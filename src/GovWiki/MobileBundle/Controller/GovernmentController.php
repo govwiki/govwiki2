@@ -131,18 +131,18 @@ class GovernmentController extends AbstractGovWikiController
 
         $user = $this->getUser();
         $paginator = $this->get('knp_paginator');
-        $year = $request->query->get(
-            'year',
-            $this->getGovernmentManager()
-                ->getAvailableYears(
-                    $this->getCurrentEnvironment(),
-                    $government
-                )[0]
-        );
+//        $year = $request->query->get(
+//            'year',
+//            $this->getGovernmentManager()
+//                ->getAvailableYears(
+//                    $this->getCurrentEnvironment(),
+//                    $government
+//                )[0]
+//        );
 
         $issues = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:Issue')
-            ->getListQuery($government->getId(), $year, $user instanceof User);
+            ->getListQuery($government->getId(), $user instanceof User);
         $issues = $paginator->paginate(
             $issues,
             $request->query->get('page', 1),

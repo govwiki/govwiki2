@@ -11,7 +11,7 @@ var Step31;
 var Step3;
 var Step2;
 var Step1;
-var government = JSON.parse(window.gw.government);
+// var government = JSON.parse(window.gw.government);
 var modal = $('#addIssue');
 var authorized = window.gw.authorized;
 var Handlebars = require('../vendor/handlebars.js');
@@ -272,12 +272,8 @@ modal.find('form').submit(function  newIssue(event) {
     data: data
   })
     .done(function success(response) {
-      var template;
-
-      if (government.currentYear === Number(response.date.replace(/^(\d+)-.*/, '$1'))) {
-        template = Handlebars.compile($('#issue-row').html());
-        $('#issues tbody tr:last-child').before(template(response));
-      }
+      var template = Handlebars.compile($('#issue-row').html());
+      $('#issues tbody tr:last-child').before(template(response));
 
       modal.modal('hide');
     })
