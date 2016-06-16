@@ -2,11 +2,8 @@
 
 namespace GovWiki\DbBundle\Form\Type;
 
-use GovWiki\EnvironmentBundle\Manager\Government\GovernmentManagerInterface;
-use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class RankLetterRangeType
@@ -30,12 +27,16 @@ class RankLetterRangeType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $options = [
+            'label_attr' => [ 'class' => 'range-grade-label' ],
+        ];
+
         $builder
-            ->add('a', new RangeType())
-            ->add('b', new RangeType())
-            ->add('c', new RangeType())
-            ->add('d', new RangeType())
-            ->add('f', new RangeType());
+            ->add('a', new RangeType(), $options)
+            ->add('b', new RangeType(), $options)
+            ->add('c', new RangeType(), $options)
+            ->add('d', new RangeType(), $options)
+            ->add('f', new RangeType(), $options);
     }
 
     /**

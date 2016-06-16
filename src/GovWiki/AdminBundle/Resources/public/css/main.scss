@@ -273,3 +273,29 @@ body .container a.btn-primary:hover {
       }
    }
 }
+
+.range-grade-label {
+  text-align: center;
+  vertical-align: middle;
+  width: 10%;
+  margin: 0;
+}
+
+.range-grade-row {
+  display: inline-block;
+  vertical-align: middle;
+  width: 90%;
+}
+
+.range-grade-border-label {
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  width: 20%;
+}
+
+.range-grade-border-row {
+  display: inline-block;
+  vertical-align: middle;
+  width: 80%;
+}

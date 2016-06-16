@@ -2,11 +2,8 @@
 
 namespace GovWiki\DbBundle\Form\Type;
 
-use GovWiki\EnvironmentBundle\Manager\Government\GovernmentManagerInterface;
-use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class RangeType
@@ -30,12 +27,14 @@ class RangeType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('start', 'number', [
+        $options = [
+            'type' => 'integer',
             'attr' => [ 'min' => 0, 'max' => 100 ],
-        ]);
-        $builder->add('end', 'number', [
-            'attr' => [ 'min' => 0, 'max' => 100 ],
-        ]);
+            'label_attr' => [ 'class' => 'range-grade-border-label' ],
+        ];
+
+        $builder->add('start', 'percent', $options);
+        $builder->add('end', 'percent', $options);
     }
 
     /**

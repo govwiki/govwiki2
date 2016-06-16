@@ -1,27 +1,38 @@
 {% block color_widget %}
 {% spaceless %}
-        <div class="input-group color-picker">
-            <span class="input-group-addon">
-                <i></i>
-            </span>
-            {{- block('form_widget_simple') -}}
-        </div>
+    <div class="input-group color-picker">
+        <span class="input-group-addon">
+            <i></i>
+        </span>
+        {{- block('form_widget_simple') -}}
+    </div>
 {% endspaceless %}
 {% endblock %}
 
+{% block percent_widget -%}
+{% spaceless %}
+    {%- set type = 'number' -%}
+    <div class="input-group">
+        {{- block('form_widget_simple') -}}
+        <span class="input-group-addon">%</span>
+    </div>
+{% endspaceless %}
+{%- endblock percent_widget %}
+
+
 {% block conditions_widget %}
 {% spaceless %}
-        <div class="row condition-row">
-            <div class="col-md-5 col-lg-5 col-xs-12">
-                {{- form_row(form.condition) -}}
-            </div>
-            <div class="col-md-4 col-lg-4 col-xs-12">
-                {{- form_row(form.color) -}}
-            </div>
-            <div class="col-md-3 col-lg-3 col-xs-12">
-                <button type="button" class="btn btn-danger conditions-delete">Delete</button>
-            </div>
+    <div class="row condition-row">
+        <div class="col-md-5 col-lg-5 col-xs-12">
+            {{- form_row(form.condition) -}}
         </div>
+        <div class="col-md-4 col-lg-4 col-xs-12">
+            {{- form_row(form.color) -}}
+        </div>
+        <div class="col-md-3 col-lg-3 col-xs-12">
+            <button type="button" class="btn btn-danger conditions-delete">Delete</button>
+        </div>
+    </div>
 {% endspaceless %}
 {% endblock conditions_widget %}
 
@@ -32,14 +43,14 @@
 #}
 {% block coloring_condition_widget %}
 {% spaceless %}
-        <div class="conditions">
-            {{- form_row(form.colorized) -}}
-            {{- form_row(form.fieldName) -}}
-            {{- form_row(form.conditions) -}}
-            <button type="button" class=" pull-right btn btn-default" id="conditions-add">
-                Add new conditions
-            </button>
-        </div>
+    <div class="conditions">
+        {{- form_row(form.colorized) -}}
+        {{- form_row(form.fieldName) -}}
+        {{- form_row(form.conditions) -}}
+        <button type="button" class=" pull-right btn btn-default" id="conditions-add">
+            Add new conditions
+        </button>
+    </div>
 {% endspaceless %}
 {% endblock %}
 
@@ -116,17 +127,58 @@
 {% endspaceless %}
 {%- endblock _government_altType_widget -%}
 
+{#
+    Form range.
+#}
 {%- block range_widget -%}
 {%- spaceless -%}
-    <div class="rank-letter-range">
-        {{- form_widget(form.start, { attr: { style: 'width: 50%; float: left' }}) -}}
-        {{- form_widget(form.end, { attr: { style: 'width: 50%;float: left' }}) -}}
+    <div>
+        {{- form_label(form) -}}
+        <div class="range-grade-row">
+            <div>
+                {{- form_label(form.start) -}}
+                <div class="range-grade-border-row">
+                    {{- form_widget(form.start) -}}
+                </div>
+            </div>
+            <div>
+                {{- form_label(form.end) -}}
+                <div class="range-grade-border-row">
+                    {{- form_widget(form.end) -}}
+                </div>
+            </div>
+        </div>
     </div>
 {%- endspaceless -%}
 {%- endblock range_widget -%}
 
-{%- block _rank_letter_range_entry_widget -%}
+{%- block range_row -%}
 {%- spaceless -%}
-aa
+    {{- form_widget(form) -}}
+{%- endspaceless -%}
+{%- endblock range_row -%}
+
+{%- block _format_rankLetterRanges_entry_widget -%}
+{%- spaceless -%}
+    {# Get Format entity instance. #}
+    {%- set format = form.parent.parent.vars.value -%}
+    {%- set unslugName = name|replace('_', ' ') -%}
+
+    <div id="{{- name -}}" class="col-md-{{ 12 / format.showIn|length }}" {%
+        if (unslugName not in format.showIn)
+    -%}style="display: none"{%- endif -%}>
+        {{- form_label(form) -}}
+        {%- if form.parent is empty -%}
+            {{ form_errors(form) }}
+        {%- endif -%}
+        {{- block('form_rows') -}}
+        {{- form_rest(form) -}}
+    </div>
+{%- endspaceless -%}
+{%- endblock -%}
+
+{%- block _format_rankLetterRanges_entry_row -%}
+{%- spaceless -%}
+    {{- form_widget(form) -}}
 {%- endspaceless -%}
 {%- endblock -%}
