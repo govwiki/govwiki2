@@ -1,5 +1,4 @@
 
-{% dump elected %}
 {%- set bioChanged = not (elected.newBio is empty) -%}
 {%- set currentUserChangeBio = (elected.bioEditor is not null)
         and (app.user is not null)
