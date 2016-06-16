@@ -6,18 +6,44 @@
 
         <div id="bio" class="form-group clearfix">
             <div class="loader"></div>
-            <label for="elected-bio">Bio</label>
-            <textarea style="resize: vertical" id="elected-bio" rows="6" class="form-control">
-                {{- elected.bio -}}
+            <label>Bio</label>
+            <div id="elected-bio-view">
+                {%- if (bioChanged and currentUserChangeBio) -%}
+                    {{- elected.newBio -}}
+                {%- else -%}
+                    {{- elected.bio -}}
+                {%- endif -%}
+            </div>
+            <textarea style="resize: vertical; display: none"
+                      id="elected-bio-edit" rows="6" class="form-control">
+                {%- if (bioChanged and currentUserChangeBio) -%}
+                    {{- elected.newBio -}}
+                {%- else -%}
+                    {{- elected.bio -}}
+                {%- endif -%}
             </textarea>
-            {%- if (elected.newBio is null or elected.newBio is empty) -%}
-                <a id="change-bio" href="{{- path(
-                    'govwiki_api_v1_electedofficial_changebio',
-                    { 'elected': elected.id }
-                ) -}}" class="btn btn-primary pull-right disabled">Change</a>
+            {%- if ((app.user is null)
+            or (not bioChanged)
+            or (bioChanged and currentUserChangeBio)) -%}
+                <div class="pull-right">
+                    <button id="change-bio-start"
+                            class="btn btn-primary">
+                        Change
+                    </button>
+                    <div id="change-bio-group" style="display: none">
+                        <a id="change-bio-save" href="{{- path(
+                        'govwiki_api_v1_electedofficial_changebio',
+                        { 'elected': elected.id }
+                        ) -}}" class="btn btn-primary">Save Changes</a>
+                        <button id="change-bio-revert"
+                                class="btn btn-default">
+                            Revert
+                        </button>
+                    </div>
+                </div>
             {%- else -%}
                 <p class="text-info text-center">
-                    Bio changed
+                    Unapproved Changes Pending Approval
                 </p>
             {%- endif -%}
         </div>

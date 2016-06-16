@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -134,6 +135,13 @@ class ElectedOfficial
      * @ORM\Column(type="text")
      */
     private $newBio;
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="GovWiki\UserBundle\Entity\User")
+     */
+    private $bioEditor;
 
     /**
      * @ORM\OneToMany(targetEntity="Contribution", mappedBy="electedOfficial")
@@ -717,5 +725,29 @@ class ElectedOfficial
     public function getSurveyResponses()
     {
         return $this->surveyResponses;
+    }
+
+    /**
+     * Set bioEditor
+     *
+     * @param User $bioEditor A User entity instance.
+     *
+     * @return ElectedOfficial
+     */
+    public function setBioEditor(User $bioEditor = null)
+    {
+        $this->bioEditor = $bioEditor;
+
+        return $this;
+    }
+
+    /**
+     * Get bioEditor
+     *
+     * @return User
+     */
+    public function getBioEditor()
+    {
+        return $this->bioEditor;
     }
 }

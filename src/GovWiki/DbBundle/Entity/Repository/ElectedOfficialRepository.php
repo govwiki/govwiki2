@@ -80,7 +80,9 @@ class ElectedOfficialRepository extends EntityRepository
                 ->addSelect(
                     'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}'
                 )
+                ->addSelect('partial BioEditor.{id}')
                 ->join('ElectedOfficial.government', 'Government')
+                ->leftJoin('ElectedOfficial.bioEditor', 'BioEditor')
                 ->where($expr->andX(
                     $expr->eq('Government.environment', ':environment'),
                     $expr->eq('ElectedOfficial.slug', ':eoSlug'),
