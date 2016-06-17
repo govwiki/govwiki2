@@ -1,0 +1,202 @@
+{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+
+{% block title %}{{ parent() }} - translations{% endblock %}
+
+{% block breadcrumb %}
+    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
+    {{- macro.breadcrumbElement(
+        'Localizations',
+        'govwiki_admin_globallocalization_index'
+    ) -}}
+    {{- macro.breadcrumbElement(locale_name|upper) -}}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    Global translations
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {# Navigation #}
+    <div class="row">
+
+        {# Tabs #}
+        <ul class="nav nav-pills" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#with_transText" aria-controls="with_transText" role="tab" data-toggle="tab" id="with_transText_btn">
+                    <span class="badge pull-right">{{ count_with_transText }}</span>
+                    With translation
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#without_transText" aria-controls="without_transText" role="tab" data-toggle="tab" id="without_transText_btn">
+                    <span class="badge pull-right">{{ count_without_transText }}</span>
+                    Without translation
+                </a>
+            </li>
+        </ul>
+
+        {# Pagination #}
+        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center" id="with_transText_pagination">
+            {{ knp_pagination_render(with_transText) }}
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center" id="without_transText_pagination" style="display: none">
+            {{ knp_pagination_render(without_transText) }}
+        </div>
+
+        {# Filter #}
+        <div class="col-xs-8 col-sm-9 col-md-5 col-lg-5 text-center text-left-sm">
+
+            <div class="row">
+                <form action="" method="get" class="form-inline controls">
+                    <div class="col-xs-10">
+
+                        <input name="filter[trans_key]" type="text" class="form-control input-sm" placeholder="Key"
+                               value="{{ app.request.query.get('filter') ? app.request.query.get('filter').trans_key }}">
+
+                        <input name="filter[translation]" type="text" class="form-control input-sm" placeholder="Translation"
+                               value="{{app.request.query.get('filter') ? app.request.query.get('filter').translation }}">
+
+                    </div>
+
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
+                        <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+
+        {# Controls #}
+        <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3 text-center text-right-sm">
+            <div class="btn-group controls">
+                <a class="btn btn-sm btn-default" href="{{-
+                    path('govwiki_admin_globallocalization_exportlocale', {
+                        'locale_name': locale_name
+                    })
+                -}}">Export</a>
+                <button class="btn btn-sm btn-default" id="import">Import</button>
+                <a class="btn btn-sm btn-primary" href="{{-
+                    path('govwiki_admin_globallocalization_createtranslation', {
+                        'locale_name': locale_name
+                    })
+                -}}">Create</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="with_transText">
+            {{ _self.translationTable(with_transText) }}
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="without_transText">
+            {{ _self.translationTable(without_transText) }}
+        </div>
+    </div>
+
+    <div id="modal-import" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
+                <div class="modal-body">
+                    {{- render(controller('GovWikiAdminBundle:GlobalLocalization:importLocale', {
+                        'locale_name': locale_name
+                    })) -}}
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-right">
+                        <a id="import-confirm" class="btn btn-success">
+                            Import
+                        </a>
+                        <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock panel_body %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(function() {
+            $('#import').click(function () {
+                $('#modal-import').modal('show');
+            });
+
+            $('#import-confirm').click(function () {
+                $('form', '#modal-import').submit();
+            });
+
+            $('#with_transText_btn').click(function () {
+                $('#without_transText_pagination').hide();
+                $('#with_transText_pagination').show();
+            });
+
+            $('#without_transText_btn').click(function () {
+                $('#with_transText_pagination').hide();
+                $('#without_transText_pagination').show();
+            });
+        });
+    </script>
+{% endblock javascripts %}
+
+{% macro translationTable(translation_list) %}
+    {# Table #}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover text-center">
+                    <thead>
+                    <tr>
+                        <th>{{ knp_pagination_sortable(translation_list, 'Key',        'Translation.transKey') }}</th>
+                        <th>{{ knp_pagination_sortable(translation_list, 'Translation','Translation.translation') }}</th>
+                        <th class="actions">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for translation in translation_list %}
+                        <tr>
+                            <td>{{ translation.transKey }}</td>
+                            <td>{{ translation.translation }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{- path('govwiki_admin_globallocalization_edittranslation',
+                                    { transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-default">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                        Edit
+                                    </a>
+                                    {% if translation.transTextareaType != 'ckeditor' %}
+                                        <button data-url="{{- path('govwiki_admin_globallocalization_removetranslation',
+                                        { transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete this translation? Remember that translations with key &quot{{ translation.transKey }}&quot will be removed from all localizations.">
+                                            <span class="glyphicon glyphicon-remove"></span> Remove
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    {# Navigation #}
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            {# Pagination #}
+            <div class="navigation">
+                {{ knp_pagination_render(translation_list) }}
+            </div>
+
+        </div>
+    </div>
+{% endmacro %}

@@ -36,6 +36,10 @@ class ShapeController extends Controller
      */
     public function formAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $shape = new Shape();
         $form = $this->createForm(new NewShapeType(), $shape, [
             'action' => $this->generateUrl('govwiki_admin_shape_form'),

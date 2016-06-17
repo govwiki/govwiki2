@@ -17,30 +17,207 @@ use Doctrine\ORM\EntityRepository;
  */
 class TranslationRepository extends EntityRepository
 {
+
     /**
-     * @param string $environment Environment name.
-     * @param string $locale_name Locale short name ('en', 'fr' etc.)
-     * @param array $trans_key_settings Array with Matching type and Translation Keys array
-     * @param string $translation Translation text
-     * @param boolean $needOneResult If true, return object, else return array.
+     * @param integer $environment A Environment entity id.
+     * @param string  $locale      Locale short name.
      *
      * @return array
      */
-    public function getTranslationsBySettings($environment, $locale_name, $trans_key_settings = null, $translation = null, $needOneResult = null)
+    public function getAllTranslations($environment, $locale)
     {
         $expr = $this->_em->getExpressionBuilder();
-        $added = false;
+
+        $globalLocaleDQL = $this->_em->createQueryBuilder()
+            ->select('GlobalLocale')
+            ->from('GovWikiDbBundle:GlobalLocale', 'GlobalLocale')
+            ->where($expr->eq('GlobalLocale.shortName', ':locale'))
+            ->getDQL();
+
+        return $this->createQueryBuilder('tr')
+            ->select('tr')
+            ->leftJoin('tr.locale', 'Locale')
+            ->where($expr->orX(
+                $expr->andX(
+                    $expr->eq('Locale.shortName', ':locale'),
+                    $expr->eq('Locale.environment', ':environment')
+                ),
+                $expr->in('Locale', $globalLocaleDQL)
+            ))
+            ->setParameters([
+                'environment' => $environment,
+                'locale' => $locale,
+            ])
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param integer $environment   Environment entity id.
+     * @param string  $locale        Locale short name ('en', 'fr' etc.).
+     * @param array   $keySettings   Array with Matching type and
+     *                               Translation Keys array
+     * @param string  $translation   Translation text.
+     * @param boolean $needOneResult If true, return object, else return
+     *                               array.
+     *
+     * @return array
+     */
+    public function getEnvironmentTranslations(
+        $environment,
+        $locale,
+        $keySettings = null,
+        $translation = null,
+        $needOneResult = false
+    ) {
+        $expr = $this->_em->getExpressionBuilder();
 
         $qb = $this->createQueryBuilder('tr')
             ->select('tr')
             ->leftJoin('tr.locale', 'Locale')
-            ->leftJoin('Locale.environment', 'Environment');
+            ->where($expr->andX(
+                $expr->eq('Locale.shortName', ':locale'),
+                $expr->eq('Locale.environment', ':environment')
+            ))
+            ->setParameters([
+                'environment' => $environment,
+                'locale' => $locale,
+            ]);
+
+        if ($keySettings !== null) {
+            $matching = $keySettings['matching'];
+            $keys = $keySettings['transKeys'];
+
+            if (! empty($keys)) {
+                if ('eq' === $matching) {
+                    $qb->andWhere($expr->in('tr.transKey', ':transKeysArray'))
+                        ->setParameter('transKeysArray', $keys);
+                } elseif ('like' === $matching) {
+                    $orX = $expr->orX();
+                    foreach ($keys as $key) {
+                        $orX->add('tr.transKey LIKE ' .
+                            $expr->literal('%' . $key . '%')
+                        );
+                    }
+                    $qb->andWhere($orX);
+                }
+            }
+        }
+
+        if (null !== $translation) {
+            $qb->andWhere($expr->like(
+                'tr.translation',
+                $expr->literal('%' . $translation . '%')
+            ));
+        }
+
+        if ($needOneResult) {
+            $qb->setMaxResults(1);
+
+            return $qb->getQuery()->getOneOrNullResult();
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param string  $locale        Locale short name ('en', 'fr' etc.).
+     * @param array   $keySettings   Array with Matching type and
+     *                               Translation Keys array
+     * @param string  $translation   Translation text.
+     * @param boolean $needOneResult If true, return object, else return
+     *                               array.
+     *
+     * @return array
+     */
+    public function getGlobalTranslations(
+        $locale,
+        $keySettings = null,
+        $translation = null,
+        $needOneResult = false
+    ) {
+        $expr = $this->_em->getExpressionBuilder();
+
+        $globalLocaleDQL = $this->_em->createQueryBuilder()
+            ->select('GlobalLocale')
+            ->from('GovWikiDbBundle:GlobalLocale', 'GlobalLocale')
+            ->where($expr->eq('GlobalLocale.shortName', ':locale'))
+            ->getDQL();
+
+        $qb = $this->createQueryBuilder('tr')
+            ->select('tr')
+            ->leftJoin('tr.locale', 'Locale')
+            ->where($expr->in('Locale', $globalLocaleDQL))
+            ->setParameter('locale', $locale);
+
+        if ($keySettings !== null) {
+            $matching = $keySettings['matching'];
+            $keys = $keySettings['transKeys'];
+
+            if (! empty($keys)) {
+                if ('eq' === $matching) {
+                    $qb->andWhere($expr->in('tr.transKey', ':transKeysArray'))
+                        ->setParameter('transKeysArray', $keys);
+                } elseif ('like' === $matching) {
+                    $orX = $expr->orX();
+                    foreach ($keys as $key) {
+                        $orX->add('tr.transKey LIKE ' .
+                            $expr->literal('%' . $key . '%')
+                        );
+                    }
+                    $qb->andWhere($orX);
+                }
+            }
+        }
+
+        if (null !== $translation) {
+            $qb->andWhere($expr->like(
+                'tr.translation',
+                $expr->literal('%' . $translation . '%')
+            ));
+        }
+
+        if ($needOneResult) {
+            $qb->setMaxResults(1);
+
+            return $qb->getQuery()->getOneOrNullResult();
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param integer $environment        Environment entity id.
+     * @param string  $locale_name        Locale short name ('en', 'fr' etc.)
+     * @param array   $trans_key_settings Array with Matching type and
+     *                                    Translation Keys array
+     * @param string  $translation        Translation text
+     * @param boolean $needOneResult      If true, return object, else return
+     *                                    array.
+     *
+     * @return array
+     */
+    public function getTranslationsBySettings(
+        $environment,
+        $locale_name,
+        $trans_key_settings = null,
+        $translation = null,
+        $needOneResult = null
+    ) {
+        $expr = $this->_em->getExpressionBuilder();
+        $added = false;
+        $noMerge = ($trans_key_settings !== null) && array_key_exists('no_merge', $trans_key_settings)
+            && $trans_key_settings['no_merge'] === true;
+
+        $qb = $this->createQueryBuilder('tr')
+            ->select('tr')
+            ->leftJoin('tr.locale', 'Locale');
 
         if (null !== $environment) {
             $qb
                 ->where($expr->andX(
                     $expr->eq('Locale.shortName', ':locale_name'),
-                    $expr->eq('Environment.slug', ':env')
+                    $expr->eq('Locale.environment', ':env')
                 ))
                 ->setParameters([
                     'env' => $environment,
@@ -57,7 +234,7 @@ class TranslationRepository extends EntityRepository
             $added = true;
         }
 
-        if (null !== $trans_key_settings) {
+        if ((null !== $trans_key_settings) && array_key_exists('matching', $trans_key_settings)) {
             $matching = $trans_key_settings['matching'];
             $trans_keys = $trans_key_settings['transKeys'];
 
@@ -73,7 +250,7 @@ class TranslationRepository extends EntityRepository
                     $qb->andWhere($orX);
                 }
             }
-        } elseif (false === $added) {
+        } elseif ((false === $added) && ! $noMerge) {
             $globalLocaleDQL = $this->_em->createQueryBuilder()
                 ->select('GlobalLocale')
                 ->from('GovWikiDbBundle:GlobalLocale', 'GlobalLocale')

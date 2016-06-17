@@ -19,9 +19,9 @@
                 <p>Name: {{elected.fullName}} &nbsp;&nbsp;
                     <span class="disqus-comment-count vote" id="{{elected.id}}" data-disqus-identifier="{{elected.id}}">0</span>
                 <p>Term expiries: {{elected.termExpires}}</p>
-                {% if elected.bioUrl %}
+                {#{% if elected.bioUrl %}
                     <p><a target="_blank" href="{{elected.bioUrl}}">Biographical Highlights</a></p>
-                {% endif %}
+                {% endif %}#}
                 <p>Email: <a href="mailto:{{elected.emailAddress}}">{{elected.emailAddress}}</a></p>
             </div>
 
@@ -37,10 +37,11 @@
 
                 <!-- Nav tabs -->
                 <ul class="nav nav-pills" role="tablist">
-                    <li role="presentation" class="active"><a href="#Votes" aria-controls="Votes" role="tab" data-toggle="tab">Votes</a></li>
-                    <li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>
+                    <li role="presentation" class="active"><a href="#Votes" aria-controls="Votes" role="tab" data-toggle="tab">Bio</a></li>
+                    {#<li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>#}
                     <li role="presentation"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
-                    <li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>
+                    <li role="presentation"><a href="#Surveys" aria-controls="Surveys" role="tab" data-toggle="tab">Surveys</a></li>
+                    {#<li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>#}
                 </ul>
 
                 <!-- Tab panes -->
@@ -52,13 +53,16 @@
                     {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:votes.html.twig') }}
 
                     {# Contributions #}
-                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:contributions.html.twig') }}
+                    {#{{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:contributions.html.twig') }}#}
 
                     {# Endorsements #}
                     {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:endorsements.html.twig') }}
 
+                    {# Surveys #}
+                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:surveys.html.twig') }}
+
                     {# Public Statements #}
-                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}
+                    {#{{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}#}
 
                 </div>
 
@@ -67,23 +71,23 @@
 
     </section>
 
-    <!-- Disqus Modal -->
+    {# Disqus Modal #}
     {#{% include 'GovWikiFrontendBundle:Partial/Elected/Modals:disqus.html.twig' %}#}
 
-    <!-- Facebook Comment Modal -->
+    {# Facebook Comment Modal #}
     {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:facebook_comment.html.twig' %}
 
-    <!-- Votes Modal -->
+    {# Votes Modal #}
     {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:votes.html.twig' %}
 
-    <!-- Contributions Modal -->
-    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:contributions.html.twig' %}
+    {# Contributions Modal #}
+    {#{% include 'GovWikiFrontendBundle:Partial/Elected/Modals:contributions.html.twig' %}#}
 
-    <!-- Endorsements Modal -->
+    {# Endorsements Modal #}
     {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:endorsements.html.twig' %}
 
-    <!-- Public Statements Modal -->
-    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:publicStatements.html.twig' %}
+    {# Public Statements Modal #}
+    {#{% include 'GovWikiFrontendBundle:Partial/Elected/Modals:publicStatements.html.twig' %}#}
 
     {% verbatim %}
     <script id="row-addVotes" type="text//x-handlebars-template">
@@ -182,10 +186,8 @@
 
     {{parent()}}
 
-    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
-
     {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/elected.scss' filter='scss' %}
-        <link rel="stylesheet" href="{{ asset_url }}">
+    <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 
 {% endblock %}
@@ -200,21 +202,14 @@
         window.gw.electedOfficial = '{{ electedOfficialJSON | escape('js') }}';
 
         window.gw.urls = {};
-        window.gw.urls.create_request = '{{ govwiki_path('govwiki_api_v1_createrequest_create') }}'
-        window.gw.urls.edit_request = '{{ govwiki_path('govwiki_api_v1_editrequest_create') }}'
-        window.gw.urls.check_url = '{{ govwiki_path('govwiki_api_v1_url_extract') }}'
+        window.gw.urls.create_request = '{{ path('govwiki_api_v1_createrequest_create') }}';
+        window.gw.urls.edit_request = '{{ path('govwiki_api_v1_editrequest_create') }}';
+        window.gw.urls.check_url = '{{ path('govwiki_api_v1_url_extract') }}'
     </script>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
-    <script id="dsq-embed-scr" src="//cpc-civicprofiles.disqus.com/embed.js"></script>
-    <script id="dsq-count-scr" src="//cpc-civicprofiles.disqus.com/count.js"></script>
 
-    {% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/script.js'
-                    '@GovWikiFrontendBundle/Resources/public/js/elected/handlers.js'
-                    output='js/elected.js' %}
-        <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+    <script src="/js/common.js"></script>
+    <script src="/js/elected.js"></script>
 
 {% endblock %}

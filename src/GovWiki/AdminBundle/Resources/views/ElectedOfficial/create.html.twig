@@ -4,47 +4,124 @@
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-        macro.breadcrumbElement(
-            admin_environment|capitalize ~' environment',
-            'govwiki_admin_main_show',
-            { 'environment': admin_environment }
-        )
-    }}
-    {{
-        macro.breadcrumbElement(
-            'Elected Officials',
-            'govwiki_admin_electedofficial_index'
-        )
-    }}
-    {{ macro.breadcrumbElement('New') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Elected Officials',
+        'govwiki_admin_electedofficial_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{ macro.breadcrumbElement('New elected official') }}
 {% endblock breadcrumb %}
 
-{% block body %}
-    <div class="container-fluid">
-        {{ form_start(form) }}
-            <div class="row">
-                <div class="col-md-4">
-                    {{ form_row(form.fullName) }}
-                    {{ form_row(form.government) }}
-                    {{ form_row(form.displayOrder) }}
-                </div>
-                <div class="col-md-4">
-                    {{ form_row(form.title) }}
-                    {{ form_row(form.emailAddress) }}
-                    {{ form_row(form.telephoneNumber) }}
-                </div>
-                <div class="col-md-4">
-                    {{ form_row(form.photoUrl) }}
-                    {{ form_row(form.bioUrl) }}
-                    {{ form_row(form.termExpires) }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <input type="submit" class="btn btn-primary">
-                </div>
-            </div>
-        {{ form_end(form) }}
+{% block panel_title %}
+    New elected official
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{ form_start(form) }}
+    <div class="row">
+        <div class="col-md-4 col-sm-6 col-xs-12">
+            {{ form_row(form.fullName) }}
+            {{ form_row(form.government) }}
+            {{ form_row(form.displayOrder) }}
+        </div>
+        <div class="col-md-4 col-sm-6 col-xs-12">
+            {{ form_row(form.title) }}
+            {{ form_row(form.emailAddress) }}
+            {{ form_row(form.telephoneNumber) }}
+        </div>
+        <div class="col-md-4 col-sm-12 col-xs-12">
+            {{ form_row(form.photoUrl) }}
+            {{ form_row(form.bioUrl) }}
+            {{ form_row(form.termExpires) }}
+        </div>
     </div>
-{% endblock %}
+    <div class="row">
+        <div class="col-md-12">
+            <input type="submit" class="btn btn-primary">
+        </div>
+    </div>
+    {{ form_end(form) }}
+{% endblock panel_body %}
+
+{% block javascripts %}
+    {{- parent() -}}
+    <script src="{{- asset('bundles/govwikifrontend/js/vendor/typeahead.js') -}}"></script>
+    <script src="{{- asset('bundles/govwikifrontend/js/vendor/handlebars.js') -}}"></script>
+    <script>
+        $(function() {
+            var timer;
+
+            // Request delay.
+            var delay = 750;
+
+            /**
+             * Typeahead search
+             */
+
+            var findMatches = function findMatches(query, syncCallback, asyncCallback) {
+                if (timer) {
+                    clearTimeout(timer);
+                }
+
+                timer = setTimeout(function request() {
+                    $.ajax({
+                        method: 'GET',
+                        url: '{{- path('govwiki_api_v1_government_search') -}}?search=' + query
+                    }).success(function success(data) {
+                        asyncCallback(data);
+                    });
+                }, delay);
+            };
+
+            var searchValue = '';
+            {%- verbatim -%}
+            // Init typeahead
+            var $typeahead = $('#govwiki_dbbundle_electedofficial_government').typeahead({
+                hint: true,
+                highlight: true,
+                minLength: 3
+            }, {
+                name: 'countries',
+                source: findMatches,
+                templates: {
+                    empty: '<div class="tt-suggestion">Not found. Please retype your query </div>',
+                    suggestion: Handlebars.compile('<div class="sugg-box">' +
+                                                   '<div class="sugg-state">{{state}}</div>' +
+                                                   '<div class="sugg-name">{{name}}</div>' +
+                                                   '</div>')
+                },
+                updater: function updater(item) {
+                    alert(item);
+                }
+            });
+            {%- endverbatim -%}
+
+            // Pressed mouse or enter button
+            $typeahead.bind('typeahead:selected', function selected(obj, selectedItemData) {
+                $typeahead.typeahead('val', selectedItemData.name);
+            });
+
+            // Move cursor via arrows keys
+            $typeahead.bind('typeahead:cursorchange', function cursorchange() {
+                $typeahead.typeahead('val', searchValue);
+            });
+
+            // Remove request
+            $typeahead.bind('keyup', function typeaheadChange() {
+                if ($typeahead.val().length < 3) {
+                    clearTimeout(timer);
+                }
+            });
+
+            // Store search value on typing
+            $typeahead.keyup(function keyup(event) {
+                searchValue = $(event.target).val();
+            });
+        });
+    </script>
+{% endblock javascripts %}

@@ -13,57 +13,11 @@ services:
                 method: onKernelResponse
                 priority: -100
 
-    govwiki_api.environment_manager.configurator:
-        class: GovWiki\ApiBundle\Manager\EnvironmentManagerConfigurator
-        arguments:
-            - @govwiki_api.environment.determinator.host
-        tags:
-            -
-                name: kernel.event_listener
-                event: kernel.request
-                priority: 20
-
-    govwiki_api.environment.determinator.path:
-        class: GovWiki\ApiBundle\Determinator\PathDeterminator
-        tags:
-            - { name: environment.determinator, alias: path }
-
-    govwiki_api.environment.determinator.host:
-        class: GovWiki\ApiBundle\Determinator\HostDeterminator
-        arguments:
-            - @doctrine.orm.default_entity_manager
-        tags:
-            - { name: environment.determinator, alias: host }
-
-    govwiki_api.manager.environment:
-        class: GovWiki\ApiBundle\Manager\EnvironmentManager
-        arguments:
-            - @doctrine.orm.default_entity_manager
-            - @carto_db.api
-            - @govwiki_db.service.max_ranks_computer
-        configurator: [@govwiki_api.environment_manager.configurator, configure]
-
     govwiki_api.serializer.serialization_visitor:
         class: GovWiki\ApiBundle\Serializer\ArraySerializationVisitor
         arguments: [@jms_serializer.naming_strategy]
         tags:
             - { name: jms_serializer.serialization_visitor, format: array }
-
-    govwiki_api.routing.loader.govwiki:
-        class: GovWiki\ApiBundle\Router\GovWikiLoader
-        arguments:
-            - @file_locator
-            - @sensio_framework_extra.routing.loader.annot_class
-            - %determinator.name%
-        tags:
-            - { name: routing.loader }
-
-    govwiki_api.url.generator:
-        class: GovWiki\ApiBundle\Router\GovWikiUrlGenerator
-        arguments:
-            - @router
-            - %determinator.name%
-            - @govwiki_admin.manager.environment
 
     govwiki_api.serizlizer.deserialization_visitor:
         class: GovWiki\ApiBundle\Serializer\ArrayDeserializationVisitor

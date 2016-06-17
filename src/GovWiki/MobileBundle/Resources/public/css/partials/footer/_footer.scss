@@ -1,0 +1,39 @@
+footer {
+   min-height: 80px;
+   position: relative;
+   padding-top: 10px;
+   -webkit-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+   -moz-box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+   box-shadow: 2px 5px 22px -1px rgba(0, 0, 0, 0.49);
+   color: #eee;
+   padding: 15px;
+   font-size: 0.7em;
+
+
+   .copyright-wrapper {
+      /*
+         Add space between copyright and links on to mobile devices.
+      */
+      @media (max-width: $screen-sm-max) {
+         margin-bottom: 10px;
+      }
+
+      .copyright {
+
+         p {
+            margin-bottom: 0;
+         }
+
+      }
+   }
+
+   a {
+      color: #eee;
+
+      &:hover {
+         color: #eee;
+      }
+
+   }
+
+}

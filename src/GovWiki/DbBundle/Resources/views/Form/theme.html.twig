@@ -1,7 +1,9 @@
 {% block color_widget %}
 {% spaceless %}
         <div class="input-group color-picker">
-            <span class="input-group-addon"><i></i></span>
+            <span class="input-group-addon">
+                <i></i>
+            </span>
             {{- block('form_widget_simple') -}}
         </div>
 {% endspaceless %}
@@ -28,13 +30,15 @@
     Colorized county condition form widget.
 
 #}
-{% block colorized_county_condition_widget %}
+{% block coloring_condition_widget %}
 {% spaceless %}
         <div class="conditions">
             {{- form_row(form.colorized) -}}
             {{- form_row(form.fieldName) -}}
             {{- form_row(form.conditions) -}}
-            <button type="button" class=" pull-right btn btn-default" id="conditions-add">Add new conditions</button>
+            <button type="button" class=" pull-right btn btn-default" id="conditions-add">
+                Add new conditions
+            </button>
         </div>
 {% endspaceless %}
 {% endblock %}
@@ -48,7 +52,11 @@
 {% spaceless %}
     <div class="input-group">
         {{ block('choice_widget') }}
-        <span class="input-group-addon"><span class="shape-add"><i class="glyphicon glyphicon-plus"></i></span></span>
+        <span class="input-group-addon">
+            <span class="shape-add">
+                <i class="glyphicon glyphicon-plus"></i>
+            </span>
+        </span>
     </div>
 {% endspaceless %}
 {% endblock %}
@@ -81,10 +89,29 @@
         {%- endif -%}
 
         {# Remove button #}
-        <span>
+        <span class="style-buttons">
             <a class="style-remove-button"><i class="glyphicon glyphicon-remove"></i></a>
+            <a class="style-edit-button"><i class="glyphicon glyphicon-pencil"></i></a>
         </span>
     </h4>
     {{ block('form_widget') }}
 {% endspaceless %}
 {% endblock govwiki_admin_form_style_row_widget %}
+
+{#
+
+    Alt type selector in government form.
+
+#}
+{%- block _government_altType_widget -%}
+{% spaceless %}
+    <div class="input-group">
+        {{ block('choice_widget') }}
+        <div class="input-group-btn">
+            <button type="button" class="btn btn-success new-alt-type">
+                <i class="glyphicon glyphicon-plus"></i>
+            </button>
+        </div>
+    </div>
+{% endspaceless %}
+{%- endblock _government_altType_widget -%}

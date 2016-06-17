@@ -1,0 +1,20 @@
+localization:
+    resource: "@GovWikiMobileBundle/Controller/LocalizationController.php"
+    type:     annotation
+
+elected:
+    resource: "@GovWikiMobileBundle/Controller/ElectedController.php"
+    type:     annotation
+
+government:
+    resource: "@GovWikiMobileBundle/Controller/GovernmentController.php"
+    type:     annotation
+
+main:
+    resource: "@GovWikiMobileBundle/Controller/MainController.php"
+    type:     annotation
+    prefix:   /
+
+robots:
+    resource: "@GovWikiMobileBundle/Controller/RobotsController.php"
+    type:     annotation

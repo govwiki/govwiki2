@@ -79,7 +79,7 @@ abstract class AbstractGroup
     /**
      * @param string $name Tab name.
      *
-     * @return Format
+     * @return AbstractGroup
      */
     public function setName($name)
     {
@@ -99,7 +99,7 @@ abstract class AbstractGroup
     /**
      * @param string $orderNumber Tab order.
      *
-     * @return Format
+     * @return AbstractGroup
      */
     public function setOrderNumber($orderNumber)
     {
@@ -119,7 +119,7 @@ abstract class AbstractGroup
     /**
      * @param Environment $environment A Environment instance.
      *
-     * @return Format
+     * @return AbstractGroup
      */
     public function setEnvironment(Environment $environment)
     {

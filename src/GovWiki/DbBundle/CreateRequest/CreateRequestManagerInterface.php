@@ -13,8 +13,8 @@ interface CreateRequestManagerInterface
 {
 
     /**
-     * @param array  $data        Create request, received from user.
-     * @param string $environment A Environment instance.
+     * @param array       $data        Create request, received from user.
+     * @param Environment $environment A Environment entity instance.
      *
      * @return CreatableInterface
      *
@@ -23,5 +23,5 @@ interface CreateRequestManagerInterface
      * @throws \RuntimeException Wrong entity name.
      * @throws \Doctrine\ORM\ORMException Error while getting entity proxy.
      */
-    public function process(array $data, $environment = null);
+    public function process(array $data, Environment $environment = null);
 }

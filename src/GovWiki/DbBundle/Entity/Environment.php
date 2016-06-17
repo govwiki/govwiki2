@@ -19,7 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  repositoryClass="GovWiki\DbBundle\Entity\Repository\EnvironmentRepository"
  * )
  *
- * @UniqueEntity("name")
+ * @UniqueEntity({"name"})
+ * @UniqueEntity({"domain"})
  */
 class Environment
 {
@@ -30,7 +31,7 @@ class Environment
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
@@ -38,14 +39,14 @@ class Environment
      * @ORM\Column(unique=true)
      * @Assert\Regex(pattern="|^[\w\s]+$|")
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      *
      * @ORM\Column()
      */
-    private $title;
+    protected $title;
 
     /**
      * @var string
@@ -54,7 +55,7 @@ class Environment
      *
      * @Groups({"map"})
      */
-    private $slug;
+    protected $slug;
 
     /**
      * @var string
@@ -62,7 +63,7 @@ class Environment
      * @ORM\Column()
      * @Assert\NotBlank()
      */
-    private $domain;
+    protected $domain;
 
     /**
      * CSS styles.
@@ -71,14 +72,23 @@ class Environment
      *
      * @ORM\Column(type="text", nullable=true)
      */
-    private $style;
+    protected $style;
+
+    /**
+     * CSS styles for mobile view.
+     *
+     * @var string
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    protected $mobileStyle;
 
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
      */
-    private $enabled = false;
+    protected $enabled = false;
 
     /**
      * @var Map
@@ -90,7 +100,7 @@ class Environment
      *)
      * @ORM\JoinColumn(name="map_id")
      */
-    private $map;
+    protected $map;
 
     /**
      * @var Collection
@@ -101,7 +111,7 @@ class Environment
      *  cascade={"remove"}
      * )
      */
-    private $governments;
+    protected $governments;
 
     /**
      * @var Collection
@@ -112,7 +122,7 @@ class Environment
      *  cascade={"remove", "persist"}
      *)
      */
-    private $formats;
+    protected $formats;
 
     /**
      * @var Collection
@@ -122,7 +132,7 @@ class Environment
      *  mappedBy="environments"
      * )
      */
-    private $users;
+    protected $users;
 
     /**
      * @var Collection
@@ -133,68 +143,82 @@ class Environment
      *  cascade={"remove"}
      * )
      */
-    private $groups;
+    protected $groups;
 
     /**
      * @var Collection
      *
      * @ORM\OneToMany(targetEntity="Locale", mappedBy="environment", cascade={"remove"})
      */
-    private $locales;
+    protected $locales;
 
     /**
      * @var Locale
      *
      * @ORM\OneToOne(targetEntity="Locale")
      */
-    private $defaultLocale;
+    protected $defaultLocale;
 
     /**
      * @var string
      *
      * @ORM\Column()
      */
-    private $adminEmail;
+    protected $adminEmail;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(type="array")
      */
-    private $legislationDisplayTime;
+    protected $legislationDisplayTime;
 
     /**
      * @var string
      *
      * @ORM\Column(nullable=true)
      */
-    private $logoHref;
+    protected $logoHref;
 
     /**
      * @var string
      *
      * @ORM\Column(nullable=true)
      */
-    private $logo;
+    protected $logo;
 
     /**
      * @var UploadedFile
      */
-    private $file;
+    protected $file;
 
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
      */
-    private $subscribable = false;
+    protected $subscribable = false;
 
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
      */
-    private $showDocuments = false;
+    protected $showDocuments = false;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(nullable=true)
+     */
+    protected $mainImage;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Advertising", mappedBy="environment")
+     */
+    protected $advertising;
 
     /**
      *
@@ -204,6 +228,7 @@ class Environment
         $this->governments = new ArrayCollection();
         $this->formats = new ArrayCollection();
         $this->locales = new ArrayCollection();
+        $this->advertising = new ArrayCollection();
     }
 
     /**
@@ -522,10 +547,11 @@ class Environment
     /**
      * Add locales
      *
-     * @param \GovWiki\DbBundle\Entity\Locale $locales
+     * @param Locale $locales A Locale entity instance.
+     *
      * @return Environment
      */
-    public function addLocale(\GovWiki\DbBundle\Entity\Locale $locales)
+    public function addLocale(Locale $locales)
     {
         $this->locales[] = $locales;
 
@@ -535,11 +561,15 @@ class Environment
     /**
      * Remove locales
      *
-     * @param \GovWiki\DbBundle\Entity\Locale $locales
+     * @param Locale $locales A Locale entity instance.
+     *
+     * @return Environment
      */
-    public function removeLocale(\GovWiki\DbBundle\Entity\Locale $locales)
+    public function removeLocale(Locale $locales)
     {
         $this->locales->removeElement($locales);
+
+        return $this;
     }
 
     /**
@@ -653,6 +683,8 @@ class Environment
     public function setLogo($logo)
     {
         $this->logo = $logo;
+
+        return $this;
     }
 
     /**
@@ -668,7 +700,7 @@ class Environment
      *
      * @return Environment
      */
-    public function setFile($file)
+    public function setFile(UploadedFile $file)
     {
         $this->file = $file;
 
@@ -679,6 +711,7 @@ class Environment
      * Set subscribable
      *
      * @param boolean $subscribable
+     *
      * @return Environment
      */
     public function setSubscribable($subscribable)
@@ -691,7 +724,7 @@ class Environment
     /**
      * Get subscribable
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getSubscribable()
     {
@@ -714,6 +747,121 @@ class Environment
     public function setShowDocuments($showDocuments)
     {
         $this->showDocuments = $showDocuments;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainImage()
+    {
+        return $this->mainImage;
+    }
+
+    /**
+     * @param string $mainImage New path to main image.
+     *
+     * @return Environment
+     */
+    public function setMainImage($mainImage)
+    {
+        $this->mainImage = $mainImage;
+
+        return $this;
+    }
+
+    /**
+     * Add advertising
+     *
+     * @param Advertising $advertising A Advertising entity instance.
+     *
+     * @return Environment
+     */
+    public function addAdvertising(Advertising $advertising)
+    {
+        $this->advertising[] = $advertising;
+
+        return $this;
+    }
+
+    /**
+     * Remove advertising
+     *
+     * @param Advertising $advertising A Advertising entity instance.
+     *
+     * @return Environment
+     */
+    public function removeAdvertising(Advertising $advertising)
+    {
+        $this->advertising->removeElement($advertising);
+
+        return $this;
+    }
+
+    /**
+     * Get advertising
+     *
+     * @return Collection
+     */
+    public function getAdvertising()
+    {
+        return $this->advertising;
+    }
+
+    /**
+     * Set mobileStyle
+     *
+     * @param string $mobileStyle Css rules.
+     *
+     * @return Environment
+     */
+    public function setMobileStyle($mobileStyle)
+    {
+        $this->mobileStyle = $mobileStyle;
+
+        return $this;
+    }
+
+    /**
+     * Get mobileStyle
+     *
+     * @return string
+     */
+    public function getMobileStyle()
+    {
+        return $this->mobileStyle;
+    }
+
+    /**
+     * Generate css rules.
+     *
+     * @param array|EnvironmentStyles[] $styles List of styles.
+     * @param string                    $type   Style type: desktop or mobile.
+     *
+     * @return Environment
+     */
+    public function updateStyle(array $styles, $type)
+    {
+        $css = '';
+
+        foreach ($styles as $style) {
+            $css .= $style->getClassName() .'{';
+            foreach ($style->getProperties() as $property) {
+                $css .= $property[0] .':'. $property[1] .';';
+            }
+            $css .= '}';
+        }
+
+        switch ($type) {
+            case 'desktop':
+                $this->setStyle($css);
+                break;
+
+            case 'mobile':
+                $this->setMobileStyle($css);
+                break;
+        }
 
         return $this;
     }

@@ -1,0 +1,78 @@
+/*
+Syntax error: Invalid CSS after "            &": expected "{", was "-info {"
+              
+              "-info" may only be used at the beginning of a compound selector.
+        on line 221 of government.scss
+
+216:         .person {
+217:             width: 100%;
+218:             margin-top: 20px;
+219:             border-bottom: 1px dotted #ddd;
+220: 
+221:             &-info {
+222:                 width: 79%;
+223:                 vertical-align: top;
+224:                 font-size: 1.4em;
+225:                 display: inline-block;
+226:                 min-width: 79%;
+
+Backtrace:
+government.scss:221
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1146:in `expected'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1084:in `expected'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:691:in `block in simple_selector_sequence'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1094:in `throw_error'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:691:in `simple_selector_sequence'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:639:in `_selector'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:618:in `selector'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:602:in `selector_sequence'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:527:in `ruleset'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:590:in `block in declaration_or_ruleset'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1104:in `block in catch_error'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1104:in `catch'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1104:in `catch_error'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:590:in `declaration_or_ruleset'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:553:in `block_child'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:545:in `block_contents'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:534:in `block'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:528:in `ruleset'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:590:in `block in declaration_or_ruleset'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1104:in `block in catch_error'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1104:in `catch'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1104:in `catch_error'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:590:in `declaration_or_ruleset'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:553:in `block_child'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:545:in `block_contents'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:534:in `block'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:528:in `ruleset'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:590:in `block in declaration_or_ruleset'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1104:in `block in catch_error'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1104:in `catch'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:1104:in `catch_error'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:590:in `declaration_or_ruleset'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:553:in `block_child'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:545:in `block_contents'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:534:in `block'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:528:in `ruleset'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:552:in `block_child'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:545:in `block_contents'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:82:in `stylesheet'
+/usr/lib/ruby/vendor_ruby/sass/scss/parser.rb:27:in `parse'
+/usr/lib/ruby/vendor_ruby/sass/engine.rb:342:in `_to_tree'
+/usr/lib/ruby/vendor_ruby/sass/engine.rb:315:in `_render'
+/usr/lib/ruby/vendor_ruby/sass/engine.rb:262:in `render'
+/usr/lib/ruby/vendor_ruby/sass/plugin/compiler.rb:362:in `update_stylesheet'
+/usr/lib/ruby/vendor_ruby/sass/plugin/compiler.rb:203:in `block in update_stylesheets'
+/usr/lib/ruby/vendor_ruby/sass/plugin/compiler.rb:201:in `each'
+/usr/lib/ruby/vendor_ruby/sass/plugin/compiler.rb:201:in `update_stylesheets'
+/usr/lib/ruby/vendor_ruby/sass/plugin.rb:81:in `update_stylesheets'
+/usr/lib/ruby/vendor_ruby/sass/exec.rb:439:in `watch_or_update'
+/usr/lib/ruby/vendor_ruby/sass/exec.rb:326:in `process_result'
+/usr/lib/ruby/vendor_ruby/sass/exec.rb:41:in `parse'
+/usr/lib/ruby/vendor_ruby/sass/exec.rb:21:in `parse!'
+/usr/bin/scss:8:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: Invalid CSS after \"            &\": expected \"{\", was \"-info {\"\A               \A               \"-info\" may only be used at the beginning of a compound selector.\A         on line 221 of government.scss\A \A 216:         .person {\A 217:             width: 100%;\A 218:             margin-top: 20px;\A 219:             border-bottom: 1px dotted #ddd;\A 220: \A 221:             &-info {\A 222:                 width: 79%;\A 223:                 vertical-align: top;\A 224:                 font-size: 1.4em;\A 225:                 display: inline-block;\A 226:                 min-width: 79%;"; }

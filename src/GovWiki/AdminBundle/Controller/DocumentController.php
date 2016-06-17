@@ -4,7 +4,7 @@ namespace GovWiki\AdminBundle\Controller;
 
 use GovWiki\DbBundle\Entity\Document;
 use GovWiki\DbBundle\Entity\Government;
-use GovWiki\DbBundle\Form\DocumentType;
+use GovWiki\DbBundle\Entity\Issue;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,8 +14,11 @@ use Symfony\Component\HttpFoundation\Request;
  * @package GovWiki\AdminBundle\Controller
  *
  * @Configuration\Route(
- *  "/{government}/documents",
- *  requirements={ "government": "\d+" }
+ *  "/{environment}/government/{government}/documents",
+ *  requirements={
+ *      "environment": "\w+",
+ *      "government": "\d+"
+ *  }
  * )
  */
 class DocumentController extends AbstractGovWikiAdminController
@@ -36,22 +39,22 @@ class DocumentController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request, Government $government)
     {
-        $type = null;
-        $year = null;
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        $date = null;
         if ($filter = $request->query->get('filter')) {
-            if (!empty($filter['type'])) {
-                $type = (int) $filter['type'];
-            }
-            if (!empty($filter['year'])) {
-                $year = $filter['year'];
+            if (!empty($filter['date'])) {
+                $date = $filter['date'];
             }
         }
 
         return [
             'government' => $government,
             'documents' => $this->paginate(
-                $this->getDoctrine()->getRepository('GovWikiDbBundle:Document')
-                    ->getListQuery($government->getId(), $type, $year),
+                $this->getDoctrine()->getRepository('GovWikiDbBundle:Issue')
+                    ->getListAllQuery($government->getId(), $date),
                 $request->query->getInt('page', 1),
                 self::MAX_PER_PAGE
             ),
@@ -73,12 +76,24 @@ class DocumentController extends AbstractGovWikiAdminController
      */
     public function newAction(Request $request, Government $government)
     {
-        $document = new Document();
-        $document->setGovernment($government);
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        $document = new Issue();
+        $document
+            ->setGovernment($government)
+            ->setCreator($this->getUser());
         $form = $this->createForm('document', $document);
 
         $form->handleRequest($request);
-        $this->manageForm($form);
+        if ($this->manageForm($form)) {
+            return $this->redirectToRoute('govwiki_admin_document_edit', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+                'government' => $government->getId(),
+                'document' => $document->getId(),
+            ]);
+        }
 
         return [
             'government' => $government,
@@ -95,7 +110,7 @@ class DocumentController extends AbstractGovWikiAdminController
      *
      * @param Request    $request    A Request instance.
      * @param Government $government A Government entity instance.
-     * @param Document   $document   A Document entity instance.
+     * @param Issue      $document   A Document entity instance.
      *
      * @return array
      *
@@ -105,12 +120,21 @@ class DocumentController extends AbstractGovWikiAdminController
     public function editAction(
         Request $request,
         Government $government,
-        Document $document
+        Issue $document
     ) {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm('document', $document);
 
         $form->handleRequest($request);
-        $this->manageForm($form);
+        if ($this->manageForm($form)) {
+            return $this->redirectToRoute('govwiki_admin_document_index', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+                'government' => $government->getId()
+            ]);
+        }
 
         return [
             'government' => $government,
@@ -125,21 +149,26 @@ class DocumentController extends AbstractGovWikiAdminController
      *  requirements={ "document": "\d+"}
      * )
      *
-     * @param integer  $government Government entity id.
-     * @param Document $document   A Document entity instance.
+     * @param integer $government Government entity id.
+     * @param Issue   $document   A Document entity instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
      * @throws \LogicException Some required bundle not registered.
      * @throws \InvalidArgumentException Invalid entity manager.
      */
-    public function deleteAction($government, Document $document)
+    public function deleteAction($government, Issue $document)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($document);
         $em->flush();
 
         return $this->redirectToRoute('govwiki_admin_document_index', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
             'government' => $government,
         ]);
     }
@@ -147,7 +176,7 @@ class DocumentController extends AbstractGovWikiAdminController
     /**
      * @param FormInterface $form A FormInterface instance.
      *
-     * @return void
+     * @return boolean
      *
      * @throws \LogicException Some required bundle not registered.
      * @throws \InvalidArgumentException Invalid entity manager.
@@ -159,6 +188,60 @@ class DocumentController extends AbstractGovWikiAdminController
 
             $em->persist($form->getData());
             $em->flush();
+
+            return true;
         }
+
+        return false;
+    }
+
+    /**
+     * @Configuration\Route(
+     *  "/{issue}/approve",
+     *  requirements={ "issue": "\d+"}
+     * )
+     *
+     * @param integer $government A Government entity id.
+     * @param Issue   $issue      A Issue entity instance.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function approveAction($government, Issue $issue)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $issue->setState(Issue::APPROVED);
+        $em->persist($issue);
+        $em->flush();
+
+        return $this->redirectToRoute('govwiki_admin_document_index', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+            'government' => $government,
+        ]);
+    }
+
+    /**
+     * @Configuration\Route(
+     *  "/{issue}/discard",
+     *  requirements={ "issue": "\d+"}
+     * )
+     *
+     * @param integer $government A Government entity id.
+     * @param Issue   $issue      A Issue entity instance.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function discardAction($government, Issue $issue)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $issue->setState(Issue::DISCARDED);
+        $em->persist($issue);
+        $em->flush();
+
+        return $this->redirectToRoute('govwiki_admin_document_index', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+            'government' => $government,
+        ]);
     }
 }

@@ -1,0 +1,99 @@
+{% extends 'GovWikiAdminBundle:Layout:main.html.twig' %}
+
+{% import 'GovWikiAdminBundle:User:show.html.twig' as user_macro %}
+
+{% block title %}{{ parent() }} - admins{% endblock %}
+
+{% block breadcrumb %}
+    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
+    {{- macro.breadcrumbElement('Admins') -}}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    Admins
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {# Pagination #}
+    <div class="index-page-head">
+        <div class="navigation">
+            <div class="row">
+                <div class="col-md-5">
+                    {{ knp_pagination_render(users) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-bordered text-center">
+        <thead>
+        <tr>
+            <th>{{- knp_pagination_sortable(
+                users,
+                'Id',
+                'User.id'
+            ) -}}</th>
+            <th>{{- knp_pagination_sortable(
+                users,
+                'Username',
+                'User.username'
+            ) -}}</th>
+            <th>Locked</th>
+            <th>{{- knp_pagination_sortable(
+                users,
+                'Last login',
+                'User.lastLogin'
+            ) -}}</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user_macro.renderBoolean(user.locked) }}</td>
+                <td>{{ user.lastLogin|date('m/d/y g:i a') }}</td>
+                <td>
+                    <div class="btn-group">
+                        <a href="{{- path(
+                            'govwiki_admin_adminuser_show',
+                            { 'id': user.id }
+                        ) -}}" class="btn btn-default">
+                            <span class="glyphicon glyphicon-search"></span> Show
+                        </a>
+                        <a href="{{- path(
+                            'govwiki_admin_adminuser_edit',
+                            { 'id': user.id }
+                        ) -}}" class="btn btn-default">
+                            <i class="glyphicon glyphicon-pencil"></i> Edit
+                        </a>
+                        {% set glyph = 'glyphicon-ban-circle' %}
+                        {% set title = 'Disable' %}
+                        {% if user.locked %}
+                            {% set glyph = 'glyphicon-ok-circle' %}
+                            {% set title = 'Enable' %}
+                        {% endif %}
+                        <a href="{{- path(
+                            'govwiki_admin_adminuser_enabletoggle',
+                            { 'id': user.id }
+                        ) -}}" class="btn btn-default">
+                            <i class="glyphicon {{ glyph }}"> {{ title }}</i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {# Pagination #}
+    <div class="navigation">
+        {{ knp_pagination_render(users) }}
+    </div>
+    <div class="btn-group">
+        <a class="btn btn-primary" href="{{- path(
+            'govwiki_admin_adminuser_new'
+        ) -}}">Add new user</a>
+    </div>
+{% endblock panel_body %}

@@ -16,7 +16,7 @@ use GovWiki\DbBundle\Form\PublicStatementType;
  *
  * @package GovWiki\AdminBundle\Controller
  */
-class PublicStatementController extends Controller
+class PublicStatementController extends AbstractGovWikiAdminController
 {
     /**
      * @Configuration\Route(
@@ -34,6 +34,10 @@ class PublicStatementController extends Controller
         Request $request,
         ElectedOfficial $electedOfficial
     ) {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $publicStatement = new PublicStatement();
 
         $form = $this->createForm(new PublicStatementType(), $publicStatement);
@@ -74,6 +78,10 @@ class PublicStatementController extends Controller
         Request $request,
         PublicStatement $publicStatement
     ) {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm(new PublicStatementType(), $publicStatement);
         $form->handleRequest($request);
 
@@ -98,6 +106,10 @@ class PublicStatementController extends Controller
      */
     public function removeAction(PublicStatement $publicStatement)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($publicStatement);
         $em->flush();

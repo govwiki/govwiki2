@@ -2,12 +2,14 @@
 
 namespace GovWiki\ApiBundle\Controller\V1;
 
-use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Entity\Issue;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * GovernmentController
@@ -36,8 +38,13 @@ class GovernmentController extends AbstractGovWikiApiController
             );
         }
 
-        return new JsonResponse($this->environmentManager()
-            ->searchGovernment($search));
+        $governments = $this->getGovernmentManager()
+            ->searchGovernment(
+                $this->getCurrentEnvironment(),
+                $search
+            );
+
+        return new JsonResponse($governments);
     }
 
     /**
@@ -61,6 +68,8 @@ class GovernmentController extends AbstractGovWikiApiController
      */
     public function getRanksAction(Request $request, $altTypeSlug, $slug)
     {
+        $environment = $this->getCurrentEnvironment();
+
         $fieldName = $request->query->get('field_name', null);
         if ((null === $fieldName) || ('' === $fieldName)) {
             return new JsonResponse(
@@ -72,9 +81,9 @@ class GovernmentController extends AbstractGovWikiApiController
         /*
          * Check field name.
          */
-        $fields = $this->environmentManager()->getRankedFields();
+        $fields = $this->getFormatManager()->getRankedFields($environment);
         $found = false;
-        $tmp = preg_replace('|_rank$|', '', $fieldName);
+        $tmp = GovwikiNamingStrategy::originalFromRankFieldName($fieldName);
         foreach ($fields as $field) {
             if ($field['field'] === $tmp) {
                 $found = true;
@@ -87,7 +96,8 @@ class GovernmentController extends AbstractGovWikiApiController
             ], 400);
         }
 
-        $data = $this->environmentManager()->getGovernmentRank(
+        $data = $this->getGovernmentManager()->getGovernmentRank(
+            $environment,
             $altTypeSlug,
             $slug,
             [
@@ -114,62 +124,38 @@ class GovernmentController extends AbstractGovWikiApiController
     }
 
     /**
-     * @Route("/{government}/salaries")
-     * @Template()
+     * @Route("/{government}/new_issue", methods={ "POST" })
+     * @Security("is_granted('ROLE_USER')")
      *
-     * @param Request $request    A Request instance.
-     * @param integer $government Government entity id.
+     * @param Request    $request    A Request instance.
+     * @param Government $government A Government entity instance.
      *
-     * @return array
+     * @return JsonResponse
      */
-    public function salariesAction(Request $request, $government)
+    public function issueAction(Request $request, Government $government)
     {
-        $paginator = $this->get('knp_paginator');
-        $year = $request->query->get(
-            'year',
-            $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-                ->getAvailableYears()[0]
-        );
+        $issue = new Issue();
+        $issue
+            ->setCreator($this->getUser())
+            ->setGovernment($government)
+            ->setState(Issue::PENDING);
 
-        $salaries = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Salary')
-            ->getListQuery($government, $year);
-        $salaries = $paginator->paginate(
-            $salaries,
-            $request->query->get('page', 1),
-            self::MAX_SALARIES_PER_PAGE
-        );
+        $form = $this->createForm('document', $issue);
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
 
-        return [ 'salaries' => $salaries ];
-    }
+            $em->persist($issue);
+            $em->flush();
 
-    /**
-     * @Route("/{government}/pensions")
-     * @Template()
-     *
-     * @param Request $request    A Request instance.
-     * @param integer $government Government entity id.
-     *
-     * @return array
-     */
-    public function pensionsAction(Request $request, $government)
-    {
-        $paginator = $this->get('knp_paginator');
-        $year = $request->query->get(
-            'year',
-            $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-                ->getAvailableYears()[0]
-        );
+            return new JsonResponse([
+                'name' => $issue->getName(),
+                'description' => $issue->getDescription(),
+                'link' => $issue->getLink(),
+                'date' => $issue->getDate()->format('Y-m-d'),
+            ]);
+        }
 
-        $pensions = $this->getDoctrine()
-            ->getRepository('GovWikiDbBundle:Pension')
-            ->getListQuery($government, $year);
-        $pensions = $paginator->paginate(
-            $pensions,
-            $request->query->get('page', 1),
-            self::MAX_PENSIONS_PER_PAGE
-        );
-
-        return [ 'pensions' => $pensions ];
+        return $this->formError($form);
     }
 }

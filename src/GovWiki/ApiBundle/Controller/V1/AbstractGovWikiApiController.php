@@ -3,9 +3,10 @@
 namespace GovWiki\ApiBundle\Controller\V1;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use JMS\Serializer\SerializationContext;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -13,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Class AbstractGovWikiApiController
  * @package GovWiki\ApiBundle\Controller
  */
-abstract class AbstractGovWikiApiController extends Controller
+abstract class AbstractGovWikiApiController extends AbstractGovWikiController
 {
     /**
      * @param string $message Error message.
@@ -24,7 +25,7 @@ abstract class AbstractGovWikiApiController extends Controller
     {
         return new JsonResponse([
             'status' => 'error',
-            'message' => $message
+            'message' => $message,
         ], 404);
     }
 
@@ -37,7 +38,7 @@ abstract class AbstractGovWikiApiController extends Controller
     {
         return new JsonResponse([
             'status' => 'error',
-            'message' => $message
+            'message' => $message,
         ], 400);
     }
 
@@ -106,10 +107,20 @@ abstract class AbstractGovWikiApiController extends Controller
     }
 
     /**
-     * @return \GovWiki\ApiBundle\Manager\EnvironmentManager
+     * @param FormInterface $form A FormInterface instance.
+     *
+     * @return JsonResponse
      */
-    protected function environmentManager()
+    protected function formError(FormInterface $form)
     {
-        return $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
+        $errors = $form->getErrors();
+        $messages = [];
+
+        /** @var FormError $error */
+        foreach ($errors as $error) {
+            $messages[] = $error->getMessage();
+        }
+
+        return new JsonResponse($messages, 400);
     }
 }

@@ -1,0 +1,39 @@
+<div class="paginate">
+    <div class="loader" style="display: none"></div>
+    <div class="tab-pane-main">
+        {{ knp_pagination_render(pensions) }}
+
+        <div class="hidden-xs col-sm-12">
+
+                <table class="table table-responsive table-striped">
+                    <thead>
+                        <tr>
+                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Employee', 'Pension.employee') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Job title', 'Pension.job') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Amount', 'Pension.amount') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Benefits', 'Pension.benefits') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Disability', 'Pension.disability') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Total', 'Pension.total') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Years of service', 'Pension.yearsOfService') }}</th>
+                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Year of retirement', 'Pension.yearOfRetirement') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pension in pensions %}
+                            <tr>
+                                <td>{{ pension.employee }}</td>
+                                <td>{{ pension.job }}</td>
+                                <td>$ {{ pension.amount|number_format(2) }}</td>
+                                <td>$ {{ pension.benefits|number_format(2) }}</td>
+                                <td>$ {{ pension.disability|number_format(2) }}</td>
+                                <td>$ {{ pension.total|number_format(2) }}</td>
+                                <td>{{ pension.yearsOfService }}</td>
+                                <td>{{ pension.yearOfRetirement }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+        </div>
+    </div>
+</div>

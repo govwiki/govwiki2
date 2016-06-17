@@ -2,10 +2,8 @@
 
 namespace GovWiki\DbBundle\Form;
 
-use Doctrine\ORM\EntityManagerInterface;
-use GovWiki\ApiBundle\Manager\EnvironmentManager;
 use GovWiki\DbBundle\Entity\Category;
-use GovWiki\DbBundle\Entity\Format;
+use GovWiki\DbBundle\Entity\Tab;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -21,15 +19,28 @@ class AbstractGroupType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $subject = $builder->getData();
+
         $builder
             ->add('name')
             ->add('orderNumber', 'integer');
-        if ($builder->getData() instanceof Category) {
+        if ($subject instanceof Category) {
             $builder->add('decoration', 'choice', [
-               'choices' => array_combine(
-                   Category::availableDecorations(),
-                   Category::availableDecorations()
-               ),
+                'choices' => array_combine(
+                    Category::availableDecorations(),
+                    Category::availableDecorations()
+                ),
+            ]);
+        } elseif ($subject instanceof Tab) {
+            $builder->add('tabType', 'choice', [
+                'choices' => array_combine(Tab::availableTabType(), [
+                    'Defined By User',
+                    'Issues',
+                    'Financial Statements',
+                    'Salaries',
+                    'Pensions',
+                ]),
+                'label' => 'Type',
             ]);
         }
     }

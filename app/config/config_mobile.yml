@@ -1,0 +1,51 @@
+imports:
+    - { resource: config.yml }
+
+framework:
+    router:
+        resource: "%kernel.root_dir%/config/routing_mobile.yml"
+        strict_requirements: ~
+
+# Assetic Configuration
+assetic:
+    ruby: ~
+    bundles:
+        - 'GovWikiMobileBundle'
+#    use_controller: false
+#
+#web_profiler:
+#    toolbar: true
+#    intercept_redirects: false
+
+monolog:
+    handlers:
+        main:
+            type:   stream
+            path:   "%kernel.logs_dir%/%kernel.environment%.log"
+            level:  debug
+        console:
+            type:   console
+            bubble: false
+            verbosity_levels:
+                VERBOSITY_VERBOSE: INFO
+                VERBOSITY_VERY_VERBOSE: DEBUG
+            channels: ["!doctrine"]
+        console_very_verbose:
+            type:   console
+            bubble: false
+            verbosity_levels:
+                VERBOSITY_VERBOSE: NOTICE
+                VERBOSITY_VERY_VERBOSE: NOTICE
+                VERBOSITY_DEBUG: DEBUG
+            channels: ["doctrine"]
+
+mobile_detect:
+    redirect:
+        mobile:
+            is_enabled: false
+        tablet: ~
+        full:
+            is_enabled: true
+            host: http://some.host
+    switch_device_view: ~
+    request_response_listener_class: GovWiki\MobileDetectBundle\EventListener\GovWikiRequestResponseListener

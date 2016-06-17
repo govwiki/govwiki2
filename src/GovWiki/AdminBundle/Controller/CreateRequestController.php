@@ -2,15 +2,17 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\AdminBundle\Entity\Repository\TemplateRepository;
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\CommentBundle\GovWikiCommentServices;
-use GovWiki\DbBundle\Entity\ElectedOfficial;
+use GovWiki\CommentBundle\Manager\CommentKeyManager;
 use GovWiki\DbBundle\Entity\ElectedOfficialVote;
 use GovWiki\DbBundle\Entity\Legislation;
 use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
+use GovWiki\RequestBundle\Entity\AbstractCreatable;
 use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
 use GovWiki\RequestBundle\Entity\LegislationCreateRequest;
+use GovWiki\RequestBundle\Entity\Repository\CreateRequestRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +22,10 @@ use Symfony\Component\Routing\RouterInterface;
  * Class CreateRequestController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/create-request")
+ * @Configuration\Route(
+ *  "/{environment}/create-request",
+ *  requirements={ "environment": "\w+" }
+ * )
  */
 class CreateRequestController extends AbstractGovWikiAdminController
 {
@@ -36,8 +41,19 @@ class CreateRequestController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        /** @var CreateRequestRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('GovWikiRequestBundle:AbstractCreateRequest');
+
+        $createRequests = $repository
+            ->getListQuery($this->getCurrentEnvironment()->getId());
+
         $createRequests = $this->paginate(
-            $this->getManager()->getListQuery(),
+            $createRequests,
             $request->query->getInt('page', 1),
             50
         );
@@ -46,7 +62,10 @@ class CreateRequestController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{id}")
+     * @Configuration\Route(
+     *  "/{id}",
+     *  requirements={ "id": "\d+" }
+     * )
      *
      * @Configuration\ParamConverter(
      *  "createRequest",
@@ -55,7 +74,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
      * )
      *
      * @param Request               $request       A Request instance.
-     * @param AbstractCreateRequest $createRequest A AbstractCreateRequest
+     * @param AbstractCreateRequest $createRequest A AbstractCreateRequest entity
      *                                             instance.
      *
      * @return Response
@@ -67,6 +86,11 @@ class CreateRequestController extends AbstractGovWikiAdminController
         Request $request,
         AbstractCreateRequest $createRequest
     ) {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        $environment = $this->getCurrentEnvironment();
         $em = $this->getDoctrine()->getManager();
 
         $type = $createRequest->getFormType();
@@ -75,27 +99,20 @@ class CreateRequestController extends AbstractGovWikiAdminController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($request->request->has('discard')) {
-                /*
-                 * Discard current create request.
-                 */
+                // Discard current create request.
                 $createRequest
                     ->setStatus(AbstractCreateRequest::STATE_DISCARDED);
 
                 $em->persist($createRequest);
             } else {
-                /*
-                 * Apply current create request.
-                 */
+                // Apply current create request.
 
                 $createRequest
                     ->setStatus(AbstractCreateRequest::STATE_APPLIED);
 
                 if ($createRequest instanceof LegislationCreateRequest) {
-                    /*
-                     * Set display time for applied legislation.
-                     */
+                    // Set display time for applied legislation.
 
-                    $environment = $this->adminEnvironmentManager()->getEntity();
                     $delay = $environment->getLegislationDisplayTime();
 
                     if (null !== $delay) {
@@ -124,6 +141,10 @@ class CreateRequestController extends AbstractGovWikiAdminController
             }
 
             $em->flush();
+
+            return $this->redirectToRoute('govwiki_admin_createrequest_index', [
+                'environment' => $environment->getSlug(),
+            ]);
         }
 
         $templateName = strtolower(str_replace(
@@ -142,19 +163,35 @@ class CreateRequestController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{id}/remove")
+     * @Configuration\Route(
+     *  "/{id}/remove",
+     *  requirements={ "id": "\d+" }
+     * )
      *
-     * @param AbstractCreateRequest $createRequest A CreateRequest instance.
+     * @param AbstractCreateRequest $request A AbstractCreateRequest entity
+     *                                       instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function removeAction(AbstractCreateRequest $createRequest)
+    public function removeAction(AbstractCreateRequest $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
-        $em->remove($createRequest);
+
+        /** @var AbstractCreatable $subject */
+        $subject = $request->getSubject();
+        $subject->setRequest(null);
+
+        $em->persist($subject);
+        $em->remove($request);
         $em->flush();
 
-        return $this->redirectToRoute('govwiki_admin_createrequest_index');
+        return $this->redirectToRoute('govwiki_admin_createrequest_index', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+        ]);
     }
 
     /**
@@ -164,8 +201,9 @@ class CreateRequestController extends AbstractGovWikiAdminController
      */
     private function sendEmails(array $electedList, AbstractCreateRequest $createRequest)
     {
-        $domain = $this->adminEnvironmentManager()->getEntity()->getDomain();
+        $domain = $this->getCurrentEnvironment()->getDomain();
 
+        /** @var CommentKeyManager $commentKeyManager */
         $commentKeyManager = $this
             ->get(GovWikiCommentServices::COMMENT_KEY_MANAGER);
         $govwikiRouter = $this
@@ -198,7 +236,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
                 'full_name' => $row['fullName'],
                 'title' => $row['title'],
                 'type' => $type,
-                'email' => $this->adminEnvironmentManager()->getEntity()->getAdminEmail(),
+                'email' => $this->getCurrentEnvironment()->getAdminEmail(),
                 'government_name' => $row['name'],
                 'profileUrl' => "http://{$domain}".$govwikiRouter->generate(
                     'elected',
@@ -212,11 +250,13 @@ class CreateRequestController extends AbstractGovWikiAdminController
             $engine = $this->get('twig');
 
             if ('vote' === $type) {
-                $template = $this->getDoctrine()
-                    ->getRepository('GovWikiAdminBundle:Template')
+                /** @var TemplateRepository $repository */
+                $repository = $this->getDoctrine()
+                    ->getRepository('GovWikiAdminBundle:Template');
+
+                $template = $repository
                     ->getVoteEmailTemplate(
-                        $this->adminEnvironmentManager()
-                            ->getEnvironment()
+                        $this->getCurrentEnvironment()->getSlug()
                     );
                 $vote =
                     $this->getVote($createRequest->getSubject(), $row['id']);
@@ -236,7 +276,7 @@ class CreateRequestController extends AbstractGovWikiAdminController
 
             $message
                 ->setSubject($this->getParameter('email_subject'))
-                ->setFrom($this->adminEnvironmentManager()->getEntity()->getAdminEmail())
+                ->setFrom($this->getCurrentEnvironment()->getAdminEmail())
                 ->setBody(
                     $engine->render(
                         $template->getContent(),
@@ -265,13 +305,5 @@ class CreateRequestController extends AbstractGovWikiAdminController
         }
 
         return null;
-    }
-
-    /**
-     * @return \GovWiki\AdminBundle\Manager\Entity\AdminCreateRequestManager
-     */
-    private function getManager()
-    {
-        return $this->get(GovWikiAdminServices::CREATE_REQUEST_MANAGER);
     }
 }

@@ -4,172 +4,167 @@
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-        macro.breadcrumbElement(
-            admin_environment|capitalize ~' environment',
-            'govwiki_admin_main_show',
-            { 'environment': admin_environment }
-        )
-    }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
     {{ macro.breadcrumbElement('Elected Officials') }}
 {% endblock breadcrumb %}
 
+{% block panel_title %}
+    Elected officials
+{% endblock panel_title %}
 
-{% block body %}
+{% block panel_body %}
+    {# Navigation #}
+    <div class="row">
 
+        {# Pagination #}
+        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center">
+            {{ knp_pagination_render(electedOfficials) }}
+        </div>
+
+        {# Filter #}
+        <div class="col-xs-8 col-sm-9 col-md-6 col-lg-6 text-center text-left-sm">
+
+            <div class="row">
+                <form method="get" class="form-inline controls">
+                    <div class="col-xs-10">
+
+                        {% set session_filter = app.session.get('filter') %}
+                        {% if session_filter and session_filter[environment.slug] is defined %}
+                            {% set filter_id = session_filter[environment.slug].elected.id %}
+                            {% set filter_fullName = session_filter[environment.slug].elected.fullName %}
+                            {% set filter_governmentName = session_filter[environment.slug].elected.governmentName %}
+                        {% elseif app.request.query.get('filter') %}
+                            {% set filter_id = macro.filterValue('id') %}
+                            {% set filter_fullName = macro.filterValue('fullName') %}
+                            {% set filter_governmentName = macro.filterValue('governmentName') %}
+                        {% else %}
+                            {% set filter_id = '' %}
+                            {% set filter_fullName = '' %}
+                            {% set filter_governmentName = '' %}
+                        {% endif %}
+
+                        <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id"
+                               value="{{ filter_id }}">
+
+                        <input name="filter[fullName]" type="text" class="form-control input-sm" placeholder="Name"
+                               value="{{ filter_fullName }}">
+
+                        <input name="filter[governmentName]" type="text" class="form-control input-sm" placeholder="Government name"
+                               value="{{ filter_governmentName }}">
+
+                    </div>
+
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
+                        <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        {# Controls #}
+        <div class="col-xs-4 col-sm-3 col-md-2 col-lg-2 text-center text-right-sm">
+            <a class="btn btn-sm btn-primary controls" href="{{- path(
+                'govwiki_admin_electedofficial_create',
+                { 'environment': environment.slug }
+            ) -}}">
+                Create
+            </a>
+        </div>
+    </div>
+
+    {# Table #}
     <div class="row">
         <div class="col-md-12">
 
-            {# Panel #}
-            <div class="panel panel-primary">
+            <div class="table-responsive">
 
-                {# Header #}
-                <div class="panel-heading">
-                    <h3 class="panel-title">Elected Official info</h3>
-                </div>
+                <table class="table table-bordered table-hover text-center">
 
-                {# Body #}
-                <div class="panel-body">
+                    {# THEAD #}
+                    <thead>
+                    <tr>
+                        <th>
+                            {{- knp_pagination_sortable(
+                                electedOfficials,
+                                'Id',
+                                'eo.id'
+                            ) -}}
+                        </th>
+                        <th>
+                            {{- knp_pagination_sortable(
+                                electedOfficials,
+                                'Name',
+                                'eo.fullName'
+                            ) -}}
+                        </th>
+                        <th>
+                            {{ knp_pagination_sortable(
+                                electedOfficials,
+                                'Government',
+                                'Government.name'
+                            ) -}}
+                        </th>
+                        <th>
+                            {{- knp_pagination_sortable(
+                                electedOfficials,
+                                'Title',
+                                'eo.title'
+                            ) -}}
+                        </th>
+                        <td class="actions">Actions</td>
+                    </tr>
+                    </thead>
 
-                    {# Navigation #}
-                    <div class="row">
+                    {# TBODY #}
+                    <tbody>
+                    {% for electedOfficial in electedOfficials %}
+                        <tr>
+                            <td>{{ electedOfficial.id }}</td>
+                            <td>{{ electedOfficial.fullName }}</td>
+                            <td>{{ electedOfficial.government ? electedOfficial.government.name }}</td>
+                            <td>{{ electedOfficial.title }}</td>
+                            <td>
+                                <a href="{{- path(
+                                    'govwiki_admin_electedofficial_edit',
+                                    {
+                                        'environment': environment.slug,
+                                        'elected': electedOfficial.id
+                                    }
+                                ) -}}"
+                                   class="btn btn-sm btn-default">
+                                    <span class="glyphicon glyphicon-pencil"></span> Edit
+                                </a>
+                                <a href="{{- path(
+                                    'govwiki_admin_comment_list',
+                                    {
+                                        'environment': environment.slug,
+                                        'elected': electedOfficial.id
+                                    }
+                                ) -}}" class="btn btn-sm btn-default">Comments</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
 
-                        {# Pagination #}
-                        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center">
-                            {{ knp_pagination_render(electedOfficials) }}
-                        </div>
-
-                        {# Filter #}
-                        <div class="col-xs-8 col-sm-9 col-md-6 col-lg-6 text-center text-left-sm">
-
-                            <div class="row">
-                                <form method="get" class="form-inline controls">
-                                    <div class="col-xs-10">
-
-                                        {% set session_filter = app.session.get('filter') %}
-                                        {% if session_filter and session_filter[admin_environment] is defined %}
-                                            {% set filter_id = session_filter[admin_environment].elected.id %}
-                                            {% set filter_fullName = session_filter[admin_environment].elected.fullName %}
-                                            {% set filter_governmentName = session_filter[admin_environment].elected.governmentName %}
-                                        {% elseif app.request.query.get('filter') %}
-                                            {% set filter_id = app.request.query.get('filter').id %}
-                                            {% set filter_fullName = app.request.query.get('filter').fullName %}
-                                            {% set filter_governmentName = app.request.query.get('filter').governmentName %}
-                                        {% else %}
-                                            {% set filter_id = '' %}
-                                            {% set filter_fullName = '' %}
-                                            {% set filter_governmentName = '' %}
-                                        {% endif %}
-
-                                        <input name="filter[id]" type="text" class="form-control input-sm" placeholder="Id"
-                                               value="{{ filter_id }}">
-
-                                        <input name="filter[fullName]" type="text" class="form-control input-sm" placeholder="Name"
-                                               value="{{ filter_fullName }}">
-
-                                        <input name="filter[governmentName]" type="text" class="form-control input-sm" placeholder="Government name"
-                                               value="{{ filter_governmentName }}">
-
-                                    </div>
-
-                                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
-                                    <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
-                                </div>
-                                </form>
-                            </div>
-
-                        </div>
-
-                        {# Controls #}
-                        <div class="col-xs-4 col-sm-3 col-md-2 col-lg-2 text-center text-right-sm">
-                            <a class="btn btn-sm btn-primary controls" href="{{- path('govwiki_admin_electedofficial_create') -}}">
-                                Create
-                            </a>
-                        </div>
-                    </div>
-
-                    {# Table #}
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            <div class="table-responsive">
-
-                                <table class="table table-bordered table-hover text-center">
-
-                                    {# THEAD #}
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                {{ knp_pagination_sortable(
-                                                    electedOfficials,
-                                                    'Id',
-                                                    'eo.id')
-                                                }}
-                                            </th>
-                                            <th>
-                                                {{ knp_pagination_sortable(
-                                                    electedOfficials,
-                                                    'Name',
-                                                    'eo.fullName')
-                                                }}
-                                            </th>
-                                            <th>
-                                                {{ knp_pagination_sortable(
-                                                    electedOfficials,
-                                                    'Government',
-                                                    'Government.name')
-                                                }}
-                                            </th>
-                                            <th>
-                                                {{ knp_pagination_sortable(
-                                                    electedOfficials,
-                                                    'Title',
-                                                    'eo.title')
-                                                }}
-                                            </th>
-                                            <td class="actions">Actions</td>
-                                        </tr>
-                                    </thead>
-
-                                    {# TBODY #}
-                                    <tbody>
-                                        {% for electedOfficial in electedOfficials %}
-                                            <tr>
-                                                <td>{{ electedOfficial.id }}</td>
-                                                <td>{{ electedOfficial.fullName }}</td>
-                                                <td>{{ electedOfficial.government ? electedOfficial.government.name }}</td>
-                                                <td>{{ electedOfficial.title }}</td>
-                                                <td>
-                                                    <a href="{{- path('govwiki_admin_electedofficial_edit', {id: electedOfficial.id}) -}}"
-                                                       class="btn btn-sm btn-default">
-                                                        <span class="glyphicon glyphicon-pencil"></span> Edit
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-
-                            </div>
-
-                        </div>
-                    </div>
-
-                    {# Pagination #}
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-
-                            <div class="navigation">
-                                {{ knp_pagination_render(electedOfficials) }}
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
             </div>
 
         </div>
     </div>
 
-{% endblock %}
+    {# Pagination #}
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            <div class="navigation">
+                {{ knp_pagination_render(electedOfficials) }}
+            </div>
+
+        </div>
+    </div>
+{% endblock panel_body %}

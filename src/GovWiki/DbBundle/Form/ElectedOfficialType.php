@@ -2,9 +2,13 @@
 
 namespace GovWiki\DbBundle\Form;
 
-use Doctrine\ORM\EntityRepository;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\DbBundle\Entity\ElectedOfficial;
+use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,18 +18,18 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class ElectedOfficialType extends AbstractType
 {
-    /**
-     * @var AdminEnvironmentManager
-     */
-    private $manager;
 
     /**
-     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
-     *                                         instance.
+     * @var EntityManagerInterface
      */
-    public function __construct(AdminEnvironmentManager $manager)
+    private $em;
+
+    /**
+     * @param EntityManagerInterface $em A EntityManagerInterface instance.
+     */
+    public function __construct(EntityManagerInterface $em)
     {
-        $this->manager = $manager;
+        $this->em = $em;
     }
 
     /**
@@ -33,6 +37,11 @@ class ElectedOfficialType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $elected = $builder->getData();
+
+        $hasChanges = ($elected instanceof ElectedOfficial)
+            && (! empty($elected->getNewBio()));
+
         $builder
             ->add('fullName')
             ->add('displayOrder')
@@ -42,21 +51,34 @@ class ElectedOfficialType extends AbstractType
             ->add('photoUrl', 'url', [ 'required' => false ])
             ->add('bioUrl', 'url', [ 'required' => false ])
             ->add('termExpires', null, [ 'required' => false ])
-            ->add('government', 'entity', [
-                'class' => 'GovWiki\DbBundle\Entity\Government',
-                'query_builder' => function (EntityRepository $repository) {
-                    $qb = $repository->createQueryBuilder('Government');
-                    $expr = $qb->expr();
-
-                    return $qb
-                        ->select('partial Government.{id, name}')
-                        ->join('Government.environment', 'Environment')
-                        ->where($expr->eq(
-                            'Environment.slug',
-                            $expr->literal($this->manager->getSlug())
-                        ));
-                },
+            ->add('government', 'text')
+            ->add('bio', 'textarea', [
+                'disabled' => $hasChanges,
+                'label' => ($hasChanges) ? 'Bio (has changes)' :'Bio'
             ]);
+
+        if ($hasChanges) {
+            $builder->add('newBio', 'textarea', [
+                'disabled' => true,
+            ]);
+        }
+
+        $builder->get('government')
+            ->resetViewTransformers()
+            ->addViewTransformer(new CallbackTransformer(
+                function ($original) {
+                    if ($original instanceof Government) {
+                        return $original->getName();
+                    }
+                    return $original;
+                }, function ($name) {
+                    /** @var GovernmentRepository $repository */
+                    $repository = $this->em
+                        ->getRepository('GovWikiDbBundle:Government');
+
+                    return $repository->findOneBy([ 'name' => $name ]);
+                }
+            ));
     }
 
     /**

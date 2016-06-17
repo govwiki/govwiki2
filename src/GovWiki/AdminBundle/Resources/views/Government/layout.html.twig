@@ -1,0 +1,25 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block submenu %}
+    {{- macro.submenuElement(
+        'Governments',
+        'govwiki_admin_government_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.submenuElement(
+        'Issues',
+        'govwiki_admin_document_index',
+        {
+            'environment': environment.slug,
+            'government': government.id
+        }
+    ) -}}
+    {{- macro.submenuElement(
+        'Subscribers',
+        'govwiki_admin_subscribe_index',
+        {
+            'environment': environment.slug,
+            'government': government.id
+        }
+    ) -}}
+{% endblock submenu %}

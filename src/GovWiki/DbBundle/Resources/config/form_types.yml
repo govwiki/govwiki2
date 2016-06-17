@@ -1,49 +1,38 @@
 services:
 
+    govwiki_db.form.type.environment:
+        class: GovWiki\DbBundle\Form\EnvironmentType
+        arguments: [ %kernel.root_dir%/../web]
+        tags:
+            - { name: form.type, alias: environment }
+
     govwiki_db.form.type.alt_type:
         class: GovWiki\DbBundle\Form\Type\AltTypeType
-        arguments: [@govwiki_admin.manager.environment]
+        arguments:
+            - @govwiki_environment.storage
+            - @govwiki_environment.manager.government
         tags:
             - { name: form.type, alias: alt_type }
 
     govwiki_db.form.type.elected_official:
         class: GovWiki\DbBundle\Form\ElectedOfficialType
-        arguments: [@govwiki_admin.manager.environment]
+        arguments: [ @doctrine.orm.default_entity_manager ]
         tags:
             - { name: form.type, alias: govwiki_dbbundle_electedofficial }
-
-    govwiki_db.form.type.field_name:
-        class: GovWiki\DbBundle\Form\Type\FieldNameType
-        arguments: [@govwiki_admin.manager.environment]
-        tags:
-            - { name: form.type, alias: field_name }
 
     govwiki_db.form.type.color:
         class: GovWiki\DbBundle\Form\Type\ColorType
         tags:
             - { name: form.type, alias: color }
 
-    govwiki_db.form.type.conditions_type:
-        class: GovWiki\DbBundle\Form\Type\ConditionsType
-        tags:
-            - { name: form.type, alias: conditions }
-
-    govwiki_db.form.type.colorized_county_condition:
-        class: GovWiki\DbBundle\Form\Type\ColorizedCountyConditionType
-        tags:
-            - { name: form.type, alias: colorized_county_condition }
-
     govwiki_db.form.government:
         class: GovWiki\DbBundle\Form\GovernmentType
-        arguments: [@govwiki_admin.manager.environment]
+        arguments:
+            - %kernel.root_dir%/../web
+            - @govwiki_environment.storage
+            - @govwiki_environment.manager.government
         tags:
             - { name: form.type, alias: government }
-
-    govwiki_db.form.format:
-        class: GovWiki\DbBundle\Form\FormatType
-        arguments: [@govwiki_admin.manager.environment]
-        tags:
-            - { name: form.type, alias: format }
 
     govwiki_db.form.shape:
         class: GovWiki\DbBundle\Form\Type\ShapeType
@@ -55,9 +44,26 @@ services:
 
     govwiki_db.form.fin_data:
         class: GovWiki\DbBundle\Form\FinDataType
-        arguments: [@govwiki_admin.manager.environment]
+        arguments: [ @govwiki_environment.storage ]
         tags:
             - { name: form.type, alias: fin_data }
+
+    govwiki_db.form.ext_government:
+        class: GovWiki\DbBundle\Form\ExtGovernmentType
+        arguments:
+            - @govwiki_environment.storage
+            - @govwiki_environment.manager.format
+        tags:
+            - { name: form.type, alias: ext_government }
+
+    govwiki_db.form.new_ext_government:
+        class: GovWiki\DbBundle\Form\NewExtGovernmentType
+        arguments:
+            - @govwiki_environment.storage
+            - @govwiki_environment.manager.format
+            - @govwiki_environment.manager.government
+        tags:
+            - { name: form.type, alias: new_ext_government }
 
     govwiki_db.form.document:
         class: GovWiki\DbBundle\Form\DocumentType
@@ -66,3 +72,17 @@ services:
             - 'documents'
         tags:
             - { name: form.type, alias: document }
+
+    govwiki_db.form.legislation:
+        class: GovWiki\DbBundle\Form\LegislationType
+        arguments: [ @govwiki_environment.storage ]
+        tags:
+            - { name: form.type, alias: govwiki_dbbundle_legislation }
+
+    govwiki_db.form.survey:
+        class: GovWiki\DbBundle\Form\SurveyType
+        arguments:
+            - @govwiki_environment.manager.government
+            - @govwiki_environment.storage
+        tags:
+            - { name: form.type, alias: survey }

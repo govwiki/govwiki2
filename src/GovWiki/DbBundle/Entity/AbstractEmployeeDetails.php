@@ -26,16 +26,16 @@ class AbstractEmployeeDetails
     protected $government;
 
     /**
-     * @var Employee
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="Employee")
+     * @ORM\Column()
      */
     private $employee;
 
     /**
-     * @var Job
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="Job")
+     * @ORM\Column()
      */
     private $job;
 
@@ -97,7 +97,7 @@ class AbstractEmployeeDetails
     }
 
     /**
-     * @return Job
+     * @return string
      */
     public function getJob()
     {
@@ -105,11 +105,11 @@ class AbstractEmployeeDetails
     }
 
     /**
-     * @param Job $job A Job entity instance.
+     * @param string $job Employee job title..
      *
      * @return AbstractEmployeeDetails
      */
-    public function setJob(Job $job)
+    public function setJob($job)
     {
         $this->job = $job;
 

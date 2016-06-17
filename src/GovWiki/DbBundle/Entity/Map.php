@@ -2,10 +2,9 @@
 
 namespace GovWiki\DbBundle\Entity;
 
-use CartoDbBundle\Utils\NamedMap;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ColorizedCountyConditions;
+use GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditions;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Asset;
 
@@ -72,13 +71,13 @@ class Map
     private $position = 'left';
 
     /**
-     * @var ColorizedCountyConditions
+     * @var ColoringConditions
      *
-     * @ORM\Column(type="colorized_county_condition")
+     * @ORM\Column(type="coloring_conditions")
      *
      * @Groups({"map"})
      */
-    private $colorizedCountyConditions;
+    private $coloringConditions;
 
     /**
      * @var boolean
@@ -139,23 +138,26 @@ class Map
     public function __construct()
     {
         $this->governments = new ArrayCollection();
-        $this->colorizedCountyConditions = new ColorizedCountyConditions();
+        $this->coloringConditions = new ColoringConditions();
     }
 
     /**
-     * @param string $name Map name.
-     *
-     * @return NamedMap
+     * @return array
      */
-    public function toNamedMap($name)
+    public function toArray()
     {
-        $namedMap = new NamedMap($name);
-        $namedMap
-            ->setLatitude($this->centerLatitude)
-            ->setLongitude($this->centerLongitude)
-            ->setZoom($this->zoom);
-
-        return $namedMap;
+        return [
+            'centerLatitude' => $this->getCenterLatitude(),
+            'centerLongitude' => $this->getCenterLongitude(),
+            'zoom' => $this->getZoom(),
+            'position' => $this->getPosition(),
+            'coloringConditions' => $this
+                ->getColoringConditions()
+                ->toArray(),
+            'debug' => $this->isDebug(),
+            'legendTypes' => $this->getLegendTypes(),
+            'legend' => $this->getLegend(),
+        ];
     }
 
     /**
@@ -201,7 +203,7 @@ class Map
      */
     public function setCenterLongitude($centerLongitude)
     {
-        $this->centerLongitude = $centerLongitude;
+        $this->centerLongitude = (float) $centerLongitude;
 
         return $this;
     }
@@ -221,7 +223,7 @@ class Map
      */
     public function setCenterLatitude($centerLatitude)
     {
-        $this->centerLatitude = $centerLatitude;
+        $this->centerLatitude = (float) $centerLatitude;
 
         return $this;
     }
@@ -288,21 +290,22 @@ class Map
     }
 
     /**
-     * @return ColorizedCountyConditions
+     * @return ColoringConditions
      */
-    public function getColorizedCountyConditions()
+    public function getColoringConditions()
     {
-        return $this->colorizedCountyConditions;
+        return $this->coloringConditions;
     }
 
     /**
-     * @param ColorizedCountyConditions $colorizedCountyConditions A ColorizedCountyConditions instance.
+     * @param ColoringConditions $coloringConditions A ColoringConditions
+     *                                               instance.
      *
      * @return Map
      */
-    public function setColorizedCountyConditions(ColorizedCountyConditions $colorizedCountyConditions)
+    public function setColoringConditions(ColoringConditions $coloringConditions)
     {
-        $this->colorizedCountyConditions = $colorizedCountyConditions;
+        $this->coloringConditions = $coloringConditions;
 
         return $this;
     }

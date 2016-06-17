@@ -1,0 +1,119 @@
+{% extends "GovWikiMobileBundle:Layout:main.html.twig" %}
+
+{% block main %}
+    <section class="mapController">
+
+        <div>
+            {# Typeahead Search #}
+
+            {# Show environment main image. #}
+            {% if environment.mainImage %}
+                <img class="page-image" src="{{ environment.mainImage }}">
+            {% endif %}
+
+            {#<div class="clearfix">
+                <div class="btn_custom">
+                    <span>Comparative Search</span>
+                </div>
+                <div class="btn_custom enable">
+                    <span>Single Item Search</span>
+                </div>
+            </div>#}
+
+            {# Typeahead Search #}
+            <div>
+                <div class="search_custom" style="border: 1px solid darkgray; border-radius: 5px;padding: 5px;margin-top: 10px;margin-bottom: 10px;">
+                    <label for="search_custom">
+                        <i class="glyphicon glyphicon-search" style="margin-left: 5px;font-size: 1.5em;color: silver;vertical-align: middle;"></i>
+                    </label>
+                    <input id="search_custom" type="text" placeholder="{{ 'mobile.map.selector.name'|trans }}" class="text-uppercase typeahead_custom form-control" disabled>
+                </div>
+            </div>
+
+            {% if 'altTypes' in environment.map.legendTypes %}
+                <div>
+                    <div class="legend_title">
+                        <div class="text">SELECT OBJECTS TYPES TO SHOW</div>
+                        <a class="button" data-toggle="collapse" href="#menu" aria-expanded="false">
+                            <i class="glyphicon glyphicon-menu-up" style="color:white"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <div>
+
+                {# Map wrapper #}
+                <div id="map_wrap">
+
+                    {# Preloader #}
+                    <div class="loader"></div>
+
+                    {# Notification message#}
+                    <div class="mapOnProcessing">
+                        <h5>Please wait, map recently created</h5>
+                        <h5>Please refresh page later</h5>
+                    </div>
+
+                    {# Legend #}
+                    {% if 'altTypes' in environment.map.legendTypes %}
+                        <ul id='menu' class="collapse in">
+                        </ul>
+                    {% endif %}
+
+                    {# Map #}
+                    <div id="map"></div>
+
+                </div>
+
+            </div>
+
+            {# Intro text #}
+            <div>
+
+                <div class="intro-text">
+                    {{- greetingText|raw -}}
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+{% endblock %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{parent()}}
+
+    {% stylesheets '@GovWikiMobileBundle/Resources/public/css/map.scss' filter='scss, cssrewrite' %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}
+
+
+{# Javascripts #}
+{% block javascripts %}
+
+    {{parent()}}
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+
+    <script>
+        window.gw.map = '{{ map | escape('js') }}';
+        window.gw.environment = '{{ environment|cartoDbDataset }}';
+        window.gw.urls = {};
+        window.gw.urls.search = '{{ path('govwiki_api_v1_search_search') }}';
+    </script>
+
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
+    {#<script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.uncompressed.js"></script>#}
+    <script src="/js/mobile/common.js"></script>
+    <script src="/js/mobile/map.js"></script>
+
+{% endblock %}

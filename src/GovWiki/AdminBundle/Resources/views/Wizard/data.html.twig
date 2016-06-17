@@ -1,25 +1,24 @@
 {% extends "GovWikiAdminBundle:Layout:wizard.html.twig" %}
 
-{% block panel_title %}
-    Importing map
-{% endblock panel_title %}
-
 {% block breadcrumb %}
-    <li><a href="{{ path('step1') }}">Setup environment</a></li>
-    <li><a href="{{ path('step2') }}">Setup map</a></li>
-    <li class="active">Importing map</li>
+    {{- parent() -}}
+    {{- macro.breadcrumbElement('Importing data') -}}
 {% endblock breadcrumb %}
 
-{% block content %}
+{% block panel_title %}
+    Importing data
+{% endblock panel_title %}
+
+{% block panel_body %}
     <div class="text-center">
         {{ form_start(form) }}
         {{ form_widget(form) }}
 
          <a class="pull-left btn btn-danger" href="{{ path('govwiki_admin_wizard_cancel') }}">Cancel</a>
-        <div class="pull-right btn-group">
-            <a class="btn btn-default" href="{{ back_url }}">Back</a>
-            <button class="btn btn-primary" data-loader data-loader-message="Importing data ..." type="submit">Next</button>
-        </div>
+        <button class="btn btn-primary pull-right" data-loader
+                data-loader-message="Importing data ..." type="submit">
+            Next
+        </button>
         {{ form_end(form) }}
     </div>
-{% endblock content %}
+{% endblock panel_body %}

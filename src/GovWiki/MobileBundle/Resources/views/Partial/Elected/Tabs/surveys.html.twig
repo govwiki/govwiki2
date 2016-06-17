@@ -1,0 +1,54 @@
+<div role="tabpanel" class="tab-pane" id="Surveys"
+     xmlns="http://www.w3.org/1999/html">
+    <div class="tab-pane-main">
+        {{ knp_pagination_render(surveyResponses) }}
+
+        {% for surveyResponse in surveyResponses %}
+            {% set blockId = 'surveyCollapse' ~ loop.index %}
+
+            <div class="card">
+                {# Header #}
+                <div class="card__header text-justify" data-toggle="collapse"
+                     data-target="#{{ blockId }}"
+                     aria-expanded="false" aria-controls="{{ blockId }}">
+
+                    <p class="card__header-title">
+                        {{- surveyResponse.survey.title -}}
+                    </p>
+
+                    {# Expand icon #}
+                    <div class="card__header-expand" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false"
+                         aria-controls="{{ blockId }}">
+                        <i class="glyphicon glyphicon-chevron-down"></i>
+                    </div>
+
+                </div>
+
+                {# Content (Collapsable) #}
+                <div class="collapse" id="{{ blockId }}" data-id="{{surveyResponse.id}}">
+                    <div class="card__block">
+                        {% for question, answer in surveyResponse.responses %}
+                            <div class="card__group">
+                                <span class="card__group-item">
+                                    {{- question -}}:&nbsp;
+                                    <span>{{- answer -}}</span>
+                                </span>
+                            </div>
+                        {% else %}
+
+                            <p style="font-size:18px; margin: 0;">Something went wrong: there are no questions and answers in survey.</p>
+
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+
+            <p style="font-size:18px; margin: 0;">No information at this time. Please check back later.</p>
+
+        {% endfor %}
+
+        {{ knp_pagination_render(surveyResponses) }}
+    </div>
+</div>

@@ -3,6 +3,8 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query;
 
 /**
  * ElectedOfficialRepository
@@ -62,43 +64,42 @@ class ElectedOfficialRepository extends EntityRepository
      *  <li>Array of made CreateRequest for current elected official</li>
      * </ul>
      *
-     * @param string $environment Environment name.
-     * @param string $altTypeSlug Slugged government alt type.
-     * @param string $slug        Slugged government name.
-     * @param string $eoSlug      Slugged elected official full name.
+     * @param integer $environment A Environment entity id.
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
+     * @param string  $eoSlug      Slugged elected official full name.
      *
      * @return array
      */
     public function findOne($environment, $altTypeSlug, $slug, $eoSlug)
     {
-        $qb = $this->createQueryBuilder('ElectedOfficial');
-        $expr = $qb->expr();
+        $expr = $this->_em->getExpressionBuilder();
 
-        $result = $qb
-            ->addSelect(
-                'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}'
-            )
-            ->join('ElectedOfficial.government', 'Government')
-            ->join('Government.environment', 'Environment')
-            ->where(
-                $expr->andX(
-                    $expr->eq('Environment.slug', $expr->literal($environment)),
-                    $expr->eq('ElectedOfficial.slug', $expr->literal($eoSlug)),
-                    $expr->eq('Government.slug', $expr->literal($slug)),
-                    $expr->eq(
-                        'Government.altTypeSlug',
-                        $expr->literal($altTypeSlug)
-                    )
+        try {
+            return $this->createQueryBuilder('ElectedOfficial')
+                ->addSelect(
+                    'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}'
                 )
-            )
-            ->getQuery()
-            ->getArrayResult();
-
-        if (is_array($result)) {
-            return $result[0];
+                ->addSelect('partial BioEditor.{id}')
+                ->join('ElectedOfficial.government', 'Government')
+                ->leftJoin('ElectedOfficial.bioEditor', 'BioEditor')
+                ->where($expr->andX(
+                    $expr->eq('Government.environment', ':environment'),
+                    $expr->eq('ElectedOfficial.slug', ':eoSlug'),
+                    $expr->eq('Government.slug', ':slug'),
+                    $expr->eq('Government.altTypeSlug', ':altTypeSlug')
+                ))
+                ->setParameters([
+                    'environment' => $environment,
+                    'eoSlug'      => $eoSlug,
+                    'slug'        => $slug,
+                    'altTypeSlug' => $altTypeSlug,
+                ])
+                ->getQuery()
+                ->getOneOrNullResult(Query::HYDRATE_ARRAY);
+        } catch (NonUniqueResultException $e) {
+            return null;
         }
-
-        return null;
     }
 
     /**
@@ -131,34 +132,62 @@ class ElectedOfficialRepository extends EntityRepository
     }
 
     /**
+     * Get elected officials by government alt_type.
+     *
+     * @param integer $environment A Environment entity id.
+     * @param array  $alt_types Government alt_type.
+     *
+     * @return array
+     */
+    public function getEmailsByAltTypes($environment, $alt_types)
+    {
+        $qb = $this->createQueryBuilder('ElectedOfficial');
+        $expr = $qb->expr();
+        return $qb
+            ->select(
+                'ElectedOfficial.emailAddress as email',
+                'ElectedOfficial.id as custom_id'
+            )
+            ->join('ElectedOfficial.government', 'Government')
+            ->where(
+                $qb->expr()->andX(
+                    $expr->isNotNull('ElectedOfficial.emailAddress'),
+                    $expr->in('Government.altType', $alt_types),
+                    $expr->eq('Government.environment', ':environment')
+                )
+            )
+            ->groupBy('ElectedOfficial.emailAddress')
+            ->setParameter('environment', $environment)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
      * Search elected official with name like given in partOfName parameter.
      *
-     * @param string $environment Environment name.
-     * @param string $partOfName  Part of elected official name.
+     * @param integer $environment A Environment entity id.
+     * @param string  $partOfName  Part of elected official name.
      *
      * @return array
      */
     public function search($environment, $partOfName)
     {
-        $qb = $this->createQueryBuilder('ElectedOfficial');
-        $expr = $qb->expr();
+        $expr = $this->_em->getExpressionBuilder();
 
-        return $qb
+        return $this->createQueryBuilder('ElectedOfficial')
             ->select(
-                'partial ElectedOfficial.{id, fullName, slug},
-                partial Government.{id, name, altTypeSlug, slug}'
+                'partial ElectedOfficial.{id, fullName, slug}',
+                'partial Government.{id, name, altTypeSlug, slug}'
             )
             ->leftJoin('ElectedOfficial.government', 'Government')
-            ->leftJoin('Government.environment', 'Environment')
-            ->where(
-                $expr->andX(
-                    $expr->eq('Environment.slug', $expr->literal($environment)),
-                    $expr->like(
-                        'ElectedOfficial.fullName',
-                        $expr->literal('%'.$partOfName.'%')
-                    )
-                )
-            )
+            ->where($expr->andX(
+                $expr->eq('Government.environment', ':environment'),
+                $expr->like('ElectedOfficial.fullName', ':partOfName')
+            ))
+            ->setParameters([
+                'environment' => $environment,
+                'partOfName' => '%'. $partOfName .'%',
+            ])
             ->getQuery()
             ->getArrayResult();
     }

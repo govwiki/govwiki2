@@ -108,17 +108,9 @@ class Format
     private $environment;
 
     /**
-     * @var Tab
-     *
-     * @ORM\ManyToOne(targetEntity="Tab")
-     * @ORM\JoinColumn(name="tab_id")
-     */
-    private $tab;
-
-    /**
      * @var Category
      *
-     * @ORM\ManyToOne(targetEntity="Category")
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="formats")
      * @ORM\JoinColumn(name="category_id")
      */
     private $category;
@@ -296,6 +288,10 @@ class Format
      */
     public function getHelpText()
     {
+        if ($this->helpText === null) {
+            return '';
+        }
+
         return $this->helpText;
     }
 
@@ -327,26 +323,6 @@ class Format
     public function setEnvironment(Environment $environment)
     {
         $this->environment = $environment;
-
-        return $this;
-    }
-
-    /**
-     * @return Tab
-     */
-    public function getTab()
-    {
-        return $this->tab;
-    }
-
-    /**
-     * @param Tab $tab A Tab instance.
-     *
-     * @return Format
-     */
-    public function setTab(Tab $tab)
-    {
-        $this->tab = $tab;
 
         return $this;
     }

@@ -1,9 +1,21 @@
+wizard:
+    resource: @GovWikiAdminBundle/Controller/WizardController.php
+    type:     annotation
+
 main:
     resource: "@GovWikiAdminBundle/Controller/MainController.php"
     type:     annotation
 
+environment:
+    resource: "@GovWikiAdminBundle/Controller/EnvironmentController.php"
+    type:     annotation
+
 government:
     resource: "@GovWikiAdminBundle/Controller/GovernmentController.php"
+    type:     annotation
+
+government_data:
+    resource: "@GovWikiAdminBundle/Controller/GovernmentDataController.php"
     type:     annotation
 
 electedofficial:
@@ -12,10 +24,6 @@ electedofficial:
 
 legislation:
     resource: "@GovWikiAdminBundle/Controller/LegislationController.php"
-    type:     annotation
-
-electedofficialvote:
-    resource: "@GovWikiAdminBundle/Controller/ElectedOfficialVoteController.php"
     type:     annotation
 
 contribution:
@@ -42,12 +50,12 @@ user:
     resource: "@GovWikiAdminBundle/Controller/UserController.php"
     type:     annotation
 
-map:
-    resource: "@GovWikiAdminBundle/Controller/MapController.php"
+admin_user:
+    resource: "@GovWikiAdminBundle/Controller/AdminUserController.php"
     type:     annotation
 
-format:
-    resource: "@GovWikiAdminBundle/Controller/FormatController.php"
+field:
+    resource: "@GovWikiAdminBundle/Controller/FieldController.php"
     type:     annotation
 
 tab:
@@ -58,16 +66,8 @@ category:
     resource: "@GovWikiAdminBundle/Controller/CategoryController.php"
     type:     annotation
 
-wizard:
-    resource: @GovWikiAdminBundle/Controller/WizardController.php
-    type:     annotation
-
 fin_data:
     resource: @GovWikiAdminBundle/Controller/FinDataController.php
-    type:     annotation
-
-template:
-    resource: "@GovWikiAdminBundle/Controller/TemplateController.php"
     type:     annotation
 
 legend:
@@ -86,6 +86,10 @@ locale:
     resource: @GovWikiAdminBundle/Controller/LocalizationController.php
     type:     annotation
 
+global_locale:
+    resource: @GovWikiAdminBundle/Controller/GlobalLocalizationController.php
+    type:     annotation
+
 subscriber:
     resource: @GovWikiAdminBundle/Controller/SubscribeController.php
     type:     annotation
@@ -96,4 +100,12 @@ styles:
 
 document:
     resource: @GovWikiAdminBundle/Controller/DocumentController.php
+    type:     annotation
+
+comment:
+    resource: @GovWikiAdminBundle/Controller/CommentController.php
+    type:     annotation
+
+survey:
+    resource: "@GovWikiAdminBundle/Controller/SurveyController.php"
     type:     annotation

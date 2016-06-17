@@ -3,8 +3,8 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -121,6 +121,29 @@ class ElectedOfficial
     private $electedOfficialComments;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="text")
+     */
+    private $bio;
+
+    /**
+     * Contains edited by user `bio`.
+     *
+     * @var string
+     *
+     * @ORM\Column(type="text")
+     */
+    private $newBio;
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="GovWiki\UserBundle\Entity\User")
+     */
+    private $bioEditor;
+
+    /**
      * @ORM\OneToMany(targetEntity="Contribution", mappedBy="electedOfficial")
      * @Groups({"elected_official"})
      */
@@ -145,6 +168,13 @@ class ElectedOfficial
     private $votes;
 
     /**
+     * @ORM\OneToMany(targetEntity="SurveyResponse", mappedBy="electedOfficial")
+     * @Groups({"elected_official"})
+     */
+    private $surveyResponses;
+
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -153,6 +183,7 @@ class ElectedOfficial
         $this->endorsements      = new \Doctrine\Common\Collections\ArrayCollection();
         $this->publicStatements  = new \Doctrine\Common\Collections\ArrayCollection();
         $this->votes             = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->surveyResponses   = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -603,6 +634,46 @@ class ElectedOfficial
     }
 
     /**
+     * @return string
+     */
+    public function getBio()
+    {
+        return $this->bio;
+    }
+
+    /**
+     * @param string $bio Bio information.
+     *
+     * @return ElectedOfficial
+     */
+    public function setBio($bio)
+    {
+        $this->bio = $bio;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNewBio()
+    {
+        return $this->newBio;
+    }
+
+    /**
+     * @param string $newBio New bio edited by user.
+     *
+     * @return ElectedOfficial
+     */
+    public function setNewBio($newBio)
+    {
+        $this->newBio = $newBio;
+
+        return $this;
+    }
+
+    /**
      * Sanitize
      *
      * @param  string $str
@@ -621,5 +692,62 @@ class ElectedOfficial
         $clean = preg_replace("/[\/_|+ -]+/", $delimiter, trim($clean));
 
         return $clean;
+    }
+
+    /**
+     * Add surveyResponses
+     *
+     * @param \GovWiki\DbBundle\Entity\SurveyResponse $surveyResponses
+     * @return ElectedOfficial
+     */
+    public function addSurveyResponse(\GovWiki\DbBundle\Entity\SurveyResponse $surveyResponses)
+    {
+        $this->surveyResponses[] = $surveyResponses;
+
+        return $this;
+    }
+
+    /**
+     * Remove surveyResponses
+     *
+     * @param \GovWiki\DbBundle\Entity\SurveyResponse $surveyResponses
+     */
+    public function removeSurveyResponse(\GovWiki\DbBundle\Entity\SurveyResponse $surveyResponses)
+    {
+        $this->surveyResponses->removeElement($surveyResponses);
+    }
+
+    /**
+     * Get surveyResponses
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getSurveyResponses()
+    {
+        return $this->surveyResponses;
+    }
+
+    /**
+     * Set bioEditor
+     *
+     * @param User $bioEditor A User entity instance.
+     *
+     * @return ElectedOfficial
+     */
+    public function setBioEditor(User $bioEditor = null)
+    {
+        $this->bioEditor = $bioEditor;
+
+        return $this;
+    }
+
+    /**
+     * Get bioEditor
+     *
+     * @return User
+     */
+    public function getBioEditor()
+    {
+        return $this->bioEditor;
     }
 }

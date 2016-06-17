@@ -1,43 +1,47 @@
 {% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
 
-{% block title %}{{ parent() }} - Create elected official{% endblock %}
+{% block title %}{{ parent() }} - create legislation{% endblock %}
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-        macro.breadcrumbElement(
-            admin_environment|capitalize ~' environment',
-            'govwiki_admin_main_show',
-            { 'environment': admin_environment }
-        )
-    }}
-    {{ macro.breadcrumbElement('Legislations', 'govwiki_admin_legislation_index') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{ macro.breadcrumbElement(
+        'Legislations',
+        'govwiki_admin_legislation_index',
+        { 'environment': environment.slug }
+    ) }}
     {{ macro.breadcrumbElement('New') }}
 {% endblock breadcrumb %}
 
-{% block body %}
-    <div class="container-fluid">
-        {{ form_start(form) }}
-            <div class="row">
-                <div class="col-md-4 col-md-offset-2">
-                    {{ form_row(form.name) }}
-                    {{ form_row(form.summary) }}
-                    {{ form_row(form.govAssignedNumber) }}
-                    {{ form_row(form.dateConsidered) }}
-                </div>
-                <div class="col-md-4">
-                    {{ form_row(form.issueCategory) }}
-                    {{ form_row(form.government) }}
-                    {{ form_row(form.evaluatorApprovedPosition) }}
-                    {{ form_row(form.weighting) }}
-                    {{ form_row(form.notes) }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <input type="submit" class="btn btn-primary">
-                </div>
-            </div>
-        {{ form_end(form) }}
+{% block panel_title %}
+    New
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{ form_start(form) }}
+    <div class="row">
+        <div class="col-md-4 col-md-offset-2">
+            {{ form_row(form.name) }}
+            {{ form_row(form.summary) }}
+            {{ form_row(form.govAssignedNumber) }}
+            {{ form_row(form.dateConsidered) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.issueCategory) }}
+            {{ form_row(form.government) }}
+            {{ form_row(form.evaluatorApprovedPosition) }}
+            {{ form_row(form.weighting) }}
+            {{ form_row(form.notes) }}
+        </div>
     </div>
-{% endblock %}
+    <div class="row">
+        <div class="col-md-12">
+            <input type="submit" class="btn btn-primary">
+        </div>
+    </div>
+    {{ form_end(form) }}
+{% endblock panel_body %}

@@ -1,39 +1,42 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - Create localization{% endblock %}
 
 {% block breadcrumb %}
-    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {% if admin_environment is not null %}
-        {{
-        macro.breadcrumbElement(
-        admin_environment|capitalize ~' environment',
-        'govwiki_admin_main_show',
-        { 'environment': admin_environment }
-        )
-        }}
-    {% endif %}
-    {{ macro.breadcrumbElement('Localizations', 'govwiki_admin_localization_index') }}
-    {{ macro.breadcrumbElement('Create localization') }}
+    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Localizations',
+        'govwiki_admin_localization_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{ macro.breadcrumbElement('Create locale') }}
 {% endblock breadcrumb %}
 
-{% block body %}
-    <div class="container-fluid">
-        {{ form_start(form) }}
+{% block panel_title %}
+    {{ environment.name }} new locale
+{% endblock panel_title %}
 
-        <div class="col-md-6">
-            <div class="form-group">
-                {{ form_label(form.locale_name) }}
-                {% for flash_message in app.session.flashbag.get('error') %}
-                    <h6>{{ flash_message }}</h6>
-                {% endfor %}
-                {{ form_widget(form.locale_name) }}
-            </div>
+{% block panel_body %}
+    {{ form_start(form) }}
+
+    <div class="col-md-6">
+        <div class="form-group">
+            {{ form_label(form.locale_name) }}
+            {% for flash_message in app.session.flashbag.get('error') %}
+                <h6>{{ flash_message }}</h6>
+            {% endfor %}
+            {{ form_widget(form.locale_name) }}
         </div>
-        <div class="col-md-12">
-            <input type="submit" class="btn btn-primary">
-        </div>
-        
-        {{ form_end(form) }}
     </div>
-{% endblock %}
+    <div class="col-md-12">
+        <input type="submit" class="btn btn-primary">
+    </div>
+
+    {{ form_end(form) }}
+{% endblock panel_body %}
+

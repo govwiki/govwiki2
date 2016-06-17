@@ -3,12 +3,58 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
+use GovWiki\DbBundle\Entity\Tab;
 
 /**
  * TabRepository
  */
 class TabRepository extends EntityRepository
 {
+
+    /**
+     * @param integer $environment A Environment entity id.
+     *
+     * @return Tab[]
+     */
+    public function get($environment)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        return $this->createQueryBuilder('Tab')
+            ->addSelect('Category, Format')
+            ->leftJoin('Tab.categories', 'Category')
+            ->leftJoin('Category.formats', 'Format')
+            ->where($expr->eq('Tab.environment', ':environment'))
+            ->setParameter('environment', $environment)
+            ->orderBy($expr->asc('Tab.orderNumber'))
+            ->addOrderBy($expr->asc('Category.orderNumber'))
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getForGovernment($environment, $altType)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        return $this->createQueryBuilder('Tab')
+            ->addSelect('Category, Format')
+            ->leftJoin('Tab.categories', 'Category')
+            ->leftJoin('Category.formats', 'Format')
+            ->where($expr->andX(
+                $expr->eq('Tab.environment', ':environment'),
+                $expr->orX(
+                    "REGEXP('{$altType}', Format.showIn) = 1",
+                    $expr->neq('Tab.tabType', $expr->literal(Tab::USER_DEFINED))
+                )
+            ))
+            ->setParameter('environment', $environment)
+            ->orderBy($expr->asc('Tab.orderNumber'))
+            ->addOrderBy($expr->asc('Category.orderNumber'))
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     /**
      * @param string $environment Environment name.
      *

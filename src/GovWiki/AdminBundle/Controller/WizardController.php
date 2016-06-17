@@ -4,26 +4,18 @@ namespace GovWiki\AdminBundle\Controller;
 
 use CartoDbBundle\CartoDbServices;
 use CartoDbBundle\Service\CartoDbApi;
-use CartoDbBundle\Utils\NamedMap;
-use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManagerInterface;
-use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Util\GeoJsonStreamListener;
-use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Environment;
-use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Entity\Locale;
 use GovWiki\DbBundle\Entity\Translation;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Fund;
 use GovWiki\DbBundle\Entity\CaptionCategory;
-use GovWiki\DbBundle\Form\EnvironmentType;
 use GovWiki\DbBundle\Form\MapType;
-use GovWiki\DbBundle\GovWikiDbServices;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\Collection;
 
@@ -128,13 +120,10 @@ class WizardController extends AbstractGovWikiAdminController
         if (null === $environment) {
             $environment = new Environment();
         }
-        $form = $this->createForm(new EnvironmentType(), $environment);
+        $form = $this->createForm('environment', $environment);
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
-            /*
-             * Proceed to next step.
-             */
             $this->storeEnvironmentEntity($environment);
             $this->setGreetingText($request->request->get('greetingText'));
             $this->setBottomText($request->request->get('bottomText'));
@@ -162,7 +151,7 @@ class WizardController extends AbstractGovWikiAdminController
         }
         $map->setEnvironment($environment);
 
-        $form = $this->createForm(new MapType(true), $map);
+        $form = $this->createForm(new MapType(), $map);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -176,13 +165,19 @@ class WizardController extends AbstractGovWikiAdminController
             /*
              * Create dataset for environments.
              */
-            $api
-                ->createDataset($environment->getSlug(), [
-                    'alt_type_slug' => 'VARCHAR(255)',
-                    'slug' => 'VARCHAR(255)',
-                    'data_json' => 'VARCHAR(255)',
-                    'name' => 'VARCHAR(255)',
-                ]);
+            $datasetName = GovwikiNamingStrategy::cartoDbDatasetName($environment);
+            $response = $api->createDataset($datasetName, [
+                'alt_type_slug' => 'VARCHAR(255)',
+                'slug' => 'VARCHAR(255)',
+                'data_json' => 'VARCHAR(255)',
+                'name' => 'VARCHAR(255)',
+            ]);
+
+            $error = CartoDbApi::getErrorFromResponse($response);
+            if ($error) {
+                $this->errorMessage('Can\'t create new dataset: '. $error);
+                return $this->redirectToRoute('step2');
+            }
 
             $environment->setEnabled(true);
 
@@ -190,14 +185,12 @@ class WizardController extends AbstractGovWikiAdminController
 
             $em->persist($environment);
             $em->flush();
+
+            $this->getGovernmentManager()->createTable($environment);
+            $this->createLocale($environment);
+            $this->setCurrentEnvironment($environment);
             $this->storeEnvironmentEntity($environment);
 
-            $this->get(GovWikiAdminServices::GOVERNMENT_TABLE_MANAGER)
-                ->createGovernmentTable($environment->getSlug());
-
-            $this->adminEnvironmentManager()->changeEnvironment($environment);
-
-            $this->storeEnvironmentEntity($environment);
             return $this->nextStep();
         }
 
@@ -241,8 +234,6 @@ class WizardController extends AbstractGovWikiAdminController
                 $parser->parse();
             }
 
-            $this->createLocale();
-
             return $this->nextStep();
         }
 
@@ -267,7 +258,7 @@ class WizardController extends AbstractGovWikiAdminController
         $this->setBottomText(null);
 
         return $this->redirectToRoute('govwiki_admin_main_show', [
-            'environment' => $environment->getSlug(),
+            'slug' => $environment->getSlug(),
         ]);
     }
 
@@ -403,11 +394,9 @@ class WizardController extends AbstractGovWikiAdminController
      *
      * @return void
      */
-    private function createLocale()
+    private function createLocale(Environment $environment)
     {
         $em = $this->getDoctrine()->getManager();
-        $session_env_id = $this->getEnvironmentEntity()->getId();
-        $environment = $em->getRepository('GovWikiDbBundle:Environment')->find($session_env_id);
         $greeting_text = $this->getGreetingText();
         $bottom_text = $this->getBottomText();
 
@@ -417,29 +406,16 @@ class WizardController extends AbstractGovWikiAdminController
         $em->persist($locale);
 
         // Translations for Greeting text and Bottom text are initially set into '' and can be changed in ckeditor
-        $texts_list = array(
+        $texts_list = [
             'map.greeting_text' => $greeting_text,
             'general.bottom_text' => $bottom_text
-        );
+        ];
         foreach ($texts_list as $transKey => $transText) {
             $this->newTranslation($locale, $transKey, $transText, 'ckeditor');
         }
 
-        // Translations for footer copyright and socials
-        $env_styles = $environment->getStyle();
-        foreach ($env_styles[0]['content'] as $outer_key => $item) {
-            if ($item['block'] == 'footer' && isset($item['content']) && !empty($item['content'])) {
-                foreach ($item['content'] as $inner_key => $content) {
-                    $this->newTranslation($locale, 'footer.' . $content['block'], $content['content'], 'ckeditor');
-                    unset($env_styles[0]['content'][$outer_key]['content'][$inner_key]);
-                }
-                break;
-            }
-        }
-        $environment->setStyle($env_styles);
-
         // General translations
-        $general_trans_list = array(
+        $general_trans_list = [
             'map.government.name' => 'Government Name',
             'map.select.types' => 'Select type(s)',
             'map.type_part_agency_name' => 'Type part of the agency’s name',
@@ -448,23 +424,23 @@ class WizardController extends AbstractGovWikiAdminController
             'gov.links.latest_audit' => 'Latest Audit',
             'gov.financial_statements' => 'Financial Statements',
             'preposition.of' => 'of'
-        );
+        ];
         foreach ($general_trans_list as $transKey => $transText) {
             $this->newTranslation($locale, $transKey, $transText);
         }
 
         /** @var Fund $fund */
-        $fund_list = array(
+        $fund_list = [
             'funds.general_fund' => 'General Fund',
             'funds.other' => 'Other Funds',
             'funds.total' => 'Total Gov. Funds'
-        );
+        ];
         foreach ($fund_list as $transKey => $transText) {
             $this->preSaveTranslation($locale, $transKey, $transText);
         }
 
-        $search  = array(' ', '-'  , '&'  , ','  , '(' , ')' , '/' , '%'   , "'");
-        $replace = array('_', '_d_', 'amp', '_c_', 'lb', 'rb', 'sl', 'proc', "_apos_");
+        $search  = [' ', '-'  , '&'  , ','  , '(' , ')' , '/' , '%'   , "'"];
+        $replace = ['_', '_d_', 'amp', '_c_', 'lb', 'rb', 'sl', 'proc', "_apos_"];
         /** @var CaptionCategory $captionCategory */
         $captionCategories = $em->getRepository('GovWikiDbBundle:CaptionCategory')->findAll();
         foreach ($captionCategories as $captionCategory) {
@@ -481,6 +457,8 @@ class WizardController extends AbstractGovWikiAdminController
             $this->preSaveTranslation($locale, 'format.' . $format->getField(), $format->getName());
         }
 
+        $environment->setDefaultLocale($locale);
+
         $em->flush();
     }
 
@@ -488,10 +466,10 @@ class WizardController extends AbstractGovWikiAdminController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $exist_translation = $em->getRepository('GovWikiDbBundle:Translation')->findOneBy(array(
+        $exist_translation = $em->getRepository('GovWikiDbBundle:Translation')->findOneBy([
             'locale' => $locale,
             'transKey' => $transKey
-        ));
+        ]);
 
         if (!empty($exist_translation)) {
             $exist_translation->setTranslation($transText);

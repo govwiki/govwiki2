@@ -7,7 +7,9 @@ use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\ElectedOfficialVote;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(
+ *  repositoryClass="GovWiki\DbBundle\Entity\Repository\VoteCommentRepository"
+ * )
  */
 class VoteComment extends AbstractComment
 {

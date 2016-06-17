@@ -1,42 +1,51 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - Create translation{% endblock %}
 
 {% block breadcrumb %}
-    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {% if admin_environment is not null %}
-        {{
-        macro.breadcrumbElement(
-        admin_environment|capitalize ~' environment',
-        'govwiki_admin_main_show',
-        { 'environment': admin_environment }
-        )
-        }}
-    {% endif %}
-    {{ macro.breadcrumbElement('Localizations', 'govwiki_admin_localization_index') }}
-    {{ macro.breadcrumbElement(locale_name|upper~' Translations', 'govwiki_admin_localization_showlocale', {'locale_name': locale_name}) }}
+    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Localizations',
+        'govwiki_admin_localization_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        locale_name|upper~' locale',
+        'govwiki_admin_localization_showlocale',
+        {
+            'environment': environment.slug,
+            'locale_name': locale_name
+        }
+    ) -}}
     {{ macro.breadcrumbElement('Create translation') }}
 {% endblock breadcrumb %}
 
-{% block body %}
-    <div class="container-fluid">
-        {{ form_start(form) }}
+{% block panel_title %}
+        {{ environment.name }} new translation
+{% endblock panel_title %}
 
-        <div class="col-md-6">
-            {{ form_label(form.transKey) }}
-            {% for flash_message in app.session.flashbag.get('error') %}
-                <h6>{{ flash_message }}</h6>
-            {% endfor %}
-            {{ form_widget(form.transKey) }}
-        </div>
-        <div class="col-md-6">
-            {{ form_row(form.translation) }}
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <input type="submit" class="btn btn-primary" value="Submit">
-            </div>
-        </div>
-        {{ form_end(form) }}
+{% block panel_body %}
+    {{ form_start(form) }}
+
+    <div class="col-md-6">
+        {{ form_label(form.transKey) }}
+        {% for flash_message in app.session.flashbag.get('error') %}
+            <h6>{{ flash_message }}</h6>
+        {% endfor %}
+        {{ form_widget(form.transKey) }}
     </div>
-{% endblock %}
+    <div class="col-md-6">
+        {{ form_row(form.translation) }}
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
+    </div>
+    {{ form_end(form) }}
+{% endblock panel_body %}

@@ -1,67 +1,126 @@
-{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% extends "GovWikiAdminBundle:Government:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - Edit government{% endblock %}
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-    macro.breadcrumbElement(
-    admin_environment|capitalize ~' environment',
-    'govwiki_admin_main_show',
-    { 'environment': admin_environment }
-    )
-    }}
-    {{ macro.breadcrumbElement('Governments', 'govwiki_admin_government_index') }}
-    {{ macro.breadcrumbElement('Edit '~ form.main.name.vars.data) }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Governments',
+        'govwiki_admin_government_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(government.name) -}}
 {% endblock breadcrumb %}
 
-{% block body %}
-    <div class="container-fluid">
+{% block panel_title %}
+    Edit {{ government.name }}
+{% endblock panel_title %}
 
-        <div class="btn-group pull-right">
-            <a class="btn btn-primary" href="{{-
-                path('govwiki_admin_document_index', {
-                    'government': id
-                })
-            -}}">Documents</a>
-            <a class="btn btn-primary" href="{{-
-                path('govwiki_admin_findata_index', {
-                    'government': id
-                })
-            -}}">Financial Statements</a>
-            <a class="btn btn-primary" href="{{-
-                path('govwiki_admin_subscribe_index', {
-                    'government': id
-                })
-            -}}">Subscribers</a>
-        </div>
+{% block panel_body %}
+    {{ form_start(form) }}
+    <div class="col-md-6">
+        <h4>Main information</h4>
+        {{ form_row(form.name) }}
+        {{ form_row(form.altType) }}
+        {% if form['environment'] is defined %}
+            {{ form_row(form.environment) }}
+        {% endif %}
+        {% if availableYears is defined and availableYears|length > 0 %}
+            <div>
+                <label for="years">Select year for editing data</label>
+                <div class="input-group">
+                    <select class="form-control" id="years">
+                        {% for year in availableYears %}
+                            <option data-remove-url="{{- path(
+                                'govwiki_admin_governmentdata_remove',
+                                {
+                                    'environment': environment.slug,
+                                    'government': government.id,
+                                    'year': year
+                                }
+                            ) -}}" data-edit-url="{{- path(
+                                'govwiki_admin_governmentdata_edit',
+                                {
+                                    'environment': environment.slug,
+                                    'government': government.id,
+                                    'year': year
+                                }
+                            ) -}}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="input-group-btn">
+                        <button type="button" id="data-edit" class="btn btn-primary">
+                            <i class="glyphicon glyphicon-pencil"></i>
+                        </button>
 
-        {{ form_start(form) }}
-        {# Nav tabs #}
-        <ul class="nav nav-pills" role="tablist">
-            <li role="presentation" class="active"><a href="#General" aria-controls="General" role="tab" data-toggle="tab">General</a></li>
-            <li role="presentation"><a href="#Fields" aria-controls="Fields" role="tab" data-toggle="tab">Fields</a></li>
-            <li role="presentation"><a href="#Ranks" aria-controls="Ranks" role="tab" data-toggle="tab">Ranks</a></li>
-        </ul>
-
-        {# Tab panes #}
-        <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
-
-            {# General tab #}
-            {{ include('GovWikiAdminBundle:Partial/Government/Tabs:general.html.twig') }}
-
-            {# Fields tab #}
-            {{ include('GovWikiAdminBundle:Partial/Government/Tabs:fields.html.twig') }}
-
-            {# Ranks tab #}
-            {{ include('GovWikiAdminBundle:Partial/Government/Tabs:ranks.html.twig') }}
-
-        </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <input type="submit" class="btn btn-primary">
+                        <button type="button" id="data-remove" class="btn btn-danger">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                    </div>
                 </div>
             </div>
-        {{ form_row(form._token) }}
+            <div class="pull-right">
+                <a href="{{- path(
+                    'govwiki_admin_governmentdata_new',
+                    {
+                        'environment': environment.slug,
+                        'government': government.id
+                    }
+                ) -}}">&plus; Add data for new year</a>
+            </div>
+        {% endif %}
     </div>
-{% endblock %}
+    <div class="col-md-6">
+        <h4>Urls</h4>
+        {{ form_row(form.wikipediaPageName) }}
+        {{ form_row(form.secondaryLogo) }}
+        {{ form_row(form.secondaryLogoUrl) }}
+        {{ form_row(form.imageFile) }}
+        {{ form_row(form.image) }}
+    </div>
+    <div class="btn-group">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a class="btn btn-default" href="{{- path(
+            'govwiki_admin_government_index',
+            { 'environment': environment.slug }
+        ) -}}">Back</a>
+    </div>
+    {{ form_end(form) }}
+{% endblock panel_body %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(function() {
+            $('#data-edit').click(function() {
+                window.location = $('#years').find(':selected').data('edit-url');
+            });
+
+            $('#data-remove').click(function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                var $modal = $('#modal-delete');
+                var $selected = $('#years').find(':selected');
+
+                $('#delete-confirm').attr(
+                        'href',
+                        $selected.data('remove-url')
+                );
+
+                $modal
+                    .find('.modal-body')
+                    .find('.text-center')
+                    .html('Are you sure wont to delete data for '
+                        + $selected.val() + ' year?'
+                    );
+                $modal.modal('show');
+            });
+        });
+    </script>
+{% endblock javascripts %}

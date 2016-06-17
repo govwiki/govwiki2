@@ -1,0 +1,120 @@
+{% extends "GovWikiAdminBundle:ElectedOfficial:layout.html.twig" %}
+
+{% block title %}
+    {{ parent() }} - {{ elected.fullName }} votes
+{% endblock title %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Elected Officials',
+        'govwiki_admin_electedofficial_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Edit '~ elected.fullName,
+        'govwiki_admin_electedofficial_edit',
+        {
+            'environment': environment.slug,
+            'elected': elected.id
+        }
+    ) -}}
+    {{- macro.breadcrumbElement('Vote') -}}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    Votes
+{% endblock panel_title %}
+
+{% block panel_body %}
+    <div class="row">
+        <div class="col-md-6">
+            {{ knp_pagination_render(data) }}
+        </div>
+        <div class="col-md-6">
+            <a class="btn btn-primary pull-right" href="{{- path(
+                'govwiki_admin_electedofficial_staffcreate',
+                {
+                    'environment': environment.slug,
+                    'elected': elected.id,
+                    'staff': 'Vote'
+                }
+            ) -}}">
+                Create
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+        <thead>
+            <tr>
+                <th>{{ knp_pagination_sortable(data, 'Id', 'Vote.id') }}</th>
+                <th>{{- knp_pagination_sortable(
+                    data, 'Date', 'Legislarion.dateConsidered'
+                ) -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    data, 'Name', 'Legislarion.name'
+                ) -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    data, 'Summary of Measure', 'Legislarion.summary'
+                ) -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    data, 'How official Voted', 'Vote.vote'
+                ) -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    data, 'Sponsored by this official?', 'Vote.didElectedOfficialProposeThis'
+                ) -}}</th>
+                <th>{{- knp_pagination_sortable(
+                    data, 'Category', 'Vote.legislation.issueCategory.name'
+                ) -}}</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for vote in data %}
+                <tr>
+                    <td>{{ vote.id }}</td>
+                    <td>{{ vote.legislation.dateConsidered|date('m/d/Y') }}</td>
+                    <td>{{ vote.legislation.name }}</td>
+                    <td>{{ vote.legislation.summary }}</td>
+                    <td>{{ vote.vote }}</td>
+                    <td>{{ (vote.didElectedOfficialProposeThis == 1) ? "Yes" : "No" }}</td>
+                    <td>{{ vote.legislation.issueCategory.name }}</td>
+                    <td>
+                        <a href="{{- path(
+                        'govwiki_admin_electedofficial_staffedit',
+                        {
+                            'environment': environment.slug,
+                            'elected': elected.id,
+                            'staff': 'Vote',
+                            'id': vote.id
+                        }
+                        ) -}}" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
+                        <button data-url="{{- path(
+                            'govwiki_admin_electedofficial_staffremove',
+                            {
+                                'environment': environment.slug,
+                                'elected': elected.id,
+                                'staff': 'Vote',
+                                'id': vote.id
+                            }
+                        ) -}}" class="btn btn-sm btn-danger btn-delete"
+                                data-description="Are you sure want to delete vote '{{ vote.id }}'?">
+                            <span class="glyphicon glyphicon-remove"></span> Remove
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+
+        {{ knp_pagination_render(data) }}
+    </div>
+{% endblock panel_body %}

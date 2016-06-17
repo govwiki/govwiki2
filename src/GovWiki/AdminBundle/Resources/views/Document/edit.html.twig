@@ -1,67 +1,56 @@
-{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% extends "GovWikiAdminBundle:Government:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - governments{% endblock %}
 
 {% block breadcrumb %}
-    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
-    {{-
-        macro.breadcrumbElement(
-            admin_environment|capitalize ~' environment',
-            'govwiki_admin_main_show',
-            { 'environment': admin_environment }
-        )
-    -}}
-    {{- macro.breadcrumbElement('Governments', 'govwiki_admin_government_index') -}}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
     {{- macro.breadcrumbElement(
-            'Edit '~ government.name,
-            'govwiki_admin_government_index',
-            { 'government': government.id }
-        )
-    -}}
-    {{-
-        macro.breadcrumbElement(
-            'Documents',
-            'govwiki_admin_document_index',
-            { 'government': government.id }
-        )
-    -}}
-    {{- macro.breadcrumbElement('Edit document #'~ document.id) -}}
+    environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Governments',
+        'govwiki_admin_government_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        government.name,
+        'govwiki_admin_government_edit',
+        {
+            'environment': environment.slug,
+            'government': government.id
+        }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        government.name ~ ' issues',
+        'govwiki_admin_document_index',
+        {
+            'environment': environment.slug,
+            'government': government.id
+        }
+    ) -}}
+    {{- macro.breadcrumbElement('Edit #' ~ document.id) -}}
 {% endblock breadcrumb %}
 
-{% block body %}
+{% block panel_title %}
+    Edit #{{ document.id }}
+{% endblock panel_title %}
 
+{% block panel_body %}
     <div class="row">
         <div class="col-md-12">
-
-            {# Panel #}
-            <div class="panel panel-primary">
-
-                {# Header #}
-                <div class="panel-heading">
-                    <h3 class="panel-title">Edit document</h3>
-                </div>
-
-                {# Body #}
-                <div class="panel-body">
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            {{ form_start(form) }}
-                            {{ form_widget(form) }}
-                            <button type="submit" class="btn btn-success">Update</button>
-                            <a class="btn btn-danger" href="{{-
-                                path(
-                                    'govwiki_admin_document_index',
-                                    { 'government': government.id }
-                                )
-                            -}}">Back</a>
-                            {{ form_end(form) }}
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button type="submit" class="btn btn-success">Update</button>
+            <a class="btn btn-danger" href="{{- path(
+                'govwiki_admin_document_index',
+                {
+                    'environment': environment.slug,
+                    'government': government.id
+                }
+            ) -}}">Back</a>
+            {{ form_end(form) }}
         </div>
     </div>
-{% endblock %}
+{% endblock panel_body %}

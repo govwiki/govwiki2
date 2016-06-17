@@ -1,4 +1,4 @@
-{% if tabName == 'Overview + Elected Officials' %}
+{% if tab.name == 'Overview + Elected Officials' %}
     <div class="col-sm-8">
     {% for elected in government.electedOfficials %}
         <div class="person">
@@ -10,7 +10,7 @@
                 </p>
 
                 <p>
-                    <a href="{{ govwiki_path('elected', {
+                    <a href="{{ path('elected', {
                         'altTypeSlug': government.altTypeSlug,
                         'slug': government.slug,
                         'electedSlug': elected.slug
@@ -38,7 +38,7 @@
             <div class="person-photo">
 
                 {% if elected.photoUrl %}
-                    <a href="{{ govwiki_path('elected', {
+                    <a href="{{ path('elected', {
                         'altTypeSlug': government.altTypeSlug,
                         'slug': government.slug,
                         'electedSlug': elected.slug

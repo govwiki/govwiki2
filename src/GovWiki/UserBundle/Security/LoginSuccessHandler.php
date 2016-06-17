@@ -3,7 +3,6 @@
 namespace GovWiki\UserBundle\Security;
 
 use Doctrine\ORM\EntityManagerInterface;
-use GovWiki\ApiBundle\Manager\EnvironmentManagerAwareInterface;
 use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,39 +40,42 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * This is called when an interactive authentication attempt succeeds. This
+     * is called by authentication listeners inheriting from
+     * AbstractAuthenticationListener.
+     *
+     * @param Request        $request A Request instance.
+     * @param TokenInterface $token   A TokenInterface instance.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response never null
+     *
+     * @throws \InvalidArgumentException Can't create RedirectResponse.
      */
     public function onAuthenticationSuccess(
         Request $request,
         TokenInterface $token
     ) {
         $referer = $request->server->get('HTTP_REFERER');
+        // By default return back to main page.
+        $uri = '/';
 
         if (!empty($referer)) {
-
             /** @var User $user */
             $user = $token->getUser();
 
             if (strpos($referer, 'login')) {
                 if ($user->hasRole('ROLE_ADMIN') || $user->hasRole('ROLE_MANAGER')) {
-                    /*
-                     * Admin.
-                     */
-                    return new RedirectResponse(
-                        $this->router->generate('govwiki_admin_main_home')
-                    );
-                } else {
-                    /*
-                     * Ordinary user.
-                     */
-                    return new RedirectResponse(
-                        $this->router->generate('map')
-                    );
+                    // Admin or manager.
+                    $uri = $this->router->generate('govwiki_admin_main_home');
                 }
+                // Ordinary user return to main page.
+            } else {
+                // Back to previous page.
+                $uri = $referer;
             }
-
-            return new RedirectResponse($referer);
         }
-        return new RedirectResponse('/');
+
+        // Return to main page.
+        return new RedirectResponse($uri);
     }
 }

@@ -1,0 +1,189 @@
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - {{ environment.name }}{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{ macro.breadcrumbElement(environment.name|capitalize ~' environment') }}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    Environment info
+{% endblock panel_title %}
+
+{% block panel_body %}
+    <div class="row">
+
+        {# Information about environment. #}
+        <div class="col-md-2">
+
+            <button class="btn btn-sm btn-default" id="import-fin-stmt">
+                Import fin. stmt.
+            </button>
+
+            <a class="btn btn-sm btn-default" href="{{- path(
+                'govwiki_admin_environment_sync',
+                { environment: environment.slug }
+            ) -}}">
+                Update CartoDB
+            </a>
+
+            <hr>
+
+            <h6>Status:
+                <small>
+                    {%- if environment.enabled -%}
+                        <a href="{{- path('govwiki_admin_environment_disable',
+                        { environment: environment.slug }) -}}"
+                           class="text-success">Enabled</a>
+                    {%- else -%}
+                        <a href="{{- path('govwiki_admin_environment_enable',
+                        { environment: environment.slug }) -}}"
+                           class="text-danger">Disabled</a>
+                    {%- endif -%}
+                </small>
+            </h6>
+
+            <h6>Map:
+                <small>
+                    {%- if environment.map and environment.map.isCreated -%}
+                        <span class="text-success">Created</span>
+                    {%- else -%}
+                        <span class="text-danger">Not created</span>
+                    {% endif %}
+                </small>
+            </h6>
+
+
+            <h6>Formats:
+                <small>
+                    {%- if environment.formats -%}
+                        <span class="text-success">Exists</span>
+                    {%- else -%}
+                        <span class="text-danger">Not exists</span>
+                    {%- endif -%}
+                </small>
+            </h6>
+
+            <h6>Managers</h6>
+            <ul>
+                {% for user in environment.users %}
+                    {% if user.hasRole('ROLE_MANAGER') %}
+                        <li>
+                            <a href="{{- path('govwiki_admin_user_edit', {
+                                'environment': environment.slug,
+                                'id': user.id
+                            }) -}}">{{ user }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        {# Forms #}
+        <div class="col-md-10">
+            {{ form_start(form) }}
+
+            {# Nav tabs #}
+            {% if environment.locales|length == 1 %}
+                <ul class="nav nav-pills" role="tablist">
+                    <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
+                    <li role="presentation"><a href="#greeting-text" aria-controls="greeting-text" role="tab" data-toggle="tab">Greeting text</a></li>
+                    <li role="presentation"><a href="#bottom-text" aria-controls="bottom-text" role="tab" data-toggle="tab">Bottom text</a></li>
+                </ul>
+            {% endif %}
+
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="general">
+                    {{ form_row(form.domain) }}
+                    {{ form_row(form.title) }}
+                    {{ form_row(form.adminEmail) }}
+                    {{ form_row(form.defaultLocale) }}
+                    {{ form_row(form.file) }}
+                    {{ form_row(form.logoHref) }}
+                    {{ form_row(form.mainImageFile) }}
+                    {{ form_row(form.subscribable, {'label': 'Users can subscribe to governments of the environment'}) }}
+                </div>
+
+                {% if environment.locales|length == 1 %}
+                    <div role="tabpanel" class="tab-pane" id="greeting-text">
+                        <div class="form-group">
+                            <label class="control-label required" for="greetingText">
+                                Greeting text
+                            </label>
+                                                <textarea id="content_greetingText" name="greetingText" class="environment-content">
+                                                    {{ greetingText }}
+                                                </textarea>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="bottom-text">
+                        <div class="form-group">
+                            <label class="control-label required" for="bottomText">
+                                Bottom text
+                            </label>
+                                                <textarea id="content_bottomText" name="bottomText" class="environment-content">
+                                                    {{ bottomText }}
+                                                </textarea>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="btn-group pull-left">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="button" data-description="Delete environment with all governments?" class="btn btn-danger btn-delete" data-url="{{ path('govwiki_admin_environment_remove', {environment: environment.slug}) }}">
+                    Delete
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <div id="modal-import" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
+                <div class="modal-body">
+                    {{- render(controller('GovWikiAdminBundle:Environment:fin', {
+                        'environment': environment.slug
+                    })) -}}
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-right">
+                        <a id="import-confirm" class="btn btn-success">
+                            Import
+                        </a>
+                        <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock panel_body %}
+
+{% block panel_footer %}
+{% endblock panel_footer %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="/bundles/ivoryckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
+        {% if environment.locales|length == 1 %}
+            CKEDITOR.replace('content_greetingText');
+            CKEDITOR.replace('content_bottomText');
+        {% endif %}
+
+        $(function() {
+
+            $('#import-fin-stmt').click(function () {
+                $('#modal-import').modal('show');
+            });
+
+            $('#import-confirm').click(function () {
+                $('form', '#modal-import').submit();
+            });
+        });
+    </script>
+{% endblock javascripts %}

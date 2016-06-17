@@ -1,0 +1,100 @@
+/* ========================= */
+/* ========= CARD ======== */
+/* ========================= */
+
+// card__header
+// card__header-title
+// card__header-expand
+
+// card__group
+// card__group-item
+// card__group-item_right
+
+// card__block
+// card__block-title
+// card__block-footer
+
+
+// Block
+.card {
+  position: relative;
+  display: block;
+  margin-bottom: 1.5rem;
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: .25rem;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+
+
+
+  // Element
+  &__header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+
+    // Element
+    &-title {
+      padding: 0.6rem;
+      margin: 0;
+      font-size: 1.7em;
+      color: black;
+    }
+
+    // Expand icon
+    &-expand {
+      background-color: #f5f5f5;
+      color: #929292;
+      text-align: center;
+      font-size: 1.2em;
+    }
+
+  }
+
+  // Element
+  &__group {
+    margin: 0;
+
+    &_offset {
+      margin: 0.6em 1.2em;
+    }
+
+    // Element
+    &-item {
+      display: inline-block;
+      font-size: 1.3em;
+      color: #727272;
+
+      // Modificatior
+      &_right {
+        float: right;
+      }
+
+    }
+
+  }
+
+  // Element
+  &__block {
+    padding: 1.05rem;
+    padding-bottom: 0;
+
+    &-title {
+      margin: 1.2em 0;
+    }
+
+    &-content {
+      margin-bottom: 20px;
+      font-size: 1.4em;
+      line-height: 22px;
+    }
+
+    &-footer {
+      font-size: 2.5em;
+      margin: 0;
+    }
+
+  }
+
+
+
+}

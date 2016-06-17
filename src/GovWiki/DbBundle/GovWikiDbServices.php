@@ -12,6 +12,5 @@ abstract class GovWikiDbServices
 
     const CREATE_REQUEST_MANAGER = 'govwiki_db.manager.create_request';
 
-    const GOVERNMENT_IMPORTER = 'govwiki_db.importer.government';
     const FIN_DATA_IMPORTER = 'govwiki_db.importer.fin_data';
 }

@@ -1,0 +1,264 @@
+{% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+{% import _self as helper %}
+
+<div role="tabpanel" class="tab-pane active" id="Votes">
+	<div class="tab-pane-main">
+
+        <div id="bio" class="form-group clearfix">
+            <div class="loader"></div>
+            <label>Bio</label>
+            <div id="elected-bio-view">
+                {%- if (bioChanged and currentUserChangeBio) -%}
+                    {{- elected.newBio -}}
+                {%- else -%}
+                    {{- elected.bio -}}
+                {%- endif -%}
+            </div>
+            <textarea style="resize: vertical; display: none"
+                      id="elected-bio-edit" rows="6" class="form-control">
+                {%- if (bioChanged and currentUserChangeBio) -%}
+                    {{- elected.newBio -}}
+                {%- else -%}
+                    {{- elected.bio -}}
+                {%- endif -%}
+            </textarea>
+            {%- if app.user is not null -%}
+                {%- if ((not bioChanged)
+                    or (bioChanged and currentUserChangeBio)) -%}
+                    <div class="pull-right">
+                        <button id="change-bio-start"
+                                class="btn btn-primary">
+                            Change
+                        </button>
+                        <div id="change-bio-group" style="display: none">
+                            <a id="change-bio-save" href="{{- path(
+                            'govwiki_api_v1_electedofficial_changebio',
+                            { 'elected': elected.id }
+                            ) -}}" class="btn btn-primary">Save Changes</a>
+                            <button id="change-bio-revert"
+                                    class="btn btn-default">
+                                Revert
+                            </button>
+                        </div>
+                    </div>
+                {%- else -%}
+                    <p class="text-info text-center">
+                        Unapproved Changes Pending Approval
+                    </p>
+                {%- endif -%}
+            {%- endif -%}
+        </div>
+
+        <hr>
+
+		<div class="add_action">
+			<span>Add new Vote</span>
+			<span class="glyphicon glyphicon-plus"></span>
+		</div>
+
+        {{ knp_pagination_render(endorsements) }}
+
+		{% for vote in votes %}
+			{% set blockId = 'voteCollapse' ~ loop.index %}
+
+				{# Card #}
+				<div class="card">
+
+					{# Header #}
+					<div class="card__header text-justify" data-toggle="collapse"
+                         data-target="#{{ blockId }}"
+					     aria-expanded="false" aria-controls="{{ blockId }}"
+                        {%-
+                           if macro.isPendingRequest(vote.legislation)
+                        -%}
+                            style="background: rgba(80, 0, 0, 0.1)"
+                        {%- endif -%}>
+
+						{# Legislation Name#}
+						<p class="card__header-title">{{ vote.legislation.name }}</p>
+
+						{# How legislation vote #}
+						<div class="card__group card__group_offset">
+		                    <span class="card__group-item">
+		                        How official voted:
+		                        <span>{{ vote.vote }}</span>
+		                    </span>
+		                    <span class="card__group-item card__group-item_right">
+		                        Did official sponsor?
+		                        <span>{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}</span>
+		                    </span>
+						</div>
+
+						{# Expand icon #}
+						<div class="card__header-expand" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false"
+						     aria-controls="{{ blockId }}">
+							<i class="glyphicon glyphicon-chevron-down"></i>
+						</div>
+
+					</div>
+
+					{# Content (Collapsable) #}
+					<div class="collapse" id="{{ blockId }}">
+						<div class="card__block">
+
+							{# Vote date & issue category #}
+							<div class="card__group">
+								{{- helper.legislationDate(vote) -}}
+								{{- helper.legislationIssueCategory(vote) -}}
+							</div>
+
+							{# Legislation info #}
+							<h4 class="card__block-title">
+                                {{- helper.legislationName(vote) -}}
+                            </h4>
+							{{ helper.legislationSummary(vote) }}
+
+							{# How legislation vote (as table) #}
+							<table class="table table-stripped">
+								<tr>
+									<th>How official voted</th>
+									<td>{{ helper.legislationVote(vote) }}</td>
+								</tr>
+								<tr>
+									<th>Did official sponsor?</th>
+									<td>{{ helper.legislationSponsor(vote) }}</td>
+								</tr>
+							</table>
+
+                            {%- if not macro.isPendingRequest(vote.legislation) -%}
+                                {# Comment icon #}
+                                <p class="card__block-footer">
+                                    <span class="vote-public-comment"
+                                        data-legislation-name="{{- vote.legislation.name -}}"
+                                        id="{{ vote.electedOfficial.id }}_v{{ vote.id }}">
+                                        <i class="glyphicon glyphicon-comment"></i>
+                                    </span>
+                                </p>
+                            {%- endif -%}
+
+						</div>
+					</div>
+
+				</div>{# Card end #}
+
+		{% endfor %}
+
+	</div>
+</div>
+
+{% macro legislationDate(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+	<div data-date-considered="{{ vote.legislation.dateConsidered | date("m/d/Y") }}" class="card__group-item">
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.legislation.dateConsidered | date("m/d/Y") -}}
+        {%- else -%}
+            <a href="javascript:void(0);"
+               data-type="date"
+               data-pk="1"
+               data-format="mm/dd/yyyy"
+               data-placeholder="Please edit"
+               data-title="Please edit"
+               data-original-title="" title=""
+               class="editable editable-pre-wrapped editable-click">
+                {{- vote.legislation.dateConsidered | date("m/d/Y") -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+	</div>
+{% endmacro %}
+
+{% macro legislationIssueCategory(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+	<div data-gov-assigned-number="{{ vote.legislation.govAssignedNumber }}" class="card__group-item card__group-item_right" >
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.legislation.issueCategory.name -}}
+        {%- else -%}
+            <a href="javascript:void(0);"
+               data-type="textarea"
+               data-pk="1"
+               data-placeholder="Please edit"
+               data-title="Please edit"
+               data-original-title="" title=""
+               class="editable editable-pre-wrapped editable-click">
+                {{- vote.legislation.issueCategory.name -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+            {# : {{ vote.legislation.govAssignedNumber }} #}
+        {%- endif -%}
+	</div>
+{% endmacro %}
+
+{% macro legislationName(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+	<div data-name="{{ vote.legislation.name }}">
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.legislation.name -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title=""
+               title="">
+                {{- vote.legislation.name -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+	</div>
+{% endmacro %}
+
+{% macro legislationSummary(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+	<div data-summary="{{ vote.legislation.summary }}" class="card__block-content">
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.legislation.summary -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title=""
+               title="">
+                {{- vote.legislation.summary -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+	</div>
+{% endmacro %}
+
+{% macro legislationVote(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+	<div data-vote="{{ vote.vote }}">
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.vote -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="select"
+               data-source="{'Yes': 'Yes', 'No': 'No', 'Abstain': 'Abstain', 'Absence': 'Absence', 'Not in Office': 'Not in Office'}"
+               data-pk="1" data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title="" title="">
+                {{- vote.vote -}}
+                <span data-id="{{ vote.id }}"
+                      class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+	</div>
+{% endmacro %}
+
+{% macro legislationSponsor(vote) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+	<div data-did-elected-official-propose-this="{{ vote.didElectedOfficialProposeThis ? 'Yes' : 'No' }}"
+	     align="center">
+        {%- if macro.isPendingRequest(vote.legislation) -%}
+            {{- vote.didElectedOfficialProposeThis ? 'Yes' : 'No' -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="select"
+               data-source="{'0': 'No', '1': 'Yes'}" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title="" title="">
+                {{- vote.didElectedOfficialProposeThis ? 'Yes' : 'No' -}}
+                <span data-id="{{ vote.id }}"
+                      class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+	</div>
+{% endmacro %}

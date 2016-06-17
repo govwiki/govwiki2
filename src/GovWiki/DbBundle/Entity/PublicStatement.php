@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\QueryBuilder;
+use GovWiki\DbBundle\Form\PublicStatementType;
 use GovWiki\RequestBundle\Entity\AbstractCreatable;
 use GovWiki\RequestBundle\Entity\PublicStatementCreateRequest;
 use JMS\Serializer\Annotation\Groups;
@@ -16,7 +17,8 @@ use JMS\Serializer\Annotation\Groups;
  *  repositoryClass="GovWiki\DbBundle\Entity\Repository\PublicStatementRepository"
  * )
  */
-class PublicStatement extends AbstractCreatable
+class PublicStatement extends AbstractCreatable implements
+    StaffEntityInterface
 {
     /**
      * @var integer
@@ -198,5 +200,13 @@ class PublicStatement extends AbstractCreatable
     public function getIssueCategory()
     {
         return $this->issueCategory;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getFormType()
+    {
+        return new PublicStatementType();
     }
 }

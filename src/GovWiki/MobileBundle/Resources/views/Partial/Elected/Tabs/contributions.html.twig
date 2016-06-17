@@ -1,0 +1,211 @@
+{% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+{% import _self as helper %}
+
+<div role="tabpanel" class="tab-pane" id="Contributions">
+    <div class="tab-pane-main">
+
+        <div class="add_action">
+            <span>Add new Contribution</span>
+            <span class="glyphicon glyphicon-plus"></span>
+        </div>
+
+        {{ knp_pagination_render(endorsements) }}
+
+        {% for contribution in contributions %}
+            {% set blockId = 'contributionCollapse' ~ loop.index %}
+
+            {# Card #}
+            <div class="card">
+
+                {# Header #}
+                <div class="card__header text-justify" data-toggle="collapse"
+                     data-target="#{{ blockId }}"
+                     aria-expanded="false" aria-controls="{{ blockId }}"
+                     {%-
+                        if macro.isPendingRequest(contribution)
+                     -%}
+                        style="background: rgba(80, 0, 0, 0.1)"
+                     {%- endif -%}>
+
+                    {# Contribution Name#}
+                    <p class="card__header-title">{{ contribution.contributorName }}</p>
+
+                    {# Contribution amount #}
+                    <div class="card__group card__group_offset">
+                        <span class="card__group-item">Election year: {{ contribution.electionYear }}</span>
+                    </div>
+
+                    {# Contribution amount #}
+                    <div class="card__group card__group_offset">
+                        <span class="card__group-item">Ind. Exp. Desc : <strong>{{ contribution.independentExpenditureDesc ?? '-' }}</strong></span>
+                        <span class="card__group-item card__group-item_right">Amount: <strong>{{ contribution.contributionAmount|number_format }}</strong></span>
+                    </div>
+
+                    {# Expand icon #}
+                    <div class="card__header-expand" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false"
+                         aria-controls="{{ blockId }}">
+                        <i class="glyphicon glyphicon-chevron-down"></i>
+                    </div>
+
+                </div>
+
+                {# Content (Collapsable) #}
+                <div class="collapse" id="{{ blockId }}">
+                    <div class="card__block">
+
+                        <div class="card__group">
+                            <span class="card__group-item">
+                                Election year:
+                                {{- macro.dataElement(
+                                    contribution,
+                                    'electionYear'
+                                ) -}}
+                            </span>
+                        </div>
+
+                        {# Vote date & issue category #}
+                        <div class="card__group">
+                            <span class="card__group-item">
+                                Ind. Exp. Desc:
+                                {{- macro.dataElement(
+                                    contribution,
+                                    'independentExpenditureDesc',
+                                    { type: 'textarea' }
+                                ) -}}
+                            </span>
+                            <span class="card__group-item card__group-item_right">
+                                Amount:
+                                {{- macro.dataElement(
+                                    contribution,
+                                    'contributionAmount',
+                                    { type: 'number' }
+                                ) -}}
+                            </span>
+                        </div>
+
+                        {# Legislation info #}
+                        <h4 class="card-title">
+                            {{- macro.dataElement(
+                                contribution,
+                                'contributorName',
+                                { type: 'textarea' }
+                            ) -}}
+                        </h4>
+
+                    </div>
+
+                    {#{%- if not macro.isPendingRequest(contribution) -%}
+                        &#123;&#35; Comment icon &#35;&#125;
+                        <p class="card__block-footer">
+                            <span class="vote-public-comment">
+                                <i class="glyphicon glyphicon-comment"></i>
+                            </span>
+                        </p>
+                    {%- endif -%}#}
+
+                </div>
+
+            </div>{# Card end #}
+
+        {% else %}
+
+            <tr>
+                <td colspan="6" align="center">
+                    <p style="font-size:18px; margin: 0;">No information at this time. Please check back later.</p>
+                </td>
+            </tr>
+
+        {% endfor %}
+
+    </div>
+</div>
+
+{% macro contributionYear(contribution) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+    <div data-election-year="{{contribution.electionYear}}" style="display: inline-block">
+        {%- if macro.isPendingRequest(contribution) -%}
+            {{- contribution.electionYear -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="text" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title=""
+               title="">
+                {{- contribution.electionYear -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+    </div>
+{% endmacro %}
+
+{% macro contributionName(contribution) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+    <div data-contributor-name="{{contribution.contributorName}}" style="display: inline-block">
+        {%- if macro.isPendingRequest(contribution) -%}
+            {{- contribution.contributorName -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title=""
+               title="">
+                {{- contribution.contributorName -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+    </div>
+{% endmacro %}
+
+{% macro independentExpenditureDesc(contribution) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+    <div data-independent-expenditure-desc="{{contribution.independentExpenditureDesc}}" style="display: inline-block">
+        {%- if macro.isPendingRequest(contribution) -%}
+            {{- contribution.independentExpenditureDesc -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title=""
+               title="">
+                {{- contribution.independentExpenditureDesc -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+    </div>
+{% endmacro %}
+
+{% macro contributionAmount(contribution) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+    <div data-contribution-amount="{{contribution.contributionAmount}}" style="display: inline-block">
+        {%- if macro.isPendingRequest(contribution) -%}
+            {{- contribution.contributionAmount|number_format -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="text" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title=""
+               title="">
+                {{- contribution.contributionAmount|number_format -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+    </div>
+{% endmacro %}
+
+{% macro contributorType(contribution) %}
+    {% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+    <div data-contributor-type="{{contribution.contributorType}}" style="display: inline-block">
+        {%- if macro.isPendingRequest(contribution) -%}
+            {{- contribution.contributorType -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{'Candidate Committee': 'Candidate Committee'}, {'Corporate': 'Corporate', 'Individual': 'Individual', 'Political Party': 'Political Party', 'Political Action Committee': 'Political Action Committee', 'Self': 'Self', 'Union': 'Union', 'Other': 'Other'}"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title=""
+               title="">
+                {{- contribution.contributorType -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+    </div>
+{% endmacro %}

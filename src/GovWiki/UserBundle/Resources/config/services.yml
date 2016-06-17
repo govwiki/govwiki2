@@ -27,10 +27,10 @@ services:
 
     govwiki.user.form.registration:
         class: GovWiki\UserBundle\Form\RegistrationForm
-        arguments: [@govwiki_api.manager.environment]
+        arguments: [ @govwiki_environment.storage ]
         tags:
             - { name: form.type, alias: app_user_registration }
 
     govwiki.user_bundle.own_user_provider:
         class: GovWiki\UserBundle\Manager\OwnUserManager
-        arguments: [@security.encoder_factory, @fos_user.util.username_canonicalizer, @fos_user.util.email_canonicalizer, @doctrine.orm.entity_manager, GovWiki\UserBundle\Entity\User, @govwiki_api.manager.environment]
+        arguments: [@security.encoder_factory, @fos_user.util.username_canonicalizer, @fos_user.util.email_canonicalizer, @doctrine.orm.entity_manager, GovWiki\UserBundle\Entity\User, @govwiki_environment.storage]

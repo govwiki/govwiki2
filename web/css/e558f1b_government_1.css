@@ -7,6 +7,7 @@
 /* ===================== */
 /* ====== Loader ======= */
 /* ===================== */
+@import url(partials/datepicker.css);
 .loader {
   margin: 60px auto;
   font-size: 4px;
@@ -186,6 +187,11 @@ main {
   box-shadow: 0 1px 4px rgba(255, 0, 0, 0.6); }
 
 /* Temporary (start) */
+.btn-group .btn {
+  box-shadow: none; }
+  .btn-group .btn:hover {
+    box-shadow: none; }
+
 /* Temporary (end) */
 /* ===================================================== */
 /* ======== Customize bootstrap & global styles ======== */
@@ -215,18 +221,48 @@ i.icon {
 .nav-pills > li.active > a:focus {
   background-color: #0b4d70; }
 
+.mainmenu {
+  margin-top: 0;
+  margin-bottom: 3px; }
+  .mainmenu li {
+    margin: 0 2px; }
+  .mainmenu select,
+  .mainmenu select:focus {
+    outline: none;
+    border: none;
+    box-shadow: none; }
+
+.form-control__inline {
+  display: inline-block;
+  width: auto; }
+
 /*
    Set z-index for date picker.
 */
 .datepicker-dropdown {
   z-index: 10000 !important; }
 
+.disabled {
+  cursor: not-allowed !important;
+  color: #BBBBBB !important;
+  background-color: #F3F3F3 !important; }
+
 /*
-   Remove border from table in financial statement tab at government page.
+   Pagination sortable.
 */
-#Financial_Statements .table th,
-#Financial_Statements .table td {
-  border: none; }
+.sortable a i {
+  background: url("/bundles/govwikifrontend/img/bg.gif");
+  width: 21px;
+  height: 9px;
+  display: inline-block; }
+.sortable a.asc i {
+  height: 4px;
+  margin-bottom: 4px;
+  background: url("/bundles/govwikifrontend/img/asc.gif"); }
+.sortable a.desc i {
+  height: 4px;
+  margin-bottom: 4px;
+  background: url("/bundles/govwikifrontend/img/desc.gif"); }
 
 /* ========================= */
 /* ======== CartoDB ======== */
@@ -254,177 +290,343 @@ div.cartodb-tooltip-content-wrapper p {
   margin: 0 auto;
   overflow: hidden; }
 
-.governmentController nav a {
-  display: inline-block;
-  margin-top: 10px; }
-.governmentController header h3 {
-  color: #074d71;
-  /*
-     todo hardcode for puerto.
-  */ }
-  .governmentController header h3.puerto {
-    color: #f15a29; }
-.governmentController section {
-  /* ===================== */
-  /* ====== Loader ======= */
-  /* ===================== */
-  /* ==================================== */
-  /* ======= Rank Popover Window ======== */
-  /* ==================================== */
-  /*
-     todo hardcode for puerto
-  */ }
-  .governmentController section .loader {
-    margin: 60px auto;
-    font-size: 4px;
-    position: relative;
-    text-indent: -9999em;
-    border-top: 2px solid rgba(200, 200, 200, 0.5);
-    border-right: 2px solid rgba(200, 200, 200, 0.5);
-    border-bottom: 2px solid rgba(200, 200, 200, 0.5);
-    border-left: 2px solid #0b4d70;
-    -webkit-transform: translateZ(0);
-    -ms-transform: translateZ(0);
-    transform: translateZ(0);
-    -webkit-animation: load8 0.7s infinite linear;
-    animation: load8 0.7s infinite linear; }
-  .governmentController section .loader, .governmentController section .loader:after {
-    border-radius: 50%;
-    width: 10em;
-    height: 10em; }
-@-webkit-keyframes load8 {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg); }
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg); } }
-  .governmentController section .loader_wrap {
-    opacity: 1;
-    position: absolute;
-    top: 0;
+.message_form_container {
+  margin: 20px 50px; }
+
+.governmentController {
+  /* ========================= */
+  /* ======= TYPEAHEAD ======= */
+  /* ========================= */ }
+  .governmentController .typeahead_wrap {
+    font-size: 12px; }
+    .governmentController .typeahead_wrap .twitter-typeahead {
+      display: block !important; }
+    .governmentController .typeahead_wrap .typeahead_government {
+      display: block;
+      background-color: #fff;
+      padding-left: 14px !important; }
+    .governmentController .typeahead_wrap .typeahead_elected {
+      display: block;
+      background-color: #fff;
+      padding-left: 10px !important; }
+  .governmentController .tt-input {
+    font-size: 12px; }
+  .governmentController .tt-menu {
     width: 100%;
-    height: 110%;
-    background-color: lightgrey;
-    z-index: 100000;
-    transition: opacity 1s ease-out;
-    visibility: visible; }
-    .governmentController section .loader_wrap .loader {
-      margin-top: 300px; }
-  .governmentController section nav {
-    margin-bottom: 30px; }
-    .governmentController section nav a {
-      font-size: 1.4em; }
-  .governmentController section .statistics {
-    font-size: 1.4em; }
-    .governmentController section .statistics .f-nam {
-      min-width: 540px;
-      display: inline-block;
-      color: #666;
-      text-align: left;
-      margin-right: 5px;
+    background-color: #fff;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    cursor: default;
+    z-index: 2000 !important;
+    max-height: 150px;
+    overflow-y: auto; }
+  .governmentController .tt-suggestion {
+    padding: 0 12px;
+    line-height: 30px;
+    text-align: left; }
+  .governmentController .tt-suggestion:hover, .governmentController .tt-cursor {
+    color: #fff;
+    background-color: #0097cf;
+    cursor: pointer; }
+  .governmentController .tt-suggestion p {
+    margin: 0; }
+  .governmentController .sugg-box {
+    position: relative;
+    border-bottom: 0 solid #eee;
+    overflow: hidden; }
+  .governmentController .sugg-state {
+    top: 0;
+    left: 0;
+    margin-right: 20px;
+    float: left;
+    z-index: 0;
+    font-size: 18px;
+    color: #337ab7;
+    font-weight: bold; }
+  .governmentController .sugg-name {
+    font-size: 12px;
+    display: inline;
+    text-transform: uppercase; }
+  .governmentController .sugg-govname {
+    font-size: 13px;
+    text-transform: uppercase; }
+  .governmentController .sugg-type {
+    font-size: 70%;
+    color: #337ab7;
+    float: right;
+    top: 36px;
+    right: 0;
+    line-height: 100%; }
+  .governmentController nav a {
+    display: inline-block;
+    margin-top: 10px; }
+  .governmentController table .add {
+    color: #0b4d70;
+    text-align: center;
+    cursor: pointer; }
+    .governmentController table .add:hover {
+      background-color: #0b4d70;
+      color: #fff; }
+  .governmentController header h3 {
+    color: #074d71;
+    /*
+       todo hardcode for puerto.
+    */ }
+    .governmentController header h3.puerto {
+      color: #f15a29; }
+  .governmentController .mobile-header {
+    background-image: url("/img/California.jpg");
+    background-size: cover;
+    background-repeat: no-repeat; }
+    .governmentController .mobile-header a {
+      color: white; }
+    .governmentController .mobile-header .mobile-statistics-table {
+      margin: 0; }
+      .governmentController .mobile-header .mobile-statistics-table td {
+        color: white;
+        padding: 0 8px; }
+        .governmentController .mobile-header .mobile-statistics-table td:nth-child(1) {
+          text-align: left; }
+        .governmentController .mobile-header .mobile-statistics-table td:nth-child(2) {
+          text-align: right; }
+    .governmentController .mobile-header .mobile-header-content {
+      background-color: rgba(0, 55, 122, 0.55); }
+    .governmentController .mobile-header .mobile-header-icons {
+      text-align: right; }
+  .governmentController .mobile-nav {
+    margin-bottom: 0;
+    padding-left: 0;
+    list-style: none; }
+    .governmentController .mobile-nav .mobile-tab {
+      display: none;
+      padding: 10px 15px;
+      text-align: center;
+      background-color: #0B4D70;
+      color: white; }
+      .governmentController .mobile-nav .mobile-tab a {
+        color: white; }
+      .governmentController .mobile-nav .mobile-tab.active {
+        display: block; }
+      .governmentController .mobile-nav .mobile-tab .prev_tab {
+        position: absolute;
+        display: block;
+        top: 0;
+        left: 0;
+        padding: 10px 15px; }
+      .governmentController .mobile-nav .mobile-tab .next_tab {
+        position: absolute;
+        display: block;
+        top: 0;
+        right: 0;
+        padding: 10px 15px; }
+  .governmentController .mobile-tab-pane .mobile-tab-title {
+    background-color: #65A7D6;
+    color: white;
+    margin-bottom: 20px; }
+  .governmentController .mobile-tab-pane .mobile-tab-content {
+    padding: 0 15px; }
+  .governmentController .mobile-person {
+    width: 100%;
+    border-bottom: 1px dotted #ddd;
+    padding-bottom: 10px; }
+    .governmentController .mobile-person:not(:first-child) {
+      margin-top: 15px; }
+    .governmentController .mobile-person-info {
+      width: 60%;
       vertical-align: top;
-      font-size: 120%; }
-    .governmentController section .statistics .f-nam__bold {
-      font-weight: bold; }
-    .governmentController section .statistics .f-nam__italic {
-      font-style: italic; }
-    .governmentController section .statistics .f-nam__underline {
-      text-decoration: underline; }
-    .governmentController section .statistics .currency-symbol {
-      padding-left: 40px; }
-    .governmentController section .statistics .statistics-table {
+      font-size: 1em;
+      display: inline-block;
+      padding: 0 15px; }
+      .governmentController .mobile-person-info p {
+        margin-bottom: 0; }
+    .governmentController .mobile-person-photo {
+      width: 30%;
+      display: inline-block; }
+      .governmentController .mobile-person-photo a {
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        text-align: center; }
+        .governmentController .mobile-person-photo a img {
+          width: 100%;
+          height: 100%;
+          min-height: 140px; }
+  .governmentController #mobile-Financial_Statements #mobile-total-revenue-pie {
+    min-height: 350px;
+    border: 1px solid lightgray;
+    padding: 15px;
+    padding-bottom: 0; }
+  .governmentController #mobile-Financial_Statements #mobile-total-expenditures-pie {
+    min-height: 350px;
+    border: 1px solid lightgray;
+    padding: 15px;
+    padding-bottom: 0; }
+  .governmentController #mobile-Financial_Statements .chart-controls {
+    margin-bottom: 20px; }
+  .governmentController section {
+    /* ==================================== */
+    /* ======= Rank Popover Window ======== */
+    /* ==================================== */
+                                                /*
+   todo hardcode for puerto
+*/ }
+    .governmentController section .loader {
+      margin: 0 auto;
+      margin-bottom: 12px; }
+    .governmentController section .divider {
+      color: #DBDBDB;
+      margin-top: 7%; }
+    .governmentController section .selected {
+      background-color: #DDE7FF; }
+    .governmentController section nav {
+      margin-bottom: 30px; }
+      .governmentController section nav a {
+        font-size: 1.4em; }
+    .governmentController section #Financial_Statements .government-compare {
+      padding-top: 15px; }
+      .governmentController section #Financial_Statements .government-compare h4 {
+        color: #0d87e9; }
+      .governmentController section #Financial_Statements .government-compare select {
+        font-size: 12px;
+        padding: 10px; }
+      .governmentController section #Financial_Statements .government-compare .first-condition {
+        border: 1px solid #0d87e9;
+        border-radius: 10px; }
+      .governmentController section #Financial_Statements .government-compare .second-condition {
+        border: 1px solid #0d87e9;
+        border-radius: 10px; }
+      .governmentController section #Financial_Statements .government-compare .government-categories {
+        border: 1px solid #0d87e9;
+        border-radius: 10px; }
+    .governmentController section #Financial_Statements #total-compare-first-pie p, .governmentController section #Financial_Statements #total-compare-second-pie p, .governmentController section #Financial_Statements #total-compare-column p {
+      padding: 150px 0;
+      background-color: #f3f3f3; }
+    .governmentController section .statistics {
+      font-size: 1.4em; }
+      .governmentController section .statistics .f-nam {
+        min-width: 540px;
+        display: inline-block;
+        color: #666;
+        text-align: left;
+        margin-right: 5px;
+        vertical-align: top;
+        font-size: 120%; }
+      .governmentController section .statistics .f-nam__bold {
+        font-weight: bold; }
+      .governmentController section .statistics .f-nam__italic {
+        font-style: italic; }
+      .governmentController section .statistics .f-nam__underline {
+        text-decoration: underline; }
+      .governmentController section .statistics .currency-symbol {
+        padding-left: 40px; }
+    .governmentController section .statistics-table {
       width: 100%; }
-      .governmentController section .statistics .statistics-table > tbody > tr > td {
-        border-bottom: 1px dotted #ddd;
-        white-space: nowrap; }
-        .governmentController section .statistics .statistics-table > tbody > tr > td:nth-child(1) {
-          color: #666; }
-        .governmentController section .statistics .statistics-table > tbody > tr > td:nth-child(2) {
+      .governmentController section .statistics-table thead > .statistics-row > td, .governmentController section .statistics-table tbody > .statistics-row > td {
+        padding: 0; }
+        .governmentController section .statistics-table thead > .statistics-row > td:nth-child(1), .governmentController section .statistics-table tbody > .statistics-row > td:nth-child(1) {
+          color: #666;
+          border-bottom: 1px dotted #ddd; }
+        .governmentController section .statistics-table thead > .statistics-row > td:nth-child(2), .governmentController section .statistics-table tbody > .statistics-row > td:nth-child(2) {
           color: #000;
           text-align: right;
-          border: none; }
-        .governmentController section .statistics .statistics-table > tbody > tr > td a.rank {
+          white-space: nowrap; }
+        .governmentController section .statistics-table thead > .statistics-row > td a.rank, .governmentController section .statistics-table tbody > .statistics-row > td a.rank {
           font-style: italic;
           font-size: 75%;
           cursor: pointer; }
-  .governmentController section .person {
-    width: 100%;
-    margin-top: 20px;
-    border-bottom: 1px dotted #ddd; }
-    .governmentController section .person-info {
-      width: 79%;
-      vertical-align: top;
-      font-size: 1.4em;
-      display: inline-block;
-      min-width: 79%; }
-      .governmentController section .person-info p {
-        margin-bottom: 0; }
-    .governmentController section .person-photo {
-      width: 20%;
-      display: inline-block; }
-      .governmentController section .person-photo img {
-        width: 100%;
-        float: right; }
-  .governmentController section .rankPopover {
-    width: 280px; }
-    .governmentController section .rankPopover .popover-title {
-      padding: 0;
-      border-bottom: none;
-      border-radius: 0; }
-    .governmentController section .rankPopover .popover-btn {
-      width: 48%;
-      display: inline-block;
-      text-align: right; }
-    .governmentController section .rankPopover .popover-btn a {
-      background-color: #fff;
-      border: 1px solid #074d71;
-      color: #074d71;
-      border-radius: 3px;
-      padding: 5px 10px; }
-    .governmentController section .rankPopover .popover-btn a:hover {
-      background-color: #074d71;
-      color: #fff;
-      text-decoration: none; }
-    .governmentController section .rankPopover .popover-title-custom {
-      margin: 0;
-      padding: 8px 14px;
-      font-size: 13px;
-      background-color: #f7f7f7;
-      border-bottom: 1px solid #ebebeb;
-      border-radius: 2px 2px 0 0; }
-    .governmentController section .rankPopover .popover-content {
-      overflow-y: scroll;
-      height: 300px; }
-    .governmentController section .rankPopover .popover-content table tr th {
-      cursor: pointer; }
-    .governmentController section .rankPopover .popover-content table tr th:first-child {
-      width: 80%; }
-    .governmentController section .rankPopover .popover-content table tr th:last-child {
-      width: 19%; }
-    .governmentController section .rankPopover .popover-content table tr th,
-    .governmentController section .rankPopover .popover-content table tr td {
-      padding-right: inherit;
-      font-size: 80%;
-      color: black; }
-  .governmentController section .nav-pills__puerto .active a {
-    background-color: #f15a29;
-    color: white; }
-  .governmentController section .nav-pills__puerto a {
-    background-color: white;
-    color: #f15a29; }
-    .governmentController section .nav-pills__puerto a:hover {
+    .governmentController section .financial-table, .governmentController section .compare-first-table, .governmentController section .compare-second-table {
+      width: 100%; }
+      .governmentController section .financial-table thead > tr > th, .governmentController section .financial-table thead > tr td, .governmentController section .financial-table tbody > tr > th, .governmentController section .financial-table tbody > tr td, .governmentController section .compare-first-table thead > tr > th, .governmentController section .compare-first-table thead > tr td, .governmentController section .compare-first-table tbody > tr > th, .governmentController section .compare-first-table tbody > tr td, .governmentController section .compare-second-table thead > tr > th, .governmentController section .compare-second-table thead > tr td, .governmentController section .compare-second-table tbody > tr > th, .governmentController section .compare-second-table tbody > tr td {
+        font-size: 1.4em;
+        padding: 0;
+        border: none;
+        white-space: nowrap;
+        text-align: right; }
+        .governmentController section .financial-table thead > tr > th:nth-child(1), .governmentController section .financial-table thead > tr td:nth-child(1), .governmentController section .financial-table tbody > tr > th:nth-child(1), .governmentController section .financial-table tbody > tr td:nth-child(1), .governmentController section .compare-first-table thead > tr > th:nth-child(1), .governmentController section .compare-first-table thead > tr td:nth-child(1), .governmentController section .compare-first-table tbody > tr > th:nth-child(1), .governmentController section .compare-first-table tbody > tr td:nth-child(1), .governmentController section .compare-second-table thead > tr > th:nth-child(1), .governmentController section .compare-second-table thead > tr td:nth-child(1), .governmentController section .compare-second-table tbody > tr > th:nth-child(1), .governmentController section .compare-second-table tbody > tr td:nth-child(1) {
+          color: #666;
+          width: 30%;
+          text-align: left; }
+        .governmentController section .financial-table thead > tr > th:nth-child(2), .governmentController section .financial-table thead > tr td:nth-child(2), .governmentController section .financial-table tbody > tr > th:nth-child(2), .governmentController section .financial-table tbody > tr td:nth-child(2), .governmentController section .compare-first-table thead > tr > th:nth-child(2), .governmentController section .compare-first-table thead > tr td:nth-child(2), .governmentController section .compare-first-table tbody > tr > th:nth-child(2), .governmentController section .compare-first-table tbody > tr td:nth-child(2), .governmentController section .compare-second-table thead > tr > th:nth-child(2), .governmentController section .compare-second-table thead > tr td:nth-child(2), .governmentController section .compare-second-table tbody > tr > th:nth-child(2), .governmentController section .compare-second-table tbody > tr td:nth-child(2) {
+          color: #666;
+          width: 20%; }
+        .governmentController section .financial-table thead > tr > th:nth-child(3), .governmentController section .financial-table thead > tr td:nth-child(3), .governmentController section .financial-table tbody > tr > th:nth-child(3), .governmentController section .financial-table tbody > tr td:nth-child(3), .governmentController section .compare-first-table thead > tr > th:nth-child(3), .governmentController section .compare-first-table thead > tr td:nth-child(3), .governmentController section .compare-first-table tbody > tr > th:nth-child(3), .governmentController section .compare-first-table tbody > tr td:nth-child(3), .governmentController section .compare-second-table thead > tr > th:nth-child(3), .governmentController section .compare-second-table thead > tr td:nth-child(3), .governmentController section .compare-second-table tbody > tr > th:nth-child(3), .governmentController section .compare-second-table tbody > tr td:nth-child(3) {
+          color: #666;
+          width: 20%; }
+        .governmentController section .financial-table thead > tr > th:nth-child(4), .governmentController section .financial-table thead > tr td:nth-child(4), .governmentController section .financial-table tbody > tr > th:nth-child(4), .governmentController section .financial-table tbody > tr td:nth-child(4), .governmentController section .compare-first-table thead > tr > th:nth-child(4), .governmentController section .compare-first-table thead > tr td:nth-child(4), .governmentController section .compare-first-table tbody > tr > th:nth-child(4), .governmentController section .compare-first-table tbody > tr td:nth-child(4), .governmentController section .compare-second-table thead > tr > th:nth-child(4), .governmentController section .compare-second-table thead > tr td:nth-child(4), .governmentController section .compare-second-table tbody > tr > th:nth-child(4), .governmentController section .compare-second-table tbody > tr td:nth-child(4) {
+          color: #666;
+          width: 20%; }
+    .governmentController section .person {
+      width: 100%;
+      margin-top: 20px;
+      border-bottom: 1px dotted #ddd; }
+      .governmentController section .person-info {
+        width: 79%;
+        vertical-align: top;
+        font-size: 1.4em;
+        display: inline-block;
+        min-width: 79%; }
+        .governmentController section .person-info p {
+          margin-bottom: 0; }
+      .governmentController section .person-photo {
+        width: 20%;
+        display: inline-block; }
+        .governmentController section .person-photo img {
+          width: 100%;
+          float: right; }
+    .governmentController section .rankPopover {
+      width: 280px; }
+      .governmentController section .rankPopover .popover-title {
+        padding: 0;
+        border-bottom: none;
+        border-radius: 0; }
+      .governmentController section .rankPopover .popover-btn {
+        width: 48%;
+        display: inline-block;
+        text-align: right; }
+      .governmentController section .rankPopover .popover-btn a {
+        background-color: #fff;
+        border: 1px solid #074d71;
+        color: #074d71;
+        border-radius: 3px;
+        padding: 5px 10px; }
+      .governmentController section .rankPopover .popover-btn a:hover {
+        background-color: #074d71;
+        color: #fff;
+        text-decoration: none; }
+      .governmentController section .rankPopover .popover-title-custom {
+        margin: 0;
+        padding: 8px 14px;
+        font-size: 13px;
+        background-color: #f7f7f7;
+        border-bottom: 1px solid #ebebeb;
+        border-radius: 2px 2px 0 0; }
+      .governmentController section .rankPopover .popover-content {
+        overflow-y: scroll;
+        height: 300px; }
+      .governmentController section .rankPopover .popover-content table tr th {
+        cursor: pointer; }
+      .governmentController section .rankPopover .popover-content table tr th:first-child {
+        width: 80%; }
+      .governmentController section .rankPopover .popover-content table tr th:last-child {
+        width: 19%; }
+      .governmentController section .rankPopover .popover-content table tr th,
+      .governmentController section .rankPopover .popover-content table tr td {
+        padding-right: inherit;
+        font-size: 80%;
+        color: black; }
+    .governmentController section .nav-pills__puerto .active a {
       background-color: #f15a29;
       color: white; }
-  .governmentController section .municipality-search {
-    position: absolute;
-    background: #fff;
-    z-index: 5;
-    max-height: 200px;
-    overflow-y: auto;
-    box-shadow: 0 0 4px #ccc; }
-    .governmentController section .municipality-search div {
-      cursor: pointer;
-      padding: 2px 6px; }
-    .governmentController section .municipality-search div:hover {
-      background: #F9F9F9; }
+    .governmentController section .nav-pills__puerto a {
+      background-color: white;
+      color: #f15a29; }
+      .governmentController section .nav-pills__puerto a:hover {
+        background-color: #f15a29;
+        color: white; }
+  .governmentController .subscribe-row {
+    text-align: center; }
+    .governmentController .subscribe-row .btn {
+      font-size: 20px;
+      padding: 0 30px; }

@@ -2,7 +2,8 @@
 
 namespace GovWiki\DbBundle\Form\Type;
 
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
+use GovWiki\EnvironmentBundle\Manager\Government\GovernmentManagerInterface;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -12,16 +13,28 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class AltTypeType extends AbstractType
 {
+
     /**
-     * @var AdminEnvironmentManager
+     * @var EnvironmentStorageInterface
+     */
+    private $storage;
+
+    /**
+     * @var GovernmentManagerInterface
      */
     private $manager;
 
     /**
-     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager instance.
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
+     * @param GovernmentManagerInterface  $manager A GovernmentManagerInterface
+     *                                             instance.
      */
-    public function __construct(AdminEnvironmentManager $manager)
-    {
+    public function __construct(
+        EnvironmentStorageInterface $storage,
+        GovernmentManagerInterface $manager
+    ) {
+        $this->storage = $storage;
         $this->manager = $manager;
     }
 
@@ -48,7 +61,7 @@ class AltTypeType extends AbstractType
     {
         $resolver->setDefaults([
             'multiple' => true,
-            'choices' => $this->manager->getUsedAltTypes(),
+            'choices' => $this->manager->getUsedAltTypes($this->storage->get()),
         ]);
     }
 }

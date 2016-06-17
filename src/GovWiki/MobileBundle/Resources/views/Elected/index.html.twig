@@ -1,0 +1,209 @@
+{% extends "GovWikiMobileBundle:Layout:main.html.twig" %}
+
+{% set elected = electedOfficial %}
+{# Main #}
+{% block main %}
+
+    {# Must be unique #}
+    <section class="electedController" data-elected-name="{{elected.fullName}}">
+
+        <div class="clearfix person-info-content">
+
+            <div class="col-xs-5">
+                <img src="{{elected.photoUrl}}" class="person-photo"/>
+            </div>
+
+            <div class="col-xs-7">
+                <p class="visible-xs" style="font-weight: 700;font-size: 1.2em;">{{elected.fullName}}</p>
+                <p>Title: {{elected.title}}</p>
+                <p>Name: {{elected.fullName}} &nbsp;&nbsp;
+                    <span class="hidden-xs disqus-comment-count vote" id="{{elected.id}}" data-disqus-identifier="{{elected.id}}">0</span>
+                <p>Term expiries: {{elected.termExpires}}</p>
+                {#{% if elected.bioUrl %}
+                    <p><a target="_blank" href="{{elected.bioUrl}}">Biographical Highlights</a></p>
+                {% endif %}#}
+                <p>Email: <a href="mailto:{{elected.emailAddress}}">{{elected.emailAddress}}</a></p>
+            </div>
+
+        </div>
+
+        {# TMP MOBILE LAYOUT (START) #}
+
+            <div class="person-info-tabs">
+
+                <!-- Mobile Nav tabs -->
+                <ul class="nav nav-pills mobile" role="tablist">
+                    <li role="presentation" class="active"><a href="#Votes" aria-controls="Votes" role="tab" data-toggle="tab" aria-expanded="true">Bio</a></li>
+                    {#<li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>#}
+                    <li role="presentation"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
+                    {#<li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>#}
+                    <li role="presentation"><a href="#Surveys" aria-controls="Surveys" role="tab" data-toggle="tab">Surveys</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+
+                    {# Votes #}
+                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:votes.html.twig') }}
+
+                    {# Contributions #}
+                    {#{{ include('GovWikiMobileBundle:Partial/Elected/Tabs:contributions.html.twig') }}#}
+
+                    {# Endorsements #}
+                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:endorsements.html.twig') }}
+
+                    {# Surveys #}
+                    {{ include('GovWikiMobileBundle:Partial/Elected/Tabs:surveys.html.twig') }}
+
+                    {# Public Statements #}
+                    {#{{ include('GovWikiMobileBundle:Partial/Elected/Tabs:publicStatements.html.twig') }}#}
+
+                </div>
+
+            </div>
+
+        {# TMP MOBILE LAYOUT (END) #}
+
+    </section>
+
+    {# Facebook Comment Modal #}
+    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:facebook_comment.html.twig' %}
+
+    {# Votes Modal #}
+    {% include 'GovWikiMobileBundle:Partial/Elected/Modals:votes.html.twig' %}
+
+    {# Contributions Modal #}
+    {#{% include 'GovWikiMobileBundle:Partial/Elected/Modals:contributions.html.twig' %}#}
+
+    {# Endorsements Modal #}
+    {% include 'GovWikiMobileBundle:Partial/Elected/Modals:endorsements.html.twig' %}
+
+    {# Public Statements Modal #}
+    {#{% include 'GovWikiMobileBundle:Partial/Elected/Modals:publicStatements.html.twig' %}#}
+
+    {% verbatim %}
+    <script id="row-addVotes" type="text//x-handlebars-template">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
+        <td data-date-considered="{{dateConsidered}}">
+            {{dateConsidered}}
+        </td>
+        <td data-name="{{name}}" data-no-editable>
+            {{name}}
+        </td>
+        <td data-summary="{{summary}}" data-no-editable>
+            {{summary}}
+        </td>
+        <td data-vote="{{vote}}" data-no-editable>
+            {{vote}}
+        </td>
+        <td align="center" data-did-elected-official-propose-this="{{#if did_elected_official_propose_this}}Yes{{else}}No{{/if}}" data-no-editable>
+            {{#if did_elected_official_propose_this}}Yes{{else}}No{{/if}}
+        </td>
+        <td data-issue-category="{{category}}" data-no-editable>{{category}}</td>
+        <td data-no-editable>{{username}}</td>
+    </tr>
+</script>
+
+<script id="row-addContributions" type="text//x-handlebars-template">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
+        <td data-election-year="{{electionYear}}" data-no-editable>
+            {{electionYear}}
+        </td>
+        <td data-contributor-name="{{contributorName}}" data-no-editable>
+            {{contributorName}}
+        </td>
+        <td data-independent-expenditure-desc="{{independentExpenditureDesc}}" data-no-editable>
+            {{independentExpenditureDesc}}
+        </td>
+        <td data-contribution-amount="{{contributionAmount}}" data-no-editable>
+            {{contributionAmount}}
+        </td>
+        <td data-contributor-type="{{contributorType}}" data-no-editable=>
+            {{contributorType}}
+        </td>
+        <td data-no-editable>{{username}}</td>
+    </tr>
+</script>
+
+<script id="row-addEndorsements" type="text//x-handlebars-template">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
+        <td data-election-year="{{electionYear}}" data-no-editable>
+            {{electionYear}}
+        </td>
+        <td data-name-of-endorser="{{nameOfEndorser}}" data-no-editable>
+            {{nameOfEndorser}}
+        </td>
+        <td data-endorser-type="{{endorserType}}" data-no-editable>
+            {{endorserType}}
+        </td>
+        <td data-no-editable>{{username}}</td>
+    </tr>
+</script>
+
+<script id="row-addStatements" type="text//x-handlebars-template">
+    <tr data-id style="background: rgba(80, 0, 0, 0.1)">
+        <td data-date="{{date}}" data-no-editable>
+            {{date}}
+        </td>
+        <td data-summary="{{summary}}" data-no-editable>
+            {{summary}}
+        </td>
+        <td data-url="{{url}}" data-no-editable>
+            {{url}}
+        </td>
+        <td data-url="{{category}}" data-no-editable="">
+            {{category}}
+        </td>
+        <td data-no-editable>{{username}}</td>
+    </tr>
+</script>
+
+    {% endverbatim %}
+
+    {% if bottomText %}
+        <div class="panel panel-danger notice">
+            <div class="panel-body">
+                {{ bottomText|raw }}
+            </div>
+        </div>
+        <br>
+    {% endif %}
+
+
+{% endblock %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{ parent() }}
+
+    {% stylesheets
+        '@GovWikiMobileBundle/Resources/public/css/elected.scss'
+        '@GovWikiMobileBundle/Resources/public/css/bootstrap-editable.css'
+        filter='scss, cssrewrite' %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}
+
+
+{# Javascripts #}
+{% block javascripts %}
+
+    {{parent()}}
+
+    <script>
+        window.gw.electedOfficial = '{{ electedOfficialJSON | escape('js') }}';
+
+        window.gw.urls = {};
+        window.gw.urls.create_request = '{{ path('govwiki_api_v1_createrequest_create') }}';
+        window.gw.urls.edit_request = '{{ path('govwiki_api_v1_editrequest_create') }}';
+        window.gw.urls.check_url = '{{ path('govwiki_api_v1_url_extract') }}';
+    </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+
+    <script src="/js/mobile/common.js"></script>
+    <script src="/js/mobile/elected.js"></script>
+
+{% endblock %}

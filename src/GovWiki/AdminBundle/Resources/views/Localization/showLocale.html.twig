@@ -1,116 +1,105 @@
-{% extends "GovWikiAdminBundle:Layout:main.html.twig" %}
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - translations{% endblock %}
 
 {% block breadcrumb %}
-    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {% if admin_environment is not null %}
-        {{
-        macro.breadcrumbElement(
-        admin_environment|capitalize ~' environment',
-        'govwiki_admin_main_show',
-        { 'environment': admin_environment }
-        )
-        }}
-    {% endif %}
-    {{ macro.breadcrumbElement('Localizations', 'govwiki_admin_localization_index') }}
-    {{ macro.breadcrumbElement(locale_name|upper) }}
+    {{- macro.breadcrumbElement('Main', 'govwiki_admin_main_home') -}}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        'Localizations',
+        'govwiki_admin_localization_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(locale_name|upper) -}}
 {% endblock breadcrumb %}
 
-{% block body %}
+{% block panel_title %}
+    {{ environment.name }} translations
+{% endblock panel_title %}
 
+{% block panel_body %}
+    {# Navigation #}
     <div class="row">
-        <div class="col-md-12">
 
-            {# Panel #}
-            <div class="panel panel-primary">
+        {# Tabs #}
+        <ul class="nav nav-pills" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#with_transText" aria-controls="with_transText" role="tab" data-toggle="tab" id="with_transText_btn">
+                    <span class="badge pull-right">{{ count_with_transText }}</span>
+                    With translation
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#without_transText" aria-controls="without_transText" role="tab" data-toggle="tab" id="without_transText_btn">
+                    <span class="badge pull-right">{{ count_without_transText }}</span>
+                    Without translation
+                </a>
+            </li>
+        </ul>
 
-                {# Header #}
-                <div class="panel-heading">
-                    <h3 class="panel-title">Translations</h3>
-                </div>
+        {# Pagination #}
+        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center" id="with_transText_pagination">
+            {{ knp_pagination_render(with_transText) }}
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center" id="without_transText_pagination" style="display: none">
+            {{ knp_pagination_render(without_transText) }}
+        </div>
 
-                {# Body #}
-                <div class="panel-body">
+        {# Filter #}
+        <div class="col-xs-8 col-sm-9 col-md-5 col-lg-5 text-center text-left-sm">
 
-                    {# Navigation #}
-                    <div class="row">
+            <div class="row">
+                <form action="" method="get" class="form-inline controls">
+                    <div class="col-xs-10">
 
-                        {# Tabs #}
-                        <ul class="nav nav-pills" role="tablist">
-                            <li role="presentation" class="active">
-                                <a href="#with_transText" aria-controls="with_transText" role="tab" data-toggle="tab" id="with_transText_btn">
-                                    <span class="badge pull-right">{{ count_with_transText }}</span>
-                                    With translation
-                                </a>
-                            </li>
-                            <li role="presentation">
-                                <a href="#without_transText" aria-controls="without_transText" role="tab" data-toggle="tab" id="without_transText_btn">
-                                    <span class="badge pull-right">{{ count_without_transText }}</span>
-                                    Without translation
-                                </a>
-                            </li>
-                        </ul>
+                        <input name="filter[trans_key]" type="text" class="form-control input-sm" placeholder="Key"
+                               value="{{ app.request.query.get('filter') ? app.request.query.get('filter').trans_key }}">
 
-                        {# Pagination #}
-                        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center" id="with_transText_pagination">
-                            {{ knp_pagination_render(with_transText) }}
-                        </div>
-                        <div class="col-xs-12 col-sm-12 col-md-4 hidden-xs hidden-sm text-center" id="without_transText_pagination" style="display: none">
-                            {{ knp_pagination_render(without_transText) }}
-                        </div>
+                        <input name="filter[translation]" type="text" class="form-control input-sm" placeholder="Translation"
+                               value="{{app.request.query.get('filter') ? app.request.query.get('filter').translation }}">
 
-                        {# Filter #}
-                        <div class="col-xs-8 col-sm-9 col-md-5 col-lg-5 text-center text-left-sm">
-
-                            <div class="row">
-                                <form action="" method="get" class="form-inline controls">
-                                    <div class="col-xs-10">
-
-                                        <input name="filter[trans_key]" type="text" class="form-control input-sm" placeholder="Key"
-                                               value="{{ app.request.query.get('filter') ? app.request.query.get('filter').trans_key }}">
-
-                                        <input name="filter[translation]" type="text" class="form-control input-sm" placeholder="Translation"
-                                               value="{{app.request.query.get('filter') ? app.request.query.get('filter').translation }}">
-
-                                    </div>
-
-                                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
-                                        <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
-                                    </div>
-                                </form>
-
-                            </div>
-
-                        </div>
-
-                        {# Controls #}
-                        <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3 text-center text-right-sm">
-                            <div class="btn-group controls">
-                                <a class="btn btn-sm btn-default" href="{{-
-                                path('govwiki_admin_localization_exportlocale', {'locale_name': locale_name})
-                                -}}">Export</a>
-                                <button class="btn btn-sm btn-default" id="import">Import</button>
-                                <a class="btn btn-sm btn-primary" href="{{-
-                                path('govwiki_admin_localization_createtranslation', {'locale_name': locale_name})
-                                -}}">Create</a>
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane active" id="with_transText">
-                            {{ _self.translationTable(with_transText) }}
-                        </div>
-
-                        <div role="tabpanel" class="tab-pane" id="without_transText">
-                            {{ _self.translationTable(without_transText) }}
-                        </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center-xs">
+                        <button type="submit" class="btn btn-sm btn-primary controls" value="Filter"> Filter </button>
                     </div>
+                </form>
 
-                </div>
             </div>
 
+        </div>
+
+        {# Controls #}
+        <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3 text-center text-right-sm">
+            <div class="btn-group controls">
+                <a class="btn btn-sm btn-default" href="{{-
+                    path('govwiki_admin_localization_exportlocale', {
+                        'environment': environment.slug,
+                        'locale_name': locale_name
+                    })
+                -}}">Export</a>
+                <button class="btn btn-sm btn-default" id="import">Import</button>
+                <a class="btn btn-sm btn-primary" href="{{-
+                    path('govwiki_admin_localization_createtranslation', {
+                        'environment': environment.slug,
+                        'locale_name': locale_name
+                    })
+                -}}">Create</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="with_transText">
+            {{ _self.translationTable(with_transText) }}
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="without_transText">
+            {{ _self.translationTable(without_transText) }}
         </div>
     </div>
 
@@ -119,20 +108,23 @@
             <div class="modal-content">
                 <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
                 <div class="modal-body">
-                    {{- render(controller('GovWikiAdminBundle:Localization:importLocale', {'locale_name': locale_name})) -}}
+                    {{- render(controller('GovWikiAdminBundle:Localization:importLocale', {
+                        'environment': environment.slug,
+                        'locale_name': locale_name
+                    })) -}}
                 </div>
                 <div class="modal-footer">
                     <div class="pull-right">
-                        <a id="import-confirm" class="btn btn-danger">
+                        <a id="import-confirm" class="btn btn-success">
                             Import
                         </a>
-                        <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock panel_body %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -182,13 +174,13 @@
                             <td>
                                 <div class="btn-group">
                                     <a href="{{- path('govwiki_admin_localization_edittranslation',
-                                    { transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-default">
+                                    { 'environment': environment.slug, transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-default">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                         Edit
                                     </a>
                                     {% if translation.transTextareaType != 'ckeditor' %}
                                         <button data-url="{{- path('govwiki_admin_localization_removetranslation',
-                                        { transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete this translation? Remember that translations with key &quot{{ translation.transKey }}&quot will be removed from all localizations.">
+                                        { 'environment': environment.slug, transKey: translation.transKey, locale_name: translation.locale.shortName }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete this translation? Remember that translations with key &quot{{ translation.transKey }}&quot will be removed from all localizations.">
                                             <span class="glyphicon glyphicon-remove"></span> Remove
                                         </button>
                                     {% endif %}

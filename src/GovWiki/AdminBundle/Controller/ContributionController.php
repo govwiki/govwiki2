@@ -33,6 +33,10 @@ class ContributionController extends AbstractGovWikiAdminController
         Request $request,
         ElectedOfficial $electedOfficial
     ) {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $contribution = new Contribution();
 
         $form = $this->createForm(new ContributionType(), $contribution);
@@ -71,6 +75,10 @@ class ContributionController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, Contribution $contribution)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm(new ContributionType(), $contribution);
         $form->handleRequest($request);
 
@@ -98,6 +106,10 @@ class ContributionController extends AbstractGovWikiAdminController
      */
     public function removeAction(Contribution $contribution)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($contribution);
         $em->flush();

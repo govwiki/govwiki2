@@ -1,0 +1,3 @@
+gulp/**/*
+tests/frontend/**/*
+src/GovWiki/FrontendBundle/Resources/public/js/home/map/config.js

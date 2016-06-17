@@ -2,9 +2,8 @@
 
 namespace GovWiki\AdminBundle\Twig;
 
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
-use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\AbstractCondition;
-use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ConditionInterface;
+use GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ConditionInterface;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 
 /**
  * Class TwigExtensions
@@ -12,12 +11,19 @@ use GovWiki\DbBundle\Doctrine\Type\ColorizedCountyCondition\ConditionInterface;
  */
 class TwigExtensions extends \Twig_Extension
 {
+
     /**
-     * @param AdminEnvironmentManager $manger A AdminEnvironmentManager instance.
+     * @var EnvironmentStorageInterface
      */
-    public function __construct(AdminEnvironmentManager $manger)
+    private $storage;
+
+    /**
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
+     */
+    public function __construct(EnvironmentStorageInterface $storage)
     {
-        $this->manger = $manger;
+        $this->storage = $storage;
     }
 
     /**
@@ -26,17 +32,6 @@ class TwigExtensions extends \Twig_Extension
     public function getName()
     {
         return 'gov_wiki.admin';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getGlobals()
-    {
-        return [
-            'admin_styles' => json_encode($this->manger->getStyle()),
-            'admin_environment' => $this->manger->getEnvironment(),
-        ];
     }
 
     /**
@@ -71,7 +66,7 @@ class TwigExtensions extends \Twig_Extension
             new \Twig_SimpleFilter('condition_type', [
                 $this,
                 'getConditionType',
-            ])
+            ]),
         ];
     }
 

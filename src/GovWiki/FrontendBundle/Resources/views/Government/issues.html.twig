@@ -1,0 +1,60 @@
+<div class="paginate">
+    <div class="loader" style="display: none"></div>
+    <div class="tab-pane-main">
+        {{ knp_pagination_render(issues) }}
+
+        <div class="hidden-xs col-sm-12">
+
+            <table id="issues" class="table table-striped">
+                <thead>
+                <tr>
+                    <th class="sortable">{{- knp_pagination_sortable(
+                        issues,
+                        'Name',
+                        'Issue.name'
+                        ) -}}</th>
+                    <th class="sortable">{{- knp_pagination_sortable(
+                        issues,
+                        'Description',
+                        'Issue.description'
+                    ) -}}</th>
+                    <th class="sortable">{{- knp_pagination_sortable(
+                        issues,
+                        'Link',
+                        'Issue.link'
+                    ) -}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for issue in issues %}
+                    <tr {% if issue.state == constant('PENDING', issue) -%}
+                        style="background: rgba(80, 0, 0, 0.1)"
+                    {%- endif -%}>
+                        <td>{{- issue.name -}}</td>
+                        <td>{{- issue.description -}}</td>
+                        <td><a href="{{- issue.link -}}">{{- issue.link -}}</a></td>
+                    </tr>
+                {% endfor %}
+                    <tr>
+                       <td colspan="3" class="add">
+                           Add new Issue
+                           <span class="glyphicon glyphicon-plus"></span>
+                       </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+</div>
+
+{%- verbatim -%}
+<script id="issue-row" type="text/x-handlebars-template">
+    <tr style="background: rgba(80, 0, 0, 0.1)">
+        <td>{{ name }}</td>
+        <td>{{ description }}</td>
+        <td><a href="{{ link }}">{{ link }}</a></td>
+    </tr>
+</script>
+{%- endverbatim -%}

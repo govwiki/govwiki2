@@ -2,7 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use GovWiki\AdminBundle\GovWikiAdminServices;
+use GovWiki\DbBundle\Entity\Repository\EditRequestRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,7 +12,10 @@ use GovWiki\DbBundle\Entity\EditRequest;
  * Class EditRequestController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/edit-request")
+ * @Configuration\Route(
+ *  "/{environment}/edit-request",
+ *  requirements={ "environment": "\w+" }
+ * )
  */
 class EditRequestController extends AbstractGovWikiAdminController
 {
@@ -26,8 +29,19 @@ class EditRequestController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        /** @var EditRequestRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:EditRequest');
+
+        $editRequests = $repository
+            ->getListQuery($this->getCurrentEnvironment()->getId());
+
         $editRequests = $this->paginate(
-            $this->getManager()->getListQuery(),
+            $editRequests,
             $request->query->getInt('page', 1),
             50
         );
@@ -36,15 +50,22 @@ class EditRequestController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{id}")
+     * @Configuration\Route(
+     *  "/{id}",
+     *  requirements={ "id": "\d+" }
+     * )
      * @Configuration\Template
      *
-     * @param EditRequest $editRequest A EditRequest instance.
+     * @param EditRequest $editRequest A EditRequest entity instance.
      *
      * @return array
      */
     public function showAction(EditRequest $editRequest)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $errors = [];
 
@@ -90,14 +111,21 @@ class EditRequestController extends AbstractGovWikiAdminController
     }
 
     /**
-     * @Configuration\Route("/{id}/apply")
+     * @Configuration\Route(
+     *  "/{id}/apply",
+     *  requirements={ "id": "\d+" }
+     * )
      *
-     * @param EditRequest $editRequest A EditRequest instance.
+     * @param EditRequest $editRequest A EditRequest entity instance.
      *
      * @return JsonResponse
      */
     public function applyAction(EditRequest $editRequest)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $targetEntity = $em
@@ -116,49 +144,61 @@ class EditRequestController extends AbstractGovWikiAdminController
         $em->flush();
 
         return new JsonResponse([
-            'redirect' => $this->generateUrl('govwiki_admin_editrequest_index'),
+            'redirect' => $this->generateUrl('govwiki_admin_editrequest_index', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+            ]),
         ]);
     }
 
     /**
-     * @Configuration\Route("/{id}/discard")
+     * @Configuration\Route(
+     *  "/{id}/discard",
+     *  requirements={ "id": "\d+" }
+     * )
      *
-     * @param EditRequest $editRequest A EditRequest instance.
+     * @param EditRequest $editRequest A EditRequest entity instance.
      *
      * @return JsonResponse
      */
     public function discardAction(EditRequest $editRequest)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $editRequest->setStatus('discarded');
         $em->flush();
 
         return new JsonResponse([
-            'redirect' => $this->generateUrl('govwiki_admin_editrequest_index'),
+            'redirect' => $this->generateUrl('govwiki_admin_editrequest_index', [
+                'environment' => $this->getCurrentEnvironment()->getSlug(),
+            ]),
         ]);
     }
 
     /**
-     * @Configuration\Route("/{id}/remove")
+     * @Configuration\Route(
+     * "/{id}/remove",
+     *  requirements={ "id": "\d+" }
+     * )
      *
-     * @param EditRequest $editRequest A EditRequest instance.
+     * @param EditRequest $editRequest A EditRequest entity instance.
      *
      * @return JsonResponse
      */
     public function removeAction(EditRequest $editRequest)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($editRequest);
         $em->flush();
 
-        return new JsonResponse(['status' => 'ok']);
-    }
-
-    /**
-     * @return \GovWiki\AdminBundle\Manager\Entity\AdminEditRequestManager
-     */
-    public function getManager()
-    {
-        return $this->get(GovWikiAdminServices::EDIT_REQUEST_MANAGER);
+        return $this->redirectToRoute('govwiki_admin_editrequest_index', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+        ]);
     }
 }

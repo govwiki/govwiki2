@@ -10,6 +10,7 @@ use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @ORM\Table(name="governments")
  * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\GovernmentRepository")
  * @ExclusionPolicy("none")
+ *
+ * @UniqueEntity("name")
  */
 class Government
 {
@@ -193,6 +196,13 @@ class Government
     private $secondaryLogo;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(nullable=true)
+     */
+    private $image;
+
+    /**
      * @var Collection
      *
      * @ORM\ManyToMany(
@@ -226,9 +236,11 @@ class Government
     /**
      * @var Collection
      *
-     * @ORM\OneToMany(targetEntity="Document", mappedBy="government")
+     * @ORM\OneToMany(targetEntity="Issue", mappedBy="government", cascade={
+     *  "remove"
+     * })
      */
-    private $documents;
+    private $issues;
 
     /**
      * Constructor
@@ -1071,25 +1083,25 @@ class Government
     }
 
     /**
-     * @param Document $document A Document entity instance.
+     * @param Issue $issue A Issue entity instance.
      *
      * @return Government
      */
-    public function addDocuments(Document $document)
+    public function addDocuments(Issue $issue)
     {
-        $this->documents[] = $document;
+        $this->issues[] = $issue;
 
         return $this;
     }
 
     /**
-     * @param Document $document A Document entity instance.
+     * @param Issue $issue A Issue entity instance.
      *
      * @return Government
      */
-    public function removeDocuments(Document $document)
+    public function removeIssues(Issue $issue)
     {
-        $this->documents->removeElement($document);
+        $this->issues->removeElement($issue);
 
         return $this;
     }
@@ -1097,8 +1109,28 @@ class Government
     /**
      * @return Collection
      */
-    public function getDocuments()
+    public function getIssues()
     {
-        return $this->documents;
+        return $this->issues;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param string $image Path to main image.
+     *
+     * @return Government
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
+
+        return $this;
     }
 }

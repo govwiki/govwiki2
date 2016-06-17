@@ -1,36 +1,39 @@
-{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
 
 {% block title %}{{ parent() }} - style{% endblock %}
 
 {% block breadcrumb %}
     {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
-    {{
-        macro.breadcrumbElement(
-            admin_environment|capitalize ~' environment',
-            'govwiki_admin_main_show',
-            { 'environment': admin_environment }
-        )
-    }}
-    {{ macro.breadcrumbElement('Styles', 'govwiki_admin_style_index') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        type|capitalize ~ ' styles',
+        'govwiki_admin_style_index',
+        {
+            'environment': environment.slug,
+            'type': type
+        }
+    ) -}}
     {{ macro.breadcrumbElement('Import') }}
 {% endblock breadcrumb %}
 
-{% block body %}
+{% block panel_title %}
+    {{ environment.name }} - import {{ type }} styles
+{% endblock panel_title %}
 
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-8 col-md-offset-2">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Import CSS styles</h3>
-                </div>
-                <div class="panel-body" id="environment-styles">
-                    {{ form_start(form) }}
-                    {{ form_widget(form) }}
-                    <button class="btn btn-primary">Import</button>
-                    <a class="btn btn-default" href="{{ path('govwiki_admin_style_index') }}">Back</a>
-                    {{ form_end(form) }}
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock %}
+{% block panel_body %}
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn btn-primary">Import</button>
+    <a class="btn btn-default" href="{{- path(
+        'govwiki_admin_style_index',
+        {
+            'environment': environment.slug,
+            'type': type
+        }
+    ) -}}">Back</a>
+    {{ form_end(form) }}
+{% endblock panel_body %}

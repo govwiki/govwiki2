@@ -4,8 +4,8 @@
     <div class="col-xs-6 col-sm-6 col-md-3">
 
         {% if government is defined and government.secondaryLogoPath %}
-            <a class="anchor" href="{{ entity.logoHref }}">
-                <img src="{{ entity.logo }}" class="logo" width="70%">
+            <a class="anchor" href="{{ environment.logoHref }}">
+                <img src="{{ environment.logo }}" class="logo" width="70%">
             </a>
             {% if government.secondaryLogoUrl %}
                 <a class="anchor" href="{{ government.secondaryLogoUrl }}">
@@ -15,8 +15,8 @@
                 <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
             {% endif %}
         {% elseif elected.government is defined and elected.government.secondaryLogoPath %}
-            <a class="anchor" href="{{ entity.logoHref }}">
-                <img src="{{ entity.logo }}" class="logo" width="70%">
+            <a class="anchor" href="{{ environment.logoHref }}">
+                <img src="{{ environment.logo }}" class="logo" width="70%">
             </a>
             {% if elected.government.secondaryLogoUrl %}
                 <a class="anchor" href="{{ elected.government.secondaryLogoUrl }}">
@@ -26,8 +26,8 @@
                 <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
             {% endif %}
         {% else %}
-            <a class="anchor" href="{{ entity.logoHref }}">
-                <img src="{{ entity.logo }}" class="logo">
+            <a class="anchor" href="{{ environment.logoHref }}">
+                <img src="{{ environment.logo }}" class="logo">
             </a>
         {% endif %}
     </div>
@@ -67,26 +67,16 @@
             {% else %}
                 {# Login button#}
                 <li>
-                    <a href="#" onclick="$('#modal-window').modal('show')" class="link">
+                    <a href="#" class="link" id="login-link">
                         Login / Sign Up
                     </a>
-                </li>
-            {% endif %}
-
-            {% if (app.request.attributes.get('_route') == 'government') and
-                (entity.showDocuments) %}
-                <li>
-                    <a href="{{ govwiki_path('documents', {
-                        'altTypeSlug': app.request.attributes.get('altTypeSlug'),
-                        'slug': app.request.attributes.get('slug')
-                    }) }}">Documents</a>
                 </li>
             {% endif %}
 
             {# Return to map #}
             {% if app.request.attributes.get('_route') != "map" %}
                 <li>
-                    <a href="{{ govwiki_path('map') }}" class="link">
+                    <a href="{{ path('map') }}" class="link">
                         {{ 'header.links.return_to_map'|trans }}
                         {#Return to Map#}
                     </a>
@@ -96,7 +86,7 @@
             {# Return to some government #}
             {% if app.request.attributes.get('_route') == "elected" %}
                 <li>
-                    <a href="{{ govwiki_path('government', {
+                    <a href="{{ path('government', {
                         altTypeSlug: altTypeSlug,
                         slug: slug
                     }) }}" class="link">

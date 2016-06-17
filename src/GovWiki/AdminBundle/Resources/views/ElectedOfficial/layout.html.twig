@@ -1,0 +1,43 @@
+{% extends "GovWikiAdminBundle:Layout:environment.html.twig" %}
+
+{% block submenu %}
+    {{- macro.submenuElement(
+        'Votes',
+        'govwiki_admin_electedofficial_staff',
+        {
+            'environment': environment.slug,
+            'elected': elected.id,
+            'staff': 'Vote'
+        }
+    ) -}}
+
+    {{- macro.submenuElement(
+        'Contributions',
+        'govwiki_admin_electedofficial_staff',
+        {
+            'environment': environment.slug,
+            'elected': elected.id,
+            'staff': 'Contribution'
+        }
+    ) -}}
+
+    {{- macro.submenuElement(
+        'Endorsements',
+        'govwiki_admin_electedofficial_staff',
+        {
+            'environment': environment.slug,
+            'elected': elected.id,
+            'staff': 'Endorsement'
+        }
+    ) -}}
+
+    {{- macro.submenuElement(
+        'Public Statements',
+        'govwiki_admin_electedofficial_staff',
+        {
+            'environment': environment.slug,
+            'elected': elected.id,
+            'staff': 'PublicStatement'
+        }
+    ) -}}
+{% endblock submenu %}

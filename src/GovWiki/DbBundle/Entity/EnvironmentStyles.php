@@ -15,6 +15,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class EnvironmentStyles
 {
+
+    const DESKTOP = 'desktop';
+    const MOBILE = 'mobile';
+
     /**
      * @var integer
      *
@@ -53,6 +57,13 @@ class EnvironmentStyles
     private $properties;
 
     /**
+     * @var string
+     *
+     * @ORM\Column()
+     */
+    private $type;
+
+    /**
      * Get id
      *
      * @return integer
@@ -65,9 +76,9 @@ class EnvironmentStyles
     /**
      * Set name
      *
-     * @param string $name
+     * @param string $name Style name.
      *
-     * @return $this
+     * @return EnvironmentStyles
      */
     public function setName($name)
     {
@@ -89,7 +100,8 @@ class EnvironmentStyles
     /**
      * Set className
      *
-     * @param string $className
+     * @param string $className Css selector.
+     *
      * @return $this
      */
     public function setClassName($className)
@@ -112,8 +124,9 @@ class EnvironmentStyles
     /**
      * Set properties
      *
-     * @param string $properties
-     * @return $this
+     * @param string $properties Css rules.
+     *
+     * @return EnvironmentStyles
      */
     public function setProperties($properties)
     {
@@ -125,7 +138,8 @@ class EnvironmentStyles
     /**
      * Get properties
      *
-     * @param boolean $notJson
+     * @param boolean $notJson Flag, if set return json string.
+     *
      * @return array|string
      */
     public function getProperties($notJson = false)
@@ -140,10 +154,11 @@ class EnvironmentStyles
     /**
      * Set environment
      *
-     * @param object $environment
-     * @return $this
+     * @param Environment $environment A Environment entity instance.
+     *
+     * @return EnvironmentStyles
      */
-    public function setEnvironment($environment = null)
+    public function setEnvironment(Environment $environment = null)
     {
         $this->environment = $environment;
 
@@ -153,10 +168,34 @@ class EnvironmentStyles
     /**
      * Get environment
      *
-     * @return $this
+     * @return EnvironmentStyles
      */
     public function getEnvironment()
     {
         return $this->environment;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type Desktop or mobile.
+     *
+     * @return EnvironmentStyles
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }

@@ -3,17 +3,9 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use GovWiki\AdminBundle\Form\AddStyleForm;
 use GovWiki\AdminBundle\Form\StyleForm;
-use GovWiki\AdminBundle\GovWikiAdminServices;
-use GovWiki\DbBundle\Entity\Category;
-use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\EnvironmentStyles;
-use GovWiki\DbBundle\Entity\Translation;
-use GovWiki\DbBundle\Form\AbstractGroupType;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +14,13 @@ use Symfony\Component\HttpFoundation\Response;
  * Class StyleController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/style")
+ * @Configuration\Route(
+ *  "/{environment}/{type}/style",
+ *  requirements={
+ *      "environment": "\w+",
+ *      "type": "(desktop|mobile)"
+ *  }
+ * )
  */
 class StyleController extends AbstractGovWikiAdminController
 {
@@ -31,17 +29,23 @@ class StyleController extends AbstractGovWikiAdminController
      * @Configuration\Template()
      *
      * @param Request $request A Request instance.
+     * @param string  $type    Style type: desktop or mobile.
      *
      * @return array
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $type)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        $environment = $this->getCurrentEnvironment();
+
         // Get current exists styles for current environment.
         $styles = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:EnvironmentStyles')
-            ->get(
-                $this->adminEnvironmentManager()->getEntity()->getId()
-            );
+            ->get($environment->getId(), $type);
+
         $styles = new ArrayCollection($styles);
         $original = clone $styles;
 
@@ -50,7 +54,6 @@ class StyleController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $environment = $this->adminEnvironmentManager()->getEntity();
 
             /** @var EnvironmentStyles $style */
             foreach ($original as $style) {
@@ -62,16 +65,15 @@ class StyleController extends AbstractGovWikiAdminController
             /** @var EnvironmentStyles $style */
             foreach ($styles as $style) {
                 if ($style->getEnvironment() === null) {
-                    $style->setEnvironment($environment);
+                    $style
+                        ->setEnvironment($environment)
+                        ->setType($type);
                 }
 
                 $em->persist($style);
             }
 
-            $environment->setStyle(
-                $this->get('govwiki_admin.manager.style')
-                    ->generate($styles->toArray())
-            );
+            $environment->updateStyle($styles->toArray(), $type);
             $em->persist($environment);
 
             $em->flush();
@@ -79,8 +81,8 @@ class StyleController extends AbstractGovWikiAdminController
 
         return [
             'form' => $form->createView(),
-            'environment_id' => $this->adminEnvironmentManager()->getEntity()
-                ->getId(),
+            'environment_id' => $environment->getId(),
+            'type' => $type,
         ];
     }
 
@@ -89,35 +91,40 @@ class StyleController extends AbstractGovWikiAdminController
      *
      * @Configuration\Route("/export")
      *
-     * @return Response
+     * @param string $type Style type: desktop or mobile.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function exportAction()
+    public function exportAction($type)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         // Get current exists styles for current environment.
         $styles = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:EnvironmentStyles')
-            ->get(
-                $this->adminEnvironmentManager()->getEntity()->getId()
-            );
-        $environment = $this->adminEnvironmentManager()->getSlug();
+            ->get($this->getCurrentEnvironment()->getId(), $type);
+        $environment = $this->getCurrentEnvironment()->getSlug();
 
-        $filePath = $this->getParameter('kernel.logs_dir') . '/'. $environment .
-            '.styles.csv';
-        $fp = fopen($filePath, 'w');
+        $filePath = $this->getParameter('kernel.logs_dir') .
+            '/'. $environment .'_'. $type .'.styles.csv';
+
+        $file = fopen($filePath, 'w');
         foreach ($styles as $style) {
-            fputcsv($fp, [
+            fputcsv($file, [
                 $style->getName(),
                 $style->getClassName(),
                 json_encode($style->getProperties()),
             ], ';');
         }
-        fclose($fp);
+        fclose($file);
 
         $response = new Response(file_get_contents($filePath));
         $response->headers->set('Cache-Control', 'public');
         $response->headers->set(
             'Content-Disposition',
-            'attachment; filename=' . $environment . '.styles.csv'
+            'attachment; filename='. $environment .'_'. $type .'.styles.csv'
         );
 
         unlink($filePath);
@@ -132,11 +139,18 @@ class StyleController extends AbstractGovWikiAdminController
      * @Configuration\Template()
      *
      * @param Request $request A Request instance.
+     * @param string  $type    Style type: desktop or mobile.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function importAction(Request $request)
+    public function importAction(Request $request, $type)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        $environment = $this->getCurrentEnvironment();
+
         $form = $this->createFormBuilder()
             ->add('file', 'file')
             ->getForm();
@@ -149,17 +163,16 @@ class StyleController extends AbstractGovWikiAdminController
             if ($file instanceof UploadedFile) {
                 $em = $this->getDoctrine()->getManager();
                 $file = $file->openFile();
-                $environment = $this->adminEnvironmentManager()->getEntity();
 
                 $em->getRepository('GovWikiDbBundle:EnvironmentStyles')
-                    ->purge($environment->getId());
+                    ->purge($environment->getId(), $type);
 
                 $styles = [];
-                for ($data = $file->fgetcsv(';');
-                     ! $file->eof();
-                     $data = $file->fgetcsv(';')) {
+
+                while (($data = $file->fgetcsv(';')) && (count($data) === 3)) {
                     $style = new EnvironmentStyles();
                     $style
+                        ->setType($type)
                         ->setEnvironment($environment)
                         ->setName($data[0])
                         ->setClassName($data[1])
@@ -169,18 +182,21 @@ class StyleController extends AbstractGovWikiAdminController
                     $em->persist($style);
                 }
 
-                $environment->setStyle(
-                    $this->get('govwiki_admin.manager.style')
-                        ->generate($styles)
-                );
+                $environment->updateStyle($styles, $type);
                 $em->persist($environment);
 
                 $em->flush();
             }
 
-            return $this->redirectToRoute('govwiki_admin_style_index');
+            return $this->redirectToRoute('govwiki_admin_style_index', [
+                'environment' => $environment->getSlug(),
+                'type' => $type,
+            ]);
         }
 
-        return [ 'form' => $form->createView() ];
+        return [
+            'form' => $form->createView(),
+            'type' => $type,
+        ];
     }
 }

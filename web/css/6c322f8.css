@@ -183,6 +183,11 @@ main {
   box-shadow: 0 1px 4px rgba(255, 0, 0, 0.6); }
 
 /* Temporary (start) */
+.btn-group .btn {
+  box-shadow: none; }
+  .btn-group .btn:hover {
+    box-shadow: none; }
+
 /* Temporary (end) */
 /* ===================================================== */
 /* ======== Customize bootstrap & global styles ======== */
@@ -212,18 +217,48 @@ i.icon {
 .nav-pills > li.active > a:focus {
   background-color: #0b4d70; }
 
+.mainmenu {
+  margin-top: 0;
+  margin-bottom: 3px; }
+  .mainmenu li {
+    margin: 0 2px; }
+  .mainmenu select,
+  .mainmenu select:focus {
+    outline: none;
+    border: none;
+    box-shadow: none; }
+
+.form-control__inline {
+  display: inline-block;
+  width: auto; }
+
 /*
    Set z-index for date picker.
 */
 .datepicker-dropdown {
   z-index: 10000 !important; }
 
+.disabled {
+  cursor: not-allowed !important;
+  color: #BBBBBB !important;
+  background-color: #F3F3F3 !important; }
+
 /*
-   Remove border from table in financial statement tab at government page.
+   Pagination sortable.
 */
-#Financial_Statements .table th,
-#Financial_Statements .table td {
-  border: none; }
+.sortable a i {
+  background: url("/bundles/govwikifrontend/img/bg.gif");
+  width: 21px;
+  height: 9px;
+  display: inline-block; }
+.sortable a.asc i {
+  height: 4px;
+  margin-bottom: 4px;
+  background: url("/bundles/govwikifrontend/img/asc.gif"); }
+.sortable a.desc i {
+  height: 4px;
+  margin-bottom: 4px;
+  background: url("/bundles/govwikifrontend/img/desc.gif"); }
 
 /* ========================= */
 /* ======== CartoDB ======== */
@@ -241,3 +276,15 @@ div.cartodb-tooltip-content-wrapper p {
 
 .leaflet-tile-pane .leaflet-layer:last-child {
   z-index: 1000; }
+
+/* ========================= */
+/* ======== Adverting ======== */
+/* ========================= */
+.adverting-top {
+  padding: 18px 0 0 0;
+  max-width: 728px;
+  margin: 0 auto;
+  overflow: hidden; }
+
+.message_form_container {
+  margin: 20px 50px; }

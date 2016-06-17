@@ -1,0 +1,130 @@
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - edit map{% endblock title %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{ macro.breadcrumbElement('Map') }}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    {{ environment.name }} map
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{ form_start(form) }}
+
+    <nav>
+        <ul class="nav nav-pills">
+            <li class="active">
+                <a href="#general" aria-controls="general" role="tab" data-toggle="tab">
+                    General
+                </a>
+            </li>
+
+            <li>
+                <a href="#coloring-conditions" aria-controls="general" role="tab" data-toggle="tab">
+                    Coloring conditions
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="tab-content">
+
+        {# Map position, coordinates of center and zoom. #}
+        <div class="tab-pane active" id="general">
+            <div class="col-md-6 col-lg-6 col-xs-12">
+                {{- form_row(form.centerLatitude) -}}
+                {{- form_row(form.centerLongitude) -}}
+                {{- form_row(form.zoom) -}}
+            </div>
+
+            <div class="col-md-6 col-lg-6 col-xs-12">
+                {{- form_row(form.position) -}}
+                {{- form_row(form.legendTypes) -}}
+                {{- form_row(form.debug) -}}
+            </div>
+        </div>
+
+        {# Coloring conditions. #}
+        <div class="tab-pane" id="coloring-conditions">
+            <div class="col-md-12 col-lg-12 col-xs-12">
+                <h3>Coloring conditions</h3>
+
+                <div class="form-group">
+                    <label class="control-label" for="colorized">
+                        Coloring
+                    </label>
+                    <input type="checkbox" id="colorized" name="ccc[colorized]"
+                            {%- if (conditions.colorized) %} checked{%- endif -%}>
+                </div>
+
+                <div id="conditions-main"
+                        {%- if not (conditions.colorized) -%}
+                    style="display: none"
+                        {%- endif -%}>
+
+                    {# Field name selector. #}
+                    <div class="form-group">
+                        <label for="condition-field-name">Field name</label>
+                        <select class="form-control" id="condition-field-name" name="ccc[fieldName]">
+                            {% for field, name in fields %}
+                                <option value="{{ field }}"
+                                        {%- if (field == conditions.fieldName) -%}
+                                selected
+                                        {%- endif -%}>
+                                    {{- name -}}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {# Conditions. #}
+                    <div class="form-group">
+                        <label class="control-label">Conditions</label>
+                        <div id="conditions-list"></div>
+                    </div>
+
+                    <button type="button" class="pull-right btn btn-default" id="condition-add">Add new conditions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn btn-success">Update</button>
+        <a class="btn btn-default" href="{{- path(
+            'govwiki_admin_environment_show',
+            { 'environment': environment.slug }
+        )-}}">Back</a>
+    </div>
+    {{ form_end(form) }}
+{% endblock panel_body %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# Bootstrap colorpicker #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {%- javascripts
+        '@GovWikiFrontendBundle/Resources/public/js/vendor/handlebars.runtime.js'
+        '@GovWikiAdminBundle/Resources/public/js/Map/map.js'
+        '@GovWikiAdminBundle/Resources/public/js/Map/templates.js'
+        output='js/admin_map.js'
+    -%}
+        <script src="{{ asset_url }}"></script>
+    {%- endjavascripts -%}
+
+    <script>
+        window.gw.county = JSON.parse('{{ conditions.toArray|json_encode|e('js') }}');
+    </script>
+{% endblock javascripts %}

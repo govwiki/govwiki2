@@ -5,7 +5,7 @@ var webpack = require('webpack');
 
 var path = {
     base: 'src/GovWiki/FrontendBundle/Resources/public/js',
-    web: './web/js'
+    web: '/web/js'
 };
 
 module.exports = {
@@ -14,24 +14,29 @@ module.exports = {
         map: './' + path.base + '/home/index.js',
         government: './' + path.base + '/government/index.js',
         common: './' + path.base + '/common.js',
-        document: './'+ path.base +'/document/document.js'
+        elected: './' + path.base + '/elected/handlers.js'
     },
     output: {
-        path: __dirname + '/web/js',
+        path: __dirname + path.web,
         filename: '[name].js',
         chunkFilename: '[id].js'
     },
     devtool: 'eval',
     resolve: {
-        root: [pathUtil.join(__dirname, 'bower_components')],
+        root: [ pathUtil.join(__dirname, 'bower_components') ],
         alias: {
+            typeahead: pathUtil.join(__dirname, path.base, '/vendor/typeahead.js'),
             handlebars: pathUtil.join(__dirname, path.base, '/vendor/handlebars.js')
         }
     },
     plugins: [
+        new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery",
+            "window.jQuery": "jquery"
+        }),
         new webpack.DefinePlugin({
             'process.env': {
-                // This has effect on the react lib size
                 'NODE_ENV': JSON.stringify('production')
             }
         }),

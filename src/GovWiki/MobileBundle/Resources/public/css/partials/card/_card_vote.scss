@@ -1,0 +1,104 @@
+/* ========================= */
+/* ========= CARD ======== */
+/* ========================= */
+
+// card__header
+// card__header-group
+// card__header-vote-name
+// card__header-vote-vote
+// card__header-vote-sponsor
+// card__header-expand
+
+// card__block
+// card__block-title
+// card__block-vote-date
+// card__block-vote-issue
+// card__block-comments
+
+
+// Block
+.card {
+  position: relative;
+  display: block;
+  margin-bottom: 1.5rem;
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: .25rem;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+
+  // Element
+  &__header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+
+    // Element
+    &-group {
+      margin: 0.6em 1.2em;
+    }
+
+    // Element
+    &-vote-name {
+      padding: 0.6rem;
+      margin-bottom: 1em;
+      font-size: 1.3em;
+      color: black;
+    }
+
+    // Element
+    &-vote-vote {
+
+      & > span {
+        font-weight: 700
+      }
+    }
+
+    // Element
+    &-vote-sponsor {
+      float: right;
+
+      & > span {
+        font-weight: 700
+      }
+
+    }
+
+    // Expand icon
+    &-expand {
+      background-color: #f5f5f5;
+      color: #929292;
+      text-align: center;
+      font-size: 1.2em;
+    }
+
+  }
+
+  // Element
+  &__block {
+    padding: 1.05rem;
+    padding-bottom: 0;
+
+    &-title {
+      margin-bottom: .75rem;
+    }
+
+    &-vote-date {
+      display: inline-block;
+      font-size: 1.3em;
+    }
+
+    &-vote-issue {
+      display: inline-block;
+      font-size: 1.3em;
+      float: right;
+    }
+
+    &-vote-comments {
+      font-size: 2.5em;
+      margin: 0;
+    }
+
+  }
+
+
+
+}

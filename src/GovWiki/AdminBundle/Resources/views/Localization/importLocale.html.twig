@@ -1,5 +1,8 @@
 {{ form_start(form, {
-    'action': path('govwiki_admin_localization_importlocale', {'locale_name': locale_name})
+    'action': path('govwiki_admin_localization_importlocale', {
+        'environment': environment.slug,
+        'locale_name': locale_name
+    })
 }) }}
 {{ form_widget(form) }}
 {{ form_end(form) }}

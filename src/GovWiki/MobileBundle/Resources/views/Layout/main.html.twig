@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <title>{{ environment.title }}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+        {% block stylesheets %}{% endblock %}
+    {% if environment is defined %}
+        <link rel="icon" href="{{ asset('/img/'~environment.slug~'/favicon.ico') }}" type="image/x-icon" />
+        <style>
+            {{- environment.style|raw -}}
+            {{- environment.mobileStyle|raw -}}
+        </style>
+    {% else %}
+        <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
+    {% endif %}
+    </head>
+
+    <body>
+        <div id="fb-root"></div>
+        <script>
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            var currentLocale = '{{ (app.request.locale == 'es') ? 'es_ES' : 'en_US' }}';
+            js.src = "https://connect.facebook.net/" + currentLocale + "/sdk.js#xfbml=1&version=v2.5";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));</script>
+
+        {# Header #}
+        <header>
+            {{ include('GovWikiMobileBundle:Partial:header.html.twig') }}
+        </header>
+
+        {# Menubar #}
+        {% if _locales is defined %}
+            <menu class="container mainmenu">
+                <div class="row">
+                    <div class="col-md-6">
+                        {% if years is defined and years|length > 1 %}
+                            <label for="year-selector" class="control-label">{{ 'general.year_selector_label'|trans }}: </label>
+                            <select id="year-selector" class="form-control form-control__inline">
+                                {% for year in years %}
+                                    <option value="{{ year }}" {%-
+                                        if (government is defined and government.currentYear is defined and government.currentYear == year)
+                                    -%}
+                                            selected
+                                        {%- endif -%}>
+                                        {{- year -}}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                    </div>
+                    {% set _locales = render(controller('GovWikiMobileBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) %}
+
+                    {% if _locales is defined %}
+                        <div class="col-md-6">
+                            <div class="pull-right">
+                                <ul class="nav">
+                                    {{- _locales|raw -}}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </menu>
+        {% endif %}
+
+        {# Main content #}
+        <main>
+            {{ advertising.getAdvertising(environment, 'google_adsense')|raw }}
+            {% block main %}{% endblock %}
+        </main>
+
+        {# Footer #}
+        <footer class="container footer">
+            {{ include('GovWikiMobileBundle:Partial:footer.html.twig') }}
+        </footer>
+
+        {# Login modal window #}
+        <div id="modal-window" class="modal fade">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Login</h4>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <form id="ajax-login-form" action="{{ path('fos_user_security_check') }}" method="post">
+                            <input type="hidden" name="_csrf_token" value="qpkx1M6O5lzDwG4Eisz4fMM9A8oweUFEIXRPstJa6VA" />
+
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input class="form-control" type="text" id="username" name="_username" value="" required="required" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input class="form-control" type="password" id="password" name="_password" required="required" />
+                            </div>
+
+                            <div class="checkbox">
+                                <label for="remember_me">
+                                    <input class="" type="checkbox" id="remember_me" name="_remember_me" value="on" /> Remember me
+                                </label>
+                            </div>
+
+                            <input class="btn btn-default" type="submit" id="_submit" name="_submit" value="Log in" />
+                            <a href="{{ path('fos_user_registration_register') }}" class="btn btn-default pull-right">Sign up</a>
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {#{% javascripts  '@GovWikiMobileBundle/Resources/public/js/vendor/jquery.min.js'
+            output='js/jquery.js' %}
+            <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}#}{#
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>#}
+
+        {% if app.environment == 'prod' %}
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.1/lodash.min.js"></script>
+        {% else %}
+            {% javascripts '@GovWikiFrontendBundle/Resources/public/js/vendor/lodash.min.js'%}
+            <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+        {% endif %}
+
+        {% block javascripts %}
+            {# Govwiki namespace #}
+            <script> window.gw = {}; </script>
+            <script> window.gw.authorized = "{{ app.user }}"; </script>
+            {% set username = '' %}
+            {% if app.user %}
+                <script> window.gw.user_id = "{{ app.user.id }}"; </script>
+                {% set username = app.user.username %}
+            {% endif %}
+            <script> window.gw.username = "{{ username }}"; </script>
+        {% endblock %}
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    </body>
+</html>

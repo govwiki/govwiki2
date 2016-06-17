@@ -3,6 +3,7 @@
 namespace GovWiki\ApiBundle\Controller\V1;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\DbBundle\Entity\EditRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +17,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  *
  * @Route("/edit-request")
  */
-class EditRequestController extends Controller
+class EditRequestController extends AbstractGovWikiApiController
 {
     /**
      * @Route("/create")
@@ -47,14 +48,13 @@ class EditRequestController extends Controller
                 }
 
                 $em = $this->getDoctrine()->getManager();
-
-                $editRequest = $this
-                    ->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-                    ->createEditRequest();
-                $editRequest->setUser($this->getUser())
-                            ->setEntityName($data['entityName'])
-                            ->setEntityId($data['entityId'])
-                            ->setChanges($data['changes']);
+                $editRequest = new EditRequest();
+                $editRequest
+                    ->setEnvironment($this->getCurrentEnvironment())
+                    ->setUser($this->getUser())
+                    ->setEntityName($data['entityName'])
+                    ->setEntityId($data['entityId'])
+                    ->setChanges($data['changes']);
                 $em->persist($editRequest);
                 $em->flush();
 

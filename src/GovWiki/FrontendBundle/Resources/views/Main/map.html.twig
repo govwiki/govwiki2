@@ -65,7 +65,7 @@
         </div>
 
         <div class="row">
-            {{ include('@GovWikiFrontend/Partial/Main/'~ mapEntity.position ~'.html.twig') }}
+            {{ include('@GovWikiFrontend/Partial/Main/'~ environment.map.position ~'.html.twig') }}
         </div>
 
     </section>
@@ -76,9 +76,11 @@
 {# Stylesheets #}
 {% block stylesheets %}
 
-    {{parent()}}
+    {{ parent() }}
 
-    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/map.scss' filter='scss, cssrewrite' %}
+    {% stylesheets
+        '@GovWikiFrontendBundle/Resources/public/css/map.scss'
+        filter='scss, cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 
@@ -94,13 +96,11 @@
 
     <script>
         window.gw.map = '{{ map | escape('js') }}';
-        window.gw.environment = '{{ environment }}';
+        window.gw.environment = '{{ environment|cartoDbDataset }}';
         window.gw.urls = {};
-        window.gw.urls.search_government = '{{ govwiki_path('govwiki_api_v1_government_search') }}';
-        window.gw.urls.search_elected = '{{ govwiki_path('govwiki_api_v1_electedofficial_search') }}';
+        window.gw.urls.search_government = '{{ path('govwiki_api_v1_government_search') }}';
+        window.gw.urls.search_elected = '{{ path('govwiki_api_v1_electedofficial_search') }}';
     </script>
-
-    <script src="/js/vendor/typeahead.js"></script>
 
     <script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
     {#<script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.uncompressed.js"></script>#}

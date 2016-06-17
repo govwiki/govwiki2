@@ -2,8 +2,9 @@
 
 namespace GovWiki\DbBundle\Form;
 
-use GovWiki\DbBundle\Entity\Document;
+use GovWiki\DbBundle\Entity\Issue;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
@@ -44,7 +45,7 @@ class DocumentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $choices = Document::availableTypes();
+        $choices = Issue::availableTypes();
         $names = array_map(
             function ($type) {
                 return ucfirst($type);
@@ -54,11 +55,14 @@ class DocumentType extends AbstractType
         $choices = array_combine($choices, $names);
 
         $builder
+            ->add('name')
             ->add('description', null, [ 'required' => false ])
             ->add('type', 'choice', [ 'choices' => $choices ])
             ->add('link', null, [ 'required' => false ])
             ->add('file', 'file', [ 'required' => false, 'mapped' => false ])
-            ->add('date', 'date', [ 'empty_data' => new \DateTime() ])
+            ->add('date', 'text', [
+                'attr' => [ 'data-provide' => 'datepicker' ],
+            ])
             ->addEventListener(
                 FormEvents::PRE_SUBMIT,
                 function (FormEvent $event) {
@@ -89,6 +93,21 @@ class DocumentType extends AbstractType
                     $event->setData($data);
                 }
             );
+
+        $builder->get('date')
+            ->resetModelTransformers()
+            ->addModelTransformer(new CallbackTransformer(
+                function (\DateTime $original = null) {
+                    if ($original) {
+                        return $original->format('m/d/Y');
+                    }
+
+                    return date('m/d/Y');
+                },
+                function ($view) {
+                    return \DateTime::createFromFormat('m/d/Y', $view);
+                }
+            ));
     }
 
     /**
@@ -97,7 +116,7 @@ class DocumentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'GovWiki\DbBundle\Entity\Document',
+            'data_class' => 'GovWiki\DbBundle\Entity\Issue',
         ]);
     }
 

@@ -5,22 +5,157 @@ namespace GovWiki\FrontendBundle\Controller;
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Chat;
 use GovWiki\DbBundle\Entity\Government;
+use GovWiki\DbBundle\Entity\Issue;
 use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\DbBundle\Entity\Message;
 use GovWiki\DbBundle\Form\MessageType;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * MainController
  */
-class GovernmentController extends Controller
+class GovernmentController extends AbstractGovWikiController
 {
+
+    const MAX_SALARIES_PER_PAGE = 25;
+    const MAX_PENSIONS_PER_PAGE = 25;
+    const MAX_DOCUMENTS_PER_PAGE = 25;
+
+    /**
+     * @Route("/{government}/salaries", requirements={
+     *  "government": "\d+"
+     * })
+     * @Template
+     *
+     * @param Request $request    A Request instance.
+     * @param integer $government Government entity id.
+     *
+     * @return array
+     */
+    public function salariesAction(Request $request, $government)
+    {
+        if ($this->getCurrentEnvironment() === null) {
+            // Return empty response.
+            return new Response();
+        }
+
+        $paginator = $this->get('knp_paginator');
+        $year = $request->query->get(
+            'year',
+            $this->getGovernmentManager()
+                ->getAvailableYears(
+                    $this->getCurrentEnvironment()
+                )[0]
+        );
+
+        $salaries = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Salary')
+            ->getListQuery($government, $year);
+        $salaries = $paginator->paginate(
+            $salaries,
+            $request->query->get('page', 1),
+            self::MAX_SALARIES_PER_PAGE
+        );
+        /** @var \Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination $salaries */
+        $salaries->setUsedRoute('govwiki_frontend_government_salaries');
+        $salaries->setParam('government', $government);
+
+        return [ 'salaries' => $salaries ];
+    }
+
+    /**
+     * @Route("/{government}/pensions", requirements={
+     *  "government": "\d+"
+     * })
+     * @Template
+     *
+     * @param Request $request    A Request instance.
+     * @param integer $government Government entity id.
+     *
+     * @return array
+     */
+    public function pensionsAction(Request $request, $government)
+    {
+        if ($this->getCurrentEnvironment() === null) {
+            // Return empty response.
+            return new Response();
+        }
+
+        $paginator = $this->get('knp_paginator');
+        $year = $request->query->get(
+            'year',
+            $this->getGovernmentManager()
+                ->getAvailableYears(
+                    $this->getCurrentEnvironment()
+                )[0]
+        );
+
+        $pensions = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Pension')
+            ->getListQuery($government, $year);
+        $pensions = $paginator->paginate(
+            $pensions,
+            $request->query->get('page', 1),
+            self::MAX_PENSIONS_PER_PAGE
+        );
+        /** @var \Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination $pensions */
+        $pensions->setUsedRoute('govwiki_frontend_government_pensions');
+        $pensions->setParam('government', $government);
+
+        return [ 'pensions' => $pensions ];
+    }
+
+    /**
+     * @Route("/{government}/issues", requirements={
+     *  "government": "\d+"
+     * })
+     * @Template
+     *
+     * @param Request    $request    A Request instance.
+     * @param Government $government A Government entity instance.
+     *
+     * @return array
+     */
+    public function issuesAction(Request $request, Government $government)
+    {
+        $environment = $this->getCurrentEnvironment();
+        if ($environment === null) {
+            return $this->redirectToRoute('disabled');
+        }
+
+        $user = $this->getUser();
+        $paginator = $this->get('knp_paginator');
+//        $year = $request->query->get(
+//            'year',
+//            $this->getGovernmentManager()
+//                ->getAvailableYears(
+//                    $this->getCurrentEnvironment(),
+//                    $government
+//                )[0]
+//        );
+
+        $issues = $this->getDoctrine()
+            ->getRepository('GovWikiDbBundle:Issue')
+            ->getListQuery($government->getId(), $user instanceof User);
+        $issues = $paginator->paginate(
+            $issues,
+            $request->query->get('page', 1),
+            self::MAX_DOCUMENTS_PER_PAGE
+        );
+
+        /** @var \Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination $issues */
+        $issues->setUsedRoute('govwiki_frontend_government_issues');
+        $issues->setParam('government', $government->getId());
+
+        return [ 'issues' => $issues ];
+    }
 
     /**
      * Toggle government subscribe.
@@ -39,6 +174,10 @@ class GovernmentController extends Controller
      */
     public function subscribeAction(Government $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return new JsonResponse([], 400);
+        }
+
         /** @var User $user */
         $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
@@ -66,7 +205,10 @@ class GovernmentController extends Controller
     }
 
     /**
-     * @Route("/{altTypeSlug}/{slug}", name="government")
+     * @Route("/{altTypeSlug}/{slug}", name="government", requirements={
+     *  "altTypeSlug": "\w+",
+     *  "slug": "\w+"
+     * })
      * @Template("GovWikiFrontendBundle:Government:index.html.twig")
      *
      * @param Request $request     A Request instance.
@@ -77,15 +219,21 @@ class GovernmentController extends Controller
      */
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
-        $this->clearTranslationsCache();
-        $manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('disabled');
+        }
         $user = $this->getUser();
 
-        $years = $manager->getAvailableYears();
+        $this->clearTranslationsCache();
+        $manager = $this->getGovernmentManager();
+        $environment = $this->getCurrentEnvironment();
+
+        $years = $manager->getAvailableYears($environment);
         $currentYear = $request->query->getInt('year', $years[0]);
 
         $data = $manager
             ->getGovernment(
+                $environment,
                 $altTypeSlug,
                 $slug,
                 $currentYear
@@ -143,7 +291,8 @@ class GovernmentController extends Controller
                         return 0;
                     }
 
-                    return ($a < $b) ? 1: -1; }
+                    return ($a < $b) ? 1: -1;
+                }
 
                 return 0;
             });
@@ -159,6 +308,7 @@ class GovernmentController extends Controller
         }
 
         $data['years'] = $years;
+        $data['currentYear'] = $currentYear;
         $data['government']['translations'] = [
             'total_revenue' => $translator->trans('general.findata.main.total_revenue'),
             'total_expenditure' => $translator->trans('general.findata.main.total_expenditure'),
@@ -174,7 +324,7 @@ class GovernmentController extends Controller
             $env_name = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)->getEnvironment();
             /** @var Government $government */
             $government = $em->getRepository('GovWikiDbBundle:Government')
-                ->getListQuery($env_name, $data['government']['id'])
+                ->getListQuery($environment->getId(), $data['government']['id'])
                 ->getOneOrNullResult();
 
             if ($government) {
@@ -220,7 +370,7 @@ From ' . $user_email;
                         [
                             'author' => $user_email,
                             'government_name' => $government->getName(),
-                            'message_text' => $new_message->getText()
+                            'message_text' => $new_message->getText(),
                         ]
                     );
 
@@ -231,7 +381,7 @@ From ' . $user_email;
                     return $this->redirectToRoute('government', [
                         'environment' => $env_name,
                         'altTypeSlug' => $altTypeSlug,
-                        'slug' => $slug
+                        'slug' => $slug,
                     ]);
                 }
             }
@@ -244,49 +394,16 @@ From ' . $user_email;
             ->getRepository('GovWikiDbBundle:Pension')
             ->has($data['government']['id'], $data['government']['currentYear']);
 
-        $data['environment_is_subscribable'] = $manager->getEntity()->getSubscribable();
+        $data['environment_is_subscribable'] = $environment->getSubscribable();
+
+        $form = $this->createForm('document', null, [
+            'action' => $this->generateUrl('govwiki_api_v1_government_issue', [
+                'government' => $data['government']['id'],
+            ]),
+        ]);
+        $data['issueForm'] = $form->createView();
 
         return $data;
-    }
-
-    /**
-     * @Route("/{altTypeSlug}/{slug}/documents", name="documents")
-     * @Template()
-     *
-     * @param Request $request     A Request instance.
-     * @param string  $altTypeSlug Slugged government alt type.
-     * @param string  $slug        Slugged government name.
-     *
-     * @return array
-     */
-    public function documentAction(Request $request, $altTypeSlug, $slug)
-    {
-        $manager = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER);
-
-        $years = $manager->getAvailableYears();
-        $currentYear = $request->query->getInt('year', $years[0]);
-
-        $government = $manager->getGovernmentWithoutData($altTypeSlug, $slug);
-        $government->currentYear = $currentYear;
-
-        $parameters = [
-            'years' => $years,
-            'government' => $government,
-        ];
-
-        if ($manager->getEntity()->isShowDocuments()) {
-            $documentsQuery = $this->getDoctrine()
-                ->getRepository('GovWikiDbBundle:Document')
-                ->getListQuery($government->getId(), null, $currentYear);
-            $paginator = $this->get('knp_paginator');
-            $parameters['documents'] = $paginator->paginate(
-                $documentsQuery,
-                $request->query->getInt('page', 1),
-                25
-            );
-        }
-
-        return $parameters;
     }
 
     /**

@@ -41,6 +41,10 @@ class FinDataController extends AbstractGovWikiAdminController
      */
     public function indexAction(Request $request, Government $government)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $filter = $request->query->get('filter', []);
 
         $year = null;
@@ -84,6 +88,10 @@ class FinDataController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, FinData $finData)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $form = $this->createForm('fin_data', $finData);
 
         $form->handleRequest($request);
@@ -92,52 +100,6 @@ class FinDataController extends AbstractGovWikiAdminController
 
             $em->persist($finData);
             $em->flush();
-        }
-
-        return [ 'form' => $form->createView() ];
-    }
-
-    /**
-     * @Configuration\Route("/import/{environment}")
-     * @Configuration\Template()
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return array
-     */
-    public function importAction(Request $request)
-    {
-        $form = $this->createFormBuilder(null, [
-            'action' => $this->generateUrl(
-                'govwiki_admin_findata_import',
-                [ 'environment' => $this->getManager()->getEnvironment() ]
-            ),
-        ])
-            ->add('csv_file', 'file')
-            ->getForm();
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                /** @var UploadedFile $file */
-                $file = $form->getData()['csv_file'];
-
-                $filePath = $file->getPathname();
-
-                try {
-                    $this->get(GovWikiDbServices::FIN_DATA_IMPORTER)
-                        ->import(new CsvReader($filePath));
-                } catch (\Exception $e) {
-                    $this->errorMessage('Can\'t import new financial statements');
-                    return $this->redirectToRoute('govwiki_admin_government_index');
-                }
-
-                $this->successMessage('Financial statements imported successfully');
-
-                return $this->redirectToRoute('govwiki_admin_government_index');
-            }
-
-            $this->errorMessage('Can\'t import new financial statements');
         }
 
         return [ 'form' => $form->createView() ];

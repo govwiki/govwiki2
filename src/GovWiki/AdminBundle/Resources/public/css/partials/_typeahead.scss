@@ -1,0 +1,67 @@
+
+/* ========================= */
+/* ======= TYPEAHEAD ======= */
+/* ========================= */
+
+.tt-input {
+   font-size: 12px;
+}
+
+.tt-menu {
+   width: 100%;
+   background-color: #fff;
+   border-top: 1px solid rgba(0,0,0,0.2);
+   -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+   -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+   box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+   cursor: default;
+   z-index: 2000 !important; // Overflow map controls
+   max-height: 150px;
+   overflow-y: auto;
+}
+.tt-suggestion {
+   padding: 0 12px;
+   line-height: 30px;
+   text-align: left;
+}
+.tt-suggestion:hover, .tt-cursor {
+   color: #fff;
+   background-color: #0097cf;
+   cursor: pointer;
+}
+.tt-suggestion p {
+   margin: 0;
+}
+.sugg-box {
+   position: relative;
+   border-bottom: 0 solid #eee;
+   overflow: hidden;
+}
+.sugg-state {
+   top: 0;
+   left: 0;
+   margin-right: 20px;
+   float: left;
+   z-index: 0;
+   font-size: 18px;
+   color: #337ab7;
+   font-weight: bold;
+}
+.sugg-name {
+   font-size: 12px;
+   display: inline;
+   text-transform: uppercase;
+}
+.sugg-govname {
+   font-size: 13px;
+   text-transform: uppercase;
+}
+.sugg-type {
+   font-size: 70%;
+   color: #337ab7;
+   float: right;
+   top: 36px;
+   right: 0;
+   line-height: 100%;
+}
+

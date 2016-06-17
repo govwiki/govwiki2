@@ -1,24 +1,25 @@
 {% extends "GovWikiAdminBundle:Layout:wizard.html.twig" %}
 
+{% import "GovWikiAdminBundle:Layout:macro.html.twig" as macro %}
+
+{% block breadcrumb %}
+    {{- parent() -}}
+    {{- macro.breadcrumbElement('Environment') -}}
+{% endblock breadcrumb %}
+
 {% block panel_title %}
     Environment
 {% endblock panel_title %}
 
-{% block breadcrumb %}
-    <li class="active">New environment</li>
-{% endblock breadcrumb %}
-
-{% block content %}
-    <h3>New environment</h3>
-
+{% block panel_body %}
     {{ form_start(form) }}
     {{ form_row(form.name) }}
     {{ form_row(form.domain) }}
     {{ form_row(form.title) }}
     {{ form_row(form.logoHref) }}
+    {{ form_row(form.mainImageFile) }}
     {{ form_row(form.file) }}
     {{ form_row(form.adminEmail) }}
-    {{ form_row(form.defaultLocale) }}
     {{ form_row(form.subscribable, {'label': 'Users can subscribe to governments of the environment'}) }}
 
     <div class="form-group">
@@ -42,7 +43,7 @@
         <button class="btn btn-primary" type="submit">Next</button>
     </div>
     {{ form_end(form) }}
-{% endblock content %}
+{% endblock panel_body %}
 
 {% block javascripts %}
     {{ parent() }}

@@ -1,0 +1,60 @@
+{%- macro isPendingRequest(staf) -%}
+    {{- (staf.request is not null) and (staf.request.status == 'pending') -}}
+{%- endmacro -%}
+
+{# Create view for given entity field. #}
+{%- macro dataElement(staf, field, options) -%}
+    {% import _self as self %}
+    {%- set value = attribute(staf, field) -%}
+
+    {{- self.createDataElement(field, value, self.isPendingRequest(staf), options) -}}
+{%- endmacro -%}
+
+{# Create view for sub entity field. #}
+{%- macro dataSubElement(staf, sub, field, options) -%}
+    {% import _self as self %}
+    {%- set value = attribute(attribute(staf, sub), field) -%}
+
+    {{- self.createDataElement(field, value, self.isPendingRequest(staf), options) -}}
+{%- endmacro -%}
+
+{%- macro createDataElement(field, value, isPending, options) -%}
+    {% import _self as self %}
+
+    {%- set type = options.type|default('text') -%}
+    {%- set placeholder = options.placeholder|default('Please edit') -%}
+    {%- set title = options.title|default('Please edit') -%}
+    {%- set class = 'editable editable-pre-wrapped editable-click '
+    ~ options.class|default('') -%}
+    {%- set selectSource = options.source|default(null) -%}
+    {%- set format = options.format|default('mm/dd/yyyy') -%}
+    {%- set dateFormat = options.dateFormat|default('m/d/Y') -%}
+
+    {# Data attribute name. #}
+    {%- set normilizeFieldName = field|regexpReplace('/([A-Z])/', '-$1')|lower -%}
+    {%- set dataName = options.dataName|default(normilizeFieldName) -%}
+
+    {%- if value is instanceof('DateTime') -%}
+        {%- set value = value|date(dateFormat) -%}
+    {%- endif -%}
+
+    {% if type == 'number' %}
+        {%- set type = 'text' -%}
+        {%- set value = value|number_format -%}
+    {%- endif -%}
+
+    <div data-{{ dataName -}}="{{- value -}}" class="card__group-item">
+        {%- if isPending -%}
+            {{- value -}}
+        {%- else -%}
+            <a href="javascript:void(0);" data-type="{{- type -}}" data-pk="1"
+               data-placeholder="{{- placeholder -}}" data-title="{{- title -}}"
+               class="{{- class -}}" data-original-title=""
+               title="" data-source="{{- selectSource -}}"
+                    {{ (type == 'date') ? 'data-format="' ~ format ~ '"' }}>
+                {{- value -}}
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </a>
+        {%- endif -%}
+    </div>
+{%- endmacro-%}

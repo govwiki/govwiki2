@@ -1,0 +1,44 @@
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - edit {{ user.username }}{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement(
+        environment.name ~' users',
+        'govwiki_admin_user_index',
+        { 'environment': environment.slug }
+    ) -}}
+    {{- macro.breadcrumbElement('Edit '~ user.username) -}}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    Edit {{ user.username }}
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button type="submit" class="btn btn-primary">
+        <i class="glyphicon glyphicon-ok"></i> Update
+    </button>
+    <a class="btn btn-default" href="{{- path(
+        'govwiki_admin_user_index',
+        { 'environment': environment.slug }
+    ) -}}">
+        <i class="glyphicon glyphicon-chevron-left"></i> Back
+    </a>
+    {{ form_end(form) }}
+{% endblock panel_body %}
+
+{% block javascripts %}
+    {% javascripts '@GovWikiAdminBundle/Resources/public/js/User/form.js'
+        output='js/form.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock javascripts %}

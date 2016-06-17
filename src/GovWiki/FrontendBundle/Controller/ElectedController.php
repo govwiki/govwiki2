@@ -2,19 +2,21 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
-use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\DbBundle\Entity\SurveyResponse;
 use GovWiki\DbBundle\Form\ElectedOfficialCommentType;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\SerializationContext;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * MainController
+ * Class ElectedController
+ * @package GovWiki\FrontendBundle\Controller
  */
-class ElectedController extends Controller
+class ElectedController extends AbstractGovWikiController
 {
 
     const ROWS_PER_PAGE = 15;
@@ -23,16 +25,21 @@ class ElectedController extends Controller
      * @Route("/{altTypeSlug}/{slug}/{electedSlug}", name="elected")
      * @Template("GovWikiFrontendBundle:Elected:index.html.twig")
      *
-     * @param string $altTypeSlug Slugged government alt type.
-     * @param string $slug        Slugged government name.
-     * @param string $electedSlug Slugged elected official full name.
+     * @param Request $request     A Request instance.
+     * @param string  $altTypeSlug Slugged government alt type.
+     * @param string  $slug        Slugged government name.
+     * @param string  $electedSlug Slugged elected official full name.
      *
      * @return array
      *
      * @throws \LogicException Some required bundle not registered.
      */
-    public function showAction($altTypeSlug, $slug, $electedSlug, Request $request)
+    public function showAction(Request $request, $altTypeSlug, $slug, $electedSlug)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('disabled');
+        }
+
         $user = $this->getUser();
 
         if ($user instanceof User) {
@@ -43,8 +50,14 @@ class ElectedController extends Controller
 
         $this->clearTranslationsCache();
 
-        $data = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-            ->getElectedOfficial($altTypeSlug, $slug, $electedSlug, $user);
+        $data = $this->getElectedOfficialManager()
+            ->getElectedOfficial(
+                $this->getCurrentEnvironment(),
+                $altTypeSlug,
+                $slug,
+                $electedSlug,
+                $user
+            );
 
         if (null === $data) {
             return [];
@@ -58,11 +71,11 @@ class ElectedController extends Controller
             self::ROWS_PER_PAGE
         );
 
-        $data['contributions'] = $paginator->paginate(
-            $data['contributions'],
-            1,
-            self::ROWS_PER_PAGE
-        );
+//        $data['contributions'] = $paginator->paginate(
+//            $data['contributions'],
+//            1,
+//            self::ROWS_PER_PAGE
+//        );
 
         $data['endorsements'] = $paginator->paginate(
             $data['endorsements'],
@@ -70,8 +83,14 @@ class ElectedController extends Controller
             self::ROWS_PER_PAGE
         );
 
-        $data['publicStatements'] = $paginator->paginate(
-            $data['publicStatements'],
+//        $data['publicStatements'] = $paginator->paginate(
+//            $data['publicStatements'],
+//            1,
+//            self::ROWS_PER_PAGE
+//        );
+
+        $data['surveyResponses'] = $paginator->paginate(
+            $data['surveyResponses'],
             1,
             self::ROWS_PER_PAGE
         );
@@ -87,22 +106,17 @@ class ElectedController extends Controller
 
         $electedOfficialCommentForm = $this->createForm(new ElectedOfficialCommentType(), [
             'current_text' => $data['electedOfficial']['electedOfficialComments'],
-            'electedOfficialId' => $data['electedOfficial']['id']
+            'electedOfficialId' => $data['electedOfficial']['id'],
         ]);
 
         $data = array_merge($data, [
             'altTypeSlug' => $altTypeSlug,
             'slug' => $slug,
             'electedOfficialJSON' => $electedOfficialJSON,
-            'electedOfficialCommentForm' => $electedOfficialCommentForm->createView()
+            'electedOfficialCommentForm' => $electedOfficialCommentForm->createView(),
         ]);
 
-        $template = $request->query->get('template', 'index');
-
-        return $this->render(
-            "GovWikiFrontendBundle:Elected:{$template}.html.twig",
-            $data
-        );
+        return $data;
     }
 
     private function clearTranslationsCache()

@@ -3,18 +3,19 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\AdminBundle\Form\AdvertisingForm;
-use GovWiki\AdminBundle\GovWikiAdminServices;
 
 /**
  * Class AdvertisingController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/advertising")
+ * @Configuration\Route(
+ *  "/{environment}/advertising",
+ *  requirements={ "environment": "\w+" }
+ * )
  */
-class AdvertisingController extends Controller
+class AdvertisingController extends AbstractGovWikiAdminController
 {
     /**
      * Adverting index page
@@ -29,29 +30,24 @@ class AdvertisingController extends Controller
      */
     public function indexAction(Request $request)
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
         $em = $this->getDoctrine()->getManager();
-        $environmentSlug = $this->get(GovWikiAdminServices::ADMIN_ENVIRONMENT_MANAGER)->getSlug();
-        $currentEnvironment = $em->getRepository("GovWikiDbBundle:Environment")->findOneBySlug($environmentSlug);
+        $environment = $this->getCurrentEnvironment();
 
-        $defaultEntity = $em
-            ->createQuery(
-                'SELECT ad
-                FROM GovWikiDbBundle:Advertising ad
-                WHERE ad.advertingType = :advertingType
-                AND ad.environment = :environment'
-            )
-            ->setParameters(
-                [
-                    'advertingType' => 'google_adsense',
-                    'environment'   => $currentEnvironment->getId(),
-                ]
-            )
-            ->getSingleResult();
+        $advertising = $em->getRepository('GovWikiDbBundle:Advertising')
+            ->findOneBy([ 'environment' => $environment->getId() ]);
 
-        $form = $this->createForm(new AdvertisingForm($currentEnvironment), $defaultEntity);
+        $form = $this->createForm(new AdvertisingForm(), $advertising);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($advertising->getId() === null) {
+                $advertising->setEnvironment($environment);
+            }
+            $em->persist($advertising);
             $em->flush();
         }
 

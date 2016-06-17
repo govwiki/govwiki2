@@ -1,0 +1,54 @@
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - Templates{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{
+        macro.breadcrumbElement(
+            environment.name ~' environment',
+            'govwiki_admin_environment_show',
+            { 'environment': environment.slug }
+        )
+    }}
+    {{ macro.breadcrumbElement('Templates') }}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    {{ environment.name }} templates
+{% endblock panel_title %}
+
+{% block panel_body %}
+    <div>
+        <h4>Available parameters:</h4>
+        <ul>
+            <li>
+                vote:
+                <ul>
+                    <li>vote</li>
+                    <li>didElectedOfficialProposeThis</li>
+                    <li>
+                        legislation
+                        <ul>
+                            <li>name</li>
+                            <li>issueCategory</li>
+                            <li>summary</li>
+                            <li>govAssignedNumber</li>
+                            <li>dateConsidered</li>
+                            <li>government</li>
+                            <li>displayTime</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>profileUrl</li>
+            <li>addCommentUrl</li>
+        </ul>
+    </div>
+
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button type="submit" class="btn btn-success">Update</button>
+    {{ form_end(form) }}
+{% endblock panel_body %}

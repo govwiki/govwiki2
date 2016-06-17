@@ -1,0 +1,211 @@
+{#
+    Financial statements categories.
+#}
+{% import _self as macro %}
+
+{# Chart Control #}
+
+<div class="text-left chart-controls">
+    <div class="btn-group btn-group-xs" data-toggle="buttons">
+        <label class="btn btn-primary active">
+            <input type="radio" name="options" id="chart" autocomplete="off" checked> {{ 'general.findata.main.pie'|trans }}
+        </label>
+        <label class="btn btn-primary">
+            <input type="radio" name="options" id="tree-charts" autocomplete="off"> {{ 'general.findata.main.tree_charts'|trans }}
+        </label>
+        <label class="btn btn-primary">
+            <input type="radio" name="options" id="compare-charts" autocomplete="off"> {{ 'general.findata.main.compare'|trans }}
+        </label>
+    </div>
+</div>
+
+{# Charts #}
+<div>
+    <div id="total-revenue-pie"></div>
+    <div id="total-expenditures-pie"></div>
+    <div id="total-revenue-tree"></div>
+    <div id="total-expenditures-tree"></div>
+    <div id="total-compare-pie">
+
+        {# Compare form #}
+        <form class="government-compare">
+
+            {# First condition #}
+            <div class="first-condition">
+                <h4 class="text-center">{{ 'general.findata.main.step_1'|trans }}</h4>
+                <div class="form-group">
+                    <div class="typeahead_wrap">
+                        <input type="text" placeholder="{{ 'general.findata.main.government_name'|trans }}" class="text-uppercase typeahead_government form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <select class="form-control disabled">
+                        <option value="">{{ 'general.year_selector_label'|trans|upper }}</option>
+                    </select>
+                </div>
+            </div>
+
+            {# Divider #}
+            <div class="form-group text-center divider">{{ 'general.findata.main.to'|trans }}</div>
+
+            {# Second condition #}
+            <div class="second-condition">
+                <h4 class="text-center">{{ 'general.findata.main.step_2'|trans }}</h4>
+                <div class="form-group">
+                    <div class="typeahead_wrap">
+                        <input type="text" placeholder="{{ 'general.findata.main.government_name'|trans }}" class="text-uppercase typeahead_government form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <select class="form-control disabled">
+                        <option value="">{{ 'general.year_selector_label'|trans|upper }}</option>
+                    </select>
+                </div>
+            </div>
+
+            {# Divider #}
+            <div class="form-group text-center divider">{{ 'general.findata.main.by'|trans }}</div>
+
+            {# Caption Selector #}
+            <div class="form-group government-categories">
+                <h4 class="text-center">{{ 'general.findata.main.step_3'|trans }}</h4>
+                <select class="form-control disabled category">
+                    <option value="">{{ 'general.findata.main.category'|trans }}</option>
+                    <optgroup label="Financial Statement">
+                        <option value="Revenues">{{ 'general.findata.main.revenues'|trans }}</option>
+                        <option value="Expenditures">{{ 'general.findata.main.expenditures'|trans }}</option>
+                    </optgroup>
+                </select>
+                <div class="text-center" style="font-size:12px; margin-top: 5px;color: #DBDBDB;">OR</div>
+                <div class="form-group">
+                    <select data-default-item="{{ 'general.findata.main.caption'|trans }}" class="form-control disabled caption">
+                    </select>
+                </div>
+            </div>
+
+        </form>
+
+        {# Charts #}
+        <div class="row">
+            <div class="customGraph col-md-6 text-center" id="total-compare-first-pie">
+                <p>{{ 'general.findata.main.graph_placeholder'|trans }}</p>
+            </div>
+            <div class="customGraph col-md-6 text-center" id="total-compare-second-pie">
+                <p>{{ 'general.findata.main.graph_placeholder'|trans }}</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="customGraph col-md-12 text-center" id="total-compare-column" style="display: none">
+        <p>{{ 'general.findata.main.graph_placeholder'|trans }}</p>
+    </div>
+
+</div>
+
+{# Compare tables #}
+<table class="compare-first-table table"></table>
+<table class="compare-second-table table"></table>
+
+
+{% set finDataReplacements = {
+    ' ': '_',
+    '-': '_d_',
+    '&': 'amp',
+    ',': '_c_',
+    '(': 'lb',
+    ')': 'rb',
+    '/': 'sl',
+    '%': 'proc',
+    "'": "_apos_"
+    }
+%}
+
+{%- for categoryName, fields in financialStatements -%}
+    <table class="financial-table table table-striped">
+
+        {% set showTotalAndOver = (fields|first).otherfunds is defined %}
+
+        <thead>
+            <tr>
+                {# Category caption #}
+                <th><b>{{ ('caption_categories.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></th>
+                <th>
+                    {%- if showTotalAndOver -%}
+                        <select class="fin-stmt-select">
+                            <option value="2">
+                                {{- 'funds.general_fund'|trans -}}
+                            </option>
+                            <option value="3">
+                                {{- 'funds.other'|trans -}}
+                            </option>
+                            <option value="4">
+                                {{- 'funds.total'|trans -}}
+                            </option>
+                        </select>
+                    {%- else -%}
+                        {{- 'funds.general_fund'|trans -}}
+                    {%- endif -%}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {# Category fields #}
+            {%- for name, data in fields -%}
+                <tr>
+
+                    <td>
+                        {{- ('findata.captions.' ~ name | replace(finDataReplacements) | lower) | trans -}}
+                    </td>
+                    <td>
+                        {%- if not showTotalAndOver or loop.first -%}
+                            $&nbsp;
+                        {%- endif -%}
+                        {%- if data.genfund is defined -%}
+                            {{- macro.displayValue(data.genfund) -}}
+                        {%- else -%}
+                            0
+                        {%- endif -%}
+                    </td>
+
+                    {%- if showTotalAndOver -%}
+                        <td>
+                            {%- if loop.first -%}
+                                $&nbsp;
+                            {%- endif -%}
+                            {%- if data.otherfunds is defined -%}
+                                {{- macro.displayValue(data.otherfunds) -}}
+                            {%- else -%}
+                                0
+                            {%- endif -%}
+                        </td>
+                        <td>
+                            {%- if loop.first -%}
+                                $&nbsp;
+                            {%- endif -%}
+
+                            {%- if data.totalfunds is defined -%}
+                                {{- macro.displayValue(data.totalfunds) -}}
+                            {%- else -%}
+                                0
+                            {%- endif -%}
+                        </td>
+                    {%- endif -%}
+
+                </tr>
+            {%- endfor -%}
+
+        </tbody>
+
+    </table>
+{%- endfor -%}
+
+
+{%- macro displayValue(value) -%}
+    {%- if value < 0 -%}
+        ({{- value|abs|number_format -}})
+    {%- else -%}
+        {{- value |number_format -}}
+    {%- endif -%}
+{%- endmacro -%}

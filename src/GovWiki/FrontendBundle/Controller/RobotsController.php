@@ -4,16 +4,15 @@ namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\AdminBundle\Services\TxtSitemapGenerator;
-use GovWiki\ApiBundle\GovWikiApiServices;
+use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class RobotsController
  * @package GovWiki\FrontendBundle\Controller
  */
-class RobotsController extends Controller
+class RobotsController extends AbstractGovWikiController
 {
     /**
      * @Route("/robots.txt")
@@ -25,13 +24,15 @@ class RobotsController extends Controller
      */
     public function robotsAction()
     {
+        if ($this->getCurrentEnvironment() === null) {
+            return new Response();
+        }
+
         $response = new Response('text', 200, [
             'Content-Type: text/plain',
         ]);
 
-        $environment = $this->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-            ->getSlug();
-
+        $environment = $this->getCurrentEnvironment()->getSlug();
         $robotsTxtName = TxtSitemapGenerator::getRobotsTxtName($environment);
         $path = $this->getParameter('kernel.root_dir') .'/../web/'.
             $robotsTxtName;

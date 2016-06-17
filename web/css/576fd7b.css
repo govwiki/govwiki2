@@ -186,6 +186,11 @@ main {
   box-shadow: 0 1px 4px rgba(255, 0, 0, 0.6); }
 
 /* Temporary (start) */
+.btn-group .btn {
+  box-shadow: none; }
+  .btn-group .btn:hover {
+    box-shadow: none; }
+
 /* Temporary (end) */
 /* ===================================================== */
 /* ======== Customize bootstrap & global styles ======== */
@@ -215,18 +220,48 @@ i.icon {
 .nav-pills > li.active > a:focus {
   background-color: #0b4d70; }
 
+.mainmenu {
+  margin-top: 0;
+  margin-bottom: 3px; }
+  .mainmenu li {
+    margin: 0 2px; }
+  .mainmenu select,
+  .mainmenu select:focus {
+    outline: none;
+    border: none;
+    box-shadow: none; }
+
+.form-control__inline {
+  display: inline-block;
+  width: auto; }
+
 /*
    Set z-index for date picker.
 */
 .datepicker-dropdown {
   z-index: 10000 !important; }
 
+.disabled {
+  cursor: not-allowed !important;
+  color: #BBBBBB !important;
+  background-color: #F3F3F3 !important; }
+
 /*
-   Remove border from table in financial statement tab at government page.
+   Pagination sortable.
 */
-#Financial_Statements .table th,
-#Financial_Statements .table td {
-  border: none; }
+.sortable a i {
+  background: url("/bundles/govwikifrontend/img/bg.gif");
+  width: 21px;
+  height: 9px;
+  display: inline-block; }
+.sortable a.asc i {
+  height: 4px;
+  margin-bottom: 4px;
+  background: url("/bundles/govwikifrontend/img/asc.gif"); }
+.sortable a.desc i {
+  height: 4px;
+  margin-bottom: 4px;
+  background: url("/bundles/govwikifrontend/img/desc.gif"); }
 
 /* ========================= */
 /* ======== CartoDB ======== */
@@ -254,6 +289,9 @@ div.cartodb-tooltip-content-wrapper p {
   margin: 0 auto;
   overflow: hidden; }
 
+.message_form_container {
+  margin: 20px 50px; }
+
 .mapController {
   margin-bottom: 20px;
   /* ========================= */
@@ -264,10 +302,7 @@ div.cartodb-tooltip-content-wrapper p {
   /* ========================= */
   /* ===================== */
   /* ====== Loader ======= */
-  /* ===================== */
-  /*
-     Move CartoDD color range legend on top
-  */ }
+  /* ===================== */ }
   .mapController .typeahead_wrap {
     margin-top: 40px;
     margin-bottom: 10px; }
@@ -367,27 +402,23 @@ div.cartodb-tooltip-content-wrapper p {
     visibility: visible; }
     .mapController .loader_wrap .loader {
       margin-top: 300px; }
+  @media screen and (max-width: 771px) {
+    .mapController .map_mobile {
+      padding: 0; } }
   .mapController #map_wrap {
     position: relative;
     width: 100%;
     height: 500px;
-    overflow: hidden; }
-    .mapController #map_wrap .svg {
-      margin: 0 4px;
-      vertical-align: middle; }
-    .mapController #map_wrap .mapOnProcessing {
-      margin-top: 200px;
-      text-align: center;
-      opacity: 0;
-      display: none;
-      transition: opacity 1s ease-out; }
-    .mapController #map_wrap .loader {
-      margin-top: 200px; }
-    .mapController #map_wrap #map {
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      transition: opacity 1s ease-out; }
+    overflow: hidden;
+    /* ============================ */
+    /* ========== Legend ========== */
+    /* ============================ */
+    /* ================================== */
+    /* ========== Range Legend ========== */
+    /* ================================== */
+    /**
+     * Move CartoDB color range legend on top
+     */ }
     .mapController #map_wrap #menu {
       opacity: 0;
       position: absolute;
@@ -479,26 +510,113 @@ div.cartodb-tooltip-content-wrapper p {
         display: inline; }
     @media (max-width: 767px) {
       .mapController #map_wrap #menu {
-        position: relative;
-        width: auto;
+        width: 100%;
+        left: 0;
         right: 0;
-        box-shadow: none;
-        display: none; }
-        .mapController #map_wrap #menu .legend-header {
-          display: inline-block; }
-        .mapController #map_wrap #menu .legend-item {
-          display: inline-block;
-          padding-left: 25px;
-          padding-right: 10px;
-          margin-top: 3px; }
+        background-color: rgba(255, 255, 255, 0.67); }
+        .mapController #map_wrap #menu .legend-item a {
+          color: black; }
+        .mapController #map_wrap #menu .legend-item.selected {
+          background: none;
+          padding: 2px 8px; }
         .mapController #map_wrap #menu .glyphicon.glyphicon-ok {
-          left: 10px; } }
+          left: auto;
+          right: 10px;
+          top: 6px; }
+      .mapController #map_wrap .legend-header {
+        display: none; }
+      .mapController #map_wrap .legend-item {
+        width: 50%;
+        float: left; }
+      .mapController #map_wrap .leaflet-top.leaflet-left {
+        display: none; } }
+    .mapController #map_wrap .cartodb-legend-stack__top {
+      top: 5px;
+      right: 5px;
+      bottom: inherit; }
+    .mapController #map_wrap .cartodb-legend.custom.vertical {
+      padding: 0; }
+      .mapController #map_wrap .cartodb-legend.custom.vertical .legend-title {
+        padding: 6px 15px;
+        margin: 0;
+        font-size: 10px;
+        width: 100px;
+        text-align: center;
+        background-color: #E6E6E6;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px; }
+      .mapController #map_wrap .cartodb-legend.custom.vertical li {
+        display: block;
+        text-align: center;
+        height: auto;
+        padding: 6px 15px;
+        margin: 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px; }
+        .mapController #map_wrap .cartodb-legend.custom.vertical li.active {
+          background-color: #dff0d8; }
+        .mapController #map_wrap .cartodb-legend.custom.vertical li:hover {
+          background-color: #dff0d8;
+          cursor: pointer; }
+        .mapController #map_wrap .cartodb-legend.custom.vertical li .bullet {
+          float: none;
+          display: inline-block; }
+    .mapController #map_wrap .cartodb-legend.custom.horizontal {
+      padding: 0; }
+      .mapController #map_wrap .cartodb-legend.custom.horizontal .legend-title {
+        padding: 6px 15px;
+        margin: 0;
+        text-align: center;
+        font-size: 10px;
+        background-color: #E6E6E6;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px; }
+      .mapController #map_wrap .cartodb-legend.custom.horizontal ul {
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+        width: 100%;
+        padding: 0 5px; }
+      .mapController #map_wrap .cartodb-legend.custom.horizontal li {
+        display: inline-block;
+        padding: 5px 15px;
+        text-align: center;
+        height: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-top: 3px;
+        margin-bottom: 3px; }
+        .mapController #map_wrap .cartodb-legend.custom.horizontal li.active {
+          background-color: #dff0d8; }
+        .mapController #map_wrap .cartodb-legend.custom.horizontal li:hover {
+          background-color: #dff0d8;
+          cursor: pointer; }
+        .mapController #map_wrap .cartodb-legend.custom.horizontal li:last-child {
+          margin-left: 5px;
+          margin-right: 5px; }
+        .mapController #map_wrap .cartodb-legend.custom.horizontal li:not(:last-child) {
+          margin-left: 5px; }
+        .mapController #map_wrap .cartodb-legend.custom.horizontal li .bullet {
+          float: none;
+          display: inline-block; }
+    .mapController #map_wrap .svg {
+      margin: 0 4px;
+      vertical-align: middle; }
+    .mapController #map_wrap .mapOnProcessing {
+      margin-top: 200px;
+      text-align: center;
+      opacity: 0;
+      display: none;
+      transition: opacity 1s ease-out; }
+    .mapController #map_wrap .loader {
+      margin-top: 200px; }
+    .mapController #map_wrap #map {
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      transition: opacity 1s ease-out; }
   .mapController .intro-text .title h3 {
     text-align: center;
     color: #074d71; }
   .mapController .intro-text .content {
     font-size: 16px; }
-  .mapController .cartodb-legend-stack__top {
-    top: 0;
-    right: 5px;
-    bottom: inherit; }

@@ -2,9 +2,7 @@
 
 namespace GovWiki\ApiBundle\Controller\V1;
 
-use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\GovWikiDbServices;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  *
  * @Route("/create-request")
  */
-class CreateRequestController extends Controller
+class CreateRequestController extends AbstractGovWikiApiController
 {
 
     /**
@@ -33,9 +31,7 @@ class CreateRequestController extends Controller
             if ($this->getUser() and $this->getUser()->hasRole('ROLE_USER')) {
                 $data = $request->request->get('createRequest');
 
-                $environment = $this
-                    ->get(GovWikiApiServices::ENVIRONMENT_MANAGER)
-                    ->getEnvironment();
+                $environment = $this->getCurrentEnvironment();
 
                 $entity = $this
                     ->get(GovWikiDbServices::CREATE_REQUEST_MANAGER)

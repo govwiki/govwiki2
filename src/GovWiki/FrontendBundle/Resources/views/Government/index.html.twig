@@ -1,12 +1,13 @@
 {% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
 
+{% import _self as self %}
+
 {% block main %}
 
     <section class="governmentController">
 
         {% if government is defined %}
 
-            {% set showFinStmt = government.financialStatements is defined and government.financialStatements|length > 0 %}
 
             {# Government name & wikipedia links #}
             <nav class="row">
@@ -15,7 +16,7 @@
                     {% if government.wikipediaPageName %}
                         <a target="_blank" href="{{government.wikipediaPageName}}">
                             Open Wikipedia article
-                            <img src="http://cdn-img.easyicon.net/png/11189/1118929.gif" style="width:36px; height:36px">
+                            <img src="{{- asset('/images/wikipedia.gif') -}}" style="width:36px; height:36px">
                         </a>
                     {% endif %}
 
@@ -26,13 +27,6 @@
                             <img src="data:image/png;base64,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" style="">
                         </a>
                     {% endif %}
-
-                    {#{% if government.transparentCaliforniaPageName %}
-                        <a target="_blank" href="{{government.transparentCaliforniaPageName}}" style="margin-left:20px;">
-                            Transparent California
-                            <img src="http://us.cdn2.123rf.com/168nwm/blankstock/blankstock1409/blankstock140900218/31369868-text-edit-sign-icon-letter-t-button-circle-flat-button-with-shadow-modern-ui-website-navigation-vect.jpg" style="width:36px; height:36px">
-                        </a>
-                    {% endif %}#}
 
                 </div>
 
@@ -61,119 +55,62 @@
 
                     {# Tabs control #}
                     <nav>
-                        <ul class="nav nav-pills tab-titles">
-                            {% if (formats is defined) and (formats is not empty) %}
-                                {% for tabName, categories in formats %}
-                                    {% if categories[""] is defined %}
-                                        {% set tab_id = categories[""]|first.tab_id %}
-                                    {% else %}
-                                        {% set tab_id = categories|first|first.tab_id %}
-                                    {% endif %}
+                        <ul class="nav nav-pills tab-titles clearfix">
+                            {%- if (tabs is defined) and (tabs is not empty) -%}
+                                {%- set tabsCount = tabs|length -%}
+                                {%- set width = 100 / tabsCount -%}
+                                {%- for tab in tabs -%}
+                                    {%- set slug = self.tabSlug(tab.name) -%}
 
-                                    <li class="{{ loop.first ? 'active' : '' }}">
-                                        {# TODO: Hardcoded, for new db, must be replaced #}
-                                        <a class="tabs tab_{{ tabName | replace(' ', '_') | replace('+', 'a')|lower }}" href="#{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
-                                           aria-controls="{{ tabName | replace(' ', '_') | replace('+', 'a') }}"
-                                           role="tab" data-toggle="tab" data-tabname="{{ tabName }}">
-                                            {{ ('groups.group_id_'~tab_id)|trans }}
-                                            {#{{ tabName }}#}
+                                    <li class="clearfix" style="max-width: {{ width }}%; width: {{ width }}%"
+                                            {{ loop.first ? 'class="active"' -}}>
+                                        <a class="tabs tab_{{ slug|lower }}"
+                                            href="#{{ slug }}" aria-controls="{{ slug }}"
+                                            role="tab" data-toggle="tab"
+                                            data-tabname="{{ tab.name }}">
+                                            {{- ('groups.group_id_'~tab.id)|trans -}}
                                         </a>
                                     </li>
-                                {% endfor %}
-                            {% endif %}
-
-                            {% if hasSalaries %}
-                                <li><a class="tabs tab_salaries" href="#Salaries" aria-controls="Salaries" role="tab" data-toggle="tab">Salaries</a></li>
-                            {% endif %}
-
-                            {% if hasPensions %}
-                                <li><a class="tabs tab_pensions" href="#Pensions" aria-controls="Pensions" role="tab" data-toggle="tab">Pensions</a></li>
-                            {% endif %}
-
-                            {% if showFinStmt %}
-                                <li><a class="tabs tab_financial_statements" href="#Financial_Statements"  aria-controls="Financial_Statements" role="tab" data-toggle="tab" data-tabname="Financial Financial_Statements">{{ 'gov.financial_statements'|trans }}</a></li>
-                            {% endif %}
-
+                                {%- endfor -%}
+                            {%- endif -%}
                         </ul>
                     </nav>
 
                     {# Tab content #}
                     <div class="tab-content">
-
-                        <div class="loader"></div>
-                        {% set tab_id_list = [] %}
-                        {% if (formats is defined) and (formats is not empty) %}
-
-                            {% for tabName, categories in formats %}
-                                {% if categories[""] is defined %}
-                                    {% set tab_id = categories[""]|first.tab_id %}
-                                {% else %}
-                                    {% set tab_id = categories|first|first.tab_id %}
-                                {% endif %}
-
-                                <div class="tab-pane {{ loop.first ? 'active' : '' }}" id="{{ tabName | replace(' ', '_') | replace('+', 'a') }}">
-
-                                    <h4>{{ ('groups.group_id_'~tab_id)|trans }}</h4>
-                                    {#<h4>{{ tabName }}</h4>#}
+                        {%- if (formats is defined) and (formats is not empty) -%}
+                            {%- for tab in tabs -%}
+                                <div class="tab-pane {{ loop.first ? 'active' : '' -}}"
+                                    id="{{ self.tabSlug(tab.name) }}">
+                                    <h4>{{ ('groups.group_id_'~tab.id)|trans }}</h4>
                                     <br>
                                     <div class="row">
                                         {# Statistics #}
-                                        <div class="statistics col-sm-8">
-                                            {{ include('@GovWikiFrontend/Partial/Government/tab.html.twig') }}
-                                        </div>
+                                        {%- if tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}
+                                            {# User defined tab #}
+                                            {{-
+                                                include('@GovWikiFrontend/Partial/Government/tab.html.twig')
+                                            -}}
+                                        {%- else -%}
+                                            {# Special tab #}
+                                            {{-
+                                                include('@GovWikiFrontend/Partial/Government/special_tab.html.twig')
+                                            -}}
+                                        {%- endif -%}
 
-                                        {# Overview + Elected Officials #}
                                         {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
 
-                                        {# Employee Compensation #}
                                         {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
 
-                                        {# Quality of Services #}
                                         {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
 
-                                        {# Financial Health #}
                                         {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
                                     </div>
                                 </div>
-
-                            {% endfor %}
-
-                            {% if hasSalaries %}
-                                <div class="tab-pane paginate" data-type="salaries" id="Salaries">
-                                    <div class="tab-pane-main">
-                                        {{ render(controller('GovWikiApiBundle:V1/Government:salaries', {
-                                            'government': government.id
-                                        }))}}
-                                    </div>
-                                </div>
-                            {% endif %}
-
-                            {% if hasPensions %}
-                                <div class="tab-pane paginate" data-type="pensions"  id="Pensions">
-                                    <div class="tab-pane-main">
-                                        {{ render(controller('GovWikiApiBundle:V1/Government:pensions', {
-                                            'government': government.id
-                                        }))}}
-                                    </div>
-
-                                </div>
-                            {% endif %}
-
-                            {# Financial Statements (if exists) #}
-                            {% if showFinStmt %}
-                                <div class="tab-pane" id="Financial_Statements">
-
-                                    {% include 'GovWikiFrontendBundle:Partial/Government/Tabs:financialStatements.html.twig' with {
-                                        'financialStatements': government.financialStatements
-                                    } %}
-
-                                </div>
-                            {% endif %}
-
-                        {% else %}
+                            {%- endfor -%}
+                        {%- else -%}
                             <h3 class="text-center">No data. Please refresh page later</h3>
-                        {% endif %}
-
+                        {%- endif -%}
                     </div>
 
                 </div>
@@ -186,7 +123,7 @@
         {% if app.user and environment_is_subscribable %}
             <div class="subscribe-row">
                 <a href="{{-
-                    govwiki_path('govwiki_frontend_government_subscribe', {
+                    path('govwiki_frontend_government_subscribe', {
                         'government': government.id
                     })
                 -}}" class="btn {% if isSubscriber -%}btn-danger unsubscribe{%- else -%}btn-success subscribe{%- endif -%}" id="subscribe">
@@ -220,6 +157,27 @@
 
     </section>
 
+    <div class="modal fade" id="addIssue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Contribution">
+        <div class="modal-dialog" role="document">
+            {{- form_start(issueForm) -}}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add new Issue</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_widget(issueForm) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+            {{- form_end(issueForm) -}}
+        </div>
+    </div>
+
+
 {% endblock %}
 
 
@@ -247,18 +205,21 @@
         <script>
             window.gw.government = '{{ government_json|escape('js') }}';
             window.gw.urls = {};
-            window.gw.urls.popover = '{{ govwiki_path('govwiki_api_v1_government_getranks', {
+            window.gw.urls.popover = '{{ path('govwiki_api_v1_government_getranks', {
                 'altTypeSlug': government.altTypeSlug,
                 'slug': government.slug,
             }) }}';
-            window.gw.urls.search = '{{ govwiki_path('govwiki_api_v1_comparison_search') }}';
-            window.gw.urls.captions = '{{ govwiki_path('govwiki_api_v1_comparison_captions') }}';
-            window.gw.urls.compare = '{{ govwiki_path('govwiki_api_v1_comparison_compare') }}';
+            window.gw.urls.search = '{{ path('govwiki_api_v1_comparison_search') }}';
+            window.gw.urls.captions = '{{ path('govwiki_api_v1_comparison_captions') }}';
+            window.gw.urls.compare = '{{ path('govwiki_api_v1_comparison_compare') }}';
         </script>
     {% endif %}
 
-    <script src="/js/vendor/typeahead.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/government.js"></script>
 
 {% endblock %}
+
+{%- macro tabSlug(tabName) -%}
+    {{ tabName | replace(' ', '_') | replace('+', 'a') }}
+{%- endmacro -%}

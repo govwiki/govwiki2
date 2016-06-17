@@ -1,0 +1,229 @@
+
+/* =================================== */
+/* ======== Elected Controller ======= */
+/* =================================== */
+
+@import "main";
+@import "partials/datepicker";
+
+
+.select-custom {
+   width: 100%;
+   margin-bottom: 20px;
+   padding: 6px 15px;
+   border: 1px solid #e5e5e5;
+   border-radius: 5px;
+   -webkit-box-shadow: none;
+   box-shadow: none;
+}
+
+.electedController {
+   min-width: 0;
+   margin-top: 0;
+
+   /*
+      Size of tab names.
+   */
+   .nav-pills {
+      a {
+         font-size: 1.4em;
+      }
+   }
+
+   .loader{
+      position: absolute;
+      margin-top: 240px;
+      left: 49%;
+      display: none;
+   }
+
+    #bio {
+      .loader {
+        position: relative;
+        margin-top: 0;
+        left: 0;
+      }
+    }
+
+   /*
+      Table for votes, contribution and etc.
+   */
+   .table {
+      margin-bottom: 0;
+
+      td,
+      th {
+         vertical-align: middle;
+
+         &.column__vote {
+            text-align: center;
+            width: 65px;
+         }
+
+         &.column__date {
+            width: 125px;
+         }
+
+         &.column__title {
+            width: 220px;
+         }
+      }
+
+      tr {
+
+         td {
+            text-align: center;
+            vertical-align: middle;
+         }
+
+         &:not([ data-id ]) {
+            td {
+               border-top: 1px solid #dddddd;
+            }
+         }
+
+         &.vote-comment {
+            color: black;
+
+            & td > p {
+               display: inline;
+            }
+         }
+      }
+   }
+
+   .add {
+      text-align: center;
+      cursor: pointer;
+      background-color: #0b4d70;
+      color: #fff;
+   }
+   .add:hover {
+      background-color: #ffffff;
+      color: #0b4d70;
+   }
+
+   .add_action {
+      text-align: center;
+      padding: 8px;
+//      background-color: #0B4D70;
+//      color: white;
+      font-size: 1.3em;
+      margin-bottom: 20px;
+   }
+
+   .edit {
+      color: #d3d3d3;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 12px;
+   }
+
+   .editable {
+      text-decoration: none !important;
+      color: #000 !important;
+      border-bottom: none !important;
+
+      position: relative;
+      top: 20px;
+      left: 10px;
+   }
+
+   .person {
+      width: 70%;
+      margin-top: 20px;
+      border-bottom: 1px dotted #ddd;
+
+      &-info {
+         width: 60%;
+         vertical-align: top;
+         font-size: 1.4em;
+         display: inline-block;
+         min-width: 60%;
+
+         p {
+            margin-bottom: 0;
+         }
+
+      }
+
+      &-photo {
+         width: 100%;
+         display: inline-block;
+
+         img {
+            width: 100%;
+            float: right;
+         }
+
+      }
+   }
+
+   .vote {
+      cursor: pointer;
+      display: inline-block;
+      text-align: center;
+      font-size: 13px;
+      width: 30px;
+      height: 30px;
+      background-image: url("/bundles/govwikimobile/img/comment.svg");
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      padding: 2px;
+   }
+
+   .submit_comment_button {
+      float: right;
+      margin: 5px 5px 0 0;
+   }
+
+   .person-info {
+
+      &-content {
+         color: #0b4d70;
+         font-size: 1em;
+
+         p {
+            margin: 0;
+         }
+
+         > div {
+            padding: 7px;
+         }
+      }
+
+      &-tabs {
+         font-size: 0.5em;
+
+         .tab-content {
+            padding: 10px 7px 20px;
+         }
+
+         li {
+            width: 25%;
+            margin: 0;
+
+            &:not(:first-child) {
+               border-left: 1px solid white;
+            }
+
+            a {
+               text-align: center;
+               padding: 10px 0;
+               border-radius: 0;
+            }
+         }
+      }
+
+   }
+
+}
+
+#bio {
+  #elected-bio-view {
+    font-size: 12px;
+    word-wrap: break-word;
+  }
+}
+
+@import 'partials/card/card';

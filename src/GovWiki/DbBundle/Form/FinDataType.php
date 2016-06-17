@@ -2,10 +2,8 @@
 
 namespace GovWiki\DbBundle\Form;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use GovWiki\AdminBundle\Manager\AdminEnvironmentManager;
-use GovWiki\DbBundle\Entity\Format;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,18 +15,19 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class FinDataType extends AbstractType
 {
     /**
-     * @var AdminEnvironmentManager
+     * @var EnvironmentStorageInterface
      */
-    private $manager;
+    private $storage;
 
     /**
-     * @param AdminEnvironmentManager $manager A AdminEnvironmentManager
-     *                                         instance.
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
      */
-    public function __construct(AdminEnvironmentManager $manager)
+    public function __construct(EnvironmentStorageInterface $storage)
     {
-        $this->manager = $manager;
+        $this->storage = $storage;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -56,7 +55,7 @@ class FinDataType extends AbstractType
                         ->join('Government.environment', 'Environment')
                         ->where($expr->eq(
                             'Environment.slug',
-                            $expr->literal($this->manager->getSlug())
+                            $expr->literal($this->storage->get()->getSlug())
                         ));
                 },
             ]);

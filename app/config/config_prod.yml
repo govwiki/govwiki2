@@ -1,6 +1,17 @@
 imports:
     - { resource: config.yml }
 
+assetic:
+    debug:          "%kernel.debug%"
+    use_controller: false
+    bundles:
+        - 'GovWikiFrontendBundle'
+
+framework:
+    router:
+        resource: "%kernel.root_dir%/config/routing_prod.yml"
+        strict_requirements: ~
+
 #framework:
 #    validation:
 #        cache: validator.mapping.cache.apc

@@ -2,11 +2,11 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use CartoDbBundle\Service\CartoDbApi;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Category;
 use GovWiki\DbBundle\Entity\Translation;
 use GovWiki\DbBundle\Form\AbstractGroupType;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 
@@ -14,128 +14,142 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
  * Class CategoryController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/category")
+ * @Configuration\Route(
+ *  "/{environment}/tab/{tab}/category",
+ *  requirements={
+ *      "environment": "\w+",
+ *      "tab": "\d+"
+ *  }
+ * )
  */
 class CategoryController extends AbstractGovWikiAdminController
 {
-    /**
-     * @Configuration\Route("/")
-     * @Configuration\Template()
-     *
-     * @param Request $request A Request instance.
-     *
-     * @return array
-     */
-    public function listAction(Request $request)
-    {
-        return [
-            'tabs' => $this->paginate(
-                $this->getManager()->getListQuery(),
-                $request->query->getInt('page', 1),
-                25
-            ),
-        ];
-    }
-
-    /**
-     * @Configuration\Route("/{id}/remove")
-     * @param Category $category A Category instance.
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function removeAction(Category $category)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $this->changeCategoryTranslation('remove', $category->getId());
-
-        $em->remove($category);
-        $em->flush();
-
-        return $this->redirectToRoute('govwiki_admin_category_list');
-    }
-
-    /**
-     * @Configuration\Route("/{id}/up")
-     *
-     * @param Category $category A Category instance.
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function upAction(Category $category)
-    {
-        $this->getManager()->pullUp($category);
-
-        return $this->redirectToRoute('govwiki_admin_category_list');
-    }
-
-    /**
-     * @Configuration\Route("/{id}/down")
-     *
-     * @param Category $category A Category instance.
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function downAction(Category $category)
-    {
-        $this->getManager()->pullDown($category);
-
-        return $this->redirectToRoute('govwiki_admin_category_list');
-    }
 
     /**
      * @Configuration\Route("/new")
-     * @Configuration\Template
+     * @Configuration\Template()
      *
      * @param Request $request A Request instance.
+     * @param integer $tab     A Tab entity id.
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $tab)
     {
-        $category = $this->getManager()->create();
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        $em = $this->get('doctrine.orm.default_entity_manager');
+        $environment = $this->getCurrentEnvironment();
+        $tabReference = $em->getReference('GovWikiDbBundle:Tab', $tab);
+
+        $category = new Category();
+        $category
+            ->setTab($tabReference)
+            ->setEnvironment($environment);
 
         $form = $this->createForm(new AbstractGroupType(), $category);
+        $form->handleRequest($request);
 
-        $this->processForm($request, $form);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($category);
+            $em->flush();
 
-        $this->changeCategoryTranslation('new', $category->getId(), $category->getName());
+            $this->changeCategoryTranslation('new', $category->getId(), $category->getName());
+
+            return $this->redirectToRoute('govwiki_admin_environment_format', [
+                'environment' => $environment->getSlug(),
+            ]);
+        }
 
         return [ 'form' => $form->createView() ];
     }
 
     /**
-     * @Configuration\Route("/{id}/edit")
-     * @Configuration\Template
+     * @Configuration\Route(
+     *  "/{category}/remove",
+     *  requirements={ "category": "\d+" }
+     * )
+     *
+     * @param integer $tab      A Tab entity id.
+     * @param integer $category A Category entity id.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function removeAction($tab, $category)
+    {
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        $em = $this->get('doctrine.orm.default_entity_manager');
+
+        $this->changeCategoryTranslation('remove', $category);
+
+        $expr = $em->getExpressionBuilder();
+        $em->getRepository('GovWikiDbBundle:Category')
+            ->createQueryBuilder('Category')
+            ->delete()
+            ->where($expr->andX(
+                $expr->eq('Category.tab', ':tab'),
+                $expr->eq('Category.id', ':category')
+            ))
+            ->setParameters([
+                'tab' => $tab,
+                'category' => $category,
+            ])
+            ->getQuery()
+            ->execute();
+
+        return $this->redirectToRoute('govwiki_admin_environment_format', [
+            'environment' => $this->getCurrentEnvironment()->getSlug(),
+        ]);
+    }
+
+    /**
+     * @Configuration\Route(
+     *  "/{category}/edit",
+     *  requirements={ "category": "\d+" }
+     * )
+     * @Configuration\Template()
      *
      * @param Request  $request  A Request instance.
-     * @param Category $category A Category instance.
+     * @param integer  $tab      A Tab entity id.
+     * @param Category $category A Category entity instance.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function editAction(Request $request, Category $category)
+    public function editAction(Request $request, $tab, Category $category)
     {
-        $form = $this->createForm(new AbstractGroupType(), $category);
-
-        $this->processForm($request, $form);
-
-        $this->changeCategoryTranslation('edit', $category->getId(), $category->getName());
-
-        return [ 'form' => $form->createView() ];
-    }
-
-    /**
-     * @param Request       $request A Request instance.
-     * @param FormInterface $form    A Form instance.
-     *
-     * @return void
-     */
-    private function processForm(Request $request, FormInterface $form)
-    {
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getManager()->update($form->getData());
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
         }
+
+        if ($category->getTab()->getId() === (int)$tab) {
+            $form = $this->createForm(new AbstractGroupType(), $category);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+
+                $em->persist($category);
+                $em->flush();
+
+                return $this->redirectToRoute('govwiki_admin_environment_format', [
+                    'environment' => $this-> getCurrentEnvironment()->getSlug(),
+                ]);
+            }
+
+            $this->changeCategoryTranslation('edit', $category->getId(), $category->getName());
+
+            return [
+                'form' => $form->createView(),
+                'category' => $category,
+            ];
+        }
+
+        throw $this->createNotFoundException();
     }
 
     /**
@@ -152,10 +166,10 @@ class CategoryController extends AbstractGovWikiAdminController
         $needOneResult = true;
         $trans_key_settings = null;
         if (!empty($transKey)) {
-            $trans_key_settings = array(
+            $trans_key_settings = [
                 'matching' => 'eq',
-                'transKeys' => array($transKey)
-            );
+                'transKeys' => [$transKey]
+            ];
         }
 
         /** @var Translation $translation */
@@ -166,7 +180,8 @@ class CategoryController extends AbstractGovWikiAdminController
             $translation->setLocale($locale);
             $em->persist($translation);
         } elseif ('edit' == $action) {
-            $translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
+            $translation = $this->getTranslationManager()
+                ->getEnvironmentTranslations('en', $trans_key_settings, null, $needOneResult);
             if (!empty($translation)) {
                 $translation->setTranslation($cat_name);
             } else {
@@ -177,20 +192,13 @@ class CategoryController extends AbstractGovWikiAdminController
                 $em->persist($translation);
             }
         } elseif ('remove' == $action) {
-            $translation = $this->getTranslationManager()->getTranslationsBySettings('en', $trans_key_settings, null, $needOneResult);
+            $translation = $this->getTranslationManager()
+                ->getEnvironmentTranslations('en', $trans_key_settings, null, $needOneResult);
             if (!empty($translation)) {
                 $em->remove($translation);
             }
         }
         $em->flush();
-    }
-
-    /**
-     * @return \GovWiki\AdminBundle\Manager\Entity\AdminCategoryManager
-     */
-    private function getManager()
-    {
-        return $this->get(GovWikiAdminServices::CATEGORY_MANAGER);
     }
 
     /**
