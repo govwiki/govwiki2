@@ -8,11 +8,6 @@
 
     @import "partials/typeahead/typeahead_government";
 
-    nav a {
-        display: inline-block;
-        margin-top: 10px;
-    }
-
     table {
       .add {
         color: #0b4d70;
@@ -218,8 +213,24 @@
         nav {
             margin-bottom: 30px;
 
+            .nav {
+              position: relative;
+              overflow: hidden;
+            }
+
+            li {
+                padding-bottom: 99999px;
+                margin-bottom: -99999px;
+                margin-left: 0;
+                margin-right: 0;
+            }
+
             a {
-                font-size: 1.4em;
+                font-size: 100%;
+                vertical-align: middle;
+                text-align: center;
+                padding-bottom: 99999px;
+                margin-bottom: -99999px;
             }
         }
 
