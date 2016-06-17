@@ -22,11 +22,11 @@
             'government': government.id
         }
     ) -}}
-    {{- macro.breadcrumbElement(government.name ~ ' documents') -}}
+    {{- macro.breadcrumbElement(government.name ~ ' issues') -}}
 {% endblock breadcrumb %}
 
 {% block panel_title %}
-    {{ government.name}} documents
+    {{ government.name}} issues
 {% endblock panel_title %}
 
 {% block panel_body %}
@@ -150,7 +150,7 @@
                                             'environment': environment.slug,
                                             'government': government.id,
                                             'document': document.id
-                                        }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete document '{{ document.link }}'?">
+                                        }) -}}" class="btn btn-sm btn-danger btn-delete" data-description="Are you sure want to delete issue '{{ document.link }}'?">
                                             <span class="glyphicon glyphicon-remove"></span> Remove
                                         </button>
                                     {%- endif -%}
