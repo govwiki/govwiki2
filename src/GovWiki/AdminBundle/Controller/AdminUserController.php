@@ -40,10 +40,7 @@ class AdminUserController extends AbstractGovWikiAdminController
         /** @var \GovWiki\UserBundle\Entity\Repository\UserRepository $repository */
         $repository = $this->getDoctrine()->getRepository('GovWikiUserBundle:User');
 
-        $users = $repository->getListQueryForEnvironment(
-            $this->getCurrentEnvironment()->getId(),
-            true
-        );
+        $users = $repository->getListQueryForEnvironment();
 
         $users = $this->get('knp_paginator')->paginate(
             $users,

@@ -26,18 +26,17 @@ class UserRepository extends EntityRepository
     }
 
     /**
-     * @param integer $environment A Environment entity id.
-     * @param boolean $onlyAdmins  Show only admins.
+     * @param integer $environment A Environment entity id or null.
      *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getListQueryForEnvironment($environment, $onlyAdmins = false)
+    public function getListQueryForEnvironment($environment = null)
     {
         $expr = $this->_em->getExpressionBuilder();
 
         $qb = $this->createQueryBuilder('User');
 
-        if ($onlyAdmins) {
+        if ($environment === null) {
             $qb->where("REGEXP('ROLE_ADMIN', User.roles) = 1");
         } else {
             $qb
