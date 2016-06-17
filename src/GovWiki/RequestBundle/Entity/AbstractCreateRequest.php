@@ -25,7 +25,8 @@ use Symfony\Component\Form\FormInterface;
  *  "legislation"="LegislationCreateRequest",
  *  "contribution"="ContributionCreateRequest",
  *  "endorsement"="EndorsementCreateRequest",
- *  "public_statement"="PublicStatementCreateRequest"
+ *  "public_statement"="PublicStatementCreateRequest",
+ *  "issue"="IssueCreateRequest"
  * })
  */
 abstract class AbstractCreateRequest

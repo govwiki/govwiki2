@@ -3,7 +3,6 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -126,22 +125,6 @@ class ElectedOfficial
      * @ORM\Column(type="text")
      */
     private $bio;
-
-    /**
-     * Contains edited by user `bio`.
-     *
-     * @var string
-     *
-     * @ORM\Column(type="text")
-     */
-    private $newBio;
-
-    /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="GovWiki\UserBundle\Entity\User")
-     */
-    private $bioEditor;
 
     /**
      * @ORM\OneToMany(targetEntity="Contribution", mappedBy="electedOfficial")
@@ -654,26 +637,6 @@ class ElectedOfficial
     }
 
     /**
-     * @return string
-     */
-    public function getNewBio()
-    {
-        return $this->newBio;
-    }
-
-    /**
-     * @param string $newBio New bio edited by user.
-     *
-     * @return ElectedOfficial
-     */
-    public function setNewBio($newBio)
-    {
-        $this->newBio = $newBio;
-
-        return $this;
-    }
-
-    /**
      * Sanitize
      *
      * @param  string $str
@@ -725,29 +688,5 @@ class ElectedOfficial
     public function getSurveyResponses()
     {
         return $this->surveyResponses;
-    }
-
-    /**
-     * Set bioEditor
-     *
-     * @param User $bioEditor A User entity instance.
-     *
-     * @return ElectedOfficial
-     */
-    public function setBioEditor(User $bioEditor = null)
-    {
-        $this->bioEditor = $bioEditor;
-
-        return $this;
-    }
-
-    /**
-     * Get bioEditor
-     *
-     * @return User
-     */
-    public function getBioEditor()
-    {
-        return $this->bioEditor;
     }
 }

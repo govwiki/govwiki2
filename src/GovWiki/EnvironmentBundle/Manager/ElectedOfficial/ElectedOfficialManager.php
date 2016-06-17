@@ -69,14 +69,21 @@ class ElectedOfficialManager implements ElectedOfficialManagerInterface
         $eoSlug,
         $user = null
     ) {
-        $electedOfficial = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
+        $data = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
             ->findOne($environment->getId(), $altTypeSlug, $slug, $eoSlug);
 
-
-        if (null !== $electedOfficial) {
+        if (null !== $data) {
             /*
-            * Create queries for legislations, contributions and etc.
-            */
+             * Create queries for legislations, contributions and etc.
+             */
+            $electedOfficial = $data[0];
+            unset($data[0]);
+            $electedOfficial['bioChanges'] = [
+                'changed' => (count($data) > 0) && ($data[1] !== null),
+                'changedBy' => $data[1]['user']['id'],
+                'lastChanges' => $data[1]['changes']['bio'],
+            ];
+
             $votes = $this->em->getRepository('GovWikiDbBundle:ElectedOfficialVote')
                 ->getListQuery($electedOfficial['id'], $user);
 //            $contributions = $this->em->getRepository('GovWikiDbBundle:Contribution')

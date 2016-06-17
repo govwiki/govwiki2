@@ -239,7 +239,7 @@ $(document).on('click', '.paginate .sortable a', function click(e) {
   });
 });
 
-// Add new document.
+// Add new issue.
 $(document).on('click', '.add', function newDocument() {
   if (! authorized) {
     $('#modal-window').modal('show'); // Open login modal window
@@ -253,12 +253,12 @@ modal.find('[data-provide="datepicker"]').on('changeDate', function changeDate()
   return $(this).datepicker('hide');
 });
 
-// Clear document from when modal hide.
+// Clear issue from when modal hide.
 modal.on('hidden.bs.modal', function clean() {
   (modal.find('form')[0]).reset();
 });
 
-// Document form submit.
+// Issue form submit.
 modal.find('form').submit(function  newIssue(event) {
   var data = new FormData(this);
 

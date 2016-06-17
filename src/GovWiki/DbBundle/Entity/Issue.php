@@ -3,6 +3,8 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use GovWiki\RequestBundle\Entity\AbstractCreatable;
+use GovWiki\RequestBundle\Entity\IssueCreateRequest;
 use GovWiki\UserBundle\Entity\User;
 use Symfony\Component\Validator\Constraints\Choice;
 
@@ -15,7 +17,7 @@ use Symfony\Component\Validator\Constraints\Choice;
  *  repositoryClass="GovWiki\DbBundle\Entity\Repository\IssuesRepository"
  * )
  */
-class Issue
+class Issue extends AbstractCreatable
 {
 
     const LAST_AUDIT = 'audit';
@@ -85,11 +87,14 @@ class Issue
     private $creator;
 
     /**
-     * @var string
+     * @var CreateRequest
      *
-     * @ORM\Column(nullable=true)
+     * @ORM\OneToOne(
+     *  targetEntity="GovWiki\RequestBundle\Entity\IssueCreateRequest",
+     *  inversedBy="subject"
+     * )
      */
-    private $state;
+    protected $request;
 
     /**
      * Return available document types.
@@ -265,29 +270,6 @@ class Issue
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Set state
-     *
-     * @param string $state
-     * @return Issue
-     */
-    public function setState($state)
-    {
-        $this->state = $state;
-
-        return $this;
-    }
-
-    /**
-     * Get state
-     *
-     * @return string
-     */
-    public function getState()
-    {
-        return $this->state;
     }
 
     /**

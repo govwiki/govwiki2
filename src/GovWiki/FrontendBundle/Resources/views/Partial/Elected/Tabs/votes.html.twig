@@ -1,28 +1,26 @@
 
-{%- set bioChanged = not (elected.newBio is empty) -%}
-{%- set currentUserChangeBio = (elected.bioEditor is not null)
-        and (app.user is not null)
-        and (elected.bioEditor.id == app.user.id) -%}
+{%- set bioChanged = elected.bioChanges.changed -%}
+{%- set currentUserChangeBio = (app.user is not null)
+        and (elected.bioChanges.changedBy == app.user.id) -%}
 
 <div role="tabpanel" class="tab-pane active" id="Votes">
     <div class="tab-pane-main">
         <div id="bio" class="form-group clearfix">
             <div class="loader"></div>
             <label>Bio</label>
+
+            {%- if (bioChanged and currentUserChangeBio) -%}
+                {%- set bio = elected.bioChanges.lastChanges -%}
+            {%- else -%}
+                {%- set bio = elected.bio -%}
+            {%- endif -%}
+
             <div id="elected-bio-view">
-                {%- if (bioChanged and currentUserChangeBio) -%}
-                    {{- elected.newBio -}}
-                {%- else -%}
-                    {{- elected.bio -}}
-                {%- endif -%}
+                {{- bio -}}
             </div>
             <textarea style="resize: vertical; display: none"
                       id="elected-bio-edit" rows="6" class="form-control">
-                {%- if (bioChanged and currentUserChangeBio) -%}
-                    {{- elected.newBio -}}
-                {%- else -%}
-                    {{- elected.bio -}}
-                {%- endif -%}
+                {{- bio -}}
             </textarea>
             {%- if app.user is not null -%}
                 {%- if ((not bioChanged)
@@ -34,8 +32,7 @@
                         </button>
                         <div id="change-bio-group" style="display: none">
                             <a id="change-bio-save" href="{{- path(
-                                'govwiki_api_v1_electedofficial_changebio',
-                                { 'elected': elected.id }
+                                'govwiki_api_v1_editrequest_create'
                             ) -}}" class="btn btn-primary">Save Changes</a>
                             <button id="change-bio-revert"
                                 class="btn btn-default">
