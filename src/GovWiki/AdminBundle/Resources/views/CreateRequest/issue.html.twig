@@ -1,0 +1,19 @@
+{% extends '@GovWikiAdmin/CreateRequest/show.html.twig' %}
+
+{% import '@GovWikiAdmin/CreateRequest/show.html.twig' as show_macro %}
+
+{% block detailed %}
+    {{ show_macro.addFormRow(form.name) }}
+    {{ show_macro.addFormRow(form.description) }}
+    {{ show_macro.addFormRow(form.type) }}
+    {{ show_macro.addFormRow(form.link) }}
+    {{ show_macro.addFormRow(form.file) }}
+    {{ show_macro.addFormRow(form.date) }}
+{% endblock detailed %}
+
+{% block associations %}
+    <tr>
+        <td>Government</td>
+        <td>{{ form.vars.value.government  }}</td>
+    </tr>
+{% endblock associations %}

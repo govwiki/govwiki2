@@ -42,7 +42,7 @@ class ElectedOfficialVoteRepository extends EntityRepository implements ListedEn
         $expr = $this->_em->getExpressionBuilder();
         $qb = $this->createQueryBuilder('Vote');
 
-        $now = (new \DateTime())->format('Y-m-d H:i:s');
+        $now = date('Y-m-d H:i:s');
 
         $qb
             ->addSelect('Legislation, Comment, Request, Creator, IssueCategory')

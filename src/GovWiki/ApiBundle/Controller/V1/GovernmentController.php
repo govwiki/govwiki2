@@ -5,9 +5,9 @@ namespace GovWiki\ApiBundle\Controller\V1;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Issue;
 use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
+use GovWiki\RequestBundle\Entity\IssueCreateRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -137,14 +137,20 @@ class GovernmentController extends AbstractGovWikiApiController
         $issue = new Issue();
         $issue
             ->setCreator($this->getUser())
-            ->setGovernment($government)
-            ->setState(Issue::PENDING);
+            ->setGovernment($government);
 
         $form = $this->createForm('document', $issue);
         $form->handleRequest($request);
         if ($form->isValid()) {
+            $createRequest = new IssueCreateRequest();
+            $createRequest
+                ->setEnvironment($this->getCurrentEnvironment())
+                ->setCreator($this->getUser());
+            $issue->setRequest($createRequest);
+
             $em = $this->getDoctrine()->getManager();
 
+            $em->persist($createRequest);
             $em->persist($issue);
             $em->flush();
 
@@ -153,6 +159,7 @@ class GovernmentController extends AbstractGovWikiApiController
                 'description' => $issue->getDescription(),
                 'link' => $issue->getLink(),
                 'date' => $issue->getDate()->format('Y-m-d'),
+                'type' => $issue->getType(),
             ]);
         }
 

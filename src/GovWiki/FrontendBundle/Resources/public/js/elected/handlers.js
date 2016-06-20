@@ -581,6 +581,7 @@ $('#change-bio-save').click(function save(event) {
   var loader = $('#bio').find('.loader');
   var bioEdit = $('#elected-bio-edit');
   var bioChangeGroup = $('#change-bio-group');
+  var sendObject;
 
   event.preventDefault();
 
@@ -588,10 +589,22 @@ $('#change-bio-save').click(function save(event) {
   bioEdit.hide();
   bioChangeGroup.hide();
 
+  sendObject = {
+    editRequest: {
+      entityName: 'ElectedOfficial',
+      entityId: JSON.parse(window.gw.electedOfficial).id,
+      changes: { bio: bioEdit.val() }
+    }
+  };
+  sendObject.editRequest = JSON.stringify(sendObject.editRequest);
+
   $.ajax({
     url: this.getAttribute('href'),
-    data: { bio: bioEdit.val() },
-    method: 'POST'
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: sendObject
   })
     .done(function changed() {
       alert('Changes saved.');
