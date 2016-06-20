@@ -67,7 +67,7 @@
                                 'environment': environment.slug,
                                 'id': user.id
                             }
-                        ) -}}" class="btn btn-default">
+                        ) -}}" class="btn btn-sm btn-default">
                             <span class="glyphicon glyphicon-search"></span> Show
                         </a>
                         <a href="{{- path(
@@ -76,7 +76,7 @@
                                 'environment': environment.slug,
                                 'id': user.id
                             }
-                        ) -}}" class="btn btn-default">
+                        ) -}}" class="btn btn-sm btn-default">
                             <i class="glyphicon glyphicon-pencil"></i> Edit
                         </a>
                         {% set glyph = 'glyphicon-ban-circle' %}
@@ -91,9 +91,19 @@
                                 'environment': environment.slug,
                                 'id': user.id
                             }
-                        ) -}}" class="btn btn-default">
+                        ) -}}" class="btn btn-sm btn-default">
                             <i class="glyphicon {{ glyph }}"> {{ title }}</i>
                         </a>
+                        <button data-url="{{- path(
+                            'govwiki_admin_user_remove',
+                            {
+                                'environment': environment.slug,
+                                'id': user.id
+                            }
+                        ) -}}" class="btn btn-sm btn-danger btn-delete"
+                                    data-description="Are you sure want to delete user '{{ user.username }}'?">
+                            <span class="glyphicon glyphicon-remove"></span> Remove
+                        </button>
                     </div>
                 </td>
             </tr>

@@ -203,6 +203,31 @@ class UserController extends AbstractGovWikiAdminController
     }
 
     /**
+     * Delete user.
+     *
+     * @Configuration\Route(path="/remove/{id}")
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
+     *
+     * @param User $user A User entity instance.
+     *
+     * @return RedirectResponse|array
+     */
+    public function removeAction(User $user)
+    {
+        $environment = $this->getCurrentEnvironment();
+        if ($environment === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        $userManager = $this->get('fos_user.user_manager');
+        $userManager->deleteUser($user);
+
+        return $this->redirectToRoute('govwiki_admin_user_index', [
+            'environment' => $environment,
+        ]);
+    }
+
+    /**
      * @param User $user User
      */
     private function checkUserBelongsToEnvironment(User $user)
