@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use GovWiki\DbBundle\Entity\Delta;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\DbBundle\Utils\Functions;
@@ -192,8 +193,8 @@ class GovernmentManager implements GovernmentManagerInterface
                 JOIN governments government ON extra.government_id = government.id
                 WHERE
                     government.alt_type_slug = '{$altTypeSlug}' AND
-                    government.slug = '{$governmentSlug}'
-                ORDER BY extra.{$rankFieldName}
+                    government.slug = '{$governmentSlug}' AND
+                    year = {$year}
                 LIMIT 1
             ";
 
@@ -489,17 +490,6 @@ class GovernmentManager implements GovernmentManagerInterface
         $fields = $this->formatManager->getList($environment, $altType);
 
         /*
-         * Get array of formats fields.
-         */
-        $formats = array_filter(
-            $fields,
-            function (array $format) {
-                return $format['dataOrFormula'] === 'data';
-            }
-        );
-        $formats = array_values($formats); // In order to make new keys.
-
-        /*
          *  Fetch government.
          */
         $government = $this->em->getRepository('GovWikiDbBundle:Government')
@@ -551,22 +541,39 @@ class GovernmentManager implements GovernmentManagerInterface
 
         if (count($data) > 0) {
             unset($data['alt_type_slug'], $data['year']);
-            foreach ($data as $field => $value) {
+            foreach ($data as $field => $maxValue) {
                 if (array_key_exists($field, $government)) {
                     $rankName = GovwikiNamingStrategy::rankedFieldName($field);
-                    $government['ranks'][$rankName] = [
-                        $government[$rankName],
-                        $value,
+                    $fieldProperty = $fields[$field];
+                    $type = $fieldProperty['rankType'];
+                    $value = $government[$rankName];
+
+                    $result = [
+                        'type' => $type,
                     ];
+
+                    if ($type === Format::RANK_LETTER) {
+                        // Use letter for rank type.
+                        $currentRanges = $fieldProperty['rankLetterRanges'][$altTypeSlug];
+
+                        $percent = (100 * $value) / $maxValue;
+                        foreach ($currentRanges as $letter => $range) {
+                            if (($range['start'] >= $percent) && ($range['end'] <= $percent )) {
+                                $result['letter'] = $letter;
+                                break;
+                            }
+                        }
+
+                    } else {
+                        $result['current'] = $value;
+                        $result['max'] = $maxValue;
+                    }
+
+                    $government['ranks'][$rankName] = $result;
                 }
             }
 
         }
-
-        $formats = Functions::groupBy(
-            $formats,
-            [ 'tab_name', 'category_name', 'field' ]
-        );
 
         // Get all available tabs.
         $tabs = $this->em->getRepository('GovWikiDbBundle:Tab')
@@ -576,7 +583,6 @@ class GovernmentManager implements GovernmentManagerInterface
 
         return [
             'government' => $government,
-            'formats' => $tabs,
             'tabs' => $tabs,
         ];
     }
@@ -831,6 +837,46 @@ class GovernmentManager implements GovernmentManagerInterface
         }
 
         return $altTypes;
+    }
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param Format      $format      A Format entity instance.
+     *
+     * @return void
+     *
+     * @throws \Doctrine\DBAL\DBALException Error while update.
+     */
+    public function calculateRanks(Environment $environment, Format $format)
+    {
+        $fieldName = $format->getField();
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName($environment);
+        $rankName = GovwikiNamingStrategy::rankedFieldName($fieldName);
+
+        $altTypeSlugs = array_map(function ($slug) {
+            return "'{$slug}'";
+        }, $format->getShowIn());
+        $slugs = implode(',', $altTypeSlugs);
+
+        $this->em->getConnection()->exec("
+            UPDATE {$tableName}
+            JOIN (
+                SELECT
+                    governments.id,
+                    @rank := IF(@prev_value=data.{$fieldName},@rank,@rank + 1) AS rank,
+                    @prev_value := data.{$fieldName}
+                FROM {$tableName} data
+                JOIN (SELECT @rank := 0) x
+                JOIN (SELECT @prev_value := -1) y
+                JOIN governments ON governments.id = data.government_id
+                WHERE governments.alt_type_slug in ({$slugs})
+                ORDER BY data.{$fieldName} DESC
+            ) x ON government_id = x.id
+            SET
+                {$rankName} = x.rank
+            WHERE
+                government_id = x.id;
+        ");
     }
 
     /**

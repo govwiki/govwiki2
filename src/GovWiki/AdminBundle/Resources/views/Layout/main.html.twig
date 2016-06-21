@@ -198,6 +198,14 @@
 {% block javascripts %}
     {{ parent() }}
 
+    {% if app.environment == 'prod' %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.1/lodash.min.js"></script>
+    {% else %}
+        {% javascripts '@GovWikiFrontendBundle/Resources/public/js/vendor/lodash.min.js'%}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endif %}
+
     <script>
 
         window.gw = {};
@@ -219,8 +227,6 @@
             });
         });
     </script>
-
-    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/js/bootstrap-colorpicker.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>

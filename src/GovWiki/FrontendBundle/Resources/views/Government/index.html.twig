@@ -78,7 +78,7 @@
 
                     {# Tab content #}
                     <div class="tab-content">
-                        {%- if (formats is defined) and (formats is not empty) -%}
+                        {%- if (tabs is defined) and (tabs is not empty) -%}
                             {%- for tab in tabs -%}
                                 <div class="tab-pane {{ loop.first ? 'active' : '' -}}"
                                     id="{{ self.tabSlug(tab.name) }}">

@@ -1,4 +1,4 @@
-{% extends 'bootstrap_3_layout.html.twig' %}
+{% use 'bootstrap_3_layout.html.twig' %}
 
 {% block form_label %}
     {% spaceless %}
@@ -26,6 +26,14 @@
 
     {% endspaceless %}
 {% endblock form_label %}
+
+{% block form_row -%}
+    <div class="form-group{% if (not compound or force_error|default(false)) and not valid %} has-error{% endif %}" {% if hidden %}style="display: none"{% endif %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{%- endblock form_row %}
 
 {% macro form_parent_name(form, prefix) %}
     {% spaceless %}

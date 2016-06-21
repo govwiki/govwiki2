@@ -174,7 +174,7 @@
                 <script> window.gw.user_id = "{{ app.user.id }}"; </script>
                 {% set username = app.user.username %}
             {% endif %}
-            {%- if (formValid is null) -%}
+            {%- if (formValid is not defined or formValid is null) -%}
                 <script> window.gw.formValid = null; </script>
             {%- else -%}
                 <script> window.gw.formValid = {{ (formValid) ? 1 : 0  }}; </script>

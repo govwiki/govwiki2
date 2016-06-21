@@ -33,6 +33,7 @@
 {% endblock panel_body %}
 
 {% block javascripts %}
+    {{- parent() -}}
     {% javascripts '@GovWikiAdminBundle/Resources/public/js/Format/fieldname.js'
     output='js/format.js' %}
     <script src="{{ asset_url }}"></script>

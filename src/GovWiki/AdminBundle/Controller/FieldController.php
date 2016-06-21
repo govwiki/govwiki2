@@ -6,6 +6,7 @@ use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Locale;
 use GovWiki\DbBundle\Entity\Translation;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
@@ -93,7 +94,8 @@ class FieldController extends AbstractGovWikiAdminController
      */
     public function editAction(Request $request, Format $format)
     {
-        if ($this->getCurrentEnvironment() === null) {
+        $environment = $this->getCurrentEnvironment();
+        if ($environment === null) {
             return $this->redirectToRoute('govwiki_admin_main_home');
         }
 
@@ -105,8 +107,6 @@ class FieldController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid() ) {
             $this->getManager()->update($format);
-
-            $environment = $this->getCurrentEnvironment();
             $manager = $this->getGovernmentManager();
 
             if ($format->isRanked()) {
@@ -124,11 +124,22 @@ class FieldController extends AbstractGovWikiAdminController
                         'integer'
                     );
                 }
+
+
+                // Recalculate rank.
+                $manager->calculateRanks($environment, $format);
+                // Clear max ranks.
+                $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
+                    ->removeTable($environment);
             } elseif ($oldIsRanked) {
                 $manager->deleteColumn(
                     $environment,
                     GovwikiNamingStrategy::rankedFieldName($format->getField())
                 );
+
+                // Clear max ranks.
+                $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
+                    ->removeTable($environment);
             }
 
             $manager->changeColumn(

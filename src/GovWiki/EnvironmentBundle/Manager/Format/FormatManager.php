@@ -57,8 +57,15 @@ class FormatManager implements FormatManagerInterface
      */
     public function getList(Environment $environment, $altType = null)
     {
-        return $this->em->getRepository('GovWikiDbBundle:Format')
-                ->getList($environment->getId(), $altType);
+        $result = $this->em->getRepository('GovWikiDbBundle:Format')
+            ->getList($environment->getId(), $altType);
+
+        $list = [];
+        foreach ($result as $item) {
+            $list[$item['field']] = $item;
+        }
+
+        return $list;
     }
 
     /**

@@ -16,9 +16,6 @@ services:
 
     govwiki_db.form.type.format:
         class: GovWiki\DbBundle\Form\FormatType
-        arguments:
-            - @govwiki_environment.storage
-            - @govwiki_environment.manager.government
         tags:
             - { name: form.type, alias: format }
 
@@ -94,3 +91,8 @@ services:
             - @govwiki_environment.storage
         tags:
             - { name: form.type, alias: survey }
+
+    govwiki_db.form_extension.form:
+        class: GovWiki\DbBundle\Form\Extension\FormTypeExtension
+        tags:
+            - { name: form.type_extension, alias: form }

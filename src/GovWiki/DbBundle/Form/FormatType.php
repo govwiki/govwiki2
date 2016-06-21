@@ -4,12 +4,8 @@ namespace GovWiki\DbBundle\Form;
 
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Form\Type\RankLetterRangeType;
-use GovWiki\EnvironmentBundle\Manager\Government\GovernmentManagerInterface;
-use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -20,80 +16,36 @@ class FormatType extends AbstractType
 {
 
     /**
-     * @var EnvironmentStorageInterface
-     */
-    private $storage;
-
-    /**
-     * @var GovernmentManagerInterface
-     */
-    private $manager;
-
-    /**
-     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
-     *                                             instance.
-     * @param GovernmentManagerInterface  $manager A GovernmentManagerInterface
-     *                                             instance.
-     */
-    public function __construct(
-        EnvironmentStorageInterface $storage,
-        GovernmentManagerInterface $manager
-    ) {
-        $this->storage = $storage;
-        $this->manager = $manager;
-    }
-    /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $data = $builder->getData();
+        $isRanked = false;
+        $isLetter = false;
+        $isString = (! $data instanceof Format) || ($data->getType() === 'string');
 
-        $usedAltTypes = $this->manager
-            ->getUsedAltTypes($this->storage->get(), true);
+        if ($data instanceof Format) {
+            $isRanked = $data->isRanked();
+            $isLetter = $data->getRankType() === Format::RANK_LETTER;
+        }
 
-        if (! $data instanceof Format) {
-            $data = new Format();
+        $rankedLabelAttr = [];
+        if ($isString) {
+            $rankedLabelAttr['style'] = 'display: none';
+        }
 
-            // Generate rank letter range.
-            $range = [];
-            foreach ($usedAltTypes as $altType) {
-                $range[$altType] = [
-                    'a' => [
-                        'start' => 100,
-                        'end' => 80,
-                    ],
-                    'b' => [
-                        'start' => 80,
-                        'end' => 60,
-                    ],
-                    'c' => [
-                        'start' => 60,
-                        'end' => 40,
-                    ],
-                    'd' => [
-                        'start' => 40,
-                        'end' => 20,
-                    ],
-                    'f' => [
-                        'start' => 20,
-                        'end' => 0,
-                    ],
-                ];
-            }
-
-            $data->setRankLetterRanges($range);
-        } else {
+        if ($isLetter) {
             // Check current range altTypes.
             $currentRanges = $data->getRankLetterRanges();
             $currentAltTypes = array_keys($currentRanges);
 
-            $diff = array_diff($currentAltTypes, $usedAltTypes);
+            $diff = array_diff($currentAltTypes, $data->getShowIn());
             foreach ($diff as $altType) {
                 unset($currentRanges[$altType]);
             }
 
-            $diff = array_diff($usedAltTypes, $currentAltTypes);
+            $diff = array_diff($data->getShowIn(), $currentAltTypes);
             foreach ($diff as $altType) {
                 $currentRanges[$altType] = [
                     'a' => [
@@ -120,21 +72,13 @@ class FormatType extends AbstractType
             }
 
             $data->setRankLetterRanges($currentRanges);
+            $builder->setData($data);
         }
-        $builder->setData($data);
 
         $availableTypes = array_combine(
             Format::availableTypes(),
             Format::availableTypes()
         );
-
-        $rankLetterRangesOptions = [
-            'required' => false,
-            'type' => new RankLetterRangeType(),
-        ];
-        if ($data->getRankType() === Format::RANK_RANGE) {
-            $rankLetterRangesOptions['attr'] = [ 'style' => 'display: none' ];
-        }
 
         $builder
             ->add('field')
@@ -142,15 +86,25 @@ class FormatType extends AbstractType
             ->add('type', 'choice', [ 'choices' => $availableTypes ])
             ->add('helpText', 'textarea', [ 'required' => false ])
             ->add('mask', null, [ 'required' => false ])
-            ->add('ranked', 'checkbox', [ 'required' => false ])
+            ->add('ranked', 'checkbox', [
+                'required' => false,
+                'label_attr' => $rankedLabelAttr,
+            ])
             ->add('rankType', 'choice', [
                 'empty_data' => Format::RANK_RANGE,
                 'choices' => [
                     Format::RANK_RANGE => 'Range',
                     Format::RANK_LETTER => 'Letter',
                 ],
+                'hidden' => !$isRanked || $isString,
             ])
-            ->add('rankLetterRanges', 'collection', $rankLetterRangesOptions)
+            ->add('rankLetterRanges', 'collection', [
+                'required' => false,
+                'type' => new RankLetterRangeType(),
+                'allow_add' => true,
+                'allow_delete' => true,
+                'hidden' => !$isRanked || !$isLetter,
+            ])
             ->add('dataOrFormula', 'choice', [
                 'required' => false,
                 'choices' => [

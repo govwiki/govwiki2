@@ -3,6 +3,7 @@
 namespace GovWiki\EnvironmentBundle\Manager\Government;
 
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Government;
 
 /**
@@ -253,4 +254,14 @@ interface GovernmentManagerInterface
      * @return string[]
      */
     public function getUsedAltTypes(Environment $environment, $slugged = false);
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param Format      $format      A Format entity instance.
+     *
+     * @return void
+     *
+     * @throws \Doctrine\DBAL\DBALException Error while update.
+     */
+    public function calculateRanks(Environment $environment, Format $format);
 }
