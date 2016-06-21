@@ -40,10 +40,7 @@ class AdminUserController extends AbstractGovWikiAdminController
         /** @var \GovWiki\UserBundle\Entity\Repository\UserRepository $repository */
         $repository = $this->getDoctrine()->getRepository('GovWikiUserBundle:User');
 
-        $users = $repository->getListQueryForEnvironment(
-            $this->getCurrentEnvironment()->getId(),
-            true
-        );
+        $users = $repository->getListQueryForEnvironment();
 
         $users = $this->get('knp_paginator')->paginate(
             $users,
@@ -156,5 +153,23 @@ class AdminUserController extends AbstractGovWikiAdminController
         }
 
         return [ 'form' => $form->createView() ];
+    }
+
+    /**
+     * Delete user.
+     *
+     * @Configuration\Route(path="/remove/{id}")
+     * @Configuration\Security("is_granted('ROLE_ADMIN')")
+     *
+     * @param User $user A User entity instance.
+     *
+     * @return RedirectResponse|array
+     */
+    public function removeAction(User $user)
+    {
+        $userManager = $this->get('fos_user.user_manager');
+        $userManager->deleteUser($user);
+
+        return $this->redirectToRoute('govwiki_admin_adminuser_index');
     }
 }

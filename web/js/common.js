@@ -98,7 +98,7 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	eval("/* WEBPACK VAR INJECTION */(function($) {var $loaderWrap = $('.loader_wrap');\n__webpack_require__(2);\n\n$loaderWrap.css({ opacity: 0 });\n\nwindow.setTimeout(function tick() {\n  $loaderWrap.css({ visibility: 'hidden' });\n}, 1000);\n\n$('#login-link').click(function login(event) {\n  event.preventDefault();\n\n  $('#modal-window').modal('show');\n});\n/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/GovWiki/FrontendBundle/Resources/public/js/common.js\n ** module id = 0\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/GovWiki/FrontendBundle/Resources/public/js/common.js?");
+	eval("/* WEBPACK VAR INJECTION */(function($) {var $loaderWrap = $('.loader_wrap');\nvar $changePasswordWindow = $('#change-password-modal-window');\n\n__webpack_require__(2);\n\n$loaderWrap.css({ opacity: 0 });\n\nwindow.setTimeout(function tick() {\n  $loaderWrap.css({ visibility: 'hidden' });\n}, 1000);\n\n$('#login-link').click(function login(event) {\n  event.preventDefault();\n\n  $('#modal-window').modal('show');\n});\n\n$('#change-password-link').click(function changePassword(event) {\n  event.preventDefault();\n\n  $changePasswordWindow.modal('show');\n});\n\nif (window.gw.formValid === 0) {\n  $changePasswordWindow.modal('show');\n}\n\n/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/GovWiki/FrontendBundle/Resources/public/js/common.js\n ** module id = 0\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/GovWiki/FrontendBundle/Resources/public/js/common.js?");
 
 /***/ },
 /* 1 */

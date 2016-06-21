@@ -11,7 +11,7 @@ var Step31;
 var Step3;
 var Step2;
 var Step1;
-var government = JSON.parse(window.gw.government);
+// var government = JSON.parse(window.gw.government);
 var modal = $('#addIssue');
 var authorized = window.gw.authorized;
 var Handlebars = require('../vendor/handlebars.js');
@@ -239,7 +239,7 @@ $(document).on('click', '.paginate .sortable a', function click(e) {
   });
 });
 
-// Add new document.
+// Add new issue.
 $(document).on('click', '.add', function newDocument() {
   if (! authorized) {
     $('#modal-window').modal('show'); // Open login modal window
@@ -253,12 +253,12 @@ modal.find('[data-provide="datepicker"]').on('changeDate', function changeDate()
   return $(this).datepicker('hide');
 });
 
-// Clear document from when modal hide.
+// Clear issue from when modal hide.
 modal.on('hidden.bs.modal', function clean() {
   (modal.find('form')[0]).reset();
 });
 
-// Document form submit.
+// Issue form submit.
 modal.find('form').submit(function  newIssue(event) {
   var data = new FormData(this);
 
@@ -272,12 +272,8 @@ modal.find('form').submit(function  newIssue(event) {
     data: data
   })
     .done(function success(response) {
-      var template;
-
-      if (government.currentYear === Number(response.date.replace(/^(\d+)-.*/, '$1'))) {
-        template = Handlebars.compile($('#issue-row').html());
-        $('#issues tbody tr:last-child').before(template(response));
-      }
+      var template = Handlebars.compile($('#issue-row').html());
+      $('#issues tbody tr:last-child').before(template(response));
 
       modal.modal('hide');
     })

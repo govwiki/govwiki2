@@ -78,9 +78,22 @@ class ElectedOfficialRepository extends EntityRepository
         try {
             return $this->createQueryBuilder('ElectedOfficial')
                 ->addSelect(
-                    'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}'
+                    'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}',
+                    'partial EditRequest.{id, changes}',
+                    'partial User.{id}'
                 )
                 ->join('ElectedOfficial.government', 'Government')
+                ->leftJoin(
+                    'GovWikiDbBundle:EditRequest',
+                    'EditRequest',
+                    Query\Expr\Join::WITH,
+                    $expr->andX(
+                        "(REGEXP('bio', EditRequest.changes)) = 1",
+                        $expr->eq('EditRequest.entityId', 'ElectedOfficial.id'),
+                        $expr->eq('EditRequest.status', $expr->literal('pending'))
+                    )
+                )
+                ->leftJoin('EditRequest.user', 'User')
                 ->where($expr->andX(
                     $expr->eq('Government.environment', ':environment'),
                     $expr->eq('ElectedOfficial.slug', ':eoSlug'),
@@ -93,8 +106,9 @@ class ElectedOfficialRepository extends EntityRepository
                     'slug'        => $slug,
                     'altTypeSlug' => $altTypeSlug,
                 ])
+                ->orderBy($expr->desc('EditRequest.created'))
                 ->getQuery()
-                ->getOneOrNullResult(Query::HYDRATE_ARRAY);
+                ->getArrayResult();
         } catch (NonUniqueResultException $e) {
             return null;
         }

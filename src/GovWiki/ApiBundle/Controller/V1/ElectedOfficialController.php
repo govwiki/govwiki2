@@ -34,6 +34,7 @@ class ElectedOfficialController extends AbstractGovWikiApiController
         $bio = $request->request->get('bio');
 
         $elected->setNewBio($bio);
+        $elected->setBioEditor($this->getUser());
         $em = $this->getDoctrine()->getManager();
         $em->persist($elected);
         $em->flush();

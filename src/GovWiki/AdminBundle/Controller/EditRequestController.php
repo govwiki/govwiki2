@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Repository\EditRequestRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;

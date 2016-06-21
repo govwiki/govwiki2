@@ -73,7 +73,7 @@ class MaxRankComputer implements MaxRankComputerInterface
                 alt_type_slug VARCHAR(255) NOT NULL,
                 year int(4) NOT NULL,
                 {$columnDefinitions},
-                PRIMARY KEY (`year`)
+                CONSTRAINT pk_max_ranks PRIMARY KEY (`year`, alt_type_slug)
             ) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
         ");
 
@@ -91,8 +91,7 @@ class MaxRankComputer implements MaxRankComputerInterface
                 INNER JOIN environments env ON g.environment_id = env.id
                 WHERE
                     env.slug = '{$environment}' AND
-                    e.year = {$year} AND
-                    g.alt_type_slug = '{$altTypeSlug}'
+                    e.year = {$year}
                 GROUP BY g.alt_type_slug
             ) AS new
             ON DUPLICATE KEY UPDATE

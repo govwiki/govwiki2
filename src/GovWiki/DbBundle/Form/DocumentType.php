@@ -102,7 +102,7 @@ class DocumentType extends AbstractType
                         return $original->format('m/d/Y');
                     }
 
-                    return date('Y-m-d');
+                    return date('m/d/Y');
                 },
                 function ($view) {
                     return \DateTime::createFromFormat('m/d/Y', $view);

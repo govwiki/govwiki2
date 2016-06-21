@@ -125,6 +125,32 @@
             </div>
         </div>
 
+        {# Change password modal window #}
+        {%- if form is defined -%}
+            <div id="change-password-modal-window" class="modal fade">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Change password</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            {{- form_start(form) -}}
+                            {{- form_widget(form) -}}
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">Change</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">Cancel</button>
+                            </div>
+                            {{- form_end(form) -}}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        {%- endif -%}
+
         {#{% javascripts  '@GovWikiMobileBundle/Resources/public/js/vendor/jquery.min.js'
             output='js/jquery.js' %}
             <script src="{{ asset_url }}"></script>
@@ -148,6 +174,11 @@
                 <script> window.gw.user_id = "{{ app.user.id }}"; </script>
                 {% set username = app.user.username %}
             {% endif %}
+            {%- if (formValid is null) -%}
+                <script> window.gw.formValid = null; </script>
+            {%- else -%}
+                <script> window.gw.formValid = {{ (formValid) ? 1 : 0  }}; </script>
+            {%- endif -%}
             <script> window.gw.username = "{{ username }}"; </script>
         {% endblock %}
 

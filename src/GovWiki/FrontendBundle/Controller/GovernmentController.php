@@ -132,18 +132,10 @@ class GovernmentController extends AbstractGovWikiController
 
         $user = $this->getUser();
         $paginator = $this->get('knp_paginator');
-        $year = $request->query->get(
-            'year',
-            $this->getGovernmentManager()
-                ->getAvailableYears(
-                    $this->getCurrentEnvironment(),
-                    $government
-                )[0]
-        );
 
         $issues = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:Issue')
-            ->getListQuery($government->getId(), $year, $user instanceof User);
+            ->getListQuery($government->getId(), $user instanceof User);
         $issues = $paginator->paginate(
             $issues,
             $request->query->get('page', 1),
@@ -396,9 +388,7 @@ From ' . $user_email;
 
         $data['environment_is_subscribable'] = $environment->getSubscribable();
 
-        $issue = new Issue();
-        $issue->setDate(new \DateTime($currentYear .'-'. date('m-d')));
-        $form = $this->createForm('document', $issue, [
+        $form = $this->createForm('document', null, [
             'action' => $this->generateUrl('govwiki_api_v1_government_issue', [
                 'government' => $data['government']['id'],
             ]),

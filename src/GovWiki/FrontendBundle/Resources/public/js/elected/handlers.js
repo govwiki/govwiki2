@@ -1,6 +1,4 @@
-var bioInput;
-var bioContent;
-var bioChangeBtn;
+var bioChangeStartBtn;
 
 var authorized = window.gw.authorized;
 var $commentWindow = $('#conversation');
@@ -537,43 +535,85 @@ if (tableType) {
   window.sessionStorage.removeItem('tableType');
 }
 
-bioInput = $('#elected-bio');
-bioChangeBtn = $('#change-bio');
+bioChangeStartBtn = $('#change-bio-start');
 
-// Remember bio content.
-bioContent = bioInput.val();
+/*
+  Start change.
+ */
+bioChangeStartBtn.click(function startChange() {
+  if (! authorized) {
+    // Open login modal window.
+    $('#modal-window').modal('show');
+  } else {
+    // Replace div with textarea.
+    $('#elected-bio-view').hide();
+    $('#elected-bio-edit').show();
 
-// Toggle button enabled when bio input change.
-bioInput.keyup(function bioChanged() {
-  if ((bioContent === bioInput.val()) && ! bioChangeBtn.hasClass('disabled')) {
-    bioChangeBtn.addClass('disabled');
-  } else if ((bioContent !== bioInput.val()) && bioChangeBtn.hasClass('disabled')) {
-    bioChangeBtn.removeClass('disabled');
+    // Replace start button with edit buttons.
+    bioChangeStartBtn.hide();
+    $('#change-bio-group').show();
   }
 });
 
-// Change bio.
-bioChangeBtn.click(function bioChange(event) {
+/*
+  Revert bio changes.
+ */
+$('#change-bio-revert').click(function revertChanges() {
+  var bioEdit = $('#elected-bio-edit');
+  var bioView = $('#elected-bio-view');
+
+  // Revert changes.
+  bioEdit.val(bioView.html());
+
+  // Replace textarea back to div.
+  bioView.show();
+  bioEdit.hide();
+
+  // Replace edit buttons.
+  bioChangeStartBtn.show();
+  $('#change-bio-group').hide();
+});
+
+/*
+  Save changes.
+ */
+$('#change-bio-save').click(function save(event) {
   var loader = $('#bio').find('.loader');
+  var bioEdit = $('#elected-bio-edit');
+  var bioChangeGroup = $('#change-bio-group');
+  var sendObject;
 
   event.preventDefault();
 
   loader.show();
-  bioInput.hide();
-  bioChangeBtn.hide();
+  bioEdit.hide();
+  bioChangeGroup.hide();
+
+  sendObject = {
+    editRequest: {
+      entityName: 'ElectedOfficial',
+      entityId: JSON.parse(window.gw.electedOfficial).id,
+      changes: { bio: bioEdit.val() }
+    }
+  };
+  sendObject.editRequest = JSON.stringify(sendObject.editRequest);
 
   $.ajax({
     url: this.getAttribute('href'),
-    data: { bio: bioInput.val() },
-    method: 'POST'
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: sendObject
   })
     .done(function changed() {
-      bioChangeBtn.before('<p class="text-info text-center">Bio changed</p>');
-      bioChangeBtn.remove();
+      alert('Changes saved.');
+      // Replace default values.
+      $('#elected-bio-view').html(bioEdit.val());
     })
     .always(function always() {
       loader.hide();
-      bioInput.show();
-      bioChangeBtn.show();
-    });
+      bioEdit.show();
+      bioChangeGroup.show();
+    })
 });

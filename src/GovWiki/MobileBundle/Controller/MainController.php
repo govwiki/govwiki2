@@ -2,9 +2,12 @@
 
 namespace GovWiki\MobileBundle\Controller;
 
+use FOS\UserBundle\Model\UserManagerInterface;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
+use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Translation\MessageCatalogue;
 
@@ -40,9 +43,11 @@ class MainController extends AbstractGovWikiController
      * @Route("/", name="map")
      * @Template("GovWikiMobileBundle:Main:map.html.twig")
      *
+     * @param Request $request A Request instance.
+     *
      * @return array
      */
-    public function mapAction()
+    public function mapAction(Request $request)
     {
         $this->clearTranslationsCache();
         $translator = $this->get('translator');
@@ -73,13 +78,38 @@ class MainController extends AbstractGovWikiController
         if ($catalogue->has($transKey)) {
             $greetingText = $translator->trans($transKey);
         }
-
-        return [
+        $params = [
             'map' => json_encode($map),
             'greetingText' => $greetingText,
             'years' => $years,
             'currentYear' => $currentYear,
         ];
+
+        /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */
+        $formFactory = $this->get('fos_user.change_password.form.factory');
+
+        $user = $this->getUser();
+        $params['formValid'] = null;
+        if ($user instanceof User) {
+            $form = $formFactory->createForm();
+            $form->setData($user);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted()) {
+                if ($form->isValid()) {
+                    /** @var UserManagerInterface $userManager */
+                    $userManager = $this->get('fos_user.user_manager');
+                    $userManager->updateUser($user);
+                    $params['formValid'] = true;
+                } else {
+                    $params['formValid'] = false;
+                }
+            }
+
+            $params['form'] = $form->createView();
+        }
+
+        return $params;
     }
 
     private function clearTranslationsCache()

@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use GovWiki\DbBundle\Entity\Issue;
+use GovWiki\RequestBundle\Entity\AbstractCreateRequest;
 
 /**
  * IssuesRepository
@@ -17,38 +18,38 @@ class IssuesRepository extends EntityRepository
 
     /**
      * @param integer $government A government entity id.
-     * @param integer $year       Data year.
-     * @param boolean $addPending Add pending issues.
+     * @param boolean $user       A User entity id or null.
      *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getListQuery($government, $year, $addPending = false)
+    public function getListQuery($government, $user = null)
     {
         $expr = $this->_em->getExpressionBuilder();
+        $qb = $this->createQueryBuilder('Issue');
 
-        $stateFilter = $expr->andX(
-            $expr->neq('Issue.state', $expr->literal(Issue::DISCARDED))
-        );
+        $qb
+            ->addSelect('Request, Creator')
+            ->leftJoin('Issue.request', 'Request')
+            ->leftJoin('Request.creator', 'Creator')
+            ->where($expr->eq('Issue.government', ':government'))
+            ->orderBy($expr->desc('Issue.date'))
+            ->setParameter('government', $government);
 
-        if (! $addPending) {
-            $stateFilter->add(
-                $expr->neq('Issue.state', $expr->literal(Issue::PENDING))
-            );
+        if ($user) {
+            $qb
+                ->andWhere($expr->orX(
+                    $expr->isNull('Issue.request'),
+                    $expr->neq('Request.status', ':discard')
+                ))
+                ->setParameter('discard', AbstractCreateRequest::STATE_DISCARDED);
+        } else {
+            $qb
+                ->andWhere($expr->orX(
+                    $expr->isNull('Issue.request'),
+                    $expr->eq('Request.status', ':applied')
+                ))
+                ->setParameter('applied', AbstractCreateRequest::STATE_APPLIED);
         }
-
-        $qb = $this->createQueryBuilder('Issue')
-            ->where($expr->andX(
-                $expr->eq('Issue.government', ':government'),
-                'YEAR(Issue.date) = :year',
-                $expr->orX(
-                    $stateFilter,
-                    $expr->isNull('Issue.state')
-                )
-            ))
-            ->setParameters([
-                'government' => $government,
-                'year' => $year,
-            ]);
 
         return $qb;
     }
@@ -71,7 +72,7 @@ class IssuesRepository extends EntityRepository
              $qb
                  ->andWhere($expr->eq('YEAR(Issue.date)', ':year'))
                  ->setParameter('year', $year);
-         }
+        }
 
         return $qb;
     }

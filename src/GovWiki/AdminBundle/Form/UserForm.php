@@ -24,7 +24,10 @@ class UserForm extends AbstractType
         /** @var User $user */
         $user = $builder->getData();
 
-        $options = [ 'attr' => [ 'autocomplete' => 'off' ] ];
+        $options = [
+            'attr' => [ 'autocomplete' => 'off' ],
+            'label' => 'Password',
+        ];
         if ($user->getId() !== null) {
             $options = array_merge($options, [ 'required' => false ]);
         }

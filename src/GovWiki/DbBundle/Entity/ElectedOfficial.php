@@ -127,15 +127,6 @@ class ElectedOfficial
     private $bio;
 
     /**
-     * Contains edited by user `bio`.
-     *
-     * @var string
-     *
-     * @ORM\Column(type="text")
-     */
-    private $newBio;
-
-    /**
      * @ORM\OneToMany(targetEntity="Contribution", mappedBy="electedOfficial")
      * @Groups({"elected_official"})
      */
@@ -641,26 +632,6 @@ class ElectedOfficial
     public function setBio($bio)
     {
         $this->bio = $bio;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNewBio()
-    {
-        return $this->newBio;
-    }
-
-    /**
-     * @param string $newBio New bio edited by user.
-     *
-     * @return ElectedOfficial
-     */
-    public function setNewBio($newBio)
-    {
-        $this->newBio = $newBio;
 
         return $this;
     }

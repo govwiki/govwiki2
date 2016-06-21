@@ -8,6 +8,7 @@
             <table id="issues" class="table table-striped">
                 <thead>
                 <tr>
+                    <th></th>
                     <th class="sortable">{{- knp_pagination_sortable(
                         issues,
                         'Name',
@@ -15,32 +16,44 @@
                         ) -}}</th>
                     <th class="sortable">{{- knp_pagination_sortable(
                         issues,
-                        'Description',
-                        'Issue.description'
-                    ) -}}</th>
+                        'Type',
+                        'Issue.type'
+                        ) -}}</th>
                     <th class="sortable">{{- knp_pagination_sortable(
                         issues,
-                        'Link',
-                        'Issue.link'
-                    ) -}}</th>
+                        'Description',
+                        'Issue.description'
+                        ) -}}</th>
+                    <th class="sortable">{{- knp_pagination_sortable(
+                        issues,
+                        'Date',
+                        'Issue.date'
+                        ) -}}</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for issue in issues %}
-                    <tr {% if issue.state == constant('PENDING', issue) -%}
+                {%- for issue in issues -%}
+                    <tr {% if (issue.request is not null) and
+                        (issue.request.status == constant('STATE_PENDING', issue.request)) -%}
                         style="background: rgba(80, 0, 0, 0.1)"
-                    {%- endif -%}>
+                            {%- endif -%}>
+                        <td>
+                            <a href="{{- issue.link -}}" target="_blank">
+                                <img src="{{- asset('/images/download.png') -}}">
+                            </a>
+                        </td>
+                        <td>{{- issue.type -}}</td>
                         <td>{{- issue.name -}}</td>
                         <td>{{- issue.description -}}</td>
-                        <td><a href="{{- issue.link -}}">{{- issue.link -}}</a></td>
+                        <td>{{- issue.date|date('Y/d/m') -}}</td>
                     </tr>
-                {% endfor %}
-                    <tr>
-                       <td colspan="3" class="add">
-                           Add new Issue
-                           <span class="glyphicon glyphicon-plus"></span>
-                       </td>
-                    </tr>
+                {%- endfor -%}
+                <tr>
+                    <td colspan="5" class="add">
+                        Add new Issue
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </td>
+                </tr>
                 </tbody>
             </table>
 
@@ -52,9 +65,15 @@
 {%- verbatim -%}
 <script id="issue-row" type="text/x-handlebars-template">
     <tr style="background: rgba(80, 0, 0, 0.1)">
+        <td>
+            <a href="{{ link }}">
+                <img src="/images/download.png">
+            </a>
+        </td>
+        <td>{{ type }}</td>
         <td>{{ name }}</td>
         <td>{{ description }}</td>
-        <td><a href="{{ link }}">{{ link }}</a></td>
+        <td>{{ date }}</td>
     </tr>
 </script>
 {%- endverbatim -%}

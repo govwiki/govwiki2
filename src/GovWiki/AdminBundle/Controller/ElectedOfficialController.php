@@ -394,8 +394,10 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
      */
     public function approveAction(ElectedOfficial $elected)
     {
-        $elected->setBio($elected->getNewBio());
-        $elected->setNewBio(null);
+        $elected
+            ->setBio($elected->getNewBio())
+            ->setNewBio(null)
+            ->setBioEditor(null);
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($elected);
@@ -420,7 +422,9 @@ class ElectedOfficialController extends AbstractGovWikiAdminController
      */
     public function declineAction(ElectedOfficial $elected)
     {
-        $elected->setNewBio(null);
+        $elected
+            ->setNewBio(null)
+            ->setBioEditor(null);
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($elected);

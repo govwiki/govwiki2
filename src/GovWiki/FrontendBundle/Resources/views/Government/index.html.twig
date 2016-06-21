@@ -55,12 +55,15 @@
 
                     {# Tabs control #}
                     <nav>
-                        <ul class="nav nav-pills tab-titles">
+                        <ul class="nav nav-pills tab-titles clearfix">
                             {%- if (tabs is defined) and (tabs is not empty) -%}
+                                {%- set tabsCount = tabs|length -%}
+                                {%- set width = 100 / tabsCount -%}
                                 {%- for tab in tabs -%}
                                     {%- set slug = self.tabSlug(tab.name) -%}
 
-                                    <li {{ loop.first ? 'class="active"' -}}>
+                                    <li class="clearfix" style="max-width: {{ width }}%; width: {{ width }}%"
+                                            {{ loop.first ? 'class="active"' -}}>
                                         <a class="tabs tab_{{ slug|lower }}"
                                             href="#{{ slug }}" aria-controls="{{ slug }}"
                                             role="tab" data-toggle="tab"

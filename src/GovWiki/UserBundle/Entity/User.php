@@ -231,7 +231,7 @@ class User extends BaseUser
     /**
      * Add environment
      *
-     * @param Environment $environment A Environment instance.
+     * @param Environment $environment A Environment instance or null.
      *
      * @return User
      */
