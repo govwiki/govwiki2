@@ -18,31 +18,6 @@ class ElectedOfficialController extends AbstractGovWikiApiController
 {
 
     /**
-     * @Route(
-     *  "/{elected}/new_bio",
-     *  requirements={ "elected": "\d+" },
-     *  methods={ "POST" }
-     * )
-     *
-     * @param Request         $request A Request instance.
-     * @param ElectedOfficial $elected A ElectedOfficial instance.
-     *
-     * @return JsonResponse
-     */
-    public function changeBioAction(Request $request, ElectedOfficial $elected)
-    {
-        $bio = $request->request->get('bio');
-
-        $elected->setNewBio($bio);
-        $elected->setBioEditor($this->getUser());
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($elected);
-        $em->flush();
-
-        return new JsonResponse();
-    }
-
-    /**
      * @Route("/{govAltTypeSlug}/{govSlug}/{eoSlug}", methods="GET")
      *
      * @param Request $request        A Request instance.

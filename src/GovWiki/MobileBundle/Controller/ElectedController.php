@@ -103,11 +103,33 @@ class ElectedController extends AbstractGovWikiController
             'electedOfficialId' => $data['electedOfficial']['id'],
         ]);
 
+        // Create bio form.
+        $electedOfficial = $data['electedOfficial'];
+        $bioChanges = $electedOfficial['bioChanges'];
+
+        $bio = $electedOfficial['bio'];
+        if ($bioChanges['changed'] && (($user !== null)
+                && ($bioChanges['changedBy'] == $user))
+        ) {
+            $bio = $bioChanges['lastChanges'];
+        }
+
+        $bioForm = $this
+            ->createFormBuilder([ 'bio' => $bio ], [
+                'attr' => [ 'id' => 'bio-form' ],
+            ])
+            ->add('bio', 'ckeditor', [
+                'config_name' => 'elected_official_bio',
+                'label' => false,
+            ])
+            ->getForm();
+
         $data = array_merge($data, [
             'altTypeSlug' => $altTypeSlug,
             'slug' => $slug,
             'electedOfficialJSON' => $electedOfficialJSON,
             'electedOfficialCommentForm' => $electedOfficialCommentForm->createView(),
+            'bioForm' => $bioForm->createView(),
         ]);
 
         return $data;

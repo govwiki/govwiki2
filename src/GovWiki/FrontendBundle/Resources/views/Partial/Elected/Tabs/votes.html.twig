@@ -16,12 +16,11 @@
             {%- endif -%}
 
             <div id="elected-bio-view">
-                {{- bio -}}
+                {{- bio|raw -}}
             </div>
-            <textarea style="resize: vertical; display: none"
-                      id="elected-bio-edit" rows="6" class="form-control">
-                {{- bio -}}
-            </textarea>
+            <div id="elected-bio-edit-block" style="display: none">
+                {{ form(bioForm) }}
+            </div>
             {%- if app.user is not null -%}
                 {%- if ((not bioChanged)
                     or (bioChanged and currentUserChangeBio)) -%}

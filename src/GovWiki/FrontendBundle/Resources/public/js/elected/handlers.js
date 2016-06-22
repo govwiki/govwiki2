@@ -547,7 +547,7 @@ bioChangeStartBtn.click(function startChange() {
   } else {
     // Replace div with textarea.
     $('#elected-bio-view').hide();
-    $('#elected-bio-edit').show();
+    $('#elected-bio-edit-block').show();
 
     // Replace start button with edit buttons.
     bioChangeStartBtn.hide();
@@ -559,15 +559,15 @@ bioChangeStartBtn.click(function startChange() {
   Revert bio changes.
  */
 $('#change-bio-revert').click(function revertChanges() {
-  var bioEdit = $('#elected-bio-edit');
+  var bioEditor = $('#elected-bio-edit-block');
   var bioView = $('#elected-bio-view');
 
   // Revert changes.
-  bioEdit.val(bioView.html());
+  window.CKEDITOR.instances.form_bio.setData(bioView.html());
 
   // Replace textarea back to div.
   bioView.show();
-  bioEdit.hide();
+  bioEditor.hide();
 
   // Replace edit buttons.
   bioChangeStartBtn.show();
@@ -579,21 +579,22 @@ $('#change-bio-revert').click(function revertChanges() {
  */
 $('#change-bio-save').click(function save(event) {
   var loader = $('#bio').find('.loader');
-  var bioEdit = $('#elected-bio-edit');
+  var bioEditor = $('#elected-bio-edit-block');
+  var data = window.CKEDITOR.instances.form_bio.getData();
   var bioChangeGroup = $('#change-bio-group');
   var sendObject;
 
   event.preventDefault();
 
   loader.show();
-  bioEdit.hide();
+  bioEditor.hide();
   bioChangeGroup.hide();
 
   sendObject = {
     editRequest: {
       entityName: 'ElectedOfficial',
       entityId: JSON.parse(window.gw.electedOfficial).id,
-      changes: { bio: bioEdit.val() }
+      changes: { bio: data }
     }
   };
   sendObject.editRequest = JSON.stringify(sendObject.editRequest);
@@ -609,11 +610,11 @@ $('#change-bio-save').click(function save(event) {
     .done(function changed() {
       alert('Changes saved.');
       // Replace default values.
-      $('#elected-bio-view').html(bioEdit.val());
+      $('#elected-bio-view').html(data);
     })
     .always(function always() {
       loader.hide();
-      bioEdit.show();
+      bioEditor.show();
       bioChangeGroup.show();
     })
 });
