@@ -5,6 +5,8 @@ namespace GovWiki\DbBundle\Form;
 use GovWiki\DbBundle\Entity\Issue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\ChoiceList\ArrayChoiceList;
+use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
@@ -45,14 +47,17 @@ class DocumentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $choices = Issue::availableTypes();
-        $names = array_map(
-            function ($type) {
-                return ucfirst($type);
-            },
-            $choices
-        );
-        $choices = array_combine($choices, $names);
+        $choices = array_combine(Issue::availableTypes(), [
+            'Audit',
+            'Other',
+            'News Report',
+            'Govt Document',
+            'CPC Research',
+            'Blog Post',
+            'Video Clip',
+            'Image',
+            'Audio Clip',
+        ]);
 
         $builder
             ->add('name')

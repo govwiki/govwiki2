@@ -22,6 +22,13 @@ class Issue extends AbstractCreatable
 
     const LAST_AUDIT = 'audit';
     const OTHER = 'other';
+    const NEWS_REPORT = 'news_report';
+    const GOVT_DOCUMENT = 'govt_document';
+    const CPC_RESEARCH = 'cpc_research';
+    const BLOG_POST = 'blog_post';
+    const VIDEO_CLIP = 'video_clip';
+    const IMAGE = 'image';
+    const AUDIO_CLIO = 'audio_clip';
 
     const PENDING = 'pending';
     const APPROVED = 'approved';
@@ -106,6 +113,13 @@ class Issue extends AbstractCreatable
         return [
             self::LAST_AUDIT,
             self::OTHER,
+            self::NEWS_REPORT,
+            self::GOVT_DOCUMENT,
+            self::CPC_RESEARCH,
+            self::BLOG_POST,
+            self::VIDEO_CLIP,
+            self::IMAGE,
+            self::AUDIO_CLIO,
         ];
     }
 

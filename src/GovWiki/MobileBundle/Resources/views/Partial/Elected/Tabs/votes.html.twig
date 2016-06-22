@@ -52,12 +52,14 @@ and (elected.bioChanges.changedBy == app.user.id) -%}
 
         <hr>
 
+        <h4 class="text-center">Votes</h4>
+
 		<div class="add_action">
 			<span>Add new Vote</span>
 			<span class="glyphicon glyphicon-plus"></span>
 		</div>
 
-        {{ knp_pagination_render(endorsements) }}
+        {{ knp_pagination_render(votes) }}
 
 		{% for vote in votes %}
 			{% set blockId = 'voteCollapse' ~ loop.index %}
