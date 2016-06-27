@@ -16,6 +16,11 @@
                         ) -}}</th>
                     <th class="sortable">{{- knp_pagination_sortable(
                         issues,
+                        'Date',
+                        'Issue.date'
+                        ) -}}
+                        {{- knp_pagination_sortable(
+                        issues,
                         'Type',
                         'Issue.type'
                         ) -}}</th>
@@ -23,11 +28,6 @@
                         issues,
                         'Description',
                         'Issue.description'
-                        ) -}}</th>
-                    <th class="sortable">{{- knp_pagination_sortable(
-                        issues,
-                        'Date',
-                        'Issue.date'
                         ) -}}</th>
                 </tr>
                 </thead>
@@ -42,10 +42,17 @@
                                 <img src="{{- asset('/images/download.png') -}}">
                             </a>
                         </td>
-                        <td>{{- issue.type -}}</td>
                         <td>{{- issue.name -}}</td>
+                        <td>
+                            <div>
+                                {{- issue.date|date('Y/d/m') -}}
+                            </div>
+                            <div>
+                                {{- issue.type -}}
+                            </div>
+                        </td>
                         <td>{{- issue.description -}}</td>
-                        <td>{{- issue.date|date('Y/d/m') -}}</td>
+                        <td></td>
                     </tr>
                 {%- endfor -%}
                 <tr>

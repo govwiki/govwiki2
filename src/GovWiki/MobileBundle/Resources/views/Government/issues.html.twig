@@ -11,6 +11,7 @@
                 <table id="issues" class="table table-striped">
                     <thead>
                     <tr>
+                        <th></th>
                         <th class="sortable">{{- knp_pagination_sortable(
                             issues,
                             'Name',
@@ -18,24 +19,43 @@
                             ) -}}</th>
                         <th class="sortable">{{- knp_pagination_sortable(
                             issues,
-                            'Description',
-                            'Issue.description'
+                            'Date',
+                            'Issue.date'
+                            ) -}}
+                            {{- knp_pagination_sortable(
+                            issues,
+                            'Type',
+                            'Issue.type'
                             ) -}}</th>
                         <th class="sortable">{{- knp_pagination_sortable(
                             issues,
-                            'Link',
-                            'Issue.link'
+                            'Description',
+                            'Issue.description'
                             ) -}}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for issue in issues %}
-                        <tr {% if issue.state == constant('PENDING', issue) -%}
+                        <tr {% if (issue.request is not null) and
+                        (issue.request.status == constant('STATE_PENDING', issue.request)) -%}
                             style="background: rgba(80, 0, 0, 0.1)"
-                        {%- endif -%}>
+                                {%- endif -%}>
+                            <td>
+                                <a href="{{- issue.link -}}" target="_blank">
+                                    <img src="{{- asset('/images/download.png') -}}">
+                                </a>
+                            </td>
                             <td>{{- issue.name -}}</td>
+                            <td>
+                                <div>
+                                    {{- issue.date|date('Y/d/m') -}}
+                                </div>
+                                <div>
+                                    {{- issue.type -}}
+                                </div>
+                            </td>
                             <td>{{- issue.description -}}</td>
-                            <td><a href="{{- issue.link -}}">{{- issue.link -}}</a></td>
+                            <td></td>
                         </tr>
                     {% endfor %}
                     </tbody>
