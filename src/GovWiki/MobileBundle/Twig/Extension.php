@@ -160,7 +160,7 @@ class Extension extends \Twig_Extension
     private function isUrl($string)
     {
         return preg_match(
-            '#(?:[Hh][Tt]{2}[Pp][Ss]?://)?((?:[Ww]{3})?\.[a-zA-Z0-9\.]+\.[a-zA-Z]{2,})#',
+            '#(?:[Hh][Tt]{2}[Pp][Ss]?://)?([a-zA-Z0-9\.]+)#',
             $string
         );
     }
