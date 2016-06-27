@@ -159,9 +159,6 @@ class Extension extends \Twig_Extension
      */
     private function isUrl($string)
     {
-        return preg_match(
-            '#(?:[Hh][Tt]{2}[Pp][Ss]?://)?([a-zA-Z0-9\.]+)#',
-            $string
-        );
+        return filter_var(trim($string), FILTER_VALIDATE_URL);
     }
 }
