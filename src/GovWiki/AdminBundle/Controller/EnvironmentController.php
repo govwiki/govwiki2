@@ -523,7 +523,7 @@ class EnvironmentController extends AbstractGovWikiAdminController
             // Get all coloring conditions.
             $data = $request->request->get('ccc');
 
-            if (array_key_exists('colorized', $data)) {
+            if ($data && array_key_exists('colorized', $data)) {
                 // Add coloring conditions for given map.
                 $data['colorized'] = true;
                 $conditions = ColoringConditions::fromArray($data);

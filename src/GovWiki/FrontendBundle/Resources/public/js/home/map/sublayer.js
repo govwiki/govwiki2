@@ -156,7 +156,8 @@ function initSublayerHandlers() {
           /**
            * If hover on county layer
            */
-          if (layerIndex === config.countySubLayer._position) {
+          if (config.countySubLayer &&
+            (layerIndex === config.countySubLayer._position)) {
             drawAppropriatePolygon(data);
           } else {
             removeAllHoverShapes();

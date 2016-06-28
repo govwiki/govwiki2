@@ -517,62 +517,72 @@ class GovernmentManager implements GovernmentManagerInterface
         $government = array_merge($government, $data);
         unset($data, $dataFields);
 
-        /*
-         * Get max ranks.
-         */
-        $data = $this->maxRankManager->get(
-            $environment,
-            $altTypeSlug,
-            $year
+
+        $ranked = array_filter(
+            $fields,
+            function (array $field) {
+                return $field['ranked'] === true;
+            }
         );
-        if ($data === false) {
-            $this->maxRankManager->computeAndSave(
-                $environment,
-                $fields,
-                $year
-            );
+
+        if (count($ranked) > 0) {
+            /*
+             * Get max ranks.
+             */
             $data = $this->maxRankManager->get(
                 $environment,
                 $altTypeSlug,
                 $year
             );
-        }
-        $government['ranks'] = $data;
+            if ($data === false) {
+                $this->maxRankManager->computeAndSave(
+                    $environment,
+                    $fields,
+                    $year
+                );
+                $data = $this->maxRankManager->get(
+                    $environment,
+                    $altTypeSlug,
+                    $year
+                );
+            }
+            $government['ranks'] = $data;
 
-        if (count($data) > 0) {
-            unset($data['alt_type_slug'], $data['year']);
-            foreach ($data as $field => $maxValue) {
-                if (array_key_exists($field, $government)) {
-                    $rankName = GovwikiNamingStrategy::rankedFieldName($field);
-                    $fieldProperty = $fields[$field];
-                    $type = $fieldProperty['rankType'];
-                    $value = $government[$rankName];
+            if (count($data) > 0) {
+                unset($data['alt_type_slug'], $data['year']);
+                foreach ($data as $field => $maxValue) {
+                    if (array_key_exists($field, $government)) {
+                        $rankName = GovwikiNamingStrategy::rankedFieldName($field);
+                        $fieldProperty = $fields[$field];
+                        $type = $fieldProperty['rankType'];
+                        $value = $government[$rankName];
 
-                    $result = [
-                        'type' => $type,
-                    ];
+                        $result = [
+                            'type' => $type,
+                        ];
 
-                    if ($type === Format::RANK_LETTER) {
-                        // Use letter for rank type.
-                        $currentRanges = $fieldProperty['rankLetterRanges'][$altTypeSlug];
+                        if ($type === Format::RANK_LETTER) {
+                            // Use letter for rank type.
+                            $currentRanges = $fieldProperty['rankLetterRanges'][$altTypeSlug];
 
-                        $percent = (100 * $value) / $maxValue;
-                        foreach ($currentRanges as $letter => $range) {
-                            if (($range['start'] >= $percent) && ($range['end'] <= $percent )) {
-                                $result['letter'] = $letter;
-                                break;
+                            $percent = (100 * $value) / $maxValue;
+                            foreach ($currentRanges as $letter => $range) {
+                                if (($range['start'] >= $percent) && ($range['end'] <= $percent)) {
+                                    $result['letter'] = $letter;
+                                    break;
+                                }
                             }
+
+                        } else {
+                            $result['current'] = $value;
+                            $result['max'] = $maxValue;
                         }
 
-                    } else {
-                        $result['current'] = $value;
-                        $result['max'] = $maxValue;
+                        $government['ranks'][$rankName] = $result;
                     }
-
-                    $government['ranks'][$rankName] = $result;
                 }
-            }
 
+            }
         }
 
         // Get all available tabs.

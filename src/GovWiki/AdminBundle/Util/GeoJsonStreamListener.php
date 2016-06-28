@@ -349,7 +349,11 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                     LIMIT 1
                 ";
 
-                $this->sqls['government'][] = "(({$idSql}),". implode(',', $insertParts) .')';
+                if (count($insertParts) > 0) {
+                    $this->sqls['government'][] = "(({$idSql})," . implode(',', $insertParts) . ')';
+                } else {
+                    $this->sqls['government'][] = "(({$idSql}))";
+                }
 
                 /*
                  * Add sql parts for insert into CartoDB dataset.
@@ -652,13 +656,15 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
                  * Insert new formats and update environment related government
                  * table.
                  */
-                $con->exec('
+                if (count($formats) > 0) {
+                    $con->exec('
                     INSERT INTO formats
                         (name, field, show_in, data_or_formula, ranked, type, environment_id)
                     VALUES ' . implode(',', $formats));
-                $con->exec(
-                    "ALTER TABLE `{$environment}` " . implode(',', $tableFields)
-                );
+                    $con->exec(
+                        "ALTER TABLE `{$environment}` " . implode(',', $tableFields)
+                    );
+                }
                 $this->isMetadataUpdated = true;
             }
 
@@ -666,10 +672,16 @@ class GeoJsonStreamListener implements \JsonStreamingParser_Listener
              * Pull environment related government with table extended
              * properties values.
              */
-            $con->exec("
-                INSERT IGNORE INTO {$environment} (government_id, " .
-                implode(',', $this->envRelatedGovernmentFields) . ') VALUES ' .
-                implode(',', $this->sqls['government']));
+            if (count($this->envRelatedGovernmentFields) > 0) {
+                $con->exec("
+                    INSERT IGNORE INTO {$environment} (government_id, " .
+                        implode(',', $this->envRelatedGovernmentFields) . ') VALUES ' .
+                        implode(',', $this->sqls['government']));
+            } else {
+                $con->exec("
+                    INSERT IGNORE INTO {$environment} (government_id) VALUES " .
+                    implode(',', $this->sqls['government']));
+            }
         } catch (\Exception $e) {
             $con->rollBack();
             throw $e;

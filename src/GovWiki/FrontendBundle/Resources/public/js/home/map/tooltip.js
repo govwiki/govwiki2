@@ -19,7 +19,9 @@ function init(altType) {
     width: 200,
     position: 'bottom|right'
   });
-  config.tooltips[altType].setMask(window.gw.map.coloringConditions.field_mask.mask);
+  if (window.gw.map.coloringConditions.field_mask) {
+    config.tooltips[altType].setMask(window.gw.map.coloringConditions.field_mask.mask);
+  }
 }
 
 
