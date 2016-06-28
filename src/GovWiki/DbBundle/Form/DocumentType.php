@@ -47,22 +47,10 @@ class DocumentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $choices = array_combine(Issue::availableTypes(), [
-            'Audit',
-            'Other',
-            'News Report',
-            'Govt Document',
-            'CPC Research',
-            'Blog Post',
-            'Video Clip',
-            'Image',
-            'Audio Clip',
-        ]);
-
         $builder
             ->add('name')
             ->add('description', null, [ 'required' => false ])
-            ->add('type', 'choice', [ 'choices' => $choices ])
+            ->add('type', 'choice', [ 'choices' => Issue::availableTypes() ])
             ->add('link', null, [ 'required' => false ])
             ->add('file', 'file', [ 'required' => false, 'mapped' => false ])
             ->add('date', 'text', [

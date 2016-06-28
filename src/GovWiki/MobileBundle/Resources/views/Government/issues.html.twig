@@ -14,11 +14,6 @@
                         <th></th>
                         <th class="sortable">{{- knp_pagination_sortable(
                             issues,
-                            'Name',
-                            'Issue.name'
-                            ) -}}</th>
-                        <th class="sortable">{{- knp_pagination_sortable(
-                            issues,
                             'Date',
                             'Issue.date'
                             ) -}}
@@ -26,6 +21,11 @@
                             issues,
                             'Type',
                             'Issue.type'
+                            ) -}}</th>
+                        <th class="sortable">{{- knp_pagination_sortable(
+                            issues,
+                            'Name',
+                            'Issue.name'
                             ) -}}</th>
                         <th class="sortable">{{- knp_pagination_sortable(
                             issues,
@@ -45,17 +45,16 @@
                                     <img src="{{- asset('/images/download.png') -}}">
                                 </a>
                             </td>
-                            <td>{{- issue.name -}}</td>
                             <td>
                                 <div>
                                     {{- issue.date|date('Y/d/m') -}}
                                 </div>
                                 <div>
-                                    {{- issue.type -}}
+                                    {{- issue.displayType -}}
                                 </div>
                             </td>
+                            <td>{{- issue.name -}}</td>
                             <td>{{- issue.description -}}</td>
-                            <td></td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -71,9 +70,21 @@
 {%- verbatim -%}
 <script id="issue-row" type="text/x-handlebars-template">
     <tr style="background: rgba(80, 0, 0, 0.1)">
+        <td>
+            <a href="{{ link }}" target="_blank">
+                <img src="/images/download.png">
+            </a>
+        </td>
+        <td>
+            <div>
+                {{ date }}
+            </div>
+            <div>
+                {{ type }}
+            </div>
+        </td>
         <td>{{ name }}</td>
         <td>{{ description }}</td>
-        <td><a href="{{ link }}">{{ link }}</a></td>
     </tr>
 </script>
 {%- endverbatim -%}

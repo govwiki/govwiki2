@@ -28,7 +28,7 @@ class Issue extends AbstractCreatable
     const BLOG_POST = 'blog_post';
     const VIDEO_CLIP = 'video_clip';
     const IMAGE = 'image';
-    const AUDIO_CLIO = 'audio_clip';
+    const AUDIO_CLIP = 'audio_clip';
 
     const PENDING = 'pending';
     const APPROVED = 'approved';
@@ -61,7 +61,7 @@ class Issue extends AbstractCreatable
      * @var string
      *
      * @ORM\Column()
-     * @Choice(callback="availableTypes")
+     * @Choice(callback="availableTypeNames")
      */
     private $type = self::LAST_AUDIT;
 
@@ -104,11 +104,11 @@ class Issue extends AbstractCreatable
     protected $request;
 
     /**
-     * Return available document types.
+     * Return available document type names.
      *
      * @return array
      */
-    public static function availableTypes()
+    public static function availableTypeNames()
     {
         return [
             self::LAST_AUDIT,
@@ -119,7 +119,27 @@ class Issue extends AbstractCreatable
             self::BLOG_POST,
             self::VIDEO_CLIP,
             self::IMAGE,
-            self::AUDIO_CLIO,
+            self::AUDIO_CLIP,
+        ];
+    }
+
+    /**
+     * Return available document types.
+     *
+     * @return array
+     */
+    public static function  availableTypes()
+    {
+        return [
+            self::LAST_AUDIT => 'Audit',
+            self::OTHER => 'Other',
+            self::NEWS_REPORT => 'News Report',
+            self::GOVT_DOCUMENT => 'Govt Document',
+            self::CPC_RESEARCH => 'CPC Research',
+            self::BLOG_POST => 'Blog Post',
+            self::VIDEO_CLIP => 'Video Clip',
+            self::IMAGE => 'Image',
+            self::AUDIO_CLIP => 'Audio Clip',
         ];
     }
 
@@ -189,6 +209,14 @@ class Issue extends AbstractCreatable
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDisplayType()
+    {
+        return self::availableTypes()[$this->type];
     }
 
     /**

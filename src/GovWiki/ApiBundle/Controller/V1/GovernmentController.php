@@ -159,7 +159,7 @@ class GovernmentController extends AbstractGovWikiApiController
                 'description' => $issue->getDescription(),
                 'link' => $issue->getLink(),
                 'date' => $issue->getDate()->format('Y-m-d'),
-                'type' => $issue->getType(),
+                'type' => $issue->getDisplayType(),
             ]);
         }
 
