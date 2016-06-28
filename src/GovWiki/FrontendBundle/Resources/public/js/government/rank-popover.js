@@ -44,7 +44,7 @@ RankPopover.prototype.init = function init() {
   });
 
   $governmentController.on('click', function click(e) {
-        // Close other popovers
+    // Close other popovers
     if (!$(e.target).closest('.popover')[0]) {
       $('.rank').not(e.target).popover('destroy');
     }
@@ -54,6 +54,9 @@ RankPopover.prototype.init = function init() {
     var $element = $(e.target);
     var $popover = $element.hasClass('rank') ? $element : $element.closest('.rank');
 
+    if ($popover.length === 0) {
+      return true;
+    }
     e.preventDefault();
     e.stopPropagation();
 
