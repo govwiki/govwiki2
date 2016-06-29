@@ -57,21 +57,7 @@
                     <nav>
                         <ul class="nav nav-pills tab-titles clearfix">
                             {%- if (tabs is defined) and (tabs is not empty) -%}
-                                {%- set tabsCount = tabs|length -%}
-                                {%- set width = 100 / tabsCount -%}
-                                {%- for tab in tabs -%}
-                                    {%- set slug = self.tabSlug(tab.name) -%}
-
-                                    <li class="clearfix" style="max-width: {{ width }}%; width: {{ width }}%"
-                                            {{ loop.first ? 'class="active"' -}}>
-                                        <a class="tabs tab_{{ slug|lower }}"
-                                            href="#{{ slug }}" aria-controls="{{ slug }}"
-                                            role="tab" data-toggle="tab"
-                                            data-tabname="{{ tab.name }}">
-                                            {{- ('groups.group_id_'~tab.id)|trans -}}
-                                        </a>
-                                    </li>
-                                {%- endfor -%}
+                                {{- self.renderTabPils(tabs) -}}
                             {%- endif -%}
                         </ul>
                     </nav>
@@ -281,4 +267,55 @@
 
 {%- macro tabSlug(tabName) -%}
     {{ tabName | replace(' ', '_') | replace('+', 'a') }}
+{%- endmacro -%}
+
+{%- macro renderTabPils(tabs) -%}
+    {% import _self as self %}
+
+    {#{%- set tabsCount = tabs|length -%}#}
+    {#{%- set width = 100 / tabsCount -%}#}
+    {%- for tab in tabs -%}
+        {%- set slug = self.tabSlug(tab.name) -%}
+        {%- if (tab.parent is null) -%}
+
+            {%- if (tab.childrens|length > 0) -%}
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        {{- tab.name -}}&nbsp;
+                        <i class="caret"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        {{- self.renderChildTabPils(tab.childrens) -}}
+                    </ul>
+                </li>
+            {%- else -%}
+                {#<li class="clearfix" style="max-width: {{ width }}%; width: {{ width }}%"#}
+                <li class="clearfix"
+                        {{ loop.first ? 'class="active"' -}}>
+                    <a class="tabs tab_{{ slug|lower }}"
+                       href="#{{ slug }}" aria-controls="{{ slug }}"
+                       role="tab" data-toggle="tab"
+                       data-tabname="{{ tab.name }}">
+                        {{- ('groups.group_id_'~tab.id)|trans -}}
+                    </a>
+                </li>
+            {%- endif -%}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endmacro -%}
+
+{%- macro renderChildTabPils(tabs) -%}
+    {% import _self as self %}
+
+    {%- for tab in tabs -%}
+        {%- set slug = self.tabSlug(tab.name) -%}
+        <li>
+            <a class="tabs tab_{{ slug|lower }}"
+               href="#{{ slug }}" aria-controls="{{ slug }}"
+               role="tab" data-toggle="tab"
+               data-tabname="{{ tab.name }}">
+                {{- ('groups.group_id_'~tab.id)|trans -}}
+            </a>
+        </li>
+    {%- endfor -%}
 {%- endmacro -%}

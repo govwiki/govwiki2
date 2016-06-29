@@ -96,3 +96,9 @@ services:
         class: GovWiki\DbBundle\Form\Extension\FormTypeExtension
         tags:
             - { name: form.type_extension, alias: form }
+
+    govwiki_db.form.group:
+        class: GovWiki\DbBundle\Form\AbstractGroupType
+        arguments: [ @govwiki_environment.storage ]
+        tags:
+            - { name: form.type, alias: govwiki_group }

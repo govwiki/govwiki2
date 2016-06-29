@@ -41,7 +41,7 @@ class TabController extends AbstractGovWikiAdminController
         }
 
         $tab = $this->getManager()->create();
-        $form = $this->createForm(new AbstractGroupType(), $tab);
+        $form = $this->createForm('govwiki_group', $tab);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -90,7 +90,7 @@ class TabController extends AbstractGovWikiAdminController
             return $this->redirectToRoute('govwiki_admin_main_home');
         }
 
-        $form = $this->createForm(new AbstractGroupType(), $tab);
+        $form = $this->createForm('govwiki_group', $tab);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

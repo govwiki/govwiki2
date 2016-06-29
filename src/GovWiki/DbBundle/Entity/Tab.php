@@ -90,6 +90,7 @@ class Tab extends AbstractGroup
             self::FINANCIAL_STATEMENTS,
             self::SALARIES,
             self::PENSIONS,
+            self::GROUP,
         ];
     }
 

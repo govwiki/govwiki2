@@ -14,35 +14,62 @@ class TabRepository extends EntityRepository
 
     /**
      * @param integer $environment A Environment entity id.
+     * @param integer $except      A Tab entity id.
      *
      * @return Tab[]
      */
-    public function get($environment)
+    public function get($environment, $except = null)
     {
         $expr = $this->_em->getExpressionBuilder();
 
-        return $this->createQueryBuilder('Tab')
-            ->addSelect('Category, Format')
-            ->leftJoin('Tab.categories', 'Category')
-            ->leftJoin('Category.formats', 'Format')
-            ->where($expr->eq('Tab.environment', ':environment'))
-            ->setParameter('environment', $environment)
+        return $this->getQueryBuilder($environment, $except)
             ->orderBy($expr->asc('Tab.orderNumber'))
             ->addOrderBy($expr->asc('Category.orderNumber'))
             ->getQuery()
             ->getResult();
     }
 
+    /**
+     * @param integer $environment A Environment entity id.
+     * @param integer $except      A Tab entity id.
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getQueryBuilder($environment, $except = null)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        $qb = $this->createQueryBuilder('Tab')
+            ->addSelect('Category, Format, Child')
+            ->leftJoin('Tab.categories', 'Category')
+            ->leftJoin('Category.formats', 'Format')
+            ->leftJoin('Tab.childrens', 'Child')
+            ->where($expr->eq('Tab.environment', ':environment'))
+            ->setParameter('environment', $environment);
+
+        if ($except) {
+            $qb
+                ->andWhere($expr->neq('Tab.id', ':tab'))
+                ->setParameter('tab', $except);
+        }
+
+        return $qb;
+    }
+
+    /**
+     * @param integer $environment A Environment entity id.
+     * @param string  $altType     A Government entity altType.
+     *
+     * @return array
+     */
     public function getForGovernment($environment, $altType)
     {
         $expr = $this->_em->getExpressionBuilder();
 
-        return $this->createQueryBuilder('Tab')
-            ->addSelect('Category, Format')
-            ->leftJoin('Tab.categories', 'Category')
-            ->leftJoin('Category.formats', 'Format')
-            ->where($expr->andX(
-                $expr->eq('Tab.environment', ':environment'),
+        return $this->getQueryBuilder($environment)
+            ->addSelect('Parent')
+            ->leftJoin('Tab.parent', 'Parent')
+            ->andWhere($expr->andX(
                 $expr->orX(
                     "REGEXP('{$altType}', Format.showIn) = 1",
                     $expr->neq('Tab.tabType', $expr->literal(Tab::USER_DEFINED))

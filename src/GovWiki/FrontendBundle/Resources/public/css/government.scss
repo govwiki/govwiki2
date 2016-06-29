@@ -213,24 +213,14 @@
         nav {
             margin-bottom: 30px;
 
-            .nav {
-              position: relative;
-              overflow: hidden;
-            }
-
             li {
-                padding-bottom: 99999px;
-                margin-bottom: -99999px;
                 margin-left: 0;
                 margin-right: 0;
             }
 
             a {
-                font-size: 100%;
                 vertical-align: middle;
                 text-align: center;
-                padding-bottom: 99999px;
-                margin-bottom: -99999px;
             }
         }
 
