@@ -221,6 +221,13 @@ class Environment
     protected $advertising;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     */
+    protected $showGovernmentComment;
+
+    /**
      *
      */
     public function __construct()
@@ -864,5 +871,29 @@ class Environment
         }
 
         return $this;
+    }
+
+    /**
+     * Set showGovernmentComment
+     *
+     * @param boolean $showGovernmentComment Whether to show comment form.
+     *
+     * @return Environment
+     */
+    public function setShowGovernmentComment($showGovernmentComment)
+    {
+        $this->showGovernmentComment = $showGovernmentComment;
+
+        return $this;
+    }
+
+    /**
+     * Is showGovernmentComment
+     *
+     * @return boolean
+     */
+    public function isShowGovernmentComment()
+    {
+        return $this->showGovernmentComment;
     }
 }

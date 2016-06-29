@@ -388,12 +388,23 @@ From ' . $user_email;
 
         $data['environment_is_subscribable'] = $environment->getSubscribable();
 
-        $form = $this->createForm('document', null, [
+        $issueForm = $this->createForm('document', null, [
             'action' => $this->generateUrl('govwiki_api_v1_government_issue', [
                 'government' => $data['government']['id'],
             ]),
         ]);
-        $data['issueForm'] = $form->createView();
+        $data['issueForm'] = $issueForm->createView();
+
+        $commentForm = $this->createFormBuilder(
+            [ 'comment' => $data['government']['comment'] ],
+            [ 'attr' => [ 'id' => 'comment-form' ] ]
+        )
+            ->add('comment', 'ckeditor', [
+                'config_name' => 'elected_official_bio',
+                'label' => false,
+            ])
+            ->getForm();
+        $data['commentForm'] = $commentForm->createView();
 
         return $data;
     }

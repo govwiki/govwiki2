@@ -11,7 +11,7 @@ var Step31;
 var Step3;
 var Step2;
 var Step1;
-// var government = JSON.parse(window.gw.government);
+var government = JSON.parse(window.gw.government);
 var modal = $('#addIssue');
 var authorized = window.gw.authorized;
 var Handlebars = require('../vendor/handlebars.js');
@@ -20,6 +20,9 @@ var graphs = require('./graphs.js');
 var popover = new (require('./rank-popover.js'))({  // eslint-disable-line
   year: JSON.parse(window.gw.government).currentYear
 });
+
+var commentText = $('#comment-text');
+var commentEdit = $('#comment-edit');
 
 require(__dirname + '/../../../../../../../'
     + 'bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js');
@@ -298,3 +301,58 @@ function openProperTab() {
 }
 
 openProperTab();
+
+/*
+  Comment form.
+ */
+$('#comment-text-edit').click(function commentStartEdit() {
+  commentText.hide();
+  commentEdit.show();
+});
+
+$('#comment-edit-revert').click(function commentRevert() {
+  // Revert changes.
+  window.CKEDITOR.instances.form_comment.setData(document.getElementById('comment-text-value').innerHTML);
+
+  commentText.show();
+  commentEdit.hide();
+});
+
+$('#comment-edit-save').click(function commentSave(event) {
+  var loader = $('#comment').find('.loader');
+  var data = window.CKEDITOR.instances.form_comment.getData();
+  var sendObject;
+
+  event.preventDefault();
+
+  loader.show();
+  commentText.hide();
+  commentEdit.hide();
+
+  sendObject = {
+    editRequest: {
+      entityName: 'Government',
+      entityId: government.id,
+      changes: { comment: data }
+    }
+  };
+  sendObject.editRequest = JSON.stringify(sendObject.editRequest);
+
+  $.ajax({
+    url: this.getAttribute('href'),
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: sendObject
+  })
+    .done(function changed() {
+      alert('Changes saved.');
+      document.getElementById('comment-text-value').innerHTML = data;
+    })
+    .always(function always() {
+      loader.hide();
+      commentText.show();
+    });
+});
+

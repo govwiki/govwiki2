@@ -135,43 +135,59 @@ class GovernmentRepository extends EntityRepository
         $expr = $this->_em->getExpressionBuilder();
 
         // Get government.
-        try {
-            $government = $this->createQueryBuilder('Government')
-                ->select(
-                    'Government',
-                    'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
-                    'partial Issue.{id, description, link, type}'
+        $data = $this->createQueryBuilder('Government')
+            ->select(
+                'Government',
+                'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
+                'partial Issue.{id, description, link, type}',
+                'partial EditRequest.{id, changes}',
+                'partial User.{id}'
+            )
+            ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
+            ->leftJoin(
+                'Government.issues',
+                'Issue',
+                JOIN::WITH,
+                $expr->andX(
+                    $expr->eq('Issue.government', 'Government.id'),
+                    $expr->eq('YEAR(Issue.date)', $year),
+                    $expr->eq('Issue.type', $expr->literal(Issue::LAST_AUDIT))
                 )
-                ->leftJoin('Government.electedOfficials', 'ElectedOfficial')
-                ->leftJoin(
-                    'Government.issues',
-                    'Issue',
-                    JOIN::WITH,
-                    $expr->andX(
-                        $expr->eq('Issue.government', 'Government.id'),
-                        $expr->eq('YEAR(Issue.date)', $year),
-                        $expr->eq('Issue.type', $expr->literal(Issue::LAST_AUDIT))
-                    )
+            )
+            ->leftJoin(
+                'GovWikiDbBundle:EditRequest',
+                'EditRequest',
+                Join::WITH,
+                $expr->andX(
+                    $expr->eq('EditRequest.entityName', ':entity'),
+                    $expr->eq('EditRequest.entityId', 'Government.id'),
+                    $expr->eq('EditRequest.status', ':status')
                 )
-                ->where($expr->andX(
-                    $expr->eq('Government.altTypeSlug', ':altTypeSlug'),
-                    $expr->eq('Government.slug', ':slug'),
-                    $expr->eq('Government.environment', ':environment')
-                ))
-                ->setParameters([
-                    'altTypeSlug' => $altTypeSlug,
-                    'slug'        => $slug,
-                    'environment' => $environment,
-                ])
-                ->getQuery()
-                ->getOneOrNullResult(Query::HYDRATE_ARRAY);
-        } catch (NonUniqueResultException $e) {
+            )
+            ->leftJoin('EditRequest.user', 'User')
+            ->where($expr->andX(
+                $expr->eq('Government.altTypeSlug', ':altTypeSlug'),
+                $expr->eq('Government.slug', ':slug'),
+                $expr->eq('Government.environment', ':environment')
+            ))
+            ->setParameters([
+                'altTypeSlug' => $altTypeSlug,
+                'slug' => $slug,
+                'environment' => $environment,
+                'entity' => 'Government',
+                'status' => 'pending',
+            ])
+            ->orderBy($expr->desc('EditRequest.created'))
+            ->getQuery()
+            ->getArrayResult();
+
+        if ($data === null) {
             return [];
         }
 
-        if ($government === null) {
-            return [];
-        }
+        $government = $data[0];
+        unset($data[0]);
+        $lastEditRequest = $data[1];
 
         // Get government financial statements data.
         $finData = $this->_em->getRepository('GovWikiDbBundle:FinData')
@@ -206,7 +222,10 @@ class GovernmentRepository extends EntityRepository
             }
         }
 
-        return $government;
+        return [
+            'government' => $government,
+            'lastEdit' => $lastEditRequest,
+        ];
     }
 
     /**

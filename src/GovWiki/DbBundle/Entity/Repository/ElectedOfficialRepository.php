@@ -75,43 +75,39 @@ class ElectedOfficialRepository extends EntityRepository
     {
         $expr = $this->_em->getExpressionBuilder();
 
-        try {
-            return $this->createQueryBuilder('ElectedOfficial')
-                ->addSelect(
-                    'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}',
-                    'partial EditRequest.{id, changes}',
-                    'partial User.{id}'
+        return $this->createQueryBuilder('ElectedOfficial')
+            ->addSelect(
+                'partial Government.{id, altType, name, secondaryLogoPath, secondaryLogoUrl}',
+                'partial EditRequest.{id, changes}',
+                'partial User.{id}'
+            )
+            ->join('ElectedOfficial.government', 'Government')
+            ->leftJoin(
+                'GovWikiDbBundle:EditRequest',
+                'EditRequest',
+                Query\Expr\Join::WITH,
+                $expr->andX(
+                    "(REGEXP('bio', EditRequest.changes)) = 1",
+                    $expr->eq('EditRequest.entityId', 'ElectedOfficial.id'),
+                    $expr->eq('EditRequest.status', $expr->literal('pending'))
                 )
-                ->join('ElectedOfficial.government', 'Government')
-                ->leftJoin(
-                    'GovWikiDbBundle:EditRequest',
-                    'EditRequest',
-                    Query\Expr\Join::WITH,
-                    $expr->andX(
-                        "(REGEXP('bio', EditRequest.changes)) = 1",
-                        $expr->eq('EditRequest.entityId', 'ElectedOfficial.id'),
-                        $expr->eq('EditRequest.status', $expr->literal('pending'))
-                    )
-                )
-                ->leftJoin('EditRequest.user', 'User')
-                ->where($expr->andX(
-                    $expr->eq('Government.environment', ':environment'),
-                    $expr->eq('ElectedOfficial.slug', ':eoSlug'),
-                    $expr->eq('Government.slug', ':slug'),
-                    $expr->eq('Government.altTypeSlug', ':altTypeSlug')
-                ))
-                ->setParameters([
-                    'environment' => $environment,
-                    'eoSlug'      => $eoSlug,
-                    'slug'        => $slug,
-                    'altTypeSlug' => $altTypeSlug,
-                ])
-                ->orderBy($expr->desc('EditRequest.created'))
-                ->getQuery()
-                ->getArrayResult();
-        } catch (NonUniqueResultException $e) {
-            return null;
-        }
+            )
+            ->leftJoin('EditRequest.user', 'User')
+            ->where($expr->andX(
+                $expr->eq('Government.environment', ':environment'),
+                $expr->eq('ElectedOfficial.slug', ':eoSlug'),
+                $expr->eq('Government.slug', ':slug'),
+                $expr->eq('Government.altTypeSlug', ':altTypeSlug')
+            ))
+            ->setParameters([
+                'environment' => $environment,
+                'eoSlug'      => $eoSlug,
+                'slug'        => $slug,
+                'altTypeSlug' => $altTypeSlug,
+            ])
+            ->orderBy($expr->desc('EditRequest.created'))
+            ->getQuery()
+            ->getArrayResult();
     }
 
     /**

@@ -198,6 +198,13 @@ class Government
     /**
      * @var string
      *
+     * @ORM\Column(type="text")
+     */
+    private $comment = false;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(nullable=true)
      */
     private $image;
@@ -1132,5 +1139,29 @@ class Government
         $this->image = $image;
 
         return $this;
+    }
+
+    /**
+     * Set comment
+     *
+     * @param string $comment Free text discussion about government.
+     *
+     * @return Government
+     */
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+
+        return $this;
+    }
+
+    /**
+     * Get comment
+     *
+     * @return string
+     */
+    public function getComment()
+    {
+        return $this->comment;
     }
 }

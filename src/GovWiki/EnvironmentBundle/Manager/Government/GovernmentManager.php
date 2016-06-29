@@ -492,13 +492,16 @@ class GovernmentManager implements GovernmentManagerInterface
         /*
          *  Fetch government.
          */
-        $government = $this->em->getRepository('GovWikiDbBundle:Government')
+        $data = $this->em->getRepository('GovWikiDbBundle:Government')
             ->findGovernment(
                 $environment->getId(),
                 $altTypeSlug,
                 $slug,
                 $year
             );
+
+        $government = $data['government'];
+        $lastEditRequest = $data['lastEdit'];
 
         /*
          * Fetch environment related government data if at least one field
@@ -590,6 +593,12 @@ class GovernmentManager implements GovernmentManagerInterface
             ->getForGovernment($environment->getId(), $altType);
 
         $government['currentYear'] = $year;
+
+        $government['commentChanges'] = [
+            'changed' => $lastEditRequest !== null,
+            'changedBy' => $lastEditRequest['user']['id'],
+            'lastChanges' => $lastEditRequest['changes']['comment'],
+        ];
 
         return [
             'government' => $government,

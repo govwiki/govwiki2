@@ -76,6 +76,10 @@
                         </ul>
                     </nav>
 
+                    {%- set commentChanged = government.commentChanges.changed -%}
+                    {%- set currentUserChangeComment = (app.user is not null)
+                        and (government.commentChanges.changedBy == app.user.id) -%}
+
                     {# Tab content #}
                     <div class="tab-content">
                         {%- if (tabs is defined) and (tabs is not empty) -%}
@@ -85,6 +89,61 @@
                                     <h4>{{ ('groups.group_id_'~tab.id)|trans }}</h4>
                                     <br>
                                     <div class="row">
+
+                                        {%- if loop.first and environment.showGovernmentComment -%}
+                                            <div id="comment" class="col-md-12 clearfix">
+                                                <div class="loader" style="display: none"></div>
+                                                <label class="control-label">Comment</label>
+                                                <div id="comment-text">
+
+                                                    {%- if (commentChanged and currentUserChangeComment) -%}
+                                                        {%- set comment = government.commentChanges.lastChanges -%}
+                                                    {%- else -%}
+                                                        {%- set comment = government.comment -%}
+                                                    {%- endif -%}
+
+                                                    <div id="comment-text-value">
+                                                        {{- comment|raw -}}
+                                                    </div>
+                                                    {%- if app.user is not null -%}
+                                                        {%- if ((not commentChanged)
+                                                            or (commentChanged and currentUserChangeComment)) -%}
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-primary" id="comment-text-edit">
+                                                                    Edit
+                                                                </button>
+                                                            </div>
+                                                        {%- else -%}
+                                                            <p class="text-info text-center">
+                                                                Unapproved Changes Pending Approval
+                                                            </p>
+                                                        {%- endif -%}
+                                                    {%- endif -%}
+                                                </div>
+                                                <div id="comment-edit" style="display: none">
+                                                    {{- form_start(commentForm) -}}
+                                                    {{- form_widget(commentForm) -}}
+                                                    <div class="pull-right">
+                                                        <a class="btn btn-primary"
+                                                            id="comment-edit-save"
+                                                            href="{{- path(
+                                                                'govwiki_api_v1_editrequest_create'
+                                                            ) -}}">
+                                                            Save Changes
+                                                        </a>
+                                                        <button type="button" class="btn btn-default"
+                                                            id="comment-edit-revert">
+                                                            Revert
+                                                        </button>
+                                                    </div>
+                                                    {{- form_end(commentForm) -}}
+                                                </div>
+
+                                                <br>
+                                                <hr>
+                                            </div>
+                                        {%- endif -%}
+
                                         {# Statistics #}
                                         {%- if tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}
                                             {# User defined tab #}
