@@ -44,6 +44,11 @@ class Tab extends AbstractGroup
     const PENSIONS = 'pensions';
 
     /**
+     * Group over tabs into entity menu on government page.
+     */
+    const GROUP = 'group';
+
+    /**
      * @var Collection
      *
      * @ORM\OneToMany(targetEntity="Category", mappedBy="tab")
@@ -59,6 +64,20 @@ class Tab extends AbstractGroup
     private $tabType;
 
     /**
+     * @var Tab
+     *
+     * @ORM\ManyToOne(targetEntity="Tab", inversedBy="childrens")
+     */
+    private $parent;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Tab", mappedBy="parent")
+     */
+    private $childrens;
+
+    /**
      * Return available tab types.
      *
      * @return array
@@ -71,6 +90,7 @@ class Tab extends AbstractGroup
             self::FINANCIAL_STATEMENTS,
             self::SALARIES,
             self::PENSIONS,
+            self::GROUP,
         ];
     }
 
@@ -143,5 +163,68 @@ class Tab extends AbstractGroup
     public function getTabType()
     {
         return $this->tabType;
+    }
+
+    /**
+     * Set parent
+     *
+     * @param Tab $parent A Tab entity instance.
+     *
+     * @return Tab
+     */
+    public function setParent(Tab $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * Get parent
+     *
+     * @return Tab
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * Add children
+     *
+     * @param Tab $children A Tab entity instance.
+     *
+     * @return Tab
+     */
+    public function addChildren(Tab $children)
+    {
+        $this->childrens[] = $children;
+        $children->setParent($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove children
+     *
+     * @param Tab $children A Tab entity instance.
+     *
+     * @return Tab
+     */
+    public function removeChildren(Tab $children)
+    {
+        $this->childrens->removeElement($children);
+
+        return $this;
+    }
+
+    /**
+     * Get childrens
+     *
+     * @return Collection
+     */
+    public function getChildrens()
+    {
+        return $this->childrens;
     }
 }

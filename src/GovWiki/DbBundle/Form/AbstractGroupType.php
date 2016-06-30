@@ -3,7 +3,9 @@
 namespace GovWiki\DbBundle\Form;
 
 use GovWiki\DbBundle\Entity\Category;
+use GovWiki\DbBundle\Entity\Repository\TabRepository;
 use GovWiki\DbBundle\Entity\Tab;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -14,6 +16,21 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class AbstractGroupType extends AbstractType
 {
+
+    /**
+     * @var EnvironmentStorageInterface
+     */
+    private $storage;
+
+    /**
+     * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
+     *                                             instance.
+     */
+    public function __construct(EnvironmentStorageInterface $storage)
+    {
+        $this->storage = $storage;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -39,8 +56,18 @@ class AbstractGroupType extends AbstractType
                     'Financial Statements',
                     'Salaries',
                     'Pensions',
+                    'Group',
                 ]),
                 'label' => 'Type',
+            ]);
+            $builder->add('parent', 'entity', [
+                'class' => Tab::class,
+                'empty_data' => null,
+                'query_builder' => function (TabRepository $repository) use ($subject) {
+                    $environment = $this->storage->get()->getId();
+                    return $repository->getQueryBuilder($environment, $subject->getId());
+                },
+                'required' => false,
             ]);
         }
     }
@@ -60,6 +87,6 @@ class AbstractGroupType extends AbstractType
      */
     public function getName()
     {
-        return 'format';
+        return 'govwiki_group';
     }
 }

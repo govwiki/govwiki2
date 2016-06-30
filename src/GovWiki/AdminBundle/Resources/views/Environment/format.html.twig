@@ -138,6 +138,14 @@
                             'tab': tab.id
                         }) }}" class="btn btn-primary">Add new category</a>
                     </div>
+                {%- elseif (tab.tabType == constant('GROUP', tab)) -%}
+                    <h4>Child tabs</h4>
+
+                    <ul>
+                        {%- for child in tab.childrens -%}
+                            <li><strong>{{- child.name -}}</strong></li>
+                        {%- endfor -%}
+                    </ul>
                 {%- endif -%}
 
                 {# Tab control. #}
