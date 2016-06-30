@@ -272,8 +272,6 @@
 {%- macro renderTabPils(tabs) -%}
     {% import _self as self %}
 
-    {#{%- set tabsCount = tabs|length -%}#}
-    {#{%- set width = 100 / tabsCount -%}#}
     {%- for tab in tabs -%}
         {%- set slug = self.tabSlug(tab.name) -%}
         {%- if (tab.parent is null) -%}
@@ -289,7 +287,6 @@
                     </ul>
                 </li>
             {%- else -%}
-                {#<li class="clearfix" style="max-width: {{ width }}%; width: {{ width }}%"#}
                 <li class="clearfix"
                         {{ loop.first ? 'class="active"' -}}>
                     <a class="tabs tab_{{ slug|lower }}"

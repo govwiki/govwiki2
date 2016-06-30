@@ -87,19 +87,21 @@
                     <ul class="nav">
                         {%- if (tabs is defined) and (tabs is not empty) -%}
                             {%- for tab in tabs -%}
-                                {%- set slug = self.tabSlug(tab.name) -%}
+                                {%- if (tab.parent is null) -%}
+                                    {%- set slug = self.tabSlug(tab.name) -%}
 
-                                <li class="tab {{ loop.first ? 'active' -}}">
-                                    <span class="prev_tab">
-                                        <i class="glyphicon glyphicon-chevron-left"></i>
-                                    </span>
-                                    <a class="tab_{{ slug|lower }}" href="#{{ slug }}">
-                                        {{- ('groups.group_id_'~tab.id)|trans -}}
-                                    </a>
-                                    <span class="next_tab">
-                                        <i class="glyphicon glyphicon-chevron-right"></i>
-                                    </span>
-                                </li>
+                                    <li class="tab {{ loop.first ? 'active' -}}">
+                                        <span class="prev_tab">
+                                            <i class="glyphicon glyphicon-chevron-left"></i>
+                                        </span>
+                                        <a class="tab_{{ slug|lower }}" href="#{{ slug }}">
+                                            {{- ('groups.group_id_'~tab.id)|trans -}}
+                                        </a>
+                                        <span class="next_tab">
+                                            <i class="glyphicon glyphicon-chevron-right"></i>
+                                        </span>
+                                    </li>
+                                {%- endif -%}
                             {%- endfor -%}
                         {%- endif -%}
                     </ul>
@@ -109,91 +111,92 @@
                 <div>
                     {%- if (formats is defined) and (formats is not empty) -%}
                         {%- for tab in tabs -%}
+                            {%- if (tab.parent is null) -%}
+                                {%- if loop.first and environment.showGovernmentComment -%}
+                                    <div id="comment" class="col-md-12 clearfix">
+                                        <div class="loader" style="display: none"></div>
+                                        <label class="control-label">Comment</label>
+                                        <div id="comment-text">
 
-                            {%- if loop.first and environment.showGovernmentComment -%}
-                                <div id="comment" class="col-md-12 clearfix">
-                                    <div class="loader" style="display: none"></div>
-                                    <label class="control-label">Comment</label>
-                                    <div id="comment-text">
-
-                                        {%- if (commentChanged and currentUserChangeComment) -%}
-                                            {%- set comment = government.commentChanges.lastChanges -%}
-                                        {%- else -%}
-                                            {%- set comment = government.comment -%}
-                                        {%- endif -%}
-
-                                        <div id="comment-text-value">
-                                            {{- comment|raw -}}
-                                        </div>
-                                        {%- if app.user is not null -%}
-                                            {%- if ((not commentChanged)
-                                            or (commentChanged and currentUserChangeComment)) -%}
-                                                <div class="pull-right">
-                                                    <button class="btn btn-primary" id="comment-text-edit">
-                                                        Edit
-                                                    </button>
-                                                </div>
+                                            {%- if (commentChanged and currentUserChangeComment) -%}
+                                                {%- set comment = government.commentChanges.lastChanges -%}
                                             {%- else -%}
-                                                <p class="text-info text-center">
-                                                    Unapproved Changes Pending Approval
-                                                </p>
+                                                {%- set comment = government.comment -%}
                                             {%- endif -%}
-                                        {%- endif -%}
-                                    </div>
-                                    <div id="comment-edit" style="display: none">
-                                        {{- form_start(commentForm) -}}
-                                        {{- form_widget(commentForm) -}}
-                                        <div class="pull-right">
-                                            <a class="btn btn-primary"
-                                               id="comment-edit-save"
-                                               href="{{- path(
-                                               'govwiki_api_v1_editrequest_create'
-                                               ) -}}">
-                                                Save Changes
-                                            </a>
-                                            <button type="button" class="btn btn-default"
-                                                    id="comment-edit-revert">
-                                                Revert
-                                            </button>
+
+                                            <div id="comment-text-value">
+                                                {{- comment|raw -}}
+                                            </div>
+                                            {%- if app.user is not null -%}
+                                                {%- if ((not commentChanged)
+                                                or (commentChanged and currentUserChangeComment)) -%}
+                                                    <div class="pull-right">
+                                                        <button class="btn btn-primary" id="comment-text-edit">
+                                                            Edit
+                                                        </button>
+                                                    </div>
+                                                {%- else -%}
+                                                    <p class="text-info text-center">
+                                                        Unapproved Changes Pending Approval
+                                                    </p>
+                                                {%- endif -%}
+                                            {%- endif -%}
                                         </div>
-                                        {{- form_end(commentForm) -}}
+                                        <div id="comment-edit" style="display: none">
+                                            {{- form_start(commentForm) -}}
+                                            {{- form_widget(commentForm) -}}
+                                            <div class="pull-right">
+                                                <a class="btn btn-primary"
+                                                   id="comment-edit-save"
+                                                   href="{{- path(
+                                                   'govwiki_api_v1_editrequest_create'
+                                                   ) -}}">
+                                                    Save Changes
+                                                </a>
+                                                <button type="button" class="btn btn-default"
+                                                        id="comment-edit-revert">
+                                                    Revert
+                                                </button>
+                                            </div>
+                                            {{- form_end(commentForm) -}}
+                                        </div>
+
+                                        <br>
+                                        <hr>
+                                    </div>
+                                {%- endif -%}
+
+                                <div class="tab-pane {{ loop.first ? 'active' : '' -}}"
+                                     id="{{ self.tabSlug(tab.name) }}">
+
+                                    <div class="tab-title">
+                                        {{- ('groups.group_id_'~tab.id)|trans -}}
                                     </div>
 
-                                    <br>
-                                    <hr>
+                                    <div class="tab-content">
+                                        {# Statistics #}
+                                        {%- if tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}
+                                            {# User defined tab #}
+                                            {%- if tab.name != 'Overview + Elected Officials' -%}
+                                                {{- include(
+                                                    '@GovWikiMobile/Partial/Government/tab.html.twig'
+                                                ) -}}
+                                            {%- endif -%}
+                                        {%- else -%}
+                                            {# Special tab #}
+                                            {{-
+                                            include('@GovWikiMobile/Partial/Government/special_tab.html.twig')
+                                            -}}
+                                        {%- endif -%}
+
+                                        {{ include('GovWikiMobileBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
+
+                                        {{ include('GovWikiMobileBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
+
+                                        {{ include('GovWikiMobileBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
+                                    </div>
                                 </div>
                             {%- endif -%}
-
-                            <div class="tab-pane {{ loop.first ? 'active' : '' -}}"
-                                 id="{{ self.tabSlug(tab.name) }}">
-
-                                <div class="tab-title">
-                                    {{- ('groups.group_id_'~tab.id)|trans -}}
-                                </div>
-
-                                <div class="tab-content">
-                                    {# Statistics #}
-                                    {%- if tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}
-                                        {# User defined tab #}
-                                        {%- if tab.name != 'Overview + Elected Officials' -%}
-                                            {{- include(
-                                                '@GovWikiMobile/Partial/Government/tab.html.twig'
-                                            ) -}}
-                                        {%- endif -%}
-                                    {%- else -%}
-                                        {# Special tab #}
-                                        {{-
-                                        include('@GovWikiMobile/Partial/Government/special_tab.html.twig')
-                                        -}}
-                                    {%- endif -%}
-
-                                    {{ include('GovWikiMobileBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
-
-                                    {{ include('GovWikiMobileBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
-
-                                    {{ include('GovWikiMobileBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
-                                </div>
-                            </div>
                         {%- endfor -%}
                     {%- else -%}
                         <h3 class="text-center">No data. Please refresh page later</h3>
