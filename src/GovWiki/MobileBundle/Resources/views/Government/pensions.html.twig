@@ -27,10 +27,10 @@
                             <tr>
                                 <td>{{ pension.employee }}</td>
                                 <td>{{ pension.job }}</td>
-                                <td>$ {{ pension.amount|number_format(2) }}</td>
-                                <td>$ {{ pension.benefits|number_format(2) }}</td>
-                                <td>$ {{ pension.disability|number_format(2) }}</td>
-                                <td>$ {{ pension.total|number_format(2) }}</td>
+                                <td>$ {{ pension.amount|round }}</td>
+                                <td>$ {{ pension.benefits|round }}</td>
+                                <td>$ {{ pension.disability|round }}</td>
+                                <td>$ {{ pension.total|round }}</td>
                                 <td>{{ pension.yearsOfService }}</td>
                                 <td>{{ pension.yearOfRetirement }}</td>
                             </tr>

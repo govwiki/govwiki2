@@ -26,12 +26,12 @@
                         <tr>
                             <td>{{ salary.employee }}</td>
                             <td>{{ salary.job }}</td>
-                            <td>$ {{ salary.base|number_format(2) }}</td>
-                            <td>$ {{ salary.overtime|number_format(2) }}</td>
-                            <td>$ {{ salary.other|number_format(2) }}</td>
-                            <td>$ {{ salary.benefits|number_format(2) }}</td>
-                            <td>$ {{ salary.total|number_format(2) }}</td>
-                            <td>$ {{ salary.totalAndBenefits|number_format(2) }}</td>
+                            <td>$ {{ salary.base|round }}</td>
+                            <td>$ {{ salary.overtime|round }}</td>
+                            <td>$ {{ salary.other|round }}</td>
+                            <td>$ {{ salary.benefits|round }}</td>
+                            <td>$ {{ salary.total|round }}</td>
+                            <td>$ {{ salary.totalAndBenefits|round }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
