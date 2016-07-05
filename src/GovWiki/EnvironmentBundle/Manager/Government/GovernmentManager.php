@@ -859,22 +859,32 @@ class GovernmentManager implements GovernmentManagerInterface
     }
 
     /**
-     * @param Environment $environment A Environment entity instance.
-     * @param Format      $format      A Format entity instance.
+     * @param Environment  $environment A Environment entity instance.
+     * @param Format|array $format      A Format entity instance.
      *
      * @return void
      *
      * @throws \Doctrine\DBAL\DBALException Error while update.
      */
-    public function calculateRanks(Environment $environment, Format $format)
+    public function calculateRanks(Environment $environment, $format)
     {
-        $fieldName = $format->getField();
+        if (is_array($format)) {
+            $fieldName = $format['field'];
+            $showIn = $format['showIn'];
+        } elseif ($format instanceof Format) {
+            $fieldName = $format->getField();
+            $showIn = $format->getShowIn();
+        } else {
+            $error = 'Invalid $format argument. Expect array or instance of Format';
+            throw new \InvalidArgumentException($error);
+        }
+
         $tableName = GovwikiNamingStrategy::environmentRelatedTableName($environment);
         $rankName = GovwikiNamingStrategy::rankedFieldName($fieldName);
 
         $altTypeSlugs = array_map(function ($slug) {
             return "'{$slug}'";
-        }, $format->getShowIn());
+        }, $showIn);
         $slugs = implode(',', $altTypeSlugs);
 
         $this->em->getConnection()->exec("

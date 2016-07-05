@@ -256,12 +256,12 @@ interface GovernmentManagerInterface
     public function getUsedAltTypes(Environment $environment, $slugged = false);
 
     /**
-     * @param Environment $environment A Environment entity instance.
-     * @param Format      $format      A Format entity instance.
+     * @param Environment  $environment A Environment entity instance.
+     * @param Format|array $format      A Format entity instance.
      *
      * @return void
      *
      * @throws \Doctrine\DBAL\DBALException Error while update.
      */
-    public function calculateRanks(Environment $environment, Format $format);
+    public function calculateRanks(Environment $environment, $format);
 }

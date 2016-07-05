@@ -175,14 +175,41 @@ class GovernmentDataController extends AbstractGovWikiAdminController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Get new data.
+            $newData = $form->getData();
+
             // Update government in our database.
             $this->getGovernmentManager()
                 ->updateGovernmentData(
                     $environment,
                     $government,
                     $year,
-                    $form->getData()
+                    $newData
                 );
+
+            // Get list of ranked field.
+            $rankedFilterFn = function (array $format) {
+                return $format['ranked'];
+            };
+            $rankedFields = array_filter($formats, $rankedFilterFn);
+
+            // Get only those that are changed.
+            $changedRankedFields = [];
+            foreach ($rankedFields as $name => $field) {
+                $oldValue = $data[$name];
+                $newValue = $newData[$name];
+                settype($oldValue, $field['type']);
+                settype($newValue, $field['type']);
+
+                if ($oldValue !== $newValue) {
+                    $changedRankedFields[] = $field;
+                }
+            }
+
+            // Recalculate ranks for changed ranked fields.
+            foreach ($changedRankedFields as $field) {
+                $this->getGovernmentManager()->calculateRanks($environment, $field);
+            }
 
             // Remove max ranks table, max ranks values will be recalculated
             // on demand.
@@ -244,6 +271,7 @@ class GovernmentDataController extends AbstractGovWikiAdminController
             }
         }
 
+        $formats = array_values($formats);
         return [
             'form' => $form->createView(),
             'formats' => Functions::groupBy($formats, [ 'tab_name', 'field' ]),
