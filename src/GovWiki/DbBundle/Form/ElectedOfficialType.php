@@ -37,11 +37,6 @@ class ElectedOfficialType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $elected = $builder->getData();
-
-        $hasChanges = ($elected instanceof ElectedOfficial)
-            && (! empty($elected->getNewBio()));
-
         $builder
             ->add('fullName')
             ->add('displayOrder')
@@ -52,16 +47,7 @@ class ElectedOfficialType extends AbstractType
             ->add('bioUrl', 'url', [ 'required' => false ])
             ->add('termExpires', null, [ 'required' => false ])
             ->add('government', 'text')
-            ->add('bio', 'textarea', [
-                'disabled' => $hasChanges,
-                'label' => ($hasChanges) ? 'Bio (has changes)' :'Bio'
-            ]);
-
-        if ($hasChanges) {
-            $builder->add('newBio', 'textarea', [
-                'disabled' => true,
-            ]);
-        }
+            ->add('bio', 'ckeditor', [ 'config_name' => 'elected_official_bio' ]);
 
         $builder->get('government')
             ->resetViewTransformers()
