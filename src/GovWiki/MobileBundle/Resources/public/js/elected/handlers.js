@@ -2,7 +2,6 @@ var bioChangeStartBtn;
 
 var authorized = window.gw.authorized;
 var $commentWindow = $('#conversation');
-var $editable = $('.editable');
 var $pane = $('.tab-content');
 var tableType = window.sessionStorage.getItem('tableType');
 var Handlebars = require('../vendor/handlebars.js');
@@ -56,6 +55,7 @@ function handlerSortAndPagination(selector) {
       success: function success(data) {
         $loader.hide();
         $mainContent.html(data);
+        initEditable();
       }
     });
   });
@@ -63,9 +63,6 @@ function handlerSortAndPagination(selector) {
 
 
 $('[data-toggle="tooltip"]').tooltip();
-
-$editable.editable({ stylesheets: false, type: 'textarea', showbuttons: 'bottom', display: true, emptytext: ' ' });
-//$editable.off('click');
 
 $pane.on('click', 'table .glyphicon-pencil', function click(e) {
   e.preventDefault();
@@ -146,46 +143,57 @@ $pane.on('click', '.vote-public-comment', function click() {
   $('.loader', $commentWindow).show();
 });
 
-/**
- * Save event from xEditable, after click on check icon
- */
-$pane.on('save', 'a', function save(e, params) {
-  var sendObject;
-  var entityType = $(this).closest('table').attr('data-entity-type');
-  var id = $(this).closest('tr').attr('data-id');
-  var field = Object.keys($(this).closest('td')[0].dataset)[0];
+function initEditable() {
+  var $editable = $('.editable');
 
-  if (field === 'vote' || field === 'didElectedOfficialProposeThis') {
-        // Current field owned by ElectedOfficialVote
-    entityType = 'ElectedOfficialVote';
-    id = $(e.currentTarget).parent().find('span')[0].dataset.id;
-  }
+  $editable.editable({ stylesheets: false, type: 'textarea', showbuttons: 'bottom', display: true, emptytext: ' ' });
+  $editable.off('click');
 
-  sendObject = {
-    editRequest: {
-      entityName: entityType,
-      entityId: id,
-      changes: {}
+  /**
+   * Save event from xEditable, after click on check icon
+   */
+  $editable.on('save', function save(e, params) {
+    var sendObject;
+    var entityType = $(this).closest('table').attr('data-entity-type');
+    var id = $(this).closest('tr').attr('data-id');
+    var field = Object.keys($(this).closest('td')[0].dataset)[0];
+
+    console.log('adasd');
+
+    if (field === 'vote' || field === 'didElectedOfficialProposeThis') {
+      // Current field owned by ElectedOfficialVote
+      entityType = 'ElectedOfficialVote';
+      id = $(e.currentTarget).parent().find('span')[0].dataset.id;
     }
-  };
 
-  sendObject.editRequest.changes[field] = params.newValue;
-  sendObject.editRequest = JSON.stringify(sendObject.editRequest);
-
-  $.ajax(window.gw.urls.edit_request, {
-    method: 'POST',
-    data: sendObject,
-    dataType: 'text/json',
-    success: function success(response) {
-      console.log(response.responseText);
-    },
-    error: function error(err) {
-      if (err.status === 401) {
-        $('#modal-window').modal('show'); // Open login modal window
+    sendObject = {
+      editRequest: {
+        entityName: entityType,
+        entityId: id,
+        changes: {}
       }
-    }
+    };
+
+    sendObject.editRequest.changes[field] = params.newValue;
+    sendObject.editRequest = JSON.stringify(sendObject.editRequest);
+
+    $.ajax(window.gw.urls.edit_request, {
+      method: 'POST',
+      data: sendObject,
+      dataType: 'text/json',
+      success: function success(response) {
+        console.log(response.responseText);
+      },
+      error: function error(err) {
+        if (err.status === 401) {
+          $('#modal-window').modal('show'); // Open login modal window
+        }
+      }
+    });
   });
-});
+}
+
+initEditable();
 
 $pane.on('click', '.tab-pane .add_action', function click(e) {
   var tabPane;

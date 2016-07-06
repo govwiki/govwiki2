@@ -24,6 +24,7 @@ var popover = new (require('./rank-popover.js'))({  // eslint-disable-line
 
 var commentText = $('#comment-text');
 var commentEdit = $('#comment-edit');
+var issues = $('#Issues');
 
 require(__dirname + '/../../../../../../../'
 + 'bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js');
@@ -430,3 +431,66 @@ $('#comment-edit-save').click(function commentSave(event) {
       commentText.show();
     });
 });
+
+issues.on('click', '.edit', function click(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (e.currentTarget.dataset.noEditable !== undefined) return;
+  if (!authorized) {
+    $('#modal-window').modal('show'); // Open login modal window
+    window.sessionStorage.setItem('tableType', 'Issues');
+    window.sessionStorage.setItem('dataId', $(e.currentTarget).closest('tr').data('id'));
+    window.sessionStorage.setItem('field', Number(($(e.currentTarget).closest('td'))[0].cellIndex) + 1);
+  } else {
+    $(e.currentTarget).siblings('.editable').editable('toggle');
+  }
+});
+
+function initEditable() {
+  var $editable = $('.editable');
+
+  $editable.editable({
+    stylesheets: false,
+    type: 'textarea',
+    showbuttons: 'bottom',
+    display: true,
+    emptytext: ' '
+  });
+  $editable.off('click');
+
+  /**
+   * Save event from xEditable, after click on check icon
+   */
+  $editable.on('save', function(resp, data) { // eslint-disable-line
+    var sendObject;
+    var id = $(this).closest('tr').data('id');
+    var field = this.dataset.field;
+
+    sendObject = {
+      editRequest: {
+        entityName: 'Issue',
+        entityId: id,
+        changes: {}
+      }
+    };
+
+    sendObject.editRequest.changes[field] = data.newValue;
+    sendObject.editRequest = JSON.stringify(sendObject.editRequest);
+
+    $.ajax(window.gw.urls.edit_request, {
+      method: 'POST',
+      data: sendObject,
+      dataType: 'text/json',
+      success: function success(response) {
+        console.log(response.responseText);
+      },
+      error: function error(err) {
+        if (err.status === 401) {
+          $('#modal-window').modal('show'); // Open login modal window
+        }
+      }
+    });
+  });
+}
+
+initEditable();

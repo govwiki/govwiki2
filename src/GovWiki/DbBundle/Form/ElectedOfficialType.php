@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
-use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;

@@ -11,6 +11,18 @@
     }
 
     @import "partials/typeahead/typeahead_government";
+    .editable {
+      text-decoration: none !important;
+      color: #000 !important;
+      border-bottom: none !important;
+    }
+
+    .edit {
+      color: #d3d3d3;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
 
     nav a {
         display: inline-block;

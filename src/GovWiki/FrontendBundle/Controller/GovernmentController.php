@@ -26,7 +26,7 @@ class GovernmentController extends AbstractGovWikiController
 
     const MAX_SALARIES_PER_PAGE = 25;
     const MAX_PENSIONS_PER_PAGE = 25;
-    const MAX_DOCUMENTS_PER_PAGE = 25;
+    const MAX_DOCUMENTS_PER_PAGE = 5;
 
     /**
      * @Route("/{government}/salaries", requirements={

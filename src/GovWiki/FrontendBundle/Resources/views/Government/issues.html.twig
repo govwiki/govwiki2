@@ -36,7 +36,7 @@
                     <tr {% if (issue.request is not null) and
                         (issue.request.status == constant('STATE_PENDING', issue.request)) -%}
                         style="background: rgba(80, 0, 0, 0.1)"
-                            {%- endif -%}>
+                            {%- endif -%} data-id="{{ issue.id }}">
                         <td>
                             <a href="{{- issue.link -}}" target="_blank">
                                 <img src="{{- asset('/images/download.png') -}}">
@@ -44,14 +44,43 @@
                         </td>
                         <td>
                             <div>
-                                {{- issue.date|date('Y/d/m') -}}
+                                <a data-field="date" href="javascript:void(0);" data-type="date" data-pk="1"  data-format="mm/dd/yyyy"
+                                   data-placeholder="Please edit" data-title="Please edit"
+                                   class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                   title="">
+                                    {{- issue.date|date('Y/d/m') -}}
+                                </a>
+                                <span class="glyphicon glyphicon-pencil edit"></span>
                             </div>
                             <div>
-                                {{- issue.displayType -}}
+                                <a data-field="type" href="javascript:void(0);" data-type="select" data-source="{'audit': 'Audit', 'other': 'Other', 'news_report': 'News Report', 'govt_document': 'Govt Document', 'cpc_research': 'CPC Research', 'blog_post': 'Blog Post', 'video_clip': 'Video Clip', 'image': 'Image', 'audio_clip': 'Audio Clip'}"
+                                   data-placeholder="Please edit" data-title="Please edit"
+                                   class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                   data-value="{{- issue.type -}}"
+                                   title="">
+                                    {{- issue.displayType -}}
+                                </a>
+                                <span class="glyphicon glyphicon-pencil edit"></span>
                             </div>
                         </td>
-                        <td>{{- issue.name -}}</td>
-                        <td>{{- issue.description -}}</td>
+                        <td>
+                            <a data-field="name" href="javascript:void(0);" data-type="textarea" data-pk="1"
+                               data-placeholder="Please edit" data-title="Please edit"
+                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                               title="">
+                                {{- issue.name -}}
+                            </a>
+                            <span class="glyphicon glyphicon-pencil edit"></span>
+                        </td>
+                        <td>
+                            <a data-field="description" href="javascript:void(0);" data-type="textarea" data-pk="1"
+                               data-placeholder="Please edit" data-title="Please edit"
+                               class="editable editable-pre-wrapped editable-click" data-original-title=""
+                               title="">
+                                {{- issue.description -}}
+                            </a>
+                            <span class="glyphicon glyphicon-pencil edit"></span>
+                        </td>
                     </tr>
                 {%- endfor -%}
                 <tr>
