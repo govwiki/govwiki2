@@ -8,14 +8,14 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th class="sortable">{{knp_pagination_sortable(salaries, 'Employee', 'Salary.employee') }}</th>
-                            <th class="sortable">{{knp_pagination_sortable(salaries, 'Job title', 'Salary.job') }}</th>
-                            <th class="sortable" style="min-width: 95px">{{knp_pagination_sortable(salaries, 'Base pay', 'Salary.base') }}</th>
-                            <th class="sortable" style="min-width: 95px">{{knp_pagination_sortable(salaries, 'Overtime pay', 'Salary.overtime') }}</th>
-                            <th class="sortable" style="min-width: 95px">{{knp_pagination_sortable(salaries, 'Other pay', 'Salary.other') }}</th>
-                            <th class="sortable" style="min-width: 95px">{{knp_pagination_sortable(salaries, 'Benefits pay', 'Salary.benefits') }}</th>
-                            <th class="sortable" style="min-width: 95px">{{knp_pagination_sortable(salaries, 'Total pay', 'Salary.total') }}</th>
-                            <th class="sortable" style="min-width: 95px">{{knp_pagination_sortable(salaries, 'Total and benefits pay', 'Salary.totalAndBenefits') }}</th>
+                            <th class="sortable text-center" style="vertical-align: middle">{{knp_pagination_sortable(salaries, 'Employee', 'Salary.employee') }}</th>
+                            <th class="sortable text-center" style="vertical-align: middle">{{knp_pagination_sortable(salaries, 'Job title', 'Salary.job') }}</th>
+                            <th class="sortable text-center" style="min-width: 95px;vertical-align: middle">{{knp_pagination_sortable(salaries, 'Base pay', 'Salary.base') }}</th>
+                            <th class="sortable text-center" style="min-width: 95px;vertical-align: middle">{{knp_pagination_sortable(salaries, 'Overtime pay', 'Salary.overtime') }}</th>
+                            <th class="sortable text-center" style="min-width: 95px;vertical-align: middle">{{knp_pagination_sortable(salaries, 'Other pay', 'Salary.other') }}</th>
+                            <th class="sortable text-center" style="min-width: 95px;vertical-align: middle">{{knp_pagination_sortable(salaries, 'Benefits pay', 'Salary.benefits') }}</th>
+                            <th class="sortable text-center" style="min-width: 95px;vertical-align: middle">{{knp_pagination_sortable(salaries, 'Total pay', 'Salary.total') }}</th>
+                            <th class="sortable text-center" style="min-width: 95px;vertical-align: middle">{{knp_pagination_sortable(salaries, 'Total and benefits pay', 'Salary.totalAndBenefits') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -23,12 +23,12 @@
                         <tr>
                             <td>{{ salary.employee }}</td>
                             <td>{{ salary.job }}</td>
-                            <td>$ {{ salary.base|round }}</td>
-                            <td>$ {{ salary.overtime|round }}</td>
-                            <td>$ {{ salary.other|round }}</td>
-                            <td>$ {{ salary.benefits|round }}</td>
-                            <td>$ {{ salary.total|round }}</td>
-                            <td>$ {{ salary.totalAndBenefits|round }}</td>
+                            <td class="text-right">$ {{ salary.base|number_format }}</td>
+                            <td class="text-right">$ {{ salary.overtime|number_format }}</td>
+                            <td class="text-right">$ {{ salary.other|number_format }}</td>
+                            <td class="text-right">$ {{ salary.benefits|number_format }}</td>
+                            <td class="text-right">$ {{ salary.total|number_format }}</td>
+                            <td class="text-right">$ {{ salary.totalAndBenefits|number_format }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

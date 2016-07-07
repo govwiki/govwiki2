@@ -8,14 +8,14 @@
                 <table class="table table-responsive table-striped">
                     <thead>
                         <tr>
-                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Employee', 'Pension.employee') }}</th>
-                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Job title', 'Pension.job') }}</th>
-                            <th class="sortable" style="min-width: 95px">{{knp_pagination_sortable(pensions, 'Amount', 'Pension.amount') }}</th>
-                            <th class="sortable" style="min-width: 95px">{{knp_pagination_sortable(pensions, 'Benefits', 'Pension.benefits') }}</th>
-                            <th class="sortable" style="min-width: 95px">{{knp_pagination_sortable(pensions, 'Disability', 'Pension.disability') }}</th>
-                            <th class="sortable" style="min-width: 95px">{{knp_pagination_sortable(pensions, 'Total', 'Pension.total') }}</th>
-                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Years of service', 'Pension.yearsOfService') }}</th>
-                            <th class="sortable">{{knp_pagination_sortable(pensions, 'Year of retirement', 'Pension.yearOfRetirement') }}</th>
+                            <th class="sortable text-center" style="vertical-align: middle">{{knp_pagination_sortable(pensions, 'Employee', 'Pension.employee') }}</th>
+                            <th class="sortable text-center" style="vertical-align: middle">{{knp_pagination_sortable(pensions, 'Job title', 'Pension.job') }}</th>
+                            <th class="sortable text-center" style="min-width: 95px;vertical-align: middle">{{knp_pagination_sortable(pensions, 'Amount', 'Pension.amount') }}</th>
+                            <th class="sortable text-center" style="min-width: 95px;vertical-align: middle">{{knp_pagination_sortable(pensions, 'Benefits', 'Pension.benefits') }}</th>
+                            <th class="sortable text-center" style="min-width: 95px;vertical-align: middle">{{knp_pagination_sortable(pensions, 'Disability', 'Pension.disability') }}</th>
+                            <th class="sortable text-center" style="min-width: 95px;vertical-align: middle">{{knp_pagination_sortable(pensions, 'Total', 'Pension.total') }}</th>
+                            <th class="sortable text-center" style="vertical-align: middle">{{knp_pagination_sortable(pensions, 'Years of service', 'Pension.yearsOfService') }}</th>
+                            <th class="sortable text-center" style="vertical-align: middle">{{knp_pagination_sortable(pensions, 'Year of retirement', 'Pension.yearOfRetirement') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -23,12 +23,12 @@
                             <tr>
                                 <td>{{ pension.employee }}</td>
                                 <td>{{ pension.job }}</td>
-                                <td>$ {{ pension.amount|round }}</td>
-                                <td>$ {{ pension.benefits|round }}</td>
-                                <td>$ {{ pension.disability|round }}</td>
-                                <td>$ {{ pension.total|round }}</td>
-                                <td>{{ pension.yearsOfService }}</td>
-                                <td>{{ pension.yearOfRetirement }}</td>
+                                <td class="text-right">$ {{ pension.amount|number_format }}</td>
+                                <td class="text-right">$ {{ pension.benefits|number_format }}</td>
+                                <td class="text-right">$ {{ pension.disability|number_format }}</td>
+                                <td class="text-right">$ {{ pension.total|number_format }}</td>
+                                <td class="text-right">{{ pension.yearsOfService }}</td>
+                                <td class="text-right">{{ pension.yearOfRetirement }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
