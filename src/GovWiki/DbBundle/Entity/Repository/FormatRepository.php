@@ -27,7 +27,8 @@ class FormatRepository extends EntityRepository
             $qb->select(
                 'Format.helpText, Format.dataOrFormula, Format.name',
                 'Format.mask, Format.field, Format.ranked, Format.showIn',
-                'Format.type, Format.rankType, Format.rankLetterRanges'
+                'Format.type, Format.rankType, Format.rankLetterRanges',
+                'Format.source'
             );
         } else {
             $qb->select('Format.id, Format.name');

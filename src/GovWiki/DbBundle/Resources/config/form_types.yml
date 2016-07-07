@@ -16,6 +16,7 @@ services:
 
     govwiki_db.form.type.format:
         class: GovWiki\DbBundle\Form\FormatType
+        arguments: [ @doctrine.orm.default_entity_manager ]
         tags:
             - { name: form.type, alias: format }
 

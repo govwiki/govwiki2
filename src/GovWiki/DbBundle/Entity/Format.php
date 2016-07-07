@@ -27,6 +27,9 @@ class Format
      */
     const RANK_LETTER = 'letter';
 
+    const SOURCE_USER_DEFINED = 'user_defined';
+    const SOURCE_GOVERNMENT = 'government';
+
     /**
      * @var integer
      *
@@ -152,6 +155,13 @@ class Format
      * @ORM\Column(type="array")
      */
     private $rankLetterRanges = [];
+
+    /**
+     * @var string
+     *
+     * @ORM\Column
+     */
+    private $source = self::SOURCE_USER_DEFINED;
 
     /**
      * @return array
@@ -481,5 +491,29 @@ class Format
 
         // Put bad grade if value don't found.
         return 'f';
+    }
+
+    /**
+     * Set source
+     *
+     * @param string $source Field source.
+     *
+     * @return Format
+     */
+    public function setSource($source)
+    {
+        $this->source = $source;
+
+        return $this;
+    }
+
+    /**
+     * Get source
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return $this->source;
     }
 }

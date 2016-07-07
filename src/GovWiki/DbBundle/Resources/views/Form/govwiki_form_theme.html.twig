@@ -1,3 +1,4 @@
+{% use 'form_div_layout.html.twig' with checkbox_widget as old_checkbox_widget %}
 {% use 'bootstrap_3_layout.html.twig' %}
 
 {% block form_label %}
@@ -34,6 +35,12 @@
         {{- form_errors(form) -}}
     </div>
 {%- endblock form_row %}
+
+{% block checkbox_widget -%}
+    <div class="checkbox" {% if hidden %}style="display: none"{% endif %}>
+        {{- form_label(form, null, { widget: block('old_checkbox_widget') }) -}}
+    </div>
+{%- endblock checkbox_widget %}
 
 {% macro form_parent_name(form, prefix) %}
     {% spaceless %}

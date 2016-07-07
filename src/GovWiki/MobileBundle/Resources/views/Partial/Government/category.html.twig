@@ -14,7 +14,7 @@
                     {%- set helpText = helpTextKey|trans -%}
 
                     {{- ('format.'~field.field)|trans -}}
-                    {%- if helpTextKey != helpTextKey -%}
+                    {%- if helpText != helpTextKey -%}
                         <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}"
                              data-toggle="tooltip"
                              data-placement="bottom"

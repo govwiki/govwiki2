@@ -40,12 +40,11 @@
                                         <tr>
                                             {# Field name #}
                                             <td>
-                                                {{- ('format.'~ field.field)|trans  -}}
                                                 {%- set helpTextKey = 'format.'~field.field~'.help_text' -%}
                                                 {%- set helpText = helpTextKey|trans -%}
 
                                                 {{- ('format.'~field.field)|trans -}}
-                                                {%- if helpTextKey != helpTextKey -%}
+                                                {%- if helpText != helpTextKey -%}
                                                     <img data-triger="click" src="{{-
                                                         asset('bundles/govwikifrontend/img/help.png')
                                                         -}}"
@@ -109,7 +108,7 @@
 
                 {# Tab content #}
                 <div>
-                    {%- if (formats is defined) and (formats is not empty) -%}
+                    {%- if (tab is defined) and (tab is not empty) -%}
                         {%- for tab in tabs -%}
                             {%- if (tab.parent is null) -%}
                                 {%- if loop.first and environment.showGovernmentComment -%}

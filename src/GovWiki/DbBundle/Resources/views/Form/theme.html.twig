@@ -164,7 +164,13 @@
     {%- set format = form.parent.parent.vars.value -%}
     {%- set unslugName = name|replace('_', ' ') -%}
 
-    <div id="{{- name -}}" class="col-md-{{ 12 / format.showIn|length }}">
+    {%- set width = 12 -%}
+    {%- set count = format.showIn|length -%}
+    {%- if count > 0 -%}
+        {%- set width = width / count -%}
+    {%- endif -%}
+
+    <div id="{{- name -}}" class="col-md-{{- width -}}">
         {{- form_label(form) -}}
         {%- if form.parent is empty -%}
             {{ form_errors(form) }}

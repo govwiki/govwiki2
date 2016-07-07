@@ -7,6 +7,7 @@ $(function() {
   var ranked = $('#format_ranked');
   var rankType = $('#format_rankType');
   var rankLetterRanges = $('#format_rankLetterRanges');
+  var source = $('#format_source');
 
   $nameFormInput.change(function() {
     if (! $fieldNameFormInput.val()) {
@@ -24,14 +25,47 @@ $(function() {
     }
   });
 
+  source.change(function() {
+    if (this.value === 'user_defined') {
+      $('#format_fieldName').parent().show();
+      $('#format_fieldChoice').parent().hide();
+      $('#format_helpText').parent().show();
+      $('#format_mask').parent().show();
+
+      ranked.parent().parent().show();
+      type.parent().show();
+      rankType.parent().show();
+
+      if (ranked[0].checked) {
+        rankType.parent().show();
+        if (rankType[0].value === 'range') {
+          rankLetterRanges.parent().hide();
+        } else {
+          generateRanges();
+          rankLetterRanges.parent().show();
+        }
+      }
+    } else {
+      $('#format_fieldName').parent().hide();
+      $('#format_fieldChoice').parent().show();
+      $('#format_helpText').parent().hide();
+      $('#format_mask').parent().hide();
+
+      ranked.parent().parent().hide();
+      type.parent().hide();
+      rankType.parent().hide();
+      rankLetterRanges.parent().hide();
+    }
+  });
+
   // React on format type changed.
   type.change(function() {
     if (this.value === 'string') {
-      ranked.parent().hide();
+      ranked.parent().parent().hide();
       rankType.parent().hide();
       rankLetterRanges.parent().hide();
     } else {
-      ranked.parent().show();
+      ranked.parent().parent().show();
       if (ranked[0].checked) {
         rankType.parent().show();
         if (rankType[0].value === 'range') {

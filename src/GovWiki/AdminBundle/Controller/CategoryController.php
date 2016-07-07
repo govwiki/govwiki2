@@ -2,11 +2,9 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
-use CartoDbBundle\Service\CartoDbApi;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Category;
 use GovWiki\DbBundle\Entity\Translation;
-use GovWiki\DbBundle\Form\AbstractGroupType;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 
@@ -49,7 +47,7 @@ class CategoryController extends AbstractGovWikiAdminController
             ->setTab($tabReference)
             ->setEnvironment($environment);
 
-        $form = $this->createForm(new AbstractGroupType(), $category);
+        $form = $this->createForm('govwiki_group', $category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -127,7 +125,7 @@ class CategoryController extends AbstractGovWikiAdminController
         }
 
         if ($category->getTab()->getId() === (int)$tab) {
-            $form = $this->createForm(new AbstractGroupType(), $category);
+            $form = $this->createForm('govwiki_group', $category);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {

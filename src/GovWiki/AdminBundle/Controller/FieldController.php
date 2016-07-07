@@ -109,45 +109,47 @@ class FieldController extends AbstractGovWikiAdminController
             $this->getManager()->update($format);
             $manager = $this->getGovernmentManager();
 
-            if ($format->isRanked()) {
-                if ($oldIsRanked) {
-                    $manager->changeColumn(
+            if ($format->getSource() === Format::SOURCE_USER_DEFINED) {
+                if ($format->isRanked()) {
+                    if ($oldIsRanked) {
+                        $manager->changeColumn(
+                            $environment,
+                            GovwikiNamingStrategy::rankedFieldName($oldFieldName),
+                            GovwikiNamingStrategy::rankedFieldName($format->getField()),
+                            'integer'
+                        );
+                    } else {
+                        $manager->addColumn(
+                            $environment,
+                            GovwikiNamingStrategy::rankedFieldName($format->getField()),
+                            'integer'
+                        );
+                    }
+
+
+                    // Recalculate rank.
+                    $manager->calculateRanks($environment, $format);
+                    // Clear max ranks.
+                    $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
+                        ->removeTable($environment);
+                } elseif ($oldIsRanked) {
+                    $manager->deleteColumn(
                         $environment,
-                        GovwikiNamingStrategy::rankedFieldName($oldFieldName),
-                        GovwikiNamingStrategy::rankedFieldName($format->getField()),
-                        'integer'
+                        GovwikiNamingStrategy::rankedFieldName($format->getField())
                     );
-                } else {
-                    $manager->addColumn(
-                        $environment,
-                        GovwikiNamingStrategy::rankedFieldName($format->getField()),
-                        'integer'
-                    );
+
+                    // Clear max ranks.
+                    $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
+                        ->removeTable($environment);
                 }
 
-
-                // Recalculate rank.
-                $manager->calculateRanks($environment, $format);
-                // Clear max ranks.
-                $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
-                    ->removeTable($environment);
-            } elseif ($oldIsRanked) {
-                $manager->deleteColumn(
+                $manager->changeColumn(
                     $environment,
-                    GovwikiNamingStrategy::rankedFieldName($format->getField())
+                    $oldFieldName,
+                    $format->getField(),
+                    $format->getType()
                 );
-
-                // Clear max ranks.
-                $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
-                    ->removeTable($environment);
             }
-
-            $manager->changeColumn(
-                $environment,
-                $oldFieldName,
-                $format->getField(),
-                $format->getType()
-            );
 
             $this->changeFormatTranslation('edit', $format->getField(), $format->getName());
             $this->changeFormatTranslation('edit', $format->getField() . '.help_text', $format->getHelpText());

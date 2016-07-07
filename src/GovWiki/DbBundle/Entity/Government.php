@@ -250,6 +250,13 @@ class Government
     private $issues;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(nullable=true)
+     */
+    private $webSiteAddress;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -1163,5 +1170,29 @@ class Government
     public function getComment()
     {
         return $this->comment;
+    }
+
+    /**
+     * Set webSiteAddress
+     *
+     * @param string $webSiteAddress
+     *
+     * @return Government
+     */
+    public function setWebSiteAddress($webSiteAddress)
+    {
+        $this->webSiteAddress = $webSiteAddress;
+
+        return $this;
+    }
+
+    /**
+     * Get webSiteAddress
+     *
+     * @return string 
+     */
+    public function getWebSiteAddress()
+    {
+        return $this->webSiteAddress;
     }
 }

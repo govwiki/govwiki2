@@ -509,6 +509,10 @@ class GovernmentManager implements GovernmentManagerInterface
          */
         $dataFields = [];
         foreach ($fields as $field) {
+            if ($field['source'] === Format::SOURCE_GOVERNMENT) {
+                continue;
+            }
+
             $dataFields[$field['field']] = $field['type'];
             if ($field['ranked'] === true) {
                 $name = GovwikiNamingStrategy::rankedFieldName($field['field']);
