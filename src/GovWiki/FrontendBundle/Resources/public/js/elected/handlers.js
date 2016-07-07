@@ -589,6 +589,7 @@ $('#change-bio-save').click(function save(event) {
   var bioEditor = $('#elected-bio-edit-block');
   var data = window.CKEDITOR.instances.form_bio.getData();
   var bioChangeGroup = $('#change-bio-group');
+  var bioView = $('#elected-bio-view');
   var sendObject;
 
   event.preventDefault();
@@ -618,10 +619,24 @@ $('#change-bio-save').click(function save(event) {
       alert('Changes saved.');
       // Replace default values.
       $('#elected-bio-view').html(data);
+      bioEditor.show();
+      bioChangeGroup.show();
+    })
+    .error(function error(xhr) {
+      var message = JSON.parse(xhr.responseText);
+
+      if (message.errors[0] === 'Already edited.') {
+        bioView.show();
+        bioChangeStartBtn.remove();
+        bioView.append(
+          '<p class="text-info text-center">'
+          + 'Unapproved Changes Pending Approval'
+          + '</p>'
+        );
+      }
+      alert(message.errors[0]);
     })
     .always(function always() {
       loader.hide();
-      bioEditor.show();
-      bioChangeGroup.show();
     })
 });

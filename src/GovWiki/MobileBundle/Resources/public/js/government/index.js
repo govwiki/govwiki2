@@ -425,10 +425,24 @@ $('#comment-edit-save').click(function commentSave(event) {
     .done(function changed() {
       alert('Changes saved.');
       document.getElementById('comment-text-value').innerHTML = data;
+      commentText.show();
+    })
+    .error(function error(xhr) {
+      var message = JSON.parse(xhr.responseText);
+
+      if (message.errors[0] === 'Already edited.') {
+        commentText.show();
+        $('#comment-text-edit').remove();
+        $('#comment-text-value').append(
+          '<p class="text-info text-center">'
+          + 'Unapproved Changes Pending Approval'
+          + '</p>'
+        );
+      }
+      alert(message.errors[0]);
     })
     .always(function always() {
       loader.hide();
-      commentText.show();
     });
 });
 

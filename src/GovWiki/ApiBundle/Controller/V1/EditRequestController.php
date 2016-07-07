@@ -4,6 +4,7 @@ namespace GovWiki\ApiBundle\Controller\V1;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\EditRequest;
+use GovWiki\UserBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +29,11 @@ class EditRequestController extends AbstractGovWikiApiController
     public function createAction(Request $request)
     {
         if ($request->isXmlHttpRequest()) {
-            if ($this->getUser() and $this->getUser()->hasRole('ROLE_USER')) {
+            $user = $this->getUser();
+
+            if (($user instanceof User ) && $user->hasRole('ROLE_USER')) {
+                $environment = $this->getCurrentEnvironment();
+
                 $errors = [];
 
                 $data = json_decode($request->request->get('editRequest'), true);
@@ -48,6 +53,26 @@ class EditRequestController extends AbstractGovWikiApiController
                 }
 
                 $em = $this->getDoctrine()->getManager();
+
+                $entityName = $data['entityName'];
+                $entityId = $data['entityId'];
+
+                if (($entityName === 'Government') || ($entityName === 'ElectedOfficial')) {
+                    $repository = $em->getRepository('GovWikiDbBundle:EditRequest');
+                    $unapproveds = $repository->getUnapprovedFor(
+                        $environment->getId(),
+                        $entityName,
+                        $entityId
+                    );
+
+                    foreach ($unapproveds as $unapproved) {
+                        if ($unapproved['user']['id'] !== $user->getId()) {
+                            return new JsonResponse([
+                                'errors' => [ 'Already edited.' ],
+                            ], 400);
+                        }
+                    }
+                }
                 $editRequest = new EditRequest();
                 $editRequest
                     ->setEnvironment($this->getCurrentEnvironment())
