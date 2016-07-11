@@ -146,6 +146,6 @@ class MaxRankManager implements MaxRankManagerInterface
     public function removeTable(Environment $environment)
     {
         $tableName = GovwikiNamingStrategy::maxRanksTableName($environment);
-        $this->em->getConnection()->exec("DROP TABLE IF EXISTS `{$tableName}``");
+        $this->em->getConnection()->exec("DROP TABLE IF EXISTS `{$tableName}`");
     }
 }

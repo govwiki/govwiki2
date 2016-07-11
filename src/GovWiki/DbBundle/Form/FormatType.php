@@ -89,6 +89,7 @@ class FormatType extends AbstractType
 
             $diff = array_diff($data->getShowIn(), $currentAltTypes);
             foreach ($diff as $altType) {
+                $altType = str_replace(' ', '_', $altType);
                 $currentRanges[$altType] = [
                     'a' => [
                         'start' => 100,

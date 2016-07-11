@@ -27,16 +27,27 @@ class RankLetterRangeType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $options = [
-            'label_attr' => [ 'class' => 'range-grade-label' ],
-        ];
-
         $builder
-            ->add('a', new RangeType(), $options)
-            ->add('b', new RangeType(), $options)
-            ->add('c', new RangeType(), $options)
-            ->add('d', new RangeType(), $options)
-            ->add('f', new RangeType(), $options);
+            ->add('a', new RangeType(), [
+                'label_attr' => [ 'class' => 'range-grade-label' ],
+                'default' => [ 100, 80 ],
+            ])
+            ->add('b', new RangeType(), [
+                'label_attr' => [ 'class' => 'range-grade-label' ],
+                'default' => [ 80, 60 ],
+            ])
+            ->add('c', new RangeType(), [
+                'label_attr' => [ 'class' => 'range-grade-label' ],
+                'default' => [ 60, 40 ],
+            ])
+            ->add('d', new RangeType(), [
+                'label_attr' => [ 'class' => 'range-grade-label' ],
+                'default' => [ 40, 20 ],
+            ])
+            ->add('f', new RangeType(), [
+                'label_attr' => [ 'class' => 'range-grade-label' ],
+                'default' => [ 20, 0 ],
+            ]);
     }
 
     /**

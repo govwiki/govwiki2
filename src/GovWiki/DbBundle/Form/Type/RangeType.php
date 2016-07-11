@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class RangeType
@@ -27,15 +28,35 @@ class RangeType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $options = [
+        $builder->add('start', 'percent', [
             'type' => 'integer',
             'attr' => [ 'min' => 0, 'max' => 100 ],
             'label_attr' => [ 'class' => 'range-grade-border-label' ],
-        ];
-
-        $builder->add('start', 'percent', $options);
-        $builder->add('end', 'percent', $options);
+            'data' => $options['default'][0],
+        ]);
+        $builder->add('end', 'percent', [
+            'type' => 'integer',
+            'attr' => [ 'min' => 0, 'max' => 100 ],
+            'label_attr' => [ 'class' => 'range-grade-border-label' ],
+            'data' => $options['default'][1],
+        ]);
     }
+
+    /**
+     * Configures the options for this type.
+     *
+     * @param OptionsResolver $resolver The resolver for the options.
+     *
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver
+            ->setDefined('default')
+            ->setRequired('default')
+            ->setAllowedTypes('default', 'array');
+    }
+
 
     /**
      * {@inheritdoc}

@@ -4,12 +4,10 @@ namespace GovWiki\EnvironmentBundle\Manager\Government;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
-use GovWiki\DbBundle\Entity\Delta;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
-use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\EnvironmentBundle\Converter\DataTypeConverter;
 use GovWiki\EnvironmentBundle\Manager\Format\FormatManagerInterface;
 use GovWiki\EnvironmentBundle\Manager\MaxRank\MaxRankManagerInterface;
@@ -524,7 +522,6 @@ class GovernmentManager implements GovernmentManagerInterface
         $government = array_merge($government, $data);
         unset($data, $dataFields);
 
-
         $ranked = array_filter(
             $fields,
             function (array $field) {
@@ -553,7 +550,7 @@ class GovernmentManager implements GovernmentManagerInterface
                     $year
                 );
             }
-            $government['ranks'] = $data;
+            $government['ranks'] = [];
 
             if (count($data) > 0) {
                 unset($data['alt_type_slug'], $data['year']);

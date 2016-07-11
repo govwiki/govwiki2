@@ -9,6 +9,7 @@ use GovWiki\DbBundle\Entity\Translation;
 use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -40,7 +41,8 @@ class FieldController extends AbstractGovWikiAdminController
      */
     public function newAction(Request $request, $category)
     {
-        if ($this->getCurrentEnvironment() === null) {
+        $environment = $this->getCurrentEnvironment();
+        if ($environment === null) {
             return $this->redirectToRoute('govwiki_admin_main_home');
         }
 
@@ -54,19 +56,8 @@ class FieldController extends AbstractGovWikiAdminController
         $format->setCategory($categoryReference);
 
         $form = $this->createForm('format', $format);
-        $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
-            $environment = $this->getCurrentEnvironment();
-
-            $this->getManager()->update($format);
-
-            $this->getGovernmentManager()->addColumn(
-                $environment,
-                $format->getField(),
-                $format->getType()
-            );
-
+        if ($this->handleRequest($format, $form, $request)) {
             $this->changeFormatTranslation('new', $format->getField(), $format->getName());
             if (!is_null($format->getHelpText())) {
                 $this->changeFormatTranslation('new', $format->getField() . '.help_text', $format->getHelpText());
@@ -101,56 +92,7 @@ class FieldController extends AbstractGovWikiAdminController
 
         $form = $this->createForm('format', $format);
 
-        $oldFieldName = $format->getField();
-        $oldIsRanked = $format->isRanked();
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid() ) {
-            $this->getManager()->update($format);
-            $manager = $this->getGovernmentManager();
-
-            if ($format->getSource() === Format::SOURCE_USER_DEFINED) {
-                if ($format->isRanked()) {
-                    if ($oldIsRanked) {
-                        $manager->changeColumn(
-                            $environment,
-                            GovwikiNamingStrategy::rankedFieldName($oldFieldName),
-                            GovwikiNamingStrategy::rankedFieldName($format->getField()),
-                            'integer'
-                        );
-                    } else {
-                        $manager->addColumn(
-                            $environment,
-                            GovwikiNamingStrategy::rankedFieldName($format->getField()),
-                            'integer'
-                        );
-                    }
-
-
-                    // Recalculate rank.
-                    $manager->calculateRanks($environment, $format);
-                    // Clear max ranks.
-                    $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
-                        ->removeTable($environment);
-                } elseif ($oldIsRanked) {
-                    $manager->deleteColumn(
-                        $environment,
-                        GovwikiNamingStrategy::rankedFieldName($format->getField())
-                    );
-
-                    // Clear max ranks.
-                    $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
-                        ->removeTable($environment);
-                }
-
-                $manager->changeColumn(
-                    $environment,
-                    $oldFieldName,
-                    $format->getField(),
-                    $format->getType()
-                );
-            }
-
+        if ($this->handleRequest($format, $form, $request)) {
             $this->changeFormatTranslation('edit', $format->getField(), $format->getName());
             $this->changeFormatTranslation('edit', $format->getField() . '.help_text', $format->getHelpText());
 
@@ -281,5 +223,65 @@ class FieldController extends AbstractGovWikiAdminController
     private function getTranslationManager()
     {
         return $this->get(GovWikiAdminServices::TRANSLATION_MANAGER);
+    }
+
+    /**
+     * @param Format        $format  A Format entity instance.
+     * @param FormInterface $form    A FormInterface instance.
+     * @param Request       $request A Request instance.
+     *
+     * @return boolean
+     */
+    public function handleRequest(Format $format, FormInterface $form, Request $request)
+    {
+        $environment = $this->getCurrentEnvironment();
+
+        $oldFieldName = $format->getField();
+        $oldIsRanked = $format->isRanked();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getManager()->update($format);
+            $manager = $this->getGovernmentManager();
+
+            if ($format->isRanked()) {
+                // Column set as ranked.
+
+                if ($oldIsRanked) {
+                    // Column marks as ranked previously, change column definition.
+                    $manager->changeColumn(
+                        $environment,
+                        GovwikiNamingStrategy::rankedFieldName($oldFieldName),
+                        GovwikiNamingStrategy::rankedFieldName($format->getField()),
+                        'integer'
+                    );
+                } else {
+                    $manager->addColumn(
+                        $environment,
+                        GovwikiNamingStrategy::rankedFieldName($format->getField()),
+                        'integer'
+                    );
+                }
+
+                // Recalculate rank.
+                $manager->calculateRanks($environment, $format);
+                // Clear max ranks.
+                $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
+                    ->removeTable($environment);
+            } elseif ($oldIsRanked) {
+                $manager->deleteColumn(
+                    $environment,
+                    GovwikiNamingStrategy::rankedFieldName($format->getField())
+                );
+
+                // Clear max ranks.
+                $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
+                    ->removeTable($environment);
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

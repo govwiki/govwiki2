@@ -99,6 +99,7 @@ $(function() {
     if (this.value === 'range') {
       rankLetterRanges.parent().hide();
     } else {
+      generateRanges();
       rankLetterRanges.parent().show();
     }
   });
