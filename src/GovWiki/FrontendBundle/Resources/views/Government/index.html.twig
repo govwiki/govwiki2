@@ -75,8 +75,7 @@
                                     <h4>{{ ('groups.group_id_'~tab.id)|trans }}</h4>
                                     <br>
                                     <div class="row">
-
-                                        {%- if loop.first and environment.showGovernmentComment -%}
+                                        {%- if loop.first and environment.showGovernmentComment and (government.comment or app.user) -%}
                                             <div id="comment" class="col-md-12 clearfix">
                                                 <div class="loader" style="display: none"></div>
                                                 <label class="control-label">Comment</label>

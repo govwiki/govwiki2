@@ -111,7 +111,7 @@
                     {%- if (tab is defined) and (tab is not empty) -%}
                         {%- for tab in tabs -%}
                             {%- if (tab.parent is null) -%}
-                                {%- if loop.first and environment.showGovernmentComment -%}
+                                {%- if loop.first and environment.showGovernmentComment and (government.comment or app.user) -%}
                                     <div id="comment" class="col-md-12 clearfix">
                                         <div class="loader" style="display: none"></div>
                                         <label class="control-label">Comment</label>
