@@ -1,0 +1,54 @@
+{% for elected in government.electedOfficials %}
+    <div class="person">
+
+        <div class="person-photo" style="display: block; width: 50%; margin: 0 auto">
+
+            {% if elected.photoUrl %}
+                <a href="{{ path('elected', {
+                'altTypeSlug': government.altTypeSlug,
+                'slug': government.slug,
+                'electedSlug': elected.slug
+            }) }}"
+                    <span class="f-val">
+                        <img src="{{elected.photoUrl}}"/>
+                    </span>
+                </a>
+            {% endif %}
+
+        </div>
+
+        <div class="person-info" style="font-size: 1em">
+
+            <p>
+                Title: {{elected.title}}
+            </p>
+
+            <p>
+                <a href="{{ path('elected', {
+                    'altTypeSlug': government.altTypeSlug,
+                    'slug': government.slug,
+                    'electedSlug': elected.slug
+                }) }}" class="elected_link">Name {{elected.fullName}}</a>
+            </p>
+
+            <p>
+                {% if elected.emailAddress %}
+                    <a href="mailto:{{elected.emailAddress}}">Email: {{elected.emailAddress}}</a>
+                {% endif %}
+            </p>
+
+            <p>
+                {% if elected.telephoneNumber %}
+                    Phone: {{elected.telephoneNumber}}
+                {% endif %}
+            </p>
+
+            <p>
+                Term Expires: {{elected.termExpires}}
+            </p>
+
+        </div>
+
+    </div>
+
+{% endfor %}

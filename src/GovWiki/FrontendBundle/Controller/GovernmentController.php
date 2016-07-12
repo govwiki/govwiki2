@@ -406,6 +406,10 @@ From ' . $user_email;
             ->getForm();
         $data['commentForm'] = $commentForm->createView();
 
+
+        if ($request->query->has('new')) {
+            return $this->render('@GovWikiFrontend/Government/index_new.html.twig', $data);
+        }
         return $data;
     }
 
