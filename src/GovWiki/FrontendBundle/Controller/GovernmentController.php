@@ -121,7 +121,7 @@ class GovernmentController extends AbstractGovWikiController
      * @param Request    $request    A Request instance.
      * @param Government $government A Government entity instance.
      *
-     * @return array
+     * @return array|Response
      */
     public function issuesAction(Request $request, Government $government)
     {
@@ -145,6 +145,10 @@ class GovernmentController extends AbstractGovWikiController
         /** @var \Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination $issues */
         $issues->setUsedRoute('govwiki_frontend_government_issues');
         $issues->setParam('government', $government->getId());
+
+        if ($issues->count() === 0 ) {
+            return new Response();
+        }
 
         return [ 'issues' => $issues ];
     }

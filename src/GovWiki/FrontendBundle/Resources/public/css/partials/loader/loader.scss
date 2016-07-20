@@ -4,7 +4,8 @@
 /* ===================== */
 
 
-.loader {
+.loader,
+.analysis-loader {
    margin: 60px auto;
    font-size: 4px;
    position: relative;
@@ -19,7 +20,10 @@
    -webkit-animation: load8 0.7s infinite linear;
    animation: load8 0.7s infinite linear;
 }
-.loader, .loader:after {
+.loader,
+.analysis-loader,
+.loader:after,
+.analysis-loader:after {
    border-radius: 50%;
    width: 10em;
    height: 10em;

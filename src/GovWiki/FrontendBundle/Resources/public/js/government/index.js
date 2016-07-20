@@ -23,7 +23,7 @@ var popover = new (require('./rank-popover.js'))({  // eslint-disable-line
 
 var commentText = $('#comment-text');
 var commentEdit = $('#comment-edit');
-var issues = $('#Issues');
+var issues = $('#articles-content');
 
 require(__dirname + '/../../../../../../../'
     + 'bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js');
@@ -202,7 +202,6 @@ $(document).on('click', '.paginate .pagination a', function click(e) {
 
   e.preventDefault();
   e.stopPropagation();
-
   $this = $(this);
   $closestPane = $this.closest('.tab-pane');
   url = $this.attr('href');
@@ -214,7 +213,7 @@ $(document).on('click', '.paginate .pagination a', function click(e) {
   $loader.show();
   $.ajax(url).success(function load(data) {
     $loader.hide();
-    $closestPane.find('.row').html(data);
+    $mainContent.html(data);
     initEditable();
   });
 });
@@ -322,7 +321,7 @@ $('#comment-edit-revert').click(function commentRevert() {
 });
 
 $('#comment-edit-save').click(function commentSave(event) {
-  var loader = $('#comment').find('.loader');
+  var loader = $('.analysis-loader');
   var data = window.CKEDITOR.instances.form_comment.getData();
   var sendObject;
 
@@ -376,6 +375,7 @@ $('#comment-edit-save').click(function commentSave(event) {
 issues.on('click', '.edit', function click(e) {
   e.preventDefault();
   e.stopPropagation();
+
   if (e.currentTarget.dataset.noEditable !== undefined) return;
   if (!authorized) {
     $('#modal-window').modal('show'); // Open login modal window

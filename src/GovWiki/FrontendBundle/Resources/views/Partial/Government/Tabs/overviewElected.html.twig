@@ -1,60 +1,201 @@
-{% if tab.name == 'Overview + Elected Officials' %}
-    <div class="col-sm-8">
-    {% for elected in government.electedOfficials %}
-        <div class="person">
+<div class="first-tab">
 
-            <div class="person-info">
+{%- set articlesContent -%}
+    {{- render(controller('GovWikiFrontendBundle:Government:issues', {
+        'government': government.id
+    })) -}}
+{%- endset -%}
 
-                <p>
-                    Title: {{elected.title}}
-                </p>
+{# Section selector. #}
+<div class="col-md-12">
+    <div class="dropdown">
+        <button id="section-dropdown" data-target="#" class="btn btn-link"
+           data-toggle="dropdown" aria-haspopup="true">
+            Section
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="section-dropdown">
+            {%- if hasElectedOfficials -%}
+                <li><a href="#elected-officials">Elected Officials</a></li>
+            {%- endif -%}
+            <li><a href="#overview">Overview</a></li>
+            {%- if articlesContent is not empty -%}
+                <li><a href="#articles">Articles</a></li>
+            {%- endif -%}
+            {%- if environment.showGovernmentComment
+                and (government.comment or app.user) -%}
+                <li><a href="#analysis">Analysis</a></li>
+            {%- endif -%}
+        </ul>
+    </div>
+</div>
 
-                <p>
-                    <a href="{{ path('elected', {
-                        'altTypeSlug': government.altTypeSlug,
-                        'slug': government.slug,
-                        'electedSlug': elected.slug
-                    }) }}" class="elected_link">Name {{elected.fullName}}</a>
-                </p>
+{# Elected officials. #}
+{%- if hasElectedOfficials -%}
+    <div class="col-md-12">
+        <h4 id="elected-officials">
+            Elected officials
+            <small><a href="#section-dropdown">
+                <i class="glyphicon glyphicon-chevron-up"></i>
+            </a></small>
+        </h4>
+        {% for elected in government.electedOfficials %}
+            <div class="col-md-6 col-sm-12">
+                <div class="person">
 
-                <p>
-                    {% if elected.emailAddress %}
-                        <a href="mailto:{{elected.emailAddress}}">Email: {{elected.emailAddress}}</a>
+                    <div class="person-info">
+
+                        <p>
+                            Title: {{elected.title}}
+                        </p>
+
+                        <p>
+                            <a href="{{ path('elected', {
+                                'altTypeSlug': government.altTypeSlug,
+                                'slug': government.slug,
+                                'electedSlug': elected.slug
+                            }) }}" class="elected_link">Name {{elected.fullName}}</a>
+                        </p>
+
+                        <p>
+                            {% if elected.emailAddress %}
+                                <a href="mailto:{{elected.emailAddress}}">Email: {{elected.emailAddress}}</a>
+                            {% endif %}
+                        </p>
+
+                        <p>
+                            {% if elected.telephoneNumber %}
+                                Phone: {{elected.telephoneNumber}}
+                            {% endif %}
+                        </p>
+
+                        <p>
+                            Term Expires: {{elected.termExpires}}
+                        </p>
+
+                    </div>
+
+                    <div class="person-photo">
+
+                        {% if elected.photoUrl %}
+                        <a href="{{ path('elected', {
+                            'altTypeSlug': government.altTypeSlug,
+                            'slug': government.slug,
+                            'electedSlug': elected.slug
+                        }) }}"
+                            <span class="f-val">
+                                <img src="{{elected.photoUrl}}"/>
+                            </span>
+                        </a>
                     {% endif %}
-                </p>
 
-                <p>
-                    {% if elected.telephoneNumber %}
-                        Phone: {{elected.telephoneNumber}}
-                    {% endif %}
-                </p>
+                    </div>
 
-                <p>
-                    Term Expires: {{elected.termExpires}}
-                </p>
-
+                </div>
             </div>
+        {% endfor %}
+    </div>
+{%- endif -%}
 
-            <div class="person-photo">
+{# Overview. #}
+<div class="col-md-12">
+    <h4 id="overview">
+        Overview
+        <small><a href="#section-dropdown">
+            <i class="glyphicon glyphicon-chevron-up"></i>
+        </a></small>
+    </h4>
+    {%- if tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}
+        {# User defined tab #}
+        {{-
+        include('@GovWikiFrontend/Partial/Government/tab.html.twig')
+        -}}
+        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
 
-                {% if elected.photoUrl %}
-                    <a href="{{ path('elected', {
-                        'altTypeSlug': government.altTypeSlug,
-                        'slug': government.slug,
-                        'electedSlug': elected.slug
-                    }) }}"
-                        <span class="f-val">
-                            <img src="{{elected.photoUrl}}"/>
-                        </span>
-                    </a>
-                {% endif %}
+        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
 
+        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
+    {%- else -%}
+        {# Special tab #}
+        {{-
+        include('@GovWikiFrontend/Partial/Government/special_tab.html.twig')
+        -}}
+    {%- endif -%}
+</div>
+
+{# Articles #}
+{%- if articlesContent is not empty -%}
+    <div class="col-md-12">
+        <h4 id="articles">
+            Articles
+            <small><a href="#section-dropdown">
+                <i class="glyphicon glyphicon-chevron-up"></i>
+            </a></small>
+        </h4>
+        <div id="articles-content">
+            {{- articlesContent|raw -}}
+        </div>
+    </div>
+{%- endif -%}
+
+{# Comment #}
+{% if environment.showGovernmentComment and (government.comment or app.user) %}
+    <div id="comment" class="col-md-12 clearfix">
+        <h4 id="analysis">
+            Analysis
+            <small><a href="#section-dropdown">
+                <i class="glyphicon glyphicon-chevron-up"></i>
+            </a></small>
+        </h4>
+        <div class="analysis-loader" style="display: none"></div>
+        <div id="comment-text">
+
+            {%- if (commentChanged and currentUserChangeComment) -%}
+                {%- set comment = government.commentChanges.lastChanges -%}
+            {%- else -%}
+                {%- set comment = government.comment -%}
+            {%- endif -%}
+
+            <div id="comment-text-value">
+                {{- comment|raw -}}
             </div>
-
+            {%- if app.user is not null -%}
+                {%- if ((not commentChanged)
+                or (commentChanged and currentUserChangeComment)) -%}
+                    <div class="pull-right">
+                        <button class="btn btn-primary" id="comment-text-edit">
+                            Edit
+                        </button>
+                    </div>
+                {%- else -%}
+                    <p class="text-info text-center">
+                        Unapproved Changes Pending Approval
+                    </p>
+                {%- endif -%}
+            {%- endif -%}
+        </div>
+        <div id="comment-edit" style="display: none">
+            {{- form_start(commentForm) -}}
+            {{- form_widget(commentForm) -}}
+            <div class="pull-right">
+                <a class="btn btn-primary"
+                   id="comment-edit-save"
+                   href="{{- path(
+                   'govwiki_api_v1_editrequest_create'
+                   ) -}}">
+                    Save Changes
+                </a>
+                <button type="button" class="btn btn-default"
+                        id="comment-edit-revert">
+                    Revert
+                </button>
+            </div>
+            {{- form_end(commentForm) -}}
         </div>
 
-
-    {% endfor %}
+        <br>
+        <hr>
     </div>
-
 {% endif %}
+
+</div>
