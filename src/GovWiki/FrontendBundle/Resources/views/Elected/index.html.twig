@@ -37,9 +37,9 @@
 
                 <!-- Nav tabs -->
                 <ul class="nav nav-pills" role="tablist">
-                    <li role="presentation" class="active"><a href="#Votes" aria-controls="Votes" role="tab" data-toggle="tab">Bio</a></li>
+                    {#<li role="presentation" class="active"><a href="#Votes" aria-controls="Votes" role="tab" data-toggle="tab">Bio</a></li>#}
                     {#<li role="presentation"><a href="#Contributions" aria-controls="Contributions" role="tab" data-toggle="tab">Contributions</a></li>#}
-                    <li role="presentation"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
+                    <li role="presentation" class="active"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Endorsements</a></li>
                     <li role="presentation"><a href="#Surveys" aria-controls="Surveys" role="tab" data-toggle="tab">Surveys</a></li>
                     {#<li role="presentation"><a href="#Statements" aria-controls="Statements" role="tab" data-toggle="tab">Public Statements</a></li>#}
                 </ul>
@@ -50,7 +50,7 @@
                     <div class="loader"></div>
 
                     {# Votes #}
-                    {{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:votes.html.twig') }}
+                    {#{{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:votes.html.twig') }}#}
 
                     {# Contributions #}
                     {#{{ include('GovWikiFrontendBundle:Partial/Elected/Tabs:contributions.html.twig') }}#}

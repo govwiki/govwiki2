@@ -65,11 +65,11 @@ class ElectedController extends AbstractGovWikiController
 
         $paginator = $this->get('knp_paginator');
 
-        $data['votes'] = $paginator->paginate(
-            $data['votes'],
-            1,
-            self::ROWS_PER_PAGE
-        );
+//        $data['votes'] = $paginator->paginate(
+//            $data['votes'],
+//            1,
+//            self::ROWS_PER_PAGE
+//        );
 
 //        $data['contributions'] = $paginator->paginate(
 //            $data['contributions'],
