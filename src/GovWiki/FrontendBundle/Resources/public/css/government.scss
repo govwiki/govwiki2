@@ -216,6 +216,11 @@
 
     section {
 
+        .articles-content,
+        .comment-content {
+          font-size: 1.4em;
+        }
+
         .loader {
             margin: 0 auto;
             margin-bottom: 12px;

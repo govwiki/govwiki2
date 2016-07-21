@@ -125,7 +125,7 @@
 
 {# Articles #}
 {%- if articlesContent is not empty -%}
-    <div class="col-md-12">
+    <div class="col-md-12 articles-content">
         <h4 id="articles">
             Articles
             <small><a href="#section-dropdown">
@@ -140,7 +140,7 @@
 
 {# Comment #}
 {% if environment.showGovernmentComment and (government.comment or app.user) %}
-    <div id="comment" class="col-md-12 clearfix">
+    <div id="comment" class="col-md-12 clearfix comment-content">
         <h4 id="analysis">
             Analysis
             <small><a href="#section-dropdown">
