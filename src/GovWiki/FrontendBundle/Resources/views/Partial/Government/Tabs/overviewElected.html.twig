@@ -150,17 +150,22 @@
         <div class="analysis-loader" style="display: none"></div>
         <div id="comment-text">
 
-            {%- if (commentChanged and currentUserChangeComment) -%}
+            {#{%- if (commentChanged and currentUserChangeComment) -%}
                 {%- set comment = government.commentChanges.lastChanges -%}
             {%- else -%}
                 {%- set comment = government.comment -%}
-            {%- endif -%}
+            {%- endif -%}#}
 
             <div id="comment-text-value">
-                {{- comment|raw -}}
+                {{- government.comment |raw -}}
             </div>
             {%- if app.user is not null -%}
-                {%- if ((not commentChanged)
+                <div class="pull-right">
+                    <button class="btn btn-primary" id="comment-text-edit">
+                        Edit
+                    </button>
+                </div>
+                {#{%- if ((not commentChanged)
                 or (commentChanged and currentUserChangeComment)) -%}
                     <div class="pull-right">
                         <button class="btn btn-primary" id="comment-text-edit">
@@ -171,7 +176,7 @@
                     <p class="text-info text-center">
                         Unapproved Changes Pending Approval
                     </p>
-                {%- endif -%}
+                {%- endif -%}#}
             {%- endif -%}
         </div>
         <div id="comment-edit" style="display: none">

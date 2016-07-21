@@ -2,15 +2,12 @@
 
 namespace GovWiki\ApiBundle\Controller\V1;
 
-use GovWiki\ApiBundle\GovWikiApiServices;
-use GovWiki\DbBundle\Entity\EditRequest;
 use GovWiki\UserBundle\Entity\User;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * Class EditRequestController
@@ -32,7 +29,7 @@ class EditRequestController extends AbstractGovWikiApiController
             $user = $this->getUser();
 
             if (($user instanceof User ) && $user->hasRole('ROLE_USER')) {
-                $environment = $this->getCurrentEnvironment();
+//                $environment = $this->getCurrentEnvironment();
 
                 $errors = [];
 
@@ -48,7 +45,7 @@ class EditRequestController extends AbstractGovWikiApiController
                     $errors[] = 'No changes';
                 }
 
-                if (!empty($errors)) {
+                if (count($errors) > 0) {
                     return new JsonResponse(['errors' => $errors], 400);
                 }
 
@@ -57,38 +54,57 @@ class EditRequestController extends AbstractGovWikiApiController
                 $entityName = $data['entityName'];
                 $entityId = $data['entityId'];
 
-                if (($entityName === 'Government') || ($entityName === 'ElectedOfficial')) {
-                    $repository = $em->getRepository('GovWikiDbBundle:EditRequest');
-                    $unapproveds = $repository->getUnapprovedFor(
-                        $environment->getId(),
-                        $entityName,
-                        $entityId
-                    );
+                $entity = $em->getRepository('GovWikiDbBundle:'. $entityName)
+                    ->findOneBy([ 'id' => $entityId ]);
 
-                    foreach ($unapproveds as $unapproved) {
-                        if ($unapproved['user']['id'] !== $user->getId()) {
-                            return new JsonResponse([
-                                'errors' => [ 'Already edited.' ],
-                            ], 400);
-                        }
-                    }
+                if ($entity === null) {
+                    return new JsonResponse([
+                        'errors' => [ 'Can\'t find entity with id '. $entityId ],
+                    ], 400);
                 }
-                $editRequest = new EditRequest();
-                $editRequest
-                    ->setEnvironment($this->getCurrentEnvironment())
-                    ->setUser($this->getUser())
-                    ->setEntityName($data['entityName'])
-                    ->setEntityId($data['entityId'])
-                    ->setChanges($data['changes']);
-                $em->persist($editRequest);
+
+                $changes = $data['changes'];
+
+                $accessor = PropertyAccess::createPropertyAccessor();
+                foreach ($changes as $name => $value) {
+                    $accessor->setValue($entity, $name, $value);
+                }
+
+                $em->persist($entity);
                 $em->flush();
+
+//                if (($entityName === 'Government') || ($entityName === 'ElectedOfficial')) {
+//                    $repository = $em->getRepository('GovWikiDbBundle:EditRequest');
+//                    $unapproveds = $repository->getUnapprovedFor(
+//                        $environment->getId(),
+//                        $entityName,
+//                        $entityId
+//                    );
+//
+//                    foreach ($unapproveds as $unapproved) {
+//                        if ($unapproved['user']['id'] !== $user->getId()) {
+//                            return new JsonResponse([
+//                                'errors' => [ 'Already edited.' ],
+//                            ], 400);
+//                        }
+//                    }
+//                }
+//                $editRequest = new EditRequest();
+//                $editRequest
+//                    ->setEnvironment($this->getCurrentEnvironment())
+//                    ->setUser($this->getUser())
+//                    ->setEntityName($data['entityName'])
+//                    ->setEntityId($data['entityId'])
+//                    ->setChanges($data['changes']);
+//                $em->persist($editRequest);
+//                $em->flush();
 
                 return new JsonResponse(['message' => 'We save your edit request. Thank you!'], 200);
             } else {
                 return new Response(null, 401);
             }
-        } else {
-            throw new HttpException(400);
         }
+
+        return new Response(null, 400);
     }
 }

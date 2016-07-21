@@ -41,6 +41,15 @@
                             <a href="{{- issue.link -}}" target="_blank">
                                 <img src="{{- asset('/images/download.png') -}}">
                             </a>
+                            <a data-field="link" href="javascript:void(0);"
+                               data-type="textarea" data-pk="1"
+                               data-placeholder="Please edit" data-title="Please edit"
+                               class="editable editable-pre-wrapped editable-click"
+                               data-original-title=""
+                               title="" data-value="{{ issue.link }}"
+                               data-display="false">
+                            </a>
+                            <span class="glyphicon glyphicon-pencil edit"></span>
                         </td>
                         <td>
                             <div>
@@ -99,22 +108,60 @@
 
 {%- verbatim -%}
 <script id="issue-row" type="text/x-handlebars-template">
-    <tr style="background: rgba(80, 0, 0, 0.1)">
+    <tr data-id="{{ id }}">
         <td>
             <a href="{{ link }}" target="_blank">
                 <img src="/images/download.png">
             </a>
+            <a data-field="link" href="javascript:void(0);"
+               data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click"
+               data-original-title=""
+               title="" data-value="{{ link }}"
+               data-display="false">
+            </a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
         </td>
         <td>
             <div>
-                {{ date }}
+                <a data-field="date" href="javascript:void(0);" data-type="date" data-pk="1"  data-format="yyyy/dd/mm"
+                   data-placeholder="Please edit" data-title="Please edit"
+                   class="editable editable-pre-wrapped editable-click" data-original-title=""
+                   title="">
+                    {{ date }}
+                </a>
+                <span class="glyphicon glyphicon-pencil edit"></span>
             </div>
             <div>
-                {{ type }}
+                <a data-field="type" href="javascript:void(0);" data-type="select" data-source="{'audit': 'Audit', 'other': 'Other', 'news_report': 'News Report', 'govt_document': 'Govt Document', 'cpc_research': 'CPC Research', 'blog_post': 'Blog Post', 'video_clip': 'Video Clip', 'image': 'Image', 'audio_clip': 'Audio Clip'}"
+                   data-placeholder="Please edit" data-title="Please edit"
+                   class="editable editable-pre-wrapped editable-click" data-original-title=""
+                   data-value="{{ type }}"
+                   title="">
+                    {{ displayType }}
+                </a>
+                <span class="glyphicon glyphicon-pencil edit"></span>
             </div>
         </td>
-        <td>{{ name }}</td>
-        <td>{{ description }}</td>
+        <td>
+            <a data-field="name" href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">
+                {{ name }}
+            </a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
+        <td>
+            <a data-field="description" href="javascript:void(0);" data-type="textarea" data-pk="1"
+               data-placeholder="Please edit" data-title="Please edit"
+               class="editable editable-pre-wrapped editable-click" data-original-title=""
+               title="">
+                {{ description }}
+            </a>
+            <span class="glyphicon glyphicon-pencil edit"></span>
+        </td>
     </tr>
 </script>
 {%- endverbatim -%}

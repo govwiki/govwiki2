@@ -6,6 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use GovWiki\RequestBundle\Entity\AbstractCreatable;
 use GovWiki\RequestBundle\Entity\IssueCreateRequest;
 use GovWiki\UserBundle\Entity\User;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Component\Validator\Constraints\Choice;
 
 /**
@@ -40,6 +43,7 @@ class Issue extends AbstractCreatable
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({ "api" })
      */
     private $id;
 
@@ -54,6 +58,7 @@ class Issue extends AbstractCreatable
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
+     * @Groups({ "api" })
      */
     private $description;
 
@@ -62,6 +67,7 @@ class Issue extends AbstractCreatable
      *
      * @ORM\Column()
      * @Choice(callback="availableTypeNames")
+     * @Groups({ "api" })
      */
     private $type = self::LAST_AUDIT;
 
@@ -69,6 +75,7 @@ class Issue extends AbstractCreatable
      * @var string
      *
      * @ORM\Column()
+     * @Groups({ "api" })
      */
     private $link;
 
@@ -76,6 +83,8 @@ class Issue extends AbstractCreatable
      * @var \DateTime
      *
      * @ORM\Column(type="date")
+     * @Groups({ "api" })
+     * @Type("DateTime<'Y/d/m'>")
      */
     private $date;
 
@@ -83,6 +92,7 @@ class Issue extends AbstractCreatable
      * @var string
      *
      * @ORM\Column()
+     * @Groups({ "api" })
      */
     private $name;
 
@@ -212,6 +222,9 @@ class Issue extends AbstractCreatable
     }
 
     /**
+     * @VirtualProperty()
+     * @Groups({ "api" })
+     *
      * @return string
      */
     public function getDisplayType()
@@ -252,14 +265,16 @@ class Issue extends AbstractCreatable
     }
 
     /**
-     * @param \DateTime $date A Issue placement date.
+     * @param \DateTime|string $date A Issue placement date.
      *
      * @return Issue
      */
-    public function setDate(\DateTime $date = null)
+    public function setDate($date = null)
     {
         if (null === $date) {
             $date = new \DateTime();
+        } elseif (is_string($date)) {
+            $date = new \DateTime($date);
         }
         $this->date = $date;
 

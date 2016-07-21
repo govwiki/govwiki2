@@ -70,7 +70,7 @@
     {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:facebook_comment.html.twig' %}
 
     {# Votes Modal #}
-    {% include 'GovWikiMobileBundle:Partial/Elected/Modals:votes.html.twig' %}
+    {#{% include 'GovWikiMobileBundle:Partial/Elected/Modals:votes.html.twig' %}#}
 
     {# Contributions Modal #}
     {#{% include 'GovWikiMobileBundle:Partial/Elected/Modals:contributions.html.twig' %}#}
@@ -81,7 +81,30 @@
     {# Public Statements Modal #}
     {#{% include 'GovWikiMobileBundle:Partial/Elected/Modals:publicStatements.html.twig' %}#}
 
-    {% verbatim %}
+    {%- verbatim -%}
+    <script id="row-addEndorsements" type="text//x-handlebars-template">
+        <tr data-id="{{ id }}">
+            <td data-election-year="{{ electionYear }}">
+                <a data-type="text"
+                   data-placeholder="Please edit" data-title="Please edit"
+                   class="editable editable-pre-wrapped editable-click" data-original-title="">{{ electionYear }}<span class="glyphicon glyphicon-pencil edit"></span></a>
+            </td>
+            <td data-name-of-endorser="{{ nameOfEndorser }}">
+                <a href="javascript:void(0);" data-type="textarea"
+                   data-placeholder="Please edit" data-title="Please edit"
+                   class="editable editable-pre-wrapped editable-click" data-original-title="">{{ nameOfEndorser }}</a>
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </td>
+            <td data-endorser-type="{{ endorserType }}">
+                <a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{'Elected Official': 'Elected Official', 'Organization': 'Organization', 'Political Party': 'Political Party', 'Union': 'Union', 'Other': 'Other'}" data-placeholder="Please edit" data-title="Please edit"
+                   class="editable editable-pre-wrapped editable-click" data-original-title="">{{ endorserType }}</a>
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </td>
+        </tr>
+    </script>
+    {%- endverbatim -%}
+
+    {#{% verbatim %}
     <script id="row-addVotes" type="text//x-handlebars-template">
     <tr data-id style="background: rgba(80, 0, 0, 0.1)">
         <td data-date-considered="{{dateConsidered}}">
@@ -96,8 +119,8 @@
         <td data-vote="{{vote}}" data-no-editable>
             {{vote}}
         </td>
-        <td align="center" data-did-elected-official-propose-this="{{#if did_elected_official_propose_this}}Yes{{else}}No{{/if}}" data-no-editable>
-            {{#if did_elected_official_propose_this}}Yes{{else}}No{{/if}}
+        <td align="center" data-did-elected-official-propose-this="{&#123;&#35;if did_elected_official_propose_this}}Yes{{else}}No{{/if}}" data-no-editable>
+            {&#123;&#35;if did_elected_official_propose_this}}Yes{{else}}No{{/if}}
         </td>
         <td data-issue-category="{{category}}" data-no-editable>{{category}}</td>
         <td data-no-editable>{{username}}</td>
@@ -158,7 +181,7 @@
     </tr>
 </script>
 
-    {% endverbatim %}
+    {% endverbatim %}#}
 
     {% if bottomText %}
         <div class="panel panel-danger notice">

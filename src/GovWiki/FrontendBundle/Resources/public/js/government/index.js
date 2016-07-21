@@ -278,7 +278,8 @@ modal.find('form').submit(function  newIssue(event) {
   })
     .done(function success(response) {
       var template = Handlebars.compile($('#issue-row').html());
-      $('#issues tbody tr:last-child').before(template(response));
+
+      $('#issues tbody tr:last-child').before(template(JSON.parse(response)));
 
       modal.modal('hide');
     })

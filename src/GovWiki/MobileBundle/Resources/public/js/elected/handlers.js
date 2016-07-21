@@ -498,7 +498,7 @@ window.addItem = function addItem(e) {
     }
     if (add) {
       data.category = selectedText;
-      $('#Votes tr:last-child').before(rowTemplate(data));
+      //$('#Votes tr:last-child').before(rowTemplate(data));
     }
   } else if (modalType === 'addContributions') {
         /*
@@ -506,13 +506,13 @@ window.addItem = function addItem(e) {
          */
     data.contributorType = selectedText;
     data.contributionAmount = numeral(data.contributionAmount).format('0,000');
-    $('#Contributions tr:last-child').before(rowTemplate(data));
+    //$('#Contributions tr:last-child').before(rowTemplate(data));
   } else if (modalType === 'addEndorsements') {
     data.endorserType = selectedText;
-    $('#Endorsements tr:last-child').before(rowTemplate(data));
+    //$('#Endorsements tr:last-child').before(rowTemplate(data));
   } else if (modalType === 'addStatements') {
     data.category = selectedText;
-    $('#Statements tr:last-child').before(rowTemplate(data));
+    //$('#Statements tr:last-child').before(rowTemplate(data));
   }
 
     /*
@@ -527,6 +527,11 @@ window.addItem = function addItem(e) {
     },
     data: sendObject,
     success: function success(res) {
+      // Add new row into table.
+      var modelName = modalType.replace('add', '');
+
+      $('#' + modelName +' tr:last-child ').before(rowTemplate(JSON.parse(res)));
+
       if (modalType === 'addVotes') {
         alert('Thanks for your submission. Your entry will appear' +
                 ' on the elected official profiles within 3-5 business days');

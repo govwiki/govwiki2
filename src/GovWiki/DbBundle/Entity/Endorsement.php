@@ -3,7 +3,6 @@
 namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\QueryBuilder;
 use GovWiki\DbBundle\Form\EndorsementType;
 use GovWiki\RequestBundle\Entity\AbstractCreatable;
 use GovWiki\RequestBundle\Entity\EndorsementCreateRequest;
@@ -32,7 +31,7 @@ class Endorsement extends AbstractCreatable implements
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"elected_official"})
+     * @Groups({"elected_official", "api"})
      */
     private $id;
 
@@ -40,7 +39,7 @@ class Endorsement extends AbstractCreatable implements
      * @var string
      *
      * @ORM\Column(name="name_of_endorser", type="string", length=255, nullable=true)
-     * @Groups({"elected_official"})
+     * @Groups({"elected_official", "api"})
      */
     private $nameOfEndorser;
 
@@ -48,7 +47,7 @@ class Endorsement extends AbstractCreatable implements
      * @var string
      *
      * @ORM\Column(name="endorser_type", type="string", length=255, nullable=true)
-     * @Groups({"elected_official"})
+     * @Groups({"elected_official", "api"})
      */
     private $endorserType;
 
@@ -56,7 +55,7 @@ class Endorsement extends AbstractCreatable implements
      * @var integer
      *
      * @ORM\Column(name="election_year", type="integer", nullable=true)
-     * @Groups({"elected_official"})
+     * @Groups({"elected_official", "api"})
      */
     private $electionYear;
 

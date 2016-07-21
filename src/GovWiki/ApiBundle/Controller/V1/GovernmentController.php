@@ -6,10 +6,13 @@ use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Issue;
 use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use GovWiki\RequestBundle\Entity\IssueCreateRequest;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\Serializer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * GovernmentController
@@ -142,25 +145,19 @@ class GovernmentController extends AbstractGovWikiApiController
         $form = $this->createForm('document', $issue);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $createRequest = new IssueCreateRequest();
-            $createRequest
-                ->setEnvironment($this->getCurrentEnvironment())
-                ->setCreator($this->getUser());
-            $issue->setRequest($createRequest);
-
+            /** @var Serializer $serializer */
+            $serializer = $this->get('jms_serializer');
             $em = $this->getDoctrine()->getManager();
 
-            $em->persist($createRequest);
             $em->persist($issue);
             $em->flush();
 
-            return new JsonResponse([
-                'name' => $issue->getName(),
-                'description' => $issue->getDescription(),
-                'link' => $issue->getLink(),
-                'date' => $issue->getDate()->format('Y-m-d'),
-                'type' => $issue->getDisplayType(),
-            ]);
+            // Serialize new issue.
+            $context = SerializationContext::create()
+                ->setGroups('api');
+            $issue = $serializer->serialize($issue, 'json', $context);
+
+            return new Response($issue);
         }
 
         return $this->formError($form);

@@ -38,13 +38,14 @@ publicstatement:
     resource: "@GovWikiAdminBundle/Controller/PublicStatementController.php"
     type:     annotation
 
-createrequest:
-    resource: "@GovWikiAdminBundle/Controller/CreateRequestController.php"
-    type:     annotation
-
-editrequest:
-    resource: "@GovWikiAdminBundle/Controller/EditRequestController.php"
-    type:     annotation
+# Commented out by client request.
+#createrequest:
+#    resource: "@GovWikiAdminBundle/Controller/CreateRequestController.php"
+#    type:     annotation
+#
+#editrequest:
+#    resource: "@GovWikiAdminBundle/Controller/EditRequestController.php"
+#    type:     annotation
 
 user:
     resource: "@GovWikiAdminBundle/Controller/UserController.php"
