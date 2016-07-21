@@ -4,6 +4,67 @@
 <div role="tabpanel" class="tab-pane active" id="Endorsements">
     <div class="tab-pane-main">
 
+        <div id="bio" class="form-group clearfix">
+            <div class="loader"></div>
+            <label>Bio</label>
+
+            {#{%- if (bioChanged and currentUserChangeBio) -%}
+                {%- set bio = elected.bioChanges.lastChanges -%}
+            {%- else -%}
+                {%- set bio = elected.bio -%}
+            {%- endif -%}#}
+
+            <div id="elected-bio-view">
+                {{- elected.bio|raw -}}
+            </div>
+            <div id="elected-bio-edit-block" style="display: none">
+                {{ form(bioForm) }}
+            </div>
+            <div class="pull-right">
+                <button id="change-bio-start"
+                        class="btn btn-primary">
+                    Change
+                </button>
+                <div id="change-bio-group" style="display: none">
+                    <a id="change-bio-save" href="{{- path(
+                    'govwiki_api_v1_editrequest_create'
+                    ) -}}" class="btn btn-primary">Save Changes</a>
+                    <button id="change-bio-revert"
+                            class="btn btn-default">
+                        Revert
+                    </button>
+                </div>
+            </div>
+            {#{%- if app.user is not null -%}
+                {%- if ((not bioChanged)
+                or (bioChanged and currentUserChangeBio)) -%}
+                    <div class="pull-right">
+                        <button id="change-bio-start"
+                                class="btn btn-primary">
+                            Change
+                        </button>
+                        <div id="change-bio-group" style="display: none">
+                            <a id="change-bio-save" href="{{- path(
+                            'govwiki_api_v1_editrequest_create'
+                            ) -}}" class="btn btn-primary">Save Changes</a>
+                            <button id="change-bio-revert"
+                                    class="btn btn-default">
+                                Revert
+                            </button>
+                        </div>
+                    </div>
+                {%- else -%}
+                    <p class="text-info text-center">
+                        Unapproved Changes Pending Approval
+                    </p>
+                {%- endif -%}
+            {%- endif -%}#}
+        </div>
+
+        <hr>
+
+        <h4 class="text-center">Endorsements</h4>
+
         <div class="add_action">
             <span>Add new Endorsement</span>
             <span class="glyphicon glyphicon-plus"></span>
