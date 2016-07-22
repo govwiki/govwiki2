@@ -92,12 +92,14 @@
                         </td>
                     </tr>
                 {%- endfor -%}
+                {%- if app.user -%}
                 <tr>
                     <td colspan="5" class="add">
-                        Add new Issue
+                        Add new Article
                         <span class="glyphicon glyphicon-plus"></span>
                     </td>
                 </tr>
+                {%- endif -%}
                 </tbody>
             </table>
 

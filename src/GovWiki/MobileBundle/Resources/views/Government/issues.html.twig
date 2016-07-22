@@ -89,7 +89,11 @@
                     </tbody>
                 </table>
 
-                <button id="new-issue" class="btn btn-primary">Add new Issue</button>
+                {%- if app.user -%}
+                    <button id="new-issue" class="btn btn-primary">
+                        Add new Issue
+                    </button>
+                {%- endif -%}
 
             </div>
         </div>
