@@ -104,6 +104,69 @@ function initMarkerSubLayer(altType) {
   Tooltip.init(_altType);
 }
 
+function initCmfMarkerSublayer(altType) {
+  var _altType = altType.toLowerCase();
+  var cartocss = '';
+
+  var isRangeLegend = window.gw.map.coloringConditions.colorized;
+  var options = { isMarkerLayer: true };
+  var legendColorsAsCartoCss = Style.getColorsFromLegend(altType);
+
+  var sql = [
+    'SELECT',
+    ' case',
+    "   when name != 'Honolulu' and name != 'Anchorage'",
+    '   then ST_Transform(the_geom_webmercator,42303)',
+    "   when name = 'Anchorage'",
+    '   then ST_Rotate(ST_Scale(',
+    '     ST_Transform(',
+    '       ST_Translate(',
+    '         the_geom,90,-50',
+    '       )',
+    '       ,3857',
+    '     )',
+    '     , 0.4',
+    '     , 0.5',
+    '   ),0)',
+    "   when name = 'Honolulu'",
+    '   then ST_Scale(',
+    '     ST_Transform(',
+    '       ST_Translate(',
+    '         the_geom,55,3',
+    '       )',
+    '       ,42303',
+    '     )',
+    '     , 1.5',
+    '     , 1.5',
+    '   )',
+    ' end as the_geom_webmercator, cartodb_id, name',
+    'FROM cmf'
+  ].join(' ');
+
+  options.markerFileCss = legendColorsAsCartoCss.markerFileCss;
+  options.markerFillColorCss = legendColorsAsCartoCss.markerFillColorCss;
+  options.markerLineColorColorCss = legendColorsAsCartoCss.markerLineColorColorCss;
+
+  if (isRangeLegend) {
+    cartocss += '#layer { ' +
+                legendColorsAsCartoCss.markerFileCss +
+                legendColorsAsCartoCss.markerLineColorColorCss +
+                ' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+    cartocss += getConditionsColorsAsCartoCss(options);
+  } else {
+    cartocss += '#layer { ' +
+                legendColorsAsCartoCss.markerFileCss +
+                legendColorsAsCartoCss.markerFillColorCss +
+                ' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+  }
+  config.subLayers[_altType] = config.baseLayer.createSubLayer({
+    sql: sql,
+    cartocss: cartocss,
+    interactivity: ['cartodb_id', 'name']
+  });
+  Tooltip.init(_altType);
+}
+
 /**
  * @param options
  * @returns {string}
@@ -257,9 +320,16 @@ function initSubLayers(altTypes) {
   countySubLayers.forEach(function loop(altType) {
     initCountySubLayer(altType.alt_type_slug);
   });
-  markerSubLayers.forEach(function loop(altType) {
-    initMarkerSubLayer(altType.alt_type_slug);
-  });
+  // Hardcode for CMF environment.
+  if (window.gw.environment.indexOf('cmf') !== -1) {
+    markerSubLayers.forEach(function loop(altType) {
+      initCmfMarkerSublayer(altType.alt_type_slug);
+    });
+  } else {
+    markerSubLayers.forEach(function loop(altType) {
+      initMarkerSubLayer(altType.alt_type_slug);
+    });
+  }
   initSublayerHandlers();
 }
 
@@ -283,6 +353,7 @@ function reInit(settings) {
 module.exports = {
   initCountySubLayer: initCountySubLayer,
   initMarkerSubLayer: initMarkerSubLayer,
+  initCmfMarkerSublayer: initCmfMarkerSublayer,
   initSublayerHandlers: initSublayerHandlers,
   removeAllHoverShapes: removeAllHoverShapes,
   removeAllSubLayers: removeAllSubLayers,
