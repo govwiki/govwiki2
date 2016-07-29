@@ -164,10 +164,23 @@
                                             </div>
                                             {{- form_end(commentForm) -}}
                                         </div>
-
-                                        <br>
-                                        <hr>
                                     </div>
+
+                                    {%- if environment.showDocuments -%}
+                                        <div class="col-md-12 articles-content">
+                                            <h4 id="articles">
+                                                Articles
+                                            </h4>
+                                            <div id="articles-content">
+                                                {{- render(controller('GovWikiMobileBundle:Government:issues', {
+                                                    'government': government.id
+                                                })) -}}
+                                            </div>
+                                        </div>
+                                    {%- endif -%}
+
+                                    <br>
+                                    <hr>
                                 {%- endif -%}
 
                                 <div class="tab-pane {{ loop.first ? 'active' : '' -}}"

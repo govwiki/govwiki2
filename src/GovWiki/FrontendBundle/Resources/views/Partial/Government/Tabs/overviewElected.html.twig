@@ -1,11 +1,5 @@
 <div class="first-tab">
 
-{%- set articlesContent -%}
-    {{- render(controller('GovWikiFrontendBundle:Government:issues', {
-        'government': government.id
-    })) -}}
-{%- endset -%}
-
 {# Section selector. #}
 <div class="col-md-12">
     <div class="dropdown">
@@ -19,7 +13,7 @@
                 <li><a href="#elected-officials">Elected Officials</a></li>
             {%- endif -%}
             <li><a href="#overview">Overview</a></li>
-            {%- if articlesContent is not empty -%}
+            {%- if environment.showDocuments -%}
                 <li><a href="#articles">Articles</a></li>
             {%- endif -%}
             {%- if environment.showGovernmentComment
@@ -124,7 +118,7 @@
 </div>
 
 {# Articles #}
-{%- if articlesContent is not empty -%}
+{%- if environment.showDocuments -%}
     <div class="col-md-12 articles-content">
         <h4 id="articles">
             Articles
@@ -133,7 +127,9 @@
             </a></small>
         </h4>
         <div id="articles-content">
-            {{- articlesContent|raw -}}
+            {{- render(controller('GovWikiFrontendBundle:Government:issues', {
+                'government': government.id
+            })) -}}
         </div>
     </div>
 {%- endif -%}

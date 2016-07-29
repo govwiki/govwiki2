@@ -111,16 +111,17 @@ class GovernmentController extends AbstractGovWikiController
         return [ 'pensions' => $pensions ];
     }
 
+
     /**
      * @Route("/{government}/issues", requirements={
      *  "government": "\d+"
      * })
-     * @Template()
+     * @Template
      *
      * @param Request    $request    A Request instance.
      * @param Government $government A Government entity instance.
      *
-     * @return array
+     * @return array|Response
      */
     public function issuesAction(Request $request, Government $government)
     {
@@ -131,14 +132,6 @@ class GovernmentController extends AbstractGovWikiController
 
         $user = $this->getUser();
         $paginator = $this->get('knp_paginator');
-//        $year = $request->query->get(
-//            'year',
-//            $this->getGovernmentManager()
-//                ->getAvailableYears(
-//                    $this->getCurrentEnvironment(),
-//                    $government
-//                )[0]
-//        );
 
         $issues = $this->getDoctrine()
             ->getRepository('GovWikiDbBundle:Issue')
@@ -152,6 +145,10 @@ class GovernmentController extends AbstractGovWikiController
         /** @var \Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination $issues */
         $issues->setUsedRoute('govwiki_mobile_government_issues');
         $issues->setParam('government', $government->getId());
+
+        if ($issues->count() === 0 ) {
+            return new Response();
+        }
 
         return [ 'issues' => $issues ];
     }
