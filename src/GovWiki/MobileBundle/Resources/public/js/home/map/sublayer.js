@@ -139,7 +139,11 @@ function initCmfMarkerSublayer(altType) {
     '     , 1.5',
     '     , 1.5',
     '   )',
-    ' end as the_geom_webmercator, cartodb_id, name',
+    ' end as the_geom_webmercator,',
+    ' cartodb_id,',
+    ' name,',
+    ' alt_type_slug,',
+    ' slug',
     'FROM cmf'
   ].join(' ');
 
@@ -162,7 +166,7 @@ function initCmfMarkerSublayer(altType) {
   config.subLayers[_altType] = config.baseLayer.createSubLayer({
     sql: sql,
     cartocss: cartocss,
-    interactivity: ['cartodb_id', 'name']
+    interactivity: ['cartodb_id', 'name', 'alt_type_slug', 'slug']
   });
   Tooltip.init(_altType);
 }
