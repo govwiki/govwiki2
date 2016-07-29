@@ -43,6 +43,13 @@ class Government
     private $stateId;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(type="integer")
+     */
+    private $agayaId;
+
+    /**
      * @ORM\OneToMany(
      *  targetEntity="ElectedOfficial",
      *  mappedBy="government",
@@ -1194,5 +1201,28 @@ class Government
     public function getWebSiteAddress()
     {
         return $this->webSiteAddress;
+    }
+
+    /**
+     * Set agayaId
+     *
+     * @param string $agayaId
+     * @return Government
+     */
+    public function setAgayaId($agayaId)
+    {
+        $this->agayaId = $agayaId;
+
+        return $this;
+    }
+
+    /**
+     * Get agayaId
+     *
+     * @return string 
+     */
+    public function getAgayaId()
+    {
+        return $this->agayaId;
     }
 }
