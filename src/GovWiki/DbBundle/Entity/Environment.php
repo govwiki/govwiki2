@@ -171,7 +171,10 @@ class Environment
      *
      * @ORM\Column(type="array")
      */
-    protected $legislationDisplayTime;
+    protected $legislationDisplayTime = [
+        'hours' => 72,
+        'minutes' => 0,
+    ];
 
     /**
      * @var string
@@ -636,6 +639,13 @@ class Environment
      */
     public function getLegislationDisplayTime()
     {
+        if ($this->legislationDisplayTime === null) {
+            $this->legislationDisplayTime = [
+                'hours' => 72,
+                'minutes' => 0,
+            ];
+        }
+
         return $this->legislationDisplayTime;
     }
 

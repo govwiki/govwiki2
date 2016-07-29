@@ -5,6 +5,7 @@ namespace GovWiki\AdminBundle\Controller;
 use CartoDbBundle\CartoDbServices;
 use CartoDbBundle\Service\CartoDbApi;
 use Gedmo\Translator\Entity\Translation;
+use GovWiki\AdminBundle\Entity\Template;
 use GovWiki\AdminBundle\Form\Type\DelayType;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditions;
@@ -338,16 +339,22 @@ class EnvironmentController extends AbstractGovWikiAdminController
      */
     public function templateAction(Request $request)
     {
-        if ($this->getCurrentEnvironment() === null) {
+        $environment = $this->getCurrentEnvironment();
+
+        if ($environment === null) {
             return $this->redirectToRoute('govwiki_admin_main_home');
         }
-
-        $environment = $this->getCurrentEnvironment();
 
         $template = $this->getDoctrine()
             ->getRepository('GovWikiAdminBundle:Template')
             ->getVoteEmailTemplate($this->getCurrentEnvironment()->getSlug());
 
+        if ($template === null) {
+            $template = new Template();
+            $template
+                ->setContent('')
+                ->setEnvironment($environment);
+        }
         $form = $this->createFormBuilder([
             'template' => $template->getContent(),
             'delay' => $environment->getLegislationDisplayTime(),

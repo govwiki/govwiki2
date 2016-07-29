@@ -30,6 +30,6 @@ class TemplateRepository extends EntityRepository
                 $expr->eq('Template.name', $expr->literal('vote_email'))
             ))
             ->getQuery()
-            ->getSingleResult();
+            ->getOneOrNullResult();
     }
 }
