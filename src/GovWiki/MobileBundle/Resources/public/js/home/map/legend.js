@@ -8,6 +8,12 @@ function init() {
   var $legendContainer = $('#menu');
   // Add new elements.
   var compiledLegendItems = '';
+
+  if (config.legend.length < 2) {
+    // Don't generate legend if we don't have or have only one legend row.
+    return;
+  }
+
   config.legend.forEach(function loop(menuItem) {
     var _altTypeSlug;
     var iconCounty = '';
