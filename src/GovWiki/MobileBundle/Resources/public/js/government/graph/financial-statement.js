@@ -197,77 +197,78 @@ function expendituresPie() {
  * #total-revenue-tree
  */
 function revenuesTree() {
-  var chart;
-  var RevenuesDataTable;
-  var visData;
-  var totalAmount = 0;
-  var options;
-  var container;
-  var subCatValue;
-  var subCategory;
-  var rKey;
-  var RevenuesData = data.financialStatements.Revenues;
+  //var chart;
+  //var RevenuesDataTable;
+  //var visData;
+  //var totalAmount = 0;
+  //var options;
+  //var container;
+  //var subCatValue;
+  //var subCategory;
+  //var rKey;
+  //var RevenuesData = data.financialStatements.Revenues;
+  //
+  //RevenuesDataTable = [
+  //  ['Location', 'Parent', 'FinData', 'Heat'],
+  //  [data.translations.total_revenue, null, 0, 0]
+  //];
+  //
+  //// Prepare Revenues data to Google Tree Chart
+  //for (rKey in RevenuesData) {
+  //  if (RevenuesData.hasOwnProperty(rKey) && (RevenuesData[rKey].caption !== 'Total Revenues')) {
+  //    subCategory = RevenuesData[rKey];
+  //    subCatValue = getSubCatValue(subCategory);
+  //
+  //    if (!subCatValue) {
+  //      continue;
+  //    }
+  //
+  //    RevenuesDataTable.push(
+  //      [
+  //        subCategory.translatedCaption,
+  //        data.translations.total_revenue,
+  //        parseInt(subCatValue, 10),
+  //        parseInt(subCatValue, 10)
+  //      ]
+  //    );
+  //
+  //    totalAmount += parseInt(subCatValue, 10);
+  //  }
+  //}
+  //
+  //container = 'total-revenue-tree';
+  //options = {
+  //  highlightOnMouseOver: true,
+  //  maxDepth: 1,
+  //  maxPostDepth: 2,
+  //  minHighlightColor: '#8c6bb1',
+  //  midHighlightColor: '#9ebcda',
+  //  maxHighlightColor: '#edf8fb',
+  //  minColor: '#009688',
+  //  midColor: '#f7f7f7',
+  //  maxColor: '#ee8100',
+  //  headerHeight: 15,
+  //  showScale: true,
+  //  width: '100%',
+  //  height: 500,
+  //  useWeightedAverageForAggregation: true,
+  //  generateTooltip: revenuesTooltip
+  //};
+  //
+  //function revenuesTooltip(row) {
+  //  var caption = visData.getValue(row, 0);
+  //  var val = visData.getValue(row, 2);
+  //  var percent = val * 100 / totalAmount;
+  //  percent = percent.toFixed(2);
+  //  return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">' + caption + ': ' +
+  //    numeral(val).format('$0,0') + ' (' + percent + '%)</div>';
+  //}
+  //
+  //
+  //visData = google.visualization.arrayToDataTable(RevenuesDataTable);
+  //chart = new google.visualization.TreeMap(document.getElementById(container));
+  //chart.draw(visData, options);
 
-  RevenuesDataTable = [
-    ['Location', 'Parent', 'FinData', 'Heat'],
-    [data.translations.total_revenue, null, 0, 0]
-  ];
-
-  // Prepare Revenues data to Google Tree Chart
-  for (rKey in RevenuesData) {
-    if (RevenuesData.hasOwnProperty(rKey) && (RevenuesData[rKey].caption !== 'Total Revenues')) {
-      subCategory = RevenuesData[rKey];
-      subCatValue = getSubCatValue(subCategory);
-
-      if (!subCatValue) {
-        continue;
-      }
-
-      RevenuesDataTable.push(
-        [
-          subCategory.translatedCaption,
-          data.translations.total_revenue,
-          parseInt(subCatValue, 10),
-          parseInt(subCatValue, 10)
-        ]
-      );
-
-      totalAmount += parseInt(subCatValue, 10);
-    }
-  }
-
-  container = 'total-revenue-tree';
-  options = {
-    highlightOnMouseOver: true,
-    maxDepth: 1,
-    maxPostDepth: 2,
-    minHighlightColor: '#8c6bb1',
-    midHighlightColor: '#9ebcda',
-    maxHighlightColor: '#edf8fb',
-    minColor: '#009688',
-    midColor: '#f7f7f7',
-    maxColor: '#ee8100',
-    headerHeight: 15,
-    showScale: true,
-    width: '100%',
-    height: 500,
-    useWeightedAverageForAggregation: true,
-    generateTooltip: revenuesTooltip
-  };
-
-  function revenuesTooltip(row) {
-    var caption = visData.getValue(row, 0);
-    var val = visData.getValue(row, 2);
-    var percent = val * 100 / totalAmount;
-    percent = percent.toFixed(2);
-    return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">' + caption + ': ' +
-      numeral(val).format('$0,0') + ' (' + percent + '%)</div>';
-  }
-
-
-  visData = google.visualization.arrayToDataTable(RevenuesDataTable);
-  chart = new google.visualization.TreeMap(document.getElementById(container));
-  chart.draw(visData, options);
 }
 
 /**

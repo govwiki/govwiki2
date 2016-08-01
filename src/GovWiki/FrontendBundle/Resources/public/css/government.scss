@@ -476,3 +476,13 @@
       }
    }
 }
+
+.treemap-tooltip {
+  background: #7bbaff;
+  color: #fff;
+  padding: 10px;
+  border-style: solid;
+  border-radius: 3px;
+  position: absolute;
+  z-index: 9999;
+}

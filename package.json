@@ -19,6 +19,7 @@
   "devDependencies": {
     "babel-eslint": "^6.0.2",
     "chai": "^3.5.0",
+    "d3": "^4.2.0",
     "eslint": "^2.7.0",
     "eslint-config-airbnb": "^7.0.0",
     "eslint-config-airbnb-es5": "^1.0.8",

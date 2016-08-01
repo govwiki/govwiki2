@@ -1,6 +1,7 @@
 var data = require('./glob.js').data;
 var chartStatus = require('./config.js').chart;
 var rowSortFunction = require('./utils.js').rowSortFunction;
+var d3 = require('d3');
 
 /**
  * Initialization
@@ -181,76 +182,236 @@ function expendituresPie() {
  * #total-revenue-tree
  */
 function revenuesTree() {
-  var chart;
-  var RevenuesDataTable;
-  var visData;
-  var totalAmount = 0;
-  var options;
-  var container;
-  var subCatValue;
-  var subCategory;
+  //var chart;
+  //var RevenuesDataTable;
+  //var visData;
+  //var totalAmount = 0;
+  //var options;
+  //var container;
+  //var subCatValue;
+  //var subCategory;
+  //var rKey;
+  //var RevenuesData = data.financialStatements.Revenues;
+  //
+  //RevenuesDataTable = [
+  //  ['Location', 'Parent', 'FinData', 'Heat'],
+  //  [data.translations.total_revenue, null, 0, 0]
+  //];
+  //
+  //// Prepare Revenues data to Google Tree Chart
+  //for (rKey in RevenuesData) {
+  //  if (RevenuesData.hasOwnProperty(rKey) && (RevenuesData[rKey].caption !== 'Total Revenues')) {
+  //    subCategory = RevenuesData[rKey];
+  //    subCatValue = getSubCatValue(subCategory);
+  //
+  //    if (!subCatValue) {
+  //      continue;
+  //    }
+  //
+  //    RevenuesDataTable.push(
+  //      [
+  //        subCategory.translatedCaption,
+  //        data.translations.total_revenue,
+  //        parseInt(subCatValue, 10),
+  //        parseInt(subCatValue, 10)
+  //      ]
+  //    );
+  //
+  //    totalAmount += parseInt(subCatValue, 10);
+  //  }
+  //}
+  //
+  //container = 'total-revenue-tree';
+  //options = {
+  //  highlightOnMouseOver: true,
+  //  maxDepth: 1,
+  //  maxPostDepth: 2,
+  //  minHighlightColor: '#8c6bb1',
+  //  midHighlightColor: '#9ebcda',
+  //  maxHighlightColor: '#edf8fb',
+  //  minColor: '#009688',
+  //  midColor: '#f7f7f7',
+  //  maxColor: '#ee8100',
+  //  headerHeight: 15,
+  //  showScale: true,
+  //  height: 500,
+  //  useWeightedAverageForAggregation: true,
+  //  generateTooltip: revenuesTooltip
+  //};
+  //
+  //function revenuesTooltip(row) {
+  //  var caption = visData.getValue(row, 0);
+  //  var val = visData.getValue(row, 2);
+  //  var percent = val * 100 / totalAmount;
+  //  percent = percent.toFixed(2);
+  //  return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">' + caption + ': ' +
+  //    numeral(val).format('$0,0') + ' (' + percent + '%)</div>';
+  //}
+  //
+  //
+  //visData = google.visualization.arrayToDataTable(RevenuesDataTable);
+  //chart = new google.visualization.TreeMap(document.getElementById(container));
+  //chart.draw(visData, options);
+  var selector = '#total-revenue-tree';
+  var width = $(selector).width() - 50;
+  var treemap;
+  var root;
+  var tooltip;
+  var treemapView;
+  var color;
+  var fontSize;
   var rKey;
+  var subCategory;
+  var subCatValue;
+  var totalAmount = 0.0;
+  var minAmount = Number.MAX_VALUE;
+  var maxAmount = 0.0;
+  var index = 0;
   var RevenuesData = data.financialStatements.Revenues;
+  var revenues = {
+    name: data.translations.total_revenue,
+    children: []
+  };
 
-  RevenuesDataTable = [
-    ['Location', 'Parent', 'FinData', 'Heat'],
-    [data.translations.total_revenue, null, 0, 0]
-  ];
+  // Set treemap title.
+  $('#total-revenue-tree-title').text(data.translations.total_revenue);
 
   // Prepare Revenues data to Google Tree Chart
   for (rKey in RevenuesData) {
     if (RevenuesData.hasOwnProperty(rKey) && (RevenuesData[rKey].caption !== 'Total Revenues')) {
       subCategory = RevenuesData[rKey];
-      subCatValue = getSubCatValue(subCategory);
+      subCatValue = parseInt(getSubCatValue(subCategory), 10);
 
       if (!subCatValue) {
         continue;
       }
 
-      RevenuesDataTable.push(
-        [
-          subCategory.translatedCaption,
-          data.translations.total_revenue,
-          parseInt(subCatValue, 10),
-          parseInt(subCatValue, 10)
-        ]
-      );
+      revenues.children.push({
+        name: subCategory.translatedCaption,
+        index: index++,
+        amount: subCatValue
+      });
 
-      totalAmount += parseInt(subCatValue, 10);
+      if (subCatValue < minAmount) {
+        minAmount = subCatValue;
+      }
+      if (subCatValue > maxAmount) {
+        maxAmount = subCatValue;
+      }
+
+      totalAmount += subCatValue;
     }
   }
 
-  container = 'total-revenue-tree';
-  options = {
-    highlightOnMouseOver: true,
-    maxDepth: 1,
-    maxPostDepth: 2,
-    minHighlightColor: '#8c6bb1',
-    midHighlightColor: '#9ebcda',
-    maxHighlightColor: '#edf8fb',
-    minColor: '#009688',
-    midColor: '#f7f7f7',
-    maxColor: '#ee8100',
-    headerHeight: 15,
-    showScale: true,
-    height: 500,
-    useWeightedAverageForAggregation: true,
-    generateTooltip: revenuesTooltip
-  };
+  // Create tooltip.
+  tooltip = d3.select("body").append("div")
+    .attr("class", "treemap-tooltip")
+    .style("opacity", 0);
+
+  // Init treemap layout.
+  treemap = d3
+    .treemap()
+    .size([ width, width ])
+    .padding(1);
+
+  // Prepare data for d3.
+  root = d3.hierarchy(revenues)
+    .sum(function(row) { return row.amount; } );
+
+  // Init color.
+  color = d3.scaleOrdinal()
+    .range(d3.schemeCategory10.map(function (c) {
+      var _c = d3.rgb(c);
+      _c.opacity = 0.6;
+      return _c;
+    }));
+
+  // Init fontSize.
+  fontSize = d3.scaleLinear()
+    .domain([minAmount, maxAmount])
+    .rangeRound([10, 20]);
+
+  // Form data in treemap.
+  treemap(root);
+
+  // Add treemap root svg element.
+  treemapView = d3.select(selector)
+    .append('div')
+    .style('width', width + 'px')
+    .style('height', width + 'px')
+    .style('position', 'relative');
+
+  // Create treemap group element.
+  treemapView
+    .selectAll('div')
+    .data(root.leaves())
+    .enter()
+      .append('div')
+        .attr('id', function (row) { return 'rect-' + row.data.key; })
+        .style('overflow', 'hidden')
+        .style('text-align', 'center')
+        .style('display', 'table')
+        .style('left', function (row) { return row.x0 + 'px'; })
+        .style('top', function (row) { return row.y0 + 'px'; })
+        .style('width', function (row) { return (row.x1 - row.x0) + 'px'; })
+        .style('height', function (row) { return (row.y1 - row.y0) + 'px'; })
+        .style('position', 'absolute')
+        .style('background-color', function (row) { return color(row.data.index); })
+        .on('mouseover', function (row) {
+          tooltip.transition()
+            .duration(200)
+            .style("opacity", 0.9);
+          tooltip.html(revenuesTooltip(row))
+            .style("left", (d3.event.pageX + 28) + "px")
+            .style("top", (d3.event.pageY - 52) + "px");
+        })
+        .on("mousemove", function() {
+          return tooltip
+            .style("left",(event.pageX + 28) + "px")
+            .style("top", (event.pageY - 52) + "px");
+        })
+        .on("mouseout", function() {
+          tooltip.transition()
+            .duration(500)
+            .style("opacity", 0);
+        })
+      .append('p')
+        .style('font-weight', 'bold')
+        .style('overflow-wrap', 'break-word')
+        .style('display', 'table-cell')
+        .style('vertical-align', 'middle')
+        .style('padding', '3px')
+        .style('margin', 0)
+        .style('font-size', function (row) {
+          return fontSize(row.data.amount) + 'px';
+        })
+        .html(function(row) {
+          if ((row.x1 - row.x0) < 40) {
+            return '';
+          }
+          return row.data.name;
+        });
+
+  // Add rectangle.
+  //treemapView.append('rect')
+  //  .attr('id', function (row) { return 'rect-' + row.data.key; })
+  //  .attr('width', function (row) { return row.x1 - row.x0; })
+  //  .attr('height', function (row) { return row.y1 - row.y0; })
+  //  .style('fill', function () { return '#fff000'; });
+
+  // Add text.
+  //text = treemapView.append('text')
+  //  .attr('x', function(row) { return (row.x1 - row.x0) / 2; })
+  //  .attr('y', function(row) { return (row.y1 - row.y0) / 2; })
+  //  .attr('text-anchor', 'middle');
 
   function revenuesTooltip(row) {
-    var caption = visData.getValue(row, 0);
-    var val = visData.getValue(row, 2);
-    var percent = val * 100 / totalAmount;
+    var percent = (row.data.amount * 100) / totalAmount;
     percent = percent.toFixed(2);
-    return '<div style="background:#7bbaff; color: #fff; padding:10px; border-style:solid">' + caption + ': ' +
-      numeral(val).format('$0,0') + ' (' + percent + '%)</div>';
+    return row.data.name + ': '
+      + numeral(row.data.amount).format('$0,0')
+      + ' (' + percent + '%)';
   }
-
-
-  visData = google.visualization.arrayToDataTable(RevenuesDataTable);
-  chart = new google.visualization.TreeMap(document.getElementById(container));
-  chart.draw(visData, options);
 }
 
 /**
