@@ -32,7 +32,7 @@ function handlerOnTabSwitch() {
       case 'Financial Health':
         financialHealthGraphs.initAll();
         break;
-      case 'Financial Financial_Statements':
+      case 'Financial Statements':
         financialStatementGraphs.initAll();
         break;
       default:
