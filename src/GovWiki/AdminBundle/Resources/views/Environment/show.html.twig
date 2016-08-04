@@ -17,9 +17,16 @@
         {# Information about environment. #}
         <div class="col-md-2">
 
-            <button class="btn btn-sm btn-default" id="import-fin-stmt">
+            {#<button class="btn btn-sm btn-default" id="import-fin-stmt">
                 Import fin. stmt.
-            </button>
+            </button>#}
+
+            <a class="btn btn-sm btn-default" href="{{- path(
+                'govwiki_admin_environment_updatefindata',
+                { environment: environment.slug }
+            ) -}}">
+                FinData localization
+            </a>
 
             <a class="btn btn-sm btn-default" href="{{- path(
                 'govwiki_admin_environment_sync',
@@ -141,7 +148,7 @@
         </div>
     </div>
 
-    <div id="modal-import" class="modal fade">
+    {#<div id="modal-import" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header"><h4 class="modal-title">Confirm</h4></div>
@@ -160,7 +167,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>#}
 {% endblock panel_body %}
 
 {% block panel_footer %}
@@ -177,9 +184,9 @@
 
         $(function() {
 
-            $('#import-fin-stmt').click(function () {
+            /*$('#import-fin-stmt').click(function () {
                 $('#modal-import').modal('show');
-            });
+            });*/
 
             $('#import-confirm').click(function () {
                 $('form', '#modal-import').submit();
