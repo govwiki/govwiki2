@@ -245,7 +245,7 @@ function revenuesTree() {
   drawTreemap(revenues, {
     selector: selector,
     width: $(selector).width() - 50,
-    height: $(selector).width() - 50,
+    height: $(selector).width() - 150,
     minAmount: minAmount,
     maxAmount: maxAmount,
     totalAmount: totalAmount
@@ -305,7 +305,7 @@ function expendituresTree() {
   drawTreemap(expenditures, {
     selector: selector,
     width: $(selector).width() - 50,
-    height: $(selector).width() - 50,
+    height: $(selector).width() - 150,
     minAmount: minAmount,
     maxAmount: maxAmount,
     totalAmount: totalAmount
@@ -528,15 +528,18 @@ function drawTreemap(values, params) {
     .append('p')
     .style('font-weight', 'bold')
     .style('overflow-wrap', 'break-word')
-    .style('display', 'table-cell')
+    .style('position', 'absolute')
     .style('vertical-align', 'middle')
     .style('padding', '3px')
     .style('margin', 0)
+    .style('width', '100%')
+    .style('top', '50%')
+    .style('transform', 'translate(0, -50%)')
     .style('font-size', function (row) {
       return fontSize(row.data.amount) + 'px';
     })
     .html(function(row) {
-      if ((row.x1 - row.x0) < 40) {
+      if (((row.data.amount * 100) / params.totalAmount) < 1.0) {
         return '';
       }
       return row.data.name;
