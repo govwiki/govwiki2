@@ -318,6 +318,7 @@ function handlerSwitchChart() {
         revenuePie();
         expendituresPie();
       }
+      $('#charts-row').css('margin-bottom', '0');
     } else if (chartType === 'tree-charts') {
       hideTableGroup('financialTable', true);
       hideTableGroup('compareTables', false);
@@ -329,6 +330,7 @@ function handlerSwitchChart() {
         expendituresTree();
         revenuesTree();
       }
+      $('#charts-row').css('margin-bottom', '52px');
     } else if (chartType === 'compare-charts') {
       hideTableGroup('financialTable', false);
       hideTableGroup('compareTables', true);
@@ -340,6 +342,7 @@ function handlerSwitchChart() {
         expendituresTree();
         revenuesTree();
       }
+      $('#charts-row').css('margin-bottom', '0');
     }
   });
 
