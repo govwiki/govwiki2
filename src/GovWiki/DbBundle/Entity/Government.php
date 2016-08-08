@@ -19,8 +19,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @ORM\Table(name="governments")
  * @ORM\Entity(repositoryClass="GovWiki\DbBundle\Entity\Repository\GovernmentRepository")
  * @ExclusionPolicy("none")
- *
- * @UniqueEntity("name")
  */
 class Government
 {
