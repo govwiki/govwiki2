@@ -538,7 +538,7 @@ class LocalizationController extends AbstractGovWikiAdminController
      *
      * @Configuration\Route("/{locale_name}/translation/{transKey}/remove")
      *
-     * @param string $transKey Translation key.
+     * @param string $transKey    Translation key.
      * @param string $locale_name Locale shortName.
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -562,7 +562,7 @@ class LocalizationController extends AbstractGovWikiAdminController
             ];
         }
         $trans_list = $this->getTranslationManager()
-            ->getEnvironmentTranslations(null, $trans_key_settings);
+            ->getEnvironmentTranslations($locale_name, $trans_key_settings);
 
         foreach ($trans_list as $translation) {
             $em->remove($translation);
@@ -571,7 +571,7 @@ class LocalizationController extends AbstractGovWikiAdminController
 
         return $this->redirectToRoute('govwiki_admin_localization_showlocale', [
             'environment' => $this->getCurrentEnvironment()->getSlug(),
-            'locale_name' => $locale_name
+            'locale_name' => $locale_name,
         ]);
     }
 
