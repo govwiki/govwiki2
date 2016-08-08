@@ -91,12 +91,50 @@
         ) -}}">Back</a>
     </div>
     {{ form_end(form) }}
+
+    {%- include '@GovWikiAdmin/Government/new_alt_type_modal.html.twig' -%}
 {% endblock panel_body %}
 
 {% block javascripts %}
     {{ parent() }}
     <script>
         $(function() {
+            var modal = $('#modal-new-alt-type');
+            var altTypeSelect = $('#government_altType');
+            var option;
+
+            $('.new-alt-type').click(function() {
+                modal.modal('show');
+            });
+
+
+            $('#alt-type-add').click(function() {
+                // Add new alt type.
+                var founded;
+                var newAltType = document.getElementById('alt-type-input').value;
+
+                altTypeSelect.find('option').each(function () {
+                    if (this.value === newAltType) {
+                        founded = this;
+                    }
+                });
+
+                altTypeSelect.find('option').prop('selected', false);
+                if (founded) {
+                    $(founded).prop('selected', true);
+                } else {
+                    option = $('<option>', { value : newAltType })
+                            .text(newAltType)
+                            .prop('selected', true);
+
+                    altTypeSelect
+                            .append(option);
+                }
+
+                modal.modal('hide');
+                document.getElementById('alt-type-input').value = '';
+            });
+
             $('#data-edit').click(function() {
                 window.location = $('#years').find(':selected').data('edit-url');
             });
@@ -109,8 +147,8 @@
                 var $selected = $('#years').find(':selected');
 
                 $('#delete-confirm').attr(
-                        'href',
-                        $selected.data('remove-url')
+                    'href',
+                    $selected.data('remove-url')
                 );
 
                 $modal

@@ -83,12 +83,12 @@ class GovernmentManager implements GovernmentManagerInterface
             ");
         }
 
-        return array_map(
+        return array_filter(array_map(
             function (array $result) {
                 return $result['year'];
             },
             $years
-        );
+        ));
     }
 
     /**
