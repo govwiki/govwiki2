@@ -16,14 +16,27 @@ interface GovernmentManagerInterface
     /**
      * Return available years for current environment.
      *
-     * @param Environment $environment A Environment entity instance.
-     * @param Government  $government  A Government entity instance.
+     * @param Environment        $environment A Environment entity instance.
+     * @param Government|integer $government  A Government entity instance.
      *
      * @return integer[]
      */
     public function getAvailableYears(
         Environment $environment,
-        Government $government = null
+        $government = null
+    );
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $altTypeSlug A Government entity altTypeSlug instance.
+     * @param string      $slug        A Government entity slug instance.
+     *
+     * @return integer[]
+     */
+    public function getGovernmentAvailableYears(
+        Environment $environment,
+        $altTypeSlug,
+        $slug
     );
 
     /**

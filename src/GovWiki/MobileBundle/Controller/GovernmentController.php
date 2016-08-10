@@ -220,8 +220,13 @@ class GovernmentController extends AbstractGovWikiController
         $user = $this->getUser();
         $environment = $this->getCurrentEnvironment();
 
-        $years = $manager->getAvailableYears($environment);
+        // Get available years for specified government.
+        $years = $manager
+            ->getGovernmentAvailableYears($environment, $altTypeSlug, $slug);
         $currentYear = $request->query->getInt('year', $years[0]);
+        if (! in_array($currentYear, $years, true)) {
+            $currentYear = $years[0];
+        }
 
         $data = $manager
             ->getGovernment(

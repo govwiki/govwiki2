@@ -69,7 +69,7 @@ class MainController extends AbstractGovWikiController
         $environment = $this->getCurrentEnvironment();
 
         $years = $this->getGovernmentManager()->getAvailableYears($environment);
-        $currentYear = (count($years) > 0) ? $years[0] : 0;
+        $currentYear = (count($years) > 0) ? 'latest' : 0;
 
         $map = $environment->getMap();
         $coloringConditions = $map->getColoringConditions();

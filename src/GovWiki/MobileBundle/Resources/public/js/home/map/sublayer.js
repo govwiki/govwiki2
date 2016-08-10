@@ -40,18 +40,35 @@ function initCountySubLayer(altType) {
     ' line-width: 0.5; line-opacity: 1; } ';
   var cLayer;
   var _altType;
+  var dataSelection;
   var colorized = window.gw.map.coloringConditions.colorized;
 
   if (colorized) {
     cartocss += getConditionsColorsAsCartoCss({});
   }
 
+  // Change data selection depending on requested year value.
+  if (window.gw.map.year === 'latest') {
+    dataSelection = [
+      '(data_json::json->>(',
+      ' SELECT',
+      '  json_object_keys(data_json::json) as latest_year',
+      ' FROM '+ window.gw.environment,
+      ' WHERE cartodb_id = e.cartodb_id',
+      ' ORDER BY 1 DESC',
+      ' LIMIT 1',
+      '))::float AS data'
+    ].join(' ');
+  } else {
+    dataSelection = "(data_json::json->>'" + window.gw.map.year
+      + "')::float AS data";
+  }
+
   cLayer = {
     cartocss: cartocss,
-    sql: "SELECT *, (data_json::json->>'" + window.gw.map.year +
-    "')::float AS data, ST_AsGeoJSON(the_geom) AS geometry FROM " +
-    window.gw.environment + " WHERE  alt_type_slug = '" +
-    altType + "'",
+    sql: 'SELECT *,'
+     + dataSelection + ', ST_AsGeoJSON(the_geom) AS geometry FROM '
+     + window.gw.environment + " e WHERE  alt_type_slug = '" + altType + "'",
     interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometry', 'data', 'name']
   };
 
@@ -73,6 +90,7 @@ function initCountySubLayer(altType) {
 function initMarkerSubLayer(altType) {
   var _altType = altType.toLowerCase();
   var cartocss = '';
+  var dataSelection;
 
   var isRangeLegend = window.gw.map.coloringConditions.colorized;
   var options = { isMarkerLayer: true };
@@ -94,10 +112,28 @@ function initMarkerSubLayer(altType) {
       legendColorsAsCartoCss.markerFillColorCss +
       ' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
   }
+
+  // Change data selection depending on requested year value.
+  if (window.gw.map.year === 'latest') {
+    dataSelection = [
+      '(data_json::json->>(',
+      ' SELECT',
+      '  json_object_keys(data_json::json) as latest_year',
+      ' FROM '+ window.gw.environment,
+      ' WHERE cartodb_id = e.cartodb_id',
+      ' ORDER BY 1 DESC',
+      ' LIMIT 1',
+      '))::float AS data'
+    ].join(' ');
+  } else {
+    dataSelection = "(data_json::json->>'" + window.gw.map.year
+      + "')::float AS data";
+  }
+
   config.subLayers[_altType] = config.baseLayer.createSubLayer({
-    sql: "SELECT *, (data_json::json->>'" + window.gw.map.year +
-    "')::float AS data, GeometryType(the_geom) AS geometrytype FROM " + window.gw.environment +
-    " WHERE alt_type_slug = '" + altType + "'",
+    sql: 'SELECT *, '
+      + dataSelection + ', GeometryType(the_geom) AS geometrytype FROM '
+      + window.gw.environment + " e WHERE alt_type_slug = '" + altType + "'",
     cartocss: cartocss,
     interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype', 'data', 'name']
   });
@@ -281,7 +317,8 @@ function initSublayerHandlers() {
         if (pathname[pathname.length - 1] !== '/') {
           pathname += '/';
         }
-        window.location.pathname = pathname + data.alt_type_slug + '/' + data.slug;
+        window.location.href = pathname + data.alt_type_slug + '/' + data.slug
+          + '?year=' + window.gw.map.year;
 
         return true;
       });

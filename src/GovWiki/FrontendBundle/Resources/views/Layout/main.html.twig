@@ -44,6 +44,14 @@
                         {% if years is defined and years|length > 1 %}
                             <label for="year-selector" class="control-label">{{ 'general.year_selector_label'|trans }}: </label>
                             <select id="year-selector" class="form-control form-control__inline">
+                                {%- if (app.request.attributes.get('_route') ==
+                                    'map') -%}
+                                <option value="latest" {% if (currentYear == 'latest') -%}selected{%- endif -%}>
+                                {%- endif -%}
+                                {%- spaceless -%}
+                                    Latest
+                                {%- endspaceless -%}
+                                </option>
                                 {% for year in years %}
                                     <option value="{{ year }}" {%-
                                     if (currentYear == year)

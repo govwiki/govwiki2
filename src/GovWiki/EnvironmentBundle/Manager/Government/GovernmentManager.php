@@ -58,8 +58,12 @@ class GovernmentManager implements GovernmentManagerInterface
      */
     public function getAvailableYears(
         Environment $environment,
-        Government $government = null
+        $government = null
     ) {
+        if ($government instanceof Government) {
+            $government = $government->getId();
+        }
+
         $con = $this->em->getConnection();
         $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
             $environment
@@ -78,7 +82,7 @@ class GovernmentManager implements GovernmentManagerInterface
             $years = $con->fetchAll("
                 SELECT year
                 FROM `{$tableName}`
-                WHERE government_id = {$government->getId()}
+                WHERE government_id = {$government}
                 GROUP BY year
             ");
         }
@@ -90,6 +94,44 @@ class GovernmentManager implements GovernmentManagerInterface
             $years
         ));
     }
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $altTypeSlug A Government entity altTypeSlug instance.
+     * @param string      $slug        A Government entity slug instance.
+     *
+     * @return integer[]
+     */
+    public function getGovernmentAvailableYears(
+        Environment $environment,
+        $altTypeSlug,
+        $slug
+    ) {
+        $con = $this->em->getConnection();
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
+
+        $years = $con->fetchAll("
+            SELECT er.year
+            FROM {$tableName} er
+            JOIN
+                governments g ON g.id = er.government_id
+            WHERE
+                g.slug = '{$slug}' AND
+                g.alt_type_slug = '{$altTypeSlug}'
+            GROUP BY year
+            ORDER BY year DESC
+        ");
+
+        return array_filter(array_map(
+            function (array $result) {
+                return $result['year'];
+            },
+            $years
+        ));
+    }
+
 
     /**
      * {@inheritdoc}
