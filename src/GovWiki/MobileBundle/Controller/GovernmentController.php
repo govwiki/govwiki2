@@ -224,7 +224,7 @@ class GovernmentController extends AbstractGovWikiController
         $years = $manager
             ->getGovernmentAvailableYears($environment, $altTypeSlug, $slug);
         $currentYear = $request->query->getInt('year', $years[0]);
-        if (! in_array($currentYear, $years, true)) {
+        if (! in_array($currentYear, $years)) {
             $currentYear = $years[0];
         }
 
