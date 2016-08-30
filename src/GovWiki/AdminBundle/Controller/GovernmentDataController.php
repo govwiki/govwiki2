@@ -111,6 +111,17 @@ class GovernmentDataController extends AbstractGovWikiAdminController
                     $data
                 );
 
+                // Get list of ranked field.
+                $rankedFilterFn = function (array $format) {
+                    return $format['ranked'];
+                };
+                $rankedFields = array_filter($formats, $rankedFilterFn);
+
+                // Recalculate ranks.
+                foreach ($rankedFields as $field) {
+                    $this->getGovernmentManager()->calculateRanks($environment, $field);
+                }
+
                 // Remove max ranks table, max ranks values will be recalculated
                 // on demand.
                 $this->getMaxRankManager()->removeTable($environment);
@@ -299,6 +310,8 @@ class GovernmentDataController extends AbstractGovWikiAdminController
             return $this->redirectToRoute('govwiki_admin_main_home');
         }
 
+        $formats = $this->getFormatManager()
+            ->getList($environment, $government->getAltType());
         // Remove extended data for specified year.
         $this->getGovernmentManager()
             ->removeData($environment, $government->getId(), $year);
@@ -332,12 +345,27 @@ class GovernmentDataController extends AbstractGovWikiAdminController
 
             // Update CartoDB dataset.
             $response = $this->get(CartoDbServices::CARTO_DB_API)->sqlRequest("
-                    UPDATE {$dataset}
-                    SET data_json = '{$dataJson}'
-                    WHERE
-                        slug = '{$slug}' AND
-                        alt_type_slug = '{$altTypeSlug}'
-                ");
+                UPDATE {$dataset}
+                SET data_json = '{$dataJson}'
+                WHERE
+                    slug = '{$slug}' AND
+                    alt_type_slug = '{$altTypeSlug}'
+            ");
+
+            // Get list of ranked field.
+            $rankedFilterFn = function (array $format) {
+                return $format['ranked'];
+            };
+            $rankedFields = array_filter($formats, $rankedFilterFn);
+
+            // Remove max ranks table, max ranks values will be recalculated
+            // on demand.
+            $this->getMaxRankManager()->removeTable($environment);
+
+            // Recalculate ranks.
+            foreach ($rankedFields as $field) {
+                $this->getGovernmentManager()->calculateRanks($environment, $field);
+            }
 
             if (array_key_exists('error', $response)) {
                 // Display error received from CartoDB.

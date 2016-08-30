@@ -63,7 +63,7 @@ class Extension extends \Twig_Extension
             if ('' === $value || '0' === $value) {
                 return null;
             }
-        } elseif ((empty($value) || ($value === 0) || (($value > -0.0001) && ($value < 0.0001)))) {
+        } elseif (abs($value) < 0.000001) {
             return null;
         }
 

@@ -110,6 +110,26 @@ class MaxRankManager implements MaxRankManagerInterface
             ON DUPLICATE KEY UPDATE
                 {$updateParts}
         ");
+
+        $s = "
+            INSERT INTO `{$maxRankTableName}`
+            SELECT new.*
+            FROM
+            (
+                SELECT
+                    g.alt_type_slug AS alt_type_slug,
+                    {$year} AS year,
+                    {$insertParts}
+                FROM `{$governmentTableName}` e
+                INNER JOIN governments g ON e.government_id = g.id
+                WHERE
+                    g.environment_id = '{$environment->getId()}' AND
+                    e.year = {$year}
+                GROUP BY g.alt_type_slug
+            ) AS new
+            ON DUPLICATE KEY UPDATE
+                {$updateParts}
+        ";
     }
 
     /**
