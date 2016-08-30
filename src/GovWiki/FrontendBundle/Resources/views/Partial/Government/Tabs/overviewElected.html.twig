@@ -1,28 +1,31 @@
 <div class="first-tab">
 
 {# Section selector. #}
-<div class="col-md-12">
-    <div class="dropdown">
-        <button id="section-dropdown" data-target="#" class="btn btn-link"
-           data-toggle="dropdown" aria-haspopup="true">
-            Section
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="section-dropdown">
-            {%- if hasElectedOfficials -%}
-                <li><a href="#elected-officials">Elected Officials</a></li>
-            {%- endif -%}
-            <li><a href="#overview">Overview</a></li>
-            {%- if environment.showDocuments -%}
-                <li><a href="#articles">Articles</a></li>
-            {%- endif -%}
-            {%- if environment.showGovernmentComment
-                and (government.comment or app.user) -%}
-                <li><a href="#analysis">Analysis</a></li>
-            {%- endif -%}
-        </ul>
+{%- if (hasElectedOfficials or environment.showDocuments
+    or environment.showGovernmentComment) -%}
+    <div class="col-md-12">
+        <div class="dropdown">
+            <button id="section-dropdown" data-target="#" class="btn btn-link"
+               data-toggle="dropdown" aria-haspopup="true">
+                Section
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="section-dropdown">
+                {%- if hasElectedOfficials -%}
+                    <li><a href="#elected-officials">Elected Officials</a></li>
+                {%- endif -%}
+                <li><a href="#overview">Overview</a></li>
+                {%- if environment.showDocuments -%}
+                    <li><a href="#articles">Articles</a></li>
+                {%- endif -%}
+                {%- if environment.showGovernmentComment
+                    and (government.comment or app.user) -%}
+                    <li><a href="#analysis">Analysis</a></li>
+                {%- endif -%}
+            </ul>
+        </div>
     </div>
-</div>
+{%- endif -%}
 
 {# Elected officials. #}
 {%- if hasElectedOfficials -%}
@@ -93,12 +96,15 @@
 
 {# Overview. #}
 <div class="col-md-12">
-    <h4 id="overview">
-        Overview
-        <small><a href="#section-dropdown">
-            <i class="glyphicon glyphicon-chevron-up"></i>
-        </a></small>
-    </h4>
+    {%- if (hasElectedOfficials or environment.showDocuments
+        or environment.showGovernmentComment) -%}
+        <h4 id="overview">
+            Overview
+            <small><a href="#section-dropdown">
+                <i class="glyphicon glyphicon-chevron-up"></i>
+            </a></small>
+        </h4>
+    {%- endif -%}
     {%- if tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}
         {# User defined tab #}
         {{-

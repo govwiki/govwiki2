@@ -13,7 +13,7 @@ if [ -n "$NODE_VERSION" ]; then
     PRE_COMMIT_SCRIPT=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/pre-commit-js;
 
     # Have node execute the file
-    $(node $PRE_COMMIT_SCRIPT);
+    $(echo "node $PRE_COMMIT_SCRIPT");
 
     # $? holds exit code of *last executed command* - trickster b/c even an echo command changes its value
     PRE_COMMIT_STATUS=$?;
