@@ -7,10 +7,6 @@
     {%- for field in category.formats -%}
         {%- set value = government|applay_mask(field) -%}
 
-        {% if (category.id == 72) %}
-            {% dump value %}
-        {% endif %}
-
         {%- if not value is null -%}
             <tr class="statistics-row">
                 {# Field name #}
