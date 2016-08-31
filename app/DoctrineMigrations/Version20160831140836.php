@@ -20,7 +20,7 @@ class Version20160831140836 extends AbstractMigration
 
         $this->addSql('ALTER TABLE formats ADD parentheses_on_negative TINYINT(1) NOT NULL');
         $this->addSql('
-            UPDATE TABLE formats
+            UPDATE `formats`
             SET parentheses_on_negative = false
         ');
     }
