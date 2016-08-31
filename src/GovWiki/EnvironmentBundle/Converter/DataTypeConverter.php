@@ -14,7 +14,7 @@ final class DataTypeConverter
      */
     public static function abstract2database($type)
     {
-        switch ($type) {
+        switch (strtolower($type)) {
             case 'string':
                 return 'VARCHAR(255)';
 
@@ -33,14 +33,18 @@ final class DataTypeConverter
      */
     public static function database2abstract($type)
     {
-        switch (strtolower($type)) {
-            case 'varchar(255)':
+        $type = strtolower($type);
+
+        switch (true) {
+            case (strpos($type, 'varchar') !== false):
                 return 'string';
 
-            case 'int(11)':
+            case (strpos($type, 'int') !== false):
                 return 'integer';
 
-            case 'float':
+            case (strpos($type, 'float') !== false)
+                || (strpos($type, 'decimal') !== false)
+                || (strpos($type, 'double') !== false):
                 return 'float';
         }
 

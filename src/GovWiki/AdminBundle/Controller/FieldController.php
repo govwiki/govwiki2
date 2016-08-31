@@ -172,13 +172,13 @@ class FieldController extends AbstractGovWikiAdminController
         /** @var Locale $locale */
         foreach ($locale_list as $locale) {
             /** @var Translation $translation */
-            if ('new' == $action) {
+            if ('new' === $action) {
                 $translation = new Translation();
                 $translation->setTransKey($transKey);
                 $translation->setTranslation($format_name);
                 $translation->setLocale($locale);
                 $em->persist($translation);
-            } elseif ('edit' == $action) {
+            } elseif ('edit' === $action) {
                 $translation = $this->getTranslationManager()
                     ->getEnvironmentTranslations($locale->getShortName(), $trans_key_settings, null, $needOneResult);
                 if (!empty($translation)) {
@@ -190,7 +190,7 @@ class FieldController extends AbstractGovWikiAdminController
                     $translation->setLocale($locale);
                     $em->persist($translation);
                 }
-            } elseif ('remove' == $action) {
+            } elseif ('remove' === $action) {
                 $translation = $this->getTranslationManager()
                     ->getEnvironmentTranslations($locale->getShortName(), $trans_key_settings, null, $needOneResult);
                 if (!empty($translation)) {
@@ -232,7 +232,7 @@ class FieldController extends AbstractGovWikiAdminController
      *
      * @return boolean
      */
-    public function handleRequest(Format $format, FormInterface $form, Request $request)
+    private function handleRequest(Format $format, FormInterface $form, Request $request)
     {
         $environment = $this->getCurrentEnvironment();
 
@@ -243,6 +243,22 @@ class FieldController extends AbstractGovWikiAdminController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getManager()->update($format);
             $manager = $this->getGovernmentManager();
+
+            // Add or change column definition.
+            if ($oldFieldName !== null) {
+                $manager->changeColumn(
+                    $environment,
+                    $oldFieldName,
+                    $format->getField(),
+                    $format->getType()
+                );
+            } else {
+                $manager->addColumn(
+                    $environment,
+                    $format->getField(),
+                    $format->getType()
+                );
+            }
 
             if ($format->isRanked()) {
                 // Column set as ranked.

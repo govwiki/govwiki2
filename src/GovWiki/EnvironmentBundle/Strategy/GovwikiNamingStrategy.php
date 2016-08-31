@@ -31,6 +31,16 @@ final class GovwikiNamingStrategy
     }
 
     /**
+     * @param string $field Field name.
+     *
+     * @return boolean
+     */
+    public static function isRankedName($field)
+    {
+        return strpos($field, '_rank') === (strlen($field) - 5);
+    }
+
+    /**
      * @param string $rankFieldName Ranked field name.
      *
      * @return string

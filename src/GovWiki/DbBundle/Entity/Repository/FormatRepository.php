@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Utils\Functions;
 
 /**
@@ -92,21 +93,30 @@ class FormatRepository extends EntityRepository
     /**
      * @param integer $environment Environment entity id.
      * @param string  $name        Field name.
+     * @param boolean $asObject    If set get entity instance instead of
+     *                             array.
      *
-     * @return array|null
+     * @return array|Format|null
      */
-    public function getOne($environment, $name)
+    public function getOne($environment, $name, $asObject = false)
     {
         $expr = $this->_em->getExpressionBuilder();
+        $qb = $this->createQueryBuilder('Format');
+
+        if ($asObject) {
+            $qb->addSelect('Category');
+        } else {
+            $qb->select(
+                'Format.helpText, Format.dataOrFormula, Format.name',
+                'Format.mask, Format.field, Format.ranked, Format.showIn',
+                'Format.type',
+                'Category.id AS category_id, Category.name AS category_name',
+                'Category.decoration as category_decoration'
+            );
+        }
+
         try {
-            return $this->createQueryBuilder('Format')
-                ->select(
-                    'Format.helpText, Format.dataOrFormula, Format.name',
-                    'Format.mask, Format.field, Format.ranked, Format.showIn',
-                    'Format.type',
-                    'Category.id AS category_id, Category.name AS category_name',
-                    'Category.decoration as category_decoration'
-                )
+            return $qb
                 ->leftJoin('Format.category', 'Category')
                 ->where($expr->andX(
                     $expr->eq('Format.environment', ':environment'),
@@ -119,6 +129,7 @@ class FormatRepository extends EntityRepository
                 ->getQuery()
                 ->getOneOrNullResult();
         } catch (NonUniqueResultException $e) {
+            dump($e);
             return null;
         }
     }

@@ -223,6 +223,19 @@ interface GovernmentManagerInterface
     );
 
     /**
+     * Get database column definition from environment related data table.
+     * Return array with values:
+     *  - field
+     *  - type (abstract type like 'integer' not a concrete database type)
+     *
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $name        Column name.
+     *
+     * @return array
+     */
+    public function getColumnDefinition(Environment $environment, $name);
+
+    /**
      * Add new column to environment related government table.
      *
      * @param Environment $environment A Environment entity instance.

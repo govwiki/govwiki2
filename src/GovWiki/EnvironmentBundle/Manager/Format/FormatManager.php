@@ -37,10 +37,13 @@ class FormatManager implements FormatManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getFieldFormat(Environment $environment, $fieldName)
-    {
+    public function getFieldFormat(
+        Environment $environment,
+        $fieldName,
+        $asObject = false
+    ) {
         return $this->em->getRepository('GovWikiDbBundle:Format')
-            ->getOne($environment->getId(), $fieldName);
+            ->getOne($environment->getId(), $fieldName, $asObject);
     }
 
     /**

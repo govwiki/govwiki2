@@ -71,7 +71,7 @@ class RecalculateRanksCommand extends ContainerAwareCommand
             ->getContainer()
             ->get(GovWikiEnvironmentService::FORMAT_MANAGER);
 
-        /** @var GovernmentManagerInterface $manager */
+        /** @var GovernmentManagerInterface $governmentManager */
         $governmentManager = $this
             ->getContainer()
             ->get(GovWikiEnvironmentService::GOVERNMENT_MANAGER);

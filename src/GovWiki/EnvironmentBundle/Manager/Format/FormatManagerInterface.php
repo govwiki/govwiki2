@@ -3,6 +3,7 @@
 namespace GovWiki\EnvironmentBundle\Manager\Format;
 
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Format;
 
 /**
  * Interface FormatManagerInterface
@@ -25,10 +26,16 @@ interface FormatManagerInterface
      *
      * @param Environment $environment A Environment entity instance.
      * @param string      $fieldName   Field name.
+     * @param boolean     $asObject    If set get entity instance instead of
+     *                                 array.
      *
-     * @return array|null
+     * @return array|Format|null
      */
-    public function getFieldFormat(Environment $environment, $fieldName);
+    public function getFieldFormat(
+        Environment $environment,
+        $fieldName,
+        $asObject = false
+    );
 
     /**
      * @param Environment $environment A Environment entity instance.

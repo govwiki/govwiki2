@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Asset;
 
 /**
@@ -12,6 +13,11 @@ use Symfony\Component\Validator\Constraints as Asset;
  * @ORM\Table(name="formats")
  * @ORM\Entity(
  *  repositoryClass="GovWiki\DbBundle\Entity\Repository\FormatRepository"
+ * )
+ *
+ * @UniqueEntity(
+ *  fields={ "field" },
+ *  message="Column with current field name already exists."
  * )
  */
 class Format
@@ -44,6 +50,7 @@ class Format
      *
      * @ORM\Column()
      * @Groups({"government"})
+     * @Asset\NotBlank(message="Name should not be blank.")
      */
     private $name;
 
@@ -51,6 +58,7 @@ class Format
      * @var string
      *
      * @ORM\Column()
+     * @Asset\NotBlank(message="Field name should not be blank.")
      */
     private $field;
 

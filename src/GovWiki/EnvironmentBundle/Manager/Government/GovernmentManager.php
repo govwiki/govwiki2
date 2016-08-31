@@ -806,6 +806,40 @@ class GovernmentManager implements GovernmentManagerInterface
     }
 
     /**
+     * Get database column definition from environment related data table.
+     * Return array with values:
+     *  - field
+     *  - type (abstract type like 'integer' not a concrete database type)
+     *
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $name        Column name.
+     *
+     * @return array|null
+     */
+    public function getColumnDefinition(Environment $environment, $name)
+    {
+        $tableName = GovwikiNamingStrategy::environmentRelatedTableName(
+            $environment
+        );
+
+        $columns = $this->em->getConnection()->fetchAll("
+            SHOW COLUMNS FROM `{$tableName}` LIKE '{$name}'
+        ");
+
+        if (count($columns) >= 1) {
+            // Get column definitions.
+            $originalType = $columns[0]['Type'];
+
+            return [
+                'field' => $columns[0]['Field'],
+                'type' => DataTypeConverter::database2abstract($originalType),
+            ];
+        }
+
+        return null;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function addColumn(Environment $environment, $name, $type)
