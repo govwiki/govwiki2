@@ -77,9 +77,10 @@ class Extension extends \Twig_Extension
             if ('$' === $mask[0]) {
                 $prefix = '$';
 
-                if ($value < 0) {
+                if ($value < 0 && ($format['parenthesesOnNegative'])) {
                     $value = abs($value);
-                    $prefix = '-$';
+                    $prefix = '$ (';
+                    $postfix = ')';
                 }
                 $decimalStr = $mask;
                 if (strpos($mask, ',') !== false) {
@@ -88,6 +89,12 @@ class Extension extends \Twig_Extension
                 $decimal = strlen($decimalStr) - 1;
             } elseif (strpos($mask, '%') !== false) {
                 $postfix = '%';
+
+                if ($value < 0 && ($format['parenthesesOnNegative'])) {
+                    $value = abs($value);
+                    $prefix = '(';
+                    $postfix = ') %';
+                }
 
                 // If type is float then this value is percent value :-)
                 if ('float' === $format['type']) {
@@ -104,7 +111,12 @@ class Extension extends \Twig_Extension
             $value = $prefix . number_format($value, $decimal) . $postfix;
         } elseif (! is_string($value)) {
             // Add thousands separator.
-            $value = number_format($value);
+
+            if ($value < 0 && ($format['parenthesesOnNegative'])) {
+                $value = '('. number_format(abs($value)) .')';
+            } else {
+                $value = number_format($value);
+            }
         }
 
         return $value;

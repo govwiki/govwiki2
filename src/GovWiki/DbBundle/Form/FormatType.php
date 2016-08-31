@@ -129,6 +129,7 @@ class FormatType extends AbstractType
                 'data' => $data->getField(),
                 'hidden' => $isGovernmentSource,
                 'mapped' => false,
+                'empty_data' => $data->getField(),
             ])
             ->add('fieldChoice', 'choice', [
                 'data' => $data->getField(),
@@ -156,6 +157,7 @@ class FormatType extends AbstractType
                 'required' => false,
                 'hidden' => $isGovernmentSource,
             ])
+            ->add('parenthesesOnNegative')
             ->add('ranked', 'checkbox', [
                 'required' => false,
                 'label_attr' => $rankedLabelAttr,

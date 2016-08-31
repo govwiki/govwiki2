@@ -4,14 +4,18 @@ namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use GovWiki\DbBundle\Doctrine\Repository\EnvironmentStorageAwareInterface;
+use GovWiki\DbBundle\Doctrine\Repository\EnvironmentStorageAwareTrait;
 use GovWiki\DbBundle\Entity\Format;
 use GovWiki\DbBundle\Utils\Functions;
 
 /**
  * FormatRepository
  */
-class FormatRepository extends EntityRepository
+class FormatRepository extends EntityRepository implements
+    EnvironmentStorageAwareInterface
 {
+    use EnvironmentStorageAwareTrait;
 
     /**
      * @param integer $environment Environment entity id.
@@ -29,7 +33,7 @@ class FormatRepository extends EntityRepository
                 'Format.helpText, Format.dataOrFormula, Format.name',
                 'Format.mask, Format.field, Format.ranked, Format.showIn',
                 'Format.type, Format.rankType, Format.rankLetterRanges',
-                'Format.source'
+                'Format.source, Format.parenthesesOnNegative'
             );
         } else {
             $qb->select('Format.id, Format.name');
@@ -109,7 +113,7 @@ class FormatRepository extends EntityRepository
             $qb->select(
                 'Format.helpText, Format.dataOrFormula, Format.name',
                 'Format.mask, Format.field, Format.ranked, Format.showIn',
-                'Format.type',
+                'Format.type, Format.parenthesesOnNegative',
                 'Category.id AS category_id, Category.name AS category_name',
                 'Category.decoration as category_decoration'
             );
@@ -158,5 +162,17 @@ class FormatRepository extends EntityRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $criteria Select criteria.
+     *
+     * @return Format[]
+     */
+    public function checkUnique(array $criteria)
+    {
+        $criteria['environment'] = $this->storage->get()->getId();
+
+        return $this->findBy($criteria);
     }
 }

@@ -86,6 +86,7 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+        repository_factory: govwiki_db.factory.repository
         dql:
             string_functions:
                 year: GovWiki\DbBundle\Doctrine\Functions\YearFunction

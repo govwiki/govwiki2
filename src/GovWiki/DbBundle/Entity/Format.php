@@ -17,7 +17,8 @@ use Symfony\Component\Validator\Constraints as Asset;
  *
  * @UniqueEntity(
  *  fields={ "field" },
- *  message="Column with current field name already exists."
+ *  message="Column with current field name already exists.",
+ *  repositoryMethod="checkUnique"
  * )
  */
 class Format
@@ -170,6 +171,13 @@ class Format
      * @ORM\Column
      */
     private $source = self::SOURCE_USER_DEFINED;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $parenthesesOnNegative = false;
 
     /**
      * @return array
@@ -523,5 +531,29 @@ class Format
     public function getSource()
     {
         return $this->source;
+    }
+
+    /**
+     * Set parenthesesOnNegative
+     *
+     * @param boolean $parenthesesOnNegative Flag.
+     *
+     * @return Format
+     */
+    public function setParenthesesOnNegative($parenthesesOnNegative)
+    {
+        $this->parenthesesOnNegative = $parenthesesOnNegative;
+
+        return $this;
+    }
+
+    /**
+     * Get parenthesesOnNegative
+     *
+     * @return boolean
+     */
+    public function isParenthesesOnNegative()
+    {
+        return $this->parenthesesOnNegative;
     }
 }
