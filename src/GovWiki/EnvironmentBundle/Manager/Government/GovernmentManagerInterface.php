@@ -284,10 +284,11 @@ interface GovernmentManagerInterface
     /**
      * @param Environment  $environment A Environment entity instance.
      * @param Format|array $format      A Format entity instance.
+     * @param integer      $year        Calculate year.
      *
      * @return void
      *
      * @throws \Doctrine\DBAL\DBALException Error while update.
      */
-    public function calculateRanks(Environment $environment, $format);
+    public function calculateRanks(Environment $environment, $format, $year);
 }

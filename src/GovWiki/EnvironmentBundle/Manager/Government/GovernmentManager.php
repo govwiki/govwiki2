@@ -938,12 +938,13 @@ class GovernmentManager implements GovernmentManagerInterface
     /**
      * @param Environment  $environment A Environment entity instance.
      * @param Format|array $format      A Format entity instance.
+     * @param integer      $year        Calculate year.
      *
      * @return void
      *
      * @throws \Doctrine\DBAL\DBALException Error while update.
      */
-    public function calculateRanks(Environment $environment, $format)
+    public function calculateRanks(Environment $environment, $format, $year)
     {
         if (is_array($format)) {
             $fieldName = $format['field'];
@@ -975,13 +976,16 @@ class GovernmentManager implements GovernmentManagerInterface
                 JOIN (SELECT @rank := 0) x
                 JOIN (SELECT @prev_value := -1) y
                 JOIN governments ON governments.id = data.government_id
-                WHERE governments.alt_type_slug in ({$slugs})
+                WHERE
+                    governments.alt_type_slug in ({$slugs}) AND
+                    data.year = {$year}
                 ORDER BY data.{$fieldName} DESC
             ) x ON government_id = x.id
             SET
                 {$rankName} = x.rank
             WHERE
-                government_id = x.id;
+                government_id = x.id AND
+                year = {$year}
         ");
     }
 

@@ -29,7 +29,7 @@ class RecalculateRanksCommand extends ContainerAwareCommand
         $this
             ->setName('govwiki:recalculate:ranks')
             ->setDescription('Recalculate ranks for given GovWiki environment.')
-            ->addArgument('environment', InputArgument::REQUIRED, 'Environment');
+            ->addArgument('environment', InputArgument::REQUIRED, 'Environment domain.');
     }
 
     /**
@@ -57,7 +57,7 @@ class RecalculateRanksCommand extends ContainerAwareCommand
 
         // Get environment entity by name from user input.
         $name = $input->getArgument('environment');
-        $environment = $repository->findOneBy([ 'name' => $name ]);
+        $environment = $repository->findOneBy([ 'domain' => $name ]);
 
         if (! $environment instanceof Environment) {
             $message = "<error>Can't find environment with name: {$name}</error>";
@@ -83,10 +83,15 @@ class RecalculateRanksCommand extends ContainerAwareCommand
         };
         $formats = array_filter($formats, $rankedFilterFn);
 
-        foreach ($formats as $format) {
-            $output->write("Recalculate for [{$format['name']}] ... ");
-            $governmentManager->calculateRanks($environment, $format);
-            $output->writeln("[ OK ]");
+        // Get all available years for environment.
+        $availableYears = $governmentManager->getAvailableYears($environment);
+
+        foreach ($availableYears as $year) {
+            foreach ($formats as $format) {
+                $output->write("Recalculate for [{$format['name']}] ({$year}) ... ");
+                $governmentManager->calculateRanks($environment, $format, $year);
+                $output->writeln("[ OK ]");
+            }
         }
 
         return 0;
