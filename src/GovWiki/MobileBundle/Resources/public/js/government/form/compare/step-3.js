@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 /**
  * Constructor
  * @param FormState
@@ -108,7 +110,9 @@ Step.prototype.loadMatchedCategories = function loadMatchedCategories() {
       availableTabs = [];
 
       data.forEach(function loop(item) {
-        if (availableTabs.indexOf(item.translatedTab) === -1) {
+        if (! _.find(availableTabs, function(tab) {
+            return tab.normal === item.tab;
+          })) {
           availableTabs.push({
             translated: item.translatedTab,
             normal: item.tab
