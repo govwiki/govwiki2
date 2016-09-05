@@ -139,7 +139,7 @@ class GovernmentRepository extends EntityRepository
             ->select(
                 'Government',
                 'partial ElectedOfficial.{id, fullName, slug, displayOrder, title, emailAddress, telephoneNumber, photoUrl, bioUrl, termExpires}',
-                'partial Issue.{id, description, link, type}',
+                'partial Issue.{id, name, description, link, type}',
                 'partial EditRequest.{id, changes}',
                 'partial User.{id}'
             )
