@@ -279,8 +279,11 @@ class FieldController extends AbstractGovWikiAdminController
                     );
                 }
 
-                // Recalculate rank.
-                $manager->calculateRanks($environment, $format);
+                // Recalculate ranks.
+                $years = $manager->getAvailableYears($environment);
+                foreach ($years as $year) {
+                    $manager->calculateRanks($environment, $format, $year);
+                }
                 // Clear max ranks.
                 $this->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
                     ->removeTable($environment);

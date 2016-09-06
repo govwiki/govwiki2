@@ -79,7 +79,7 @@ class Extension extends \Twig_Extension
 
                 if ($value < 0 && ($format['parenthesesOnNegative'])) {
                     $value = abs($value);
-                    $prefix = '$ (';
+                    $prefix = '($';
                     $postfix = ')';
                 }
                 $decimalStr = $mask;
@@ -93,7 +93,7 @@ class Extension extends \Twig_Extension
                 if ($value < 0 && ($format['parenthesesOnNegative'])) {
                     $value = abs($value);
                     $prefix = '(';
-                    $postfix = ') %';
+                    $postfix = '%)';
                 }
 
                 // If type is float then this value is percent value :-)
