@@ -94,6 +94,10 @@ class RecalculateRanksCommand extends ContainerAwareCommand
             }
         }
 
+        // Drop max ranks table.
+        $this->getContainer()->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
+            ->removeTable($environment);
+
         return 0;
     }
 }
