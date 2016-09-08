@@ -15,7 +15,7 @@
 
                     {% if government.wikipediaPageName %}
                         <a target="_blank" href="{{government.wikipediaPageName}}">
-                            Open Wikipedia article
+                            {{- 'government.wikipedia_link'|trans -}}
                             <img src="{{- asset('/images/wikipedia.gif') -}}" style="width:36px; height:36px">
                         </a>
                     {% endif %}
