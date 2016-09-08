@@ -8,8 +8,8 @@ var d3 = require('d3');
  */
 function init() {
   handlerSwitchChart();
-  revenuePie();
-  expendituresPie();
+  revenuesTree();
+  expendituresTree();
 }
 
 /**
@@ -332,9 +332,9 @@ function expendituresTree() {
 function handlerSwitchChart() {
   var mobile = '';
 
-  hideChartGroup('pie-charts', false);
+  hideChartGroup('tree-charts', false);
+  hideChartGroup('pie-charts', true);
   hideChartGroup('compare-charts', true);
-  hideChartGroup('tree-charts', true);
   hideTableGroup('financialTable', true);
   hideTableGroup('compareTables', false);
 
