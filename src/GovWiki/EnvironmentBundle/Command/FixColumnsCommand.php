@@ -89,8 +89,8 @@ class FixColumnsCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param Environment $environment A Environment entity instance.
-     * @param OutputInterface $output An OutputInterface instance.
+     * @param Environment     $environment A Environment entity instance.
+     * @param OutputInterface $output      An OutputInterface instance.
      *
      * @return void
      */
@@ -192,8 +192,8 @@ class FixColumnsCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param Environment $environment A Environment entity instance.
-     * @param OutputInterface $output An OutputInterface instance.
+     * @param Environment     $environment A Environment entity instance.
+     * @param OutputInterface $output      An OutputInterface instance.
      *
      * @return void
      */

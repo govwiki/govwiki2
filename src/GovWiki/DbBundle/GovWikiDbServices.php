@@ -8,7 +8,6 @@ namespace GovWiki\DbBundle;
  */
 abstract class GovWikiDbServices
 {
-    const MAX_RANKS_COMPUTER = 'govwiki_db.service.max_ranks_computer';
 
     const CREATE_REQUEST_MANAGER = 'govwiki_db.manager.create_request';
 

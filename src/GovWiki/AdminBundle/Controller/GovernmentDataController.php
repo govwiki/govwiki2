@@ -119,7 +119,8 @@ class GovernmentDataController extends AbstractGovWikiAdminController
 
                 // Recalculate ranks.
                 foreach ($rankedFields as $field) {
-                    $this->getGovernmentManager()->calculateRanks($environment, $field);
+                    $this->getGovernmentManager()
+                        ->calculateRanks($environment, $field, $year);
                 }
 
                 // Remove max ranks table, max ranks values will be recalculated
@@ -219,7 +220,7 @@ class GovernmentDataController extends AbstractGovWikiAdminController
 
             // Recalculate ranks for changed ranked fields.
             foreach ($changedRankedFields as $field) {
-                $this->getGovernmentManager()->calculateRanks($environment, $field);
+                $this->getGovernmentManager()->calculateRanks($environment, $field, $year);
             }
 
             // Remove max ranks table, max ranks values will be recalculated
@@ -364,7 +365,8 @@ class GovernmentDataController extends AbstractGovWikiAdminController
 
             // Recalculate ranks.
             foreach ($rankedFields as $field) {
-                $this->getGovernmentManager()->calculateRanks($environment, $field);
+                $this->getGovernmentManager()
+                    ->calculateRanks($environment, $field, $year);
             }
 
             if (array_key_exists('error', $response)) {

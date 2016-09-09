@@ -37,7 +37,7 @@ interface MaxRankManagerInterface
      * @param string      $altTypeSlug Government alt type.
      * @param integer     $year        Data year.
      *
-     * @return array
+     * @return array|boolean
      */
     public function get(
         Environment $environment,

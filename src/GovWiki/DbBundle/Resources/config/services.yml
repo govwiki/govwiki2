@@ -4,11 +4,6 @@ services:
         arguments: [ @govwiki_environment.storage ]
         public: false
 
-    govwiki_db.service.max_ranks_computer:
-        class: GovWiki\DbBundle\Service\MaxRankComputer
-        arguments:
-            - @doctrine.orm.entity_manager
-
     govwiki_db.importer.abstract:
         class: GovWiki\DbBundle\Importer\AbstractImporter
         arguments:
