@@ -81,6 +81,10 @@ class EnvironmentType extends AbstractType
                 'required' => false,
                 'mapped' => false,
             ])
+            ->add('analytics', null, [
+                'label' => 'Analytics code',
+                'attr' => [ 'style' => 'height: 220px' ],
+            ])
             ->add('adminEmail');
         if ($subject->getId()) {
             $builder->add('defaultLocale', 'entity', [

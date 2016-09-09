@@ -231,6 +231,13 @@ class Environment
     protected $showGovernmentComment;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    protected $analytics;
+
+    /**
      *
      */
     public function __construct()
@@ -905,5 +912,29 @@ class Environment
     public function isShowGovernmentComment()
     {
         return $this->showGovernmentComment;
+    }
+
+    /**
+     * Set analytics
+     *
+     * @param string $analytics Analytics code.
+     *
+     * @return Environment
+     */
+    public function setAnalytics($analytics)
+    {
+        $this->analytics = $analytics;
+
+        return $this;
+    }
+
+    /**
+     * Get analytics
+     *
+     * @return string
+     */
+    public function getAnalytics()
+    {
+        return $this->analytics;
     }
 }

@@ -192,5 +192,9 @@
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
+        {%- if (environment.analytics is defined) -%}
+            {{- environment.analytics|raw -}}
+        {%- endif -%}
+
     </body>
 </html>
