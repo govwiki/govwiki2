@@ -970,10 +970,11 @@ class GovernmentManager implements GovernmentManagerInterface
             JOIN (
                 SELECT
                     governments.id,
-                    @rank := IF(@prev_value=data.{$fieldName},@rank,@rank + 1) AS rank,
-                    @prev_value := data.{$fieldName}
+                    IF (data.{$fieldName} = @prev_value, @rank, @rank := @count) AS rank,
+                    @prev_value := data.{$fieldName},
+                    @count := @count + 1
                 FROM {$tableName} data
-                JOIN (SELECT @rank := 0) x
+                JOIN (SELECT @count := 1) x
                 JOIN (SELECT @prev_value := -1) y
                 JOIN governments ON governments.id = data.government_id
                 WHERE
@@ -987,6 +988,29 @@ class GovernmentManager implements GovernmentManagerInterface
                 government_id = x.id AND
                 year = {$year}
         ");
+
+//        $this->em->getConnection()->exec("
+//            UPDATE {$tableName}
+//            JOIN (
+//                SELECT
+//                    governments.id,
+//                    @rank := IF(@prev_value=data.{$fieldName},@rank,@rank + 1) AS rank,
+//                    @prev_value := data.{$fieldName}
+//                FROM {$tableName} data
+//                JOIN (SELECT @rank := 0) x
+//                JOIN (SELECT @prev_value := -1) y
+//                JOIN governments ON governments.id = data.government_id
+//                WHERE
+//                    governments.alt_type_slug in ({$slugs}) AND
+//                    data.year = {$year}
+//                ORDER BY data.{$fieldName} DESC
+//            ) x ON government_id = x.id
+//            SET
+//                {$rankName} = x.rank
+//            WHERE
+//                government_id = x.id AND
+//                year = {$year}
+//        ");
     }
 
     /**
