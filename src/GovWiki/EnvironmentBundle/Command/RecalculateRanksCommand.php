@@ -81,7 +81,7 @@ class RecalculateRanksCommand extends ContainerAwareCommand
         $rankedFilterFn = function (array $format) {
             return $format['ranked'];
         };
-        $formats = array_filter($formats, $rankedFilterFn);
+        $formats = array_values(array_filter($formats, $rankedFilterFn));
 
         // Get all available years for environment.
         $availableYears = $governmentManager->getAvailableYears($environment);
@@ -93,6 +93,8 @@ class RecalculateRanksCommand extends ContainerAwareCommand
                 $output->writeln("[ OK ]");
             }
         }
+
+        $governmentManager->calculateRanks($environment, $formats[0], $availableYears[0]);
 
         // Drop max ranks table.
         $this->getContainer()->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
