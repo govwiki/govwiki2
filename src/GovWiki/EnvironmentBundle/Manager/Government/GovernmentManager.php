@@ -976,6 +976,7 @@ class GovernmentManager implements GovernmentManagerInterface
                 FROM {$tableName} data
                 JOIN (SELECT @count := 1) x
                 JOIN (SELECT @prev_value := -1) y
+                JOIN (SELECT @rank := 1) z
                 JOIN governments ON governments.id = data.government_id
                 WHERE
                     governments.alt_type_slug in ({$slugs}) AND
