@@ -970,7 +970,13 @@ class GovernmentManager implements GovernmentManagerInterface
             JOIN (
                 SELECT
                     governments.id,
-                    IF (data.{$fieldName} = @prev_value, @rank, @rank := @count) AS rank,
+                    (
+                        CASE
+                            WHEN data.{$fieldName} IS NULL THEN NULL
+                            WHEN data.{$fieldName} = @prev_value THEN @rank
+                            ELSE @rank := @count
+                        END
+                    ) AS rank,
                     @prev_value := data.{$fieldName},
                     @count := @count + 1
                 FROM {$tableName} data
