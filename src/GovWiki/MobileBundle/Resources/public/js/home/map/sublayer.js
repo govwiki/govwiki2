@@ -156,7 +156,8 @@ function initCmfMarkerSublayer(altType) {
       ' SELECT',
       '  json_object_keys(data_json::json) as latest_year',
       ' FROM '+ window.gw.environment,
-      ' WHERE cartodb_id = e.cartodb_id',
+      ' WHERE cartodb_id = e.cartodb_id AND',
+      "  data_json <> 'null'",
       ' ORDER BY 1 DESC',
       ' LIMIT 1',
       '))::float AS data'
