@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Controller;
 
+use GovWiki\DbBundle\Entity\Advertising;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use GovWiki\AdminBundle\Form\AdvertisingForm;
@@ -39,6 +40,9 @@ class AdvertisingController extends AbstractGovWikiAdminController
 
         $advertising = $em->getRepository('GovWikiDbBundle:Advertising')
             ->findOneBy([ 'environment' => $environment->getId() ]);
+        if (! $advertising instanceof Advertising) {
+            $advertising = new Advertising();
+        }
 
         $form = $this->createForm(new AdvertisingForm(), $advertising);
         $form->handleRequest($request);
@@ -51,8 +55,6 @@ class AdvertisingController extends AbstractGovWikiAdminController
             $em->flush();
         }
 
-        return [
-            'form' => $form->createView(),
-        ];
+        return [ 'form' => $form->createView() ];
     }
 }
