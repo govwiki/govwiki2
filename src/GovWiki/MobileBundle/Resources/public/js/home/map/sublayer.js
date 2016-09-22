@@ -142,13 +142,31 @@ function initMarkerSubLayer(altType) {
 
 function initCmfMarkerSublayer(altType) {
   var _altType = altType.toLowerCase();
-  var cartocss = '';
+  var cartocss;
+  var dataSelection;
+  var sql;
 
   var isRangeLegend = window.gw.map.coloringConditions.colorized;
   var options = { isMarkerLayer: true };
   var legendColorsAsCartoCss = Style.getColorsFromLegend(altType);
 
-  var sql = [
+  if (window.gw.map.year === 'latest') {
+    dataSelection = [
+      '(data_json::json->>(',
+      ' SELECT',
+      '  json_object_keys(data_json::json) as latest_year',
+      ' FROM '+ window.gw.environment,
+      ' WHERE cartodb_id = e.cartodb_id',
+      ' ORDER BY 1 DESC',
+      ' LIMIT 1',
+      '))::float AS data'
+    ].join(' ');
+  } else {
+    dataSelection = "(data_json::json->>'" + window.gw.map.year
+    + "')::float AS data";
+  }
+
+  sql = [
     'SELECT',
     ' case',
     "   when name != 'Honolulu' and name != 'Anchorage'",
@@ -179,30 +197,31 @@ function initCmfMarkerSublayer(altType) {
     ' cartodb_id,',
     ' name,',
     ' alt_type_slug,',
-    ' slug',
-    'FROM cmf'
-  ].join(' ');
+    ' slug,',
+    dataSelection,
+    'FROM cmf e'
+  ];
 
   options.markerFileCss = legendColorsAsCartoCss.markerFileCss;
   options.markerFillColorCss = legendColorsAsCartoCss.markerFillColorCss;
   options.markerLineColorColorCss = legendColorsAsCartoCss.markerLineColorColorCss;
 
+  cartocss = '#layer { ' +
+  legendColorsAsCartoCss.markerFileCss +
+  legendColorsAsCartoCss.markerFillColorCss +
+  ' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
+
   if (isRangeLegend) {
-    cartocss += '#layer { ' +
-                legendColorsAsCartoCss.markerFileCss +
-                legendColorsAsCartoCss.markerLineColorColorCss +
-                ' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
     cartocss += getConditionsColorsAsCartoCss(options);
-  } else {
-    cartocss += '#layer { ' +
-                legendColorsAsCartoCss.markerFileCss +
-                legendColorsAsCartoCss.markerFillColorCss +
-                ' line-color: #FFF; line-width: 0.5; line-opacity: 1; } ';
   }
+
+  console.log(cartocss);
+  console.log(sql.join("\n"));
+
   config.subLayers[_altType] = config.baseLayer.createSubLayer({
-    sql: sql,
+    sql: sql.join(' '),
     cartocss: cartocss,
-    interactivity: ['cartodb_id', 'name', 'alt_type_slug', 'slug']
+    interactivity: ['cartodb_id', 'name', 'alt_type_slug', 'slug', 'data']
   });
   Tooltip.init(_altType);
 }

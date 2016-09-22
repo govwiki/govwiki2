@@ -102,11 +102,14 @@ function handlerToggleConditions($container) {
     }
 
     if (activeConditions.length > 0) {
-      disabledConditions = findDisabledConditions(activeConditions, config.defaultConditions);
+      disabledConditions = findDisabledConditions(
+        activeConditions,
+        config.defaultConditions.conditions
+      );
       addActiveConditions(completeConditions, activeConditions);
       addDisabledConditions(completeConditions, disabledConditions);
     } else {
-      completeConditions = config.defaultConditions;
+      completeConditions = config.defaultConditions.conditions;
     }
 
     console.group();
@@ -167,6 +170,7 @@ function addDisabledConditions(completeConditions, disabledConditions) {
 
 /**
  * @param activeConditions
+ * @param disabledConditions
  * @returns {*}
  */
 function findDisabledConditions(activeConditions, defaultConditions) {
