@@ -1,0 +1,9 @@
+{%- spaceless -%}
+<div class="monetizations monetizations_{{- position -}}">
+    {%- for monetization in monetizations -%}
+        {{- include('@GovWikiFrontend/Monetization/default.html.twig', {
+            code: monetization.code
+        }) -}}
+    {%- endfor -%}
+</div>
+{%- endspaceless -%}

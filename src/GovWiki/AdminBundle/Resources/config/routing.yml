@@ -79,8 +79,8 @@ shape:
     resource: "@GovWikiAdminBundle/Controller/ShapeController.php"
     type:      annotation
 
-advertising:
-    resource: "@GovWikiAdminBundle/Controller/AdvertisingController.php"
+monetization:
+    resource: "@GovWikiAdminBundle/Controller/MonetizationController.php"
     type:     annotation
 
 locale:

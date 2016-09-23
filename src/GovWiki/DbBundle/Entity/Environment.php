@@ -219,9 +219,9 @@ class Environment
     /**
      * @var Collection
      *
-     * @ORM\OneToMany(targetEntity="Advertising", mappedBy="environment")
+     * @ORM\OneToMany(targetEntity="Monetization", mappedBy="environment")
      */
-    protected $advertising;
+    protected $monetization;
 
     /**
      * @var boolean
@@ -796,29 +796,29 @@ class Environment
     }
 
     /**
-     * Add advertising
+     * Add monetization
      *
-     * @param Advertising $advertising A Advertising entity instance.
+     * @param Monetization $monetization A Monetization entity instance.
      *
      * @return Environment
      */
-    public function addAdvertising(Advertising $advertising)
+    public function addAdvertising(Monetization $monetization)
     {
-        $this->advertising[] = $advertising;
+        $this->monetization[] = $monetization;
 
         return $this;
     }
 
     /**
-     * Remove advertising
+     * Remove monetization
      *
-     * @param Advertising $advertising A Advertising entity instance.
+     * @param Monetization $monetization A Monetization entity instance.
      *
      * @return Environment
      */
-    public function removeAdvertising(Advertising $advertising)
+    public function removeAdvertising(Monetization $monetization)
     {
-        $this->advertising->removeElement($advertising);
+        $this->monetization->removeElement($monetization);
 
         return $this;
     }
@@ -830,7 +830,7 @@ class Environment
      */
     public function getAdvertising()
     {
-        return $this->advertising;
+        return $this->monetization;
     }
 
     /**
