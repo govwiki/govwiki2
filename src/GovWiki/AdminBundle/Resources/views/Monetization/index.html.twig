@@ -9,22 +9,25 @@
         'govwiki_admin_environment_show',
         { 'environment': environment.slug }
     ) -}}
-    {{ macro.breadcrumbElement('Advertising') }}
+    {{ macro.breadcrumbElement('Advertising & Donation') }}
 {% endblock breadcrumb %}
 
 {% block panel_title %}
-    Advertising
+    Advertising & Donation
 {% endblock panel_title %}
 
 {% block panel_body %}
-    {{ form_start(form) }}
-    <div class="row">
-        <div class="col-md-6">{{ form_row(form.advertingType) }}</div>
-        <div class="col-md-6">{{ form_row(form.advertingEnable) }}</div>
+    {{- form_start(form) -}}
+    <div class="col-md-6 col-xs-12">
+        <h3>Advertising</h3>
+        {{- form_widget(form.advertising) -}}
     </div>
-    {{ form_row(form.advertingCode) }}
-    <div>
+    <div class="col-md-6 col-xs-12">
+        <h3>Donation button</h3>
+        {{- form_widget(form.button) -}}
+    </div>
+    <div class="col-md-12">
         <button type="submit" class="btn btn-success">Save</button>
     </div>
-    {{ form_end(form) }}
+    {{- form_end(form) -}}
 {% endblock panel_body %}

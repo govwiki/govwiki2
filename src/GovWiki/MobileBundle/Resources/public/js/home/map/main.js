@@ -52,7 +52,7 @@ var tileMapConfig = {
       type: 'cartodb',
       options: {
         cartocss_version: '2.1.1',
-        cartocss: 'Map {background-color: white;} #layer { polygon-fill: #FF6600; polygon-opacity: 0.7; line-color: #FFF;' +
+        cartocss: 'Map {background-color: white;} #layer { polygon-fill: #bfbfbf; polygon-opacity: 0.7; line-color: #FFF;' +
                   ' line-width: 0.5; line-opacity: 1; } ',
         sql: tileSql
       }

@@ -3,7 +3,9 @@
 namespace GovWiki\EnvironmentBundle\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Entity\Monetization;
 use GovWiki\EnvironmentBundle\Manager\ElectedOfficial\ElectedOfficialManagerInterface;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
@@ -36,6 +38,11 @@ class Extension extends \Twig_Extension
      * @var EntityManagerInterface
      */
     private $em;
+
+    /**
+     * @var array[]
+     */
+    private $monetizations;
 
     /**
      * @param EnvironmentStorageInterface     $storage                A
@@ -130,6 +137,14 @@ class Extension extends \Twig_Extension
                 $this,
                 'getIssuesCategoriesSource',
             ]),
+
+            new \Twig_SimpleFunction('insertMonetization', [
+                $this,
+                'insertMonetization',
+            ], [
+                'is_safe' => [ 'html' ],
+                'needs_environment' => true
+            ]),
         ];
     }
 
@@ -196,6 +211,40 @@ class Extension extends \Twig_Extension
         }
 
         return $source;
+    }
+
+    /**
+     * @param \Twig_Environment $twigEnvironment A Twig_Environment instance.
+     * @param string            $position        Current position.
+     *
+     * @return string
+     */
+    public function insertMonetization(\Twig_Environment $twigEnvironment, $position)
+    {
+        Monetization::validatePosition($position);
+
+        if ($this->monetizations === null) {
+            /** @var EntityRepository $repository */
+            $repository = $this->em->getRepository('GovWikiDbBundle:Monetization');
+            $this->monetizations =
+                $repository->findBy([
+                    'environment' => $this->storage->get()->getId(),
+                    'enable' => true,
+                ]);
+        }
+
+        $monetizations = array_filter(
+            $this->monetizations,
+            function (Monetization $monetization) use ($position) {
+                return $monetization->isOnPosition($position);
+            }
+        );
+
+        return $twigEnvironment
+            ->render('GovWikiFrontendBundle:Monetization:defaultList.html.twig', [
+                'monetizations' => $monetizations,
+                'position' => $position,
+            ]);
     }
 
     /**
