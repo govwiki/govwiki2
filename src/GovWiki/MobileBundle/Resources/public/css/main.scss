@@ -148,11 +148,15 @@ div.cartodb-tooltip-content-wrapper p {
 /* ======== Adverting ======== */
 /* ========================= */
 
-.adverting-top {
-  padding: 18px 0 0 0;
-  max-width: 728px;
+.monetizations {
+  max-width: 350px;
   margin: 0 auto;
   overflow: hidden;
+
+  &_top,
+  &_bottom {
+    padding: 9px 0 0 0;
+  }
 }
 
 .message_form_container {

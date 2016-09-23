@@ -83,8 +83,9 @@
 
         {# Main content #}
         <main>
-            {{ advertising.getAdvertising(environment, 'google_adsense')|raw }}
+            {{- insertMonetization('top') -}}
             {% block main %}{% endblock %}
+            {{- insertMonetization('bottom') -}}
         </main>
 
         {# Footer #}
