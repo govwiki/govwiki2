@@ -51,6 +51,13 @@ services:
         class: GovWiki\EnvironmentBundle\Manager\MaxRank\MaxRankManager
         arguments: [ @doctrine.orm.default_entity_manager ]
 
+    govwiki_environment.manager.rank:
+        class: 'GovWiki\EnvironmentBundle\Manager\Rank\RankManager'
+        arguments:
+            - '@govwiki_environment.manager.format'
+            - '@govwiki_environment.manager.government'
+            - '@govwiki_environment.manager.max_ranks'
+
     govwiki_environment.manager.format:
         class: GovWiki\EnvironmentBundle\Manager\Format\FormatManager
         arguments: [ @doctrine.orm.default_entity_manager ]

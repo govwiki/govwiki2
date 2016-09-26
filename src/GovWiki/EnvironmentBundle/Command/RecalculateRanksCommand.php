@@ -66,39 +66,8 @@ class RecalculateRanksCommand extends ContainerAwareCommand
             return 1;
         }
 
-        /** @var FormatManagerInterface $formatManager */
-        $formatManager = $this
-            ->getContainer()
-            ->get(GovWikiEnvironmentService::FORMAT_MANAGER);
-
-        /** @var GovernmentManagerInterface $governmentManager */
-        $governmentManager = $this
-            ->getContainer()
-            ->get(GovWikiEnvironmentService::GOVERNMENT_MANAGER);
-
-        $formats = $formatManager->get($environment, true);
-        // Get list of ranked field.
-        $rankedFilterFn = function (array $format) {
-            return $format['ranked'];
-        };
-        $formats = array_values(array_filter($formats, $rankedFilterFn));
-
-        // Get all available years for environment.
-        $availableYears = $governmentManager->getAvailableYears($environment);
-
-        foreach ($availableYears as $year) {
-            foreach ($formats as $format) {
-                $output->write("Recalculate for [{$format['name']}] ({$year}) ... ");
-                $governmentManager->calculateRanks($environment, $format, $year);
-                $output->writeln("[ OK ]");
-            }
-        }
-
-        $governmentManager->calculateRanks($environment, $formats[0], $availableYears[0]);
-
-        // Drop max ranks table.
-        $this->getContainer()->get(GovWikiEnvironmentService::MAX_RANK_MANAGER)
-            ->removeTable($environment);
+        $this->getContainer()->get(GovWikiEnvironmentService::RANK_MANAGER)
+            ->compute($environment);
 
         return 0;
     }

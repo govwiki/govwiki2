@@ -12,6 +12,7 @@ use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ColoringConditions;
 use GovWiki\DbBundle\Entity\Map;
 use GovWiki\DbBundle\Form\MapType;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -710,6 +711,34 @@ class EnvironmentController extends AbstractGovWikiAdminController
         $con = $this->getDoctrine()->getConnection();
         $con->exec('CALL convertFinData('. $environment->getId() .')');
 
+        return $this->redirectToRoute('govwiki_admin_environment_show', [
+            'environment' => $environment->getSlug(),
+        ]);
+    }
+
+    /**
+     * @Configuration\Route("/recalculate_ranks")
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function rankAction()
+    {
+        $environment = $this->getCurrentEnvironment();
+        if ($environment === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        try {
+            $this->get(GovWikiEnvironmentService::RANK_MANAGER)
+                ->compute($environment);
+        } catch (\Exception $e) {
+            $this->errorMessage('Some error occured: '. $e->getMessage());
+            return $this->redirectToRoute('govwiki_admin_environment_show', [
+                'environment' => $environment->getSlug(),
+            ]);
+        }
+
+        $this->successMessage('Ranks recalculated.');
         return $this->redirectToRoute('govwiki_admin_environment_show', [
             'environment' => $environment->getSlug(),
         ]);
