@@ -423,52 +423,68 @@ class EnvironmentController extends AbstractGovWikiAdminController
             return $redirect;
         }
 
-        // Remove all data.
-        $response = $api->sqlRequest("
-            DELETE FROM {$datasetName}
-        ");
+        try {
+            // Remove all data.
+            $response = $api->sqlRequest("
+                DELETE FROM {$datasetName}
+            ");
 
-        $error = CartoDbApi::getErrorFromResponse($response);
-        if ($error) {
-            $this->errorMessage('Can\'t clean dataset: '. $error);
+            $error = CartoDbApi::getErrorFromResponse($response);
+            if ($error) {
+                $this->errorMessage('Can\'t clean dataset: ' . $error);
 
-            return $redirect;
-        }
+                return $redirect;
+            }
 
-        $conditions = $environment->getMap()->getColoringConditions();
-        // Get governments and values for field from coloring conditions.
-        $values = $this->getGovernmentManager()
-            ->getConditionValues($environment, $conditions->getFieldName());
+            $conditions = $environment->getMap()->getColoringConditions();
+            $sqlParts = [];
+            // Get governments and values for field from coloring conditions.
+            if (trim($conditions->getFieldName()) !== '') {
+                $values = $this->getGovernmentManager()
+                    ->getConditionValues($environment, $conditions->getFieldName());
 
-        // Prepare sql parts for CartoDB sql request.
-        $sqlParts = [];
-        foreach ($values as $row) {
-            $slug = CartoDbApi::escapeString($row['slug']);
-            $altTypeSlug = CartoDbApi::escapeString($row['alt_type_slug']);
-            $name = CartoDbApi::escapeString($row['name']);
-            $data = ($row['data'] === null) ? 'null' : $row['data'];
+                foreach ($values as $row) {
+                    $slug = CartoDbApi::escapeString($row['slug']);
+                    $altTypeSlug = CartoDbApi::escapeString($row['alt_type_slug']);
+                    $name = CartoDbApi::escapeString($row['name']);
+                    $data = ($row['data'] === null) ? 'null' : $row['data'];
 
-            $sqlParts[] = "
-                ('{$slug}', '{$altTypeSlug}', '{$data}', '{$name}')
-            ";
-        }
+                    $sqlParts[] = "
+                        ('{$slug}', '{$altTypeSlug}', '{$data}', '{$name}')
+                    ";
+                }
+            } else {
+                $values = $this->getGovernmentManager()
+                    ->getUpdateValues($environment);
 
-        // Export data to new dataset.
-        $response = $api->sqlRequest("
+                foreach ($values as $row) {
+                    $slug = CartoDbApi::escapeString($row['slug']);
+                    $altTypeSlug = CartoDbApi::escapeString($row['alt_type_slug']);
+                    $name = CartoDbApi::escapeString($row['name']);
+
+                    $sqlParts[] = "
+                        ('{$slug}', '{$altTypeSlug}', 'null', '{$name}')
+                    ";
+                }
+            }
+
+            // Export data to new dataset.
+            $response = $api->sqlRequest("
             INSERT INTO {$datasetName}
                 (slug, alt_type_slug, data_json, name)
-            VALUES ". implode(',', $sqlParts));
+            VALUES " . implode(',', $sqlParts));
 
-        $error = CartoDbApi::getErrorFromResponse($response);
-        if ($error) {
-            $this->errorMessage('Can\'t export data from previous dataset: '. $error);
+            $error = CartoDbApi::getErrorFromResponse($response);
+            if ($error) {
+                $this->errorMessage('Can\'t export data from previous dataset: ' . $error);
 
-            $api->restore($datasetName, $backupDatasetName);
-            return $redirect;
-        }
+                $api->restore($datasetName, $backupDatasetName);
 
-        // Export geometry information from backup dataset.
-        $response = $api->sqlRequest("
+                return $redirect;
+            }
+
+            // Export geometry information from backup dataset.
+            $response = $api->sqlRequest("
             UPDATE {$datasetName} new_dataset
             SET
                 the_geom = backup_dataset.the_geom,
@@ -479,12 +495,22 @@ class EnvironmentController extends AbstractGovWikiAdminController
                 new_dataset.alt_type_slug = backup_dataset.alt_type_slug
         ");
 
-        $error = CartoDbApi::getErrorFromResponse($response);
-        if ($error) {
-            $this->errorMessage('Can\'t export geometry from previous dataset: '. $error);
+            $error = CartoDbApi::getErrorFromResponse($response);
+            if ($error) {
+                $this->errorMessage('Can\'t export geometry from previous dataset: ' . $error);
 
-            $api->restore($datasetName, $backupDatasetName);
-            return $redirect;
+                $api->restore($datasetName, $backupDatasetName);
+
+                return $redirect;
+            }
+        } catch (\Exception $e) {
+            // If some error occurred restore data from backup.
+            $api->sqlRequest("DROP TABLE {$datasetName}");
+            $api->sqlRequest("
+                CREATE TABLE {$datasetName} AS
+                SELECT * FROM {$backupDatasetName}
+            ");
+            $api->sqlRequest("SELECT cdb_cartodbfytable('{$datasetName}')");
         }
 
         $this->successMessage('CartoDB dataset updated');

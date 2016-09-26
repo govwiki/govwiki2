@@ -200,7 +200,7 @@ function initCmfMarkerSublayer(altType) {
     ' alt_type_slug,',
     ' slug,',
     dataSelection,
-    'FROM cmf e'
+    'FROM ' + window.gw.environment + ' e'
   ];
 
   options.markerFileCss = legendColorsAsCartoCss.markerFileCss;
@@ -215,9 +215,6 @@ function initCmfMarkerSublayer(altType) {
   if (isRangeLegend) {
     cartocss += getConditionsColorsAsCartoCss(options);
   }
-
-  console.log(cartocss);
-  console.log(sql.join("\n"));
 
   config.subLayers[_altType] = config.baseLayer.createSubLayer({
     sql: sql.join(' '),

@@ -45,6 +45,7 @@ services:
     #
     govwiki_environment.storage:
         class: GovWiki\EnvironmentBundle\Storage\EnvironmentStorage
+        arguments: [ '%carto_db.prefix%' ]
 
     govwiki_environment.manager.max_ranks:
         class: GovWiki\EnvironmentBundle\Manager\MaxRank\MaxRankManager

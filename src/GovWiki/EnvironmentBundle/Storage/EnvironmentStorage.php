@@ -10,10 +10,24 @@ use GovWiki\DbBundle\Entity\Environment;
  */
 class EnvironmentStorage implements EnvironmentStorageInterface
 {
+
+    /**
+     * @var string
+     */
+    private $cartoDBPrefix = '';
+
     /**
      * @var Environment
      */
     private $environment;
+
+    /**
+     * @param string $cartoDBPrefix Prefix for cartodb dataset.
+     */
+    public function __construct($cartoDBPrefix = '')
+    {
+        $this->cartoDBPrefix = $cartoDBPrefix;
+    }
 
     /**
      * Get current environment entity instance.
@@ -34,6 +48,9 @@ class EnvironmentStorage implements EnvironmentStorageInterface
      */
     public function set(Environment $environment = null)
     {
+        if ($environment !== null) {
+            $environment->setCartoDBPrefix($this->cartoDBPrefix);
+        }
         $this->environment = $environment;
     }
 }

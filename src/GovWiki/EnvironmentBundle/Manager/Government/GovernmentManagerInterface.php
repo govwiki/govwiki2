@@ -182,6 +182,13 @@ interface GovernmentManagerInterface
 
     /**
      * @param Environment $environment A Environment entity instance.
+     *
+     * @return array
+     */
+    public function getUpdateValues(Environment $environment);
+
+    /**
+     * @param Environment $environment A Environment entity instance.
      * @param integer     $government  A Government entity id.
      * @param integer     $year        A data year, if null delete data for all
      *                                 years.

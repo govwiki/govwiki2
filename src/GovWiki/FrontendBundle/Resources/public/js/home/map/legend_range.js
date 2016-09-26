@@ -112,13 +112,6 @@ function handlerToggleConditions($container) {
       completeConditions = config.defaultConditions.conditions;
     }
 
-    console.group();
-    console.log('Clicked element data: ', conditionData);
-    console.log('Active conditions: ', activeConditions);
-    console.log('Disabled conditions: ', disabledConditions);
-    console.log('Complete conditions: ', completeConditions);
-    console.groupEnd();
-
     sublayer.removeAllSubLayers();
     sublayer.reInit({ conditions: completeConditions });
 

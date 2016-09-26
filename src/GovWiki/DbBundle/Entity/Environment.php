@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -236,6 +237,11 @@ class Environment
      * @ORM\Column(type="text", nullable=true)
      */
     protected $analytics;
+
+    /**
+     * @var string
+     */
+    protected $cartoDBPrefix = '';
 
     /**
      *
@@ -936,5 +942,35 @@ class Environment
     public function getAnalytics()
     {
         return $this->analytics;
+    }
+
+    /**
+     * @param string $cartoDBPrefix Prefix for cartodb dataset.
+     *
+     * @return Environment
+     */
+    public function setCartoDBPrefix($cartoDBPrefix)
+    {
+        $this->cartoDBPrefix = $cartoDBPrefix;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCartoDBPrefix()
+    {
+        return $this->cartoDBPrefix;
+    }
+
+    /**
+     * Return dataset name for current environment.
+     *
+     * @return string
+     */
+    public function getDatasetName()
+    {
+        return GovwikiNamingStrategy::cartoDbDatasetName($this);
     }
 }

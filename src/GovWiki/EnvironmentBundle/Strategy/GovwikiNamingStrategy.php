@@ -67,7 +67,8 @@ final class GovwikiNamingStrategy
      */
     public static function cartoDbDatasetName(Environment $environment)
     {
-        return self::environmentRelatedTableName($environment);
+        return $environment->getCartoDBPrefix()
+            . self::environmentRelatedTableName($environment);
     }
 
     /**
@@ -77,6 +78,6 @@ final class GovwikiNamingStrategy
      */
     public static function cartoDbBackupDatasetName(Environment $environment)
     {
-        return self::environmentRelatedTableName($environment) . '_backup';
+        return self::cartoDbDatasetName($environment) . '_backup';
     }
 }
