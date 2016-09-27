@@ -120,7 +120,8 @@ function initMarkerSubLayer(altType) {
       ' SELECT',
       '  json_object_keys(data_json::json) as latest_year',
       ' FROM '+ window.gw.environment,
-      ' WHERE cartodb_id = e.cartodb_id',
+      ' WHERE cartodb_id = e.cartodb_id AND ',
+      " data_json <> 'null'",
       ' ORDER BY 1 DESC',
       ' LIMIT 1',
       '))::float'
@@ -133,7 +134,7 @@ function initMarkerSubLayer(altType) {
   config.subLayers[_altType] = config.baseLayer.createSubLayer({
     sql: 'SELECT *, '
       + dataSelection + ' AS data, GeometryType(the_geom) AS geometrytype FROM '
-      + window.gw.environment + " e WHERE alt_type_slug = '" + altType
+      + window.gw.environment + " e WHERE alt_type_slug = '" + altType + "'"
       + ' AND '+ dataSelection +' IS NOT NULL',
     cartocss: cartocss,
     interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype', 'data', 'name']
