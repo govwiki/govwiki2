@@ -123,17 +123,18 @@ function initMarkerSubLayer(altType) {
       ' WHERE cartodb_id = e.cartodb_id',
       ' ORDER BY 1 DESC',
       ' LIMIT 1',
-      '))::float AS data'
+      '))::float'
     ].join(' ');
   } else {
     dataSelection = "(data_json::json->>'" + window.gw.map.year
-      + "')::float AS data";
+      + "')::float";
   }
 
   config.subLayers[_altType] = config.baseLayer.createSubLayer({
     sql: 'SELECT *, '
-      + dataSelection + ', GeometryType(the_geom) AS geometrytype FROM '
-      + window.gw.environment + " e WHERE alt_type_slug = '" + altType + "'",
+      + dataSelection + ' AS data, GeometryType(the_geom) AS geometrytype FROM '
+      + window.gw.environment + " e WHERE alt_type_slug = '" + altType
+      + ' AND '+ dataSelection +' IS NOT NULL',
     cartocss: cartocss,
     interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype', 'data', 'name']
   });
@@ -160,11 +161,11 @@ function initCmfMarkerSublayer(altType) {
       "  data_json <> 'null'",
       ' ORDER BY 1 DESC',
       ' LIMIT 1',
-      '))::float AS data'
+      '))::float'
     ].join(' ');
   } else {
     dataSelection = "(data_json::json->>'" + window.gw.map.year
-    + "')::float AS data";
+    + "')::float";
   }
 
   sql = [
@@ -199,8 +200,9 @@ function initCmfMarkerSublayer(altType) {
     ' name,',
     ' alt_type_slug,',
     ' slug,',
-    dataSelection,
-    'FROM ' + window.gw.environment + ' e'
+    dataSelection + ' AS data',
+    'FROM ' + window.gw.environment + ' e',
+    'WHERE '+ dataSelection +' IS NOT NULL'
   ];
 
   options.markerFileCss = legendColorsAsCartoCss.markerFileCss;
