@@ -7,35 +7,6 @@
         </a>
     {% endif %}
 
-    {# Logo #}
-    {% if government is defined and government.secondaryLogoPath %}
-        <a class="anchor" href="{{ entity.logoHref }}">
-            <img src="{{ entity.logo }}" class="logo" width="70%">
-        </a>
-        {% if government.secondaryLogoUrl %}
-            <a class="anchor" href="{{ government.secondaryLogoUrl }}">
-                <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
-            </a>
-        {% else %}
-            <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
-        {% endif %}
-    {% elseif elected.government is defined and elected.government.secondaryLogoPath %}
-        <a class="anchor" href="{{ entity.logoHref }}">
-            <img src="{{ entity.logo }}" class="logo" width="70%">
-        </a>
-        {% if elected.government.secondaryLogoUrl %}
-            <a class="anchor" href="{{ elected.government.secondaryLogoUrl }}">
-                <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
-            </a>
-        {% else %}
-            <img class="secondary_logo" src="{{ asset(elected.government.secondaryLogoPath) }}" width="25%">
-        {% endif %}
-    {% else %}
-        <a class="anchor" href="{{ environment.logoHref }}">
-            <img src="{{ environment.logo }}" class="logo">
-        </a>
-    {% endif %}
-
     {# show year selector. #}
     {% if years is defined and years|length > 1 %}
         <span class="mobile-year-selector">
