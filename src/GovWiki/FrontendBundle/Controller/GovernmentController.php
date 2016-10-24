@@ -420,8 +420,6 @@ From ' . $user_email;
             return $this->render('@GovWikiFrontend/Government/index_new.html.twig', $data);
         }
 
-        $s = $this->renderView('GovWikiFrontendBundle:Government:index.html.twig', $data);
-
         return $data;
     }
 

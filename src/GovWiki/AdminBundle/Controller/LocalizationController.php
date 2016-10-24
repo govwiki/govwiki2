@@ -87,7 +87,7 @@ class LocalizationController extends AbstractGovWikiAdminController
             }
         }
 
-        $trans_key_settings = null;
+        $trans_key_settings = [];
         if (!empty($filter_trans_key)) {
             $trans_key_settings = array_merge($trans_key_settings, [
                 'matching' => 'like',

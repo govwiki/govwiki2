@@ -84,7 +84,7 @@ class TranslationRepository extends EntityRepository
                 'locale' => $locale,
             ]);
 
-        if ($keySettings !== null) {
+        if (is_array($keySettings) && (count($keySettings) > 0)) {
             $matching = $keySettings['matching'];
             $keys = $keySettings['transKeys'];
 

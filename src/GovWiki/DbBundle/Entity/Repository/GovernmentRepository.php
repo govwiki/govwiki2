@@ -492,6 +492,18 @@ class GovernmentRepository extends EntityRepository
             $i++;
         }
 
+        // Sort.
+        usort($financialStatements, function (array $first, array $second) {
+            $categoryA = $first['category_name'];
+            $categoryB = $second['category_name'];
+
+            if ($categoryA === $categoryB) {
+                return 0;
+            }
+
+            return ($categoryA < $categoryB) ? 1 : -1;
+        });
+
         return $financialStatements;
     }
 }
