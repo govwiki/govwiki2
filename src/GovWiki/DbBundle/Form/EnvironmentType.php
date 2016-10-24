@@ -85,7 +85,8 @@ class EnvironmentType extends AbstractType
                 'label' => 'Analytics code',
                 'attr' => [ 'style' => 'height: 220px' ],
             ])
-            ->add('adminEmail');
+            ->add('adminEmail')
+            ->add('canLogin');
         if ($subject->getId()) {
             $builder->add('defaultLocale', 'entity', [
                 'class'         => 'GovWiki\DbBundle\Entity\Locale',

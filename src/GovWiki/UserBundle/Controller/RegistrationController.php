@@ -7,8 +7,11 @@ use FOS\UserBundle\Event\FormEvent;
 use FOS\UserBundle\Event\GetResponseUserEvent;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\Controller\RegistrationController as BaseController;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class RegistrationController
@@ -18,6 +21,13 @@ class RegistrationController extends BaseController
 {
     public function registerAction(Request $request)
     {
+        /** @var EnvironmentStorageInterface $storage */
+        $storage = $this->get(GovWikiEnvironmentService::STORAGE);
+
+        if (! $storage->get()->isCanLogin()) {
+            throw new NotFoundHttpException();
+        }
+
         $this->clearTranslationsCache();
 
         /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */

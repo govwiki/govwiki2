@@ -73,11 +73,13 @@
 
             {% else %}
                 {# Login button#}
-                <li>
-                    <a href="#" class="link" id="login-link">
-                        Login / Sign Up
-                    </a>
-                </li>
+                {%- if (environment.canLogin) -%}
+                    <li>
+                        <a href="#" class="link" id="login-link">
+                            Login / Sign Up
+                        </a>
+                    </li>
+                {%- endif -%}
             {% endif %}
 
             {# Return to map #}

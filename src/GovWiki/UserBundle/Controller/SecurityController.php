@@ -3,10 +3,13 @@
 namespace GovWiki\UserBundle\Controller;
 
 use FOS\UserBundle\Controller\SecurityController as BaseController;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
+use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -95,7 +98,7 @@ class SecurityController extends BaseController
     {
         $cacheDir = __DIR__ . "/../../../../app/cache";
         $finder = new \Symfony\Component\Finder\Finder();
-        $finder->in(array($cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"))->files();
+        $finder->in([$cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"])->files();
         foreach($finder as $file){
             unlink($file->getRealpath());
         }

@@ -118,6 +118,7 @@
                     {{ form_row(form.mainImageFile) }}
                     {{ form_row(form.analytics) }}
                     {{ form_row(form.subscribable, {'label': 'Users can subscribe to governments of the environment'}) }}
+                    {{ form_row(form.canLogin) }}
                 </div>
 
                 {% if environment.locales|length == 1 %}

@@ -419,6 +419,9 @@ From ' . $user_email;
         if ($request->query->has('new')) {
             return $this->render('@GovWikiFrontend/Government/index_new.html.twig', $data);
         }
+
+        $s = $this->renderView('GovWikiFrontendBundle:Government:index.html.twig', $data);
+
         return $data;
     }
 

@@ -244,6 +244,13 @@ class Environment
     protected $cartoDBPrefix = '';
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     */
+    protected $canLogin = true;
+
+    /**
      *
      */
     public function __construct()
@@ -972,5 +979,29 @@ class Environment
     public function getDatasetName()
     {
         return GovwikiNamingStrategy::cartoDbDatasetName($this);
+    }
+
+    /**
+     * Set canLogin
+     *
+     * @param boolean $canLogin If user can login on this environment.
+     *
+     * @return Environment
+     */
+    public function setCanLogin($canLogin)
+    {
+        $this->canLogin = $canLogin;
+
+        return $this;
+    }
+
+    /**
+     * Get canLogin
+     *
+     * @return boolean
+     */
+    public function isCanLogin()
+    {
+        return $this->canLogin;
     }
 }
