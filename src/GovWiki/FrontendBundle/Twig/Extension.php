@@ -72,7 +72,6 @@ class Extension extends \Twig_Extension
             $mask = $format['mask'];
             $prefix = '';
             $postfix = '';
-            $decimal = 0;
 
             if ('$' === $mask[0]) {
                 $prefix = '$';
@@ -106,6 +105,12 @@ class Extension extends \Twig_Extension
                     $decimalStr = explode('.', $mask)[1];
                 }
                 $decimal = strlen($decimalStr) - 1;
+            } else {
+                $decimalStr = $mask;
+                if (strpos($mask, '.') !== false) {
+                    $decimalStr = explode('.', $mask)[1];
+                }
+                $decimal = strlen($decimalStr);
             }
 
             $value = $prefix . number_format($value, $decimal) . $postfix;
