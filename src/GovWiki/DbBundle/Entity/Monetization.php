@@ -57,9 +57,8 @@ class Monetization
      * @var string
      *
      * @ORM\Column(type="text")
-     * @Assert\NotBlank
      */
-    private $code;
+    private $code = '';
 
     /**
      * @var string
@@ -228,6 +227,10 @@ class Monetization
      */
     public function setCode($code)
     {
+        if ($code === null) {
+            $code = '';
+        }
+
         $this->code = $code;
 
         return $this;
