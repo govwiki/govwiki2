@@ -54,7 +54,10 @@ class ElectedController extends AbstractGovWikiController
             );
 
         if (null === $data) {
-            return [];
+            return $this->render('GovWikiMobileBundle:Elected:404.html.twig', [
+                'altTypeSlug' => $altTypeSlug,
+                'slug' => $slug,
+            ]);
         }
 
         $paginator = $this->get('knp_paginator');

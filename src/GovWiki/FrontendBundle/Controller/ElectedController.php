@@ -11,6 +11,7 @@ use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class ElectedController
@@ -60,7 +61,10 @@ class ElectedController extends AbstractGovWikiController
             );
 
         if (null === $data) {
-            return [];
+            return $this->render('GovWikiFrontendBundle:Elected:404.html.twig', [
+                'altTypeSlug' => $altTypeSlug,
+                'slug' => $slug,
+            ]);
         }
 
         $paginator = $this->get('knp_paginator');

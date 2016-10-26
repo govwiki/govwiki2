@@ -1,0 +1,20 @@
+{% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
+
+{% block main %}
+
+    <section class="electedController">
+        <h1 class="text-center">Can't find elected</h1>
+    </section>
+
+{% endblock main %}
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{parent()}}
+
+    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/elected.scss' filter='scss' %}
+    <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}

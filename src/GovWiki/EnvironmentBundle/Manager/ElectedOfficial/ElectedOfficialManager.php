@@ -72,7 +72,7 @@ class ElectedOfficialManager implements ElectedOfficialManagerInterface
         $data = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
             ->findOne($environment->getId(), $altTypeSlug, $slug, $eoSlug);
 
-        if (null !== $data) {
+        if (is_array($data) && count($data) > 0) {
             /*
              * Create queries for legislations, contributions and etc.
              */
