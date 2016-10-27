@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            {% if 'altTypes' in environment.map.legendTypes %}
+            {% if ('altTypes' in environment.map.legendTypes) and (environment.map.legend|length > 1) %}
                 <div>
                     <div class="legend_title">
                         <div class="text">SELECT OBJECTS TYPES TO SHOW</div>

@@ -17,7 +17,6 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
-    cartodb_prefix: ''
 
     admin_email:  ~
     chat_email: ~
@@ -26,6 +25,7 @@ parameters:
 
     carto_db.account: ~
     carto_db.api_key: ~
+    carto_db.prefix: ''
 
     determinator.name: ~
 

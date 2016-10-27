@@ -88,13 +88,7 @@ doctrine:
         default_entity_manager: default
         entity_managers:
             default:
-                metadata_cache_driver: apc
-                result_cache_driver: apc
-                query_cache_driver: apc
                 connection: default
-                second_level_cache:
-                    enabled: true
-
                 naming_strategy: doctrine.orm.naming_strategy.underscore
                 auto_mapping: true
                 repository_factory: govwiki_db.factory.repository
