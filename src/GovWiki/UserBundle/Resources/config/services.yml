@@ -33,4 +33,4 @@ services:
 
     govwiki.user_bundle.own_user_provider:
         class: GovWiki\UserBundle\Manager\OwnUserManager
-        arguments: [@security.encoder_factory, @fos_user.util.username_canonicalizer, @fos_user.util.email_canonicalizer, @doctrine.orm.entity_manager, GovWiki\UserBundle\Entity\User, @govwiki_environment.storage]
+        arguments: [@fos_user.user_manager, @govwiki_environment.storage]

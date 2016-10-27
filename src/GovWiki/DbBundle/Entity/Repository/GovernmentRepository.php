@@ -179,6 +179,8 @@ class GovernmentRepository extends EntityRepository
             ])
             ->orderBy($expr->desc('EditRequest.created'))
             ->getQuery()
+            ->useQueryCache(true)
+            ->useResultCache(true)
             ->getArrayResult();
 
         if ($data === null) {

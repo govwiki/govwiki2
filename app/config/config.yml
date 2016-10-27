@@ -84,14 +84,25 @@ doctrine:
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
-        naming_strategy: doctrine.orm.naming_strategy.underscore
-        auto_mapping: true
-        repository_factory: govwiki_db.factory.repository
-        dql:
-            string_functions:
-                year: GovWiki\DbBundle\Doctrine\Functions\YearFunction
-            numeric_functions:
-                regexp: GovWiki\DbBundle\Doctrine\Functions\RegexpFunction
+
+        default_entity_manager: default
+        entity_managers:
+            default:
+                metadata_cache_driver: apc
+                result_cache_driver: apc
+                query_cache_driver: apc
+                connection: default
+                second_level_cache:
+                    enabled: true
+
+                naming_strategy: doctrine.orm.naming_strategy.underscore
+                auto_mapping: true
+                repository_factory: govwiki_db.factory.repository
+                dql:
+                    string_functions:
+                        year: GovWiki\DbBundle\Doctrine\Functions\YearFunction
+                    numeric_functions:
+                        regexp: GovWiki\DbBundle\Doctrine\Functions\RegexpFunction
 
 # Swiftmailer Configuration
 swiftmailer:

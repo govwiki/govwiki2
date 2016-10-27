@@ -10,13 +10,20 @@ use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
  * Class RepositoryFactory
  * @package GovWiki\DbBundle\Doctrine\Repository
  */
-class RepositoryFactory extends DefaultRepositoryFactory
+class RepositoryFactory implements \Doctrine\ORM\Repository\RepositoryFactory
 {
 
     /**
      * @var EnvironmentStorageInterface
      */
     private $storage;
+
+    /**
+     * The list of EntityRepository instances.
+     *
+     * @var \Doctrine\Common\Persistence\ObjectRepository[]
+     */
+    private $repositoryList = array();
 
     /**
      * @param EnvironmentStorageInterface $storage A EnvironmentStorageInterface
@@ -28,20 +35,40 @@ class RepositoryFactory extends DefaultRepositoryFactory
     }
 
     /**
-     * Gets the repository for an entity class.
+     * {@inheritdoc}
+     */
+    public function getRepository(EntityManagerInterface $entityManager, $entityName)
+    {
+        $repositoryHash = $entityManager->getClassMetadata($entityName)->getName() . spl_object_hash($entityManager);
+
+        if (isset($this->repositoryList[$repositoryHash])) {
+            return $this->repositoryList[$repositoryHash];
+        }
+
+        $repository = $this->createRepository($entityManager, $entityName);
+
+        if ($repository instanceof EnvironmentStorageAwareInterface) {
+            $repository->setEnvironmentStorage($this->storage);
+        }
+
+        return $this->repositoryList[$repositoryHash] = $repository;
+    }
+
+    /**
+     * Create a new repository instance for an entity class.
      *
      * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
      * @param string                               $entityName    The name of the entity.
      *
      * @return \Doctrine\Common\Persistence\ObjectRepository
      */
-    public function getRepository(EntityManagerInterface $entityManager, $entityName)
+    private function createRepository(EntityManagerInterface $entityManager, $entityName)
     {
-        $repository = parent::getRepository($entityManager, $entityName);
-        if ($repository instanceof EnvironmentStorageAwareInterface) {
-            $repository->setEnvironmentStorage($this->storage);
-        }
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        $metadata            = $entityManager->getClassMetadata($entityName);
+        $repositoryClassName = $metadata->customRepositoryClassName
+            ?: $entityManager->getConfiguration()->getDefaultRepositoryClassName();
 
-        return $repository;
+        return new $repositoryClassName($entityManager, $metadata);
     }
 }

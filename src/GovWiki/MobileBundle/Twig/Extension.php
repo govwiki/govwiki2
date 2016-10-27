@@ -80,7 +80,7 @@ class Extension extends \Twig_Extension
                     $prefix = '($';
                     $postfix = ')';
                 }
-                $decimalStr = $mask;
+                $decimalStr = '';
                 if (strpos($mask, ',') !== false) {
                     $decimalStr = explode(',', $mask)[1];
                 }
@@ -99,13 +99,13 @@ class Extension extends \Twig_Extension
                     $value *= 100;
                 }
 
-                $decimalStr = $mask;
+                $decimalStr = '';
                 if (strpos($mask, '.') !== false) {
                     $decimalStr = explode('.', $mask)[1];
                 }
                 $decimal = strlen($decimalStr) - 1;
             } else {
-                $decimalStr = $mask;
+                $decimalStr = '';
                 if (strpos($mask, '.') !== false) {
                     $decimalStr = explode('.', $mask)[1];
                 }

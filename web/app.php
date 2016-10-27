@@ -9,14 +9,14 @@ $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
 // You should change the ApcClassLoader first argument to a unique prefix
 // in order to prevent cache key conflicts with other applications
 // also using APC.
-/*
+
 $apcLoader = new ApcClassLoader(sha1(__FILE__), $loader);
 $loader->unregister();
 $apcLoader->register(true);
-*/
+
 
 require_once __DIR__.'/../app/AppKernel.php';
-//require_once __DIR__.'/../app/AppCache.php';
+require_once __DIR__.'/../app/AppCache.php';
 
 $environment = 'prod';
 if (strpos(getenv('HTTP_HOST'), 'm.') === 0) {
@@ -25,10 +25,10 @@ if (strpos(getenv('HTTP_HOST'), 'm.') === 0) {
 
 $kernel = new AppKernel($environment, false);
 $kernel->loadClassCache();
-//$kernel = new AppCache($kernel);
+$kernel = new AppCache($kernel);
 
 // When using the HttpCache, you need to call the method in your front controller instead of relying on the configuration parameter
-//Request::enableHttpMethodParameterOverride();
+Request::enableHttpMethodParameterOverride();
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();
