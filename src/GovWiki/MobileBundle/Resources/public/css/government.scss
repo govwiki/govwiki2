@@ -10,6 +10,10 @@
         overflow-y: scroll;
     }
 
+    #total-expenditures-tree{
+      margin-top: 15px;
+    }
+
     @import "partials/typeahead/typeahead_government";
     .editable {
       text-decoration: none !important;

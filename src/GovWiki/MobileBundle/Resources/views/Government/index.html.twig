@@ -28,7 +28,7 @@
                     <div class="header-content">
                         {# Get first tab and show on top. #}
                         {%- set tab = tabs|first -%}
-                        {%- if tab.name != 'Overview + Elected Officials' -%}
+                        {%- if tab and (tab.name != 'Overview + Elected Officials') -%}
                             {%- set tabs = tabs[1:] -%}
                         {%- endif -%}
 
@@ -44,7 +44,7 @@
                                                 {%- set helpText = helpTextKey|trans -%}
 
                                                 {{- ('format.'~field.field)|trans -}}
-                                                {%- if helpText != helpTextKey -%}
+                                                {%- if ((helpTextKey != helpText) and (helpText|trim != '')) -%}
                                                     <img data-triger="click" src="{{-
                                                         asset('bundles/govwikifrontend/img/help.png')
                                                         -}}"
@@ -56,12 +56,21 @@
                                             <td>
                                                 {{- value|display|raw -}}
                                                 {%- set rankName = field.field|rankName -%}
-                                                {%- if (government.ranks[rankName] is defined) -%}
+
+                                                {%- if government.ranks[rankName] is defined -%}
+                                                    {%- set rank = government.ranks[rankName] -%}
+                                                    &nbsp;
                                                     <a class='rank'
                                                        data-field='{{- rankName -}}'
                                                        data-mask='{{- field.mask -}}'
                                                        title='{{- ('format.'~field.field)|trans }}'>
-                                                        ({{- government.ranks[rankName][0] }} {{ 'preposition.of'|trans }} {{ government.ranks[rankName][1] -}})
+                                                        {%- if rank.type == 'letter' -%}
+                                                            {{ rank.letter|upper }}
+                                                        {%- else -%}
+                                                            ({{- rank.current -}}
+                                                            &nbsp;{{- 'preposition.of'|trans -}}&nbsp;
+                                                            {{- rank.max -}})
+                                                        {%- endif -%}
                                                     </a>
                                                 {%- endif -%}
                                             </td>
