@@ -167,3 +167,7 @@ mobile_detect:
         tablet: ~
     switch_device_view: ~
     request_response_listener_class: GovWiki\MobileDetectBundle\EventListener\GovWikiRequestResponseListener
+
+salva_jshrink:
+    enabled: true
+    flaggedComments: false

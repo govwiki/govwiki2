@@ -1,0 +1,330 @@
+{%- extends 'GovWikiEnvironmentBundle::pension_layout.html.twig' -%}
+
+{%- block code -%}
+    <script>
+        // We make sure that $ point to jQuery.
+        if (! $ && jQuery) {
+            window.$ = jQuery;
+        }
+
+        var ENDPOINT = '{{- endPoint -}}';
+
+        var Table = (function() {
+            /**
+             * Sorting order consts.
+             *
+             * @const
+             */
+            var SORT_ORDER = {
+                none: null,
+                asc: 'asc',
+                desc: 'desc'
+            };
+
+            var fieldsConfig = {
+                employee_name: 'string',
+                job_title: 'string',
+                employer: 'string',
+                pension_system: 'string',
+                region: 'string',
+                pension_amount: 'number',
+                benefits_amount: 'number',
+                disability_amount: 'number',
+                total_amount: 'number',
+                notes: 'string',
+                total_net_of_one_time_payments: 'number',
+                years_of_service: 'number',
+                year_of_retirement: 'number',
+                year: 'number'
+            };
+
+            function Table(selector, endPoint) {
+                var self = this;
+
+                var filterFieldSelector;
+                var filterValueSelector;
+                var filterOperationString;
+                var filterOperationNumber;
+
+                this.$el = $(selector);
+
+                this.$('.filter-operation-number').hide();
+
+                this._state = {
+                    page: 1,
+                    maxPerPage: 25,
+                    pagesCount: 0,
+                    sortField: null,
+                    sortOrder: SORT_ORDER.none,
+                    filterField: 'employee_name',
+                    filterOperation: null,
+                    filterValue: null
+                };
+
+                this._endPoint = endPoint;
+
+                // Pagination handlers.
+                this.$('.pensions-table-paginator-first').click(function() {
+                    self.goTo(1);
+                });
+                this.$('.pensions-table-paginator-previous').click(function() {
+                    self.goTo(self._state.page - 1);
+                });
+                this.$('.pensions-table-paginator-next').click(function() {
+                    self.goTo(self._state.page + 1);
+                });
+                this.$('.pensions-table-paginator-last').click(function() {
+                    self.goTo(self._state.pagesCount);
+                });
+                this.$('.pensions-table-paginator-page input').change(function(event) {
+                    self.goTo(event.target.value);
+                });
+
+                // Sort handler.
+                this.$('.sort').click(function (event) {
+                    self._sort($(this));
+
+                    event.preventDefault();
+                    event.stopPropagation();
+                });
+
+                filterFieldSelector = this.$('.filter-field');
+                filterValueSelector = this.$('.filter-value');
+                filterOperationString = this.$('.filter-operation-string');
+                filterOperationNumber = this.$('.filter-operation-number');
+
+                filterFieldSelector.change(function () {
+                    var newField = filterFieldSelector.val().trim();
+                    var newOperation = self._getFilterOperation(newField);
+                    var newValue = filterValueSelector.val().trim();
+
+                    if (fieldsConfig[newField] === 'string') {
+                        filterOperationNumber.hide();
+                        filterOperationString.show();
+                    } else {
+                        filterOperationNumber.show();
+                        filterOperationString.hide();
+                    }
+
+                    self._filter(newField, newOperation, newValue);
+                });
+                filterValueSelector.change(function () {
+                    var newField = filterFieldSelector.val().trim();
+                    var newOperation = self._getFilterOperation(newField);
+                    var newValue = filterValueSelector.val().trim();
+
+                    self._filter(newField, newOperation, newValue);
+                });
+                filterOperationString.change(function () {
+                    var newField = filterFieldSelector.val().trim();
+                    var newOperation = self._getFilterOperation(newField);
+                    var newValue = filterValueSelector.val().trim();
+
+                    self._filter(newField, newOperation, newValue);
+                });
+                filterOperationNumber.change(function () {
+                    var newField = filterFieldSelector.val().trim();
+                    var newOperation = self._getFilterOperation(newField);
+                    var newValue = filterValueSelector.val().trim();
+
+                    self._filter(newField, newOperation, newValue);
+                });
+            }
+
+            Table.prototype.$ = function(selector) {
+                return this.$el.find(selector);
+            };
+
+            Table.prototype.goTo = function(page) {
+                var pagesCount = this._state.pagesCount;
+
+                // Check page bound.
+                if ((page < 1) || (page > pagesCount)) {
+                    // Do nothing.
+                    return;
+                }
+
+                this._state.page = page;
+                this.render();
+            };
+
+            Table.prototype.render = function() {
+                var self = this;
+
+                this._query()
+                    .done(function (response) {
+                        var rows = response.data.rows;
+                        var totalCount = response.data.totalCount;
+
+                        self._state.pagesCount = Math.ceil(totalCount / self._state.maxPerPage);
+                        self._updateData(rows);
+                        self._updatePaginator();
+                    });
+            };
+
+            Table.prototype._updateData = function(data) {
+                var i;
+                var table = self.$('tbody');
+
+                table.html('');
+                for (i = 0; i < data.length; ++i) {
+                    table.append(this._renderRow(data[i]));
+                }
+            };
+
+            Table.prototype._updatePaginator = function() {
+                var currentPage = this._state.page;
+                var pagesCount = this._state.pagesCount;
+
+                this.$('.pensions-table-paginator-page input')
+                        .val(currentPage);
+                this.$('.pensions-table-footer-count .count')
+                        .text(pagesCount);
+
+                if (currentPage === 1) {
+                    // Hide previous and first button.
+                    this.$('.pensions-table-paginator-first').hide();
+                    this.$('.pensions-table-paginator-previous').hide();
+                } else {
+                    // Show previous and first button.
+                    this.$('.pensions-table-paginator-first').show();
+                    this.$('.pensions-table-paginator-previous').show();
+                }
+
+                if (currentPage === pagesCount) {
+                    // Hide next and last button.
+                    this.$('.pensions-table-paginator-next').hide();
+                    this.$('.pensions-table-paginator-last').hide();
+                } else {
+                    // Show next and last button.
+                    this.$('.pensions-table-paginator-next').show();
+                    this.$('.pensions-table-paginator-last').show();
+                }
+            };
+
+            Table.prototype._query = function() {
+                var url = this._endPoint;
+
+                var limit = this._state.maxPerPage;
+                var offset = (this._state.page - 1) * limit;
+
+                var filterField = this._state.filterField;
+                var filterOperation = this._state.filterOperation;
+                var filterValue = this._state.filterValue;
+
+                var sortField = this._state.sortField;
+                var sortOrder = this._state.sortOrder;
+
+                // Add limit and offset.
+                url += '?limit=' + limit + '&offset=' + offset;
+
+                // Add filter field name and value.
+                if (filterField && filterValue && filterOperation) {
+                    url += '&filterField=' + filterField + '&filterValue='
+                        + filterValue + '&filterOperation=' + filterOperation;
+                }
+
+                // Add sort field name and order.
+                if (sortField && sortOrder) {
+                    url += '&sortField=' + sortField + '&sortOrder='
+                        + sortOrder;
+                }
+
+                return $.ajax({
+                    url: url,
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+            };
+
+            Table.prototype._sort = function ($element) {
+                var fieldName = $element.data('name');
+
+                var currentSortField = this._state.sortField;
+                var currentSortOrder = this._state.sortOrder;
+
+                // Reset all sort element classes to initial.
+                this.$('.sort').each(function () {
+                    $(this).attr('class', 'sort');
+                });
+
+                if (currentSortField === fieldName) {
+                    // Update sort order.
+                    switch (currentSortOrder) {
+                        case SORT_ORDER.none:
+                            this._state.sortOrder = SORT_ORDER.asc;
+                            $element.attr('class', 'sort sort__asc');
+                            break;
+
+                        case SORT_ORDER.asc:
+                            this._state.sortOrder = SORT_ORDER.desc;
+                            $element.attr('class', 'sort sort__desc');
+                            break;
+
+                        case SORT_ORDER.desc:
+                            this._state.sortOrder = SORT_ORDER.none;
+                            $element.attr('class', 'sort');
+                            break;
+                    }
+                } else {
+                    this._state.sortField = fieldName;
+                    this._state.sortOrder = SORT_ORDER.asc;
+                    $element.attr('class', 'sort sort__asc');
+                }
+
+                this.render();
+            };
+
+            Table.prototype._filter = function(
+                    newFilterField,
+                    newFilterOperation,
+                    newFilterValue
+            ) {
+                if (! newFilterField && ! newFilterOperation && ! newFilterValue) {
+                    // Reset filter if one of filter parameter not set.
+                    newFilterField = null;
+                    newFilterValue = null;
+                    newFilterOperation = null;
+                }
+
+                this._state.filterField = newFilterField;
+                this._state.filterValue = newFilterValue;
+                this._state.filterOperation = newFilterOperation;
+
+                this.render();
+            };
+
+            Table.prototype._renderRow = function (row){
+                return '<tr>'
+                    +   '<td>'+ row.employee_name +'</td>'
+                    +   '<td>'+ row.job_title +'</td>'
+                    +   '<td>'+ row.employer +'</td>'
+                    +   '<td>'+ row.pension_system +'</td>'
+                    +   '<td>'+ row.region +'</td>'
+                    +   '<td>'+ row.pension_amount +'</td>'
+                    +   '<td>'+ row.benefits_amount +'</td>'
+                    +   '<td>'+ row.disability_amount +'</td>'
+                    +   '<td>'+ row.total_amount +'</td>'
+                    +   '<td>'+ row.notes +'</td>'
+                    +   '<td>'+ row.total_net_of_one_time_payments +'</td>'
+                    +   '<td>'+ row.years_of_service +'</td>'
+                    +   '<td>'+ row.year_of_retirement +'</td>'
+                    +   '<td>'+ row.year +'</td>'
+                    + '</tr>';
+            };
+
+            Table.prototype._getFilterOperation = function (filterName) {
+                return this.$('.filter-operation-' + fieldsConfig[filterName])
+                        .val();
+            };
+
+            return Table;
+        })();
+
+        var table = new Table('.pensions', ENDPOINT);
+
+        table.render();
+    </script>
+{%- endblock code -%}

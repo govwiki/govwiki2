@@ -101,7 +101,6 @@ class EnvironmentRepository extends EntityRepository
      * @param integer $user        User id.
      *
      * @return Environment|null
-     * @deprecated
      */
     public function getByName($environment, $user = null)
     {

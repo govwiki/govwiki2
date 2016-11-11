@@ -1,0 +1,291 @@
+<style>
+    .pensions-table {
+        width: 100%;
+        max-width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    .pensions-table thead th {
+        border-bottom: 2px solid #dddddd;
+        padding: 8px;
+    }
+
+    .caption {
+        color: #074d71;
+        text-decoration: none;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .caption:hover {
+        color: #2196f3;
+        text-decoration: underline;
+    }
+
+    .caption-left {
+        margin-right: 21px;
+    }
+
+    .caption-right {
+        width: 21px;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    .sort .caption-right {
+        background: url("data:image/gif;base64,R0lGODlhFQAJAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==") no-repeat center;
+    }
+
+    .sort__asc .caption-right {
+        background: url("data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7") no-repeat center;
+    }
+
+    .sort__desc .caption-right {
+        background: url("data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7") no-repeat center;
+    }
+
+    .pensions-table tbody td {
+        border-top: 1px solid #dddddd;
+        padding: 8px;
+        line-height: 1.846;
+        vertical-align: middle;
+    }
+
+    .pensions-table>tbody>tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .pensions-table-footer {
+        padding: 2px;
+    }
+
+    .pensions-table-paginator {
+        list-style: none;
+        padding: 0;
+        float: left;
+    }
+    .pensions-table-footer-count {
+        float: right;
+        margin: 1em;
+        height: 28px;
+        line-height: 28px;
+    }
+
+    .pensions-table-paginator-button,
+    .pensions-table-paginator-page {
+        border: 1px solid #ddd;
+        float: left;
+        padding: 4px;
+        min-width: 20px;
+        text-align: center;
+    }
+    .pensions-table-paginator-button {
+        cursor: pointer;
+    }
+
+    .pensions-table-paginator-button:hover {
+        background-color: #eee;
+        color: #0a6ebd;
+    }
+
+    .pensions-table-paginator li:first-child {
+        border-bottom-left-radius: 3px;
+        border-top-left-radius: 3px;
+    }
+
+    .pensions-table-paginator .pensions-table-paginator-page {
+        padding: 0;
+    }
+
+    .pensions-table-paginator-page input {
+        border: 0;
+        height: 26px;
+        padding: 0;
+        padding-left: 5px;
+        width: 45px;
+    }
+
+    .pensions-table-paginator li:last-child {
+        border-bottom-right-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .pensions-table-footer-filter {
+        float: left;
+        margin: 1em 0 1em 1em;
+    }
+
+    .pensions-table-footer-filter input,
+    .pensions-table-footer-filter select {
+        height: 26px;
+    }
+
+    .clearfix {
+        clear: both;
+    }
+</style>
+
+<div class="pensions">
+    <table class="pensions-table">
+    <thead>
+        <tr>
+            <th class="sort" data-name="employee_name">
+                <div class="caption">
+                    <div class="caption-left">Employee Name</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="job_title">
+                <div class="caption">
+                    <div class="caption-left">Job Title</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="employer">
+
+                <div class="caption">
+                    <div class="caption-left">Employer</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="pension_system">
+
+                <div class="caption">
+                    <div class="caption-left">Pension System</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="region">
+                <div class="caption">
+                    <div class="caption-left">Region</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="pension_amount">
+                <div class="caption">
+                    <div class="caption-left">Pension Amount</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="employee_name">
+                <div class="caption">
+                    <div class="caption-left">Benefits Amount</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="disability_amount">
+                <div class="caption">
+                    <div class="caption-left">Disability Amount</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="total_amount">
+                <div class="caption">
+                    <div class="caption-left">Total Amount</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="notes">
+                <div class="caption">
+                    <div class="caption-left">Notes</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="total_net_of_one_time_payments">
+                <div class="caption">
+                    <div class="caption-left">Total Net Of One Time Payments</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="years_of_service">
+                <div class="caption">
+                    <div class="caption-left">Years Of Service</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="year_of_retirement">
+                <div class="caption">
+                    <div class="caption-left">Year Of Retirement</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="year">
+                <div class="caption">
+                    <div class="caption-left">Year</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {%- block data -%}
+        {%- endblock data -%}
+    </tbody>
+    </table>
+    <div class="pensions-table-footer">
+        <ul class="pensions-table-paginator">
+            <li class="pensions-table-paginator-button pensions-table-paginator-first">
+                &lt;&lt;
+            </li>
+            <li class="pensions-table-paginator-button pensions-table-paginator-previous">
+                &lt;
+            </li>
+            <li class="pensions-table-paginator-page">
+                <input type="number">
+            </li>
+            <li class="pensions-table-paginator-button pensions-table-paginator-next">
+                &gt;
+            </li>
+            <li class="pensions-table-paginator-button pensions-table-paginator-last">
+                &gt;&gt;
+            </li>
+        </ul>
+        <div class="pensions-table-footer-filter">
+            Filter:
+            <select class="filter-field">
+                {%- for name, config in fields -%}
+                    <option value="{{- name -}}" data-type="{{- config.type -}}">
+                        {{- config.title -}}
+                    </option>
+                {%- endfor -%}
+            </select>
+            <select class="filter-operation-string">
+                <option value="eq">=</option>
+                <option value="neq">&lt;&gt;</option>
+            </select>
+            <select class="filter-operation-number">
+                <option value="lt">&lt;</option>
+                <option value="lte">&lt;=</option>
+                <option value="eq">=</option>
+                <option value="neq">&lt;&gt;</option>
+                <option value="gte">&gt;=</option>
+                <option value="gt">&gt;</option>
+            </select>
+            <input class="filter-value">
+        </div>
+        <div class="pensions-table-footer-count">
+            Total pages: <span class="count"></span>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+{%- set _code = block('code') -%}
+{%- if (_code) -%}
+    {%- if (debug) -%}
+
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+                integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+                crossorigin="anonymous">
+        </script>
+
+        {{- _code|raw -}}
+    {%- else -%}
+        {%- jshrink -%}
+            {{- _code|raw -}}
+        {%- endjshrink -%}
+    {%- endif -%}
+{%- endif -%}

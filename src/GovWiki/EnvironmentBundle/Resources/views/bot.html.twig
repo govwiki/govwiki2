@@ -1,0 +1,22 @@
+{%- extends 'GovWikiEnvironmentBundle::pension_layout.html.twig' -%}
+
+{% block data %}
+    {%- for row in data -%}
+        <tr data-index="{{- loop.index0 -}}">
+            <td>{{- row.employee_name -}}</td>
+            <td>{{- row.job_title -}}</td>
+            <td>{{- row.employer -}}</td>
+            <td>{{- row.pension_system -}}</td>
+            <td>{{- row.region -}}</td>
+            <td>{{- row.pension_amount -}}</td>
+            <td>{{- row.benefits_amount -}}</td>
+            <td>{{- row.disability_amount -}}</td>
+            <td>{{- row.total_amount -}}</td>
+            <td>{{- row.notes -}}</td>
+            <td>{{- row.total_net_of_one_time_payments -}}</td>
+            <td>{{- row.years_of_service -}}</td>
+            <td>{{- row.year_of_retirement -}}</td>
+            <td>{{- row.year -}}</td>
+        </tr>
+    {%- endfor -%}
+{% endblock data %}

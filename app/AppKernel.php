@@ -42,6 +42,7 @@ class AppKernel extends Kernel
             new GovWiki\MobileBundle\GovWikiMobileBundle(),
             new GovWiki\FrontendBundle\GovWikiFrontendBundle(),
             new GovWiki\MobileDetectBundle\GovWikiMobileDetectBundle(),
+            new Salva\JshrinkBundle\SalvaJshrinkBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
