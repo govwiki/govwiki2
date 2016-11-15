@@ -27,12 +27,12 @@
                 employer: 'string',
                 pension_system: 'string',
                 region: 'string',
-                pension_amount: 'number',
-                benefits_amount: 'number',
-                disability_amount: 'number',
-                total_amount: 'number',
+                pension_amount_formatted: 'number',
+                benefits_amount_formatted: 'number',
+                disability_amount_formatted: 'number',
+                total_amount_formatted: 'number',
                 notes: 'string',
-                total_net_of_one_time_payments: 'number',
+                total_net_of_one_time_payments_formatted: 'number',
                 years_of_service: 'number',
                 year_of_retirement: 'number',
                 year: 'number'
@@ -108,21 +108,7 @@
 
                     self._filter(newField, newOperation, newValue);
                 });
-                filterValueSelector.change(function () {
-                    var newField = filterFieldSelector.val().trim();
-                    var newOperation = self._getFilterOperation(newField);
-                    var newValue = filterValueSelector.val().trim();
-
-                    self._filter(newField, newOperation, newValue);
-                });
-                filterOperationString.change(function () {
-                    var newField = filterFieldSelector.val().trim();
-                    var newOperation = self._getFilterOperation(newField);
-                    var newValue = filterValueSelector.val().trim();
-
-                    self._filter(newField, newOperation, newValue);
-                });
-                filterOperationNumber.change(function () {
+                this.$('.filter-button').click(function () {
                     var newField = filterFieldSelector.val().trim();
                     var newOperation = self._getFilterOperation(newField);
                     var newValue = filterValueSelector.val().trim();
@@ -177,28 +163,29 @@
                 var pagesCount = this._state.pagesCount;
 
                 this.$('.pensions-table-paginator-page input')
-                        .val(currentPage);
+                    .val(currentPage)
+                    .attr('max', pagesCount);
                 this.$('.pensions-table-footer-count .count')
-                        .text(pagesCount);
+                    .text(pagesCount);
 
                 if (currentPage === 1) {
                     // Hide previous and first button.
-                    this.$('.pensions-table-paginator-first').hide();
-                    this.$('.pensions-table-paginator-previous').hide();
+                    this.$('.pensions-table-paginator-first').addClass('disabled');
+                    this.$('.pensions-table-paginator-previous').addClass('disabled');
                 } else {
                     // Show previous and first button.
-                    this.$('.pensions-table-paginator-first').show();
-                    this.$('.pensions-table-paginator-previous').show();
+                    this.$('.pensions-table-paginator-first').removeClass('disabled');
+                    this.$('.pensions-table-paginator-previous').removeClass('disabled');
                 }
 
                 if (currentPage === pagesCount) {
                     // Hide next and last button.
-                    this.$('.pensions-table-paginator-next').hide();
-                    this.$('.pensions-table-paginator-last').hide();
+                    this.$('.pensions-table-paginator-next').addClass('disabled');
+                    this.$('.pensions-table-paginator-last').addClass('disabled');
                 } else {
                     // Show next and last button.
-                    this.$('.pensions-table-paginator-next').show();
-                    this.$('.pensions-table-paginator-last').show();
+                    this.$('.pensions-table-paginator-next').removeClass('disabled');
+                    this.$('.pensions-table-paginator-last').removeClass('disabled');
                 }
             };
 
@@ -296,22 +283,38 @@
                 this.render();
             };
 
-            Table.prototype._renderRow = function (row){
+            Table.prototype._renderRow = function (row) {
+                row.pension_amount = (row.pension_amount_formatted)
+                    ? '$ ' + row.pension_amount_formatted
+                    : null;
+                row.benefits_amount = (row.benefits_amount_formatted)
+                        ? '$ ' + row.benefits_amount_formatted
+                        : null;
+                row.disability_amount = (row.disability_amount_formatted)
+                        ? '$ ' + row.disability_amount_formatted
+                        : null;
+                row.total_amount = (row.total_amount_formatted)
+                        ? '$ ' + row.total_amount_formatted
+                        : null;
+                row.total_net_of_one_time_payments = (row.total_net_of_one_time_payments_formatted)
+                        ? '$ ' + row.total_net_of_one_time_payments_formatted
+                        : null;
+
                 return '<tr>'
-                    +   '<td>'+ row.employee_name +'</td>'
-                    +   '<td>'+ row.job_title +'</td>'
-                    +   '<td>'+ row.employer +'</td>'
-                    +   '<td>'+ row.pension_system +'</td>'
-                    +   '<td>'+ row.region +'</td>'
-                    +   '<td>'+ row.pension_amount +'</td>'
-                    +   '<td>'+ row.benefits_amount +'</td>'
-                    +   '<td>'+ row.disability_amount +'</td>'
-                    +   '<td>'+ row.total_amount +'</td>'
-                    +   '<td>'+ row.notes +'</td>'
-                    +   '<td>'+ row.total_net_of_one_time_payments +'</td>'
-                    +   '<td>'+ row.years_of_service +'</td>'
-                    +   '<td>'+ row.year_of_retirement +'</td>'
-                    +   '<td>'+ row.year +'</td>'
+                    +   '<td>'+ (row.employee_name || '') +'</td>'
+                    +   '<td>'+ (row.job_title || '') +'</td>'
+                    +   '<td>'+ (row.employer || '') +'</td>'
+                    +   '<td>'+ (row.pension_system || '') +'</td>'
+                    +   '<td>'+ (row.region || '') +'</td>'
+                    +   '<td class="column-currency">'+ (row.pension_amount || '') +'</td>'
+                    +   '<td class="column-currency">'+ (row.benefits_amount || '') +'</td>'
+                    +   '<td class="column-currency">'+ (row.disability_amount || '') +'</td>'
+                    +   '<td class="column-currency">'+ (row.total_amount || '') +'</td>'
+                    +   '<td>'+ (row.notes || '') +'</td>'
+                    +   '<td class="column-currency">'+ (row.total_net_of_one_time_payments || '') +'</td>'
+                    +   '<td>'+ (row.years_of_service || '') +'</td>'
+                    +   '<td>'+ (row.year_of_retirement || '') +'</td>'
+                    +   '<td>'+ (row.year || '') +'</td>'
                     + '</tr>';
             };
 

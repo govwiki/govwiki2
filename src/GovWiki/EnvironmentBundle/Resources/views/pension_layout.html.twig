@@ -1,4 +1,41 @@
 <style>
+    .disabled {
+        cursor: not-allowed;
+        color: #BBBBBB;
+        background-color: #F3F3F3;
+    }
+
+    button {
+        border-radius: 3px;
+        display: inline-block;
+        color: #ffffff;
+        background-color: #2196f3;
+        border: none;
+        text-align: center;
+        vertical-align: middle;
+        transition: all 0.2s ease-in-out;
+        text-transform: uppercase;
+        background-image: none;
+        white-space: nowrap;
+        padding: 6px 16px;
+        font-size: 13px;
+        line-height: 1.846;
+        animation-duration: 0.0001s;
+        animation-name: mui-btn-inserted;
+    }
+
+    button:hover {
+        background-color: #0d87e9;
+        color: white;
+        border-color: rgba(0,0,0,0);
+    }
+
+    button:active {
+        color: #ffffff;
+        background-color: #0c7cd5;
+        border-color: rgba(0,0,0,0);
+    }
+
     .pensions-table {
         width: 100%;
         max-width: 100%;
@@ -47,11 +84,28 @@
         background: url("data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7") no-repeat center;
     }
 
+    .pensions {
+        display: block;
+        width: 100%;
+        min-height: 0%;
+        overflow-x: auto;
+        color: #666;
+    }
+
+    .column-currency {
+        text-align: right;
+    }
+
+    .pensions-table {
+        font-size: 13px;
+    }
+
     .pensions-table tbody td {
         border-top: 1px solid #dddddd;
         padding: 8px;
         line-height: 1.846;
         vertical-align: middle;
+        color: #666;
     }
 
     .pensions-table>tbody>tr:nth-of-type(odd) {
@@ -60,6 +114,15 @@
 
     .pensions-table-footer {
         padding: 2px;
+    }
+
+    .pensions-table-paginator,
+    .pensions-table-paginator-page input {
+        color: #074d71;
+    }
+
+    .pensions-table-paginator li:not(:first-child) {
+        border-left: none;
     }
 
     .pensions-table-paginator {
@@ -105,7 +168,7 @@
         height: 26px;
         padding: 0;
         padding-left: 5px;
-        width: 45px;
+        width: 55px;
     }
 
     .pensions-table-paginator li:last-child {
@@ -119,12 +182,58 @@
     }
 
     .pensions-table-footer-filter input,
-    .pensions-table-footer-filter select {
+    .pensions-table-footer-filter select,
+    .pensions-table-footer-filter button {
         height: 26px;
+        padding: 0 10px;
+    }
+
+    .pensions-table-footer-filter input,
+    .pensions-table-footer-filter select {
+        border: 0;
+        border-radius: 0;
+        color: #666;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    .pensions-table-footer-filter input {
+        padding: 0;
+        box-shadow: inset 0 -1px 0 #ddd;
+    }
+
+    .pensions-table-footer-filter input:focus,
+    .pensions-table-footer-filter select:focus {
+        box-shadow: inset 0 -2px 0 #2196f3;
+        outline: 0;
+    }
+
+    .pensions-table-footer-filter select {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEVmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmaP/QSjAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
+        background-size: 13px;
+        background-repeat: no-repeat;
+        background-position: right center;
+        box-shadow: inset 0 -1px 0 #ddd;
+        font-size: 16px;
+        line-height: 1.5;
+        background-color: transparent;
+    }
+
+    .pensions-table-footer-filter select:focus {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEUhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISF8S9ewAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
     }
 
     .clearfix {
         clear: both;
+    }
+
+    @keyframes mui-btn-inserted {
+        from {
+            -ms-zoom: 1;
+        }
+        to {
+            -ms-zoom:1;
+        }
     }
 </style>
 
@@ -134,7 +243,7 @@
         <tr>
             <th class="sort" data-name="employee_name">
                 <div class="caption">
-                    <div class="caption-left">Employee Name</div>
+                    <div class="caption-left">Employee</div>
                     <div class="caption-right"></div>
                 </div>
             </th>
@@ -153,7 +262,7 @@
             </th>
             <th class="sort" data-name="pension_system">
 
-                <div class="caption">
+                <div class="caption" style="width: 140px">
                     <div class="caption-left">Pension System</div>
                     <div class="caption-right"></div>
                 </div>
@@ -165,26 +274,26 @@
                 </div>
             </th>
             <th class="sort" data-name="pension_amount">
-                <div class="caption">
-                    <div class="caption-left">Pension Amount</div>
+                <div class="caption" style="width: 100px">
+                    <div class="caption-left">Pension</div>
                     <div class="caption-right"></div>
                 </div>
             </th>
             <th class="sort" data-name="employee_name">
                 <div class="caption">
-                    <div class="caption-left">Benefits Amount</div>
+                    <div class="caption-left">Benefits</div>
                     <div class="caption-right"></div>
                 </div>
             </th>
             <th class="sort" data-name="disability_amount">
                 <div class="caption">
-                    <div class="caption-left">Disability Amount</div>
+                    <div class="caption-left">Disability</div>
                     <div class="caption-right"></div>
                 </div>
             </th>
             <th class="sort" data-name="total_amount">
-                <div class="caption">
-                    <div class="caption-left">Total Amount</div>
+                <div class="caption" style="width: 100px">
+                    <div class="caption-left">Total</div>
                     <div class="caption-right"></div>
                 </div>
             </th>
@@ -195,13 +304,13 @@
                 </div>
             </th>
             <th class="sort" data-name="total_net_of_one_time_payments">
-                <div class="caption">
+                <div class="caption" style="width: 140px">
                     <div class="caption-left">Total Net Of One Time Payments</div>
                     <div class="caption-right"></div>
                 </div>
             </th>
             <th class="sort" data-name="years_of_service">
-                <div class="caption">
+                <div class="caption" style="width: 85px">
                     <div class="caption-left">Years Of Service</div>
                     <div class="caption-right"></div>
                 </div>
@@ -213,7 +322,7 @@
                 </div>
             </th>
             <th class="sort" data-name="year">
-                <div class="caption">
+                <div class="caption" style="width: 50px">
                     <div class="caption-left">Year</div>
                     <div class="caption-right"></div>
                 </div>
@@ -234,7 +343,7 @@
                 &lt;
             </li>
             <li class="pensions-table-paginator-page">
-                <input type="number">
+                <input type="number" min="1" max="">
             </li>
             <li class="pensions-table-paginator-button pensions-table-paginator-next">
                 &gt;
@@ -265,6 +374,7 @@
                 <option value="gt">&gt;</option>
             </select>
             <input class="filter-value">
+            <button class="filter-button" type="button">Filter</button>
         </div>
         <div class="pensions-table-footer-count">
             Total pages: <span class="count"></span>
@@ -273,14 +383,14 @@
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+        crossorigin="anonymous">
+</script>
+
 {%- set _code = block('code') -%}
 {%- if (_code) -%}
     {%- if (debug) -%}
-
-        <script src="https://code.jquery.com/jquery-1.12.4.min.js"
-                integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-                crossorigin="anonymous">
-        </script>
 
         {{- _code|raw -}}
     {%- else -%}

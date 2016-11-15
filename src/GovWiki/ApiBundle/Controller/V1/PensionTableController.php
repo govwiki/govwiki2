@@ -38,12 +38,12 @@ class PensionTableController extends AbstractGovWikiApiController
         'employer' => 'string',
         'pension_system' => 'string',
         'region' => 'string',
-        'pension_amount' => 'number',
-        'benefits_amount' => 'number',
-        'disability_amount' => 'number',
-        'total_amount' => 'number',
+        'pension_amount' => 'currency',
+        'benefits_amount' => 'currency',
+        'disability_amount' => 'currency',
+        'total_amount' => 'currency',
         'notes' => 'string',
-        'total_net_of_one_time_payments' => 'number',
+        'total_net_of_one_time_payments' => 'currency',
         'years_of_service' => 'number',
         'year_of_retirement' => 'number',
         'year' => 'number',
@@ -88,20 +88,26 @@ class PensionTableController extends AbstractGovWikiApiController
      */
     public function indexAction(Request $request)
     {
-
-
         $limit = $this->getLimit($request);
         $offset = $this->getOffset($request);
 
         /** @var Connection $em */
         $em = $this->getDoctrine()->getConnection();
 
+        // Prepare columns.
+        $selectStmt = [];
+        foreach ($this->fieldsConfig as $name => $type) {
+            if ($type === 'currency') {
+                $selectStmt[] = "FORMAT({$name}, 2) AS {$name}_formatted";
+            } else {
+                $selectStmt[] = $name;
+            }
+        }
+
         $qb = $em->createQueryBuilder();
         $qb
-            ->select(implode(',', array_keys($this->fieldsConfig)))
-            ->from('tc_pensions')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
+            ->select(implode(',', $selectStmt))
+            ->from('tc_pensions');
 
         if (($error = $this->applyFilter($request, $qb)) !== '') {
             return $this->badRequestResponse($error);
@@ -113,6 +119,9 @@ class PensionTableController extends AbstractGovWikiApiController
 
         $countQb = clone $qb;
         $countQb->select('COUNT(*)');
+        $qb
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
 
         return $this->successResponse([
             'rows' => $qb->execute()->fetchAll(\PDO::FETCH_ASSOC),
@@ -172,7 +181,7 @@ class PensionTableController extends AbstractGovWikiApiController
                         $qb->setParameter('filter', "%{$filterValue}%");
                     }
                 } else {
-                    // Number type.
+                    // Number or currency type.
                     $filterValue = filter_var($filterValue, FILTER_VALIDATE_INT);
                     $qb->setParameter('filter', $filterValue);
                     $condition .= ' :filter';
