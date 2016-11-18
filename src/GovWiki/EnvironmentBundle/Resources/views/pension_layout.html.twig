@@ -185,7 +185,15 @@
     .pensions-table-footer-filter select,
     .pensions-table-footer-filter button {
         height: 26px;
+    }
+
+    .pensions-table-footer-filter select {
         padding: 0 20px 0 10px;
+    }
+
+    .pensions-table-footer-filter input,
+    .pensions-table-footer-filter button {
+        padding: 0 10px;
     }
 
     .pensions-table-footer-filter input,
@@ -282,6 +290,7 @@
             <input class="filter-value">
             <input class="filter-value-max">
             <button class="filter-button" type="button">Filter</button>
+            <button class="filter-button-reset" type="button">Reset filter</button>
         </div>
         <div class="pensions-table-footer-count">
             Total pages: <span class="count"></span>

@@ -42,6 +42,7 @@
                 var self = this;
 
                 var filterFieldSelector;
+                var filterValueSelector;
 
                 this.$el = $(selector);
 
@@ -86,9 +87,10 @@
                 });
 
                 filterFieldSelector = this.$('.filter-field');
+                filterValueSelector = this.$('.filter-value');
 
                 filterFieldSelector.change(changeFilterSelectors);
-                this.$('.filter-value').change(changeFilterSelectors);
+                filterValueSelector.change(changeFilterSelectors);
                 this.$('.filter-operation-string').change(changeFilterSelectors);
                 this.$('.filter-operation-number').change(changeFilterSelectors);
                 this.$('.filter-value-min').change(changeFilterSelectors);
@@ -96,6 +98,24 @@
 
 
                 this.$('.filter-button').click(function () {
+                    self.render();
+                });
+
+                this.$('.filter-button-reset').click(function () {
+                    self._state.filterField = 'employee_name';
+                    self._state.filterOperation = null;
+                    self._state.filterValue = null;
+
+                    filterFieldSelector
+                        .find(':selected')
+                        .removeAttr('selected');
+
+                    filterFieldSelector
+                        .find('option[value="employee_name"]')
+                        .attr('selected', 'selected');
+
+                    filterValueSelector.val('');
+                    filterValueSelector.val('');
                     self.render();
                 });
 
