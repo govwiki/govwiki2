@@ -10,7 +10,11 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Touki\FTP\FTP;
+use Touki\FTP\FTPFactory;
+use Touki\FTP\Model\File;
 
 /**
  * Class GeneratePensionsCommand
@@ -242,6 +246,46 @@ EOF;
         }
 
         $output->writeln('[ <info>ok</info> ]');
+
+        if ($debug) {
+            $helper = $this->getHelper('question');
+
+            $serverQuestion = new Question('Ftp server (ftp.govwiki.info): ', 'ftp.govwiki.info');
+            $portQuestion = new Question('Ftp server port (21): ', '21');
+            $usernameQuestion = new Question('Username: ', '');
+            $passwordQuestion = new Question('Password (input will be hidden): ', '');
+            $passwordQuestion
+                ->setHidden(true)
+                ->setHiddenFallback(false);
+
+            $server = trim($helper->ask($input, $output, $serverQuestion));
+            $port = (int) $helper->ask($input, $output, $portQuestion);
+            $username = trim($helper->ask($input, $output, $usernameQuestion));
+            $password = trim($helper->ask($input, $output, $passwordQuestion));
+
+            if (! $server || ! $port || ! $username || ! $password) {
+                $this->writeError($output, 'Provide all data for ftp connection.');
+
+                return false;
+            }
+
+            $connection = ftp_connect($server, $port);
+            $loggedIn = ftp_login($connection, $username, $password);
+
+            if (! $connection || ! $loggedIn) {
+                $this->writeError($output, 'Invalid credentials.');
+                return false;
+            }
+
+            ftp_pasv($connection, true);
+
+            if (ftp_put($connection, 'human.html', realpath($pathToHumanFile), FTP_BINARY)) {
+                echo 'good';
+            }
+
+            ftp_close($connection);
+        }
+
         return true;
     }
 

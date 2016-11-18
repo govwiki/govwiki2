@@ -238,6 +238,53 @@
 </style>
 
 <div class="pensions">
+    <div class="pensions-table-footer">
+        <ul class="pensions-table-paginator">
+            <li class="pensions-table-paginator-button pensions-table-paginator-first">
+                &lt;&lt;
+            </li>
+            <li class="pensions-table-paginator-button pensions-table-paginator-previous">
+                &lt;
+            </li>
+            <li class="pensions-table-paginator-page">
+                <input type="number" min="1" max="">
+            </li>
+            <li class="pensions-table-paginator-button pensions-table-paginator-next">
+                &gt;
+            </li>
+            <li class="pensions-table-paginator-button pensions-table-paginator-last">
+                &gt;&gt;
+            </li>
+        </ul>
+        <div class="pensions-table-footer-filter">
+            Filter:
+            <select class="filter-field">
+                {%- for name, config in fields -%}
+                    <option value="{{- name -}}" data-type="{{- config.type -}}">
+                        {{- config.title -}}
+                    </option>
+                {%- endfor -%}
+            </select>
+            <select class="filter-operation-string">
+                <option value="eq">=</option>
+                <option value="neq">&lt;&gt;</option>
+            </select>
+            <select class="filter-operation-number">
+                <option value="lt">&lt;</option>
+                <option value="lte">&lt;=</option>
+                <option value="eq">=</option>
+                <option value="neq">&lt;&gt;</option>
+                <option value="gte">&gt;=</option>
+                <option value="gt">&gt;</option>
+            </select>
+            <input class="filter-value">
+            <button class="filter-button" type="button">Filter</button>
+        </div>
+        <div class="pensions-table-footer-count">
+            Total pages: <span class="count"></span>
+        </div>
+        <div class="clearfix"></div>
+    </div>
     <table class="pensions-table">
     <thead>
         <tr>
@@ -334,64 +381,15 @@
         {%- endblock data -%}
     </tbody>
     </table>
-    <div class="pensions-table-footer">
-        <ul class="pensions-table-paginator">
-            <li class="pensions-table-paginator-button pensions-table-paginator-first">
-                &lt;&lt;
-            </li>
-            <li class="pensions-table-paginator-button pensions-table-paginator-previous">
-                &lt;
-            </li>
-            <li class="pensions-table-paginator-page">
-                <input type="number" min="1" max="">
-            </li>
-            <li class="pensions-table-paginator-button pensions-table-paginator-next">
-                &gt;
-            </li>
-            <li class="pensions-table-paginator-button pensions-table-paginator-last">
-                &gt;&gt;
-            </li>
-        </ul>
-        <div class="pensions-table-footer-filter">
-            Filter:
-            <select class="filter-field">
-                {%- for name, config in fields -%}
-                    <option value="{{- name -}}" data-type="{{- config.type -}}">
-                        {{- config.title -}}
-                    </option>
-                {%- endfor -%}
-            </select>
-            <select class="filter-operation-string">
-                <option value="eq">=</option>
-                <option value="neq">&lt;&gt;</option>
-            </select>
-            <select class="filter-operation-number">
-                <option value="lt">&lt;</option>
-                <option value="lte">&lt;=</option>
-                <option value="eq">=</option>
-                <option value="neq">&lt;&gt;</option>
-                <option value="gte">&gt;=</option>
-                <option value="gt">&gt;</option>
-            </select>
-            <input class="filter-value">
-            <button class="filter-button" type="button">Filter</button>
-        </div>
-        <div class="pensions-table-footer-count">
-            Total pages: <span class="count"></span>
-        </div>
-        <div class="clearfix"></div>
-    </div>
 </div>
-
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"
-        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-        crossorigin="anonymous">
-</script>
 
 {%- set _code = block('code') -%}
 {%- if (_code) -%}
     {%- if (debug) -%}
-
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+                integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+                crossorigin="anonymous">
+        </script>
         {{- _code|raw -}}
     {%- else -%}
         {%- jshrink -%}
