@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Touki\FTP\FTP;
@@ -249,6 +250,15 @@ EOF;
 
         if ($debug) {
             $helper = $this->getHelper('question');
+
+            $deployQuestion = new ConfirmationQuestion(
+                'Deploy to server? ',
+                true
+            );
+
+            if (! $helper->ask($input, $output, $deployQuestion)) {
+                return true;
+            }
 
             $serverQuestion = new Question('Ftp server (ftp.govwiki.info): ', 'ftp.govwiki.info');
             $portQuestion = new Question('Ftp server port (21): ', '21');

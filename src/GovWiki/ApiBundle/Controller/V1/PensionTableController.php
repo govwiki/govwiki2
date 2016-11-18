@@ -19,8 +19,9 @@ class PensionTableController extends AbstractGovWikiApiController
 
     private $operations = [
         'string' => [
-            'eq' => 'LIKE',
-            'neq' => 'NOT LIKE',
+            'eq' => '=',
+            'neq' => '<>',
+            'contains' => 'LIKE',
         ],
         'number' => [
             'lt' => '<',
@@ -57,6 +58,7 @@ class PensionTableController extends AbstractGovWikiApiController
      *      for strings:
      *          - eq (equal)
      *          - neq (not equal)
+     *          - contains
      *      for numbers:
      *          - lt (less then)
      *          - lte (less or equal)
@@ -178,7 +180,10 @@ class PensionTableController extends AbstractGovWikiApiController
                         $condition .= ' IS NULL';
                     } else {
                         $condition .= ' :filter';
-                        $qb->setParameter('filter', "%{$filterValue}%");
+                        if ($filterOperation === 'contains') {
+                            $filterValue = "%{$filterValue}%";
+                        }
+                        $qb->setParameter('filter', $filterValue);
                     }
                 } else {
                     // Number or currency type.
