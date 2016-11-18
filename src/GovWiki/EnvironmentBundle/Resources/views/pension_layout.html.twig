@@ -235,12 +235,52 @@
         clear: both;
     }
 
+    .loader {
+        margin: 60px auto;
+        font-size: 4px;
+        position: relative;
+        text-indent: -9999em;
+        border-top: 2px solid rgba(200,200,200,0.5);
+        border-right: 2px solid rgba(200,200,200,0.5);
+        border-bottom: 2px solid rgba(200,200,200,0.5);
+        border-left: 2px solid #0b4d70;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-animation: load8 0.7s infinite linear;
+        animation: load8 0.7s infinite linear;
+    }
+
+    .loader,
+    .loader:after {
+        border-radius: 50%;
+        width: 10em;
+        height: 10em;
+    }
+
+    .loader_wrap {
+        width: 100px;
+        overflow: hidden;
+        margin: 0 auto;
+    }
+
     @keyframes mui-btn-inserted {
         from {
             -ms-zoom: 1;
         }
         to {
             -ms-zoom:1;
+        }
+    }
+
+    @-webkit-keyframes load8 {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
         }
     }
 </style>

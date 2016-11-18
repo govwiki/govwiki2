@@ -151,6 +151,12 @@
 
             Table.prototype.render = function() {
                 var self = this;
+                var table = this.$('tbody');
+                table.html('');
+
+                this.$el.append(
+                    '<div class="loader_wrap"><div class="loader"></div></div>'
+                );
 
                 this._query()
                     .done(function (response) {
@@ -166,9 +172,10 @@
 
             Table.prototype._updateData = function(data) {
                 var i;
-                var table = self.$('tbody');
+                var table = this.$('tbody');
 
-                table.html('');
+                this.$('.loader_wrap').remove();
+
                 for (i = 0; i < data.length; ++i) {
                     table.append(this._renderRow(data[i]));
                 }
