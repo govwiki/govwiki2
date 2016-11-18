@@ -185,7 +185,7 @@
     .pensions-table-footer-filter select,
     .pensions-table-footer-filter button {
         height: 26px;
-        padding: 0 10px;
+        padding: 0 20px 0 10px;
     }
 
     .pensions-table-footer-filter input,
@@ -277,8 +277,10 @@
                 <option value="neq">&lt;&gt;</option>
                 <option value="gte">&gt;=</option>
                 <option value="gt">&gt;</option>
+                <option value="between">between</option>
             </select>
             <input class="filter-value">
+            <input class="filter-value-max">
             <button class="filter-button" type="button">Filter</button>
         </div>
         <div class="pensions-table-footer-count">

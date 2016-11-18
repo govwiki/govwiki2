@@ -30,6 +30,16 @@ class PensionTableController extends AbstractGovWikiApiController
             'neq' => '<>',
             'gte' => '>=',
             'gt' => '>',
+            'between' => 'BETWEEN',
+        ],
+        'currency' => [
+            'lt' => '<',
+            'lte' => '<=',
+            'eq' => '=',
+            'neq' => '<>',
+            'gte' => '>=',
+            'gt' => '>',
+            'between' => 'BETWEEN',
         ],
     ];
 
@@ -143,7 +153,7 @@ class PensionTableController extends AbstractGovWikiApiController
         $filterOperation = trim($request->query->get('filterOperation'));
         $filterValue = $request->query->get('filterValue');
 
-        if ($filterField && $filterValue && $filterOperation) {
+        if ($filterField && $filterOperation) {
             // Check filter field.
             if (! in_array($filterField, array_keys($this->fieldsConfig))) {
                 // Invalid field name.
@@ -167,29 +177,26 @@ class PensionTableController extends AbstractGovWikiApiController
 
             $condition = $filterField;
 
-            if (strtolower(trim($filterValue)) === 'null') {
-                $condition = ' IS NULL';
+            if (strtolower(trim($filterValue)) === '') {
+                $condition .= ' IS NULL';
             } else {
                 $dbOperation = $operations[$filterOperation];
                 $condition .= ' '. $dbOperation;
 
                 if ($type === 'string') {
-                    $filterValue = strtolower(trim($filterValue));
-
-                    if ($filterValue === 'null') {
-                        $condition .= ' IS NULL';
-                    } else {
-                        $condition .= ' :filter';
-                        if ($filterOperation === 'contains') {
-                            $filterValue = "%{$filterValue}%";
-                        }
-                        $qb->setParameter('filter', $filterValue);
-                    }
+                    $condition = $this->processStringFilter(
+                        $filterValue,
+                        $filterOperation,
+                        $condition,
+                        $qb
+                    );
                 } else {
-                    // Number or currency type.
-                    $filterValue = filter_var($filterValue, FILTER_VALIDATE_INT);
-                    $qb->setParameter('filter', $filterValue);
-                    $condition .= ' :filter';
+                    $condition = $this->processNumberFilter(
+                        $filterValue,
+                        $filterOperation,
+                        $condition,
+                        $qb
+                    );
                 }
             }
 
@@ -197,6 +204,68 @@ class PensionTableController extends AbstractGovWikiApiController
         }
 
         return '';
+    }
+
+    /**
+     * @param string       $filterValue     Filter value.
+     * @param string       $filterOperation Filter operation.
+     * @param string       $condition       Filter condition.
+     * @param QueryBuilder $qb              A QueryBuilder instance.
+     *
+     * @return string
+     */
+    private function processStringFilter(
+        $filterValue,
+        $filterOperation,
+        $condition,
+        QueryBuilder $qb
+    ) {
+        $filterValue = strtolower(trim($filterValue));
+
+        if ($filterValue === 'null') {
+            $condition .= ' IS NULL';
+        } else {
+            $condition .= ' :filter';
+            if ($filterOperation === 'contains') {
+                $filterValue = "%{$filterValue}%";
+            }
+            $qb->setParameter('filter', $filterValue);
+        }
+
+        return $condition;
+    }
+
+    /**
+     * @param string       $filterValue     Filter value.
+     * @param string       $filterOperation Filter operation.
+     * @param string       $condition       Filter condition.
+     * @param QueryBuilder $qb              A QueryBuilder instance.
+     *
+     * @return string
+     */
+    private function processNumberFilter(
+        $filterValue,
+        $filterOperation,
+        $condition,
+        QueryBuilder $qb
+    ) {
+        if ($filterOperation === 'between') {
+            // For between operation assume that filer value contains two values
+            // delimited by comma.
+            $values = explode(',', $filterValue);
+            $min = filter_var($values[0], FILTER_VALIDATE_INT);
+            $max = filter_var($values[1], FILTER_VALIDATE_INT);
+
+            $condition .= ' :min AND :max';
+            $qb->setParameter('min', $min);
+            $qb->setParameter('max', $max);
+        } else {
+            $filterValue = filter_var($filterValue, FILTER_VALIDATE_INT);
+            $qb->setParameter('filter', $filterValue);
+            $condition .= ' :filter';
+        }
+
+        return $condition;
     }
 
     /**

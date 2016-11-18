@@ -11,7 +11,7 @@
 
         var Table = (function() {
             /**
-             * Sorting order consts.
+             * Sorting order.
              *
              * @const
              */
@@ -27,12 +27,12 @@
                 employer: 'string',
                 pension_system: 'string',
                 region: 'string',
-                pension_amount_formatted: 'number',
-                benefits_amount_formatted: 'number',
-                disability_amount_formatted: 'number',
-                total_amount_formatted: 'number',
+                pension_amount: 'number',
+                benefits_amount: 'number',
+                disability_amount: 'number',
+                total_amount: 'number',
                 notes: 'string',
-                total_net_of_one_time_payments_formatted: 'number',
+                total_net_of_one_time_payments: 'number',
                 years_of_service: 'number',
                 year_of_retirement: 'number',
                 year: 'number'
@@ -42,9 +42,6 @@
                 var self = this;
 
                 var filterFieldSelector;
-                var filterValueSelector;
-                var filterOperationString;
-                var filterOperationNumber;
 
                 this.$el = $(selector);
 
@@ -89,32 +86,30 @@
                 });
 
                 filterFieldSelector = this.$('.filter-field');
-                filterValueSelector = this.$('.filter-value');
-                filterOperationString = this.$('.filter-operation-string');
-                filterOperationNumber = this.$('.filter-operation-number');
 
-                filterFieldSelector.change(function () {
-                    var newField = filterFieldSelector.val().trim();
-                    var newOperation = self._getFilterOperation(newField);
-                    var newValue = filterValueSelector.val().trim();
+                filterFieldSelector.change(changeFilterSelectors);
+                this.$('.filter-value').change(changeFilterSelectors);
+                this.$('.filter-operation-string').change(changeFilterSelectors);
+                this.$('.filter-operation-number').change(changeFilterSelectors);
+                this.$('.filter-value-min').change(changeFilterSelectors);
+                this.$('.filter-value-max').change(changeFilterSelectors);
 
-                    if (fieldsConfig[newField] === 'string') {
-                        filterOperationNumber.hide();
-                        filterOperationString.show();
-                    } else {
-                        filterOperationNumber.show();
-                        filterOperationString.hide();
-                    }
 
-                    self._filter(newField, newOperation, newValue);
-                });
                 this.$('.filter-button').click(function () {
+                    self.render();
+                });
+
+                function changeFilterSelectors() {
                     var newField = filterFieldSelector.val().trim();
                     var newOperation = self._getFilterOperation(newField);
-                    var newValue = filterValueSelector.val().trim();
+                    var newValue = self._getFilterValue(newOperation);
 
-                    self._filter(newField, newOperation, newValue);
-                });
+                    self._state.filterField = newField;
+                    self._state.filterOperation = newOperation;
+                    self._state.filterValue = newValue;
+
+                    self._updateFilter();
+                }
             }
 
             Table.prototype.$ = function(selector) {
@@ -145,6 +140,7 @@
                         self._state.pagesCount = Math.ceil(totalCount / self._state.maxPerPage);
                         self._updateData(rows);
                         self._updatePaginator();
+                        self._updateFilter();
                     });
             };
 
@@ -189,6 +185,30 @@
                 }
             };
 
+            Table.prototype._updateFilter = function()
+            {
+                var filterValueMaxSelector = this.$('.filter-value-max');
+                var filterOperationString = this.$('.filter-operation-string');
+                var filterOperationNumber = this.$('.filter-operation-number');
+
+                var newField = this._state.filterField;
+                var newOperation = this._state.filterOperation;
+
+                if (fieldsConfig[newField] === 'string') {
+                    filterOperationNumber.hide();
+                    filterOperationString.show();
+                } else {
+                    filterOperationNumber.show();
+                    filterOperationString.hide();
+                }
+
+                if (newOperation === 'between') {
+                    filterValueMaxSelector.show();
+                } else {
+                    filterValueMaxSelector.val('').hide();
+                }
+            };
+
             Table.prototype._query = function() {
                 var url = this._endPoint;
 
@@ -206,7 +226,7 @@
                 url += '?limit=' + limit + '&offset=' + offset;
 
                 // Add filter field name and value.
-                if (filterField && filterValue && filterOperation) {
+                if (filterField && filterOperation) {
                     url += '&filterField=' + filterField + '&filterValue='
                         + filterValue + '&filterOperation=' + filterOperation;
                 }
@@ -264,25 +284,6 @@
                 this.render();
             };
 
-            Table.prototype._filter = function(
-                    newFilterField,
-                    newFilterOperation,
-                    newFilterValue
-            ) {
-                if (! newFilterField && ! newFilterOperation && ! newFilterValue) {
-                    // Reset filter if one of filter parameter not set.
-                    newFilterField = null;
-                    newFilterValue = null;
-                    newFilterOperation = null;
-                }
-
-                this._state.filterField = newFilterField;
-                this._state.filterValue = newFilterValue;
-                this._state.filterOperation = newFilterOperation;
-
-                this.render();
-            };
-
             Table.prototype._renderRow = function (row) {
                 row.pension_amount = (row.pension_amount_formatted)
                     ? '$ ' + row.pension_amount_formatted
@@ -321,6 +322,16 @@
             Table.prototype._getFilterOperation = function (filterName) {
                 return this.$('.filter-operation-' + fieldsConfig[filterName])
                         .val();
+            };
+
+            Table.prototype._getFilterValue = function (filterOperation) {
+                var value = this.$('.filter-value').val().trim();
+
+                if (filterOperation === 'between') {
+                    value += ',' + this.$('.filter-value-max').val().trim();
+                }
+
+                return value;
             };
 
             return Table;
