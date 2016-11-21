@@ -22,27 +22,109 @@
             };
 
             var fieldsConfig = {
-                employee_name: 'string',
-                job_title: 'string',
-                employer: 'string',
-                pension_system: 'string',
-                region: 'string',
-                pension_amount: 'number',
-                benefits_amount: 'number',
-                disability_amount: 'number',
-                total_amount: 'number',
-                notes: 'string',
-                total_net_of_one_time_payments: 'number',
-                years_of_service: 'number',
-                year_of_retirement: 'number',
-                year: 'number'
+                employee_name: {
+                    title: 'Employee',
+                    type: 'string'
+                },
+                job_title: {
+                    title: 'Job Title',
+                    type: 'string'
+                },
+                employer: {
+                    title: 'Employer',
+                    type: 'string'
+                },
+                pension_system: {
+                    title: 'Pension System',
+                    type: 'string'
+                },
+                region: {
+                    title: 'Region',
+                    type: 'string'
+                },
+                pension_amount: {
+                    title: 'Pension',
+                    type: 'currency'
+                },
+                benefits_amount: {
+                    title: 'Benefis',
+                    type: 'currency'
+                },
+                disability_amount: {
+                    title: 'Disability',
+                    type: 'currency'
+                },
+                total_amount: {
+                    title: 'Total',
+                    type: 'currency'
+                },
+                notes: {
+                    title: 'Notes',
+                    type: 'string'
+                },
+                total_net_of_one_time_payments: {
+                    title: 'Total Net Of One Time Payments',
+                    type: 'currency'
+                },
+                years_of_service: {
+                    title: 'Years Of Service',
+                    type: 'number'
+                },
+                year_of_retirement: {
+                    title: 'Year Of Retirement',
+                    type: 'number'
+                },
+                year: {
+                    title: 'Year',
+                    type: 'number'
+                }
             };
+
+            var DEFAULTS_COLUMNS = [
+                'employee_name',
+                'job_title',
+                'employer',
+                'pension_system',
+                'total_net_of_one_time_payments'
+            ];
+
+            function intersect(first, second){
+                var ai = 0;
+                var bi=0;
+                var result = [];
+
+                while( ai < a.length && bi < b.length ) {
+                    if (a[ai] < b[bi]) {
+                        ai++;
+                    } else if (a[ai] > b[bi]) {
+                        bi++;
+                    } else {
+                        result.push(a[ai]);
+                        ai++;
+                        bi++;
+                    }
+              }
+
+              return result;
+            }
+
+            function first(arr) {
+                var i;
+
+                for (i in arr){
+                    return arr[i];
+                }
+            }
 
             function Table(selector, endPoint) {
                 var self = this;
 
+                var field;
+
                 var filterFieldSelector;
                 var filterValueSelector;
+                var maxPerPageSelector;
+                var columnsSelector;
 
                 this.$el = $(selector);
 
@@ -50,13 +132,14 @@
 
                 this._state = {
                     page: 1,
-                    maxPerPage: 25,
+                    maxPerPage: 10,
                     pagesCount: 0,
                     sortField: null,
                     sortOrder: SORT_ORDER.none,
                     filterField: 'employee_name',
                     filterOperation: null,
-                    filterValue: null
+                    filterValue: null,
+                    showedColumns: DEFAULTS_COLUMNS
                 };
 
                 this._endPoint = endPoint;
@@ -96,6 +179,12 @@
                 this.$('.filter-value-min').change(changeFilterSelectors);
                 this.$('.filter-value-max').change(changeFilterSelectors);
 
+                maxPerPageSelector = this.$('.pensions-table-per-page');
+
+                maxPerPageSelector.change(function() {
+                    self._state.maxPerPage = Number(maxPerPageSelector.val());
+                    self.render();
+                });
 
                 this.$('.filter-button').click(function () {
                     self.render();
@@ -105,6 +194,8 @@
                     self._state.filterField = 'employee_name';
                     self._state.filterOperation = null;
                     self._state.filterValue = null;
+                    self._state.maxPerPage = 10;
+                    self._state.showedColumns = DEFAULTS_COLUMNS;
 
                     filterFieldSelector
                         .find(':selected')
@@ -112,6 +203,14 @@
 
                     filterFieldSelector
                         .find('option[value="employee_name"]')
+                        .attr('selected', 'selected');
+
+                    maxPerPageSelector
+                        .find(':selected')
+                        .removeAttr('selected');
+
+                    maxPerPageSelector
+                        .find('option[value="25"]')
                         .attr('selected', 'selected');
 
                     filterValueSelector.val('');
@@ -130,6 +229,38 @@
 
                     self._updateFilter();
                 }
+
+                // Add all columns.
+                columnsSelector = this.$('.pensions-table-footer-selector select');
+                for (field in fieldsConfig) {
+                    columnsSelector.append(
+                        '<option value="'+ field +'">'+fieldsConfig[field].title+'</option>'
+                    )
+                }
+
+                this.$('.pensions-table-footer-selector-apply').click(function() {
+                    self.render();
+                });
+
+                // Initialize multi select.
+                columnsSelector.multipleSelect({
+                    filter: true,
+                    onClick: function() {
+                        self._state.showedColumns = columnsSelector
+                            .multipleSelect('getSelects');
+                    },
+                    onCheckAll: function() {
+                        self._state.showedColumns = columnsSelector
+                            .multipleSelect('getSelects');
+                    },
+                    onUncheckAll: function() {
+                        self._state.showedColumns = columnsSelector
+                            .multipleSelect('getSelects');
+                    }
+                });
+
+                columnsSelector
+                    .multipleSelect('setSelects', this._state.showedColumns);
             }
 
             Table.prototype.$ = function(selector) {
@@ -152,6 +283,22 @@
             Table.prototype.render = function() {
                 var self = this;
                 var table = this.$('tbody');
+
+                var sortField = this._state.sortField;
+                var showedColumns = this._state.showedColumns;
+                var firstShowedColumn = first(showedColumns);
+
+                if ($.inArray(this._state.filterField, showedColumns) === -1) {
+                    this._state.filterField = firstShowedColumn;
+                    this._state.filterOperation = null;
+                    this._state.filterValue = null;
+                }
+
+                if (sortField && $.inArray(sortField, showedColumns) === -1) {
+                    this._state.sortField = firstShowedColumn;
+                    this._state.sortOrder = SORT_ORDER.none;
+                }
+
                 table.html('');
 
                 this.$el.append(
@@ -167,6 +314,7 @@
                         self._updateData(rows);
                         self._updatePaginator();
                         self._updateFilter();
+                        self._updateTable();
                     });
             };
 
@@ -212,16 +360,21 @@
                 }
             };
 
-            Table.prototype._updateFilter = function()
-            {
+            Table.prototype._updateFilter = function() {
+                var showedColumns = this._state.showedColumns;
+                var i;
+
+                var filterFieldSelector = this.$('.filter-field');
+                var filterValueSelector = this.$('.filter-value');
                 var filterValueMaxSelector = this.$('.filter-value-max');
                 var filterOperationString = this.$('.filter-operation-string');
                 var filterOperationNumber = this.$('.filter-operation-number');
 
                 var newField = this._state.filterField;
+                var newValue = this._state.filterValue;
                 var newOperation = this._state.filterOperation;
 
-                if (fieldsConfig[newField] === 'string') {
+                if (fieldsConfig[newField].type === 'string') {
                     filterOperationNumber.hide();
                     filterOperationString.show();
                 } else {
@@ -233,6 +386,38 @@
                     filterValueMaxSelector.show();
                 } else {
                     filterValueMaxSelector.val('').hide();
+                }
+
+                filterFieldSelector.find('option').hide();
+                for (i in showedColumns) {
+                    filterFieldSelector
+                        .find('[value="'+ showedColumns[i] +'"]')
+                        .show();
+                }
+                filterFieldSelector.find(':selected').removeAttr('selected');
+                filterFieldSelector.find('[value="'+ newField +'"]')
+                        .attr('selected', 'selected');
+
+                if (newValue && newValue.indexOf(',') !== -1) {
+                    newValue = newValue.split(',');
+
+                    filterValueSelector.val(newValue[0]);
+                    filterValueMaxSelector.val(newValue[1]);
+                } else {
+                    filterValueSelector.val(newValue);
+                }
+            };
+
+            Table.prototype._updateTable = function() {
+                var table = this.$('table');
+                var showedColumns = this._state.showedColumns;
+                var i;
+
+                // Hide all columns.
+                table.find('th').hide();
+                // Show only selected.
+                for (i in showedColumns) {
+                    table.find('[data-name="'+ showedColumns[i] +'"]').show();
                 }
             };
 
@@ -249,8 +434,13 @@
                 var sortField = this._state.sortField;
                 var sortOrder = this._state.sortOrder;
 
+                var columns = this._state.showedColumns;
+
                 // Add limit and offset.
                 url += '?limit=' + limit + '&offset=' + offset;
+
+                // Add required columns.
+                url += '&showedColumns=' + columns.join(',');
 
                 // Add filter field name and value.
                 if (filterField && filterOperation) {
@@ -312,43 +502,32 @@
             };
 
             Table.prototype._renderRow = function (row) {
-                row.pension_amount = (row.pension_amount_formatted)
-                    ? '$ ' + row.pension_amount_formatted
-                    : null;
-                row.benefits_amount = (row.benefits_amount_formatted)
-                        ? '$ ' + row.benefits_amount_formatted
-                        : null;
-                row.disability_amount = (row.disability_amount_formatted)
-                        ? '$ ' + row.disability_amount_formatted
-                        : null;
-                row.total_amount = (row.total_amount_formatted)
-                        ? '$ ' + row.total_amount_formatted
-                        : null;
-                row.total_net_of_one_time_payments = (row.total_net_of_one_time_payments_formatted)
-                        ? '$ ' + row.total_net_of_one_time_payments_formatted
-                        : null;
+                var result = '<tr>';
+                var showedColumns = this._state.showedColumns;
+                var i;
+                var column;
 
-                return '<tr>'
-                    +   '<td>'+ (row.employee_name || '') +'</td>'
-                    +   '<td>'+ (row.job_title || '') +'</td>'
-                    +   '<td>'+ (row.employer || '') +'</td>'
-                    +   '<td>'+ (row.pension_system || '') +'</td>'
-                    +   '<td>'+ (row.region || '') +'</td>'
-                    +   '<td class="column-currency">'+ (row.pension_amount || '') +'</td>'
-                    +   '<td class="column-currency">'+ (row.benefits_amount || '') +'</td>'
-                    +   '<td class="column-currency">'+ (row.disability_amount || '') +'</td>'
-                    +   '<td class="column-currency">'+ (row.total_amount || '') +'</td>'
-                    +   '<td>'+ (row.notes || '') +'</td>'
-                    +   '<td class="column-currency">'+ (row.total_net_of_one_time_payments || '') +'</td>'
-                    +   '<td>'+ (row.years_of_service || '') +'</td>'
-                    +   '<td>'+ (row.year_of_retirement || '') +'</td>'
-                    +   '<td>'+ (row.year || '') +'</td>'
-                    + '</tr>';
+                for (i in showedColumns) {
+                    column = showedColumns[i];
+
+                    if (fieldsConfig[column].type === 'currency') {
+                        row[column] = (row[column + '_formatted'])
+                            ? '$ ' + row[column + '_formatted']
+                            : null
+                    }
+                    result += '<td>'+ (row[column] || '') +'</td>';
+                }
+
+                return result;
             };
 
             Table.prototype._getFilterOperation = function (filterName) {
-                return this.$('.filter-operation-' + fieldsConfig[filterName])
-                        .val();
+                var type = fieldsConfig[filterName].type;
+                if (type === 'currency') {
+                    type = 'number';
+                }
+
+                return this.$('.filter-operation-' + type).val();
             };
 
             Table.prototype._getFilterValue = function (filterOperation) {

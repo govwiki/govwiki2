@@ -176,28 +176,31 @@
         border-top-right-radius: 3px;
     }
 
-    .pensions-table-footer-filter {
+    .pensions-table-footer-filter,
+    .pensions-table-footer-selector {
         float: left;
         margin: 1em 0 1em 1em;
     }
 
-    .pensions-table-footer-filter input,
-    .pensions-table-footer-filter select,
-    .pensions-table-footer-filter button {
+    .pensions input[type='text'] {
+        height: 25px;
+    }
+    .pensions select,
+    .pensions button {
         height: 26px;
     }
 
-    .pensions-table-footer-filter select {
+    .pensions select {
         padding: 0 20px 0 10px;
     }
 
-    .pensions-table-footer-filter input,
-    .pensions-table-footer-filter button {
+    .pensions input[type='text'],
+    .pensions button {
         padding: 0 10px;
     }
 
-    .pensions-table-footer-filter input,
-    .pensions-table-footer-filter select {
+    .pensions input[type='text'],
+    .pensions select {
         border: 0;
         border-radius: 0;
         color: #666;
@@ -205,18 +208,18 @@
         -webkit-appearance: none;
     }
 
-    .pensions-table-footer-filter input {
+    .pensions input[type='text'] {
         padding: 0;
         box-shadow: inset 0 -1px 0 #ddd;
     }
 
-    .pensions-table-footer-filter input:focus,
-    .pensions-table-footer-filter select:focus {
+    .pensions input[type='text']:focus,
+    .pensions select:focus {
         box-shadow: inset 0 -2px 0 #2196f3;
         outline: 0;
     }
 
-    .pensions-table-footer-filter select {
+    .pensions select {
         background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEVmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmaP/QSjAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
         background-size: 13px;
         background-repeat: no-repeat;
@@ -227,8 +230,18 @@
         background-color: transparent;
     }
 
-    .pensions-table-footer-filter select:focus {
+    .pensions select:focus {
         background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEUhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISF8S9ewAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
+    }
+
+    .ms-parent {
+        height: 25px;
+    }
+
+    .ms-choice:hover {
+        background-color: transparent;
+        color: initial;
+        border-color: rgb(170, 170, 170);
     }
 
     .clearfix {
@@ -285,6 +298,8 @@
     }
 </style>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.2.0/multiple-select.min.css">
+
 <div class="pensions">
     <div class="pensions-table-footer">
         <ul class="pensions-table-paginator">
@@ -327,12 +342,24 @@
                 <option value="gt">&gt;</option>
                 <option value="between">between</option>
             </select>
-            <input class="filter-value">
-            <input class="filter-value-max">
+            <input type="text" class="filter-value">
+            <input type="text" class="filter-value-max">
             <button class="filter-button" type="button">Filter</button>
             <button class="filter-button-reset" type="button">Reset filter</button>
         </div>
+        <div class="pensions-table-footer-selector">
+            <select multiple="multiple"></select>
+            <button class="pensions-table-footer-selector-apply" type="button">Apply</button>
+        </div>
         <div class="pensions-table-footer-count">
+            <select class="pensions-table-per-page">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="75">15</option>
+                <option value="100">100</option>
+            </select>
+            per page.
             Total pages: <span class="count"></span>
         </div>
         <div class="clearfix"></div>
@@ -378,7 +405,7 @@
                     <div class="caption-right"></div>
                 </div>
             </th>
-            <th class="sort" data-name="employee_name">
+            <th class="sort" data-name="benefits_amount">
                 <div class="caption">
                     <div class="caption-left">Benefits</div>
                     <div class="caption-right"></div>
@@ -442,6 +469,9 @@
                 integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
                 crossorigin="anonymous">
         </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.2.0/multiple-select.min.js">
+        </script>
+
         {{- _code|raw -}}
     {%- else -%}
         {%- jshrink -%}

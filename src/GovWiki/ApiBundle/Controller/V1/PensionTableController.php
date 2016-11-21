@@ -81,6 +81,7 @@ class PensionTableController extends AbstractGovWikiApiController
      *  - sortOrder
      *  - limit
      *  - offset
+     *  - showedColumns
      *
      * Return array of california pensions data:
      * {
@@ -102,13 +103,28 @@ class PensionTableController extends AbstractGovWikiApiController
     {
         $limit = $this->getLimit($request);
         $offset = $this->getOffset($request);
+        $showedColumns = $this->getShowedColumns($request);
+
+        $filteredFieldConfig = [];
+
+        // Intersect requested columns and available.
+        foreach ($showedColumns as $column) {
+            if (! isset($this->fieldsConfig[$column])) {
+                return $this->badRequestResponse('Unknown column '. $column);
+            }
+
+            $filteredFieldConfig[$column] = $this->fieldsConfig[$column];
+        }
 
         /** @var Connection $em */
         $em = $this->getDoctrine()->getConnection();
 
         // Prepare columns.
         $selectStmt = [];
-        foreach ($this->fieldsConfig as $name => $type) {
+
+        // Get only those fields which specified in request;
+
+        foreach ($filteredFieldConfig as $name => $type) {
             if ($type === 'currency') {
                 $selectStmt[] = "FORMAT({$name}, 2) AS {$name}_formatted";
             } else {
@@ -319,5 +335,16 @@ class PensionTableController extends AbstractGovWikiApiController
     private function getOffset(Request $request)
     {
         return filter_var($request->query->get('offset'), FILTER_VALIDATE_INT) ?: 0;
+    }
+
+    /**
+     * @param Request $request A Request instance.
+     *
+     * @return string[]
+     */
+    private function getShowedColumns(Request $request)
+    {
+        $columns = $request->query->get('showedColumns');
+        return array_filter(array_map('trim', explode(',', $columns)));
     }
 }
