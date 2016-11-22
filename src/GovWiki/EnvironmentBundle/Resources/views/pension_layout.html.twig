@@ -86,10 +86,8 @@
 
     .pensions {
         display: block;
-        width: 100%;
-        min-height: 0%;
-        overflow-x: auto;
-        color: #666;
+        width: 80%;
+        margin: 0 auto;
     }
 
     .column-currency {
@@ -301,7 +299,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.2.0/multiple-select.min.css">
 
 <div class="pensions">
-    <div class="pensions-table-footer">
+    {#<div class="pensions-table-footer">
         <ul class="pensions-table-paginator">
             <li class="pensions-table-paginator-button pensions-table-paginator-first">
                 &lt;&lt;
@@ -459,7 +457,7 @@
         {%- block data -%}
         {%- endblock data -%}
     </tbody>
-    </table>
+    </table>#}
 </div>
 
 {%- set _code = block('code') -%}
@@ -479,3 +477,555 @@
         {%- endjshrink -%}
     {%- endif -%}
 {%- endif -%}
+
+
+
+{#
+
+<script>
+    // We make sure that $ point to jQuery.
+    if (! $ && jQuery) {
+        window.$ = jQuery;
+    }
+
+    var ENDPOINT = '{{- endPoint -}}';
+
+    var Table = (function() {
+        /**
+         * Sorting order.
+         *
+         * @const
+         */
+        var SORT_ORDER = {
+            none: null,
+            asc: 'asc',
+            desc: 'desc'
+        };
+
+        var fieldsConfig = {
+            employee_name: {
+                title: 'Employee',
+                type: 'string'
+            },
+            job_title: {
+                title: 'Job Title',
+                type: 'string'
+            },
+            employer: {
+                title: 'Employer',
+                type: 'string'
+            },
+            pension_system: {
+                title: 'Pension System',
+                type: 'string'
+            },
+            region: {
+                title: 'Region',
+                type: 'string'
+            },
+            pension_amount: {
+                title: 'Pension',
+                type: 'currency'
+            },
+            benefits_amount: {
+                title: 'Benefis',
+                type: 'currency'
+            },
+            disability_amount: {
+                title: 'Disability',
+                type: 'currency'
+            },
+            total_amount: {
+                title: 'Total',
+                type: 'currency'
+            },
+            notes: {
+                title: 'Notes',
+                type: 'string'
+            },
+            total_net_of_one_time_payments: {
+                title: 'Total Net Of One Time Payments',
+                type: 'currency'
+            },
+            years_of_service: {
+                title: 'Years Of Service',
+                type: 'number'
+            },
+            year_of_retirement: {
+                title: 'Year Of Retirement',
+                type: 'number'
+            },
+            year: {
+                title: 'Year',
+                type: 'number'
+            }
+        };
+
+        var DEFAULTS_COLUMNS = [
+            'employee_name',
+            'job_title',
+            'employer',
+            'pension_system',
+            'total_net_of_one_time_payments'
+        ];
+
+        function intersect(first, second){
+            var ai = 0;
+            var bi=0;
+            var result = [];
+
+            while( ai < a.length && bi < b.length ) {
+                if (a[ai] < b[bi]) {
+                    ai++;
+                } else if (a[ai] > b[bi]) {
+                    bi++;
+                } else {
+                    result.push(a[ai]);
+                    ai++;
+                    bi++;
+                }
+          }
+
+          return result;
+        }
+
+        function first(arr) {
+            var i;
+
+            for (i in arr){
+                return arr[i];
+            }
+        }
+
+        function Table(selector, endPoint) {
+            var self = this;
+
+            var field;
+
+            var filterFieldSelector;
+            var filterValueSelector;
+            var maxPerPageSelector;
+            var columnsSelector;
+
+            this.$el = $(selector);
+
+            this.$('.filter-operation-number').hide();
+
+            this._state = {
+                page: 1,
+                maxPerPage: 10,
+                pagesCount: 0,
+                sortField: null,
+                sortOrder: SORT_ORDER.none,
+                filterField: 'employee_name',
+                filterOperation: null,
+                filterValue: null,
+                showedColumns: DEFAULTS_COLUMNS
+            };
+
+            this._endPoint = endPoint;
+
+            // Pagination handlers.
+            this.$('.pensions-table-paginator-first').click(function() {
+                self.goTo(1);
+            });
+            this.$('.pensions-table-paginator-previous').click(function() {
+                self.goTo(self._state.page - 1);
+            });
+            this.$('.pensions-table-paginator-next').click(function() {
+                self.goTo(self._state.page + 1);
+            });
+            this.$('.pensions-table-paginator-last').click(function() {
+                self.goTo(self._state.pagesCount);
+            });
+            this.$('.pensions-table-paginator-page input').change(function(event) {
+                self.goTo(event.target.value);
+            });
+
+            // Sort handler.
+            this.$('.sort').click(function (event) {
+                self._sort($(this));
+
+                event.preventDefault();
+                event.stopPropagation();
+            });
+
+            filterFieldSelector = this.$('.filter-field');
+            filterValueSelector = this.$('.filter-value');
+
+            filterFieldSelector.change(changeFilterSelectors);
+            filterValueSelector.change(changeFilterSelectors);
+            this.$('.filter-operation-string').change(changeFilterSelectors);
+            this.$('.filter-operation-number').change(changeFilterSelectors);
+            this.$('.filter-value-min').change(changeFilterSelectors);
+            this.$('.filter-value-max').change(changeFilterSelectors);
+
+            maxPerPageSelector = this.$('.pensions-table-per-page');
+
+            maxPerPageSelector.change(function() {
+                self._state.maxPerPage = Number(maxPerPageSelector.val());
+                self.render();
+            });
+
+            this.$('.filter-button').click(function () {
+                self.render();
+            });
+
+            this.$('.filter-button-reset').click(function () {
+                self._state.filterField = 'employee_name';
+                self._state.filterOperation = null;
+                self._state.filterValue = null;
+                self._state.maxPerPage = 10;
+                self._state.showedColumns = DEFAULTS_COLUMNS;
+
+                filterFieldSelector
+                    .find(':selected')
+                    .removeAttr('selected');
+
+                filterFieldSelector
+                    .find('option[value="employee_name"]')
+                    .attr('selected', 'selected');
+
+                maxPerPageSelector
+                    .find(':selected')
+                    .removeAttr('selected');
+
+                maxPerPageSelector
+                    .find('option[value="25"]')
+                    .attr('selected', 'selected');
+
+                filterValueSelector.val('');
+                filterValueSelector.val('');
+                self.render();
+            });
+
+            function changeFilterSelectors() {
+                var newField = filterFieldSelector.val().trim();
+                var newOperation = self._getFilterOperation(newField);
+                var newValue = self._getFilterValue(newOperation);
+
+                self._state.filterField = newField;
+                self._state.filterOperation = newOperation;
+                self._state.filterValue = newValue;
+
+                self._updateFilter();
+            }
+
+            // Add all columns.
+            columnsSelector = this.$('.pensions-table-footer-selector select');
+            for (field in fieldsConfig) {
+                columnsSelector.append(
+                    '<option value="'+ field +'">'+fieldsConfig[field].title+'</option>'
+                )
+            }
+
+            this.$('.pensions-table-footer-selector-apply').click(function() {
+                self.render();
+            });
+
+            // Initialize multi select.
+            columnsSelector.multipleSelect({
+                filter: true,
+                onClick: function() {
+                    self._state.showedColumns = columnsSelector
+                        .multipleSelect('getSelects');
+                },
+                onCheckAll: function() {
+                    self._state.showedColumns = columnsSelector
+                        .multipleSelect('getSelects');
+                },
+                onUncheckAll: function() {
+                    self._state.showedColumns = columnsSelector
+                        .multipleSelect('getSelects');
+                }
+            });
+
+            columnsSelector
+                .multipleSelect('setSelects', this._state.showedColumns);
+        }
+
+        Table.prototype.$ = function(selector) {
+            return this.$el.find(selector);
+        };
+
+        Table.prototype.goTo = function(page) {
+            var pagesCount = this._state.pagesCount;
+
+            // Check page bound.
+            if ((page < 1) || (page > pagesCount)) {
+                // Do nothing.
+                return;
+            }
+
+            this._state.page = page;
+            this.render();
+        };
+
+        Table.prototype.render = function() {
+            var self = this;
+            var table = this.$('tbody');
+
+            var sortField = this._state.sortField;
+            var showedColumns = this._state.showedColumns;
+            var firstShowedColumn = first(showedColumns);
+
+            if ($.inArray(this._state.filterField, showedColumns) === -1) {
+                this._state.filterField = firstShowedColumn;
+                this._state.filterOperation = null;
+                this._state.filterValue = null;
+            }
+
+            if (sortField && $.inArray(sortField, showedColumns) === -1) {
+                this._state.sortField = firstShowedColumn;
+                this._state.sortOrder = SORT_ORDER.none;
+            }
+
+            table.html('');
+
+            this.$el.append(
+                '<div class="loader_wrap"><div class="loader"></div></div>'
+            );
+
+            this._query()
+                .done(function (response) {
+                    var rows = response.data.rows;
+                    var totalCount = response.data.totalCount;
+
+                    self._state.pagesCount = Math.ceil(totalCount / self._state.maxPerPage);
+                    self._updateData(rows);
+                    self._updatePaginator();
+                    self._updateFilter();
+                    self._updateTable();
+                });
+        };
+
+        Table.prototype._updateData = function(data) {
+            var i;
+            var table = this.$('tbody');
+
+            this.$('.loader_wrap').remove();
+
+            for (i = 0; i < data.length; ++i) {
+                table.append(this._renderRow(data[i]));
+            }
+        };
+
+        Table.prototype._updatePaginator = function() {
+            var currentPage = this._state.page;
+            var pagesCount = this._state.pagesCount;
+
+            this.$('.pensions-table-paginator-page input')
+                .val(currentPage)
+                .attr('max', pagesCount);
+            this.$('.pensions-table-footer-count .count')
+                .text(pagesCount);
+
+            if (currentPage === 1) {
+                // Hide previous and first button.
+                this.$('.pensions-table-paginator-first').addClass('disabled');
+                this.$('.pensions-table-paginator-previous').addClass('disabled');
+            } else {
+                // Show previous and first button.
+                this.$('.pensions-table-paginator-first').removeClass('disabled');
+                this.$('.pensions-table-paginator-previous').removeClass('disabled');
+            }
+
+            if (currentPage === pagesCount) {
+                // Hide next and last button.
+                this.$('.pensions-table-paginator-next').addClass('disabled');
+                this.$('.pensions-table-paginator-last').addClass('disabled');
+            } else {
+                // Show next and last button.
+                this.$('.pensions-table-paginator-next').removeClass('disabled');
+                this.$('.pensions-table-paginator-last').removeClass('disabled');
+            }
+        };
+
+        Table.prototype._updateFilter = function() {
+            var showedColumns = this._state.showedColumns;
+            var i;
+
+            var filterFieldSelector = this.$('.filter-field');
+            var filterValueSelector = this.$('.filter-value');
+            var filterValueMaxSelector = this.$('.filter-value-max');
+            var filterOperationString = this.$('.filter-operation-string');
+            var filterOperationNumber = this.$('.filter-operation-number');
+
+            var newField = this._state.filterField;
+            var newValue = this._state.filterValue;
+            var newOperation = this._state.filterOperation;
+
+            if (fieldsConfig[newField].type === 'string') {
+                filterOperationNumber.hide();
+                filterOperationString.show();
+            } else {
+                filterOperationNumber.show();
+                filterOperationString.hide();
+            }
+
+            if (newOperation === 'between') {
+                filterValueMaxSelector.show();
+            } else {
+                filterValueMaxSelector.val('').hide();
+            }
+
+            filterFieldSelector.find('option').hide();
+            for (i in showedColumns) {
+                filterFieldSelector
+                    .find('[value="'+ showedColumns[i] +'"]')
+                    .show();
+            }
+            filterFieldSelector.find(':selected').removeAttr('selected');
+            filterFieldSelector.find('[value="'+ newField +'"]')
+                    .attr('selected', 'selected');
+
+            if (newValue && newValue.indexOf(',') !== -1) {
+                newValue = newValue.split(',');
+
+                filterValueSelector.val(newValue[0]);
+                filterValueMaxSelector.val(newValue[1]);
+            } else {
+                filterValueSelector.val(newValue);
+            }
+        };
+
+        Table.prototype._updateTable = function() {
+            var table = this.$('table');
+            var showedColumns = this._state.showedColumns;
+            var i;
+
+            // Hide all columns.
+            table.find('th').hide();
+            // Show only selected.
+            for (i in showedColumns) {
+                table.find('[data-name="'+ showedColumns[i] +'"]').show();
+            }
+        };
+
+        Table.prototype._query = function() {
+            var url = this._endPoint;
+
+            var limit = this._state.maxPerPage;
+            var offset = (this._state.page - 1) * limit;
+
+            var filterField = this._state.filterField;
+            var filterOperation = this._state.filterOperation;
+            var filterValue = this._state.filterValue;
+
+            var sortField = this._state.sortField;
+            var sortOrder = this._state.sortOrder;
+
+            var columns = this._state.showedColumns;
+
+            // Add limit and offset.
+            url += '?limit=' + limit + '&offset=' + offset;
+
+            // Add required columns.
+            url += '&showedColumns=' + columns.join(',');
+
+            // Add filter field name and value.
+            if (filterField && filterOperation) {
+                url += '&filterField=' + filterField + '&filterValue='
+                    + filterValue + '&filterOperation=' + filterOperation;
+            }
+
+            // Add sort field name and order.
+            if (sortField && sortOrder) {
+                url += '&sortField=' + sortField + '&sortOrder='
+                    + sortOrder;
+            }
+
+            return $.ajax({
+                url: url,
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+        };
+
+        Table.prototype._sort = function ($element) {
+            var fieldName = $element.data('name');
+
+            var currentSortField = this._state.sortField;
+            var currentSortOrder = this._state.sortOrder;
+
+            // Reset all sort element classes to initial.
+            this.$('.sort').each(function () {
+                $(this).attr('class', 'sort');
+            });
+
+            if (currentSortField === fieldName) {
+                // Update sort order.
+                switch (currentSortOrder) {
+                    case SORT_ORDER.none:
+                        this._state.sortOrder = SORT_ORDER.asc;
+                        $element.attr('class', 'sort sort__asc');
+                        break;
+
+                    case SORT_ORDER.asc:
+                        this._state.sortOrder = SORT_ORDER.desc;
+                        $element.attr('class', 'sort sort__desc');
+                        break;
+
+                    case SORT_ORDER.desc:
+                        this._state.sortOrder = SORT_ORDER.none;
+                        $element.attr('class', 'sort');
+                        break;
+                }
+            } else {
+                this._state.sortField = fieldName;
+                this._state.sortOrder = SORT_ORDER.asc;
+                $element.attr('class', 'sort sort__asc');
+            }
+
+            this.render();
+        };
+
+        Table.prototype._renderRow = function (row) {
+            var result = '<tr>';
+            var showedColumns = this._state.showedColumns;
+            var i;
+            var column;
+
+            for (i in showedColumns) {
+                column = showedColumns[i];
+
+                if (fieldsConfig[column].type === 'currency') {
+                    row[column] = (row[column + '_formatted'])
+                        ? '$ ' + row[column + '_formatted']
+                        : null
+                }
+                result += '<td>'+ (row[column] || '') +'</td>';
+            }
+
+            return result;
+        };
+
+        Table.prototype._getFilterOperation = function (filterName) {
+            var type = fieldsConfig[filterName].type;
+            if (type === 'currency') {
+                type = 'number';
+            }
+
+            return this.$('.filter-operation-' + type).val();
+        };
+
+        Table.prototype._getFilterValue = function (filterOperation) {
+            var value = this.$('.filter-value').val().trim();
+
+            if (filterOperation === 'between') {
+                value += ',' + this.$('.filter-value-max').val().trim();
+            }
+
+            return value;
+        };
+
+        return Table;
+    })();
+
+    var table = new Table('.pensions', ENDPOINT);
+
+    table.render();
+</script>
+#}

@@ -63,7 +63,7 @@ class PensionTableController extends AbstractGovWikiApiController
     /**
      * Get pensions data.
      * Available query parameters:
-     *  - filterField
+     *  - filterColumn
      *  - filterOperation
      *      for strings:
      *          - eq (equal)
@@ -77,7 +77,7 @@ class PensionTableController extends AbstractGovWikiApiController
      *          - gte (great or equal)
      *          - gt (great then)
      *  - filterValue
-     *  - sortFiled
+     *  - sortColumn
      *  - sortOrder
      *  - limit
      *  - offset
@@ -165,51 +165,51 @@ class PensionTableController extends AbstractGovWikiApiController
      */
     private function applyFilter(Request $request, QueryBuilder $qb)
     {
-        $filterField = trim($request->query->get('filterField'));
-        $filterOperation = trim($request->query->get('filterOperation'));
-        $filterValue = $request->query->get('filterValue');
+        $column = trim($request->query->get('filterColumn'));
+        $operation = trim($request->query->get('filterOperation'));
+        $value = $request->query->get('filterValue');
 
-        if ($filterField && $filterOperation) {
+        if ($column && $operation) {
             // Check filter field.
-            if (! in_array($filterField, array_keys($this->fieldsConfig))) {
+            if (! in_array($column, array_keys($this->fieldsConfig))) {
                 // Invalid field name.
                 return 'Invalid field name for filtering, expect one of '
                     . implode(', ', array_keys($this->fieldsConfig))
-                    . ", but '{$filterField}' given";
+                    . ", but '{$column}' given";
             }
 
             // Get current field type and available operations.
-            $type = $this->fieldsConfig[$filterField];
+            $type = $this->fieldsConfig[$column];
             $operations = $this->operations[$type];
 
             // Check filter operation.
-            if (! in_array($filterOperation, array_keys($operations))) {
+            if (! in_array($operation, array_keys($operations))) {
                 // Invalid field name.
                 return 'Invalid operation for filtering, expect one of '
                 . implode(', ', array_keys($operations))
-                . ", but '{$filterOperation}' given";
+                . ", but '{$operation}' given";
             }
 
 
-            $condition = $filterField;
+            $condition = $column;
 
-            if (strtolower(trim($filterValue)) === '') {
+            if (strtolower(trim($value)) === '') {
                 $condition .= ' IS NULL';
             } else {
-                $dbOperation = $operations[$filterOperation];
+                $dbOperation = $operations[$operation];
                 $condition .= ' '. $dbOperation;
 
                 if ($type === 'string') {
                     $condition = $this->processStringFilter(
-                        $filterValue,
-                        $filterOperation,
+                        $value,
+                        $operation,
                         $condition,
                         $qb
                     );
                 } else {
                     $condition = $this->processNumberFilter(
-                        $filterValue,
-                        $filterOperation,
+                        $value,
+                        $operation,
                         $condition,
                         $qb
                     );
@@ -292,26 +292,26 @@ class PensionTableController extends AbstractGovWikiApiController
      */
     private function applySort(Request $request, QueryBuilder $qb)
     {
-        $sortField = trim($request->query->get('sortField'));
-        $sortOrder = strtolower(trim($request->query->get('sortOrder')));
+        $column = trim($request->query->get('sortColumn'));
+        $order = strtolower(trim($request->query->get('sortOrder')));
 
-        if ($sortField && $sortOrder) {
+        if ($column && $order) {
             // Check sort field and order.
-            if (! in_array($sortField, array_keys($this->fieldsConfig))) {
+            if (! in_array($column, array_keys($this->fieldsConfig))) {
                 // Invalid field name.
                 return 'Invalid field name for sorting, expect one of '
                     . implode(', ', array_keys($this->fieldsConfig))
-                    . ", but '{$sortField}' given";
+                    . ", but '{$column}' given";
             }
 
-            if (! in_array($sortOrder, [ 'asc', 'desc' ])) {
+            if (! in_array($order, [ 'asc', 'desc' ])) {
                 // Invalid order.
                 return 'Invalid sorting order, expect one of asc, desc, but '
-                    . "{$sortOrder} given";
+                    . "{$order} given";
             }
 
             // Add sort condition.
-            $qb->orderBy($sortField, $sortOrder);
+            $qb->orderBy($column, $order);
         }
 
         return '';
