@@ -1,22 +1,177 @@
-{%- extends 'GovWikiEnvironmentBundle::pension_layout.html.twig' -%}
+<div class="pensions">
+    <div class="pensions-table-footer">
+        <ul class="pensions-table-paginator">
+            <li class="pensions-table-paginator-button pensions-table-paginator-first">
+                &lt;&lt;
+            </li>
+            <li class="pensions-table-paginator-button pensions-table-paginator-previous">
+                &lt;
+            </li>
+            <li class="pensions-table-paginator-page">
+                <input type="number" min="1" max="">
+            </li>
+            <li class="pensions-table-paginator-button pensions-table-paginator-next">
+                &gt;
+            </li>
+            <li class="pensions-table-paginator-button pensions-table-paginator-last">
+                &gt;&gt;
+            </li>
+        </ul>
+        <div class="pensions-table-footer-filter">
+            Filter:
+            <select class="filter-field">
+                {%- for name, config in fields -%}
+                    <option value="{{- name -}}" data-type="{{- config.type -}}">
+                        {{- config.title -}}
+                    </option>
+                {%- endfor -%}
+            </select>
+            <select class="filter-operation-string">
+                <option value="eq">=</option>
+                <option value="contains">contains</option>
+                <option value="neq">&lt;&gt;</option>
+            </select>
+            <select class="filter-operation-number">
+                <option value="lt">&lt;</option>
+                <option value="lte">&lt;=</option>
+                <option value="eq">=</option>
+                <option value="neq">&lt;&gt;</option>
+                <option value="gte">&gt;=</option>
+                <option value="gt">&gt;</option>
+                <option value="between">between</option>
+            </select>
+            <input type="text" class="filter-value">
+            <input type="text" class="filter-value-max">
+            <button class="filter-button" type="button">Filter</button>
+            <button class="filter-button-reset" type="button">Reset filter</button>
+        </div>
+        <div class="pensions-table-footer-selector">
+            <select multiple="multiple"></select>
+            <button class="pensions-table-footer-selector-apply" type="button">Apply</button>
+        </div>
+        <div class="pensions-table-footer-count">
+            <select class="pensions-table-per-page">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="75">15</option>
+                <option value="100">100</option>
+            </select>
+            per page.
+            Total pages: <span class="count"></span>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <table class="pensions-table">
+        <thead>
+        <tr>
+            <th class="sort" data-name="employee_name">
+                <div class="caption">
+                    <div class="caption-left">Employee</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="job_title">
+                <div class="caption">
+                    <div class="caption-left">Job Title</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="employer">
 
-{% block data %}
-    {%- for row in data -%}
-        <tr data-index="{{- loop.index0 -}}">
-            <td>{{- row.employee_name -}}</td>
-            <td>{{- row.job_title -}}</td>
-            <td>{{- row.employer -}}</td>
-            <td>{{- row.pension_system -}}</td>
-            <td>{{- row.region -}}</td>
-            <td>{{- row.pension_amount -}}</td>
-            <td>{{- row.benefits_amount -}}</td>
-            <td>{{- row.disability_amount -}}</td>
-            <td>{{- row.total_amount -}}</td>
-            <td>{{- row.notes -}}</td>
-            <td>{{- row.total_net_of_one_time_payments -}}</td>
-            <td>{{- row.years_of_service -}}</td>
-            <td>{{- row.year_of_retirement -}}</td>
-            <td>{{- row.year -}}</td>
+                <div class="caption">
+                    <div class="caption-left">Employer</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="pension_system">
+
+                <div class="caption" style="width: 140px">
+                    <div class="caption-left">Pension System</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="region">
+                <div class="caption">
+                    <div class="caption-left">Region</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="pension_amount">
+                <div class="caption" style="width: 100px">
+                    <div class="caption-left">Pension</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="benefits_amount">
+                <div class="caption">
+                    <div class="caption-left">Benefits</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="disability_amount">
+                <div class="caption">
+                    <div class="caption-left">Disability</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="total_amount">
+                <div class="caption" style="width: 100px">
+                    <div class="caption-left">Total</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="notes">
+                <div class="caption">
+                    <div class="caption-left">Notes</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="total_net_of_one_time_payments">
+                <div class="caption" style="width: 140px">
+                    <div class="caption-left">Total Net Of One Time Payments</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="years_of_service">
+                <div class="caption" style="width: 85px">
+                    <div class="caption-left">Years Of Service</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="year_of_retirement">
+                <div class="caption">
+                    <div class="caption-left">Year Of Retirement</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
+            <th class="sort" data-name="year">
+                <div class="caption" style="width: 50px">
+                    <div class="caption-left">Year</div>
+                    <div class="caption-right"></div>
+                </div>
+            </th>
         </tr>
-    {%- endfor -%}
-{% endblock data %}
+        </thead>
+        <tbody>
+        {%- for row in data -%}
+            <tr data-index="{{- loop.index0 -}}">
+                <td>{{- row.employee_name -}}</td>
+                <td>{{- row.job_title -}}</td>
+                <td>{{- row.employer -}}</td>
+                <td>{{- row.pension_system -}}</td>
+                <td>{{- row.region -}}</td>
+                <td>{{- row.pension_amount -}}</td>
+                <td>{{- row.benefits_amount -}}</td>
+                <td>{{- row.disability_amount -}}</td>
+                <td>{{- row.total_amount -}}</td>
+                <td>{{- row.notes -}}</td>
+                <td>{{- row.total_net_of_one_time_payments -}}</td>
+                <td>{{- row.years_of_service -}}</td>
+                <td>{{- row.year_of_retirement -}}</td>
+                <td>{{- row.year -}}</td>
+            </tr>
+        {%- endfor -%}
+        </tbody>
+    </table>
+</div>

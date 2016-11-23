@@ -85,6 +85,8 @@
     */
     .pensions-controls {
         margin-bottom: 20px;
+        font-size: 0.7em;
+        color: #666;
     }
 
     .pensions-controls input.styled {
@@ -128,6 +130,39 @@
         background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEUhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISF8S9ewAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
     }
 
+    .ms-parent {
+        height: 25px;
+    }
+
+    .ms-parent .ms-choice {
+        box-shadow: inset 0 -1px 0 #ddd;
+        font-size: 16px;
+        line-height: 1.5;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .ms-parent .ms-choice:focus {
+        background-color: transparent;
+        color: initial;
+        box-shadow: inset 0 -1px 0 #2196f3;
+        outline: 0;
+    }
+
+    .ms-parent .ms-choice>div {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEVmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmaP/QSjAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
+        background-size: 13px;
+        background-repeat: no-repeat;
+        background-position: right center;
+    }
+
+    .ms-parent .ms-choice>div.open {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEUhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISF8S9ewAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
+        background-size: 13px;
+        background-repeat: no-repeat;
+        background-position: right center;
+    }
+
     .btn {
         border-radius: 3px;
         display: inline-block;
@@ -166,7 +201,6 @@
 
     /* Paginator */
     .pensions-controls .pensions-paginator {
-        height: 28px;
         float: left;
     }
 
@@ -175,6 +209,7 @@
         padding: 0;
         margin: 0;
         float: left;
+        overflow-x: hidden;
     }
 
     .pensions-controls .pensions-paginator > div {
@@ -194,6 +229,10 @@
         min-width: 28px;
     }
 
+    .pensions-controls .pensions-paginator li:last-child {
+        margin-right: 0;
+    }
+
     .pensions-controls .pensions-paginator li:not([class='pensions-paginator-page']):hover {
         background-color: #eee;
         color: #0a6ebd;
@@ -205,6 +244,8 @@
 
     .pensions-controls .pensions-paginator .pensions-paginator-page {
         padding: 0;
+        width: 55px;
+        position: relative;
     }
 
     .pensions-paginator-page input {
@@ -214,6 +255,9 @@
         padding-left: 5px;
         width: 55px;
         color: #074d71;
+        position: absolute;
+        top: 0;
+        left: 0;
     }
 
     .pensions-control .pensions-paginator li:first-child {
@@ -297,21 +341,41 @@
         .pensions .pension .pension-body-item {
             width: 100%;
         }
+    }
+
+    @media (max-width: 720px) {
+        .pensions-controls .pensions-control {
+            width: 100%
+        }
 
         .pensions-controls .pensions-paginator {
             float: initial;
-            text-align: center;
             margin: 0 auto;
+        }
+
+        .pensions-controls .pensions-sort {
+            float: initial;
+            margin-top: 15px;
         }
 
         .pensions-controls .pensions-selector {
             float: initial;
-            text-align: center;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         .pensions-controls .pensions-filter {
-            margin-top: 10px;
+            margin-top: 15px;
+        }
+    }
+
+    @media (max-width: 720px) and (orientation: portrait) {
+        .pensions-controls .pensions-paginator ul {
+            float: initial;
+        }
+
+        .pensions-controls .pensions-paginator div {
+            margin-left: 0;
+            float: initial;
         }
     }
 </style>
@@ -378,6 +442,24 @@
             <button class="pensions-filter-button btn" type="button">Filter</button>
             <button class="pensions-filter-button-reset btn" type="button">Reset</button>
         </div>
+
+        <div class="pensions-control pensions-sort">
+            Sort:
+            <select class="pensions-sort-column styled">
+                <option value=""></option>
+                {%- for name, config in fields -%}
+                    <option value="{{- name -}}" data-type="{{- config.type -}}">
+                        {{- config.title -}}
+                    </option>
+                {%- endfor -%}
+            </select>
+            <select class="pensions-sort-order styled">
+                <option value=""></option>
+                <option value="asc">Ascending</option>
+                <option value="desc">Discending</option>
+            </select>
+            <button class="pensions-sort-btn btn">Sort</button>
+        </div>
     </div>
     <div class="pensions-data">
     </div>
@@ -388,8 +470,8 @@
 
 {%- if(debug) -%}
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"
-            integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-            crossorigin="anonymous">
+        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+        crossorigin="anonymous">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.2.0/multiple-select.min.js">
     </script>
@@ -591,6 +673,7 @@
 
             var filterColumnSelector;
             var columnsSelector;
+            var sortColumnSelector;
 
             this.$el = $(selector);
             this._apiEndPoint = apiEndPoint;
@@ -616,25 +699,7 @@
             };
 
             // Bind events handler for pagination.
-            this.$('.pensions-paginator-first').click(function() {
-                self.goTo(1);
-            });
-            this.$('.pensions-paginator-previous').click(function() {
-                self.goTo(self._state.page - 1);
-            });
-            this.$('.pensions-paginator-next').click(function() {
-                self.goTo(self._state.page + 1);
-            });
-            this.$('.pensions-paginator-last').click(function() {
-                self.goTo(self._state.pagesCount);
-            });
-            this.$('.pensions-paginator-page input').change(function(event) {
-                self.goTo(event.target.value);
-            });
-            this.$('.pensions-paginator-per-page').change(function() {
-                self._state.maxPerPage = Number($(this).val());
-                self.render();
-            });
+            this._bindPaginatorHandler();
 
             // Bind event handlers for filter.
             filterColumnSelector = this.$('.pensions-filter-column');
@@ -679,15 +744,30 @@
                 self._renderFilter();
             }
 
+            // Data sort.
+            sortColumnSelector = this.$('.pensions-sort-column');
+
+            this.$('.pensions-sort-btn').click(function() {
+                var column = sortColumnSelector.val().trim();
+                var order = self.$('.pensions-sort-order').val().trim();
+
+                self._state.sort = {
+                    column: column || null,
+                    order: order || null
+                };
+
+                self.render();
+            });
+
             // Columns multi selector.
             columnsSelector = this.$('.pensions-selector select');
             $.each(
                 Utils.filter(COLUMNS_DEFINITION, 'permanent', false),
                 function() {
-                    columnsSelector.append(
-                            '<option value="'+ this.name +'">'
-                            + this.title + '</option>'
-                    )
+                    var option = '<option value="'+ this.name +'">'
+                        + this.title + '</option>'
+
+                    columnsSelector.append(option);
                 }
             );
 
@@ -773,6 +853,7 @@
                         self._renderData(rows);
                         self._renderPaginator();
                         self._renderFilter();
+                        self._renderSort();
                     });
             },
 
@@ -910,6 +991,55 @@
                 }
             },
 
+            _renderSort: function() {
+                var sortColumnSelector = this.$('.pensions-sort-column');
+                var sortOrderSelector = this.$('.pensions-sort-order');
+
+                var columnDefinition = Utils.findFirst(
+                    COLUMNS_DEFINITION,
+                    'name',
+                    this._state.sort.column
+                );
+
+                // Show only columns which exists in showed columns.
+                sortColumnSelector.find('option[value!=""]').hide();
+                $.each(this._state.showedColumns, function () {
+                    sortColumnSelector
+                        .find('[value="'+ this.name +'"]')
+                        .show();
+                });
+
+                if (columnDefinition) {
+                    if (sortColumnSelector.val() !== columnDefinition.name) {
+                        sortColumnSelector
+                                .find('[selected]')
+                                .removeAttr('selected');
+
+                        sortColumnSelector
+                                .find('[value="' + columnDefinition.name + '"]')
+                                .attr('selected', true);
+                    }
+                } else {
+                    sortColumnSelector
+                        .find('[selected]')
+                        .removeAttr('selected');
+
+                    sortColumnSelector
+                        .find('[value=""]')
+                        .attr('selected', true);
+                }
+
+                if (this._state.sort.order != sortOrderSelector.val().trim()) {
+                    sortOrderSelector
+                            .find('[selected]')
+                            .removeAttr('selected');
+
+                    sortOrderSelector
+                            .find('[value="'+ (this._state.sort.order || '') +'"]')
+                            .attr('selected', true);
+                }
+            },
+
             _renderData: function(data) {
                 var self = this;
                 var view = this.$('.pensions-data');
@@ -979,6 +1109,30 @@
                 }
 
                 return value;
+            },
+
+            _bindPaginatorHandler: function() {
+                var self = this;
+
+                this.$('.pensions-paginator-first').click(function() {
+                    self.goTo(1);
+                });
+                this.$('.pensions-paginator-previous').click(function() {
+                    self.goTo(self._state.page - 1);
+                });
+                this.$('.pensions-paginator-next').click(function() {
+                    self.goTo(self._state.page + 1);
+                });
+                this.$('.pensions-paginator-last').click(function() {
+                    self.goTo(self._state.pagesCount);
+                });
+                this.$('.pensions-paginator-page input').change(function(event) {
+                    self.goTo(event.target.value);
+                });
+                this.$('.pensions-paginator-per-page').change(function() {
+                    self._state.maxPerPage = Number($(this).val());
+                    self.render();
+                });
             }
 
         });
