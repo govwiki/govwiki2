@@ -1,0 +1,424 @@
+
+<!-- Styles for data view -->
+<style>
+
+    .pensions {
+        width: 70%;
+        margin: 0 auto;
+    }
+
+    .pensions .pension {
+        margin-bottom: 20px;
+    }
+
+    .pensions .pension:last-child {
+        margin-bottom: 0;
+    }
+
+    .pensions .pension .pension-head {
+        border: 1px solid #efefef;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        background: #fafafa;
+        padding: 10px;
+    }
+
+    .pensions .pension .pension-head h2 {
+        margin: 0;
+    }
+
+    .pensions .pension .pension-body {
+        border: 1px solid #efefef;
+        border-top: none;
+        padding: 5px;
+        overflow-x: hidden;
+    }
+
+    .pensions .pension .pension-body .pension-body-item {
+        margin-bottom: 5px;
+    }
+
+    .pensions .pension .pension-body .pension-body-item-name {
+        font-weight: bold;
+        color: #666;
+    }
+
+    .pensions .pension .pension-body.pension-body-item-name:after {
+        content: ':';
+        margin-right: 5px;
+    }
+
+    .pensions .loader {
+        margin: 60px auto;
+        font-size: 4px;
+        position: relative;
+        text-indent: -9999em;
+        border-top: 2px solid rgba(200,200,200,0.5);
+        border-right: 2px solid rgba(200,200,200,0.5);
+        border-bottom: 2px solid rgba(200,200,200,0.5);
+        border-left: 2px solid #0b4d70;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-animation: load8 0.7s infinite linear;
+        animation: load8 0.7s infinite linear;
+    }
+
+    .pensions .loader,
+    .pensions .loader:after {
+        border-radius: 50%;
+        width: 10em;
+        height: 10em;
+    }
+
+    .pensions .loader-wrapper {
+        width: 100px;
+        overflow: hidden;
+        margin: 0 auto;
+        display: none;
+    }
+
+    /*
+        Pensions controls.
+    */
+    .pensions .pensions-controls {
+        margin-bottom: 20px;
+        font-size: 0.7em;
+        color: #666;
+    }
+</style>
+
+<!-- Common controls style -->
+<style>
+    .pensions-control input.styled {
+        height: 25px;
+        padding: 0;
+        box-shadow: inset 0 -1px 0 #ddd;
+    }
+
+    .pensions-control select.styled {
+        height: 26px;
+        padding: 0 20px 0 10px;
+    }
+
+    .pensions-control input.styled,
+    .pensions-control select.styled {
+        border: 0;
+        border-radius: 0;
+        color: #666;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    .pensions-control input.styled:focus,
+    .pensions-control select.styled:focus {
+        box-shadow: inset 0 -2px 0 #2196f3;
+        outline: 0;
+    }
+
+    .pensions-control select.styled {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEVmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmaP/QSjAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
+        background-size: 13px;
+        background-repeat: no-repeat;
+        background-position: right center;
+        box-shadow: inset 0 -1px 0 #ddd;
+        font-size: 16px;
+        line-height: 1.5;
+        background-color: transparent;
+    }
+
+    .pensions-control select.styled:focus {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEUhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISF8S9ewAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
+    }
+
+    .pensions-control .ms-parent {
+        height: 25px;
+    }
+
+    .pensions-control .ms-parent .ms-choice {
+        box-shadow: inset 0 -1px 0 #ddd;
+        font-size: 16px;
+        line-height: 1.5;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .pensions-control .ms-parent .ms-choice:focus {
+        background-color: transparent;
+        color: initial;
+        box-shadow: inset 0 -1px 0 #2196f3;
+        outline: 0;
+    }
+
+    .pensions-control .ms-parent .ms-choice>div {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEVmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmaP/QSjAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
+        background-size: 13px;
+        background-repeat: no-repeat;
+        background-position: right center;
+    }
+
+    .pensions-control .ms-parent .ms-choice>div.open {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEUhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISF8S9ewAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
+        background-size: 13px;
+        background-repeat: no-repeat;
+        background-position: right center;
+    }
+
+    .pensions-control .btn {
+        border-radius: 3px;
+        display: inline-block;
+        color: #ffffff;
+        background-color: #2196f3;
+        border: none;
+        text-align: center;
+        vertical-align: middle;
+        transition: all 0.2s ease-in-out;
+        text-transform: uppercase;
+        background-image: none;
+        white-space: nowrap;
+        padding: 0px 10px;
+        font-size: 13px;
+        line-height: 1.846;
+        animation-duration: 0.0001s;
+        animation-name: mui-btn-inserted;
+        height: 26px;
+    }
+
+    .pensions-control .btn:hover {
+        background-color: #0d87e9;
+        color: white;
+        border-color: rgba(0,0,0,0);
+    }
+
+    .pensions-control .btn:active {
+        color: #ffffff;
+        background-color: #0c7cd5;
+        border-color: rgba(0,0,0,0);
+    }
+
+    @keyframes load8 {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes mui-btn-inserted {
+        from {
+            -ms-zoom: 1;
+        }
+        to {
+            -ms-zoom:1;
+        }
+    }
+</style>
+
+<!-- Paginator styles -->
+<style>
+    .pensions-control.pensions-paginator .disabled {
+        cursor: not-allowed;
+        color: #BBBBBB;
+        background-color: #F3F3F3;
+    }
+
+    .pensions-control.pensions-paginator ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        overflow-x: hidden;
+    }
+
+    .pensions-control.pensions-paginator li {
+        border: 1px solid #ddd;
+        float: left;
+        text-align: center;
+        margin-right: -1px;
+        height: 26px;
+        line-height: 26px;
+        min-width: 28px;
+    }
+
+    .pensions-control.pensions-paginator li:last-child {
+        margin-right: 0;
+    }
+
+    .pensions-control.pensions-paginator li:not([class='pensions-paginator-page']):hover {
+        background-color: #eee;
+        color: #0a6ebd;
+    }
+
+    .pensions-control.pensions-paginator li:not([class='pensions-paginator-page']) {
+        cursor: pointer;
+    }
+
+    .pensions-control.pensions-paginator .pensions-paginator-page {
+        padding: 0;
+        width: 55px;
+        position: relative;
+    }
+
+    .pensions-control.pensions-paginator .pensions-paginator-page input {
+        border: 0;
+        height: 26px;
+        padding: 0;
+        padding-left: 5px;
+        width: 55px;
+        color: #074d71;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .pensions-control.pensions-paginator li:first-child {
+        border-bottom-left-radius: 3px;
+        border-top-left-radius: 3px;
+    }
+
+    .pensions-control.pensions-paginator li:last-child {
+        border-bottom-right-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+</style>
+
+<!-- Counter styles -->
+<style>
+    .pensions-control.pensions-counter {
+        margin-left: 10px;
+        float: left;
+        height: 28px;
+        line-height: 28px;
+    }
+</style>
+
+<!-- Pensions table layout -->
+<style>
+    .pensions-control {
+        display: block;
+    }
+
+    /* Sort */
+    .pensions-controls .pensions-sort {
+        float: left;
+    }
+
+
+    /* Selector */
+    .pensions-controls .pensions-selector {
+        float: right;
+    }
+
+    /* Paginator */
+    .pensions-controls .pensions-paginator {
+        float: left;
+    }
+
+    /* Filter */
+    .pensions-controls .pensions-filter {
+        margin-top: 25px;
+        text-align: center;
+        clear: both;
+    }
+
+    .pensions-filter .btn {
+        margin: 5px 0;
+    }
+
+    .pensions-footer {
+        border: 1px solid #afafaf;
+        background-color: #efefef;
+        overflow-x: hidden;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+    .pensions-footer .pensions-paginator {
+        float: left;
+    }
+
+    .pensions-footer .pensions-counter {
+        float: right;
+    }
+
+    .pensions-footer .pensions-counter select {
+        background-color: white;
+    }
+
+
+
+    @media (min-width: 1040px) {
+        .pensions .pension .pension-body-item {
+            width: 33%;
+            float: left;
+        }
+    }
+
+    @media (max-width: 1039px) {
+        .pensions {
+            width: 100%;
+            margin: 0;
+        }
+
+        .pensions .pension .pension-body-item {
+            width: 50%;
+            float: left;
+        }
+    }
+
+    @media (max-width: 1039px) and (orientation: portrait) {
+        .pensions .pension .pension-body-item {
+            width: 100%;
+            float: initial;
+        }
+    }
+
+    @media (max-width: 783px) {
+        .pensions {
+            width: 100%;
+            margin: 0;
+        }
+
+        .pensions .pension .pension-body-item {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .pensions-controls {
+            text-align: center;
+        }
+
+        .pensions-controls .pensions-control {
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .pensions-controls .pensions-sort {
+            float: initial;
+        }
+
+        .pensions-controls .pensions-selector {
+            float: initial;
+        }
+    }
+
+    @media (max-width: 720px) and (orientation: portrait) {
+        .pensions-footer {
+            text-align: center;
+        }
+
+        .pensions-footer .pensions-paginator {
+            float: initial;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .pensions-footer .pensions-counter {
+            float: initial;
+            text-align: center;
+        }
+    }
+</style>

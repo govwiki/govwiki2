@@ -1,0 +1,936 @@
+<script>
+    if (! $ && jQuery) {
+        window.$ = jQuery;
+    }
+
+    var ENDPOINT = '{{- endPoint -}}';
+
+    /**
+     * Contains helper methids.
+     */
+    var Utils = {
+
+        iteratee: function(name) {
+            return function(object) {
+                return object[name];
+            }
+        },
+
+        property: function(name, value) {
+            if (value === undefined) {
+                value = true;
+            }
+
+            if ($.isArray(name)) {
+                return function (object) {
+                    return !!Utils.findFirst(name, function(_name) {
+                        return object[_name] === value;
+                    })
+                }
+            }
+
+            return function (object) {
+                return object[name] === value;
+            }
+        },
+
+        filter: function(arr, prop, value) {
+            if (! $.isFunction(prop)) {
+                prop = Utils.property(prop, value);
+            }
+
+            return $.grep(arr, prop);
+        },
+
+        findFirst: function(arr, prop, value) {
+            var idx;
+
+            if (! $.isFunction(prop)) {
+                prop = Utils.property(prop, value);
+            }
+
+            for (idx in arr) {
+                if (arr.hasOwnProperty(idx) && prop(arr[idx])) {
+                    return arr[idx];
+                }
+            }
+
+            return null;
+        },
+
+        pick: function(arr, prop, values) {
+            return $.grep(arr, function (object) {
+                return $.inArray(object[prop], values) !== -1;
+            })
+        },
+
+        reduce: function(arr, prop) {
+            if (! $.isFunction(prop)) {
+                prop = Utils.iteratee(prop);
+            }
+
+            return $.map(arr, prop);
+        }
+    };
+
+    /**
+     * Simple event mixin.
+     */
+    var EventMixin = (function() {
+        var emitter;
+
+        // This class create in single instance and use as global event emitter.
+        function EventEmitter() {
+            this.$this = $(this);
+        }
+
+        $.extend(EventEmitter.prototype, {
+
+            listen: function(events, callback) {
+                this.$this.on(events, callback);
+            },
+
+            trigger: function(event, data) {
+                this.$this.trigger(event, data);
+            }
+
+        });
+
+        emitter = new EventEmitter();
+
+        function EventMixin() {}
+
+        $.extend(EventMixin, {
+
+            listen: function(events, callback) {
+                emitter.listen(events, callback);
+            },
+
+            trigger: function(event, data) {
+                emitter.trigger(event, data);
+            }
+        });
+
+        return EventMixin;
+    })();
+
+    /**
+     * State service.
+     *
+     * Contains all pensions table state such as current page, showed columns and
+     * etc. Responsible for fetching data from backend.
+     *
+     * @fires state:fetch:start - When request to server send.
+     *
+     * @fires state:fetch:success - When got response with data. Listeners get
+     *  current internal state and fetched data.
+     *
+     * @fires state:fetch:fail - When got error from backend. Listeners get
+     *  jQXHR object.
+     */
+    var State = (function(EventMixin, Utils) {
+
+        /**
+         * Contains configuration of pensions columns:
+         *  * name - Column name.
+         *  * title - Column title in view.
+         *  * type - Column data type, may be string, number and currency.
+         *  * permanent - Flag, if set this column always exists in result.
+         *  * selected - Flag, if set this column will be fetched at
+         *    initialization. Permanent fields always will be selected.
+         *
+         * @type {Object}
+         */
+        var COLUMNS_DEFINITION = [
+            {
+                name: 'employee_name',
+                title: 'Employee',
+                type: 'string',
+                permanent: true
+            },
+            {
+                name: 'job_title',
+                title: 'Job Title',
+                type: 'string',
+                permanent: false,
+                selected: true
+            },
+            {
+                name: 'employer',
+                title: 'Employer',
+                type: 'string',
+                permanent: false,
+                selected: true
+            },
+            {
+                name: 'pension_system',
+                title: 'Pension System',
+                type: 'string',
+                permanent: false,
+                selected: true
+            },
+            {
+                name: 'region',
+                title: 'Region',
+                type: 'string',
+                permanent: false,
+                selected: false
+            },
+            {
+                name: 'pension_amount',
+                title: 'Pension',
+                type: 'currency',
+                permanent: false,
+                selected: false
+            },
+            {
+                name: 'benefits_amount',
+                title: 'Benefis',
+                type: 'currency',
+                permanent: false,
+                selected: false
+            },
+            {
+                name: 'disability_amount',
+                title: 'Disability',
+                type: 'currency',
+                permanent: false,
+                selected: false
+            },
+            {
+                name: 'total_amount',
+                title: 'Total',
+                type: 'currency',
+                permanent: false,
+                selected: false
+            },
+            {
+                name: 'notes',
+                title: 'Notes',
+                type: 'string',
+                permanent: false,
+                selected: false
+            },
+            {
+                name: 'total_net_of_one_time_payments',
+                title: 'Total Net Of One Time Payments',
+                type: 'currency',
+                permanent: false,
+                selected: true
+            },
+            {
+                name: 'years_of_service',
+                title: 'Years Of Service',
+                type: 'number',
+                permanent: false,
+                selected: false
+            },
+            {
+                name: 'year_of_retirement',
+                title: 'Year Of Retirement',
+                type: 'number',
+                permanent: false,
+                selected: true
+            },
+            {
+                name: 'year',
+                title: 'Year',
+                type: 'number',
+                permanent: false,
+                selected: true
+            }
+        ];
+
+        function State(apiEndPoint) {
+            this._apiEndPoint = apiEndPoint;
+
+            this._state = {};
+        }
+
+        $.extend(State.prototype, EventMixin, {
+
+            /**
+             * Get property from state by name.
+             *
+             * @param {String} name
+             *
+             * @return {*}
+             */
+            get: function(name) {
+                return this._state[name];
+            },
+
+            /**
+             * Initialize state with default values.
+             */
+            init: function() {
+                this.change({
+                    page: 1,
+                    maxPerPage: 10,
+                    pagesCount: 0,
+                    sort: {
+                        column: null,
+                        order: null
+                    },
+                    filter: {
+                        column: 'employee_name',
+                        operation: null,
+                        value: null
+                    },
+                    showedColumns: Utils.filter(COLUMNS_DEFINITION, [
+                        'permanent',
+                        'selected'
+                    ])
+                });
+            },
+
+            /**
+             * Change part of current state and start fetching data from backend.
+             *
+             * @param {Object} data
+             */
+            change: function (data) {
+                var self = this;
+
+                $.each(data, function (property, value) {
+                    self._state[property] = value;
+                });
+
+                this.trigger('state:fetch:start');
+
+                this._query()
+                    .done(function (response) {
+                        var rows = response.data.rows;
+                        var maxPerPage = self._state.maxPerPage;
+                        var totalCount = response.data.totalCount;
+
+                        self._state.pagesCount =
+                                Math.ceil(totalCount / maxPerPage);
+
+                        self.trigger('state:fetch:success', [
+                            self._state,
+                            rows
+                        ]);
+                    })
+                    .fail(function (response) {
+                        self.trigger('state:fetch:fail', response)
+                    });
+            },
+
+            /**
+             * Get column definition by name.
+             *
+             * @param {String} name Column name.
+             *
+             * @return {Object}
+             */
+            getDefinition: function(name) {
+                return Utils.findFirst(COLUMNS_DEFINITION, 'name', name);
+            },
+
+            COLUMNS_DEFINITION: COLUMNS_DEFINITION,
+
+            /**
+             * @return {Deferred}
+             * @private
+             */
+            _query: function () {
+                var url = this._apiEndPoint;
+
+                var limit = this._state.maxPerPage;
+                var offset = (this._state.page - 1) * limit;
+
+                var filterColumn = this._state.filter.column;
+                var filterOperation = this._state.filter.operation;
+                var filterValue = this._state.filter.value;
+
+                var sortColumn = this._state.sort.column;
+                var sortOrder = this._state.sort.order;
+
+                var columns = this._state.showedColumns;
+
+                // Add limit and offset.
+                url += '?limit=' + limit + '&offset=' + offset;
+
+                // Add required columns.
+                url += '&showedColumns=' + Utils.reduce(columns, 'name').join(',');
+
+                // Add filter field name and value.
+                if (filterColumn && filterOperation) {
+                    url += '&filterColumn=' + filterColumn + '&filterValue='
+                    + filterValue + '&filterOperation=' + filterOperation;
+                }
+
+                // Add sort field name and order.
+                if (sortColumn && sortOrder) {
+                    url += '&sortColumn=' + sortColumn + '&sortOrder='
+                    + sortOrder;
+                }
+
+                return $.ajax({
+                    url: url,
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+            }
+
+        });
+
+        return State;
+
+    })(EventMixin, Utils);
+
+    /**
+     * Pensions table paginator.
+     */
+    var Paginator = (function(EventMixin) {
+
+        function Paginator(selector, state) {
+            var self = this;
+
+            this._state = state;
+            this.$el = $(selector);
+
+            this.listen('state:fetch:success', function(event, state) {
+                self.render(state);
+            });
+
+            // Bind UI handlers.
+            this.$('.pensions-paginator-first').click(function() {
+                self._goTo(1)
+            });
+            this.$('.pensions-paginator-previous').click(function() {
+                var currentPage = self._state.get('page');
+
+                self._goTo(currentPage - 1);
+            });
+            this.$('.pensions-paginator-next').click(function() {
+                var currentPage = self._state.get('page');
+
+                self._goTo(currentPage + 1);
+            });
+            this.$('.pensions-paginator-last').click(function() {
+                self._goTo(self._state.get('pagesCount'));
+            });
+            this.$('.pensions-paginator-page input').change(function(event) {
+                self._goTo(event.target.value);
+            });
+        }
+
+        $.extend(Paginator.prototype, EventMixin, {
+
+            $: function (selector) {
+                return this.$el.find(selector);
+            },
+
+            render: function() {
+                var currentPage = this._state.get('page');
+                var pagesCount = this._state.get('pagesCount');
+                this.$('.pensions-paginator-page input')
+                        .val(currentPage)
+                        .attr('max', pagesCount);
+
+                if (currentPage === 1) {
+                    // Hide previous and first button.
+                    this.$('.pensions-paginator-first').addClass('disabled');
+                    this.$('.pensions-paginator-previous').addClass('disabled');
+                } else {
+                    // Show previous and first button.
+                    this.$('.pensions-paginator-first').removeClass('disabled');
+                    this.$('.pensions-paginator-previous').removeClass('disabled');
+                }
+
+                if (currentPage === pagesCount) {
+                    // Hide next and last button.
+                    this.$('.pensions-paginator-next').addClass('disabled');
+                    this.$('.pensions-paginator-last').addClass('disabled');
+                } else {
+                    // Show next and last button.
+                    this.$('.pensions-paginator-next').removeClass('disabled');
+                    this.$('.pensions-paginator-last').removeClass('disabled');
+                }
+            },
+
+            _goTo: function (page) {
+                var pagesCount = this._state.get('pagesCount');
+
+                // Check page bound.
+                if ((page < 1) || (page > pagesCount)) {
+                    // Do nothing.
+                    return;
+                }
+
+                this._state.change({ page: page });
+            }
+
+
+        });
+
+        return Paginator;
+
+    })(EventMixin);
+
+    /**
+     * Sort pensions data.
+     */
+    var Sorter = (function(EventMixin) {
+
+        function Sorter(selector, state) {
+            var self = this;
+            var sortColumnSelector;
+
+            this.$el = $(selector);
+            this._state = state;
+
+            sortColumnSelector = this.$('.pensions-sort-column');
+
+            this.listen('state:fetch:success', function(event, state) {
+                self.render(state);
+            });
+
+            this.$('.pensions-sort-btn').click(function() {
+                var column = sortColumnSelector.val().trim();
+                var order = self.$('.pensions-sort-order').val().trim();
+
+                self._state.change({
+                    sort: {
+                        column: column || null,
+                        order: order || null
+                    }
+                })
+            });
+        }
+
+        $.extend(Sorter.prototype, EventMixin, {
+
+            $: function (selector) {
+                return this.$el.find(selector);
+            },
+
+            render: function(state) {
+                var sortColumnSelector = this.$('.pensions-sort-column');
+                var sortOrderSelector = this.$('.pensions-sort-order');
+
+                var columnDefinition = this._state
+                    .getDefinition(state.sort.column);
+
+                // Show only columns which exists in showed columns.
+                sortColumnSelector.find('option[value!=""]').hide();
+                $.each(state.showedColumns, function () {
+                    sortColumnSelector
+                        .find('[value="'+ this.name +'"]')
+                        .show();
+                });
+
+                if (columnDefinition) {
+                    if (sortColumnSelector.val() !== columnDefinition.name) {
+                        sortColumnSelector
+                            .find('[selected]')
+                            .removeAttr('selected');
+
+                        sortColumnSelector
+                            .find('[value="' + columnDefinition.name + '"]')
+                            .attr('selected', true);
+                    }
+                } else {
+                    sortColumnSelector
+                        .find('[selected]')
+                        .removeAttr('selected');
+
+                    sortColumnSelector
+                        .find('[value=""]')
+                        .attr('selected', true);
+                }
+
+                if (state.sort.order != sortOrderSelector.val().trim()) {
+                    sortOrderSelector
+                        .find('[selected]')
+                        .removeAttr('selected');
+
+                    sortOrderSelector
+                        .find('[value="'+ (state.sort.order || '') +'"]')
+                        .attr('selected', true);
+                }
+            }
+
+        });
+
+        return Sorter;
+    })(EventMixin);
+
+    /**
+     * Show current data count and allow to change per page value.
+     */
+    var Counter = (function(EventMixin) {
+
+        function Counter(selector, state) {
+            var self = this;
+
+            this.$el = $(selector);
+            this._state = state;
+
+            this.listen('state:fetch:success', function(event, state) {
+                self.render(state);
+            });
+
+            this.$('.pensions-counter-per-page').change(function() {
+                self._state.change({ maxPerPage: parseInt($(this).val()) });
+            });
+        }
+
+        $.extend(Counter.prototype, EventMixin, {
+
+            $: function (selector) {
+                return this.$el.find(selector);
+            },
+
+            render: function (state) {
+                var perPageSelector = this.$('.pensions-counter-per-page');
+                var currentPerPage = parseInt(perPageSelector.val());
+
+                if (currentPerPage !== state.maxPerPage) {
+                    perPageSelector
+                        .find('[selected]')
+                        .removeAttr('selected');
+
+                    perPageSelector
+                        .find('[value="'+ state.maxPerPage +'"]')
+                        .attr('selected', true);
+                }
+
+                this.$('.pensions-counter-count').text(state.pagesCount);
+            }
+
+        });
+
+        return Counter;
+
+    })(EventMixin);
+
+    /**
+     * Select which columns to show.
+     */
+    var ColumnSelector = (function(EventMixin, Utils) {
+
+        function ColumnSelector(selector, state) {
+            var columnsSelector;
+            var self = this;
+            var COLUMNS_DEFINITION = state.COLUMNS_DEFINITION;
+
+            this.$el = $(selector);
+            this._state = state;
+
+            this.listen('state:fetch:success', function (event, state) {
+                self.render(state);
+            });
+
+            columnsSelector = this.$('select');
+            $.each(
+                Utils.filter(COLUMNS_DEFINITION, 'permanent', false),
+                function() {
+                    var option = '<option value="'+ this.name +'">'
+                            + this.title + '</option>';
+
+                    columnsSelector.append(option);
+                }
+            );
+
+            columnsSelector.multipleSelect({ filter: true });
+
+            this.$('.pensions-selector-apply').click(function() {
+                var permanent = Utils
+                        .filter(COLUMNS_DEFINITION, 'permanent');
+
+                var selected = Utils.pick(
+                    COLUMNS_DEFINITION,
+                    'name',
+                    columnsSelector.multipleSelect('getSelects')
+                );
+
+                self._state.change({
+                    showedColumns: $.merge(permanent, selected)
+                })
+            });
+        }
+
+        $.extend(ColumnSelector.prototype, EventMixin, {
+
+            $: function (selector) {
+                return this.$el.find(selector);
+            },
+
+            render: function (state) {
+                this.$('select').multipleSelect(
+                    'setSelects',
+                    Utils.reduce(state.showedColumns, 'name')
+                );
+            }
+
+
+        });
+
+        return ColumnSelector;
+
+    })(EventMixin, Utils);
+
+    /**
+     * Filter pensions data by specified column, field and value.
+     */
+    var Filter = (function(EventMixin) {
+
+        function Filter(selector, state) {
+            var self = this;
+            var columnSelector;
+
+            this.$el = $(selector);
+            this._state = state;
+
+            this.listen('state:fetch:success', function (event, state) {
+                self.render(state);
+            });
+
+            columnSelector = this.$('.pensions-filter-column');
+
+            this.$('.pensions-filter-button').click(function () {
+                var column = columnSelector.val().trim() || null;
+                var operation = self._getOperation(column);
+                var value = self._getValue(operation);
+
+                self._state.change({
+                    filter: {
+                        column: column,
+                        operation: operation,
+                        value: value
+                    }
+                });
+            });
+
+            this.$('.pensions-filter-button-reset').click(function () {
+                self._state.init();
+            });
+
+            columnSelector.change(function () {
+                var column = columnSelector.val();
+                var type = self._state.getDefinition(column).type;
+
+                self._updateOperationSelector(type);
+                self._updateValueInputs(self._getOperation(column));
+            });
+            this.$('.pensions-filter-operation-number').change(function () {
+                self._updateValueInputs($(this).val());
+            });
+        }
+
+        $.extend(Filter.prototype, EventMixin, {
+
+            $: function(selector) {
+                return this.$el.find(selector);
+            },
+
+            render: function(state) {
+                var columnSelector = this.$('.pensions-filter-column');
+                var valueInput = this.$('.pensions-filter-value');
+                var valueMaxInput = this.$('.pensions-filter-value-max');
+                var operationSelector;
+
+                var columnDefinition = this._state
+                    .getDefinition(state.filter.column);
+
+                var value = state.filter.value;
+                var operation = state.filter.operation;
+
+                this._updateOperationSelector(columnDefinition.type);
+                this._updateValueInputs(state.filter.operation);
+
+                // Show only columns which exists in showed columns.
+                columnSelector.find('option').hide();
+                $.each(state.showedColumns, function () {
+                    columnSelector
+                        .find('[value="'+ this.name +'"]')
+                        .show();
+                });
+
+                if (columnSelector.val() !== columnDefinition.name) {
+                    columnSelector
+                        .find('[selected]')
+                        .removeAttr('selected');
+
+                    columnSelector
+                        .find('[value="' + columnDefinition.name + '"]')
+                        .attr('selected', true);
+                }
+
+                operationSelector = this
+                    .$('.pensions-filter-operation-' + columnDefinition.type);
+
+                if (operationSelector.val() !== operation) {
+                    operationSelector
+                            .find('[selected]')
+                            .removeAttr('sele3cted');
+
+                    operationSelector
+                            .find('[value="' + operation + '"]')
+                            .attr('selected', true);
+                }
+
+                if (value && value.indexOf(',') !== -1) {
+                    value = value.split(',');
+
+                    valueInput.val(value[0]);
+                    valueMaxInput.val(value[1]);
+                } else {
+                    valueInput.val(value);
+                }
+            },
+
+            _updateOperationSelector: function(type) {
+                var operationString =
+                        this.$('.pensions-filter-operation-string');
+                var operationNumber =
+                        this.$('.pensions-filter-operation-number');
+
+                if (type === 'string') {
+                    operationNumber.hide();
+                    operationString.show();
+                } else {
+                    operationNumber.show();
+                    operationString.hide();
+                }
+            },
+
+            _updateValueInputs: function(operation) {
+                var valueMaxInput = this.$('.pensions-filter-value-max');
+
+                if (operation === 'between') {
+                    valueMaxInput.show();
+                } else {
+                    valueMaxInput.val('').hide();
+                }
+            },
+
+            _getOperation: function (filterName) {
+                var type = this._state.getDefinition(filterName).type;
+
+                if (type === 'currency') {
+                    type = 'number';
+                }
+
+                return this.$('.pensions-filter-operation-' + type).val();
+            },
+
+            _getValue: function (filterOperation) {
+                var value = this.$('.pensions-filter-value').val().trim();
+
+                if (filterOperation === 'between') {
+                    value += ','
+                    + this.$('.pensions-filter-value-max').val().trim();
+                }
+
+                return value;
+            }
+        });
+
+        return Filter;
+
+    })(EventMixin);
+
+    /**
+     * Pension data view.
+     */
+    var Table = (function(EventMixin, Utils) {
+        function Table(selector, state) {
+            var self = this;
+            var loader;
+
+
+            this.$el = $(selector);
+
+            this._state = state;
+
+            loader = this.$('.loader-wrapper');
+
+            this.listen('state:fetch:start', function () {
+                self.$('.pensions-data').html('');
+                loader.show();
+            });
+
+            this.listen('state:fetch:success', function(event, state, rows) {
+                loader.hide();
+                self._renderData(rows);
+            });
+        }
+
+        $.extend(Table.prototype, EventMixin, {
+
+            $: function (selector) {
+                return this.$el.find(selector);
+            },
+
+            _renderData: function(data) {
+                var self = this;
+                var view = this.$('.pensions-data');
+
+                $.each(data, function () {
+                    view.append(self._renderDataRow(this));
+                })
+            },
+
+            _renderDataRow: function(row) {
+                var body = '<div class="pension-body">';
+                var columns = Utils.filter(
+                    this._state.get('showedColumns'),
+                    Utils.property('permanent', false)
+                );
+
+
+                $.each(columns, function () {
+                    var formattedName = this.name + '_formatted';
+
+                    if (this.type === 'currency') {
+
+                        row[this.name] = (row[formattedName])
+                                ? '$&nbsp;' + row[formattedName]
+                                : null;
+                    }
+
+                    body += '<div row-name="'+ this.name
+                    + '" class="pension-body-item">'
+                    +   '<span class="pension-body-item-name">'
+                    +       this.title
+                    +   '</span>'
+                    +   '<span class="pension-body-item-value">'
+                    +       (row[this.name] || '')
+                    +   '</span>'
+                    +'</div>';
+                });
+
+                body += '</div>';
+
+                return '<div class="pension">'
+                    + '<div class="pension-head">'
+                    +   '<h2>'+ (row['employee_name'] || '') +'</h2>'
+                    + '</div>'
+                    + body
+                    + '</div>';
+            }
+
+        });
+
+        return Table;
+    })(EventMixin, Utils);
+
+    window.state = new State(ENDPOINT);
+
+    window.table = new Table('.pensions', state);
+    window.paginator = new Paginator('#paginator', state);
+    window.sorter = new Sorter('#sorter', state);
+    window.counter = new Counter('#counter', state);
+    window.filter = new Filter('#filter', state);
+    window.columnSelector = new ColumnSelector('#column-selector', state);
+
+    state.init();
+
+//    window.table.render();
+</script>
