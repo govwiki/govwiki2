@@ -287,7 +287,6 @@
 <!-- Counter styles -->
 <style>
     .pensions-control.pensions-counter {
-        margin-left: 10px;
         float: left;
         height: 28px;
         line-height: 28px;
@@ -336,18 +335,45 @@
     }
 
     .pensions-footer .pensions-paginator {
+        width: 33%;
         float: left;
+    }
+    
+    .pensions-footer .pensions-csv {
+        text-align: center;
+        width: 33%;
+        float: left;
+        height: 28px;
+        line-height: 28px;
+    }
+
+    .pensions-footer .pensions-csv a,
+    .pensions-footer .pensions-csv a:focus,
+    .pensions-footer .pensions-csv a:visited,
+    .pensions-footer .pensions-csv a:active {
+        color: #0d87e9;
+    }
+
+    .pensions-footer .pensions-csv a {
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .pensions-footer .pensions-csv a:hover {
+        color: #0a6ebd;
+        text-decoration: underline;
     }
 
     .pensions-footer .pensions-counter {
-        float: right;
+        width: 33%;
+        float: left;
+        text-align: right;
     }
 
     .pensions-footer .pensions-counter select {
         background-color: white;
     }
-
-
 
     @media (min-width: 1040px) {
         .pensions .pension .pension-body-item {
@@ -403,22 +429,25 @@
         .pensions-controls .pensions-selector {
             float: initial;
         }
-    }
 
-    @media (max-width: 720px) and (orientation: portrait) {
-        .pensions-footer {
-            text-align: center;
-        }
-
-        .pensions-footer .pensions-paginator {
+        .pensions-footer .pensions-control {
             float: initial;
-            display: inline-block;
+            text-align: center;
+            width: 100%;
             margin-bottom: 15px;
         }
 
-        .pensions-footer .pensions-counter {
-            float: initial;
-            text-align: center;
+        .pensions-footer .pensions-control:last-child {
+            margin-bottom: 0;
+        }
+
+        .pensions-footer .pensions-paginator {
+            display: inline-block;
+        }
+
+        .pensions-footer .pensions-paginator ul {
+            display: inline-block;
+            margin: auto;
         }
     }
 </style>

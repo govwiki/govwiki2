@@ -13,9 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Touki\FTP\FTP;
-use Touki\FTP\FTPFactory;
-use Touki\FTP\Model\File;
 
 /**
  * Class GeneratePensionsCommand
@@ -31,6 +28,7 @@ EOF;
 
     const HUMAN_DEFAULT_PATH = './human.html';
     const BOT_DEFAULT_PATH = './bot.html';
+    const CSV_DEFAULT_PATH = './tc_pensions.csv';
 
     private $fields = [
         'employee_name' => [
@@ -115,10 +113,10 @@ EOF;
                 self::HUMAN_DEFAULT_PATH
             )
             ->addOption(
-                'only-for-human',
+                'for-human',
                 null,
                 InputOption::VALUE_NONE,
-                'Generate table only for ordinary users'
+                'Generate table for ordinary users'
             )
             ->addOption(
                 'bot',
@@ -128,10 +126,16 @@ EOF;
                 self::BOT_DEFAULT_PATH
             )
             ->addOption(
-                'only-for-bot',
+                'for-bot',
                 null,
                 InputOption::VALUE_NONE,
-                'Generate table only for bots'
+                'Generate table for bots'
+            )
+            ->addOption(
+                'csv',
+                null,
+                InputOption::VALUE_NONE,
+                'Generate csv data file'
             );
     }
 
@@ -154,14 +158,28 @@ EOF;
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $onlyForHuman = $input->getOption('only-for-human');
-        $onlyForBot = $input->getOption('only-for-bot');
+        $forHuman = $input->getOption('for-human');
+        $forBot = $input->getOption('for-bot');
+        $generateCsv = $input->getOption('csv');
 
-        if (! $onlyForBot && ! $this->generateForHuman($input, $output)) {
+        $debug = $input->getOption('debug');
+        $connection = null;
+
+        if ($debug) {
+            $connection = $this->connectToFtp($input, $output);
+        }
+
+        if ($forHuman &&
+            ! $this->generateForHuman($input, $output, $connection)) {
             return 1;
         }
 
-        if (! $onlyForHuman && ! $this->generateForBot($input, $output)) {
+        if ($forBot &&
+            ! $this->generateForBot($input, $output, $connection)) {
+            return 1;
+        }
+
+        if ($generateCsv && $this->generateCsv($output, $connection)) {
             return 1;
         }
 
@@ -195,13 +213,17 @@ EOF;
     }
 
     /**
-     * @param InputInterface  $input  A InputInterface instance.
-     * @param OutputInterface $output A OutputInterface instance.
+     * @param InputInterface  $input      A InputInterface instance.
+     * @param OutputInterface $output     A OutputInterface instance.
+     * @param resource        $connection A Ftp connection.
      *
      * @return boolean
      */
-    private function generateForHuman(InputInterface $input, OutputInterface $output)
-    {
+    private function generateForHuman(
+        InputInterface $input,
+        OutputInterface $output,
+        $connection = null
+    ) {
         $pathToHumanFile = $input->getOption('human');
         $debug = $input->getOption('debug');
 
@@ -248,65 +270,32 @@ EOF;
 
         $output->writeln('[ <info>ok</info> ]');
 
-        if ($debug) {
-            $helper = $this->getHelper('question');
-
-            $deployQuestion = new ConfirmationQuestion(
-                'Deploy to server? ',
-                true
-            );
-
-            if (! $helper->ask($input, $output, $deployQuestion)) {
-                return true;
-            }
-
-            $serverQuestion = new Question('Ftp server (ftp.govwiki.info): ', 'ftp.govwiki.info');
-            $portQuestion = new Question('Ftp server port (21): ', '21');
-            $usernameQuestion = new Question('Username: ', '');
-            $passwordQuestion = new Question('Password (input will be hidden): ', '');
-            $passwordQuestion
-                ->setHidden(true)
-                ->setHiddenFallback(false);
-
-            $server = trim($helper->ask($input, $output, $serverQuestion));
-            $port = (int) $helper->ask($input, $output, $portQuestion);
-            $username = trim($helper->ask($input, $output, $usernameQuestion));
-            $password = trim($helper->ask($input, $output, $passwordQuestion));
-
-            if (! $server || ! $port || ! $username || ! $password) {
-                $this->writeError($output, 'Provide all data for ftp connection.');
-
-                return false;
-            }
-
-            $connection = ftp_connect($server, $port);
-            $loggedIn = ftp_login($connection, $username, $password);
-
-            if (! $connection || ! $loggedIn) {
-                $this->writeError($output, 'Invalid credentials.');
-                return false;
-            }
-
-            ftp_pasv($connection, true);
+        if ($connection) {
+            $output->write('Deploy to ftp server ... ');
 
             if (ftp_put($connection, 'human.html', realpath($pathToHumanFile), FTP_BINARY)) {
-                echo 'good';
+                $output->writeln('[ <info>ok</info> ]');
+            } else {
+                $output->writeln('[ <error>error</error> ]');
+                return false;
             }
-
-            ftp_close($connection);
         }
 
         return true;
     }
 
     /**
-     * @param InputInterface  $input  A InputInterface instance.
-     * @param OutputInterface $output A OutputInterface instance.
+     * @param InputInterface  $input      A InputInterface instance.
+     * @param OutputInterface $output     A OutputInterface instance.
+     * @param resource        $connection A Ftp connection.
      *
      * @return boolean
      */
-    private function generateForBot(InputInterface $input, OutputInterface $output)
-    {
+    private function generateForBot(
+        InputInterface $input,
+        OutputInterface $output,
+        $connection
+    ) {
         $pathToBotsFile = $input->getOption('bot');
         $debug = $input->getOption('debug');
 
@@ -334,7 +323,117 @@ EOF;
         }
 
         $output->writeln('[ <info>ok</info> ]');
+
+        if ($connection) {
+            $output->write('Deploy to ftp server ... ');
+
+            if (ftp_put($connection, 'bot.html', realpath($pathToBotsFile), FTP_BINARY)) {
+                $output->writeln('[ <info>ok</info> ]');
+            } else {
+                $output->writeln('[ <error>error</error> ]');
+                return false;
+            }
+        }
         return true;
+    }
+
+    /**
+     * @param OutputInterface $output     A OutputInterface instance.
+     * @param resource        $connection A Ftp connection.
+     *
+     * @return boolean
+     */
+    private function generateCsv(
+        OutputInterface $output,
+        $connection
+    ) {
+        $pathToCsvFile = self::CSV_DEFAULT_PATH;
+
+        $message = '<info>Generate csv data file and save it to '
+            . self::CSV_DEFAULT_PATH
+            . ' ... </info>';
+        $output->write($message);
+        $headAdded = false;
+
+        $file = fopen($pathToCsvFile, 'w');
+
+        $data = $this->getData();
+        foreach ($data as $row) {
+            if (! $headAdded) {
+                fputcsv($file, array_keys($row), ',');
+            }
+
+            fputcsv($file, $row, ',');
+        }
+
+        fclose($file);
+        $output->writeln('[ <info>ok</info> ]');
+
+        if ($connection) {
+            $output->write('Deploy to ftp server ... ');
+
+            if (ftp_put($connection, 'tc_pensions.csv', realpath($pathToCsvFile), FTP_BINARY)) {
+                $output->writeln('[ <info>ok</info> ]');
+            } else {
+                $output->writeln('[ <error>error</error> ]');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param InputInterface  $input  A InputInterface instance.
+     * @param OutputInterface $output A OutputInterface instance.
+     *
+     * @return resource|null
+     */
+    private function connectToFtp(
+        InputInterface $input,
+        OutputInterface $output
+    ) {
+        $helper = $this->getHelper('question');
+
+        $deployQuestion = new ConfirmationQuestion(
+            'Deploy to server? ',
+            true
+        );
+
+        if (! $helper->ask($input, $output, $deployQuestion)) {
+            return null;
+        }
+
+        $serverQuestion = new Question('Ftp server (ftp.govwiki.info): ', 'ftp.govwiki.info');
+        $portQuestion = new Question('Ftp server port (21): ', '21');
+        $usernameQuestion = new Question('Username: ', '');
+        $passwordQuestion = new Question('Password (input will be hidden): ', '');
+        $passwordQuestion
+            ->setHidden(true)
+            ->setHiddenFallback(false);
+
+        $server = trim($helper->ask($input, $output, $serverQuestion));
+        $port = (int) $helper->ask($input, $output, $portQuestion);
+        $username = trim($helper->ask($input, $output, $usernameQuestion));
+        $password = trim($helper->ask($input, $output, $passwordQuestion));
+
+        if (! $server || ! $port || ! $username || ! $password) {
+            $this->writeError($output, 'Provide all data for ftp connection.');
+
+            return null;
+        }
+
+        $connection = ftp_connect($server, $port);
+        $loggedIn = ftp_login($connection, $username, $password);
+
+        if (! $connection || ! $loggedIn) {
+            $this->writeError($output, 'Invalid credentials.');
+            return null;
+        }
+
+        ftp_pasv($connection, true);
+
+        return $connection;
     }
 
     /**
