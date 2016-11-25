@@ -76,4 +76,25 @@ class IssuesRepository extends EntityRepository
 
         return $qb;
     }
+
+    /**
+     * @param array $names Array of searched names.
+     *
+     * @return array
+     */
+    public function getExistsWithNames(array $names)
+    {
+        $expr = $this->_em->getExpressionBuilder();
+
+        $data =  $this->createQueryBuilder('Issue')
+            ->select('Issue.name')
+            ->where($expr->in('Issue.name', ':names'))
+            ->setParameter('names', $names)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(function ($row) {
+            return $row['name'];
+        }, $data ? $data : []);
+    }
 }

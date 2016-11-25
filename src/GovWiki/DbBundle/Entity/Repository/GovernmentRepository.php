@@ -7,6 +7,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\QueryBuilder;
 use GovWiki\DbBundle\Entity\ElectedOfficial;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Issue;
@@ -95,7 +96,7 @@ class GovernmentRepository extends EntityRepository
      * @param integer $id          Government id.
      * @param string  $name        Government name.
      *
-     * @return Query
+     * @return QueryBuilder
      */
     public function getListQuery($environment, $id = null, $name = null)
     {
@@ -116,7 +117,7 @@ class GovernmentRepository extends EntityRepository
                 ->setParameter('name', '%'. $name .'%');
         }
 
-        return $qb->getQuery();
+        return $qb;
     }
 
     /**

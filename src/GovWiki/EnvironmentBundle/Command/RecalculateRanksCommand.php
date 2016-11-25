@@ -48,6 +48,8 @@ class RecalculateRanksCommand extends ContainerAwareCommand
      * @throws \LogicException When this abstract method is not implemented.
      *
      * @see setCode()
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
