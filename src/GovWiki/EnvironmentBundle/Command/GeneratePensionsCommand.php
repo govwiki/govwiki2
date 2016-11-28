@@ -361,6 +361,7 @@ EOF;
         foreach ($data as $row) {
             if (! $headAdded) {
                 fputcsv($file, array_keys($row), ',');
+                $headAdded = true;
             }
 
             fputcsv($file, $row, ',');
