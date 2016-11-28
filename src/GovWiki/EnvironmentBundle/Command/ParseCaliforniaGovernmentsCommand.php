@@ -137,11 +137,13 @@ class ParseCaliforniaGovernmentsCommand extends ContainerAwareCommand
         /** @var EntityManagerInterface $em */
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $environment = $this->getCaliforniaEnvironment();
+        /** @var GovernmentRepository $repository */
+        $repository = $em->getRepository('GovWikiDbBundle:Government');
+
+        $qb = $repository->getListQuery($environment->getId());
 
         // Get total government's count.
-        $totalCount = (new Paginator($em->getRepository('GovWikiDbBundle:Government')
-            ->getListQuery($environment)
-            ->getQuery()))->count();
+        $totalCount = (new Paginator($qb))->count();
 
         $path = $this->getContainer()->getParameter('kernel.cache_dir');
         $file = $path .'/'. self::COUNTER_FILE;
