@@ -5,6 +5,12 @@ services:
         calls:
             - ['setContainer', [ '@service_container' ]]
 
+    govwiki_generator.worker.california_parser:
+        class: 'GovWiki\GeneratorBundle\Worker\CaliforniaWorker'
+        arguments: [ '@monolog.logger.parser' ]
+        calls:
+            - ['setContainer', [ '@service_container' ]]
+
     govwiki_generator.pid_pool_factory:
         class: GovWiki\GeneratorBundle\Service\PidPoolFactory
         arguments: [ '%kernel.cache_dir%' ]

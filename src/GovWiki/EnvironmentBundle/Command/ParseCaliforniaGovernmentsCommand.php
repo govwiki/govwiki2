@@ -2,16 +2,17 @@
 
 namespace GovWiki\EnvironmentBundle\Command;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Government;
-use GovWiki\DbBundle\Entity\Issue;
 use GovWiki\DbBundle\Entity\Repository\EnvironmentRepository;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
-use GovWiki\DbBundle\Entity\Repository\IssuesRepository;
-use GovWiki\EnvironmentBundle\Utils\RSSReader;
-use React\EventLoop\Factory;
+use GovWiki\GeneratorBundle\GovWikiGeneratorService;
+use GovWiki\GeneratorBundle\Service\PidPoolFactory;
+use Mmoreram\GearmanBundle\Service\GearmanClient;
+use Mmoreram\GearmanBundle\Service\GearmanExecute;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,6 +27,8 @@ class ParseCaliforniaGovernmentsCommand extends ContainerAwareCommand
 {
 
     const BASE_URL = 'http://californiapolicycenter.org/tag/{tag}/feed';
+
+    const WORKER_COUNT = 4;
 
     const COUNTER_FILE = 'offset.txt';
 
@@ -66,32 +69,34 @@ class ParseCaliforniaGovernmentsCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $lock = new LockHandler('pares_california_government.lock');
+        $lock = new LockHandler('pares_california_governments');
         if (! $lock->lock()) {
             $output->writeln('This command already run.');
             return 1;
         }
 
-        // Get last processed offset.
-        $offset = $this->getOffset();
+        try {
+            // Get last processed offset.
+            $offset = $this->getOffset();
 
-        // Generate urls for necessary governments and compute next offset.
-        $urls = $this->generateUrls($this->getGovernmentsSlug($offset));
-        $offset += count($urls);
+            // Generate urls for necessary governments and compute next offset.
+            $urls = $this->generateUrls($this->getGovernmentsSlug($offset));
+            $offset += count($urls);
 
-        $output->writeln('Parsing data ... ');
-        $progress = new ProgressBar($output, count($urls));
-        $progress->start();
+            $output->write('Parsing data ... ');
+            // Process all urls.
+            $this->process($urls);
+            // Save new offset.
+            $this->storeOffset($offset);
+        } catch (\Exception $e) {
+            $output->writeln('[ <error>error</error> ]');
+            $output->writeln($e->getMessage());
+            return 1;
+        } finally {
+            $lock->release();
+        }
 
-        // Process all urls.
-        $this->process($urls, $progress);
-
-        $progress->finish();
-        $output->writeln('');
-
-        // Save new offset.
-        $this->storeOffset($offset);
-        $lock->release();
+        $output->writeln('[ <info>OK</info> ]');
         return 0;
     }
 
@@ -201,123 +206,69 @@ class ParseCaliforniaGovernmentsCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param array $data Issues data.
-     *
-     * @return array
-     */
-    private function removeDuplicateIssues(array $data)
-    {
-        /** @var EntityManagerInterface $em */
-        $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
-        /** @var IssuesRepository $repository */
-        $repository = $em->getRepository('GovWikiDbBundle:Issue');
-        /**
-         * @param string $name Searched issue name.
-         *
-         * @return array
-         */
-        $getByName = function ($name) use ($data) {
-            foreach ($data as $row) {
-                if ($row['title'] === $name) {
-                    return $row;
-                }
-            }
-
-            return null;
-        };
-
-        $names = array_map(function ($row) {
-            return $row['title'];
-        }, $data);
-
-        $exists = $repository->getExistsWithNames($names);
-
-        $unique = array_diff($names, $exists);
-
-        $result = [];
-        foreach ($unique as $name) {
-            $result[] = $getByName($name);
-        }
-
-        return array_filter($result);
-    }
-
-    /**
      * @param array       $urls     Array of xml urls.
      * @param ProgressBar $progress A ProgressBar instance.
      *
-     * @return void
+     * @return boolean
      */
-    private function process(array $urls, ProgressBar $progress)
+    private function process(array $urls)
     {
         /** @var EntityManagerInterface $em */
-        $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
+        $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');/** @var PidPoolFactory $pidPoolFactory */
+        $pidPoolFactory = $this->getContainer()
+            ->get(GovWikiGeneratorService::PID_POOL_FACTORY);
+
+        $pidPool = $pidPoolFactory->create('califorina_issue_parser');
+        $pidPool
+            ->restore()
+            ->sendSignal(SIGKILL)
+            ->clear();
 
         // Get creator.
         $creator = $em->getRepository('GovWikiUserBundle:User')->findOneBy([
             'username' => 'joffemd',
-        ]);
+        ])->getId();
 
-        // Start event loop and process data.
-        $loop = Factory::create();
+        /** @var GearmanExecute $executor */
+        $executor = $this->getContainer()->get('gearman.execute');
 
-        $promises = [];
-        foreach ($urls as $id => $url) {
-            $reader = new RSSReader($url, $loop);
-
-            /**
-             * @param array $data Data from xml file.
-             *
-             * @return void
-             */
-            $resolver = function ($data) use ($id, $em, &$creator, $progress) {
-                try {
-                    $data = $this->removeDuplicateIssues($data);
-
-                    foreach ($data as $row) {
-                        // Process publication date.
-                        $date = \DateTime::createFromFormat(
-                            'D, d M Y H:i:s O',
-                            $row['pubdate']
-                        );
-
-                        // Sanitaze description filed.
-                        $description = trim(str_replace(
-                            '[&#8230;]',
-                            '',
-                            $row['description']
-                        ));
-
-                        // Create and persist new issue entity.
-                        $issue = new Issue();
-                        $issue
-                            ->setDescription($description)
-                            ->setDate($date)
-                            ->setGovernment(
-                                $em->getReference(Government::class, $id)
-                            )
-                            ->setLink($row['link'])
-                            ->setName($row['title'])
-                            ->setCreator($creator)
-                            ->setType(Issue::LAST_AUDIT);
-
-                        $em->persist($issue);
-                    }
-
-                    $em->flush();
-                    $em->clear();
-                    $progress->advance();
-                } catch (\Exception $e) {
-                    echo ($e->getMessage());
-                }
-            };
-
-            $promise = $reader->read();
-            $promises[] = $promise->then($resolver);
-
+        for ($i = 0; $i < self::WORKER_COUNT; ++$i) {
+            $pid = pcntl_fork();
+            if ($pid) {
+                $pidPool->add($pid);
+            } else {
+                $executor->executeWorker('CaliforniaParser');
+            }
         }
 
-        $loop->run();
-        \React\Promise\all($promises);
+        // Reopen db connection.
+        /** @var Connection $conn */
+        $conn = $this->getContainer()->get('database_connection');
+        $conn->close();
+        $conn->connect();
+
+        // Store all childs pids.
+        $pidPool->store();
+        /** @var GearmanClient $client */
+        $client = $this->getContainer()->get('gearman');
+
+        foreach ($urls as $id => $url) {
+            $payload = [
+                'creator' => $creator,
+                'government' => $id,
+                'url' => $url,
+            ];
+
+            $client->addTask('CaliforniaParser~parseRss', serialize($payload));
+        }
+
+        $result = $client->runTasks();
+
+        // Close childs process.
+        $pidPool
+            ->sendSignal(SIGKILL)
+            ->clear();
+
+        return $result;
     }
 }
