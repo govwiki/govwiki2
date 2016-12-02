@@ -1,0 +1,77 @@
+<div class="row header">
+
+    {# Logo #}
+    <div class="col-xs-6 col-sm-6 col-md-3">
+
+        {% if government is defined and government.secondaryLogoPath %}
+            <a class="anchor" href="{{ environment.logoHref }}">
+                <img src="{{ asset(environment.logo) }}" class="logo" width="70%">
+            </a>
+            {% if government.secondaryLogoUrl %}
+                <a class="anchor" href="{{ government.secondaryLogoUrl }}">
+                    <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
+                </a>
+            {% else %}
+                <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
+            {% endif %}
+        {% elseif elected.government is defined and elected.government.secondaryLogoPath %}
+            <a class="anchor" href="{{ environment.logoHref }}">
+                <img src="{{ asset(environment.logo) }}" class="logo" width="70%">
+            </a>
+            {% if elected.government.secondaryLogoUrl %}
+                <a class="anchor" href="{{ elected.government.secondaryLogoUrl }}">
+                    <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
+                </a>
+            {% else %}
+                <img class="secondary_logo" src="{{ asset(government.secondaryLogoPath) }}" width="25%">
+            {% endif %}
+        {% else %}
+            <a class="anchor" href="{{ environment.logoHref }}">
+                <img src="{{ asset(environment.logo) }}" class="logo">
+            </a>
+        {% endif %}
+    </div>
+
+    {# Menu button (hamburger) for mobile devices #}
+    <div class="col-xs-6 col-sm-6 visible-xs visible-sm">
+
+        <button type="button" class="hamburger navbar-toggle collapsed" data-toggle="collapse"
+                data-target="#bs-navigation-collapse" aria-expanded="false">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+
+    </div>
+
+    {# Navigation #}
+    <nav class="col-xs-12 col-sm-12 col-md-9 text-right">
+
+        <ul class="navigation navbar-collapse collapse" id="bs-navigation-collapse">
+
+            {# Return to some government #}
+            {% if (electedOfficial is defined) %}
+                <li>
+                    <a href="{{ path('government', {
+                        altTypeSlug: altTypeSlug,
+                        slug: slug
+                    }) }}" class="link">
+                        Return to {{ slug|replace('_', ' ') }}
+                    </a>
+                </li>
+            {% endif %}
+
+
+            {# Return to map #}
+            <li>
+                <a href="{{ path('map') }}" class="link">
+                    {{ 'header.links.return_to_map'|trans }}
+                    {#Return to Map#}
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+</div>

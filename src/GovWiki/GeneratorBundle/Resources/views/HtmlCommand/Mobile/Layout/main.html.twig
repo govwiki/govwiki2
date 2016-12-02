@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <title>{{ environment.title }}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+        {% block stylesheets %}{% endblock %}
+    {% if environment is defined %}
+        <link rel="icon" href="{{ asset('/img/'~environment.slug~'/favicon.ico') }}" type="image/x-icon" />
+        <style>
+            {{- environment.style|raw -}}
+            {{- environment.mobileStyle|raw -}}
+        </style>
+    {% else %}
+        <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
+    {% endif %}
+    </head>
+
+    <body>
+        <div id="fb-root"></div>
+
+        {# Header #}
+        <header>
+            {{ include('GovWikiGeneratorBundle:HtmlCommand/Mobile/Partial:header.html.twig') }}
+        </header>
+
+        {# Menubar #}
+        <menu class="container mainmenu">
+            <div class="row">
+                <div class="col-md-6">
+                    {% if years is defined and years|length > 1 %}
+                        <label for="year-selector" class="control-label">{{ 'general.year_selector_label'|trans }}: </label>
+                        <select id="year-selector" class="form-control form-control__inline">
+                            {% for year in years %}
+                                <option value="{{ year }}" {%-
+                                    if (government is defined and government.currentYear is defined and government.currentYear == year)
+                                -%}
+                                        selected
+                                    {%- endif -%}>
+                                    {{- year -}}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    {% endif %}
+                </div>
+            </div>
+        </menu>
+
+        {# Main content #}
+        <main>
+            {{- insertMonetization('top') -}}
+            {% block main %}{% endblock %}
+            {{- insertMonetization('bottom') -}}
+        </main>
+
+        {# Footer #}
+        <footer class="container footer">
+            {{ include('GovWikiMobileBundle:Partial:footer.html.twig') }}
+        </footer>
+
+        {% if app.environment == 'prod' %}
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.1/lodash.min.js"></script>
+        {% else %}
+            {% javascripts '@GovWikiFrontendBundle/Resources/public/js/vendor/lodash.min.js'%}
+            <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+        {% endif %}
+
+        {% block javascripts %}
+            {# Govwiki namespace #}
+            <script> window.gw = {}; </script>
+            <script> window.gw.authorized = "{{ app.user }}"; </script>
+            {% set username = '' %}
+            {% if app.user %}
+                <script> window.gw.user_id = "{{ app.user.id }}"; </script>
+                {% set username = app.user.username %}
+            {% endif %}
+            <script> window.gw.username = "{{ username }}"; </script>
+        {% endblock %}
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+        {%- if (environment.analytics is defined) -%}
+            {{- environment.analytics|raw -}}
+        {%- endif -%}
+
+    </body>
+</html>

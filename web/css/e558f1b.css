@@ -7,7 +7,8 @@
 /* ===================== */
 /* ====== Loader ======= */
 /* ===================== */
-.loader {
+.loader,
+.analysis-loader {
   margin: 60px auto;
   font-size: 4px;
   position: relative;
@@ -22,7 +23,10 @@
   -webkit-animation: load8 0.7s infinite linear;
   animation: load8 0.7s infinite linear; }
 
-.loader, .loader:after {
+.loader,
+.analysis-loader,
+.loader:after,
+.analysis-loader:after {
   border-radius: 50%;
   width: 10em;
   height: 10em; }
@@ -202,18 +206,18 @@ a {
   white-space: nowrap; }
 
 i.icon {
-  background: url("/bundles/govwikifrontend/img/bg.gif");
+  background: url("../img/bg.gif");
   width: 21px;
   height: 9px;
   display: inline-block; }
   i.icon.icon__bottom {
     height: 4px;
     margin-bottom: 4px;
-    background: url("/bundles/govwikifrontend/img/desc.gif"); }
+    background: url("../img/desc.gif"); }
   i.icon.icon__top {
     height: 4px;
     margin-bottom: 4px;
-    background: url("/bundles/govwikifrontend/img/asc.gif"); }
+    background: url("../img/asc.gif"); }
 
 .nav-pills > li.active > a,
 .nav-pills > li.active > a:hover,
@@ -250,18 +254,18 @@ i.icon {
    Pagination sortable.
 */
 .sortable a i {
-  background: url("/bundles/govwikifrontend/img/bg.gif");
+  background: url("../img/bg.gif");
   width: 21px;
   height: 9px;
   display: inline-block; }
 .sortable a.asc i {
   height: 4px;
   margin-bottom: 4px;
-  background: url("/bundles/govwikifrontend/img/asc.gif"); }
+  background: url("../img/asc.gif"); }
 .sortable a.desc i {
   height: 4px;
   margin-bottom: 4px;
-  background: url("/bundles/govwikifrontend/img/desc.gif"); }
+  background: url("../img/desc.gif"); }
 
 /* ========================= */
 /* ======== CartoDB ======== */
@@ -283,11 +287,12 @@ div.cartodb-tooltip-content-wrapper p {
 /* ========================= */
 /* ======== Adverting ======== */
 /* ========================= */
-.adverting-top {
-  padding: 18px 0 0 0;
+.monetizations {
   max-width: 728px;
   margin: 0 auto;
   overflow: hidden; }
+  .monetizations_top, .monetizations_bottom {
+    padding: 18px 0 0 0; }
 
 .message_form_container {
   margin: 20px 50px; }
@@ -744,6 +749,14 @@ div.cartodb-tooltip-content-wrapper p {
   /* ========================= */
   /* ======= TYPEAHEAD ======= */
   /* ========================= */ }
+  .governmentController .first-tab h4 {
+    padding: 10px 0;
+    border-bottom: 1px solid #efefef;
+    border-top: 1px solid #efefef; }
+    .governmentController .first-tab h4 small {
+      margin-left: 12px; }
+      .governmentController .first-tab h4 small a {
+        font-size: 12px; }
   .governmentController .typeahead_wrap {
     font-size: 12px; }
     .governmentController .typeahead_wrap .twitter-typeahead {
@@ -806,9 +819,15 @@ div.cartodb-tooltip-content-wrapper p {
     top: 36px;
     right: 0;
     line-height: 100%; }
-  .governmentController nav a {
-    display: inline-block;
-    margin-top: 10px; }
+  .governmentController .editable {
+    text-decoration: none !important;
+    color: #000 !important;
+    border-bottom: none !important; }
+  .governmentController .edit {
+    color: #d3d3d3;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 12px; }
   .governmentController table .add {
     color: #0b4d70;
     text-align: center;
@@ -817,14 +836,8 @@ div.cartodb-tooltip-content-wrapper p {
       background-color: #0b4d70;
       color: #fff; }
   .governmentController header h3 {
-    color: #074d71;
-    /*
-       todo hardcode for puerto.
-    */ }
-    .governmentController header h3.puerto {
-      color: #f15a29; }
+    color: #074d71; }
   .governmentController .mobile-header {
-    background-image: url("/img/California.jpg");
     background-size: cover;
     background-repeat: no-repeat; }
     .governmentController .mobile-header a {
@@ -919,6 +932,9 @@ div.cartodb-tooltip-content-wrapper p {
                                                 /*
    todo hardcode for puerto
 */ }
+    .governmentController section .articles-content,
+    .governmentController section .comment-content {
+      font-size: 1.4em; }
     .governmentController section .loader {
       margin: 0 auto;
       margin-bottom: 12px; }
@@ -929,8 +945,13 @@ div.cartodb-tooltip-content-wrapper p {
       background-color: #DDE7FF; }
     .governmentController section nav {
       margin-bottom: 30px; }
+      .governmentController section nav li {
+        margin-left: 0;
+        margin-right: 0; }
       .governmentController section nav a {
-        font-size: 1.4em; }
+        font-size: 1.4em;
+        vertical-align: middle;
+        text-align: center; }
     .governmentController section #Financial_Statements .government-compare {
       padding-top: 15px; }
       .governmentController section #Financial_Statements .government-compare h4 {
@@ -1077,3 +1098,12 @@ div.cartodb-tooltip-content-wrapper p {
     .governmentController .subscribe-row .btn {
       font-size: 20px;
       padding: 0 30px; }
+
+.treemap-tooltip {
+  background: #7bbaff;
+  color: #fff;
+  padding: 10px;
+  border-style: solid;
+  border-radius: 3px;
+  position: absolute;
+  z-index: 9999; }

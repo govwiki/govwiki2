@@ -1,6 +1,6 @@
 <?php
 
-namespace GovWiki\EnvironmentBundle\Command;
+namespace GovWiki\GeneratorBundle\Command;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Class GeneratePensionsCommand
- * @package GovWiki\EnvironmentBundle\Command
+ * @package GovWiki\GeneratorBundle\Command
  */
 class GeneratePensionsCommand extends ContainerAwareCommand
 {
@@ -252,7 +252,7 @@ EOF;
         try {
             $templating = $this->getContainer()->get('templating');
             $html = $templating->render(
-                'GovWikiEnvironmentBundle::human.html.twig',
+                'GovWikiGeneratorBundle:PensionsCommand:human.html.twig',
                 [
                     'data' => $this->getData(),
                     'debug' => $debug,
@@ -307,7 +307,7 @@ EOF;
         try {
             $templating = $this->getContainer()->get('templating');
             $html = $templating->render(
-                'GovWikiEnvironmentBundle::bot.html.twig',
+                'GovWikiGeneratorBundle:PensionsCommand:bot.html.twig',
                 [
                     'data' => $this->getData(),
                     'debug' => $debug,

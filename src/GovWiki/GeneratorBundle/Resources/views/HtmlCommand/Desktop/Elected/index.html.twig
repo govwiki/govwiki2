@@ -1,0 +1,145 @@
+{% extends "GovWikiGeneratorBundle:HtmlCommand/Desktop/Layout:main.html.twig" %}
+
+{% set elected = electedOfficial %}
+{# Main #}
+{% block main %}
+
+    {# Must be unique #}
+    <section class="electedController" data-elected-name="{{elected.fullName}}">
+
+        <div class="row person-info-header">
+            <div class="col-md-10 col-md-push-1">
+                <h5>ELECTED OFFICIALS - PROFILE</h5>
+            </div>
+        </div>
+
+        <div class="row person-info-content">
+            <div class="col-xs-7 col-sm-7 col-md-7 col-md-push-1 col-lg-7 col-lg-push-1" style="font-size:16px;">
+                <p>Title: {{elected.title}}</p>
+                <p>Name: {{elected.fullName}} &nbsp;&nbsp;
+                    <span class="disqus-comment-count vote" id="{{elected.id}}" data-disqus-identifier="{{elected.id}}">0</span>
+                <p>Term expiries: {{elected.termExpires}}</p>
+                <p>Email: <a href="mailto:{{elected.emailAddress}}">{{elected.emailAddress}}</a></p>
+            </div>
+
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <img src="{{elected.photoUrl}}" class="person-photo"/>
+            </div>
+        </div>
+
+        <hr/>
+
+        <div class="row person-info-tabs">
+            <div class="col-md-10 col-md-push-1">
+
+                <!-- Nav tabs -->
+                <ul class="nav nav-pills" role="tablist">
+                    <li role="presentation" class="active"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Bio/Endorsements</a></li>
+                    <li role="presentation"><a href="#Surveys" aria-controls="Surveys" role="tab" data-toggle="tab">Surveys</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content" style="margin-top: 40px; margin-bottom: 40px;">
+
+                    <div class="loader"></div>
+
+                    {# Endorsements #}
+                    <div role="tabpanel" class="tab-pane active" id="Endorsements">
+                        <h4 class="text-center">Endorsements</h4>
+                        <div class="tab-pane-main">
+                            {% include 'GovWikiGeneratorBundle:HtmlCommand/Desktop/Partial/Elected/Lists:endorsements.html.twig' with {
+                            'list': endorsements
+                            } %}
+                        </div>
+                    </div>
+
+                    {# Surveys #}
+                    <div role="tabpanel" class="tab-pane" id="Surveys">
+                        <div class="tab-pane-main">
+                            {% include 'GovWikiGeneratorBundle:HtmlCommand/Desktop/Partial/Elected/Lists:surveys.html.twig' with {
+                            'list': surveyResponses
+                            } %}
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    {# Facebook Comment Modal #}
+    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:facebook_comment.html.twig' %}
+
+    {# Endorsements Modal #}
+    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:endorsements.html.twig' %}
+
+    {%- verbatim -%}
+        <script id="row-addEndorsements" type="text//x-handlebars-template">
+            <tr data-id="{{ id }}">
+                <td data-election-year="{{ electionYear }}">
+                    <a data-type="text"
+                       data-placeholder="Please edit" data-title="Please edit"
+                       class="editable editable-pre-wrapped editable-click" data-original-title="">{{ electionYear }}<span class="glyphicon glyphicon-pencil edit"></span></a>
+                </td>
+                <td data-name-of-endorser="{{ nameOfEndorser }}">
+                    <a href="javascript:void(0);" data-type="textarea"
+                       data-placeholder="Please edit" data-title="Please edit"
+                       class="editable editable-pre-wrapped editable-click" data-original-title="">{{ nameOfEndorser }}</a>
+                    <span class="glyphicon glyphicon-pencil edit"></span>
+                </td>
+                <td data-endorser-type="{{ endorserType }}">
+                    <a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{'Elected Official': 'Elected Official', 'Organization': 'Organization', 'Political Party': 'Political Party', 'Union': 'Union', 'Other': 'Other'}" data-placeholder="Please edit" data-title="Please edit"
+                       class="editable editable-pre-wrapped editable-click" data-original-title="">{{ endorserType }}</a>
+                    <span class="glyphicon glyphicon-pencil edit"></span>
+                </td>
+            </tr>
+        </script>
+    {%- endverbatim -%}
+
+    {% if bottomText %}
+        <div class="panel panel-danger notice">
+            <div class="panel-body">
+                {{ bottomText|raw }}
+            </div>
+        </div>
+        <br>
+    {% endif %}
+
+
+{% endblock %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{parent()}}
+
+    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/elected.scss' filter='scss, phpcssembed' %}
+        <style>{{- asset_url|content|raw -}}</style>
+    {% endstylesheets %}
+
+{% endblock %}
+
+{# Javascripts #}
+{% block javascripts %}
+
+    {{parent()}}
+
+    <script>
+        window.gw.electedOfficial = '{{ electedOfficialJSON | escape('js') }}';
+
+        window.gw.urls = {};
+        window.gw.urls.create_request = '{{ path('govwiki_api_v1_createrequest_create') }}';
+        window.gw.urls.edit_request = '{{ path('govwiki_api_v1_editrequest_create') }}';
+        window.gw.urls.check_url = '{{ path('govwiki_api_v1_url_extract') }}'
+    </script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+
+    <script src="{{- '/js/common.js'|fromServer -}}"></script>
+    <script src="{{- '/js/elected.js'|fromServer -}}"></script>
+
+{% endblock %}

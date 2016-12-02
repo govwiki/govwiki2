@@ -1,0 +1,134 @@
+{#
+    Financial statements categories.
+#}
+{% import _self as macro %}
+
+{# Chart Control #}
+
+<div class="col-md-12 text-left chart-controls">
+    <div class="btn-group btn-group-xs" data-toggle="buttons">
+        <label class="btn btn-primary active">
+            <input type="radio" name="options" id="tree-charts" autocomplete="off" checked> {{ 'general.findata.main.tree_charts'|trans }}
+        </label>
+        <label class="btn btn-primary">
+            <input type="radio" name="options" id="chart" autocomplete="off"> {{ 'general.findata.main.pie'|trans }}
+        </label>
+    </div>
+</div>
+
+{# Charts #}
+<div class="col-md-12" id="charts-row">
+    <div class="customGraph col-md-6" id="total-revenue-pie"></div>
+    <div class="customGraph col-md-6" id="total-expenditures-pie"></div>
+    <div class="customGraph col-md-6">
+        <h4 id="total-revenue-tree-title"></h4>
+        <div id="total-revenue-tree"></div>
+    </div>
+    <div class="customGraph col-md-6">
+        <h4 id="total-expenditures-tree-title"></h4>
+        <div id="total-expenditures-tree"></div>
+    </div>всё
+</div>
+
+{# Statistics #}
+
+<div class="col-md-12">
+
+    <div class="col-md-6">
+        <table class="table compare-first-table"></table>
+    </div>
+    <div class="col-md-6">
+        <table class="table compare-second-table"></table>
+    </div>
+
+    {% set finDataReplacements = {
+        ' ': '_',
+        '-': '_d_',
+        '&': 'amp',
+        ',': '_c_',
+        '(': 'lb',
+        ')': 'rb',
+        '/': 'sl',
+        '%': 'proc',
+        "'": "_apos_"
+        }
+    %}
+
+    {% for categoryName, fields in financialStatements %}
+        <table class="table financial-table">
+
+            {% set showTotalAndOver = (fields|first).otherfunds is defined %}
+
+            <thead>
+                <tr>
+                    {# Category caption #}
+                    <th><b>{{ ('general.findata.main.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></th>
+                    {% if loop.first %}
+                        <th><b>{{ 'general.findata.main.general_fund'|trans }}</b></th>
+                        <th><b>{{ 'general.findata.main.other_fund'|trans }}</b></th>
+                        <th><b>{{ 'general.findata.main.total_fund'|trans }}</b></th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+
+                {# Category fields #}
+                {% for name, data in fields %}
+                    <tr>
+
+                        <td>
+                            {{ ('findata.captions.' ~ name | replace(finDataReplacements) | lower)|trans }}
+                        </td>
+                        <td>
+                            {%- if not showTotalAndOver or loop.first -%}
+                                $&nbsp;
+                            {%- endif -%}
+                            {% if data.genfund is defined %}
+                                {{- macro.displayValue(data.genfund) -}}
+                            {%- else -%}
+                                0
+                            {%- endif -%}
+                        </td>
+
+                        {% if showTotalAndOver %}
+                            <td>
+                                {%- if loop.first -%}
+                                    $&nbsp;
+                                {%- endif -%}
+                                {% if data.otherfunds is defined %}
+                                    {{- macro.displayValue(data.otherfunds) -}}
+                                {%- else -%}
+                                    0
+                                {%- endif -%}
+                            </td>
+                            <td>
+                                {%- if loop.first -%}
+                                    $&nbsp;
+                                {%- endif -%}
+
+                                {% if data.totalfunds is defined %}
+                                    {{- macro.displayValue(data.totalfunds) -}}
+                                {%- else -%}
+                                    0
+                                {%- endif -%}
+                            </td>
+                        {% endif %}
+
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+    {% endfor %}
+
+</div>
+
+
+{% macro displayValue(value) %}
+    {% if value < 0 %}
+        ({{ value|abs|number_format }})
+    {% else %}
+        {{ value |number_format}}
+    {% endif %}
+{% endmacro %}

@@ -123,7 +123,7 @@ class Extension extends \Twig_Extension
             new \Twig_SimpleFilter('rankName', [
                 $this,
                 'rankName',
-            ])
+            ]),
         ];
     }
 

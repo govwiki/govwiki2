@@ -1,0 +1,103 @@
+<div class="paginate">
+    <div class="loader" style="display: none"></div>
+    <div class="tab-pane-main">
+
+        <div class="col-sm-12">
+            <div class="table-responsive">
+
+                <table id="issues" class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Date Type</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for issue in issues %}
+                        <tr {% if (issue.request is not null) and
+                        (issue.request.status == constant('STATE_PENDING', issue.request)) -%}
+                            style="background: rgba(80, 0, 0, 0.1)"
+                                {%- endif -%} data-id="{{ issue.id }}">
+                            <td>
+                                <a href="{{- issue.link -}}" target="_blank">
+                                    <img src="{{- asset('/images/download.png') -}}">
+                                </a>
+                            </td>
+                            <td>
+                                <div>
+                                    <a data-field="date" href="javascript:void(0);" data-type="date" data-pk="1"  data-format="mm/dd/yyyy"
+                                       data-placeholder="Please edit" data-title="Please edit"
+                                       class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                       title="">
+                                        {{- issue.date|date('Y/d/m') -}}
+                                    </a>
+                                    <span class="glyphicon glyphicon-pencil edit"></span>
+                                </div>
+                                <div>
+                                    <a data-field="type" href="javascript:void(0);" data-type="select" data-source="{'audit': 'Audit', 'other': 'Other', 'news_report': 'News Report', 'govt_document': 'Govt Document', 'cpc_research': 'CPC Research', 'blog_post': 'Blog Post', 'video_clip': 'Video Clip', 'image': 'Image', 'audio_clip': 'Audio Clip'}"
+                                       data-placeholder="Please edit" data-title="Please edit"
+                                       class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                       data-value="{{- issue.type -}}"
+                                       title="">
+                                        {{- issue.displayType -}}
+                                    </a>
+                                    <span class="glyphicon glyphicon-pencil edit"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <a data-field="name" href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                   data-placeholder="Please edit" data-title="Please edit"
+                                   class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                   title="">
+                                    {{- issue.name -}}
+                                </a>
+                                <span class="glyphicon glyphicon-pencil edit"></span>
+                            </td>
+                            <td>
+                                <a data-field="description" href="javascript:void(0);" data-type="textarea" data-pk="1"
+                                   data-placeholder="Please edit" data-title="Please edit"
+                                   class="editable editable-pre-wrapped editable-click" data-original-title=""
+                                   title="">
+                                    {{- issue.description -}}
+                                </a>
+                                <span class="glyphicon glyphicon-pencil edit"></span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                {%- if app.user -%}
+                    <button id="new-issue" class="btn btn-primary">
+                        Add new Issue
+                    </button>
+                {%- endif -%}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{%- verbatim -%}
+<script id="issue-row" type="text/x-handlebars-template">
+    <tr style="background: rgba(80, 0, 0, 0.1)">
+        <td>
+            <a href="{{ link }}" target="_blank">
+                <img src="/images/download.png">
+            </a>
+        </td>
+        <td>
+            <div>
+                {{ date }}
+            </div>
+            <div>
+                {{ type }}
+            </div>
+        </td>
+        <td>{{ name }}</td>
+        <td>{{ description }}</td>
+    </tr>
+</script>
+{%- endverbatim -%}

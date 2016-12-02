@@ -62,7 +62,7 @@ a {
 }
 
 i.icon {
-   background: url("/bundles/govwikifrontend/img/bg.gif");
+   background: url("../img/bg.gif");
    width: 21px;
    height: 9px;
    display: inline-block;
@@ -70,13 +70,13 @@ i.icon {
    &.icon__bottom {
       height: 4px;
       margin-bottom: 4px;
-      background: url("/bundles/govwikifrontend/img/desc.gif");
+      background: url("../img/desc.gif");
    }
 
    &.icon__top {
       height: 4px;
       margin-bottom: 4px;
-      background: url("/bundles/govwikifrontend/img/asc.gif");
+      background: url("../img/asc.gif");
    }
 
 }
@@ -128,7 +128,7 @@ i.icon {
 
    a {
       i {
-         background: url("/bundles/govwikifrontend/img/bg.gif");
+         background: url("../img/bg.gif");
          width: 21px;
          height: 9px;
          display: inline-block;
@@ -138,7 +138,7 @@ i.icon {
          i {
             height: 4px;
             margin-bottom: 4px;
-            background: url("/bundles/govwikifrontend/img/asc.gif");
+            background: url("../img/asc.gif");
          }
       }
 
@@ -147,7 +147,7 @@ i.icon {
 
             height: 4px;
             margin-bottom: 4px;
-            background: url("/bundles/govwikifrontend/img/desc.gif");
+            background: url("../img/desc.gif");
          }
       }
    }

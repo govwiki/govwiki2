@@ -1,0 +1,48 @@
+{#
+
+    Template for one category in tab.
+
+#}
+<table class="table table-striped statistics-table">
+    {%- for field in category.formats -%}
+        {%- set value = government|applay_mask(field) -%}
+
+        {%- if not value is null -%}
+            <tr class="statistics-row">
+                {# Field name #}
+                <td>
+                    {%- set helpTextKey = 'format.'~field.field~'.help_text' -%}
+                    {%- set helpText = helpTextKey|trans -%}
+
+                    {{- ('format.'~field.field)|trans -}}
+                    {%- if ((helpTextKey != helpText) and (helpText|trim != '')) -%}
+                        <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}"
+                             data-toggle="tooltip"
+                             data-placement="bottom"
+                             title="{{- helpText -}}">
+                    {%- endif -%}
+                </td>
+
+                {# Field value #}
+                <td>
+                    {{- value|display|raw -}}
+                    {%- set rankName = field.field|rankName -%}
+
+                    {%- if government.ranks[rankName] is defined -%}
+                        {%- set rank = government.ranks[rankName] -%}
+                        &nbsp;
+                        <a>
+                            {%- if rank.type == 'letter' -%}
+                                {{ rank.letter|upper }}
+                            {%- else -%}
+                                ({{- rank.current -}}
+                                &nbsp;{{- 'preposition.of'|trans -}}&nbsp;
+                                {{- rank.max -}})
+                            {%- endif -%}
+                        </a>
+                    {%- endif -%}
+                </td>
+            </tr>
+        {%- endif -%}
+    {%- endfor -%}
+</table>

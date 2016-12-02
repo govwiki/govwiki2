@@ -1,0 +1,20 @@
+services:
+    govwiki_generator.worker.page_generator:
+        class: 'GovWiki\GeneratorBundle\Worker\PageGeneratorWorker'
+        arguments: [ '@monolog.logger.generator' ]
+        calls:
+            - ['setContainer', [ '@service_container' ]]
+
+    govwiki_generator.pid_pool_factory:
+        class: GovWiki\GeneratorBundle\Service\PidPoolFactory
+        arguments: [ '%kernel.cache_dir%' ]
+
+    twig.extension.assets:
+        class: 'GovWiki\GeneratorBundle\Twig\AssetExtension'
+        arguments:
+            - '@assets.packages'
+            - '@request_stack'
+            - '%kernel.root_dir%/../web'
+            - '@twig.extension.httpfoundation'
+            - '@govwiki_environment.storage'
+        public: false

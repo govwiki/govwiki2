@@ -1,0 +1,141 @@
+<div class="first-tab">
+
+{# Section selector. #}
+{%- if (hasElectedOfficials or environment.showDocuments
+    or environment.showGovernmentComment) -%}
+    <div class="col-md-12">
+        <div class="dropdown">
+            <button id="section-dropdown" data-target="#" class="btn btn-link"
+               data-toggle="dropdown" aria-haspopup="true">
+                Section
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="section-dropdown">
+                {%- if hasElectedOfficials -%}
+                    <li><a href="#elected-officials">Elected Officials</a></li>
+                {%- endif -%}
+                <li><a href="#overview">Overview</a></li>
+                {%- if environment.showDocuments -%}
+                    <li><a href="#articles">Articles</a></li>
+                {%- endif -%}
+                {%- if environment.showGovernmentComment
+                    and (government.comment or app.user) -%}
+                    <li><a href="#analysis">Analysis</a></li>
+                {%- endif -%}
+            </ul>
+        </div>
+    </div>
+{%- endif -%}
+
+{# Elected officials. #}
+{%- if hasElectedOfficials -%}
+    <div class="col-md-12">
+        <h4 id="elected-officials">
+            Elected officials
+            <small><a href="#section-dropdown">
+                <i class="glyphicon glyphicon-chevron-up"></i>
+            </a></small>
+        </h4>
+        {% for elected in government.electedOfficials %}
+            <div class="col-md-6 col-sm-12">
+                <div class="person">
+
+                    <div class="person-info">
+
+                        <p>
+                            Title: {{elected.title}}
+                        </p>
+
+                        <p>
+                            <a href="{{ path('elected', {
+                                'altTypeSlug': government.altTypeSlug,
+                                'slug': government.slug,
+                                'electedSlug': elected.slug
+                            }) }}" class="elected_link">Name {{elected.fullName}}</a>
+                        </p>
+
+                        <p>
+                            {% if elected.emailAddress %}
+                                <a href="mailto:{{elected.emailAddress}}">Email: {{elected.emailAddress}}</a>
+                            {% endif %}
+                        </p>
+
+                        <p>
+                            {% if elected.telephoneNumber %}
+                                Phone: {{elected.telephoneNumber}}
+                            {% endif %}
+                        </p>
+
+                        <p>
+                            Term Expires: {{elected.termExpires}}
+                        </p>
+
+                    </div>
+
+                    <div class="person-photo">
+
+                        {% if elected.photoUrl %}
+                        <a href="{{ path('elected', {
+                            'altTypeSlug': government.altTypeSlug,
+                            'slug': government.slug,
+                            'electedSlug': elected.slug
+                        }) }}"
+                            <span class="f-val">
+                                <img src="{{elected.photoUrl}}"/>
+                            </span>
+                        </a>
+                    {% endif %}
+
+                    </div>
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{%- endif -%}
+
+{# Overview. #}
+<div class="col-md-12">
+    {%- if (hasElectedOfficials or environment.showDocuments
+        or environment.showGovernmentComment) -%}
+        <h4 id="overview">
+            Overview
+            <small><a href="#section-dropdown">
+                <i class="glyphicon glyphicon-chevron-up"></i>
+            </a></small>
+        </h4>
+    {%- endif -%}
+    {%- if tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}
+        {# User defined tab #}
+        {{-
+        include('@GovWikiFrontend/Partial/Government/tab.html.twig')
+        -}}
+        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
+
+        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
+
+        {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
+    {%- else -%}
+        {# Special tab #}
+        {{-
+        include('@GovWikiFrontend/Partial/Government/special_tab.html.twig')
+        -}}
+    {%- endif -%}
+</div>
+
+{# Articles #}
+{%- if environment.showDocuments -%}
+    <div class="col-md-12 articles-content">
+        <h4 id="articles">
+            Articles
+            <small><a href="#section-dropdown">
+                <i class="glyphicon glyphicon-chevron-up"></i>
+            </a></small>
+        </h4>
+        <div id="articles-content">
+            {%- include 'GovWikiGeneratorBundle:HtmlCommand/Desktop/Government:issues.html.twig' -%}
+        </div>
+    </div>
+{%- endif -%}
+
+</div>

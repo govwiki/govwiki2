@@ -4,18 +4,14 @@ imports:
 framework:
     router:
         resource: "%kernel.root_dir%/config/routing_mobile.yml"
-        strict_requirements: ~
 
 # Assetic Configuration
 assetic:
-    ruby: ~
     bundles:
+        - 'GovWikiAdminBundle'
+        - 'GovWikiCommentBundle'
+        - 'GovWikiGeneratorBundle'
         - 'GovWikiMobileBundle'
-#    use_controller: false
-#
-#web_profiler:
-#    toolbar: true
-#    intercept_redirects: false
 
 monolog:
     handlers:

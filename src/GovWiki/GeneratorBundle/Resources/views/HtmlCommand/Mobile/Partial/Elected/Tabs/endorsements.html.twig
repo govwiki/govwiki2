@@ -1,0 +1,97 @@
+{% import 'GovWikiMobileBundle:Partial/Elected/Tabs:macro.html.twig' as macro %}
+{% import _self as helper %}
+
+<div role="tabpanel" class="tab-pane active" id="Endorsements">
+    <div class="tab-pane-main">
+
+        <h4 class="text-center">Endorsements</h4>
+
+        <div class="add_action">
+            <span>Add new Endorsement</span>
+            <span class="glyphicon glyphicon-plus"></span>
+        </div>
+
+        {%- for endorsement in endorsements -%}
+            {% set blockId = 'endorsementCollapse' ~ loop.index %}
+
+            {# Card #}
+            <div class="card">
+
+                {# Header #}
+                <div class="card__header text-justify" data-toggle="collapse"
+                     data-target="#{{ blockId }}" aria-expanded="false"
+                     aria-controls="{{ blockId }}">
+
+                    <p class="card__header-title" {%-
+                        if macro.isPendingRequest(endorsement)
+                    -%}
+                        style="background: rgba(80, 0, 0, 0.1)"
+                    {%- endif -%}>
+                        {{- endorsement.nameOfEndorser -}}
+                    </p>
+
+                    <div class="card__group card__group_offset">
+                        <span class="card__group-item">
+                            Election Year:
+                            <span>{{- endorsement.electionYear -}}</span>
+                        </span>
+
+                        <span class="card__group-item card__group-item_right">
+                            Type:
+                            <span>{{- endorsement.endorserType -}}</span>
+                        </span>
+                    </div>
+
+                    {# Expand icon #}
+                    <div class="card__header-expand" data-toggle="collapse" data-target="#{{ blockId }}" aria-expanded="false"
+                         aria-controls="{{ blockId }}">
+                        <i class="glyphicon glyphicon-chevron-down"></i>
+                    </div>
+                </div>
+
+                {# Content (Collapsable) #}
+                <div class="collapse" id="{{ blockId }}">
+                    <div class="card__block">
+                        {# Legislation info #}
+                        <h4 class="card__block-title">
+                            {{- macro.dataElement(
+                                endorsement,
+                                'nameOfEndorser',
+                                { type: 'textarea' }
+                            ) -}}
+                        </h4>
+
+                        {# How legislation vote (as table) #}
+                        <table class="table table-stripped">
+                            <tr>
+                                <th>Election Year</th>
+                                <td>
+                                    {{- macro.dataElement(
+                                        endorsement,
+                                        'electionYear'
+                                    ) -}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Type</th>
+                                <td>
+                                    {{- macro.dataElement(
+                                        endorsement,
+                                        'endorserType',
+                                        {
+                                            type: 'select',
+                                            source: "{'Elected Official': 'Elected Official', 'Organization': 'Organization', 'Political Party': 'Political Party', 'Union': 'Union', 'Other': 'Other'}"
+                                        }
+                                    ) -}}
+                                </td>
+                            </tr>
+                        </table>
+
+
+                    </div>
+                </div>
+            </div>
+        {%- endfor -%}
+
+    </div>
+</div>

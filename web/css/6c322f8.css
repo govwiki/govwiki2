@@ -4,7 +4,8 @@
 /* ===================== */
 /* ====== Loader ======= */
 /* ===================== */
-.loader {
+.loader,
+.analysis-loader {
   margin: 60px auto;
   font-size: 4px;
   position: relative;
@@ -19,7 +20,10 @@
   -webkit-animation: load8 0.7s infinite linear;
   animation: load8 0.7s infinite linear; }
 
-.loader, .loader:after {
+.loader,
+.analysis-loader,
+.loader:after,
+.analysis-loader:after {
   border-radius: 50%;
   width: 10em;
   height: 10em; }
@@ -199,18 +203,18 @@ a {
   white-space: nowrap; }
 
 i.icon {
-  background: url("/bundles/govwikifrontend/img/bg.gif");
+  background: url("../img/bg.gif");
   width: 21px;
   height: 9px;
   display: inline-block; }
   i.icon.icon__bottom {
     height: 4px;
     margin-bottom: 4px;
-    background: url("/bundles/govwikifrontend/img/desc.gif"); }
+    background: url("../img/desc.gif"); }
   i.icon.icon__top {
     height: 4px;
     margin-bottom: 4px;
-    background: url("/bundles/govwikifrontend/img/asc.gif"); }
+    background: url("../img/asc.gif"); }
 
 .nav-pills > li.active > a,
 .nav-pills > li.active > a:hover,
@@ -247,18 +251,18 @@ i.icon {
    Pagination sortable.
 */
 .sortable a i {
-  background: url("/bundles/govwikifrontend/img/bg.gif");
+  background: url("../img/bg.gif");
   width: 21px;
   height: 9px;
   display: inline-block; }
 .sortable a.asc i {
   height: 4px;
   margin-bottom: 4px;
-  background: url("/bundles/govwikifrontend/img/asc.gif"); }
+  background: url("../img/asc.gif"); }
 .sortable a.desc i {
   height: 4px;
   margin-bottom: 4px;
-  background: url("/bundles/govwikifrontend/img/desc.gif"); }
+  background: url("../img/desc.gif"); }
 
 /* ========================= */
 /* ======== CartoDB ======== */
@@ -280,11 +284,12 @@ div.cartodb-tooltip-content-wrapper p {
 /* ========================= */
 /* ======== Adverting ======== */
 /* ========================= */
-.adverting-top {
-  padding: 18px 0 0 0;
+.monetizations {
   max-width: 728px;
   margin: 0 auto;
   overflow: hidden; }
+  .monetizations_top, .monetizations_bottom {
+    padding: 18px 0 0 0; }
 
 .message_form_container {
   margin: 20px 50px; }

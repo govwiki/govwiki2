@@ -33,7 +33,9 @@
         "suncat/mobile-detect-bundle": "^1.0",
         "ascension/php-surveymonkey": "^1.0.6",
         "salva/jshrink-bundle": "^1.1",
-        "react/react": "^0.4.2"
+        "react/react": "^0.4.2",
+        "mmoreram/gearman-bundle": "^3.0",
+        "ptachoire/cssembed": "^1.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

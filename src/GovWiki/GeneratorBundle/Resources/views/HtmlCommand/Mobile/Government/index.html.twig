@@ -1,0 +1,307 @@
+{% extends "GovWikiGeneratorBundle:HtmlCommand/Mobile/Layout:main.html.twig" %}
+{% import _self as self %}
+
+{% block main %}
+    <section class="governmentController">
+
+        {% if government is defined %}
+
+            {# TMP MOBILE LAYOUT (START) #}
+            {%- set image = (government.image) ? government.image : environment.mainImage -%}
+
+            {%- if (image) -%}
+                <header class="header" style="background-image: url({{- image -}})">
+            {%- else -%}
+                <header class="header">
+            {%- endif -%}
+                    <h6 style="padding: 15px;margin: 0;">{{government.name}}</h6>
+
+                    <div class="header-content">
+                        {# Get first tab and show on top. #}
+                        {%- set tab = tabs|first -%}
+                        {%- if tab and (tab.name != 'Overview + Elected Officials') -%}
+                            {%- set tabs = tabs[1:] -%}
+                        {%- endif -%}
+
+                        {%- for category in tab.categories -%}
+                            <table class="statistics-table table">
+                                {%- for field in category.formats -%}
+                                    {%- set value = government|applay_mask(field) -%}
+                                    {%- if not value is null -%}
+                                        <tr>
+                                            {# Field name #}
+                                            <td>
+                                                {%- set helpTextKey = 'format.'~field.field~'.help_text' -%}
+                                                {%- set helpText = helpTextKey|trans -%}
+
+                                                {{- ('format.'~field.field)|trans -}}
+                                                {%- if ((helpTextKey != helpText) and (helpText|trim != '')) -%}
+                                                    <img data-triger="click" src="{{-
+                                                        asset('bundles/govwikifrontend/img/help.png')
+                                                        -}}"
+                                                         title="{{- helpText -}}">
+                                                {%- endif -%}
+                                            </td>
+
+                                            {# Field value #}
+                                            <td>
+                                                {{- value|display|raw -}}
+                                                {%- set rankName = field.field|rankName -%}
+
+                                                {%- if government.ranks[rankName] is defined -%}
+                                                    {%- set rank = government.ranks[rankName] -%}
+                                                    &nbsp;
+                                                    <a class='rank'
+                                                       data-field='{{- rankName -}}'
+                                                       data-mask='{{- field.mask -}}'
+                                                       title='{{- ('format.'~field.field)|trans }}'>
+                                                        {%- if rank.type == 'letter' -%}
+                                                            {{ rank.letter|upper }}
+                                                        {%- else -%}
+                                                            ({{- rank.current -}}
+                                                            &nbsp;{{- 'preposition.of'|trans -}}&nbsp;
+                                                            {{- rank.max -}})
+                                                        {%- endif -%}
+                                                    </a>
+                                                {%- endif -%}
+                                            </td>
+                                        </tr>
+                                    {%- endif -%}
+                                {%- endfor -%}
+                            </table>
+                        {%- endfor -%}
+
+                        <div class="header-icons">
+                            <img src="data:image/png;base64,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"
+                                 style="width: 25px; height: 25px; margin: 5px 5px 5px 0;">
+                            <img src="{{- asset('/images/wikipedia.gif') -}}"
+                                 style="width: 25px; height: 25px; margin: 5px 5px 5px 0;">
+                        </div>
+                    </div>
+
+                </header>
+
+                {# Tabs control #}
+                <div id="tabs-control">
+                    <ul class="nav">
+                        {%- if (tabs is defined) and (tabs is not empty) -%}
+                            {%- for tab in tabs -%}
+                                {%- if (tab.parent is null) -%}
+                                    {%- set slug = self.tabSlug(tab.name) -%}
+
+                                    <li class="tab {{ loop.first ? 'active' -}}">
+                                        <span class="prev_tab">
+                                            <i class="glyphicon glyphicon-chevron-left"></i>
+                                        </span>
+                                        <a class="tab_{{ slug|lower }}" href="#{{ slug }}">
+                                            {{- ('groups.group_id_'~tab.id)|trans -}}
+                                        </a>
+                                        <span class="next_tab">
+                                            <i class="glyphicon glyphicon-chevron-right"></i>
+                                        </span>
+                                    </li>
+                                {%- endif -%}
+                            {%- endfor -%}
+                        {%- endif -%}
+                    </ul>
+                </div>
+
+                {# Tab content #}
+                <div>
+                    {%- if (tab is defined) and (tab is not empty) -%}
+                        {%- for tab in tabs -%}
+                            {%- if (tab.parent is null) -%}
+                                {%- if loop.first and environment.showGovernmentComment and (government.comment or app.user) -%}
+                                    <div id="comment" class="col-md-12 clearfix">
+                                        <div class="loader" style="display: none"></div>
+                                        <label class="control-label">Comment</label>
+                                        <div id="comment-text">
+
+                                           {# {%- if (commentChanged and currentUserChangeComment) -%}
+                                                {%- set comment = government.commentChanges.lastChanges -%}
+                                            {%- else -%}
+                                                {%- set comment = government.comment -%}
+                                            {%- endif -%}#}
+
+                                            <div id="comment-text-value">
+                                                {{- government.comment|raw -}}
+                                            </div>
+                                            <div class="pull-right">
+                                                <button class="btn btn-primary" id="comment-text-edit">
+                                                    Edit
+                                                </button>
+                                            </div>
+                                            {#{%- if app.user is not null -%}
+                                                {%- if ((not commentChanged)
+                                                or (commentChanged and currentUserChangeComment)) -%}
+                                                    <div class="pull-right">
+                                                        <button class="btn btn-primary" id="comment-text-edit">
+                                                            Edit
+                                                        </button>
+                                                    </div>
+                                                {%- else -%}
+                                                    <p class="text-info text-center">
+                                                        Unapproved Changes Pending Approval
+                                                    </p>
+                                                {%- endif -%}
+                                            {%- endif -%}#}
+                                        </div>
+                                        <div id="comment-edit" style="display: none">
+                                            {{- form_start(commentForm) -}}
+                                            {{- form_widget(commentForm) -}}
+                                            <div class="pull-right">
+                                                <a class="btn btn-primary"
+                                                   id="comment-edit-save"
+                                                   href="{{- path(
+                                                   'govwiki_api_v1_editrequest_create'
+                                                   ) -}}">
+                                                    Save Changes
+                                                </a>
+                                                <button type="button" class="btn btn-default"
+                                                        id="comment-edit-revert">
+                                                    Revert
+                                                </button>
+                                            </div>
+                                            {{- form_end(commentForm) -}}
+                                        </div>
+                                    </div>
+
+                                    {%- if environment.showDocuments -%}
+                                        <div class="col-md-12 articles-content">
+                                            <h4 id="articles">
+                                                Articles
+                                            </h4>
+                                            <div id="articles-content">
+                                                {%- include 'GovWikiGeneratorBundle:HtmlCommand/Desktop/Government:issues.html.twig' -%}
+                                            </div>
+                                        </div>
+                                    {%- endif -%}
+
+                                    <br>
+                                    <hr>
+                                {%- endif -%}
+
+                                <div class="tab-pane {{ loop.first ? 'active' : '' -}}"
+                                     id="{{ self.tabSlug(tab.name) }}">
+
+                                    <div class="tab-title">
+                                        {{- ('groups.group_id_'~tab.id)|trans -}}
+                                    </div>
+
+                                    <div class="tab-content">
+                                        {# Statistics #}
+                                        {%- if tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}
+                                            {# User defined tab #}
+                                            {%- if tab.name != 'Overview + Elected Officials' -%}
+                                                {{- include(
+                                                    '@GovWikiMobile/Partial/Government/tab.html.twig'
+                                                ) -}}
+                                            {%- endif -%}
+                                        {%- else -%}
+                                            {# Special tab #}
+                                            {{-
+                                            include('GovWikiGeneratorBundle:HtmlCommand/Mobile/Partial/Government:special_tab.html.twig')
+                                            -}}
+                                        {%- endif -%}
+
+                                        {{ include('GovWikiMobileBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
+
+                                        {{ include('GovWikiMobileBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
+
+                                        {{ include('GovWikiMobileBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
+                                    </div>
+                                </div>
+                            {%- endif -%}
+                        {%- endfor -%}
+                    {%- else -%}
+                        <h3 class="text-center">No data. Please refresh page later</h3>
+                    {%- endif -%}
+                </div>
+
+        {# TMP MOBILE LAYOUT (END) #}
+
+
+        {% if app.user and environment_is_subscribable %}
+            <div class="subscribe-row">
+                <a href="{{-
+                    path('govwiki_mobile_government_subscribe', {
+                        'government': government.id
+                    })
+                -}}" class="btn {% if isSubscriber -%}btn-danger unsubscribe{%- else -%}btn-success subscribe{%- endif -%}" id="subscribe">
+                    {%- if isSubscriber -%}
+                        Unsubscribe
+                    {%- else -%}
+                        Subscribe
+                    {%- endif -%}
+                </a>
+            </div>
+
+            <div class="message_form_container" id="chat_message_container">
+                {{ form_start(message_form) }}
+                {{ form_row(message_form.text, {'label': 'Message'}) }}
+                {{ form_row(message_form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+                {{ form_end(message_form) }}
+            </div>
+        {% endif %}
+
+        <br>
+        <br>
+
+        {% if bottomText %}
+            <div class="panel panel-danger notice">
+                <div class="panel-body">
+                    {{ bottomText|raw }}
+                </div>
+            </div>
+            <br>
+        {% endif %}
+
+    {% endif %}
+
+    </section>
+
+{% endblock %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{parent()}}
+
+    {% stylesheets '@GovWikiMobileBundle/Resources/public/css/government.scss' filter='scss, phpcssembed' %}
+        <style>{{- asset_url|content|raw -}}</style>
+    {% endstylesheets %}
+
+{% endblock %}
+
+
+{# Javascripts #}
+{% block javascripts %}
+
+    {{parent()}}
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+    <script src='http://www.google.com/jsapi'></script>
+
+    {% if government is defined %}
+        <script>
+            window.gw.government = '{{ government_json|escape('js') }}';
+            window.gw.urls = {};
+            window.gw.urls.popover = '{{ path('govwiki_api_v1_government_getranks', {
+                'altTypeSlug': government.altTypeSlug,
+                'slug': government.slug,
+            }) }}';
+            window.gw.urls.search = '{{ path('govwiki_api_v1_comparison_search') }}';
+            window.gw.urls.captions = '{{ path('govwiki_api_v1_comparison_captions') }}';
+            window.gw.urls.compare = '{{ path('govwiki_api_v1_comparison_compare') }}';
+        </script>
+    {% endif %}
+
+    <script src="{{- '/js/mobile/common.js'|fromServer -}}"></script>
+    <script src="{{- '/js/mobile/government.js'|fromServer -}}"></script>
+
+{% endblock %}
+
+{%- macro tabSlug(tabName) -%}
+    {{- tabName | replace(' ', '_') | replace('+', 'a') -}}
+{%- endmacro -%}

@@ -3,7 +3,6 @@
 namespace GovWiki\DbBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query;
 
 /**
@@ -18,7 +17,7 @@ class ElectedOfficialRepository extends EntityRepository
      * @param string  $fullName    Elected official full name.
      * @param string  $government  Government name.
      *
-     * @return \Doctrine\ORM\Query
+     * @return \Doctrine\ORM\QueryBuilder
      */
     public function getListQuery(
         $environment,
@@ -50,7 +49,7 @@ class ElectedOfficialRepository extends EntityRepository
             ));
         }
 
-        return $qb->getQuery();
+        return $qb;
     }
 
     /**

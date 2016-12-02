@@ -17,4 +17,5 @@ abstract class GovWikiEnvironmentService
     const FORMAT_MANAGER = 'govwiki_environment.manager.format';
     const ELECTED_OFFICIAL_MANAGER = 'govwiki_environment.manager.elected_official';
     const GOVERNMENT_MANAGER = 'govwiki_environment.manager.government';
+    const FINDATA_PROCESSOR = 'govwiki_environment.processor.fin_data';
 }

@@ -1,0 +1,9 @@
+{% if tab.name == 'Financial Health' %}
+    <div class="col-sm-4">
+        {% if government.altTypeSlug != 'School_District' %}
+            <div class="customGraph" id="public-safety-pie"></div>
+        {% endif %}
+        <div class="customGraph" id="fin-health-revenue-graph"></div>
+        <div class="customGraph" id="fin-health-expenditures-graph"></div>
+    </div>
+{% endif %}

@@ -23,6 +23,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            new Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
             new Helthe\Bundle\TurbolinksBundle\HeltheTurbolinksBundle(),
@@ -42,7 +43,9 @@ class AppKernel extends Kernel
             new GovWiki\MobileBundle\GovWikiMobileBundle(),
             new GovWiki\FrontendBundle\GovWikiFrontendBundle(),
             new GovWiki\MobileDetectBundle\GovWikiMobileDetectBundle(),
+            new GovWiki\GeneratorBundle\GovWikiGeneratorBundle(),
             new Salva\JshrinkBundle\SalvaJshrinkBundle(),
+            new Mmoreram\GearmanBundle\GearmanBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

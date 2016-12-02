@@ -73,6 +73,10 @@ services:
             - @govwiki_environment.manager.max_ranks
             - @govwiki_environment.manager.format
 
+    govwiki_environment.processor.fin_data:
+        class: 'GovWiki\EnvironmentBundle\Manager\FinData\FinDataProcessor'
+        arguments: [ '@translator' ]
+
     #
     # SurveyMonkey gateway.
     #

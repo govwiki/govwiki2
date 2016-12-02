@@ -1,0 +1,38 @@
+<div class="paginate">
+    <div class="loader" style="display: none"></div>
+    <div class="tab-pane-main">
+
+        <div class="hidden-xs col-sm-12">
+
+                <table class="table table-responsive table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="vertical-align: middle">Employee</th>
+                            <th class="text-center" style="vertical-align: middle">Job title</th>
+                            <th class="text-center" style="min-width: 95px;vertical-align: middle">Amount</th>
+                            <th class="text-center" style="min-width: 95px;vertical-align: middle">Benefits</th>
+                            <th class="text-center" style="min-width: 95px;vertical-align: middle">Disability</th>
+                            <th class="text-center" style="min-width: 95px;vertical-align: middle">Total</th>
+                            <th class="text-center" style="vertical-align: middle">Years of service</th>
+                            <th class="text-center" style="vertical-align: middle">Year of retirement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pension in pensions %}
+                            <tr>
+                                <td>{{ pension.employee }}</td>
+                                <td>{{ pension.job }}</td>
+                                <td class="text-right">$ {{ pension.amount|number_format }}</td>
+                                <td class="text-right">$ {{ pension.benefits|number_format }}</td>
+                                <td class="text-right">$ {{ pension.disability|number_format }}</td>
+                                <td class="text-right">$ {{ pension.total|number_format }}</td>
+                                <td class="text-right">{{ pension.yearsOfService }}</td>
+                                <td class="text-right">{{ pension.yearOfRetirement }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+        </div>
+    </div>
+</div>

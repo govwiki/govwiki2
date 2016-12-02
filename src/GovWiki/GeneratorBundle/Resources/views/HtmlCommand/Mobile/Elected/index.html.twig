@@ -1,0 +1,132 @@
+{% extends "GovWikiGeneratorBundle:HtmlCommand/Mobile/Layout:main.html.twig" %}
+
+{% set elected = electedOfficial %}
+{# Main #}
+{% block main %}
+
+    {# Must be unique #}
+    <section class="electedController" data-elected-name="{{elected.fullName}}">
+
+        <div class="clearfix person-info-content">
+
+            <div class="col-xs-5">
+                <img src="{{elected.photoUrl}}" class="person-photo"/>
+            </div>
+
+            <div class="col-xs-7">
+                <p class="visible-xs" style="font-weight: 700;font-size: 1.2em;">{{elected.fullName}}</p>
+                <p>Title: {{elected.title}}</p>
+                <p>Name: {{elected.fullName}} &nbsp;&nbsp;
+                    <span class="hidden-xs disqus-comment-count vote" id="{{elected.id}}" data-disqus-identifier="{{elected.id}}">0</span>
+                <p>Term expiries: {{elected.termExpires}}</p>
+
+                <p>Email: <a href="mailto:{{elected.emailAddress}}">{{elected.emailAddress}}</a></p>
+            </div>
+
+        </div>
+
+        {# TMP MOBILE LAYOUT (START) #}
+
+            <div class="person-info-tabs">
+
+                <!-- Mobile Nav tabs -->
+                <ul class="nav nav-pills mobile" role="tablist">
+
+                    <li role="presentation" class="active"><a href="#Endorsements" aria-controls="Endorsements" role="tab" data-toggle="tab">Bio/Endorsements</a></li>
+
+                    <li role="presentation"><a href="#Surveys" aria-controls="Surveys" role="tab" data-toggle="tab">Surveys</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+
+                    {# Endorsements #}
+                    {{ include('GovWikiGeneratorBundle:HtmlCommand/Mobile/Partial/Elected/Tabs:endorsements.html.twig') }}
+
+                    {# Surveys #}
+                    {{ include('GovWikiGeneratorBundle:HtmlCommand/Mobile/Partial/Elected/Tabs:surveys.html.twig') }}
+
+                </div>
+
+            </div>
+
+        {# TMP MOBILE LAYOUT (END) #}
+
+    </section>
+
+    {# Facebook Comment Modal #}
+    {% include 'GovWikiFrontendBundle:Partial/Elected/Modals:facebook_comment.html.twig' %}
+
+    {# Endorsements Modal #}
+    {% include 'GovWikiMobileBundle:Partial/Elected/Modals:endorsements.html.twig' %}
+
+    {%- verbatim -%}
+    <script id="row-addEndorsements" type="text//x-handlebars-template">
+        <tr data-id="{{ id }}">
+            <td data-election-year="{{ electionYear }}">
+                <a data-type="text"
+                   data-placeholder="Please edit" data-title="Please edit"
+                   class="editable editable-pre-wrapped editable-click" data-original-title="">{{ electionYear }}<span class="glyphicon glyphicon-pencil edit"></span></a>
+            </td>
+            <td data-name-of-endorser="{{ nameOfEndorser }}">
+                <a href="javascript:void(0);" data-type="textarea"
+                   data-placeholder="Please edit" data-title="Please edit"
+                   class="editable editable-pre-wrapped editable-click" data-original-title="">{{ nameOfEndorser }}</a>
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </td>
+            <td data-endorser-type="{{ endorserType }}">
+                <a href="javascript:void(0);" data-type="select" data-pk="1" data-source="{'Elected Official': 'Elected Official', 'Organization': 'Organization', 'Political Party': 'Political Party', 'Union': 'Union', 'Other': 'Other'}" data-placeholder="Please edit" data-title="Please edit"
+                   class="editable editable-pre-wrapped editable-click" data-original-title="">{{ endorserType }}</a>
+                <span class="glyphicon glyphicon-pencil edit"></span>
+            </td>
+        </tr>
+    </script>
+    {%- endverbatim -%}
+
+    {% if bottomText %}
+        <div class="panel panel-danger notice">
+            <div class="panel-body">
+                {{ bottomText|raw }}
+            </div>
+        </div>
+        <br>
+    {% endif %}
+
+
+{% endblock %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{ parent() }}
+
+    {% stylesheets
+        '@GovWikiMobileBundle/Resources/public/css/elected.scss'
+        '@GovWikiMobileBundle/Resources/public/css/bootstrap-editable.css'
+        filter='scss, phpcssembed' %}
+        <style>{{- asset_url|content|raw -}}</style>
+    {% endstylesheets %}
+
+{% endblock %}
+
+
+{# Javascripts #}
+{% block javascripts %}
+
+    {{parent()}}
+
+    <script>
+        window.gw.electedOfficial = '{{ electedOfficialJSON | escape('js') }}';
+
+        window.gw.urls = {};
+        window.gw.urls.create_request = '{{ path('govwiki_api_v1_createrequest_create') }}';
+        window.gw.urls.edit_request = '{{ path('govwiki_api_v1_editrequest_create') }}';
+        window.gw.urls.check_url = '{{ path('govwiki_api_v1_url_extract') }}';
+    </script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+
+    <script src="{{- '/js/mobile/common.js'|fromServer -}}"></script>
+    <script src="{{- '/js/mobile/elected.js'|fromServer -}}"></script>
+
+{% endblock %}

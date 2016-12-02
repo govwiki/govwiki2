@@ -63,14 +63,18 @@ class ElectedOfficialManager implements ElectedOfficialManagerInterface
      * {@inheritdoc}
      */
     public function getElectedOfficial(
-        Environment $environment,
+        $environment,
         $altTypeSlug,
         $slug,
         $eoSlug,
         $user = null
     ) {
+        if ($environment instanceof Environment) {
+            $environment = $environment->getId();
+        }
+
         $data = $this->em->getRepository('GovWikiDbBundle:ElectedOfficial')
-            ->findOne($environment->getId(), $altTypeSlug, $slug, $eoSlug);
+            ->findOne($environment, $altTypeSlug, $slug, $eoSlug);
 
         if (is_array($data) && count($data) > 0) {
             /*

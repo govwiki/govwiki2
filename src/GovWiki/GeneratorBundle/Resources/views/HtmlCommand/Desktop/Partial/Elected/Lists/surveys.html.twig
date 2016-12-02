@@ -1,0 +1,33 @@
+{% for surveyResponse in list %}
+
+    <h5>{{ surveyResponse.survey.title }}</h5>
+
+    <table class="table table-hover" data-entity-type="SurveyResponse">
+        <tr>
+            <th>Questions</th>
+            <th>Answers</th>
+        </tr>
+
+        {% for question, answer in surveyResponse.responses %}
+
+            <tr data-id="{{surveyResponse.id}}">
+                <td>
+                    <p style="color: #000;">{{ question }}</p>
+                </td>
+                <td>
+                    <p style="color: #000;">{{ answer }}</p>
+                </td>
+            </tr>
+
+        {% else %}
+
+            <p style="font-size:18px; margin: 0;">Something went wrong: there are no questions and answers in survey.</p>
+
+        {% endfor %}
+    </table>
+
+{% else %}
+
+    <p style="font-size:18px; margin: 0;">No information at this time. Please check back later.</p>
+
+{% endfor %}

@@ -28,16 +28,17 @@ interface ElectedOfficialManagerInterface
     public function searchElectedOfficial(Environment $environment, $partOfName);
 
     /**
-     * @param Environment $environment A Environment entity instance.
-     * @param string      $altTypeSlug Slugged government alt type.
-     * @param string      $slug        Slugged government name.
-     * @param string      $eoSlug      Slugged elected official full name.
-     * @param integer     $user        User entity id.
+     * @param Environment|integer $environment A Environment entity instance or
+     *                                         id.
+     * @param string              $altTypeSlug Slugged government alt type.
+     * @param string              $slug        Slugged government name.
+     * @param string              $eoSlug      Slugged elected official full name.
+     * @param integer             $user        User entity id.
      *
      * @return array|null
      */
     public function getElectedOfficial(
-        Environment $environment,
+        $environment,
         $altTypeSlug,
         $slug,
         $eoSlug,

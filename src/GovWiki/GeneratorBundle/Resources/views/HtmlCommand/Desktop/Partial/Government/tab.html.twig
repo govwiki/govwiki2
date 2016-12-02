@@ -1,0 +1,21 @@
+{#
+
+    Template for one tab page.
+
+#}
+
+<div class="statistics col-sm-8">
+    <div class="statistics-categories">
+        {%- for category in tab.categories -%}
+            {%- if category.name != 'Main' -%}
+                {# Display category content #}
+                <div class="f-nam f-nam__{{- category.decoration -}}">
+                    {{- ('groups.group_id_'~category.id)|trans -}}
+                </div>
+            {%- endif -%}
+            {%-
+                include('GovWikiGeneratorBundle:HtmlCommand/Desktop/Partial/Government:category.html.twig')
+            -%}
+        {%- endfor -%}
+    </div>
+</div>

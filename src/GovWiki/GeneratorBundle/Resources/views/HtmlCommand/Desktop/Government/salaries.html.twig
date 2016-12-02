@@ -1,0 +1,38 @@
+<div class="paginate">
+    <div class="loader" style="display: none"></div>
+    <div class="tab-pane-main">
+
+        <div class="hidden-xs col-sm-12">
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="vertical-align: middle">Employee</th>
+                            <th class="text-center" style="vertical-align: middle">Job title</th>
+                            <th class="text-center" style="min-width: 95px;vertical-align: middle">Base pay</th>
+                            <th class="text-center" style="min-width: 95px;vertical-align: middle">Overtime pay</th>
+                            <th class="text-center" style="min-width: 95px;vertical-align: middle">Other pay</th>
+                            <th class="text-center" style="min-width: 95px;vertical-align: middle">Benefits pay</th>
+                            <th class="text-center" style="min-width: 95px;vertical-align: middle">Total pay</th>
+                            <th class="text-center" style="min-width: 95px;vertical-align: middle">Total and benefits pay</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for salary in salaries %}
+                        <tr>
+                            <td>{{ salary.employee }}</td>
+                            <td>{{ salary.job }}</td>
+                            <td class="text-right">$ {{ salary.base|number_format }}</td>
+                            <td class="text-right">$ {{ salary.overtime|number_format }}</td>
+                            <td class="text-right">$ {{ salary.other|number_format }}</td>
+                            <td class="text-right">$ {{ salary.benefits|number_format }}</td>
+                            <td class="text-right">$ {{ salary.total|number_format }}</td>
+                            <td class="text-right">$ {{ salary.totalAndBenefits|number_format }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+        </div>
+    </div>
+</div>

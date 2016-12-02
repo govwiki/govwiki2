@@ -6,10 +6,11 @@ use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Chat;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Issue;
-use GovWiki\DbBundle\Utils\Functions;
 use GovWiki\DbBundle\Entity\Message;
 use GovWiki\DbBundle\Form\MessageType;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
+use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
+use GovWiki\EnvironmentBundle\Manager\FinData\FinDataProcessorInterface;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -146,7 +147,7 @@ class GovernmentController extends AbstractGovWikiController
         $issues->setUsedRoute('govwiki_frontend_government_issues');
         $issues->setParam('government', $government->getId());
 
-        if ($issues->count() === 0 ) {
+        if ($issues->count() === 0) {
             return new Response();
         }
 
@@ -222,6 +223,8 @@ class GovernmentController extends AbstractGovWikiController
 
         $this->clearTranslationsCache();
         $manager = $this->getGovernmentManager();
+        /** @var FinDataProcessorInterface $processor */
+        $processor = $this->get(GovWikiEnvironmentService::FINDATA_PROCESSOR);
         $environment = $this->getCurrentEnvironment();
 
         // Get available years for specified government.
@@ -232,74 +235,21 @@ class GovernmentController extends AbstractGovWikiController
             $currentYear = $years[0];
         }
 
-        $data = $manager
-            ->getGovernment(
-                $environment,
-                $altTypeSlug,
-                $slug,
-                $currentYear
-            );
+        $data = $manager->getGovernment(
+            $environment,
+            $altTypeSlug,
+            $slug,
+            $currentYear
+        );
 
-        $finData = $data['government']['finData'];
         /*
          * Translate.
          */
         $translator = $this->get('translator');
 
-        function getTransKey($caption) {
-            return strtr(strtolower($caption), [
-                ' ' => '_',
-                '-' => '_d_',
-                '&' => 'amp',
-                ',' => '_c_',
-                '(' => 'lb',
-                ')' => 'rb',
-                '/' => 'sl',
-                '%' => 'proc',
-                "'" => '_apos_',
-            ]);
-        }
-
-        $finData = array_map(
-            function (array $row) use ($translator) {
-                $captionKey = 'findata.captions.'. getTransKey($row['caption']);
-                $categoryKey = 'general.findata.main.'. getTransKey($row['category_name']);
-
-                $row['translatedCaption'] = $translator->trans($captionKey);
-                $row['translatedCategory'] = $translator->trans($categoryKey);
-
-                return $row;
-            },
-            $finData
-        );
-
-
-        $finData = Functions::groupBy(
-            $finData,
-            [ 'category_name', 'caption' ]
-        );
-        /*
-        * Sort findata by display order.
-        */
-        foreach ($finData as &$statement) {
-            uasort($statement, function ($a, $b) {
-                if (array_key_exists('totalfunds', $a) &&
-                    array_key_exists('totalfunds', $b)) {
-                    $a = $a['totalfunds'];
-                    $b = $b['totalfunds'];
-
-                    if ($a === $b) {
-                        return 0;
-                    }
-
-                    return ($a < $b) ? 1: -1;
-                }
-
-                return 0;
-            });
-        }
-
-        $data['government']['financialStatements'] = $finData;
+        $finData = $data['government']['finData'];
+        $data['government']['financialStatements'] =
+            $processor->process($finData);
 
         $data['isSubscriber'] = false;
         if ($user instanceof User) {
