@@ -299,3 +299,15 @@ body .container a.btn-primary:hover {
   vertical-align: middle;
   width: 80%;
 }
+
+.environment-buttons {
+  .btn {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+}
+
+.modal .progress {
+  height: 26px;
+}

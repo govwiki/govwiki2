@@ -15,7 +15,7 @@
     <div class="row">
 
         {# Information about environment. #}
-        <div class="col-md-2">
+        <div class="col-md-2 environment-buttons">
 
             {#<button class="btn btn-sm btn-default" id="import-fin-stmt">
                 Import fin. stmt.
@@ -41,6 +41,10 @@
             ) -}}">
                 Recalculate Ranks
             </a>
+
+            <button class="btn btn-sm btn-default" id="generator-show">
+                Generate HTML
+            </button>
 
             <hr>
 
@@ -157,6 +161,46 @@
         </div>
     </div>
 
+    <div id="modal-generator" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h4 class="modal-title">Generate html page</h4></div>
+                <div class="modal-body">
+                    <div class="generator-form" style="display: none">
+                        <div class="control-group">
+                        <label for="generator-form-select" class="control-label">
+                            Entity
+                        </label>
+                        <select id="generator-form-select" class="form-control">
+                            <option value="government">Government</option>
+                            <option value="elected">Elected official</option>
+                        </select>
+                        </div>
+                    </div>
+                    <div class="generator-status" style="display: none">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-success progress-bar-striped active"
+                                 role="progressbar" aria-valuenow=""
+                                 aria-valuemin="0" aria-valuemax="">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="loader" style="display: none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-right">
+                        <button class="btn btn-primary generator-run"
+                                style="display: none">
+                            Generate
+                        </button>
+                        <button class="btn btn-danger" id="generator-close" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {#<div id="modal-import" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -192,6 +236,17 @@
         {% endif %}
 
         $(function() {
+            var generatorModal = $('#modal-generator');
+            var loader = generatorModal.find('.loader');
+            var formView = generatorModal.find('.generator-form');
+            var statusView = generatorModal.find('.generator-status');
+            var runBtn = generatorModal.find('.generator-run');
+
+            var generatorUrl = '{{- path('govwiki_admin_generator_html', {
+                environment: environment.slug
+            }) -}}';
+
+            var interval;
 
             /*$('#import-fin-stmt').click(function () {
                 $('#modal-import').modal('show');
@@ -200,6 +255,105 @@
             $('#import-confirm').click(function () {
                 $('form', '#modal-import').submit();
             });
+
+            generatorModal.find('#generator-close').click(function () {
+                if (interval) {
+                    clearInterval(interval);
+                    interval = null;
+                }
+            });
+
+            generatorModal.find('.generator-run').click(function () {
+                formView.hide();
+                statusView.hide();
+                runBtn.hide();
+                loader.show();
+
+                generatorRequest('post')
+                    .done(function(status) {
+                        renderGeneratorModal(status);
+                    })
+                    .fail(function (jqXHR) {
+                        console.log(jqXHR);
+//                      alert(jqXHR.responseJson);
+                    })
+                    .always(function () {
+                        loader.hide();
+                    });
+            });
+
+            $('#generator-show').click(function() {
+                generatorRequest('get')
+                    .done(function (status) {
+                        generatorModal.modal('show');
+                        renderGeneratorModal(status);
+                        initializeRenderLoop();
+                    })
+                    .fail(function (jqXHR) {
+                        console.log(jqXHR);
+//                    alert(jqXHR.responseJson);
+                    });
+            });
+
+            function initializeRenderLoop() {
+                console.log(interval);
+                if (interval) {
+                    return;
+                }
+
+                interval = setInterval(function () {
+                    generatorRequest('get')
+                        .done(function (status) {
+                            renderGeneratorModal(status)
+                        })
+                        .fail(function (jqXHR) {
+                            console.log(jqXHR);
+                        });
+                }, 5000);
+            }
+
+            function generatorRequest(method) {
+                var property = {
+                    url: generatorUrl,
+                    method: method.toUpperCase()
+                };
+
+                if (method.toLowerCase() === 'post') {
+                    property.data = {
+                        entity: generatorModal.find('#generator-form-select')
+                                .val()
+                    };
+                }
+
+                return $.ajax(property);
+            }
+
+            function renderGeneratorModal(status) {
+                var remain;
+                var percentage;
+
+                if (! status.run) {
+                    formView.show();
+                    runBtn.show();
+                    statusView.hide();
+                } else {
+                    formView.hide();
+                    runBtn.hide();
+                    statusView.show();
+
+                    remain = status.total - status.waits + status.processeds;
+                    percentage = Math.ceil((remain * 100) / status.total);
+
+                    // Update data
+                    statusView.find('.progress-bar')
+                        .attr({
+                            'aria-valuenow': remain,
+                            'aria-valuemax': status.total
+                        })
+                        .css('width', percentage + '%')
+                        .text(percentage + '%');
+                }
+            }
         });
     </script>
 {% endblock javascripts %}
