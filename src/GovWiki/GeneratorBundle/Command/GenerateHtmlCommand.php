@@ -8,7 +8,6 @@ use GovWiki\DbBundle\Entity\Repository\ElectedOfficialRepository;
 use GovWiki\DbBundle\Entity\Repository\EnvironmentRepository;
 use GovWiki\DbBundle\Entity\Repository\GovernmentRepository;
 use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
-use GovWiki\EnvironmentBundle\Manager\ElectedOfficial\ElectedOfficialManagerInterface;
 use GovWiki\EnvironmentBundle\Manager\Government\GovernmentManagerInterface;
 use GovWiki\GeneratorBundle\GovWikiGeneratorService;
 use GovWiki\GeneratorBundle\Service\PidPoolFactory;
@@ -17,10 +16,8 @@ use Mmoreram\GearmanBundle\Service\GearmanExecute;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\LockHandler;
-use Symfony\Component\Process\Process;
 
 /**
  * Class GenerateHtmlCommand
@@ -30,21 +27,10 @@ class GenerateHtmlCommand extends ContainerAwareCommand
 {
 
     const DESCRIPTION = <<< EOF
-Generate html page for each government in specified environment.
+Generate html page for each Governments and Elected Officials in specified environment.
 EOF;
 
-    const WORKER_COUNT = 4;
-
-    private static $generatorConfig = [
-        'government' => [
-            'dataMethod' => 'getGovernments',
-            'task' => 'PageGenerator~government',
-        ],
-        'elected' => [
-            'dataMethod' => 'getElecteds',
-            'task' => 'PageGenerator~elected',
-        ],
-    ];
+    const WORKER_COUNT = 6;
 
     /**
      * Configures the current command.
@@ -56,25 +42,6 @@ EOF;
         $this
             ->setName('govwiki:generate:html')
             ->setDescription(self::DESCRIPTION)
-            ->addOption(
-                'offset',
-                'o',
-                InputOption::VALUE_REQUIRED,
-                '',
-                0
-            )
-            ->addOption(
-                'limit',
-                'l',
-                InputOption::VALUE_REQUIRED,
-                '',
-                100
-            )
-            ->addArgument(
-                'entity',
-                InputArgument::REQUIRED,
-                'Entity name for page generation. Available: government, elected'
-            )
             ->addArgument(
                 'domain',
                 InputArgument::REQUIRED,
@@ -101,18 +68,7 @@ EOF;
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $entityName = strtolower($input->getArgument('entity'));
-
-        if (! isset(self::$generatorConfig[$entityName])) {
-            $output->writeln('<error>Invalid entity argument</error>');
-            return 1;
-        }
-
-        $config = self::$generatorConfig[$entityName];
-
         $domain = $input->getArgument('domain');
-        $offset = $input->getOption('offset');
-        $limit = $input->getOption('limit');
 
         $lock = new LockHandler('generate_page');
         if (! $lock->lock()) {
@@ -128,7 +84,7 @@ EOF;
             $environment = $repository->getByDomain($domain);
 
             $output->write('Start processing ... ');
-            if ($this->process($environment, $config, $offset, $limit)) {
+            if ($this->process($environment)) {
                 $output->writeln('[ <info>OK</info> ]');
             } else {
                 $output->writeln('[ <info>ERROR</info> ]');
@@ -145,16 +101,11 @@ EOF;
 
     /**
      * @param Environment $environment A Environment entity instance.
-     * @param integer     $offset      Data offset.
-     * @param integer     $limit       Data limit.
      *
      * @return \Generator
      */
-    protected function getGovernments(
-        Environment $environment,
-        $offset,
-        $limit
-    ) {
+    protected function getGovernments(Environment $environment)
+    {
         /** @var EntityManagerInterface $em */
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         /** @var GovernmentRepository $repository */
@@ -165,8 +116,6 @@ EOF;
 
         $iterate = $repository->getListQuery($environment->getId())
             ->select('Government.id, Government.altTypeSlug, Government.slug')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset)
             ->getQuery()
             ->iterate();
 
@@ -184,16 +133,11 @@ EOF;
 
     /**
      * @param Environment $environment A Environment entity instance.
-     * @param integer     $offset      Data offset.
-     * @param integer     $limit       Data limit.
      *
      * @return \Generator
      */
-    protected function getElecteds(
-        Environment $environment,
-        $offset,
-        $limit
-    ) {
+    protected function getElecteds(Environment $environment)
+    {
         /** @var EntityManagerInterface $em */
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         /** @var ElectedOfficialRepository $repository */
@@ -204,8 +148,6 @@ EOF;
                 'Government.altTypeSlug, Government.slug',
                 'eo.slug AS electedSlug'
             )
-            ->setMaxResults($limit)
-            ->setFirstResult($offset)
             ->getQuery()
             ->iterate();
 
@@ -219,18 +161,11 @@ EOF;
 
     /**
      * @param Environment $environment A processed environment entity.
-     * @param array       $config      Generator configuration.
-     * @param integer     $offset      Data offset.
-     * @param integer     $limit       Data limit.
      *
      * @return boolean
      */
-    private function process(
-        Environment $environment,
-        array $config,
-        $offset,
-        $limit
-    ) {
+    private function process(Environment $environment)
+    {
         /** @var EntityManagerInterface $em */
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         /** @var PidPoolFactory $pidPoolFactory */
@@ -247,11 +182,13 @@ EOF;
         $executor = $this->getContainer()->get('gearman.execute');
 
         for ($i = 0; $i < self::WORKER_COUNT; ++$i) {
+            $workerName = (($i % 2) ? 'Government' : 'Elected')
+                . 'Generator';
             $pid = pcntl_fork();
             if ($pid) {
                 $pidPool->add($pid);
             } else {
-                $executor->executeWorker('PageGenerator');
+                $executor->executeWorker($workerName);
             }
         }
 
@@ -266,18 +203,26 @@ EOF;
         /** @var GearmanClient $client */
         $client = $this->getContainer()->get('gearman');
 
-        $entities = call_user_func_array([ $this, $config['dataMethod'] ], [
-            $environment,
-            $offset,
-            $limit,
-        ]);
+        // Get governments.
+        $governments = $this->getGovernments($environment);
+        $electeds = $this->getElecteds($environment);
 
-        foreach ($entities as $entity) {
-            $entity['environment'] = $environment->getId();
+        foreach ($governments as $government) {
+            $government['environment'] = $environment->getId();
 
-            $payload = serialize($entity);
-            $client->addTask($config['task'], $payload);
+            $payload = serialize($government);
+            $client->addTask('GovernmentGenerator~generate', $payload);
         }
+
+        foreach ($electeds as $elected) {
+            $elected['environment'] = $environment->getId();
+
+            $payload = serialize($elected);
+            $client->addTask('ElectedGenerator~generate', $payload);
+        }
+
+        $em->clear();
+        $conn->close();
 
         $result = $client->runTasks();
 

@@ -1,6 +1,12 @@
 services:
-    govwiki_generator.worker.page_generator:
-        class: 'GovWiki\GeneratorBundle\Worker\PageGeneratorWorker'
+    govwiki_generator.worker.government_generator:
+        class: 'GovWiki\GeneratorBundle\Worker\GovernmentGeneratorWorker'
+        arguments: [ '@monolog.logger.generator' ]
+        calls:
+            - ['setContainer', [ '@service_container' ]]
+
+    govwiki_generator.worker.elected_generator:
+        class: 'GovWiki\GeneratorBundle\Worker\ElectedGeneratorWorker'
         arguments: [ '@monolog.logger.generator' ]
         calls:
             - ['setContainer', [ '@service_container' ]]

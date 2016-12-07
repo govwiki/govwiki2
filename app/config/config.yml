@@ -101,7 +101,7 @@ doctrine:
                         regexp: GovWiki\DbBundle\Doctrine\Functions\RegexpFunction
 
 monolog:
-    channels: [ 'generator', 'parser' ]
+    channels: [ 'generator', 'parser', 'copy' ]
     handlers:
         generator:
             level: debug
@@ -116,6 +116,13 @@ monolog:
             path: '%kernel.logs_dir%/parser.log'
             max_files: 10
             channels: [ 'parser' ]
+
+        copy:
+            level: debug
+            type: rotating_file
+            path: '%kernel.logs_dir%/copy_html.log'
+            max_files: 10
+            channels: [ 'copy' ]
 
 # Swiftmailer Configuration
 swiftmailer:

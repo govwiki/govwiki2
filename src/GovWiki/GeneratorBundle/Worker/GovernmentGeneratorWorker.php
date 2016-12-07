@@ -14,27 +14,27 @@ use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\EnvironmentBundle\Manager\FinData\FinDataProcessorInterface;
 use GovWiki\EnvironmentBundle\Manager\Government\GovernmentManagerInterface;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
-use JMS\Serializer\SerializationContext;
 use Mmoreram\GearmanBundle\Driver\Gearman;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
- * Class PageGeneratorWorker
+ * Class GovernmentGeneratorWorker
  * @package GovWiki\GeneratorBundle\Worker
  *
  * @Gearman\Work(
- *  name="PageGenerator",
- *  service="govwiki_generator.worker.page_generator",
- *  description="Generate HTML pages for government or elected official entity"
+ *  name="GovernmentGenerator",
+ *  service="govwiki_generator.worker.government_generator",
+ *  description="Generate HTML pages for government entity"
  * )
  */
-class PageGeneratorWorker implements ContainerAwareInterface
+class GovernmentGeneratorWorker implements ContainerAwareInterface
 {
 
     use ContainerAwareTrait;
@@ -47,12 +47,6 @@ class PageGeneratorWorker implements ContainerAwareInterface
 
     const MOBILE_GOVERNMENT_TEMPLATE =
         'GovWikiGeneratorBundle:HtmlCommand/Mobile/Government:index.html.twig';
-
-    const DESKTOP_ELECTED_TEMPLATE =
-        'GovWikiGeneratorBundle:HtmlCommand/Desktop/Elected:index.html.twig';
-
-    const MOBILE_ELECTED_TEMPLATE =
-        'GovWikiGeneratorBundle:HtmlCommand/Mobile/Elected:index.html.twig';
 
     /**
      * @var LoggerInterface
@@ -71,7 +65,7 @@ class PageGeneratorWorker implements ContainerAwareInterface
      * Generate desktop and mobile html page for specified government.
      *
      * @Gearman\Job(
-     *  name="government",
+     *  name="generate",
      *  description="Generate desktop and mobile html page for specified
      *  government."
      * )
@@ -80,7 +74,7 @@ class PageGeneratorWorker implements ContainerAwareInterface
      *
      * @return boolean
      */
-    public function generateGovernment(\GearmanJob $job)
+    public function generate(\GearmanJob $job)
     {
         // Reopen db connection.
         /** @var Connection $conn */
@@ -111,10 +105,14 @@ class PageGeneratorWorker implements ContainerAwareInterface
         $templating = $this->container->get('templating');
         /** @var EnvironmentStorageInterface $storage */
         $storage = $this->container->get(GovWikiEnvironmentService::STORAGE);
+        /** @var Filesystem $filesystem */
+        $filesystem = $this->container->get('filesystem');
+
         $storage->set($environment);
 
         $outputPath = $this->container
-            ->getParameter('government_generation_output');
+            ->getParameter('government_generation_output') .'/'
+                . $environment->getSlug();
 
         $message = 'Process government '. $altTypeSlug .'/'. $slug;
         $this->logger->info($message);
@@ -122,6 +120,8 @@ class PageGeneratorWorker implements ContainerAwareInterface
         foreach ($years as $year) {
             // Get government data.
             try {
+                $filesystem->mkdir($outputPath);
+
                 $data = $manager->getGovernment(
                     $environment,
                     $altTypeSlug,
@@ -164,128 +164,27 @@ class PageGeneratorWorker implements ContainerAwareInterface
                     $data['pensions'] = $this->getPensions($government, $year);
                 }
 
-                $fileName = $altTypeSlug . '_' . $slug;
+                $fileName = $altTypeSlug . '_' . $slug .'_'. $year;
                 $desktop = $templating
                     ->render(self::DESKTOP_GOVERNMENT_TEMPLATE, $data);
                 $mobile = $templating
                     ->render(self::MOBILE_GOVERNMENT_TEMPLATE, $data);
+
+                $desktopFilePath = $outputPath .'/'. $fileName .'_desktop.html';
+                $mobileFilePath = $outputPath .'/'. $fileName .'_mobile.html';
+
+                file_put_contents($desktopFilePath, $desktop);
+                file_put_contents($mobileFilePath, $mobile);
             } catch (\Exception $e) {
                 $message = 'Error while processing government '
                     . $altTypeSlug .'/'. $slug .': '
                     . $e->getMessage();
                 $this->logger->error($message);
                 return false;
+            } finally {
+                $em->clear();
+                gc_collect_cycles();
             }
-            $desktopFilePath = $outputPath .'/'. $fileName .'_desktop.html';
-            $mobileFilePath = $outputPath .'/'. $fileName .'_mobile.html';
-
-            file_put_contents($desktopFilePath, $desktop);
-            file_put_contents($mobileFilePath, $mobile);
-        }
-
-        return true;
-    }
-
-    /**
-     * Generate desktop and mobile html page for specified elected official.
-     *
-     * @Gearman\Job(
-     *  name="elected",
-     *  description="Generate desktop and mobile html page for specified
-     *  elected official."
-     * )
-     *
-     * @param \GearmanJob $job A GearmanJob instance.
-     *
-     * @return boolean
-     */
-    public function generateElected(\GearmanJob $job)
-    {
-        // Reopen db connection.
-        /** @var Connection $conn */
-        $conn = $this->container->get('database_connection');
-        $conn->close();
-        $conn->connect();
-
-        $this->clearTranslationsCache();
-
-        $payload = unserialize($job->workload());
-
-        $altTypeSlug = $payload['altTypeSlug'];
-        $slug = $payload['slug'];
-        $electedSlug = $payload['electedSlug'];
-
-        $environment = $this->getEnvironment($payload);
-        $manager = $this->container
-            ->get(GovWikiEnvironmentService::ELECTED_OFFICIAL_MANAGER);
-
-        $this->clearTranslationsCache();
-
-        /** @var EngineInterface $templating */
-        $templating = $this->container->get('templating');
-        /** @var EnvironmentStorageInterface $storage */
-        $storage = $this->container->get(GovWikiEnvironmentService::STORAGE);
-        $storage->set($environment);
-
-        $outputPath = $this->container
-            ->getParameter('elected_generation_output');
-
-        $message = 'Process elected '. $altTypeSlug .'/'. $slug .'/'
-            . $electedSlug;
-        $this->logger->info($message);
-
-        try {
-            $data = $manager->getElectedOfficial(
-                $environment,
-                $altTypeSlug,
-                $slug,
-                $electedSlug
-            );
-
-            if ($data === null) {
-                return false;
-            }
-
-            /** @var \Doctrine\ORM\QueryBuilder $endorsement */
-            $endorsement = $data['endorsements'];
-            $data['endorsements'] = $endorsement->getQuery()->getResult();
-
-            /** @var \Doctrine\ORM\QueryBuilder $surveyResponses */
-            $surveyResponses = $data['surveyResponses'];
-            $data['surveyResponses'] = $surveyResponses->getQuery()
-                ->getResult();
-
-            $context = new SerializationContext();
-            $context->setGroups(['elected_official']);
-
-            // Serialize elected official to json.
-            $electedOfficialJSON = $this->container->get('jms_serializer')
-                ->serialize($data['electedOfficial'], 'json', $context);
-
-            $data = array_merge($data, [
-                'altTypeSlug' => $altTypeSlug,
-                'slug' => $slug,
-                'electedOfficialJSON' => $electedOfficialJSON,
-            ]);
-
-            $desktop = $templating
-                ->render(self::DESKTOP_ELECTED_TEMPLATE, $data);
-            $mobile = $templating
-                ->render(self::MOBILE_ELECTED_TEMPLATE, $data);
-
-            $fileName = $altTypeSlug . '_' . $slug .'_'. $electedSlug;
-
-            $desktopFilePath = $outputPath .'/'. $fileName .'_desktop.html';
-            $mobileFilePath = $outputPath .'/'. $fileName .'_mobile.html';
-
-            file_put_contents($desktopFilePath, $desktop);
-            file_put_contents($mobileFilePath, $mobile);
-        } catch (\Exception $e) {
-            $message = 'Error while processing elected '
-                . $altTypeSlug .'/'. $slug .'/'. $electedSlug .': '
-                . $e->getMessage();
-            $this->logger->error($message);
-            return false;
         }
 
         return true;

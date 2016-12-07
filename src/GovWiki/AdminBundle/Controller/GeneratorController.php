@@ -3,7 +3,9 @@
 namespace GovWiki\AdminBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\DbBundle\Entity\Environment;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
+use Symfony\Component\Filesystem\LockHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Process\Process;
@@ -37,30 +39,81 @@ class GeneratorController extends AbstractGovWikiAdminController
             return $this->redirectToRoute('govwiki_admin_main_home');
         }
 
-        $status = $this->getQueueStatus();
+        $queue = $this->getQueueStatus();
 
-        if ($request->isMethod('post')) {
-            $entity = trim($request->request->get('entity'));
-
-            if (! $entity) {
-                return JsonResponse::create('Select entity', 400);
-            }
-
-            $limit = $this->getTotalCount($entity);
-            $console = $this->getParameter('kernel.root_dir'). '/console';
-            $command = 'govwiki:generate:html '. escapeshellarg($entity) .' '
-                . $environment->getDomain() .' -l '. $limit .' --env=prod';
-            $runAt = date_create()->modify(' + 1 minutes')->format('H:i');
-
-            $atCommand = "(echo '$console $command' | at {$runAt})";
-
-            $process = new Process($atCommand);
-            $process->run();
-
-            $status = $this->getQueueStatus($entity);
+        $isRun = false;
+        foreach ($queue as $status) {
+            $isRun = $isRun || $status['run'];
         }
 
-        return JsonResponse::create($status, 200);
+        $shouldRun = $request->query->getBoolean('shouldRun', false);
+
+        if (! $isRun && $shouldRun) {
+            $this->scheduleCommand($environment, 'govwiki:generate:html');
+            $queue = $this->getQueueStatus();
+        }
+
+        return JsonResponse::create($queue, 200);
+    }
+
+    /**
+     * @Configuration\Route("/copy/check")
+     *
+     * @return JsonResponse
+     */
+    public function checkAction()
+    {
+        $lock = new LockHandler('copy_page');
+        $isLocked = ! $lock->lock();
+        if (! $isLocked) {
+            $lock->release();
+        }
+
+        return JsonResponse::create($isLocked, 200);
+    }
+
+    /**
+     * @Configuration\Route("/copy")
+     *
+     * @param Request $request A Request instance.
+     *
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function copyAction(Request $request)
+    {
+        $environment = $this->getCurrentEnvironment();
+        if ($environment === null) {
+            return $this->redirectToRoute('govwiki_admin_main_home');
+        }
+
+        $form = $this->createFormBuilder(null, [
+            'csrf_protection' => false,
+        ])
+            ->add('host')
+            ->add('port')
+            ->add('username')
+            ->add('password')
+            ->add('path')
+            ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $data = $form->getData();
+
+            $arguments = [
+                $data['host'],
+                $data['port'],
+                $data['username'],
+                $data['password'],
+                $data['path'],
+            ];
+
+            $this->scheduleCommand($environment, 'govwiki:copy:html', $arguments);
+
+            return JsonResponse::create([], 200);
+        }
+
+        return JsonResponse::create([], 400);
     }
 
     /**
@@ -68,48 +121,33 @@ class GeneratorController extends AbstractGovWikiAdminController
      */
     private function getQueueStatus()
     {
-        $status = [
-            'entity' => null,
-            'waits' => 0,
-            'processeds' => 0,
-            'workers' => 0,
-            'run' => false,
-            'total' => 0,
-        ];
+        $queue = [];
 
         $process = new Process("gearadmin --status | grep -v '^\.'");
         $process->run();
 
-        // Split output text into array of queues data.
-        $output = array_map(function ($row) {
+        $output = array_filter(explode("\n", $process->getOutput()));
+        foreach ($output as $row) {
             $row = explode("\t", $row);
+            $entity = trim(substr($row[0], 0, strpos($row[0], 'Generator')));
+            $entity = strtolower($entity);
 
-            return [
-                'entity' => explode('~', $row[0])[1],
-                'waits' => (int) $row[1],
-                'processeds' => (int) $row[2],
-                'workers' => (int) $row[3],
-            ];
-        }, array_filter(explode("\n", $process->getOutput())));
+            if (($entity === 'government') || ($entity === 'elected')) {
+                $waits = (int) $row[1];
+                $processeds = (int) $row[2];
+                $isRun = $waits || $processeds;
 
-        // Find active queue.
-        $queue = array_filter($output, function ($row) {
-            return (count($row) > 0) && ($row['waits'] || $row['processeds']);
-        });
-
-        if (count($queue) <= 0) {
-            return $status;
+                $queue[$entity] = [
+                    'waits' => $waits,
+                    'processeds' => $processeds,
+                    'workers' => (int) $row[3],
+                    'run' => $isRun,
+                    'total' => ($isRun) ? $this->getTotalCount($entity) : 0,
+                ];
+            }
         }
 
-        $status = current($queue);
-        $status['run'] = $status['waits'] || $status['processeds'];
-
-        if ($status['run']) {
-            // Get row's total count.
-            $status['total'] = $this->getTotalCount($status['entity']);
-        }
-
-        return $status;
+        return $queue;
     }
 
     /**
@@ -143,5 +181,30 @@ class GeneratorController extends AbstractGovWikiAdminController
         }
 
         return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @param Environment $environment A Environment entity instance.
+     * @param string      $command     Command name.
+     * @param array       $arguments   Command arguments.
+     *
+     * @return integer
+     */
+    private function scheduleCommand(
+        Environment $environment,
+        $command,
+        array $arguments = []
+    ) {
+        $arguments = array_map('escapeshellarg', $arguments);
+
+        $console = $this->getParameter('kernel.root_dir'). '/console';
+        $command .= ' '. $environment->getDomain()
+            .' --env=prod '. implode(' ', $arguments);
+        $runAt = date_create()->modify(' + 1 minutes')->format('H:i');
+
+        $atCommand = "(echo '$console $command' | at {$runAt})";
+
+        $process = new Process($atCommand);
+        return $process->run();
     }
 }

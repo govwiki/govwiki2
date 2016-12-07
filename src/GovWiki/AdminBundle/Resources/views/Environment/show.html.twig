@@ -46,6 +46,10 @@
                 Generate HTML
             </button>
 
+            <button class="btn btn-sm btn-default" id="copy-show">
+                Copy HTML
+            </button>
+
             <hr>
 
             <h6>Status:
@@ -166,19 +170,25 @@
             <div class="modal-content">
                 <div class="modal-header"><h4 class="modal-title">Generate html page</h4></div>
                 <div class="modal-body">
-                    <div class="generator-form" style="display: none">
-                        <div class="control-group">
-                        <label for="generator-form-select" class="control-label">
-                            Entity
-                        </label>
-                        <select id="generator-form-select" class="form-control">
-                            <option value="government">Government</option>
-                            <option value="elected">Elected official</option>
-                        </select>
-                        </div>
+                    <div class="generator-info" style="display: none">
+                        Generation is scheduled. You can wait about 1 minute and
+                        see progress bar.
                     </div>
                     <div class="generator-status" style="display: none">
-                        <div class="progress">
+                        <div class="text-center">
+                            Governments:
+                        </div>
+                        <div id="government" class="progress">
+                            <div class="progress-bar progress-bar-success progress-bar-striped active"
+                                 role="progressbar" aria-valuenow=""
+                                 aria-valuemin="0" aria-valuemax="">
+
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            Elected Officials:
+                        </div>
+                        <div id="elected" class="progress">
                             <div class="progress-bar progress-bar-success progress-bar-striped active"
                                  role="progressbar" aria-valuenow=""
                                  aria-valuemin="0" aria-valuemax="">
@@ -186,19 +196,64 @@
                             </div>
                         </div>
                     </div>
-                    <div class="loader" style="display: none;"></div>
                 </div>
                 <div class="modal-footer">
                     <div class="pull-right">
-                        <button class="btn btn-primary generator-run"
-                                style="display: none">
-                            Generate
-                        </button>
                         <button class="btn btn-danger" id="generator-close" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="modal-copy" class="modal fade" data-check-url="{{-
+        path('govwiki_admin_generator_check', {
+            environment: environment.slug
+        })
+    -}}">
+        <form method="post" action="{{-
+            path('govwiki_admin_generator_copy', {
+                environment: environment.slug
+            })
+        -}}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Ftp connection parameters
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="control-group">
+                        <label for="host" class="control-label">Host</label>
+                        <input class="form-control" id="host" name="form[host]">
+                    </div>
+                    <div class="control-group">
+                        <label for="port" class="control-label">Port</label>
+                        <input class="form-control" id="port" name="form[port]">
+                    </div>
+                    <div class="control-group">
+                        <label for="username" class="control-label">Username</label>
+                        <input class="form-control" id="username" name="form[username]">
+                    </div>
+                    <div class="control-group">
+                        <label for="password" class="control-label">Password</label>
+                        <input class="form-control" id="password" name="form[password]">
+                    </div>
+                    <div class="control-group">
+                        <label for="path" class="control-label">Path</label>
+                        <input class="form-control" id="path" name="form[path]">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-success">Copy</button>
+                        <button class="btn btn-danger" id="generator-close" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
     </div>
 
     {#<div id="modal-import" class="modal fade">
@@ -238,15 +293,16 @@
         $(function() {
             var generatorModal = $('#modal-generator');
             var loader = generatorModal.find('.loader');
-            var formView = generatorModal.find('.generator-form');
+            var infoView = generatorModal.find('.generator-info');
             var statusView = generatorModal.find('.generator-status');
-            var runBtn = generatorModal.find('.generator-run');
 
             var generatorUrl = '{{- path('govwiki_admin_generator_html', {
                 environment: environment.slug
             }) -}}';
 
             var interval;
+            var isRunPreviously = false;
+            var isScheduled = false;
 
             /*$('#import-fin-stmt').click(function () {
                 $('#modal-import').modal('show');
@@ -263,46 +319,36 @@
                 }
             });
 
-            generatorModal.find('.generator-run').click(function () {
-                formView.hide();
-                statusView.hide();
-                runBtn.hide();
-                loader.show();
-
-                generatorRequest('post')
-                    .done(function(status) {
-                        renderGeneratorModal(status);
-                    })
-                    .fail(function (jqXHR) {
-                        console.log(jqXHR);
-//                      alert(jqXHR.responseJson);
-                    })
-                    .always(function () {
-                        loader.hide();
-                    });
-            });
-
             $('#generator-show').click(function() {
-                generatorRequest('get')
-                    .done(function (status) {
+                $.ajax({
+                    url: generatorUrl,
+                    data: {
+                        shouldRun: ! isRunPreviously && ! isScheduled
+                    }
+                })
+                    .done(function (queue) {
                         generatorModal.modal('show');
-                        renderGeneratorModal(status);
+                        renderGeneratorModal(queue);
+                        isScheduled = true;
                         initializeRenderLoop();
                     })
                     .fail(function (jqXHR) {
                         console.log(jqXHR);
-//                    alert(jqXHR.responseJson);
                     });
             });
 
             function initializeRenderLoop() {
-                console.log(interval);
                 if (interval) {
                     return;
                 }
 
                 interval = setInterval(function () {
-                    generatorRequest('get')
+                    $.ajax({
+                        url: generatorUrl,
+                        data: {
+                            shouldRun: ! isRunPreviously && ! isScheduled
+                        }
+                    })
                         .done(function (status) {
                             renderGeneratorModal(status)
                         })
@@ -312,48 +358,92 @@
                 }, 5000);
             }
 
-            function generatorRequest(method) {
-                var property = {
-                    url: generatorUrl,
-                    method: method.toUpperCase()
-                };
-
-                if (method.toLowerCase() === 'post') {
-                    property.data = {
-                        entity: generatorModal.find('#generator-form-select')
-                                .val()
-                    };
-                }
-
-                return $.ajax(property);
-            }
-
-            function renderGeneratorModal(status) {
+            function renderGeneratorModal(queue) {
                 var remain;
                 var percentage;
+                var isRun = _.some(queue, { run: true });
 
-                if (! status.run) {
-                    formView.show();
-                    runBtn.show();
+                if (isRunPreviously && ! isRun) {
+                    if (interval) {
+                        clearInterval(interval);
+                        interval = null;
+                    }
+                    generatorModal.modal('hide');
+                    isScheduled = false;
+                    isRunPreviously = false;
+                    return;
+                }
+
+                isRunPreviously = isRun;
+
+                if (! isRun) {
+                    infoView.show();
                     statusView.hide();
                 } else {
-                    formView.hide();
-                    runBtn.hide();
+                    infoView.hide();
                     statusView.show();
 
-                    remain = status.total - status.waits + status.processeds;
-                    percentage = Math.ceil((remain * 100) / status.total);
+                    _.forEach(queue, function (status, entity) {
+                        if (status.run === false) {
+                            status.waits = status.total;
+                        }
 
-                    // Update data
-                    statusView.find('.progress-bar')
-                        .attr({
-                            'aria-valuenow': remain,
-                            'aria-valuemax': status.total
-                        })
-                        .css('width', percentage + '%')
-                        .text(percentage + '%');
+                        remain = status.total - status.waits
+                            + status.processeds;
+                        percentage = Math.ceil((remain * 100)
+                            / status.total);
+
+                        // Update data
+                        statusView
+                            .find('#' + entity)
+                            .find('.progress-bar')
+                            .attr({
+                                'aria-valuenow': remain,
+                                'aria-valuemax': status.total
+                            })
+                            .css('width', percentage + '%')
+                            .text(percentage + '%');
+                    });
                 }
             }
+
+            var copyModal = $('#modal-copy');
+
+            $('#copy-show').click(function () {
+                $.ajax({
+                    url: copyModal.data('checkUrl')
+                })
+                    .done(function(isLocked) {
+                        if (isLocked) {
+                            alert('This command already run.');
+                        } else {
+                            copyModal.modal('show');
+                        }
+                    });
+            });
+
+            copyModal.find('form').submit(function (event) {
+                var $this = $(this);
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                $.ajax({
+                    url: $this.attr('action'),
+                    method: 'POST',
+                    data: $this.serialize()
+                })
+                    .done(function() {
+                        alert('Command sheduled!');
+                    })
+                    .fail(function() {
+                        alert('Command not sheduled due to some error!');
+                    })
+                    .always(function() {
+                        copyModal.modal('hide')
+                    })
+
+            });
         });
     </script>
 {% endblock javascripts %}
