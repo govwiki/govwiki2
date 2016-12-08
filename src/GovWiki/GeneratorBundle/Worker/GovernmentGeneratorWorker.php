@@ -111,8 +111,8 @@ class GovernmentGeneratorWorker implements ContainerAwareInterface
         $storage->set($environment);
 
         $outputPath = $this->container
-            ->getParameter('government_generation_output') .'/'
-                . $environment->getSlug();
+            ->getParameter('static_generation_output') .'/'
+                . $environment->getSlug() . '/governments';
 
         $message = 'Process government '. $altTypeSlug .'/'. $slug;
         $this->logger->info($message);

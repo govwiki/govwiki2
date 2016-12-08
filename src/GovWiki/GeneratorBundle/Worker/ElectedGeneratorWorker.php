@@ -103,8 +103,8 @@ class ElectedGeneratorWorker implements ContainerAwareInterface
         $storage->set($environment);
 
         $outputPath = $this->container
-            ->getParameter('elected_generation_output') .'/'
-                . $environment->getSlug();
+                ->getParameter('static_generation_output') .'/'
+            . $environment->getSlug() . '/electeds';
 
         try {
             $filesystem->mkdir($outputPath);

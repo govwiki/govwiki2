@@ -30,5 +30,4 @@ parameters:
 
     gearman_server: 127.0.0.1
     gearman_port: 4730
-    government_generation_output: '%kernel.root_dir%/../static/government'
-    elected_generation_output: '%kernel.root_dir%/../static/elected'
+    static_generation_output: '%kernel.root_dir%/../static'
