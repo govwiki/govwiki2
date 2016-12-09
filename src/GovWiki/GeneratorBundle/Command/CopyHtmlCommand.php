@@ -106,11 +106,16 @@ EOF;
                 return 1;
             }
 
-            $logger->info("Copying compressed archive to remote server ... ");
+            $remotePath = rtrim($parameters['path'], '/') .'/'. $archiveName;
+
+            $remote = $parameters['user'] .'@'. $parameters['host'] .':'
+                . $remotePath;
+            $logger->info("Copying compressed archive to {$remote} ... ");
+
             $connection = $this->connectToFtp($parameters);
             ftp_put(
                 $connection,
-                $parameters['path'] . $archiveName,
+                $remotePath,
                 $dest,
                 FTP_BINARY
             );
