@@ -108,7 +108,7 @@ EOF;
 
             $remotePath = rtrim($parameters['path'], '/') .'/'. $archiveName;
 
-            $remote = $parameters['user'] .'@'. $parameters['host'] .':'
+            $remote = $parameters['username'] .'@'. $parameters['host'] .':'
                 . $remotePath;
             $logger->info("Copying compressed archive to {$remote} ... ");
 
