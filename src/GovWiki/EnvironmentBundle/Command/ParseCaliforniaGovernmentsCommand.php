@@ -153,7 +153,7 @@ class ParseCaliforniaGovernmentsCommand extends ContainerAwareCommand
         $path = $this->getContainer()->getParameter('kernel.cache_dir');
         $file = $path .'/'. self::COUNTER_FILE;
 
-        $offset = ($offset <= $totalCount) ? $offset : 0;
+        $offset = ($offset < $totalCount) ? $offset : 0;
 
         file_put_contents($file, $offset);
     }

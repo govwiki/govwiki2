@@ -97,6 +97,7 @@ EOF;
                     . $environment->getSlug());
 
             $process = new Process("tar czf {$dest} -C {$src} .");
+            $process->setTimeout(600);
 
             $logger->info("Start compressing {$src} ... ");
             $process->run();
@@ -118,7 +119,7 @@ EOF;
         } catch (\Exception $e) {
             $logger->error('Error: '. $e->getMessage());
         } finally {
-            if ($connection) {
+            if (isset($connection)) {
                 ftp_close($connection);
             }
             $lock->release();
