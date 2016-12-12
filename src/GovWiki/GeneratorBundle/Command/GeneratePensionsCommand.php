@@ -106,30 +106,37 @@ EOF;
                 'Debug generation'
             )
             ->addOption(
-                'human',
+                'human-path',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Path to output file for ordinary user, default: '. self::HUMAN_DEFAULT_PATH,
+                'Path to output file for ordinary user',
                 self::HUMAN_DEFAULT_PATH
             )
             ->addOption(
-                'for-human',
+                'human',
                 null,
                 InputOption::VALUE_NONE,
                 'Generate table for ordinary users'
             )
             ->addOption(
-                'bot',
+                'bot-path',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Path to output file for bots, default: '. self::BOT_DEFAULT_PATH,
+                'Path to output file for bots',
                 self::BOT_DEFAULT_PATH
             )
             ->addOption(
-                'for-bot',
+                'bot',
                 null,
                 InputOption::VALUE_NONE,
                 'Generate table for bots'
+            )
+            ->addOption(
+                'csv-path',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Path to output file for ordinary user',
+                self::CSV_DEFAULT_PATH
             )
             ->addOption(
                 'csv',
@@ -158,8 +165,8 @@ EOF;
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $forHuman = $input->getOption('for-human');
-        $forBot = $input->getOption('for-bot');
+        $generateHuman = $input->getOption('human');
+        $generateBot = $input->getOption('bot');
         $generateCsv = $input->getOption('csv');
 
         $debug = $input->getOption('debug');
@@ -169,17 +176,17 @@ EOF;
             $connection = $this->connectToFtp($input, $output);
         }
 
-        if ($forHuman &&
+        if ($generateHuman &&
             ! $this->generateForHuman($input, $output, $connection)) {
             return 1;
         }
 
-        if ($forBot &&
+        if ($generateBot &&
             ! $this->generateForBot($input, $output, $connection)) {
             return 1;
         }
 
-        if ($generateCsv && $this->generateCsv($output, $connection)) {
+        if ($generateCsv && $this->generateCsv($input, $output, $connection)) {
             return 1;
         }
 
@@ -224,7 +231,7 @@ EOF;
         OutputInterface $output,
         $connection = null
     ) {
-        $pathToHumanFile = $input->getOption('human');
+        $pathToHumanFile = $input->getOption('human-path');
         $debug = $input->getOption('debug');
 
         $message = '<info>Generate for ordinary users and save it to '
@@ -296,7 +303,7 @@ EOF;
         OutputInterface $output,
         $connection
     ) {
-        $pathToBotsFile = $input->getOption('bot');
+        $pathToBotsFile = $input->getOption('bot-path');
         $debug = $input->getOption('debug');
 
         $message = '<info>Generate for bots and save it to '
@@ -338,19 +345,21 @@ EOF;
     }
 
     /**
+     * @param InputInterface  $input      A InputInterface instance.
      * @param OutputInterface $output     A OutputInterface instance.
      * @param resource        $connection A Ftp connection.
      *
      * @return boolean
      */
     private function generateCsv(
+        InputInterface $input,
         OutputInterface $output,
         $connection
     ) {
-        $pathToCsvFile = self::CSV_DEFAULT_PATH;
+        $pathToCsvFile = $input->getOption('csv-path');
 
         $message = '<info>Generate csv data file and save it to '
-            . self::CSV_DEFAULT_PATH
+            . $pathToCsvFile
             . ' ... </info>';
         $output->write($message);
         $headAdded = false;
