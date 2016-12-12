@@ -4,7 +4,6 @@ namespace GovWiki\EnvironmentBundle\Command;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Government;
 use GovWiki\DbBundle\Entity\Repository\EnvironmentRepository;
@@ -14,7 +13,6 @@ use GovWiki\GeneratorBundle\Service\PidPoolFactory;
 use Mmoreram\GearmanBundle\Service\GearmanClient;
 use Mmoreram\GearmanBundle\Service\GearmanExecute;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\LockHandler;
@@ -29,10 +27,6 @@ class ParseCaliforniaGovernmentsCommand extends ContainerAwareCommand
     const BASE_URL = 'http://californiapolicycenter.org/tag/{tag}/feed';
 
     const WORKER_COUNT = 4;
-
-    const COUNTER_FILE = 'offset.txt';
-
-    const LIMIT = 100;
 
     /**
      * Configures the current command.
@@ -76,18 +70,12 @@ class ParseCaliforniaGovernmentsCommand extends ContainerAwareCommand
         }
 
         try {
-            // Get last processed offset.
-            $offset = $this->getOffset();
-
             // Generate urls for necessary governments and compute next offset.
-            $urls = $this->generateUrls($this->getGovernmentsSlug($offset));
-            $offset += count($urls);
+            $urls = $this->generateUrls($this->getGovernmentsSlug());
 
             $output->write('Parsing data ... ');
             // Process all urls.
             $this->process($urls);
-            // Save new offset.
-            $this->storeOffset($offset);
         } catch (\Exception $e) {
             $output->writeln('[ <error>error</error> ]');
             $output->writeln($e->getMessage());
@@ -118,52 +106,9 @@ class ParseCaliforniaGovernmentsCommand extends ContainerAwareCommand
     }
 
     /**
-     * @return integer
-     */
-    private function getOffset()
-    {
-        $path = $this->getContainer()->getParameter('kernel.cache_dir');
-        $file = $path .'/'. self::COUNTER_FILE;
-
-        if (file_exists($file)) {
-            return (int) file_get_contents($file);
-        }
-
-        return 0;
-    }
-
-    /**
-     * @param integer $offset New offset.
-     *
-     * @return void
-     */
-    private function storeOffset($offset)
-    {
-        /** @var EntityManagerInterface $em */
-        $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
-        $environment = $this->getCaliforniaEnvironment();
-        /** @var GovernmentRepository $repository */
-        $repository = $em->getRepository('GovWikiDbBundle:Government');
-
-        $qb = $repository->getListQuery($environment->getId());
-
-        // Get total government's count.
-        $totalCount = (new Paginator($qb))->count();
-
-        $path = $this->getContainer()->getParameter('kernel.cache_dir');
-        $file = $path .'/'. self::COUNTER_FILE;
-
-        $offset = ($offset < $totalCount) ? $offset : 0;
-
-        file_put_contents($file, $offset);
-    }
-
-    /**
-     * @param integer $offset Offset.
-     *
      * @return \Generator
      */
-    private function getGovernmentsSlug($offset = 0)
+    private function getGovernmentsSlug()
     {
         /** @var EntityManagerInterface $em */
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
@@ -174,8 +119,6 @@ class ParseCaliforniaGovernmentsCommand extends ContainerAwareCommand
         $iterate = $repository
             ->getListQuery($environment->getId())
             ->select('Government.id, Government.slug')
-            ->setMaxResults(self::LIMIT)
-            ->setFirstResult($offset)
             ->getQuery()
             ->iterate();
 
@@ -206,8 +149,7 @@ class ParseCaliforniaGovernmentsCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param array       $urls     Array of xml urls.
-     * @param ProgressBar $progress A ProgressBar instance.
+     * @param array $urls Array of xml urls.
      *
      * @return boolean
      */

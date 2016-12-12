@@ -114,7 +114,7 @@ class CaliforniaWorker implements ContainerAwareInterface
                     $row['pubdate']
                 );
 
-                // Sanitaze description filed.
+                // Sanitize description filed.
                 $description = trim(str_replace(
                     '[&#8230;]',
                     '',
@@ -130,7 +130,7 @@ class CaliforniaWorker implements ContainerAwareInterface
                     ->setLink($row['link'])
                     ->setName($row['title'])
                     ->setCreator($creator)
-                    ->setType(Issue::LAST_AUDIT);
+                    ->setType(Issue::OTHER);
 
                 $em->persist($issue);
             }
