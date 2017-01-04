@@ -124,6 +124,11 @@ class Extension extends \Twig_Extension
                 $this,
                 'rankName',
             ]),
+
+            new \Twig_SimpleFilter('prepareToTranslate', [
+                $this,
+                'prepareToTranslate',
+            ]),
         ];
     }
 
@@ -255,5 +260,25 @@ class Extension extends \Twig_Extension
     public function rankName($name)
     {
         return GovwikiNamingStrategy::rankedFieldName($name);
+    }
+
+    /**
+     * @param string $value String value which need to prepare.
+     *
+     * @return string
+     */
+    public function prepareToTranslate($value)
+    {
+        return strtr(strtolower(trim($value)), [
+            ' ' => '_',
+            '-' => '_d_',
+            '&' => 'amp',
+            ',' => '_c_',
+            '(' => 'lb',
+            ')' => 'rb',
+            '/' => 'sl',
+            '%' => 'proc',
+            "'" => '_apos_',
+        ]);
     }
 }

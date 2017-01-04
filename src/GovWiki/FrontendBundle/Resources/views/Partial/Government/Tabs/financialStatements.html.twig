@@ -123,19 +123,6 @@
         <table class="table compare-second-table"></table>
     </div>
 
-    {% set finDataReplacements = {
-        ' ': '_',
-        '-': '_d_',
-        '&': 'amp',
-        ',': '_c_',
-        '(': 'lb',
-        ')': 'rb',
-        '/': 'sl',
-        '%': 'proc',
-        "'": "_apos_"
-        }
-    %}
-
     {% for categoryName, fields in financialStatements %}
         <table class="table financial-table">
 
@@ -144,7 +131,7 @@
             <thead>
                 <tr>
                     {# Category caption #}
-                    <th><b>{{ ('general.findata.main.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></th>
+                    <th><b>{{ ('general.findata.main.' ~ categoryName | prepareToTranslate)|trans }}</b></th>
                     {% if loop.first %}
                         <th><b>{{ 'general.findata.main.general_fund'|trans }}</b></th>
                         <th><b>{{ 'general.findata.main.other_fund'|trans }}</b></th>
@@ -159,7 +146,7 @@
                     <tr>
 
                         <td>
-                            {{ ('findata.captions.' ~ name | replace(finDataReplacements) | lower)|trans }}
+                            {{ ('findata.captions.' ~ name | prepareToTranslate)|trans }}
                         </td>
                         <td>
                             {%- if not showTotalAndOver or loop.first -%}

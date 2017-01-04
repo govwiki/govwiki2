@@ -80,7 +80,7 @@ class FinDataProcessor implements FinDataProcessorInterface
      */
     private function getTransKey($caption)
     {
-        return strtr(strtolower($caption), [
+        return strtr(strtolower(trim($caption)), [
             ' ' => '_',
             '-' => '_d_',
             '&' => 'amp',

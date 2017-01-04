@@ -107,20 +107,6 @@
 <table class="compare-first-table table"></table>
 <table class="compare-second-table table"></table>
 
-
-{% set finDataReplacements = {
-    ' ': '_',
-    '-': '_d_',
-    '&': 'amp',
-    ',': '_c_',
-    '(': 'lb',
-    ')': 'rb',
-    '/': 'sl',
-    '%': 'proc',
-    "'": "_apos_"
-    }
-%}
-
 {%- for categoryName, fields in financialStatements -%}
     <table class="financial-table table table-striped">
 
@@ -129,7 +115,7 @@
         <thead>
             <tr>
                 {# Category caption #}
-                <th><b>{{ ('caption_categories.' ~ categoryName | replace(finDataReplacements) | lower)|trans }}</b></th>
+                <th><b>{{ ('caption_categories.' ~ categoryName | prepareToTranslate)|trans }}</b></th>
                 <th>
                     {%- if showTotalAndOver -%}
                         <select class="fin-stmt-select">
@@ -156,7 +142,7 @@
                 <tr>
 
                     <td>
-                        {{- ('findata.captions.' ~ name | replace(finDataReplacements) | lower) | trans -}}
+                        {{- ('findata.captions.' ~ name | prepareToTranslate) | trans -}}
                     </td>
                     <td>
                         {%- if not showTotalAndOver or loop.first -%}
