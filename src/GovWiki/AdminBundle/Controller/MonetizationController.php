@@ -48,7 +48,7 @@ class MonetizationController extends AbstractGovWikiAdminController
         $form = $this->createFormBuilder([
             'advertising' => $advertising,
             'button' => $button,
-        ])
+        ], [ 'action' => $request->getPathInfo() ])
             ->add('advertising', new MonetizationForm())
             ->add('button', new MonetizationForm())
             ->getForm();
