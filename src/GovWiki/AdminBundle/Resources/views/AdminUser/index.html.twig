@@ -38,7 +38,7 @@
                 'Username',
                 'User.username'
             ) -}}</th>
-            <th>Locked</th>
+            <th>Enabled</th>
             <th>{{- knp_pagination_sortable(
                 users,
                 'Last login',
@@ -52,7 +52,7 @@
             <tr>
                 <td>{{ user.id }}</td>
                 <td>{{ user.username }}</td>
-                <td>{{ user_macro.renderBoolean(user.locked) }}</td>
+                <td>{{ user_macro.renderBoolean(user.enabled) }}</td>
                 <td>{{ user.lastLogin|date('m/d/y g:i a') }}</td>
                 <td>
                     <div class="btn-group">
@@ -70,7 +70,7 @@
                         </a>
                         {% set glyph = 'glyphicon-ban-circle' %}
                         {% set title = 'Disable' %}
-                        {% if user.locked %}
+                        {% if user.enabled %}
                             {% set glyph = 'glyphicon-ok-circle' %}
                             {% set title = 'Enable' %}
                         {% endif %}
