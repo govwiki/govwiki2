@@ -63,39 +63,63 @@ var tileMapConfig = {
 /* eslint-enable */
 
 // Create the leaflet map
-config.map = L.map('map', {
-  zoomControl: true,
-  center: [window.gw.map.centerLatitude, window.gw.map.centerLongitude],
-  zoom: window.gw.map.zoom
-});
-
-// Hardcode for cmf environment.
 if (window.gw.environment.indexOf('cmf') !== -1) {
-  $.ajax({
-    crossOrigin: true,
-    type: 'POST',
-    dataType: 'json',
-    contentType: 'application/json',
-    url: 'https://' + window.gw.map.username + '.cartodb.com/api/v1/map',
-    data: JSON.stringify(tileMapConfig),
-    success: function(data) {
-      var templateUrl = 'https://' + window.gw.map.username + '.cartodb.com/api/v1/map/'
-        + data.layergroupid + '/{z}/{x}/{y}.png';
-
-      L.tileLayer(templateUrl, {
-        attribution: 'GovWiki'
-      }).addTo(config.map);
-
-      createMap();
+  cartodb.createVis(
+    'map',
+    'https://joffemd.carto.com/api/v2/viz/dd446cb8-d7c6-11e6-b4db-0e233c30368f/viz.json',
+    {
+      zoomControl: true,
+      center: [window.gw.map.centerLatitude, window.gw.map.centerLongitude],
+      zoom: window.gw.map.zoom
     }
+  ).done(function visCreated(vis) {
+    config.map = vis.getNativeMap();
+    createMap();
   });
 } else {
+  config.map = L.map('map', {
+    zoomControl: true,
+    center: [window.gw.map.centerLatitude, window.gw.map.centerLongitude],
+    zoom: window.gw.map.zoom
+  });
+
+
   L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
     attribution: 'GovWiki'
   }).addTo(config.map);
 
+
   createMap();
 }
+
+
+//// Hardcode for cmf environment.
+//if (window.gw.environment.indexOf('cmf') !== -1) {
+//  $.ajax({
+//    crossOrigin: true,
+//    type: 'POST',
+//    dataType: 'json',
+//    contentType: 'application/json',
+//    url: 'https://' + window.gw.map.username + '.cartodb.com/api/v1/map',
+//    data: JSON.stringify(tileMapConfig),
+//    success: function(data) {
+//      var templateUrl = 'https://' + window.gw.map.username + '.cartodb.com/api/v1/map/'
+//        + data.layergroupid + '/{z}/{x}/{y}.png';
+//
+//      L.tileLayer(templateUrl, {
+//        attribution: 'GovWiki'
+//      }).addTo(config.map);
+//
+//      createMap();
+//    }
+//  });
+//} else {
+//  L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+//    attribution: 'GovWiki'
+//  }).addTo(config.map);
+//
+//  createMap();
+//}
 
 function createMap() {
   cartodb.createLayer(config.map, {
