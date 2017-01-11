@@ -275,7 +275,7 @@ function initSublayerHandlers() {
          * If hover active
          */
         if (_.some(hovers)) {
-          $('#map').css('cursor', 'pointer');
+          $('.leaflet-container').css('cursor', 'pointer');
           /**
            * If hover on county layer
            */
@@ -310,7 +310,7 @@ function initSublayerHandlers() {
          * If hover not active
          */
         if (!_.some(hovers)) {
-          $('#map').css('cursor', 'auto');
+          $('.leaflet-container').css('cursor', 'auto');
           removeAllHoverShapes();
           /**
            *  Close all tooltips, if cursor outside of layers

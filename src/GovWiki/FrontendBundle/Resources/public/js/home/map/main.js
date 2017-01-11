@@ -14,6 +14,8 @@ var tooltip = require('./tooltip.js');
 var image;
 /* eslint-enable */
 
+window.gw.map.username = 'joffemd';
+
 // Create the leaflet map
 // For cmf environment we use custom map as tile layer.
 if (window.gw.environment.indexOf('cmf') !== -1) {
@@ -22,7 +24,7 @@ if (window.gw.environment.indexOf('cmf') !== -1) {
     'https://joffemd.carto.com/api/v2/viz/dd446cb8-d7c6-11e6-b4db-0e233c30368f/viz.json',
     {
       zoomControl: true,
-      scrollwheel: true,
+      scrollWheel: true,
       center: [window.gw.map.centerLatitude, window.gw.map.centerLongitude],
       zoom: window.gw.map.zoom
     }
@@ -64,7 +66,7 @@ function createMap(base) {
     baseLayer.on('load', function load() {
       $loader.hide();
       $map.show();
-      $map.css({opacity: 1});
+      $map.css({ opacity: 1 });
     });
 
     config.baseLayer = baseLayer;
