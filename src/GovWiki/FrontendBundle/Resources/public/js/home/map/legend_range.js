@@ -1,7 +1,6 @@
 var glob = require('../../global.js');
 var config = require('./config.js');
 var sublayer = require('./sublayer.js');
-var Style = require('./style.js');
 var methods;
 
 function init(showOnTop) {
@@ -14,49 +13,35 @@ function init(showOnTop) {
   var fieldName = window.gw.map.coloringConditions.localized_name;
   var conditions = window.gw.map.coloringConditions.conditions;
 
-  var periodConditions;
-  var simpleConditions;
-  var nullCondition;
-
   if (!window.gw.map.coloringConditions.colorized) {
     return false;
   }
 
-  // var fieldName = window.gw.map.coloringConditions.fieldName.replace(/_/g, ' ');
-  periodConditions = Style.getConditionsByType(conditions, 'period');
-  simpleConditions = Style.getConditionsByType(conditions, 'simple');
-  nullCondition = Style.getConditionsByType(conditions, 'null');
+  conditions.forEach(function loop(condition) {
+    conditionColor = 'background: ' + condition.color;
 
-  // Build legend items for period conditions
-  if (periodConditions.length !== 0) {
-    periodConditions.forEach(function loop(condition) {
-      conditionColor = 'background: ' + condition.color;
-      conditionText = condition.min + ' - ' + condition.max;
-      legendItems += '<li data-condition="' + JSON.stringify(condition).replace(/"/g, '&quot;') +
-        '"><div class="bullet" style="' + conditionColor + '"></div>' +
-        conditionText +
-        '</li>';
-    });
-  }
+    switch (condition.type) {
+      case 'period':
+        conditionText = condition.min + ' - ' + condition.max;
+        break;
 
-  // Build legend items for simple conditions
-  if (simpleConditions.length !== 0) {
-    simpleConditions.forEach(function loop(condition) {
-      conditionColor = 'background: ' + condition.color;
-      conditionText = condition.operation + ' ' + condition.value;
-      legendItems += '<li data-condition="' + JSON.stringify(condition).replace(/"/g, '&quot;') +
-        '"><div class="bullet" style="' + conditionColor + '"></div>' +
-        conditionText +
-        '</li>';
-    });
-  }
+      case 'simple':
+        conditionText = condition.operation + ' ' + condition.value;
+        break;
 
-  // Build legend items for null conditions
-  if (nullCondition.length !== 0) {
-    conditionColor = 'background: ' + nullCondition[0].color;
-    legendItems += '<li data-condition="' + JSON.stringify(nullCondition[0]).replace(/"/g, '&quot;') +
-      '"><div class="bullet" style="' + conditionColor + '"></div>null</li>';
-  }
+      case 'null':
+        conditionText = 'null';
+        break;
+
+      default:
+        console.warn('Invalid condition type.');
+    }
+
+    legendItems += '<li data-condition="' + JSON.stringify(condition).replace(/"/g, '&quot;') +
+     '"><div class="bullet" style="' + conditionColor + '"></div>' +
+     conditionText +
+     '</li>';
+  });
 
   if (showOnTop) {
     legendClass += ' cartodb-legend-stack__top';

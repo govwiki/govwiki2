@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use FOS\UserBundle\Model\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use GovWiki\DbBundle\Entity\CreateRequest;
 use GovWiki\DbBundle\Entity\EditRequest;
@@ -401,7 +402,7 @@ class User extends BaseUser
     /**
      * Get messages
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getMessages()
     {
@@ -447,5 +448,17 @@ class User extends BaseUser
     public function isAdmin()
     {
         return in_array('ROLE_ADMIN', $this->roles, true);
+    }
+
+    /**
+     * Sets the locking status of the user.
+     *
+     * @param bool $boolean
+     *
+     * @return self
+     */
+    public function setLocked($boolean)
+    {
+        $this->enabled = !$boolean;
     }
 }
