@@ -11,7 +11,6 @@ var sublayer = require('./sublayer.js');
 var legend = require('./legend.js');
 var legendRange = require('./legend_range.js');
 var tooltip = require('./tooltip.js');
-var image;
 /* eslint-enable */
 
 // Create the leaflet map

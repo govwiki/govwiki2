@@ -53,7 +53,7 @@ function initCountySubLayer(altType) {
       '(data_json::json->>(',
       ' SELECT',
       '  json_object_keys(data_json::json) as latest_year',
-      ' FROM '+ window.gw.environment,
+      ' FROM ' + window.gw.environment,
       ' WHERE cartodb_id = e.cartodb_id',
       ' ORDER BY 1 DESC',
       ' LIMIT 1',
@@ -119,7 +119,7 @@ function initMarkerSubLayer(altType) {
       '(data_json::json->>(',
       ' SELECT',
       '  json_object_keys(data_json::json) as latest_year',
-      ' FROM '+ window.gw.environment,
+      ' FROM ' + window.gw.environment,
       ' WHERE cartodb_id = e.cartodb_id AND ',
       " data_json <> 'null'",
       ' ORDER BY 1 DESC',
@@ -135,7 +135,7 @@ function initMarkerSubLayer(altType) {
     sql: 'SELECT *, '
       + dataSelection + ' AS data, GeometryType(the_geom) AS geometrytype FROM '
       + window.gw.environment + " e WHERE alt_type_slug = '" + altType + "'"
-      + ' AND '+ dataSelection +' IS NOT NULL',
+      + ' AND ' + dataSelection + ' IS NOT NULL',
     cartocss: cartocss,
     interactivity: ['cartodb_id', 'slug', 'alt_type_slug', 'geometrytype', 'data', 'name']
   });
@@ -157,7 +157,7 @@ function initCmfMarkerSublayer(altType) {
       '(data_json::json->>(',
       ' SELECT',
       '  json_object_keys(data_json::json) as latest_year',
-      ' FROM '+ window.gw.environment,
+      ' FROM ' + window.gw.environment,
       ' WHERE cartodb_id = e.cartodb_id AND',
       "  data_json <> 'null'",
       ' ORDER BY 1 DESC',
@@ -171,39 +171,14 @@ function initCmfMarkerSublayer(altType) {
 
   sql = [
     'SELECT',
-    ' case',
-    "   when name != 'Honolulu' and name != 'Anchorage'",
-    '   then ST_Transform(the_geom_webmercator,42303)',
-    "   when name = 'Anchorage'",
-    '   then ST_Rotate(ST_Scale(',
-    '     ST_Transform(',
-    '       ST_Translate(',
-    '         the_geom,100,-56',
-    '       )',
-    '       ,3857',
-    '     )',
-    '     , 0.3',
-    '     , 0.65',
-    '   ),0.1)',
-    "   when name = 'Honolulu'",
-    '   then ST_Scale(',
-    '     ST_Transform(',
-    '       ST_Translate(',
-    '         the_geom,62,1',
-    '       )',
-    '       ,42303',
-    '     )',
-    '     , 1.5',
-    '     , 1.5',
-    '   )',
-    ' end as the_geom_webmercator,',
+    ' actual_geom as the_geom_webmercator,',
     ' cartodb_id,',
     ' name,',
     ' alt_type_slug,',
     ' slug,',
     dataSelection + ' AS data',
     'FROM ' + window.gw.environment + ' e',
-    'WHERE '+ dataSelection +' IS NOT NULL'
+    'WHERE ' + dataSelection + ' IS NOT NULL'
   ];
 
   options.markerFileCss = legendColorsAsCartoCss.markerFileCss;
@@ -275,7 +250,7 @@ function initSublayerHandlers() {
          * If hover active
          */
         if (_.some(hovers)) {
-          $('#map').css('cursor', 'pointer');
+          $('.leaflet-container').css('cursor', 'pointer');
           /**
            * If hover on county layer
            */
@@ -310,7 +285,7 @@ function initSublayerHandlers() {
          * If hover not active
          */
         if (!_.some(hovers)) {
-          $('#map').css('cursor', 'auto');
+          $('.leaflet-container').css('cursor', 'auto');
           removeAllHoverShapes();
           /**
            *  Close all tooltips, if cursor outside of layers
@@ -414,6 +389,7 @@ function reInit(settings) {
 module.exports = {
   initCountySubLayer: initCountySubLayer,
   initMarkerSubLayer: initMarkerSubLayer,
+  initCmfMarkerSublayer: initCmfMarkerSublayer,
   initSublayerHandlers: initSublayerHandlers,
   removeAllHoverShapes: removeAllHoverShapes,
   removeAllSubLayers: removeAllSubLayers,
