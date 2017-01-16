@@ -14,8 +14,6 @@ var tooltip = require('./tooltip.js');
 var image;
 /* eslint-enable */
 
-window.gw.map.username = 'joffemd';
-
 // Create the leaflet map
 // For cmf environment we use custom map as tile layer.
 if (window.gw.environment.indexOf('cmf') !== -1) {
