@@ -4,8 +4,16 @@ var path = require('path');
 var frontendPath = path.resolve('./src/GovWiki/FrontendBundle/Resources/public');
 var mobilePath = path.resolve('./src/GovWiki/MobileBundle/Resources/public');
 
-var webpackDesktopPath = path.resolve('./webpack.config.js');
-var webpackMobilePath = path.resolve('./webpack.config.mobile.js');
+var webpackDesktopPath = path.resolve(
+  argv.prod
+    ? './webpack.config.desktop.prod.js'
+    : './webpack.config.desktop.js'
+);
+var webpackMobilePath = path.resolve(
+  argv.prod
+    ? './webpack.config.mobile.prod.js'
+    : './webpack.config.mobile.js'
+);
 
 var config = {};
 

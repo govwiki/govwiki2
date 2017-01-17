@@ -4,8 +4,8 @@ var pathUtil = require('path');
 var webpack = require('webpack');
 
 var path = {
-    base: 'src/GovWiki/FrontendBundle/Resources/public/js',
-    web: '/web/js'
+    base: 'src/GovWiki/MobileBundle/Resources/public/js',
+    web: '/web/js/mobile'
 };
 
 module.exports = {
@@ -21,7 +21,6 @@ module.exports = {
         filename: '[name].js',
         chunkFilename: '[id].js'
     },
-    devtool: 'eval',
     resolve: {
         root: [ pathUtil.join(__dirname, 'bower_components') ],
         alias: {
@@ -42,11 +41,11 @@ module.exports = {
         }),
         new webpack.optimize.DedupePlugin(),
         new webpack.NoErrorsPlugin(),
-        //new webpack.optimize.UglifyJsPlugin({
-        //    compress: {
-        //        warnings: false
-        //    }
-        //}),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            }
+        }),
         new webpack.optimize.CommonsChunkPlugin({
             names: ['common'],
             filename: 'common.js'

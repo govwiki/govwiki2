@@ -4,8 +4,8 @@ var pathUtil = require('path');
 var webpack = require('webpack');
 
 var path = {
-    base: 'src/GovWiki/MobileBundle/Resources/public/js',
-    web: '/web/js/mobile'
+    base: 'src/GovWiki/FrontendBundle/Resources/public/js',
+    web: '/web/js'
 };
 
 module.exports = {
