@@ -18,7 +18,7 @@ var tooltip = require('./tooltip.js');
 if (window.gw.environment.indexOf('cmf') !== -1) {
   cartodb.createVis(
     'map',
-    'https://joffemd.carto.com/api/v2/viz/dd446cb8-d7c6-11e6-b4db-0e233c30368f/viz.json',
+    'https://joffemd.carto.com/api/v2/viz/8671cd00-dc75-11e6-9a78-0e3ebc282e83/viz.json',
     {
       zoomControl: true,
       scrollWheel: true,
