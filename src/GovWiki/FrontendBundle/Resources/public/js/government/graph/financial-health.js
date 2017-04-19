@@ -34,8 +34,8 @@ function financialHealthFirstChart() {
   visData.addColumn('string', 'Public Safety Expense');
   visData.addColumn('number', 'Total');
   visData.addRows([
-    ['Public Safety Exp', 1 - data.public_safety_exp_over_tot_gov_fund_revenue],
-    ['Other', +data.public_safety_exp_over_tot_gov_fund_revenue]
+    ['Public Safety Exp', +data.public_safety_exp_over_tot_gov_fund_revenue],
+    ['Other', 1 - data.public_safety_exp_over_tot_gov_fund_revenue]
   ]);
 
   container = 'public-safety-pie';
