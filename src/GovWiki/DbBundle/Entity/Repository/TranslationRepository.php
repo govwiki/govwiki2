@@ -29,13 +29,13 @@ class TranslationRepository extends EntityRepository
         $expr = $this->_em->getExpressionBuilder();
 
         $globalLocaleDQL = $this->_em->createQueryBuilder()
-            ->select('GlobalLocale')
+            ->select('GlobalLocale.id')
             ->from('GovWikiDbBundle:GlobalLocale', 'GlobalLocale')
             ->where($expr->eq('GlobalLocale.shortName', ':locale'))
             ->getDQL();
 
         return $this->createQueryBuilder('tr')
-            ->select('tr')
+            ->select('tr.transKey, tr.translation')
             ->leftJoin('tr.locale', 'Locale')
             ->where($expr->orX(
                 $expr->andX(

@@ -16,8 +16,15 @@ use Symfony\Component\Translation\MessageCatalogue;
  */
 class DatabaseLoader implements LoaderInterface
 {
-    private $localeRepository;
+
+    /**
+     * @var \GovWiki\DbBundle\Entity\Repository\TranslationRepository
+     */
     private $translationRepository;
+
+    /**
+     * @var Environment
+     */
     private $environment;
 
     /**
@@ -31,7 +38,6 @@ class DatabaseLoader implements LoaderInterface
         EntityManagerInterface $em,
         EnvironmentStorageInterface $storage
     ) {
-        $this->localeRepository = $em->getRepository("GovWikiDbBundle:Locale");
         $this->translationRepository = $em->getRepository("GovWikiDbBundle:Translation");
         $this->environment = $storage->get();
     }
@@ -54,7 +60,11 @@ class DatabaseLoader implements LoaderInterface
                 ->getAllTranslations($this->environment->getId(), $locale);
 
             foreach ($translations as $translation) {
-                $catalogue->set($translation->getTransKey(), $translation->getTranslation(), $messageDomain);
+                $catalogue->set(
+                    $translation['transKey'],
+                    $translation['translation'],
+                    $messageDomain
+                );
             }
         }
 

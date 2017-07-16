@@ -49,7 +49,6 @@ class MainController extends AbstractGovWikiController
      */
     public function mapAction(Request $request)
     {
-        $this->clearTranslationsCache();
         $translator = $this->get('translator');
 
         $environment = $this->getCurrentEnvironment();
@@ -110,15 +109,5 @@ class MainController extends AbstractGovWikiController
         }
 
         return $params;
-    }
-
-    private function clearTranslationsCache()
-    {
-        $cacheDir = __DIR__ . "/../../../../app/cache";
-        $finder = new \Symfony\Component\Finder\Finder();
-        $finder->in([$cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"])->files();
-        foreach($finder as $file){
-            unlink($file->getRealpath());
-        }
     }
 }
