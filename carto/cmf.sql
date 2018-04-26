@@ -1,5 +1,5 @@
 -- Sql queries for cmf environments.
--- Replace 'CMF' and 'CMF_TITLE' to actual table name.
+-- Replace 'CMF' and 'CMF_TILE' to actual table name.
 
 -- Create column for precomputed geometry coordinates in custom projection.
 ALTER TABLE CMF ADD COLUMN actual_geom geometry;

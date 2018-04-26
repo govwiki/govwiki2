@@ -1,7 +1,7 @@
-server "govwiki.cloudapp.net", :web, :app, :db, :primary => true, :no_release => false
-set :deploy_root,    "/var/www/html/govwiki"
+server "52.175.252.224", :web, :app, :db, :primary => true, :no_release => false
+set :deploy_root,    "/var/www/html/govwiki_production"
 set :deploy_to,      "#{deploy_root}/#{deploy_dir}"
-set :user,           "joffemd"
+set :user,           "sibers"
 set :branch,         "azure-prod"
 set :webserver_user, "www-data"
 set :deploy_via,     :rsync_with_remote_cache
