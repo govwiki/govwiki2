@@ -2,8 +2,8 @@ parameters:
     database_host: 127.0.0.1
     database_port: null
     database_name: govwiki
-    database_user: root
-    database_password: pscs@2O12
+    database_user: govwiki
+    database_password: pscs@2O17
     mailer_transport: smtp
     mailer_host: 127.0.0.1
     mailer_user: null
