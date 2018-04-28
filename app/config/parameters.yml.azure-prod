@@ -1,7 +1,7 @@
 parameters:
     database_host: 127.0.0.1
     database_port: null
-    database_name: govwiki
+    database_name: govwiki_production
     database_user: govwiki
     database_password: pscs@2O17
     mailer_transport: smtp
