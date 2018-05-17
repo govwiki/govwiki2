@@ -20,3 +20,7 @@ _main:
 govwiki_mobile:
     resource: "@GovWikiMobileBundle/Resources/config/routing.yml"
     prefix: /
+
+link:
+  resource: '@GovWikiEnvironmentBundle/Controller/LinkController.php'
+  type: annotation

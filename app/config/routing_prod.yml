@@ -4,3 +4,7 @@ _main:
 govwiki_frontend:
     resource: "@GovWikiFrontendBundle/Resources/config/routing.yml"
     prefix: /
+
+link:
+  resource: '@GovWikiEnvironmentBundle/Controller/LinkController.php'
+  type: annotation
