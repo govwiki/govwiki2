@@ -24,7 +24,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
  * Class EnvironmentController
  * @package GovWiki\AdminBundle\Controller
  *
- * @Configuration\Route("/{environment}", requirements={ "environment": "\w+" })
+ * @Configuration\Route("/environment/{environment}", requirements={ "environment": "\w+" })
  */
 class EnvironmentController extends AbstractGovWikiAdminController
 {
@@ -75,7 +75,7 @@ class EnvironmentController extends AbstractGovWikiAdminController
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
-            if (count($environment->getLocales()) == 1) {
+            if (\count($environment->getLocales()) == 1) {
                 $greetingText = $request->request->get('greetingText');
                 $bottomText = $request->request->get('bottomText');
                 $texts = [
@@ -250,6 +250,11 @@ class EnvironmentController extends AbstractGovWikiAdminController
                 JOIN maps m ON m.id = e.map_id
                 WHERE
                     e.id = {$environment->getId()}
+            ");
+
+            $con->exec("
+                DELETE FROM environments
+                WHERE id = {$environment->getId()}
             ");
 
             $con->commit();

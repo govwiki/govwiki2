@@ -31,3 +31,7 @@ parameters:
     gearman_server: 127.0.0.1
     gearman_port: 4730
     static_generation_output: '%kernel.root_dir%/../static'
+
+    azure_account_name: cafr
+    azure_account_key: cafr
+    azure_share: OsA9Q0AHx1dNG2CZEyRxRyUL3XL7DMpChsNBYW8yzmSJOXIZNL2gDtELb/q72PZ4wODl5WITaCxqL6iI+tv0pw==

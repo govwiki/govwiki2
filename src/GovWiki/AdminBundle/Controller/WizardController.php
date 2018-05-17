@@ -155,31 +155,32 @@ class WizardController extends AbstractGovWikiAdminController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($request->request->getBoolean('withoutMap', false) === false) {
+                $map->setCreated(true);
 
-            $map->setCreated(true);
+                $api = $this->get(CartoDbServices::CARTO_DB_API);
 
-            $environment->setMap($map);
+                /*
+                 * Create dataset for environments.
+                 */
+                $datasetName = GovwikiNamingStrategy::cartoDbDatasetName($environment);
+                $response = $api->createDataset($datasetName, [
+                    'alt_type_slug' => 'VARCHAR(255)',
+                    'slug' => 'VARCHAR(255)',
+                    'data_json' => 'VARCHAR(255)',
+                    'name' => 'VARCHAR(255)',
+                ]);
 
-            $api = $this->get(CartoDbServices::CARTO_DB_API);
-
-            /*
-             * Create dataset for environments.
-             */
-            $datasetName = GovwikiNamingStrategy::cartoDbDatasetName($environment);
-            $response = $api->createDataset($datasetName, [
-                'alt_type_slug' => 'VARCHAR(255)',
-                'slug' => 'VARCHAR(255)',
-                'data_json' => 'VARCHAR(255)',
-                'name' => 'VARCHAR(255)',
-            ]);
-
-            $error = CartoDbApi::getErrorFromResponse($response);
-            if ($error) {
-                $this->errorMessage('Can\'t create new dataset: '. $error);
-                return $this->redirectToRoute('step2');
+                $error = CartoDbApi::getErrorFromResponse($response);
+                if ($error) {
+                    $this->errorMessage('Can\'t create new dataset: '. $error);
+                    return $this->redirectToRoute('step2');
+                }
             }
 
-            $environment->setEnabled(true);
+            $environment
+                ->setMap($map)
+                ->setEnabled(true);
 
             $em = $this->getDoctrine()->getManager();
 
@@ -188,6 +189,7 @@ class WizardController extends AbstractGovWikiAdminController
 
             $this->getGovernmentManager()->createTable($environment);
             $this->createLocale($environment);
+
             $this->setCurrentEnvironment($environment);
             $this->storeEnvironmentEntity($environment);
 
@@ -250,16 +252,12 @@ class WizardController extends AbstractGovWikiAdminController
      */
     public function endAction()
     {
-        $environment = $this->getEnvironmentEntity();
-
         $this->setStep(0);
         $this->storeEnvironmentEntity(null);
         $this->setGreetingText(null);
         $this->setBottomText(null);
 
-        return $this->redirectToRoute('govwiki_admin_main_show', [
-            'slug' => $environment->getSlug(),
-        ]);
+        return $this->redirectToRoute('govwiki_admin_main_home');
     }
 
     /**
@@ -363,7 +361,7 @@ class WizardController extends AbstractGovWikiAdminController
          */
         $step = $this->getStep() + 1;
 
-        $stepsCount = count(self::$wizardSteps);
+        $stepsCount = \count(self::$wizardSteps);
         if ($step >= $stepsCount) {
             $step = $stepsCount - 1;
         }

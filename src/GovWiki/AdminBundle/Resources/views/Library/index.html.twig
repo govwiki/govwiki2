@@ -1,0 +1,136 @@
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - library{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{ macro.breadcrumbElement('Library') }}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    {{ environment.name }} library
+{% endblock panel_title %}
+
+{% block panel_body %}
+
+    {{- file|rootDirectoryBreadcrumb(environment) -}}
+
+    <section class="fileLibrary">
+        <table id="documents-table">
+            <thead>
+            </thead>
+        </table>
+    </section>
+
+
+    <div style="text-align: center">
+        <button id="document-add" class="btn">Add new document</button>
+    </div>
+
+    {% embed 'GovWikiFileLibraryBundle:Partial:modal.html.twig' with {
+        id: 'document-move-modal'
+    } %}
+        {% block content %}
+            <form id="move-form">
+                <div class="modal-body">
+                    <label for="directory">Destination directory</label>
+                    <select id="directory" class="form-control" name="directory">
+                        {%- for id, name in topLevelDirNames -%}
+                            <option value="{{ id }}">{{ name }}</option>
+                        {%- endfor -%}
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Move</button>
+                    </div>
+                </div>
+            </form>
+        {% endblock content %}
+    {% endembed %}
+
+    {% embed 'GovWikiFileLibraryBundle:Partial:modal.html.twig' with {
+        id: 'document-rename-modal'
+    } %}
+        {% block content %}
+            <form id="rename-form">
+                <div class="modal-body">
+                    <input id="document-name" class="form-control" name="name">
+                    <p class="error" style="display: none"></p>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Rename</button>
+                    </div>
+                </div>
+            </form>
+        {% endblock content %}
+    {% endembed %}
+
+    {%- embed 'GovWikiFileLibraryBundle:Partial:modal.html.twig' with {
+        id: 'document-add-modal',
+        title: 'Add new document'
+    } -%}
+        {% block content %}
+            <form id="upload-form" action="{{ path('govwiki_filelibrary_document_upload', { slug: slug }) }}">
+                <div class="modal-body">
+                    <input type="file" id="document-file" class="form-control" name="file">
+                </div>
+
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </form>
+        {% endblock content %}
+    {%- endembed -%}
+
+{% endblock panel_body %}
+
+
+{# Stylesheets #}
+{% block stylesheets %}
+
+    {{ parent() }}
+
+    {% stylesheets
+        '@GovWikiFrontendBundle/Resources/public/css/partials/_library_table.scss'
+        filter='scss, cssrewrite' %}
+        <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+
+{% endblock %}
+
+
+{# Javascripts #}
+{% block javascripts %}
+    {{parent()}}
+    <script>
+      window.gw.urls = {
+        files: '{{ path('govwiki_filelibrary_document_list', {
+            slug: slug
+        }) }}',
+        base:  '{{ path('govwiki_admin_library_index', {
+            environment: environment
+        }) }}'
+      };
+      window.gw.showActions = true;
+      window.gw.defaultOrder = '{{ defaultOrder }}';
+    </script>
+
+    {#<script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.uncompressed.js"></script>#}
+    <script src="/js/common.js"></script>
+    <script src="/js/fileLibrary.js"></script>
+
+{% endblock %}

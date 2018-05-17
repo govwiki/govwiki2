@@ -1,18 +1,22 @@
 govwiki_user:
-    resource: "@GovWikiUserBundle/Resources/config/routing.yml"
-    prefix:   /
+  resource: "@GovWikiUserBundle/Resources/config/routing.yml"
+  prefix:   /
 
 fos_user:
-    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
-    prefix:   /
+  resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+  prefix:   /
 
 govwiki_api:
-    resource: "@GovWikiApiBundle/Resources/config/routing.yml"
-    prefix:   /api
+  resource: "@GovWikiApiBundle/Resources/config/routing.yml"
+  prefix:   /api
 
 govwiki_admin:
-    resource: "@GovWikiAdminBundle/Resources/config/routing.yml"
-    prefix:   /admin
+  resource: "@GovWikiAdminBundle/Resources/config/routing.yml"
+  prefix:   /admin
 
 govwiki_comment:
-    resource: "@GovWikiCommentBundle/Resources/config/routing.yml"
+  resource: "@GovWikiCommentBundle/Resources/config/routing.yml"
+
+govwiki_file_library:
+  resource: "@GovWikiFileLibraryBundle/Controller"
+  type: annotation

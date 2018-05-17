@@ -4,6 +4,7 @@ namespace GovWiki\DbBundle\Form;
 
 use Doctrine\ORM\EntityRepository;
 use GovWiki\DbBundle\Entity\Environment;
+use GovWiki\DbBundle\Form\Type\EnvironmentLibraryCredentialType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -86,7 +87,9 @@ class EnvironmentType extends AbstractType
                 'attr' => [ 'style' => 'height: 220px' ],
             ])
             ->add('adminEmail')
-            ->add('canLogin');
+            ->add('canLogin')
+            ->add('canSignUp')
+            ->add('libraryCredentials', new EnvironmentLibraryCredentialType());
         if ($subject->getId()) {
             $builder->add('defaultLocale', 'entity', [
                 'class'         => 'GovWiki\DbBundle\Entity\Locale',

@@ -1,4 +1,11 @@
 services:
+    govwiki_db.repository.environment:
+        class: 'GovWiki\DbBundle\Entity\Repository\EnvironmentRepository'
+        factory: [ '@doctrine.orm.default_entity_manager', 'getRepository' ]
+        arguments:
+          - 'GovWiki\DbBundle\Entity\Environment'
+        public: false
+
     govwiki_db.factory.repository:
         class: GovWiki\DbBundle\Doctrine\Repository\RepositoryFactory
         arguments: [ '@govwiki_environment.storage' ]
@@ -32,3 +39,4 @@ services:
         arguments: ['%kernel.default_locale%']
         tags:
             - { name: kernel.event_subscriber }
+

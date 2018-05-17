@@ -12,13 +12,15 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Class MainController
  * @package GovWiki\AdminBundle\Controller
+ *
+ * @Configuration\Route("")
  */
 class MainController extends AbstractGovWikiAdminController
 {
     const ENVIRONMENTS_LIMIT = 25;
 
     /**
-     * @Configuration\Route("/")
+     * @Configuration\Route("")
      * @Configuration\Template()
      * @Configuration\Security("is_granted('ROLE_MANAGER')")
      *

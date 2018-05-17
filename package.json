@@ -5,7 +5,10 @@
   "main": "README.md",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "gulp build:js && gulp build:js --mobile"
+    "build": "npm run build:desktop && npm run build:mobile",
+    "build:desktop": "gulp build:js",
+    "build:mobile": "gulp build:js --mobile",
+    "watch": "gulp build:js && gulp watch"
   },
   "repository": {
     "type": "git",
@@ -45,7 +48,10 @@
     "run-sequence": "^1.1.5",
     "sinon": "^1.17.3",
     "webpack": "^1.12.14",
-    "webpack-load-plugins": "^0.1.2",
     "yargs": "^4.4.0"
+  },
+  "dependencies": {
+    "datatables.net": "^1.10.16",
+    "datatables.net-dt": "^1.10.16"
   }
 }

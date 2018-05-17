@@ -3,23 +3,28 @@
 namespace GovWiki\FrontendBundle\Controller;
 
 use FOS\UserBundle\Model\UserManagerInterface;
+use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\MessageCatalogue;
 
 /**
- * MainController
+ * Class MainController
+ *
+ * @package GovWiki\FrontendBundle\Controller
  */
 class MainController extends AbstractGovWikiController
 {
 
     /**
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
-    public function indexAction()
+    public function indexAction(): RedirectResponse
     {
         $qb = $this->getDoctrine()->getRepository('GovWikiDbBundle:Environment')
             ->createQueryBuilder('Environment');
@@ -44,7 +49,7 @@ class MainController extends AbstractGovWikiController
      *
      * @return array
      */
-    public function disabledAction()
+    public function disabledAction(): array
     {
         return [];
     }
@@ -55,22 +60,37 @@ class MainController extends AbstractGovWikiController
      *
      * @param Request $request A Request instance.
      *
-     * @return array
+     * @return Response
      */
-    public function mapAction(Request $request)
+    public function mapAction(Request $request): Response
     {
         if ($this->getCurrentEnvironment() === null) {
             return $this->redirectToRoute('disabled');
         }
 
-        $translator = $this->get('translator');
-
         $environment = $this->getCurrentEnvironment();
 
-        $years = $this->getGovernmentManager()->getAvailableYears($environment);
-        $currentYear = (count($years) > 0) ? 'latest' : 0;
+        if ($environment->getMap()->isCreated()) {
+            return $this->renderMap($request, $environment);
+        }
 
+        return $this->redirectToRoute('govwiki_filelibrary_document_index');
+    }
+
+    /**
+     * @param Request     $request     A HTTP Request.
+     * @param Environment $environment A current environment.
+     *
+     * @return Response
+     */
+    private function renderMap(Request $request, Environment $environment): Response
+    {
         $map = $environment->getMap();
+        $translator = $this->get('translator');
+
+        $years = $this->getGovernmentManager()->getAvailableYears($environment);
+        $currentYear = (\count($years) > 0) ? 'latest' : 0;
+
         $coloringConditions = $map->getColoringConditions();
         $fieldMask = $this->getFormatManager()
             ->getFieldFormat($environment, $coloringConditions->getFieldName());
@@ -123,6 +143,6 @@ class MainController extends AbstractGovWikiController
             $params['form'] = $form->createView();
         }
 
-        return $params;
+        return $this->render('GovWikiFrontendBundle:Main:map.html.twig', $params);
     }
 }

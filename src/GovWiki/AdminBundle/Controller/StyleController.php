@@ -169,14 +169,14 @@ class StyleController extends AbstractGovWikiAdminController
 
                 $styles = [];
 
-                while (($data = $file->fgetcsv(';')) && (count($data) === 3)) {
+                while (($data = $file->fgetcsv(';')) && (\count($data) === 3)) {
                     $style = new EnvironmentStyles();
                     $style
                         ->setType($type)
                         ->setEnvironment($environment)
                         ->setName($data[0])
                         ->setClassName($data[1])
-                        ->setProperties($data[2], true);
+                        ->setProperties($data[2]);
                     $styles[] = $style;
 
                     $em->persist($style);

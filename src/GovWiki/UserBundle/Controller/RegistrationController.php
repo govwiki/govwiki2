@@ -23,8 +23,9 @@ class RegistrationController extends BaseController
     {
         /** @var EnvironmentStorageInterface $storage */
         $storage = $this->get(GovWikiEnvironmentService::STORAGE);
+        $environment = $storage->get();
 
-        if (! $storage->get()->isCanLogin()) {
+        if (! $environment->isCanLogin() || ! $environment->isCanSignUp()) {
             throw new NotFoundHttpException();
         }
 

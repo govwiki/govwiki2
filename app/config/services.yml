@@ -1,7 +1,5 @@
-# Learn more about services, parameters and containers at
-# http://symfony.com/doc/current/book/service_container.html
-parameters:
-#    parameter_name: value
+imports:
+  - { resource: '@GovWikiFileLibraryBundle/Resources/config/services.yml' }
 
 services:
     fos_user.doctrine_registry:
@@ -9,5 +7,7 @@ services:
 
     app.form.registration:
         class: GovWiki\UserBundle\Form\RegistrationForm
+        arguments:
+          - '@govwiki_environment.storage'
         tags:
             - { name: form.type, alias: app_user_registration }

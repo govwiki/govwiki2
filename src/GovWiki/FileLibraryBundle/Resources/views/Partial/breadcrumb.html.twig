@@ -1,0 +1,7 @@
+<ul class="path-breadcrumb">
+    {%- for name, slug in data -%}
+        <li>
+            <a href="{{ path('govwiki_filelibrary_document_index', { slug: slug }) }}">{{ name }}</a>
+        </li>
+    {%- endfor -%}
+</ul>

@@ -6,7 +6,11 @@
         'govwiki_admin_environment_show',
         { 'environment': environment.slug }
     )-}}
-
+    {{- macro.submenuElement(
+        'Library',
+        'govwiki_admin_library_index',
+        { 'environment': environment.slug }
+    )-}}
     {{- macro.submenuElement(
         'Templates',
         'govwiki_admin_environment_template',

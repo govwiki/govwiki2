@@ -3,7 +3,9 @@
 namespace GovWiki\AdminBundle\Twig;
 
 use GovWiki\DbBundle\Doctrine\Type\ColoringConditions\ConditionInterface;
+use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
+use GovWiki\FileLibraryBundle\Entity\Directory;
 
 /**
  * Class TwigExtensions
@@ -67,6 +69,10 @@ class TwigExtensions extends \Twig_Extension
                 $this,
                 'getConditionType',
             ]),
+            new \Twig_SimpleFilter('rootDirectoryBreadcrumb', [ $this, 'directoryBreadcrumb' ], [
+                'is_safe' => [ 'html' ],
+                'needs_environment' => true,
+            ]),
         ];
     }
 
@@ -119,5 +125,48 @@ class TwigExtensions extends \Twig_Extension
     public function getConditionType(ConditionInterface $condition)
     {
         return $condition::getType();
+    }
+
+    /**
+     * @param \Twig_Environment $twig        A twig environment.
+     * @param Directory|null    $directory   A directory for which we should create
+     *                                       breadcrumb.
+     * @param Environment       $environment A Environment instance.
+     *
+     * @return string
+     */
+    public function directoryBreadcrumb(
+        \Twig_Environment $twig,
+        Directory $directory = null,
+        Environment $environment
+    ): string {
+        $data = \array_reverse(self::collectBreadcrumbData($directory), true);
+
+        return $twig->render('@GovWikiAdmin/Partial/breadcrumb.html.twig', [
+            'environment' => $environment,
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * @param Directory|null $directory A current processed directory.
+     * @param array          $result    Internal variable which is used for storing
+     *                                  context between recursion call. Should not set.
+     *
+     * @return array
+     */
+    private static function collectBreadcrumbData(
+        Directory $directory = null,
+        array $result = []
+    ): array {
+        if ($directory === null) {
+            $result['Directories'] = null;
+
+            return $result;
+        }
+
+        $result[$directory->getName()] = $directory->getSlug();
+
+        return self::collectBreadcrumbData($directory->getParent(), $result);
     }
 }

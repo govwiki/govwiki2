@@ -1,0 +1,44 @@
+#
+# Docker compose file for development
+#
+
+version: "3"
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - 8081:80
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  nginx:
+    image: nginx:stable-alpine
+    volumes:
+      - ./nginx/nginx_host.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../:/code
+    environment:
+      - VIRTUAL_HOST=*.govwiki.development,govwiki.development
+    depends_on:
+      - nginx-proxy
+      - php-fpm
+
+  php-fpm:
+    build: ./php-fpm
+    environment:
+      PHP_IDE_CONFIG: "serverName=govwiki"
+    volumes:
+      - ../:/code
+
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: govwiki
+    volumes:
+      - ./db:/var/lib/mysql
+
+  mta:
+    image: mailhog/mailhog
+    ports:
+      - 8025:8025
