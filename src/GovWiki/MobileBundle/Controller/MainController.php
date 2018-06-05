@@ -3,12 +3,13 @@
 namespace GovWiki\MobileBundle\Controller;
 
 use FOS\UserBundle\Model\UserManagerInterface;
+use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\MessageCatalogue;
 
 /**
@@ -41,20 +42,38 @@ class MainController extends AbstractGovWikiController
 
     /**
      * @Route("/", name="map")
-     * @Template("GovWikiMobileBundle:Main:map.html.twig")
      *
      * @param Request $request A Request instance.
      *
-     * @return array
+     * @return Response
      */
     public function mapAction(Request $request)
     {
-        $translator = $this->get('translator');
+        if ($this->getCurrentEnvironment() === null) {
+            return $this->redirectToRoute('disabled');
+        }
 
         $environment = $this->getCurrentEnvironment();
 
+        if ($environment->getMap()->isCreated()) {
+            return $this->renderMap($request, $environment);
+        }
+
+        return $this->redirectToRoute('govwiki_filelibrary_document_index');
+    }
+
+    /**
+     * @param Request     $request     A HTTP Request.
+     * @param Environment $environment A current environment.
+     *
+     * @return Response
+     */
+    public function renderMap(Request $request, Environment $environment): Response
+    {
+        $translator = $this->get('translator');
+
         $years = $this->getGovernmentManager()->getAvailableYears($environment);
-        $currentYear = (count($years) > 0) ? $years[0] : 0;
+        $currentYear = (\count($years) > 0) ? $years[0] : 0;
 
         $map = $environment->getMap();
         $coloringConditions = $map->getColoringConditions();
@@ -78,7 +97,7 @@ class MainController extends AbstractGovWikiController
             $greetingText = $translator->trans($transKey);
         }
         $params = [
-            'map' => json_encode($map),
+            'map' => \json_encode($map),
             'greetingText' => $greetingText,
             'years' => $years,
             'currentYear' => $currentYear,
@@ -108,6 +127,6 @@ class MainController extends AbstractGovWikiController
             $params['form'] = $form->createView();
         }
 
-        return $params;
+        return $this->render('GovWikiMobileBundle:Main:map.html.twig', $params);
     }
 }
