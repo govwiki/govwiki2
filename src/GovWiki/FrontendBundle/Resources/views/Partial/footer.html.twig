@@ -7,10 +7,6 @@
         {{ 'general.bottom_text'|trans|raw }}
     </div>
 
-    {% dump copyright is not empty  %}
-    {% dump links is not empty  %}
-    {% dump social is not empty  %}
-
     {% if copyright is not empty and links is not empty and social is not empty %}
         {# Copyright #}
         <div class="copyright-wrapper col-xs-12 col-sm-6 col-md-8">
