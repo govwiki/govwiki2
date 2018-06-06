@@ -15,7 +15,7 @@ set :app_config_path, fetch(:app_path) + '/config'
 set :log_path,        fetch(:var_path) + '/logs'
 set :cache_path,      fetch(:var_path) + '/cache'
 
-set :symfony_console_path, "#{:bin_path}/console"
+set :symfony_console_path, "#{fetch(:bin_path)}/console"
 set :symfony_console_flags, '--env=' + fetch(:symfony_env) + '--no-debug'
 
 # GIT config
