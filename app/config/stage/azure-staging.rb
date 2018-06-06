@@ -6,6 +6,15 @@ ssh_options: {
   auth_methods: %w(publickey)
 }
 
+set :rsync_options, {
+  source: '.',
+  cache: 'cached-copy',
+  args: {
+    local_to_remote: %W(--rsh #{fetch(:rsh)} --compress --recursive --delete --exclude=.git* --delete-excluded),
+    cache_to_release: %w(--archive)
+  }
+}
+
 set :deploy_to, '/var/www/html/govwiki_staging'
 set :branch,    'azure-staging'
 
