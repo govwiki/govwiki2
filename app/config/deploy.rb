@@ -1,6 +1,7 @@
-set :stage, fetch(:stage)
-
 set :application, 'Govwiki'
+
+set :stage, fetch(:stage)
+set :symfony_env, 'prod'
 
 set :symfony_directory_structure, 2
 set :sensio_distribution_version, 4
@@ -9,28 +10,28 @@ set :web_path,                    'web'
 set :var_path,                    'app'
 set :bin_path,                    'app'
 
-set :app_config_path, -> { fetch(:app_path) + "/config" }
-set :log_path, -> { fetch(:var_path) + "/logs" }
-set :cache_path, -> { fetch(:var_path) + "/cache" }
+set :app_config_path, fetch(:app_path) + '/config'
+set :log_path,        fetch(:var_path) + '/logs'
+set :cache_path,      fetch(:var_path) + '/cache'
 
-set :symfony_console_path, -> { fetch(:bin_path) + "/console" }
-set :symfony_console_flags, "--no-debug"
+set :symfony_console_path, "#{:bin_path}/console"
+set :symfony_console_flags, '--env=' + fetch(:symfony_env) + '--no-debug'
 
 # GIT config
 set :repo_url, 'git@git.sibers.com:sibers/govwiki.git'
 
-set :linked_files, -> { [ "#{fetch :app_config_path}/parameters.yml" ] }
-set :linked_dirs, -> { [ "#{fetch :var_path}" ] }
+set :linked_files, [ fetch(:app_config_path) + '/parameters.yml' ]
+set :linked_dirs,  [ 'web/img', 'web/img/upload', 'web/css' ]
 
 set :keep_releases, 3
 
 set :permission_method, :acl
-set :file_permissions_users, []
+set :file_permissions_users,  [ 'sibers', 'www-data' ]
 set :file_permissions_groups, []
-set :file_permissions_paths, -> { [] }
+set :file_permissions_paths,  [ 'web/img', 'web/img/upload', 'web/css' ]
 
 # Composer
-set :composer_install_flags, "--no-interaction --optimize-autoloader"
+set :composer_install_flags, '--no-interaction --optimize-autoloader'
 
 # Custom tasks
 namespace :deploy do
@@ -64,11 +65,11 @@ namespace :deploy do
     end
 end
 
-before "deploy:check:linked_files", "deploy:touch_params"
-before "composer:run",              "deploy:rewrite_params"
-before "deploy:cleanup",            "deploy:create_symlink_to_web"
-before "deploy:updated",            "deploy:set_permissions:acl"
-before "symfony:cache:warmup",      "deploy:migrate"
-before "symfony:cache:warmup",      "deploy:assets"
-#after  "deploy:migrate",            "deploy:load_fixtures"
+before 'deploy:check:linked_files', 'deploy:touch_params'
+before 'composer:run',              'deploy:rewrite_params'
+before 'deploy:cleanup',            'deploy:create_symlink_to_web'
+before 'deploy:updated',            'deploy:set_permissions:acl'
+before 'symfony:cache:warmup',      'deploy:migrate'
+before 'symfony:cache:warmup',      'deploy:assets'
+#after  'deploy:migrate',           'deploy:load_fixtures'
 
