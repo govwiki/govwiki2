@@ -107,13 +107,15 @@
             {{ form_start(form) }}
 
             {# Nav tabs #}
-            {% if environment.locales|length == 1 %}
-                <ul class="nav nav-pills" role="tablist">
-                    <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
-                    <li role="presentation"><a href="#greeting-text" aria-controls="greeting-text" role="tab" data-toggle="tab">Greeting text</a></li>
-                    <li role="presentation"><a href="#bottom-text" aria-controls="bottom-text" role="tab" data-toggle="tab">Bottom text</a></li>
-                </ul>
-            {% endif %}
+            <ul class="nav nav-pills" role="tablist">
+                <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
+                <li role="presentation"><a href="#document-storage" aria-controls="greeting-text" role="tab" data-toggle="tab">Document storage</a></li>
+
+                {% if environment.locales|length == 1 %}
+                <li role="presentation"><a href="#greeting-text" aria-controls="greeting-text" role="tab" data-toggle="tab">Greeting text</a></li>
+                <li role="presentation"><a href="#bottom-text" aria-controls="bottom-text" role="tab" data-toggle="tab">Bottom text</a></li>
+                {% endif %}
+            </ul>
 
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="general">
@@ -127,6 +129,11 @@
                     {{ form_row(form.analytics) }}
                     {{ form_row(form.subscribable, {'label': 'Users can subscribe to governments of the environment'}) }}
                     {{ form_row(form.canLogin) }}
+                    {{ form_row(form.canSignUp) }}
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="document-storage">
+                    {{ form_row(form.libraryCredentials) }}
                 </div>
 
                 {% if environment.locales|length == 1 %}

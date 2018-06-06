@@ -39,3 +39,7 @@ parameters:
     gearman_server: 127.0.0.1
     gearman_port: 4730
     static_generation_output: '%kernel.root_dir%/../static'
+
+    azure_account_name: ~
+    azure_account_key: ~
+    azure_share: ~

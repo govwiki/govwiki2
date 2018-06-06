@@ -44,6 +44,7 @@ class AppKernel extends Kernel
             new GovWiki\FrontendBundle\GovWikiFrontendBundle(),
             new GovWiki\MobileDetectBundle\GovWikiMobileDetectBundle(),
             new GovWiki\GeneratorBundle\GovWikiGeneratorBundle(),
+            new GovWiki\FileLibraryBundle\GovWikiFileLibraryBundle(),
             new Salva\JshrinkBundle\SalvaJshrinkBundle(),
             new Mmoreram\GearmanBundle\GearmanBundle(),
         ];

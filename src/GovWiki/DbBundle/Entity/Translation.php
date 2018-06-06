@@ -148,7 +148,7 @@ class Translation
      */
     public function setTranslation($translation)
     {
-        $this->translation = $translation;
+        $this->translation = \trim($translation);
 
         return $this;
     }

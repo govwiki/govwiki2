@@ -122,7 +122,9 @@
                             </div>
 
                             <input class="btn btn-default" type="submit" id="_submit" name="_submit" value="Log in" />
-                            <a href="{{ path('fos_user_registration_register') }}" class="btn btn-default pull-right">Sign up</a>
+                            {% if environment.canSignUp %}
+                                <a href="{{ path('fos_user_registration_register') }}" class="btn btn-default pull-right">Sign up</a>
+                            {% endif %}
                         </form>
 
                     </div>

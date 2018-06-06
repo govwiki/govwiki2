@@ -1,0 +1,77 @@
+services:
+
+  govwiki_filelibrary.controller.document:
+    class: 'GovWiki\FileLibraryBundle\Controller\DocumentController'
+    arguments:
+      - '@govwiki_filelibrary.storage_factory'
+      - '@govwiki_environment.storage'
+    calls:
+      -
+        method: 'setContainer'
+        arguments:
+          - '@service_container'
+
+  govwiki_filelibrary.repository.file:
+    class: 'GovWiki\FileLibraryBundle\Repository\FileRepository'
+    factory: [ '@doctrine.orm.entity_manager', 'getRepository' ]
+    arguments:
+      - 'GovWiki\FileLibraryBundle\Entity\AbstractFile'
+
+  govwiki_filelibrary.document_entity_factory:
+    class: 'GovWiki\FileLibraryBundle\Entity\EntityFactory'
+    arguments:
+      - '@govwiki_filelibrary.repository.file'
+
+  govwiki_filelibrary.storage_adapter_factory:
+    class: 'GovWiki\FileLibraryBundle\Storage\StorageAdapterFactory'
+
+  govwiki_filelibrary.storage_index.orm:
+    class: 'GovWiki\FileLibraryBundle\Storage\Index\ORMStorageIndex'
+    arguments:
+      - '@govwiki_filelibrary.document_entity_factory'
+      - '@doctrine.orm.default_entity_manager'
+
+  govwiki_filelibrary.storage_index: '@govwiki_filelibrary.storage_index.orm'
+
+  govwiki_filelibrary.storage_factory:
+    class: 'GovWiki\FileLibraryBundle\Storage\StorageFactory'
+    arguments:
+      - '@govwiki_filelibrary.storage_adapter_factory'
+      - '@govwiki_filelibrary.storage_index'
+
+  govwiki_filelibrary.command.document_index_initialize:
+    class: 'GovWiki\FileLibraryBundle\Command\DocumentIndexInitializeCommand'
+    arguments:
+      - '@govwiki_filelibrary.storage_factory'
+      - '@doctrine.orm.default_entity_manager'
+    tags:
+      - { name: 'console.command' }
+
+  govwiki_filelibrary.command.document_index_update:
+    class: 'GovWiki\FileLibraryBundle\Command\DocumentIndexUpdateCommand'
+    arguments:
+      - '@govwiki_filelibrary.storage_factory'
+      - '@doctrine.orm.default_entity_manager'
+    tags:
+      - { name: 'console.command' }
+
+  govwiki_filelibrary.normalizer.document:
+    class: 'GovWiki\FileLibraryBundle\Serialize\Normalizer\DocumentNormalizer'
+    arguments:
+      - '@govwiki_filelibrary.storage_factory'
+      - '@govwiki_environment.storage'
+      - '@router'
+    tags:
+      - { name: 'serializer.normalizer' }
+
+  govwiki_filelibrary.normalizer.directory:
+    class: 'GovWiki\FileLibraryBundle\Serialize\Normalizer\DirectoryNormalizer'
+    arguments:
+      - '@router'
+    tags:
+      - { name: 'serializer.normalizer' }
+
+  govwiki_filelibrary.twig_extension:
+    class: 'GovWiki\FileLibraryBundle\Twig\Extension'
+    tags:
+     - { name: 'twig.extension' }

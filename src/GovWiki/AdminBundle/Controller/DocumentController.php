@@ -20,6 +20,9 @@ use Symfony\Component\HttpFoundation\Request;
  *      "government": "\d+"
  *  }
  * )
+ *
+ * @deprecated
+ * @see LibraryController
  */
 class DocumentController extends AbstractGovWikiAdminController
 {

@@ -24,7 +24,7 @@ use Symfony\Component\Validator\Constraints\Email;
  * @UniqueEntity(fields="username")
  * @UniqueEntity(fields="email")
  */
-class User extends BaseUser
+class User extends BaseUser implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -447,7 +447,7 @@ class User extends BaseUser
      */
     public function isAdmin()
     {
-        return in_array('ROLE_ADMIN', $this->roles, true);
+        return \in_array('ROLE_ADMIN', $this->roles, true);
     }
 
     /**
@@ -460,5 +460,19 @@ class User extends BaseUser
     public function setLocked($boolean)
     {
         $this->enabled = !$boolean;
+    }
+
+    /**
+     * Specify data which should be serialized to JSON.
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'type' => 'user',
+            'id' => $this->id,
+            'first'
+        ];
     }
 }

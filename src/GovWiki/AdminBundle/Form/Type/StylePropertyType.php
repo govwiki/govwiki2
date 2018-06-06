@@ -25,7 +25,7 @@ class StylePropertyType extends AbstractType
                 /*
                  * Transformer property from array to form view.
                  */
-                if (is_array($original)) {
+                if (\is_array($original)) {
                     $result = [];
                     foreach ($original as $property) {
                         $result[$property[0]] = $property[1];

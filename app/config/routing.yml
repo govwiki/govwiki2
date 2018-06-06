@@ -16,3 +16,7 @@ govwiki_admin:
 
 govwiki_comment:
   resource: "@GovWikiCommentBundle/Resources/config/routing.yml"
+
+govwiki_file_library:
+  resource: "@GovWikiFileLibraryBundle/Controller"
+  type: annotation

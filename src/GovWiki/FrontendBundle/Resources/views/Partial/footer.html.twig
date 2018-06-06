@@ -1,31 +1,40 @@
 <div class="row footer">
+    {% set copyright = 'footer.copyright'|trans|raw %}
+    {% set links = 'footer.links'|trans|raw %}
+    {% set social = 'footer.social'|trans|raw %}
 
-    {# Copyright #}
-    <div class="copyright-wrapper col-xs-12 col-sm-6 col-md-8">
+    <div>
+        {{ 'general.bottom_text'|trans|raw }}
+    </div>
 
-        <div class="copyright">
-            {#{{ environment_content.get('footer_copyright')|raw }}#}
-            {{ 'footer.copyright'|trans|raw }}
+    {% dump copyright is not empty  %}
+    {% dump links is not empty  %}
+    {% dump social is not empty  %}
+
+    {% if copyright is not empty and links is not empty and social is not empty %}
+        {# Copyright #}
+        <div class="copyright-wrapper col-xs-12 col-sm-6 col-md-8">
+
+            <div class="copyright">
+                {{ copyright }}
+            </div>
+
         </div>
 
-    </div>
+        {# Site links #}
+        <div class="col-xs-6 col-sm-3 col-md-2">
 
-    {# Site links #}
-    <div class="col-xs-6 col-sm-3 col-md-2">
+            <div class="site-links">
+                {{ links}}
+            </div>
 
-        <div class="site-links">
-            {#{{ environment_content.get('footer_links')|raw }}#}
-            {{ 'footer.links'|trans|raw }}
         </div>
 
-    </div>
-
-    {# Social links #}
-    <div class="col-xs-6 col-sm-3 col-md-2">
-        {#{{ environment_content.get('footer_social')|raw }}#}
-        {{ 'footer.social'|trans|raw }}
-    </div>
-
+        {# Social links #}
+        <div class="col-xs-6 col-sm-3 col-md-2">
+            {{ social }}
+        </div>
+    {% endif %}
 </div>
 
 

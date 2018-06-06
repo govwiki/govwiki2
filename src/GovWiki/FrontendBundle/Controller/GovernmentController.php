@@ -221,7 +221,6 @@ class GovernmentController extends AbstractGovWikiController
         }
         $user = $this->getUser();
 
-        $this->clearTranslationsCache();
         $manager = $this->getGovernmentManager();
         /** @var FinDataProcessorInterface $processor */
         $processor = $this->get(GovWikiEnvironmentService::FINDATA_PROCESSOR);
@@ -388,15 +387,5 @@ From ' . $user_email;
             }
         }
         return false;
-    }
-
-    private function clearTranslationsCache()
-    {
-        $cacheDir = __DIR__ . "/../../../../app/cache";
-        $finder = new \Symfony\Component\Finder\Finder();
-        $finder->in([$cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"])->files();
-        foreach($finder as $file){
-            unlink($file->getRealpath());
-        }
     }
 }

@@ -29,8 +29,6 @@ class LocalizationController extends AbstractGovWikiController
      */
     public function changeLocaleAction(Request $request, $locale)
     {
-        $this->clearTranslationsCache();
-
         $url = $request->server->get('HTTP_REFERER');
         $this->get('session')->set('_locale', $locale);
 
@@ -53,15 +51,5 @@ class LocalizationController extends AbstractGovWikiController
         $locale_names_list = $this->getDoctrine()->getRepository('GovWikiDbBundle:AbstractLocale')->getListLocaleNames($environment);
 
         return [ 'locale_names_list' => $locale_names_list, 'current_page_route' => $current_page_route ];
-    }
-
-    private function clearTranslationsCache()
-    {
-        $cacheDir = __DIR__ . "/../../../../app/cache";
-        $finder = new \Symfony\Component\Finder\Finder();
-        $finder->in([$cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"])->files();
-        foreach($finder as $file){
-            unlink($file->getRealpath());
-        }
     }
 }

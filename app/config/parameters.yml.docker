@@ -1,0 +1,33 @@
+parameters:
+    database_host: db
+    database_port: null
+    database_name: govwiki
+    database_user: root
+    database_password: root
+    mailer_transport: smtp
+    mailer_host: mta
+    mailer_user: null
+    mailer_password: null
+    secret: ThisTokenIsNotSoSecretChangeIt
+    admin_email: contact@calpolicycenter.org
+    chat_email: chat@govwiki.cloudapp.net
+    email_subject: 'California Policy Center'
+    debug: 1
+    carto_db.account: shemindmitry
+    carto_db.api_key: 26443c294222835282a7da3f748aef98e549a010
+    carto_db.prefix: ''
+    determinator.name: host
+    main_host: govwiki.development
+    twilio.sid: AC5b2f497a5a42370ed1a75306fd4e5393
+    twilio.token: 3fdce2f11d8b4826a5f6b423d5bb05e4
+    twilio.from: '+17874939277'
+    survey_monkey.api_key: pdfez754mptymmq6r3u5rtgd
+    survey_monkey.access_token: -ygmm.byYu2uqC5jcV7qq73YvAJveBPiZB9-iy9Gc0i3U8RbMHKRFA2tvSaVYDRadbzMAnfEkc3W9cFZhre.7WZVyka7UjEJl0Z4ZeSw9G0IVoiiSyqxCXtroXGcppN6k.Dj3c.ZHAIghDfxhyfolj-GtkVBSm1yVXAocRAFvhJmYJShJeKhkXswG5E-DVWk
+
+    gearman_server: 127.0.0.1
+    gearman_port: 4730
+    static_generation_output: '%kernel.root_dir%/../static'
+
+    azure_account_name: cafr
+    azure_account_key: cafr
+    azure_share: OsA9Q0AHx1dNG2CZEyRxRyUL3XL7DMpChsNBYW8yzmSJOXIZNL2gDtELb/q72PZ4wODl5WITaCxqL6iI+tv0pw==

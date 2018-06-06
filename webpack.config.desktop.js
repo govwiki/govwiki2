@@ -12,6 +12,7 @@ module.exports = {
     cache: false,
     entry: {
         map: './' + path.base + '/home/index.js',
+        fileLibrary: './' + path.base + '/fileLibrary/index.js',
         government: './' + path.base + '/government/index.js',
         common: './' + path.base + '/common.js',
         elected: './' + path.base + '/elected/handlers.js'
@@ -22,6 +23,10 @@ module.exports = {
         chunkFilename: '[id].js'
     },
     devtool: 'eval',
+    node: {
+        fs: "empty",
+        child_process: "empty"
+    },
     resolve: {
         root: [ pathUtil.join(__dirname, 'bower_components') ],
         alias: {

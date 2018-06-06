@@ -75,14 +75,14 @@
                 {%- if (environment.canLogin) -%}
                     <li>
                         <a href="#" class="link" id="login-link">
-                            Login / Sign Up
+                            Login {% if environment.canSignUp %}/ Sign Up{% endif %}
                         </a>
                     </li>
                 {%- endif -%}
             {% endif %}
 
             {# Return to map #}
-            {% if app.request.attributes.get('_route') != "map" %}
+            {% if (app.request.attributes.get('_route') != "map") and (environment.map.created) %}
                 <li>
                     <a href="{{ path('map') }}" class="link">
                         {{ 'header.links.return_to_map'|trans }}

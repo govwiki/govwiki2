@@ -14,6 +14,11 @@
 
 {% block panel_body %}
     {{ form_start(form) }}
+        <div class="form-group">
+            <div class="checkbox">
+                <label><input type="checkbox" id="without-map" name="withoutMap" value="1"> Without map</label>
+            </div>
+        </div>
         {{ form_widget(form) }}
 
         <a class="pull-left btn btn-danger" href="{{ path('govwiki_admin_wizard_cancel') }}">Cancel</a>

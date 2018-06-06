@@ -177,7 +177,7 @@ class GovernmentManager implements GovernmentManagerInterface
             $environment
         );
         $this->em->getConnection()
-            ->exec("DROP TABLE IF EXISTS `{$tableName}``");
+            ->exec("DROP TABLE IF EXISTS `{$tableName}`");
     }
 
     /**

@@ -60,7 +60,7 @@ class Extension extends \Twig_Extension
     {
         $value = $government[$format['field']];
 
-        if (is_string($value)) {
+        if (\is_string($value)) {
             if ('' === $value || '0' === $value) {
                 return null;
             }
@@ -68,7 +68,7 @@ class Extension extends \Twig_Extension
             return null;
         }
 
-        if (strlen($format['mask']) > 0) {
+        if (\strlen($format['mask']) > 0) {
             $mask = $format['mask'];
             $prefix = '';
             $postfix = '';
@@ -135,7 +135,7 @@ class Extension extends \Twig_Extension
      */
     public function isViewed(array $format, array $government)
     {
-        return in_array($government['altType'], $format['showIn'], true);
+        return \in_array($government['altType'], $format['showIn'], true);
     }
 
     /**
@@ -145,7 +145,7 @@ class Extension extends \Twig_Extension
      */
     public function displayValue($value)
     {
-        if (is_string($value)) {
+        if (\is_string($value)) {
             if ($this->isUrl($value)) {
                 return '<a href="' . $value . '">' . $this->fixValueSize($value) . '</a>';
             }
@@ -163,8 +163,8 @@ class Extension extends \Twig_Extension
      */
     private function fixValueSize($value)
     {
-        if (is_string($value) && strlen($value) > 25) {
-            return mb_substr($value, 0, 19) .'...';
+        if (\is_string($value) && \strlen($value) > 25) {
+            return \mb_substr($value, 0, 19) .'...';
         }
 
         return $value;
@@ -177,6 +177,6 @@ class Extension extends \Twig_Extension
      */
     private function isUrl($string)
     {
-        return filter_var(trim($string), FILTER_VALIDATE_URL);
+        return \filter_var(\trim($string), FILTER_VALIDATE_URL);
     }
 }

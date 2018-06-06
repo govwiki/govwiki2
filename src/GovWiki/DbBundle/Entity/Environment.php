@@ -5,6 +5,7 @@ namespace GovWiki\DbBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use GovWiki\DbBundle\Entity\ValueObject\EnvironmentFileStorageCredentials;
 use GovWiki\EnvironmentBundle\Strategy\GovwikiNamingStrategy;
 use GovWiki\UserBundle\Entity\User;
 use JMS\Serializer\Annotation\Groups;
@@ -20,8 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  repositoryClass="GovWiki\DbBundle\Entity\Repository\EnvironmentRepository"
  * )
  *
- * @UniqueEntity({"name"})
- * @UniqueEntity({"domain"})
+ * @UniqueEntity({"name", "domain"})
  */
 class Environment
 {
@@ -229,7 +229,7 @@ class Environment
      *
      * @ORM\Column(type="boolean")
      */
-    protected $showGovernmentComment;
+    protected $showGovernmentComment = false;
 
     /**
      * @var string
@@ -251,7 +251,21 @@ class Environment
     protected $canLogin = true;
 
     /**
+     * @var boolean
      *
+     * @ORM\Column(type="boolean")
+     */
+    protected $canSignUp = true;
+
+    /**
+     * @var EnvironmentFileStorageCredentials|null
+     *
+     * @ORM\Column(type="object", nullable=true)
+     */
+    protected $libraryCredentials;
+
+    /**
+     * Environment constructor.
      */
     public function __construct()
     {
@@ -1003,5 +1017,47 @@ class Environment
     public function isCanLogin()
     {
         return $this->canLogin;
+    }
+
+    /**
+     * @param boolean $canSignUp Can user signup or not. Make sense only if canLogin
+     *                           is set to true.
+     *
+     * @return $this
+     */
+    public function setCanSignUp(bool $canSignUp): self
+    {
+        $this->canSignUp = $canSignUp;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isCanSignUp(): bool
+    {
+        return $this->canSignUp;
+    }
+
+    /**
+     * @return EnvironmentFileStorageCredentials|null
+     */
+    public function getLibraryCredentials()
+    {
+        return $this->libraryCredentials;
+    }
+
+    /**
+     * @param EnvironmentFileStorageCredentials|null $libraryCredentials A EnvironmentFileStorageCredentials
+     *                                                                   instance.
+     *
+     * @return $this
+     */
+    public function setLibraryCredentials(EnvironmentFileStorageCredentials $libraryCredentials = null): self
+    {
+        $this->libraryCredentials = $libraryCredentials;
+
+        return $this;
     }
 }

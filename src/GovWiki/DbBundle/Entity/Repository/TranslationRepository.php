@@ -1,12 +1,4 @@
 <?php
-/*
- * This file is part of the AsmTranslationLoaderBundle package.
- *
- * (c) Marc Aschmann <maschmann@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace GovWiki\DbBundle\Entity\Repository;
 
@@ -29,13 +21,13 @@ class TranslationRepository extends EntityRepository
         $expr = $this->_em->getExpressionBuilder();
 
         $globalLocaleDQL = $this->_em->createQueryBuilder()
-            ->select('GlobalLocale')
+            ->select('GlobalLocale.id')
             ->from('GovWikiDbBundle:GlobalLocale', 'GlobalLocale')
             ->where($expr->eq('GlobalLocale.shortName', ':locale'))
             ->getDQL();
 
         return $this->createQueryBuilder('tr')
-            ->select('tr')
+            ->select('tr.transKey, tr.translation')
             ->leftJoin('tr.locale', 'Locale')
             ->where($expr->orX(
                 $expr->andX(

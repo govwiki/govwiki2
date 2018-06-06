@@ -1,5 +1,4 @@
 services:
-
     govwiki_db.form.type.environment:
         class: GovWiki\DbBundle\Form\EnvironmentType
         arguments: [ %kernel.root_dir%/../web]

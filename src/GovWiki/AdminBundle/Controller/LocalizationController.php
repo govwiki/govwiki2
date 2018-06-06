@@ -7,6 +7,7 @@ use GovWiki\DbBundle\Entity\GlobalLocale;
 use GovWiki\DbBundle\Entity\Locale;
 use GovWiki\AdminBundle\GovWikiAdminServices;
 use GovWiki\DbBundle\Entity\Repository\LocaleRepository;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration as Configuration;
 use Symfony\Component\HttpFoundation\Request;
@@ -215,6 +216,7 @@ class LocalizationController extends AbstractGovWikiAdminController
                 }
 
                 $em->flush();
+                $this->clearTranslationsCache();
 
                 return $this->redirectToRoute('govwiki_admin_localization_index', [
                     'environment' => $environment->getSlug(),
@@ -250,13 +252,12 @@ class LocalizationController extends AbstractGovWikiAdminController
         $locale = $this->getLocaleManager()->getOneLocaleByShortName($locale_name);
         $em->remove($locale);
         $em->flush();
+        $this->clearTranslationsCache();
 
         return $this->redirectToRoute('govwiki_admin_localization_index', [
             'environment' => $this->getCurrentEnvironment()->getSlug()
         ]);
     }
-
-
 
     /**
      * @Configuration\Route("/{locale_name}/export")
@@ -377,6 +378,7 @@ class LocalizationController extends AbstractGovWikiAdminController
             }
 
             $em->flush();
+            $this->clearTranslationsCache();
 
             return $this->redirectToRoute('govwiki_admin_localization_showlocale', [
                 'environment' => $this->getCurrentEnvironment()->getSlug(),
@@ -461,6 +463,7 @@ class LocalizationController extends AbstractGovWikiAdminController
                 }
 
                 $em->flush();
+                $this->clearTranslationsCache();
 
                 return $this->redirectToRoute('govwiki_admin_localization_showlocale', [
                     'environment' => $this->getCurrentEnvironment()->getSlug(),
@@ -519,6 +522,7 @@ class LocalizationController extends AbstractGovWikiAdminController
         if ($form->isValid()) {
             $em->persist($translation);
             $em->flush();
+            $this->clearTranslationsCache();
 
             return $this->redirectToRoute('govwiki_admin_localization_showlocale', [
                 'environment' => $this->getCurrentEnvironment()->getSlug(),
@@ -568,6 +572,7 @@ class LocalizationController extends AbstractGovWikiAdminController
             $em->remove($translation);
         }
         $em->flush();
+        $this->clearTranslationsCache();
 
         return $this->redirectToRoute('govwiki_admin_localization_showlocale', [
             'environment' => $this->getCurrentEnvironment()->getSlug(),
@@ -612,6 +617,7 @@ class LocalizationController extends AbstractGovWikiAdminController
             $em->persist($translation);
         }
         $em->flush();
+        $this->clearTranslationsCache();
 
         return new JsonResponse([
             'result' => true
@@ -632,5 +638,23 @@ class LocalizationController extends AbstractGovWikiAdminController
     private function getTranslationManager()
     {
         return $this->get(GovWikiAdminServices::TRANSLATION_MANAGER);
+    }
+
+    /**
+     * Remove translation cache.
+     *
+     * @return void
+     */
+    private function clearTranslationsCache()
+    {
+        $cacheDir = __DIR__ . "/../../../../app/cache";
+        $finder = new Finder();
+        $finder->in([
+            $cacheDir . "/" . $this->container->getParameter('kernel.environment') . "/translations"
+        ])->files();
+
+        foreach($finder as $file){
+            unlink($file->getRealpath());
+        }
     }
 }
