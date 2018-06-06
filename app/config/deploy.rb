@@ -29,7 +29,7 @@ set :keep_releases, 3
 set :permission_method, :acl
 set :file_permissions_users,  [ 'sibers', 'www-data' ]
 set :file_permissions_groups, []
-set :file_permissions_paths,  [ 'web/img', 'web/css' ]
+set :file_permissions_paths,  [ 'web/img', 'web/css', fetch(:log_path), fetch(:cache_path) ]
 
 # Composer
 set :composer_install_flags, '--no-interaction --optimize-autoloader'
