@@ -22,14 +22,14 @@ set :symfony_console_flags, '--env=' + fetch(:symfony_env) + '--no-debug'
 set :repo_url, 'git@git.sibers.com:sibers/govwiki.git'
 
 set :linked_files, [ fetch(:app_config_path) + '/parameters.yml' ]
-set :linked_dirs,  [ 'web/img', 'web/img/upload', 'web/css' ]
+set :linked_dirs,  [ 'web/img', 'web/css' ]
 
 set :keep_releases, 3
 
 set :permission_method, :acl
 set :file_permissions_users,  [ 'sibers', 'www-data' ]
 set :file_permissions_groups, []
-set :file_permissions_paths,  [ 'web/img', 'web/img/upload', 'web/css' ]
+set :file_permissions_paths,  [ 'web/img', 'web/css' ]
 
 # Composer
 set :composer_install_flags, '--no-interaction --optimize-autoloader'
@@ -61,7 +61,7 @@ namespace :deploy do
     end
     task :create_symlink_to_web, roles => :app do
         on roles(:app) do
-            execute(:ln, "-sf", "#{current_path}/web", "#{deploy_to}/web")
+            execute(:ln, "-sf", "#{current_path}/web", "#{deploy_to}/../web")
         end
     end
 end
