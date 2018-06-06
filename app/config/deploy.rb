@@ -1,7 +1,8 @@
 set :application, 'Govwiki'
 
-set :stage, fetch(:stage)
+set :stage,       fetch(:stage)
 set :symfony_env, 'prod'
+set :rsh,         'ssh -o PasswordAuthentication=no -o StrictHostKeyChecking=no'
 
 set :symfony_directory_structure, 2
 set :sensio_distribution_version, 4
