@@ -1,6 +1,6 @@
 set :stage, fetch(:stage)
 
-set :application, 'Govwiki Production'
+set :application, 'Govwiki'
 
 set :symfony_directory_structure, 2
 set :sensio_distribution_version, 4
