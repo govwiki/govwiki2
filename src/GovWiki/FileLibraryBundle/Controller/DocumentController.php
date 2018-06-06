@@ -2,6 +2,7 @@
 
 namespace GovWiki\FileLibraryBundle\Controller;
 
+use FOS\UserBundle\Model\UserManagerInterface;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Repository\EnvironmentRepository;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
@@ -342,14 +343,20 @@ class DocumentController extends AbstractGovWikiController
     }
 
     /**
-     * @Route("/{slug}", requirements={ "slug": "[\w-]*" }, defaults={ "slug": "" }, methods={ "GET" })
+     * @Route(
+     *     "/{slug}",
+     *     requirements={ "slug": "[\w-]*" },
+     *     defaults={ "slug": "" },
+     *     methods={ "GET", "POST" }
+     * )
      * @Template
      *
-     * @param string $slug A requested document or directory slug.
+     * @param Request $request A HTTP Request instance.
+     * @param string  $slug    A requested document or directory slug.
      *
      * @return RedirectResponse|array
      */
-    public function indexAction(string $slug)
+    public function indexAction(Request $request, string $slug)
     {
         $user = $this->getUser();
         /** @var FileRepository $repository */
@@ -366,13 +373,36 @@ class DocumentController extends AbstractGovWikiController
         }
 
         if (($file === null) || ($file instanceof Directory)) {
-            return [
+            $params = [
+                'formValid' => null,
                 'slug' => $slug,
                 'user' => $user,
                 'defaultOrder' => ($file !== null) && ($file->getParent() === null) ? 'desc' : 'asc',
                 'file' => $file,
                 'topLevelDirNames' => $topLevelDirNames,
             ];
+
+            if ($user instanceof User) {
+                /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */
+                $formFactory = $this->get('fos_user.change_password.form.factory');
+                $form = $formFactory->createForm();
+                $form->setData($user);
+                $form->handleRequest($request);
+
+                if ($form->isSubmitted()) {
+                    if ($form->isValid()) {
+                        /** @var UserManagerInterface $userManager */
+                        $userManager = $this->get('fos_user.user_manager');
+                        $userManager->updateUser($user);
+                        $params['formValid'] = true;
+                    } else {
+                        $params['formValid'] = false;
+                    }
+                }
+                $params['form'] = $form->createView();
+            }
+
+            return $params;
         }
 
         return RedirectResponse::create($this->storage->generatePublicUrl($file->getPublicPath()));

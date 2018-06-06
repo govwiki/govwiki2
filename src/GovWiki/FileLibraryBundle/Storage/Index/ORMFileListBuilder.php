@@ -340,7 +340,9 @@ class ORMFileListBuilder implements FileListBuilderInterface
                 SELECT @pv := (
                   SELECT id
                   FROM {$tableName}
-                  WHERE public_path = '{$this->publicPath}'
+                  WHERE
+                    public_path = '{$this->publicPath}' AND
+                    environment_id = {$this->environment->getId()}
                 )
               ) initialization
             WHERE
@@ -349,7 +351,7 @@ class ORMFileListBuilder implements FileListBuilderInterface
               AND @pv := CONCAT(@pv, ',', id)
         ")->fetchAll();
 
-        if (count($nestedDirsIds) === 0) {
+        if (\count($nestedDirsIds) === 0) {
             return $this->buildForNonRecursive();
         }
 
