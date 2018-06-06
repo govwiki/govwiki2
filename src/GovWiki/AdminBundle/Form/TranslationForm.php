@@ -31,7 +31,7 @@ class TranslationForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('translation', $this->type);
+        $builder->add('translation', $this->type, [ 'required' => false ]);
     }
 
     /**

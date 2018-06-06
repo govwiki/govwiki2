@@ -414,7 +414,7 @@ class LocalizationController extends AbstractGovWikiAdminController
         $new_translation = new Translation();
         $form = $this->createFormBuilder($new_translation)
             ->add('transKey')
-            ->add('translation')
+            ->add('translation', null, [ 'required' => false ])
             ->getForm();
         $form->handleRequest($request);
 
