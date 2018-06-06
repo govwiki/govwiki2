@@ -11,17 +11,17 @@ set :web_path,                    'web'
 set :var_path,                    'app'
 set :bin_path,                    'app'
 
-set :app_config_path, fetch(:app_path) + '/config'
-set :log_path,        fetch(:var_path) + '/logs'
-set :cache_path,      fetch(:var_path) + '/cache'
+set :app_config_path, "#{fetch(:app_path)}/config"
+set :log_path,        "#{fetch(:var_path)}/logs"
+set :cache_path,      "#{fetch(:var_path)}/cache"
 
 set :symfony_console_path, "#{fetch(:bin_path)}/console"
-set :symfony_console_flags, '--env=' + fetch(:symfony_env) + '--no-debug'
+set :symfony_console_flags, "--env=#{fetch(:symfony_env)} --no-debug"
 
 # GIT config
 set :repo_url, 'git@git.sibers.com:sibers/govwiki.git'
 
-set :linked_files, [ fetch(:app_config_path) + '/parameters.yml' ]
+set :linked_files, [ "#{fetch(:app_config_path)}/parameters.yml" ]
 set :linked_dirs,  [ 'web/img', 'web/css' ]
 
 set :keep_releases, 3
