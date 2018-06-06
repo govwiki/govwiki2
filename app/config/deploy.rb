@@ -22,7 +22,7 @@ set :symfony_console_flags, "--env=#{fetch(:symfony_env)} --no-debug"
 set :repo_url, 'git@git.sibers.com:sibers/govwiki.git'
 
 set :linked_files, [ "#{fetch(:app_config_path)}/parameters.yml" ]
-set :linked_dirs,  [ "#{fetch(:log_path)}", "'web/img', 'web/css' ]
+set :linked_dirs,  [ fetch(:log_path), 'web/img', 'web/css' ]
 
 set :keep_releases, 3
 
