@@ -10,5 +10,4 @@ set :deploy_to, '/var/www/html/govwiki_staging'
 set :branch,    'azure-staging'
 
 set :controllers_to_clear, [ 'app_dev.php', 'config.php' ]
-
-#set :deploy_via,     :rsync_with_remote_cache
+set :deploy_via,           :rsync_with_remote_cache

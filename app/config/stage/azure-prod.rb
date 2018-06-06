@@ -9,7 +9,5 @@ ssh_options: {
 set :deploy_to, '/var/www/html/govwiki_production'
 set :branch,    'azure-prod'
 
-set :symfony_env, 'prod'
 set :controllers_to_clear, [ 'app_dev.php', 'config.php' ]
-
-#set :deploy_via,     :rsync_with_remote_cache
+set :deploy_via,           :rsync_with_remote_cache
