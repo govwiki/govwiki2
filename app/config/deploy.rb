@@ -45,6 +45,11 @@ namespace :deploy do
             end
         end
     end
+    task :migrate, roles => :app do
+        on roles(:app) do
+            invoke "symfony:console", "doctrine:migrations:migrate", "--no-interaction"
+        end
+    end
     task :rewrite_params, roles => :app do
         stage = fetch(:stage)
         config_path = fetch(:app_config_path)
