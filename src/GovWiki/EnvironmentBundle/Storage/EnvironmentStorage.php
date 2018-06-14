@@ -32,7 +32,7 @@ class EnvironmentStorage implements EnvironmentStorageInterface
     /**
      * Get current environment entity instance.
      *
-     * @return Environment
+     * @return Environment|null
      */
     public function get()
     {

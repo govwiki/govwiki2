@@ -2,6 +2,7 @@
 
 namespace GovWiki\AdminBundle\Form;
 
+use GovWiki\DbBundle\Entity\Translation;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -39,7 +40,7 @@ class TranslationForm extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefault('data_class', 'GovWiki\DbBundle\Entity\Translation');
+        $resolver->setDefault('data_class', Translation::class);
     }
 
     /**

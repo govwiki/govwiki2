@@ -6,6 +6,13 @@ services:
           - 'GovWiki\DbBundle\Entity\Environment'
         public: false
 
+    govwiki_db.repository.translation:
+        class: 'GovWiki\DbBundle\Entity\Repository\TranslationRepository'
+        factory: [ '@doctrine.orm.default_entity_manager', 'getRepository' ]
+        arguments:
+          - 'GovWiki\DbBundle\Entity\Translation'
+        public: false
+
     govwiki_db.factory.repository:
         class: GovWiki\DbBundle\Doctrine\Repository\RepositoryFactory
         arguments: [ '@govwiki_environment.storage' ]
@@ -27,12 +34,20 @@ services:
         arguments: [@doctrine.orm.default_entity_manager]
 
     translation.loader.db:
-        class:     'GovWiki\DbBundle\Translation\DatabaseLoader'
+        class: 'GovWiki\DbBundle\Translation\DatabaseLoader'
         arguments:
             - @doctrine.orm.entity_manager
             - @govwiki_environment.storage
         tags:
             - { name: translation.loader, alias: db }
+
+    govwiki_db.translator:
+        class: 'GovWiki\DbBundle\Translation\GovwikiTranslatorDecorator'
+        decorates: 'translator'
+        arguments:
+          - '@govwiki_db.translator.inner'
+          - '@govwiki_environment.storage'
+          - '@govwiki_db.repository.translation'
 
     govwiki_db.locale_listener:
         class: 'GovWiki\DbBundle\EventListener\LocaleListener'
