@@ -16,7 +16,7 @@ class TranslationRepository extends EntityRepository
      *
      * @return array
      */
-    public function getAllTranslations($environment, $locale)
+    public function getAllTranslations(int $environment, string $locale)
     {
         $expr = $this->_em->getExpressionBuilder();
 
@@ -26,9 +26,9 @@ class TranslationRepository extends EntityRepository
             ->where($expr->eq('GlobalLocale.shortName', ':locale'))
             ->getDQL();
 
-        return $this->createQueryBuilder('tr')
-            ->select('tr.transKey, tr.translation')
-            ->leftJoin('tr.locale', 'Locale')
+        return $this->createQueryBuilder('Translation')
+            ->select('Translation.transKey, Translation.translation')
+            ->leftJoin('Translation.locale', 'Locale')
             ->where($expr->orX(
                 $expr->andX(
                     $expr->eq('Locale.shortName', ':locale'),
@@ -76,7 +76,7 @@ class TranslationRepository extends EntityRepository
                 'locale' => $locale,
             ]);
 
-        if (is_array($keySettings) && (count($keySettings) > 0)) {
+        if (\is_array($keySettings) && (\count($keySettings) > 0)) {
             $matching = $keySettings['matching'];
             $keys = $keySettings['transKeys'];
 
@@ -87,7 +87,8 @@ class TranslationRepository extends EntityRepository
                 } elseif ('like' === $matching) {
                     $orX = $expr->orX();
                     foreach ($keys as $key) {
-                        $orX->add('tr.transKey LIKE ' .
+                        $orX->add(
+                            'tr.transKey LIKE ' .
                             $expr->literal('%' . $key . '%')
                         );
                     }
@@ -115,7 +116,7 @@ class TranslationRepository extends EntityRepository
     /**
      * @param string  $locale        Locale short name ('en', 'fr' etc.).
      * @param array   $keySettings   Array with Matching type and
-     *                               Translation Keys array
+     *                               Translation Keys array.
      * @param string  $translation   Translation text.
      * @param boolean $needOneResult If true, return object, else return
      *                               array.

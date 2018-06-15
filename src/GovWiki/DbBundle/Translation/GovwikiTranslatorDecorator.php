@@ -3,6 +3,7 @@
 namespace GovWiki\DbBundle\Translation;
 
 use Doctrine\ORM\EntityManagerInterface;
+use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Repository\TranslationRepository;
 use GovWiki\DbBundle\Entity\Translation;
 use GovWiki\EnvironmentBundle\Storage\EnvironmentStorageInterface;
@@ -32,6 +33,11 @@ class GovwikiTranslatorDecorator implements TranslatorInterface, TranslatorBagIn
      * @var TranslationRepository
      */
     private $repository;
+
+    /**
+     * @var string[]
+     */
+    private $dbTranslations;
 
     /**
      * GovwikiTranslatorDecorator constructor.
@@ -76,28 +82,13 @@ class GovwikiTranslatorDecorator implements TranslatorInterface, TranslatorBagIn
     {
         $trans = $this->translator->trans($id, $parameters, $domain, $locale);
 
+        //
         // Try to resolve translation from database if not found in catalogues.
+        // We not use custom loader 'cause it not work properly and require form
+        // us creating dummy files which is not good.
+        //
         if ($trans === $id) {
-            $environment = $this->environmentStorage->get();
-
-            if ($environment !== null) {
-                $trans = $this->repository->getEnvironmentTranslations(
-                    $environment->getId(),
-                    $locale ?? 'en',
-                    [
-                        'matching'  => 'eq',
-                        'transKeys' => [$id],
-                    ],
-                    null,
-                    true
-                );
-
-                if ($trans instanceof Translation) {
-                    $trans = $trans->getTranslation();
-                } else {
-                    $trans = $id;
-                }
-            }
+            $trans = $this->dbTrans($id, $locale);
         }
 
         return $trans;
@@ -162,5 +153,33 @@ class GovwikiTranslatorDecorator implements TranslatorInterface, TranslatorBagIn
     public function getCatalogue($locale = null): MessageCatalogueInterface
     {
         return $this->translator->getCatalogue($locale);
+    }
+
+    /**
+     * @param string      $id     Translation id.
+     * @param string|null $locale Requested locale.
+     *
+     * @return string
+     */
+    private function dbTrans(string $id, string $locale = null): string
+    {
+        if ($this->dbTranslations === null) {
+            $environment = $this->environmentStorage->get();
+
+            if ($environment !== null) {
+                $tmp = $this->repository->getAllTranslations(
+                    $environment->getId(),
+                    $locale ?? $this->getLocale()
+                );
+
+                foreach ($tmp as $data) {
+                    $this->dbTranslations[$data['transKey']] = $data['translation'];
+                }
+            } else {
+                $this->dbTranslations = [];
+            }
+        }
+
+        return $this->dbTranslations[$id] ?? $id;
     }
 }
