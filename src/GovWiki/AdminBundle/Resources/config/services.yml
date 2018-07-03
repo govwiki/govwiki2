@@ -1,4 +1,11 @@
 services:
+    govwiki_admin.command.script_run:
+        class: 'GovWiki\AdminBundle\Command\RunScriptCommand'
+        arguments:
+            - '@govwiki_admin.repository.script_queued_item'
+        tags:
+            - { name: console.command }
+
     govwiki_admin.twig.extension:
         class: GovWiki\AdminBundle\Twig\TwigExtensions
         arguments: [ @govwiki_environment.storage ]
@@ -43,6 +50,12 @@ services:
             - @doctrine.orm.default_entity_manager
             - %kernel.root_dir%/../web/
             - upload/shape/
+
+    govwiki_admin.repository.script_queued_item:
+        class: 'GovWiki\AdminBundle\Entity\Repository\ScriptQueueItemRepository'
+        factory: [ '@doctrine.orm.default_entity_manager', 'getRepository' ]
+        arguments:
+          - 'GovWiki\AdminBundle\Entity\ScriptQueueItem'
 
     govwiki_admin.form.type.delay:
         class: GovWiki\AdminBundle\Form\Type\DelayType

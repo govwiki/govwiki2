@@ -11,6 +11,13 @@
         'govwiki_admin_library_index',
         { 'environment': environment.slug }
     )-}}
+    {%- if environment.name == 'cafr' -%}
+        {{- macro.submenuElement(
+            'Scripts',
+            'govwiki_admin_script_index',
+            { 'environment': environment.slug }
+        )-}}
+    {%- endif -%}
     {{- macro.submenuElement(
         'Templates',
         'govwiki_admin_environment_template',

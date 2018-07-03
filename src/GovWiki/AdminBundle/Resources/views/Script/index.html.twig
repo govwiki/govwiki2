@@ -1,0 +1,47 @@
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - scripts{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{ macro.breadcrumbElement('Scripts') }}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    {{ environment.name }} scripts
+{% endblock panel_title %}
+
+{% block panel_body %}
+    <table class="table table-bordered text-center">
+        <tr>
+            <th width="60%">Script</th>
+            <th>Action</th>
+        </tr>
+        {%- for script in scripts -%}
+            <tr>
+                <td>
+                    {{- script.name -}}
+                </td>
+                <td>
+                    <a class="btn btn-default" href="{{ path('govwiki_admin_script_log', {
+                        'environment': environment.slug,
+                        'name': script.name
+                    }) }}">Log</a>
+                    <a class="btn btn-default" href="{{ path('govwiki_admin_script_parameters', {
+                        'environment': environment.slug,
+                        'name': script.name
+                    }) }}">Parameters</a>
+                    <a class="btn btn-primary" href="{{ path('govwiki_admin_script_run', {
+                        'environment': environment.slug,
+                        'name': script.name
+                    }) }}">Run</a>
+                </td>
+            </tr>
+        {%- endfor -%}
+    </table>
+{% endblock panel_body %}

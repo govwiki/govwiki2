@@ -1,0 +1,51 @@
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - {{ script }} log{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{ macro.breadcrumbElement(
+        'Scripts',
+        'govwiki_admin_script_index',
+        { 'environment': environment.slug }
+    ) }}
+    {{ macro.breadcrumbElement(script ~ ' log') }}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    {{ environment.name }} {{ script }} log
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{ knp_pagination_render(log) }}
+    <table class="table table-bordered text-center">
+        <tr>
+            <th width="88px">Start At</th>
+            <th width="88px">End At</th>
+            <th width="60px">Result code</th>
+            <th>Error message</th>
+        </tr>
+        {%- for logRow in log -%}
+            <tr>
+                <td>
+                    {{- logRow.startTime|date('Y-m-d H:i:s') -}}
+                </td>
+                <td>
+                    {{- logRow.endTime|date('Y-m-d H:i:s') -}}
+                </td>
+                <td>
+                    {{- logRow.result -}}
+                </td>
+                <td>
+                    {{- logRow.errorMessage -}}
+                </td>
+            </tr>
+        {%- endfor -%}
+    </table>
+    {{ knp_pagination_render(log) }}
+{% endblock panel_body %}

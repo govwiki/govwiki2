@@ -1,0 +1,60 @@
+{% extends "GovWikiAdminBundle:Environment:layout.html.twig" %}
+
+{% block title %}{{ parent() }} - {{ script }} parameters{% endblock %}
+
+{% block breadcrumb %}
+    {{ macro.breadcrumbElement('Main', 'govwiki_admin_main_home') }}
+    {{- macro.breadcrumbElement(
+        environment.name ~' environment',
+        'govwiki_admin_environment_show',
+        { 'environment': environment.slug }
+    ) -}}
+    {{ macro.breadcrumbElement(
+        'Scripts',
+        'govwiki_admin_script_index',
+        { 'environment': environment.slug }
+    ) }}
+    {{ macro.breadcrumbElement(script ~ ' parameters') }}
+{% endblock breadcrumb %}
+
+{% block panel_title %}
+    {{ environment.name }} {{ script }} parameters
+{% endblock panel_title %}
+
+{% block panel_body %}
+    {{- form_start(form) -}}
+    <table class="table table-bordered text-center">
+        <tr>
+            <th>
+                Parameter
+            </th>
+            <th>
+                Value
+            </th>
+            <th width="40%">
+                Description
+            </th>
+        </tr>
+        {%- for parameter in form if parameter.vars.name != '_token' -%}
+            <tr>
+                <td>
+                    {{- form_label(parameter) -}}
+                </td>
+                <td>
+                    {{- form_widget(parameter) -}}
+                    {{- form_errors(parameter) -}}
+                </td>
+                <td>
+                    {{- parameters[parameter.vars.name].description -}}
+                </td>
+            </tr>
+        {%- endfor -%}
+    </table>
+    <div>
+        <a class="btn btn-danger" href="{{ path('govwiki_admin_script_index', {
+            'environment': environment
+        }) }}">Cancel</a>
+        <button type="submit" class="btn btn-success">Apply</button>
+    </div>
+    {{- form_end(form) -}}
+{% endblock panel_body %}
