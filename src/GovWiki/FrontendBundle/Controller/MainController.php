@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\Translation\Translator;
 
 /**
  * Class MainController
@@ -86,6 +87,7 @@ class MainController extends AbstractGovWikiController
     private function renderMap(Request $request, Environment $environment): Response
     {
         $map = $environment->getMap();
+        /** @var Translator $translator */
         $translator = $this->get('translator');
 
         $years = $this->getGovernmentManager()->getAvailableYears($environment);
@@ -103,13 +105,9 @@ class MainController extends AbstractGovWikiController
         $map['username'] = $this->getParameter('carto_db.account');
         $map['year'] = $currentYear;
 
-        /** @var MessageCatalogue $catalogue */
-        $catalogue = $translator->getCatalogue();
-        $transKey = 'map.greeting_text';
-
-        $greetingText = '';
-        if ($catalogue->has($transKey)) {
-            $greetingText = $translator->trans($transKey);
+        $greetingText = $translator->trans('map.greeting_text');
+        if ($greetingText === 'map.greeting_text') {
+            $greetingText = '';
         }
 
         /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */

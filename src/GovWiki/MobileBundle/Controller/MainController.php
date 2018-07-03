@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\Translation\Translator;
 
 /**
  * MainController
@@ -70,6 +71,7 @@ class MainController extends AbstractGovWikiController
      */
     public function renderMap(Request $request, Environment $environment): Response
     {
+        /** @var Translator $translator */
         $translator = $this->get('translator');
 
         $years = $this->getGovernmentManager()->getAvailableYears($environment);
@@ -88,14 +90,12 @@ class MainController extends AbstractGovWikiController
         $map['username'] = $this->getParameter('carto_db.account');
         $map['year'] = $currentYear;
 
-        /** @var MessageCatalogue $catalogue */
-        $catalogue = $translator->getCatalogue();
-        $transKey = 'map.greeting_text';
 
-        $greetingText = '';
-        if ($catalogue->has($transKey)) {
-            $greetingText = $translator->trans($transKey);
+        $greetingText = $translator->trans('map.greeting_text');
+        if ($greetingText === 'map.greeting_text') {
+            $greetingText = '';
         }
+
         $params = [
             'map' => \json_encode($map),
             'greetingText' => $greetingText,
