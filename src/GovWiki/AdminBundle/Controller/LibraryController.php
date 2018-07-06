@@ -31,42 +31,6 @@ class LibraryController extends AbstractGovWikiAdminController
 {
 
     /**
-     * @Configuration\Route("/{slug}", requirements={ "slug": "[\w-]*" }, defaults={ "slug": "" }, methods={ "GET" })
-     * @Configuration\Template
-     *
-     * @param string      $environment Required environment name.
-     * @param string|null $slug        A listed directory slug.
-     *
-     * @return array
-     */
-    public function indexAction(string $environment, string $slug = null): array
-    {
-        $user = $this->getUser();
-        /** @var FileRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(AbstractFile::class);
-
-        $topLevelDirNames = $repository->getTopLevelDirNames($environment);
-
-        $file = null;
-        if ($slug !== null) {
-            $file = $repository->findBySlug($environment, $slug);
-        }
-
-        if (($file === null) || ($file instanceof Directory)) {
-            return [
-                'slug' => $slug,
-                'user' => $user,
-                'defaultOrder' => ($file !== null) && ($file->getParent() === null) ? 'desc' : 'asc',
-                'file' => $file,
-                'topLevelDirNames' => $topLevelDirNames,
-            ];
-        }
-
-        throw $this->createNotFoundException();
-    }
-
-
-    /**
      * @Configuration\Route("/document/{slug}", requirements={ "slug": "[\w-]+" }, methods={ "DELETE" })
      *
      * @param string $slug A removed document slug.
@@ -322,5 +286,40 @@ class LibraryController extends AbstractGovWikiAdminController
                 ]
             ),
         ]);
+    }
+
+    /**
+     * @Configuration\Route("/{slug}", requirements={ "slug": "[\w-]*" }, defaults={ "slug": "" }, methods={ "GET" })
+     * @Configuration\Template
+     *
+     * @param string      $environment Required environment name.
+     * @param string|null $slug        A listed directory slug.
+     *
+     * @return array
+     */
+    public function indexAction(string $environment, string $slug = null): array
+    {
+        $user = $this->getUser();
+        /** @var FileRepository $repository */
+        $repository = $this->getDoctrine()->getRepository(AbstractFile::class);
+
+        $topLevelDirNames = $repository->getTopLevelDirNames($environment);
+
+        $file = null;
+        if ($slug !== null) {
+            $file = $repository->findBySlug($environment, $slug);
+        }
+
+        if (($file === null) || ($file instanceof Directory)) {
+            return [
+                'slug' => $slug,
+                'user' => $user,
+                'defaultOrder' => ($file !== null) && ($file->getParent() === null) ? 'desc' : 'asc',
+                'file' => $file,
+                'topLevelDirNames' => $topLevelDirNames,
+            ];
+        }
+
+        throw $this->createNotFoundException();
     }
 }
