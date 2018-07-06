@@ -122,6 +122,7 @@
     <script>
       window.gw.urls = {
         files: '{{ path('govwiki_admin_library_list', {
+            environment: environment,
             slug: slug
         }) }}',
         base:  '{{ path('govwiki_admin_library_index', {
