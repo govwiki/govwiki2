@@ -81,7 +81,10 @@
         title: 'Add new document'
     } -%}
         {% block content %}
-            <form id="upload-form" action="{{ path('govwiki_filelibrary_document_upload', { slug: slug }) }}">
+            <form id="upload-form" action="{{ path('govwiki_admin_library_upload', {
+                'environment': environment,
+                'slug': slug
+            }) }}">
                 <div class="modal-body">
                     <input type="file" id="document-file" class="form-control" name="file">
                 </div>
@@ -129,7 +132,6 @@
       window.gw.defaultOrder = '{{ defaultOrder }}';
     </script>
 
-    {#<script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.uncompressed.js"></script>#}
     <script src="/js/common.js"></script>
     <script src="/js/fileLibrary.js"></script>
 

@@ -17,11 +17,18 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class DocumentNormalizer implements NormalizerInterface
 {
 
-    const ACTION_URLS = [
+    const USER_ACTION_URLS = [
         'self' => 'govwiki_filelibrary_document_index',
         'move' => 'govwiki_filelibrary_document_move',
         'rename' => 'govwiki_filelibrary_document_rename',
         'remove' => 'govwiki_filelibrary_document_remove',
+    ];
+
+    const ADMIN_ACTION_URLS = [
+        'self' => 'govwiki_admin_library_index',
+        'move' => 'govwiki_admin_library_move',
+        'rename' => 'govwiki_admin_library_rename',
+        'remove' => 'govwiki_admin_library_remove',
     ];
 
     /**
@@ -82,12 +89,25 @@ class DocumentNormalizer implements NormalizerInterface
             'download' => $this->storage->generatePublicUrl($object->getPublicPath()),
         ];
 
-        foreach (self::ACTION_URLS as $name => $route) {
-            $urls[$name] = $this->urlGenerator->generate(
-                $route,
-                [ 'slug' => $object->getSlug() ],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
+        if (isset($context['admin']['environment'])) {
+            foreach (self::USER_ACTION_URLS as $name => $route) {
+                $urls[$name] = $this->urlGenerator->generate(
+                    $route,
+                    [
+                        'environment' => $context['admin']['environment'],
+                        'slug' => $object->getSlug(),
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+            }
+        } else {
+            foreach (self::USER_ACTION_URLS as $name => $route) {
+                $urls[$name] = $this->urlGenerator->generate(
+                    $route,
+                    [ 'slug' => $object->getSlug() ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+            }
         }
 
         return [

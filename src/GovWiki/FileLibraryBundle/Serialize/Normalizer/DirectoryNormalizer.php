@@ -54,6 +54,21 @@ class DirectoryNormalizer implements NormalizerInterface
      */
     public function normalize($object, $format = null, array $context = []): array
     {
+        if (isset($context['admin']['environment'])) {
+            $urls = [
+                'self' => $this->urlGenerator->generate('govwiki_admin_library_index', [
+                    'environment' => $context['admin']['context'],
+                    'slug' => $object->getSlug(),
+                ], UrlGeneratorInterface::ABSOLUTE_URL),
+            ];
+        } else {
+            $urls = [
+                'self' => $this->urlGenerator->generate('govwiki_filelibrary_document_index', [
+                    'slug' => $object->getSlug(),
+                ], UrlGeneratorInterface::ABSOLUTE_URL),
+            ];
+        }
+
         return [
             'type' => 'directory',
             'id' => $object->getId(),
@@ -63,11 +78,7 @@ class DirectoryNormalizer implements NormalizerInterface
             'parent' => $object->getParent() ? $object->getParent()->getId() : null,
             'publicPath' => $object->getPublicPath(),
             'fileSize' => null,
-            'urls' => [
-                'self' => $this->urlGenerator->generate('govwiki_filelibrary_document_index', [
-                    'slug' => $object->getSlug(),
-                ], UrlGeneratorInterface::ABSOLUTE_URL),
-            ],
+            'urls' => $urls,
         ];
     }
 }
