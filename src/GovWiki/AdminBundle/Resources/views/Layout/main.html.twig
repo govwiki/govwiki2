@@ -183,9 +183,7 @@
 {% block stylesheets %}
 
     {{ parent() }}
-
-    {#<link href="https://bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">#}
-    <link href="https://bootswatch.com/3/paper/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('/bootstrap.min.css') }}" rel="stylesheet">
 
     {% stylesheets 'bundles/govwikiadmin/css/main.scss' filter='scss, cssrewrite' %}
         <link rel="stylesheet" href="{{ asset_url }}" />
