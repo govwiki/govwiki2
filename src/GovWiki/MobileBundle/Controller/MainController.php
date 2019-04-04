@@ -64,6 +64,51 @@ class MainController extends AbstractGovWikiController
     }
 
     /**
+     * @Route("/download-all-data", name="download_all_data")
+     * @return Response
+     */
+    public function downloadAllDataAction(): Response
+    {
+        $response = new StreamedResponse();
+        $response->setCallback(function () {
+            $handle = fopen('php://output', 'w+');
+
+            /** @var Connection $conn */
+            $conn = $this->getDoctrine()->getConnection();
+
+            $sql = '
+                select governments.name, puerto_rico.*
+                from puerto_rico
+                inner join governments on (governments.id = puerto_rico.government_id)
+                order by name, year
+            ';
+
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+
+            $labels = false;
+
+            while ($row = $stmt->fetch()) {
+
+                if (!$labels) {
+                    fputcsv($handle, array_keys($row), ';');
+                    $labels = true;
+                }
+
+                fputcsv($handle, $row, ';');
+            }
+
+            fclose($handle);
+        });
+
+        $response->setStatusCode(200);
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+
+        return $response;
+    }
+
+    /**
      * @param Request     $request     A HTTP Request.
      * @param Environment $environment A current environment.
      *

@@ -35,6 +35,9 @@
 
     <div class="intro-text">
         {{- greetingText|raw -}}
+        {% if environment == 'Puerto Rico' %}
+            <p><a href="{{ path('download_all_data') }}">Download all Site Data</a></p>
+        {% endif %}
     </div>
 
 </div>

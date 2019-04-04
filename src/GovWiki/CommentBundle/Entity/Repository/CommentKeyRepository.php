@@ -17,7 +17,7 @@ class CommentKeyRepository extends EntityRepository
      *
      * @return CommentKey
      */
-    public function find($key)
+    public function find($key, $lockMode = null, $lockVersion = null)
     {
         $qb = $this->createQueryBuilder('Key');
         $expr = $qb->expr();

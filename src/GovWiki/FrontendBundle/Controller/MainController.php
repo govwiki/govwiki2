@@ -2,6 +2,7 @@
 
 namespace GovWiki\FrontendBundle\Controller;
 
+use Doctrine\DBAL\Driver\Connection;
 use FOS\UserBundle\Model\UserManagerInterface;
 use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
@@ -11,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Translator;
 
@@ -76,6 +78,51 @@ class MainController extends AbstractGovWikiController
         }
 
         return $this->redirectToRoute('govwiki_filelibrary_document_index');
+    }
+
+    /**
+     * @Route("/download-all-data", name="download_all_data")
+     * @return Response
+     */
+    public function downloadAllDataAction(): Response
+    {
+        $response = new StreamedResponse();
+        $response->setCallback(function () {
+            $handle = fopen('php://output', 'w+');
+
+            /** @var Connection $conn */
+            $conn = $this->getDoctrine()->getConnection();
+
+            $sql = '
+                select governments.name, puerto_rico.*
+                from puerto_rico
+                inner join governments on (governments.id = puerto_rico.government_id)
+                order by name, year
+            ';
+
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+
+            $labels = false;
+
+            while ($row = $stmt->fetch()) {
+
+                if (!$labels) {
+                    fputcsv($handle, array_keys($row), ';');
+                    $labels = true;
+                }
+
+                fputcsv($handle, $row, ';');
+            }
+
+            fclose($handle);
+        });
+
+        $response->setStatusCode(200);
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+
+        return $response;
     }
 
     /**
