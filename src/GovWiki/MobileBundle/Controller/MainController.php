@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Translator;
 
@@ -91,11 +92,11 @@ class MainController extends AbstractGovWikiController
             while ($row = $stmt->fetch()) {
 
                 if (!$labels) {
-                    fputcsv($handle, array_keys($row), ';');
+                    fputcsv($handle, array_keys($row), ',');
                     $labels = true;
                 }
 
-                fputcsv($handle, $row, ';');
+                fputcsv($handle, $row, ',');
             }
 
             fclose($handle);

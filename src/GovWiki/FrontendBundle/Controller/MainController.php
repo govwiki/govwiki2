@@ -108,11 +108,11 @@ class MainController extends AbstractGovWikiController
             while ($row = $stmt->fetch()) {
 
                 if (!$labels) {
-                    fputcsv($handle, array_keys($row), ';');
+                    fputcsv($handle, array_keys($row), ',');
                     $labels = true;
                 }
 
-                fputcsv($handle, $row, ';');
+                fputcsv($handle, $row, ',');
             }
 
             fclose($handle);
