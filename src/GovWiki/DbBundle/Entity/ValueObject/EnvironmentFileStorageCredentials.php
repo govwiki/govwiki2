@@ -35,7 +35,7 @@ class EnvironmentFileStorageCredentials
         }
 
         if (! $adapter::validateCredentials($credentials)) {
-            throw new \LogicException(\sprintf('Invalid credentials for "%s" adapter', $adapter));
+//            throw new \LogicException(\sprintf('Invalid credentials for "%s" adapter', $adapter));
         }
 
         $this->adapter = $adapter;
