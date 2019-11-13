@@ -90,7 +90,7 @@
 
                                             {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
                                         {%- else -%}
-                                            {# Special tab #}
+                                             Special tab
                                             {{-
                                                 include('@GovWikiFrontend/Partial/Government/special_tab.html.twig')
                                             -}}
@@ -174,6 +174,16 @@
 
     {{parent()}}
 
+    <style>
+        {# Filter style in Financial Statements #}
+        .show-table-td {
+            display: table-cell;
+        }
+        .hide-table-td {
+            display: none;
+        }
+    </style>
+
     {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/government.scss' filter='scss' %}
         <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
@@ -186,6 +196,7 @@
 
     {{parent()}}
 
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
     <script src='http://www.google.com/jsapi'></script>
 
@@ -207,6 +218,76 @@
 
     <script src="/js/common.js"></script>
     <script src="/js/government.js"></script>
+
+    <script>
+        $( document ).ready(function() {
+            $('#visualize').change(function() {
+                let $class = $(this).val();
+                let $removeElemClass, $addElemClass, $removeClasses;
+
+                const KEY_TOTAL_GOV_FUNDS = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_TOTAL_GOV_FUNDS')) }}';
+                const KEY_OTHER_FUNDS     = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_OTHER_FUNDS')) }}';
+                const KEY_GENERAL_FUNDS   = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_GENERAL_FUNDS')) }}';
+                const KEY_NO_CHOICE       = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_NO_CHOICE')) }}';
+
+                switch ($class) {
+                    case KEY_TOTAL_GOV_FUNDS:
+                        $removeElemClass = [KEY_GENERAL_FUNDS, KEY_OTHER_FUNDS];
+                        $addElemClass    = KEY_TOTAL_GOV_FUNDS;
+
+                        break;
+                    case KEY_OTHER_FUNDS:
+                        $removeElemClass = [KEY_TOTAL_GOV_FUNDS, KEY_GENERAL_FUNDS];
+                        $addElemClass    = KEY_OTHER_FUNDS;
+
+                        break;
+                    case KEY_GENERAL_FUNDS:
+                        $removeElemClass = [KEY_TOTAL_GOV_FUNDS, KEY_OTHER_FUNDS];
+                        $addElemClass    = KEY_GENERAL_FUNDS;
+
+                        break;
+                    case KEY_NO_CHOICE:
+                        $removeClasses = [KEY_TOTAL_GOV_FUNDS, KEY_OTHER_FUNDS, KEY_GENERAL_FUNDS];
+
+                        $removeClasses.forEach(function (element) {
+                            clearAddClass(element);
+                        });
+
+                        return;
+                }
+
+                $removeElemClass.forEach(function (element) {
+                    clearHideClass(element);
+                });
+
+                clearAddClass($addElemClass);
+
+
+                function clearHideClass($removeElemClass) {
+                    let $tdsRemove = $('.'+$removeElemClass);
+
+                    $tdsRemove.each(function () {
+                        let self = $(this);
+                        changeClass(self, 'hide-table-td', 'show-table-td');
+                    });
+                }
+
+                function clearAddClass($addElemClass) {
+                    let $tdsAdd    = $('.'+$addElemClass);
+
+                    $tdsAdd.each(function () {
+                        let self = $(this);
+                        changeClass(self, 'show-table-td', 'hide-table-td');
+                    });
+                }
+
+                function changeClass(currentElem, addClass, removeClass) {
+                    currentElem.addClass(addClass);
+                    currentElem.removeClass(removeClass);
+                }
+            });
+        });
+    </script>
 
 {% endblock %}
 

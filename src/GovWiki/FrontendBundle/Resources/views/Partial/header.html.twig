@@ -2,6 +2,9 @@
 
     {# Logo #}
     <div class="col-xs-6 col-sm-6 col-md-3">
+        <p>
+            {{ 'develop.by'|trans }}
+        </p>
         {% if government is defined and government.secondaryLogoPath %}
             <a class="anchor" href="{{ environment.logoHref }}">
                 <img src="{{ environment.logo }}" class="logo" width="70%">
