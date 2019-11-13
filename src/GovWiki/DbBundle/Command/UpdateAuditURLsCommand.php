@@ -32,17 +32,20 @@ class UpdateAuditURLsCommand extends ContainerAwareCommand
 
         /** @var EntityManager $manager */
         $manager = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $manager->getConnection()->executeQuery("DELETE FROM issues WHERE name = 'CAFRS audits'");
 
-        foreach (self::$environments as $environment) {
+        foreach (self::$environments as $environment) {;
             $sql = "SELECT * FROM {$environment}";
             $stmt = $manager->getConnection()->prepare($sql);
             $stmt->execute();
             $manager->getConnection()->beginTransaction();
             try {
-                $manager->getConnection()->executeQuery("DELETE FROM issues WHERE name = 'CAFRS audits'");
                 while ($row = $stmt->fetch()) {
                     $government = $manager->getRepository(Government::class)->find($row['government_id']);
-                    $type = str_replace(' ', '-', strtolower($government->getType()));
+                    $type = 'general-purpose';
+                    if ($government->getType()) {
+                        $type = str_replace(' ', '-', strtolower($government->getType()));
+                    }
                     $link = self::FILE_LIBRARY_URL . "/{$type}-{$row['year']}?s={$government->getState()}";
                     $issue = new Issue();
                     $issue
