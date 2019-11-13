@@ -1,27 +1,38 @@
 <!DOCTYPE html>
-
 <html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta property="og:image" content="path/to/image.jpg">
+    <title>{{ environment.title }}</title>
 
-    <head>
-        <title>{{ environment.title }}</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="{{ asset('/bootstrap.min.css') }}" rel="stylesheet">
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
-        {% block stylesheets %}{% endblock %}
+    <link href="{{ asset('/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+
+    {% block stylesheets %}{% endblock %}
+    <!--Main-Style-->
+
+    <link href="{{ asset('/bundles/govwikifrontend/css/new-style.css') }}" rel="stylesheet">
+    <!--Fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap" rel="stylesheet">
+    <!--Fonts-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap" rel="stylesheet">
     {% if environment is defined %}
         <link rel="icon" href="{{ asset('/img/'~ environment.slug ~'/favicon.ico') }}" type="image/x-icon" />
-        <style>{{ environment.style|raw }}</style>
+        {#        <style>{{ environment.style|raw }}</style>#}
     {% else %}
         <link rel="icon" href="http://californiapolicycenter.org/wp-content/uploads/sites/2/2015/04/favicon_v1.png" type="image/png">
     {% endif %}
-    </head>
+</head>
 
-    <body>
-        <div id="fb-root"></div>
-        <script>
-            (function(d, s, id) {
+<body>
+
+<!--Wrapper-->
+<div id="wrapper" class="wrapper">
+    <script>
+        (function(d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) return;
             js = d.createElement(s); js.id = id;
@@ -30,177 +41,136 @@
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));</script>
 
-        {# Header #}
-        <header class="container">
-            {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
-        </header>
+    <div class="container wrapper_container">
 
-        {# Menubar #}
-        {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) %}
-        {% if (_locales is defined) or (years is defined and years|length > 1)%}
-            <menu class="container mainmenu">
-                <div class="row">
-                    <div class="col-md-6">
-                        {% if years is defined and years|length > 1 %}
-                            <label for="year-selector" class="control-label">{{ 'general.year_selector_label'|trans }}: </label>
-                            <select id="year-selector" class="form-control form-control__inline">
-                                {%- if (app.request.attributes.get('_route') ==
-                                    'map') -%}
-                                <option value="latest" {% if (currentYear == 'latest') -%}selected{%- endif -%}>
-                                {%- endif -%}
-                                {%- spaceless -%}
-                                    Latest
-                                {%- endspaceless -%}
-                                </option>
-                                {% for year in years %}
-                                    <option value="{{ year }}" {%-
-                                    if (currentYear == year)
-                                    -%}
-                                            selected
-                                        {%- endif -%}>
-                                        {{- year -}}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        {% endif %}
-                    </div>
+        <!--start Header-->
+        {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
+        <!--end Header-->
 
-                    {% if _locales is defined %}
-                        <div class="col-md-6">
-                            <div class="pull-right">
-                                <ul class="nav">
-                                    {{- _locales|raw -}}
-                                </ul>
-                            </div>
-                            <div class="pull-right">
-                                <p><a href="https://www.abrepr.org/" target="_blank">ABREPR.ORG</a></p>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-            </menu>
-        {% endif %}
-
-        {# Main content #}
-        <main class="container">
-            {{- insertMonetization('top') -}}
+        <!--start section.introduction-->
+        <section class="introduction">
+             {{- insertMonetization('top') -}}
             {% block main %}{% endblock %}
-            {{- insertMonetization('bottom') -}}
-        </main>
+             {{- insertMonetization('bottom') -}}
+        </section>
+        <!--end section.introduction-->
 
-        {# Footer #}
-        <footer class="container footer">
-            {{ include('GovWikiFrontendBundle:Partial:footer.html.twig') }}
-        </footer>
+        <!--start Footer-->
+        {{ include('GovWikiFrontendBundle:Partial:footer.html.twig') }}
+        <!--end Footer-->
 
-        {# Login modal window #}
-        <div id="modal-window" class="modal fade">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
+    </div>
+</div>
+<!--Wrapper end-->
 
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Login</h4>
+{# Login modal window #}
+<div id="modal-window" class="modal fade">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Login</h4>
+            </div>
+
+            <div class="modal-body">
+
+                <form id="ajax-login-form" action="{{ path('fos_user_security_check') }}" method="post">
+                    <input type="hidden" name="_csrf_token" value="qpkx1M6O5lzDwG4Eisz4fMM9A8oweUFEIXRPstJa6VA" />
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input class="form-control" type="text" id="username" name="_username" value="" required="required" />
                     </div>
 
-                    <div class="modal-body">
-
-                        <form id="ajax-login-form" action="{{ path('fos_user_security_check') }}" method="post">
-                            <input type="hidden" name="_csrf_token" value="qpkx1M6O5lzDwG4Eisz4fMM9A8oweUFEIXRPstJa6VA" />
-
-                            <div class="form-group">
-                                <label for="username">Username</label>
-                                <input class="form-control" type="text" id="username" name="_username" value="" required="required" />
-                            </div>
-
-                            <div class="form-group">
-                                <label for="password">Password</label>
-                                <input class="form-control" type="password" id="password" name="_password" required="required" />
-                            </div>
-
-                            <div class="checkbox">
-                                <label for="remember_me">
-                                    <input class="" type="checkbox" id="remember_me" name="_remember_me" value="on" /> Remember me
-                                </label>
-                            </div>
-
-                            <input class="btn btn-default" type="submit" id="_submit" name="_submit" value="Log in" />
-                            {% if environment.canSignUp %}
-                                <a href="{{ path('fos_user_registration_register') }}" class="btn btn-default pull-right">Sign up</a>
-                            {% endif %}
-                        </form>
-
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input class="form-control" type="password" id="password" name="_password" required="required" />
                     </div>
 
+                    <div class="checkbox">
+                        <label for="remember_me">
+                            <input class="" type="checkbox" id="remember_me" name="_remember_me" value="on" /> Remember me
+                        </label>
+                    </div>
+
+                    <input class="btn btn-default" type="submit" id="_submit" name="_submit" value="Log in" />
+                    {% if environment.canSignUp %}
+                        <a href="{{ path('fos_user_registration_register') }}" class="btn btn-default pull-right">Sign up</a>
+                    {% endif %}
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{# Change password modal window #}
+{%- if form is defined -%}
+    <div id="change-password-modal-window" class="modal fade">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Change password</h4>
                 </div>
+
+                <div class="modal-body">
+                    {{- form_start(form) -}}
+                    {{- form_widget(form) -}}
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">Change</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">Cancel</button>
+                    </div>
+                    {{- form_end(form) -}}
+                </div>
+
             </div>
         </div>
+    </div>
+{%- endif -%}
 
-        {# Change password modal window #}
-        {%- if form is defined -%}
-            <div id="change-password-modal-window" class="modal fade">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
+{# Overflow all page and show loader (disabled via script.js) #}
+{#<div class="loader_wrap">#}
+{#<div class="loader"></div>#}
+{#</div>#}
 
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">Change password</h4>
-                        </div>
+{#{% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/jquery.min.js' output='js/jquery.js' %}#}
+{#<script src="{{ asset_url }}"></script>#}
+{#{% endjavascripts %}#}
 
-                        <div class="modal-body">
-                            {{- form_start(form) -}}
-                            {{- form_widget(form) -}}
-                            <div class="btn-group">
-                                <button type="submit" class="btn btn-primary">Change</button>
-                                <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">Cancel</button>
-                            </div>
-                            {{- form_end(form) -}}
-                        </div>
+{% if app.environment == 'prod' %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.1/lodash.min.js"></script>
+{% else %}
+    {% javascripts '@GovWikiFrontendBundle/Resources/public/js/vendor/lodash.min.js'%}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endif %}
 
-                    </div>
-                </div>
-            </div>
-        {%- endif -%}
+{% block javascripts %}
+    {# Govwiki namespace #}
+    <script> window.gw = {}; </script>
+    <script> window.gw.authorized = "{{ app.user }}"; </script>
+    {% set username = '' %}
+    {% if app.user %}
+    <script> window.gw.user_id = "{{ app.user.id }}"; </script>
+    {% set username = app.user.username %}
+    {% endif %}
+    {%- if (formValid is not defined or formValid is null) -%}
+    <script> window.gw.formValid = null; </script>
+    {%- else -%}
+    <script> window.gw.formValid = {{ (formValid) ? 1 : 0  }}; </script>
+    {%- endif -%}
+    <script> window.gw.username = "{{ username }}"; </script>
+{% endblock %}
 
-        {# Overflow all page and show loader (disabled via script.js) #}
-        {#<div class="loader_wrap">#}
-            {#<div class="loader"></div>#}
-        {#</div>#}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
-        {#{% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/jquery.min.js' output='js/jquery.js' %}#}
-            {#<script src="{{ asset_url }}"></script>#}
-        {#{% endjavascripts %}#}
+{%- if (environment.analytics is defined) -%}
+    {{- environment.analytics|raw -}}
+{%- endif -%}
 
-        {% if app.environment == 'prod' %}
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.1/lodash.min.js"></script>
-        {% else %}
-            {% javascripts '@GovWikiFrontendBundle/Resources/public/js/vendor/lodash.min.js'%}
-                <script src="{{ asset_url }}"></script>
-            {% endjavascripts %}
-        {% endif %}
-
-        {% block javascripts %}
-            {# Govwiki namespace #}
-            <script> window.gw = {}; </script>
-            <script> window.gw.authorized = "{{ app.user }}"; </script>
-            {% set username = '' %}
-            {% if app.user %}
-                <script> window.gw.user_id = "{{ app.user.id }}"; </script>
-                {% set username = app.user.username %}
-            {% endif %}
-            {%- if (formValid is not defined or formValid is null) -%}
-                <script> window.gw.formValid = null; </script>
-            {%- else -%}
-                <script> window.gw.formValid = {{ (formValid) ? 1 : 0  }}; </script>
-            {%- endif -%}
-            <script> window.gw.username = "{{ username }}"; </script>
-        {% endblock %}
-
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-
-        {%- if (environment.analytics is defined) -%}
-            {{- environment.analytics|raw -}}
-        {%- endif -%}
-
-    </body>
+</body>
 </html>

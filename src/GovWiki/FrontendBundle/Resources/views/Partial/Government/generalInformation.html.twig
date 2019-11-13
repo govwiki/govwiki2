@@ -1,0 +1,52 @@
+{%- for category in tab.categories -%}
+    {%- if category.name != 'Main' -%}
+        {# Display category content #}
+        <div class="f-nam f-nam__{{- category.decoration -}}">
+            {{- ('groups.group_id_'~category.id)|trans -}}
+        </div>
+    {%- endif -%}
+{#    {{-#}
+{#    include('@GovWikiFrontend/Partial/Government/category.html.twig')#}
+{#    -}}#}
+{%- endfor -%}
+
+
+<div class="badge_section">
+    <h3 class="badge_section__title">FINANCIAL PERFORMANCE GRADE</h3>
+    <div class="row badge_section__row">
+        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12 badge_box">
+            <div class="badge" style="background: #00B9C4;">
+                <span>D</span>
+            </div>
+            <div class="ranking">
+                <span class="ranking_title">Financial Health Ranking</span>
+                <div class="ranking_numbers">
+                    <span class="active" style="color: #00B9C4;">42</span> of 78
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 space"></div>
+        <div class="col-lg-4 col-md-5 col-sm-6 col-xs-12 general_information">
+            <table class="table_info">
+                <tbody>
+                <tr>
+                    <td>Population</td>
+                    <td>179,565</td>
+                </tr>
+                <tr>
+                    <td>Number of Public Employees</td>
+                    <td>2,293</td>
+                </tr>
+                <tr>
+                    <td>Unemployment Rate</td>
+                    <td>6.6%</td>
+                </tr>
+                <tr>
+                    <td>Mayor's Annual Salary</td>
+                    <td>$600</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
