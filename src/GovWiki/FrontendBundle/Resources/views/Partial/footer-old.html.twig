@@ -1,0 +1,34 @@
+<div class="row footer">
+    {% set copyright = 'footer.copyright'|trans %}
+    {% set links     = 'footer.links'|trans %}
+    {% set social    = 'footer.social'|trans %}
+
+    <div>
+        {{ 'general.bottom_text'|trans|raw }}
+    </div>
+
+    {% if copyright is not empty and links is not empty and social is not empty %}
+        {# Copyright #}
+        <div class="copyright-wrapper col-xs-12 col-sm-6 col-md-8">
+
+            <div class="copyright">
+                {{ copyright|raw }}
+            </div>
+
+        </div>
+
+        {# Site links #}
+        <div class="col-xs-6 col-sm-3 col-md-2">
+
+            <div class="site-links">
+                {{ links|raw }}
+            </div>
+
+        </div>
+
+        {# Social links #}
+        <div class="col-xs-6 col-sm-3 col-md-2">
+            {{ social|raw }}
+        </div>
+    {% endif %}
+</div>

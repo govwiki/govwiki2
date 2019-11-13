@@ -3,6 +3,21 @@
 #}
 {% import _self as macro %}
 
+{# Filter #}
+
+<div class="col-md-12">
+    <form id="form-filter" action="{{ path('government', {altTypeSlug:government.altTypeSlug, slug:government.slug, year:currentYear}) }}" method="get">
+        <div class="form-group">
+            <label for="visualize">Visualize by:</label>
+            <select class="form-control" id="visualize" name="columnFin">
+                {% for option, key in filters %}
+                    <option value="{{key}}">{{option}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+</div>
+
 {# Chart Control #}
 
 <div class="col-md-12 text-left chart-controls">
@@ -123,6 +138,10 @@
         <table class="table compare-second-table"></table>
     </div>
 
+    {% set classTotalfunds = (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_TOTAL_GOV_FUNDS')) %}
+    {% set classGenfund    = (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_GENERAL_FUNDS')) %}
+    {% set classOtherFunds = (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_OTHER_FUNDS')) %}
+
     {% for categoryName, fields in financialStatements %}
         <table class="table financial-table">
 
@@ -133,9 +152,9 @@
                     {# Category caption #}
                     <th><b>{{ ('general.findata.main.' ~ categoryName | prepareToTranslate)|trans }}</b></th>
                     {% if loop.first %}
-                        <th><b>{{ 'general.findata.main.general_fund'|trans }}</b></th>
-                        <th><b>{{ 'general.findata.main.other_fund'|trans }}</b></th>
-                        <th><b>{{ 'general.findata.main.total_fund'|trans }}</b></th>
+                        <th class="{{ classGenfund }}"><b>{{ 'general.findata.main.general_fund'|trans }}</b></th>
+                        <th class="{{ classOtherFunds }}"><b>{{ 'general.findata.main.other_fund'|trans }}</b></th>
+                        <th class="{{ classTotalfunds }}"><b>{{ 'general.findata.main.total_fund'|trans }}</b></th>
                     {% endif %}
                 </tr>
             </thead>
@@ -148,7 +167,7 @@
                         <td>
                             {{ ('findata.captions.' ~ name | prepareToTranslate)|trans }}
                         </td>
-                        <td>
+                        <td class="{{ classGenfund }}">
                             {%- if not showTotalAndOver or loop.first -%}
                                 $&nbsp;
                             {%- endif -%}
@@ -160,7 +179,7 @@
                         </td>
 
                         {% if showTotalAndOver %}
-                            <td>
+                            <td class="{{ classOtherFunds }}">
                                 {%- if loop.first -%}
                                     $&nbsp;
                                 {%- endif -%}
@@ -170,7 +189,7 @@
                                     0
                                 {%- endif -%}
                             </td>
-                            <td>
+                            <td class="{{ classTotalfunds }}">
                                 {%- if loop.first -%}
                                     $&nbsp;
                                 {%- endif -%}

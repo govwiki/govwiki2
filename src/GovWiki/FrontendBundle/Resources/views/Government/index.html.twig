@@ -3,169 +3,174 @@
 {% import _self as self %}
 
 {% block main %}
+    {% if government is defined %}
+        <h1 class="caption">{{government.name}}</h1>
+        <div class="row__sub_caption">
+            {#  SB_DOWORK add firld in database  description  government     #}
+            <h5 class="sub_caption">Municipal Fiscal Health</h5>
+            <div class="group_select">
 
-    <section class="governmentController">
-
-        {% if government is defined %}
-
-
-            {# Government name & wikipedia links #}
-            <nav class="row">
-                <div class="col-md-12 text-right">
-
-                    {% if government.wikipediaPageName %}
-                        <a target="_blank" href="{{government.wikipediaPageName}}">
-                            {{- 'government.wikipedia_link'|trans -}}
-                            <img src="{{- asset('/images/wikipedia.gif') -}}" style="width:36px; height:36px">
-                        </a>
-                    {% endif %}
-
-                    {% if government.latestAuditUrl %}
-                        <a target="_blank" href="{{government.latestAuditUrl.link}}" style="margin-left:20px;">
-                            {{- 'gov.links.latest_audit'|trans -}}
-                            {#Latest Audit#}
-                            <img src="data:image/png;base64,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" style="">
-                        </a>
-                    {% endif %}
-
-                </div>
-
-            </nav>
-
-            {# Header #}
-            <header class="row">
-                <div class="col-md-12">
-
-                    <h3>{{government.name}}</h3>
-
-                </div>
-            </header>
-
-            {% for flash_message in app.session.flashbag.get('message_saved_success') %}
-                <div class="row">
-                    <div class="alert alert-success alert-dismissible" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        {{ flash_message }}
-                    </div>
-                </div>
-            {% endfor %}
-
-            <section class="row">
-                <div class="col-md-12">
-
-                    {# Tabs control #}
-                    <nav>
-                        <ul class="nav nav-pills tab-titles clearfix">
-                            {%- if (tabs is defined) and (tabs is not empty) -%}
-                                {{- self.renderTabPils(tabs) -}}
+                {% if years is defined and years|length > 1 %}
+                    <select id="year-selector" class="select_years">
+                        {%- if (app.request.attributes.get('_route') ==
+                            'map') -%}
+                        <option value="latest" {% if (currentYear == 'latest') -%}selected{%- endif -%}>
                             {%- endif -%}
-                        </ul>
-                    </nav>
-
-                    {%- set commentChanged = government.commentChanges.changed -%}
-                    {%- set currentUserChangeComment = (app.user is not null)
-                        and (government.commentChanges.changedBy == app.user.id) -%}
-
-                    {# Tab content #}
-                    <div class="tab-content">
-                        {%- if (tabs is defined) and (tabs is not empty) -%}
-                            {%- for tab in tabs -%}
-                                <div class="tab-pane {{ loop.first ? 'active' : '' -}}"
-                                    id="{{ self.tabSlug(tab.name) }}">
-                                    <h4>{{ ('groups.group_id_'~tab.id)|trans }}</h4>
-                                    <br>
-                                    <div class="row">
-                                        {# Statistics #}
-                                        {%- if loop.first -%}
-                                            {# First tab. #}
-                                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}
-                                        {%- elseif tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}
-                                            {# User defined tab #}
-                                            {{-
-                                                include('@GovWikiFrontend/Partial/Government/tab.html.twig')
-                                            -}}
-                                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}
-
-                                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}
-
-                                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}
-                                        {%- else -%}
-                                            {# Special tab #}
-                                            {{-
-                                                include('@GovWikiFrontend/Partial/Government/special_tab.html.twig')
-                                            -}}
-                                        {%- endif -%}
-                                    </div>
-                                </div>
-                            {%- endfor -%}
-                        {%- else -%}
-                            <h3 class="text-center">No data. Please refresh page later</h3>
-                        {%- endif -%}
-                    </div>
-
-                </div>
-            </section>
-
-        {% else %}
-            <h3 class="text-center">No data</h3>
-        {% endif %}
-
-        {% if app.user and environment_is_subscribable %}
-            <div class="subscribe-row">
-                <a href="{{-
-                    path('govwiki_frontend_government_subscribe', {
-                        'government': government.id
-                    })
-                -}}" class="btn {% if isSubscriber -%}btn-danger unsubscribe{%- else -%}btn-success subscribe{%- endif -%}" id="subscribe">
-                    {%- if isSubscriber -%}
-                        Unsubscribe
-                    {%- else -%}
-                        Subscribe
-                    {%- endif -%}
-                </a>
+                            {%- spaceless -%}
+                                Latest
+                            {%- endspaceless -%}
+                        </option>
+                        {% for year in years %}
+                            <option value="{{ year }}" {%-
+                                if (currentYear == year)
+                            -%}
+                            selected
+                                    {%- endif -%}>
+                                {{- year -}}
+                            </option>
+                        {% endfor %}
+                    </select>
+                {% endif %}
             </div>
-
-            <div class="message_form_container" id="chat_message_container">
-                {{ form_start(message_form) }}
-                {{ form_row(message_form.text, {'label': 'Message'}) }}
-                {{ form_row(message_form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
-                {{ form_end(message_form) }}
-            </div>
-        {% endif %}
-
-        <br>
-        <br>
-
-        {% if bottomText %}
-            <div class="panel panel-danger notice">
-                <div class="panel-body">
-                    {{ bottomText|raw }}
-                </div>
-            </div>
-            <br>
-        {% endif %}
-
-    </section>
-
-    <div class="modal fade" id="addIssue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Contribution">
-        <div class="modal-dialog" role="document">
-            {{- form_start(issueForm) -}}
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Add new Issue</h4>
-                </div>
-                <div class="modal-body">
-                    {{ form_widget(issueForm) }}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add</button>
-                </div>
-            </div>
-            {{- form_end(issueForm) -}}
         </div>
-    </div>
+
+        {% if tabs is defined and tabs[0] is not empty and tabs[0] is defined %}
+            {% include '@GovWikiFrontend/Partial/Government/generalInformation.html.twig' with { 'tab':tabs[0] } %}
+        {% endif %}
+
+    {% endif %}
+
+
+{#  SB_DOWORK доработать  #}
+{#    <section class="governmentController">#}
+
+{#        {% if government is defined %}#}
+
+{#            {% for flash_message in app.session.flashbag.get('message_saved_success') %}#}
+{#                <div class="row">#}
+{#                    <div class="alert alert-success alert-dismissible" role="alert">#}
+{#                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>#}
+{#                        {{ flash_message }}#}
+{#                    </div>#}
+{#                </div>#}
+{#            {% endfor %}#}
+
+{#            <section class="row">#}
+{#                <div class="col-md-12">#}
+
+{#                    #}{# Tabs control #}
+{#                    <nav>#}
+{#                        <ul class="nav nav-pills tab-titles clearfix">#}
+{#                            {%- if (tabs is defined) and (tabs is not empty) -%}#}
+{#                                {{- self.renderTabPils(tabs) -}}#}
+{#                            {%- endif -%}#}
+{#                        </ul>#}
+{#                    </nav>#}
+
+{#                    {%- set commentChanged = government.commentChanges.changed -%}#}
+{#                    {%- set currentUserChangeComment = (app.user is not null)#}
+{#                        and (government.commentChanges.changedBy == app.user.id) -%}#}
+
+{#                    #}{# Tab content #}
+{#                    <div class="tab-content">#}
+{#                        {%- if (tabs is defined) and (tabs is not empty) -%}#}
+{#                            {%- for tab in tabs -%}#}
+{#                                <div class="tab-pane {{ loop.first ? 'active' : '' -}}"#}
+{#                                    id="{{ self.tabSlug(tab.name) }}">#}
+{#                                    <h4>{{ ('groups.group_id_'~tab.id)|trans }}</h4>#}
+{#                                    <br>#}
+{#                                    <div class="row">#}
+{#                                        #}{# Statistics #}
+{#                                        {%- if loop.first -%}#}
+{#                                            #}{# First tab. #}
+{#                                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:overviewElected.html.twig') }}#}
+{#                                        {%- elseif tab.tabType == constant('GovWiki\\DbBundle\\Entity\\Tab::USER_DEFINED') -%}#}
+{#                                            #}{# User defined tab #}
+{#                                            {{-#}
+{#                                                include('@GovWikiFrontend/Partial/Government/tab.html.twig')#}
+{#                                            -}}#}
+{#                                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:employeeCompensation.html.twig') }}#}
+
+{#                                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:qualityServices.html.twig') }}#}
+
+{#                                            {{ include('GovWikiFrontendBundle:Partial/Government/Tabs:financialHealth.html.twig') }}#}
+{#                                        {%- else -%}#}
+{#                                            #}{# Special tab #}
+{#                                            {{-#}
+{#                                                include('@GovWikiFrontend/Partial/Government/special_tab.html.twig')#}
+{#                                            -}}#}
+{#                                        {%- endif -%}#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            {%- endfor -%}#}
+{#                        {%- else -%}#}
+{#                            <h3 class="text-center">No data. Please refresh page later</h3>#}
+{#                        {%- endif -%}#}
+{#                    </div>#}
+
+{#                </div>#}
+{#            </section>#}
+
+{#        {% else %}#}
+{#            <h3 class="text-center">No data</h3>#}
+{#        {% endif %}#}
+
+{#        {% if app.user and environment_is_subscribable %}#}
+{#            <div class="subscribe-row">#}
+{#                <a href="{{-#}
+{#                    path('govwiki_frontend_government_subscribe', {#}
+{#                        'government': government.id#}
+{#                    })#}
+{#                -}}" class="btn {% if isSubscriber -%}btn-danger unsubscribe{%- else -%}btn-success subscribe{%- endif -%}" id="subscribe">#}
+{#                    {%- if isSubscriber -%}#}
+{#                        Unsubscribe#}
+{#                    {%- else -%}#}
+{#                        Subscribe#}
+{#                    {%- endif -%}#}
+{#                </a>#}
+{#            </div>#}
+
+{#            <div class="message_form_container" id="chat_message_container">#}
+{#                {{ form_start(message_form) }}#}
+{#                {{ form_row(message_form.text, {'label': 'Message'}) }}#}
+{#                {{ form_row(message_form.submit, {'attr': {'class': 'btn btn-primary'}}) }}#}
+{#                {{ form_end(message_form) }}#}
+{#            </div>#}
+{#        {% endif %}#}
+
+{#        <br>#}
+{#        <br>#}
+
+{#        {% if bottomText %}#}
+{#            <div class="panel panel-danger notice">#}
+{#                <div class="panel-body">#}
+{#                    {{ bottomText|raw }}#}
+{#                </div>#}
+{#            </div>#}
+{#            <br>#}
+{#        {% endif %}#}
+
+{#    </section>#}
+
+{#    <div class="modal fade" id="addIssue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Contribution">#}
+{#        <div class="modal-dialog" role="document">#}
+{#            {{- form_start(issueForm) -}}#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>#}
+{#                    <h4 class="modal-title">Add new Issue</h4>#}
+{#                </div>#}
+{#                <div class="modal-body">#}
+{#                    {{ form_widget(issueForm) }}#}
+{#                </div>#}
+{#                <div class="modal-footer">#}
+{#                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>#}
+{#                    <button type="submit" class="btn btn-primary">Add</button>#}
+{#                </div>#}
+{#            </div>#}
+{#            {{- form_end(issueForm) -}}#}
+{#        </div>#}
+{#    </div>#}
 {% endblock %}
 
 
@@ -186,6 +191,7 @@
 
     {{parent()}}
 
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
     <script src='http://www.google.com/jsapi'></script>
 
@@ -207,6 +213,76 @@
 
     <script src="/js/common.js"></script>
     <script src="/js/government.js"></script>
+
+    <script>
+        $( document ).ready(function() {
+            $('#visualize').change(function() {
+                let $class = $(this).val();
+                let $removeElemClass, $addElemClass, $removeClasses;
+
+                const KEY_TOTAL_GOV_FUNDS = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_TOTAL_GOV_FUNDS')) }}';
+                const KEY_OTHER_FUNDS     = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_OTHER_FUNDS')) }}';
+                const KEY_GENERAL_FUNDS   = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_GENERAL_FUNDS')) }}';
+                const KEY_NO_CHOICE       = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_NO_CHOICE')) }}';
+
+                switch ($class) {
+                    case KEY_TOTAL_GOV_FUNDS:
+                        $removeElemClass = [KEY_GENERAL_FUNDS, KEY_OTHER_FUNDS];
+                        $addElemClass    = KEY_TOTAL_GOV_FUNDS;
+
+                        break;
+                    case KEY_OTHER_FUNDS:
+                        $removeElemClass = [KEY_TOTAL_GOV_FUNDS, KEY_GENERAL_FUNDS];
+                        $addElemClass    = KEY_OTHER_FUNDS;
+
+                        break;
+                    case KEY_GENERAL_FUNDS:
+                        $removeElemClass = [KEY_TOTAL_GOV_FUNDS, KEY_OTHER_FUNDS];
+                        $addElemClass    = KEY_GENERAL_FUNDS;
+
+                        break;
+                    case KEY_NO_CHOICE:
+                        $removeClasses = [KEY_TOTAL_GOV_FUNDS, KEY_OTHER_FUNDS, KEY_GENERAL_FUNDS];
+
+                        $removeClasses.forEach(function (element) {
+                            clearAddClass(element);
+                        });
+
+                        return;
+                }
+
+                $removeElemClass.forEach(function (element) {
+                    clearHideClass(element);
+                });
+
+                clearAddClass($addElemClass);
+
+
+                function clearHideClass($removeElemClass) {
+                    let $tdsRemove = $('.'+$removeElemClass);
+
+                    $tdsRemove.each(function () {
+                        let self = $(this);
+                        changeClass(self, 'hide-table-td', 'show-table-td');
+                    });
+                }
+
+                function clearAddClass($addElemClass) {
+                    let $tdsAdd    = $('.'+$addElemClass);
+
+                    $tdsAdd.each(function () {
+                        let self = $(this);
+                        changeClass(self, 'show-table-td', 'hide-table-td');
+                    });
+                }
+
+                function changeClass(currentElem, addClass, removeClass) {
+                    currentElem.addClass(addClass);
+                    currentElem.removeClass(removeClass);
+                }
+            });
+        });
+    </script>
 
 {% endblock %}
 

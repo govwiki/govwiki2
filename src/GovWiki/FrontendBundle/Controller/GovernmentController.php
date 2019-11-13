@@ -4,13 +4,14 @@ namespace GovWiki\FrontendBundle\Controller;
 
 use GovWiki\ApiBundle\GovWikiApiServices;
 use GovWiki\DbBundle\Entity\Chat;
+use GovWiki\DbBundle\Entity\Environment;
 use GovWiki\DbBundle\Entity\Government;
-use GovWiki\DbBundle\Entity\Issue;
 use GovWiki\DbBundle\Entity\Message;
 use GovWiki\DbBundle\Form\MessageType;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\EnvironmentBundle\Manager\FinData\FinDataProcessorInterface;
+use GovWiki\FrontendBundle\Helpers\FinancialStatements;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -24,7 +25,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class GovernmentController extends AbstractGovWikiController
 {
-
     const MAX_SALARIES_PER_PAGE = 25;
     const MAX_PENSIONS_PER_PAGE = 25;
     const MAX_DOCUMENTS_PER_PAGE = 5;
@@ -216,7 +216,9 @@ class GovernmentController extends AbstractGovWikiController
      */
     public function governmentAction(Request $request, $altTypeSlug, $slug)
     {
-        if ($this->getCurrentEnvironment() === null) {
+        $environment = $this->getCurrentEnvironment();
+
+        if (!$environment instanceof Environment) {
             return $this->redirectToRoute('disabled');
         }
         $user = $this->getUser();
@@ -224,7 +226,6 @@ class GovernmentController extends AbstractGovWikiController
         $manager = $this->getGovernmentManager();
         /** @var FinDataProcessorInterface $processor */
         $processor = $this->get(GovWikiEnvironmentService::FINDATA_PROCESSOR);
-        $environment = $this->getCurrentEnvironment();
 
         // Get available years for specified government.
         $years = $manager
@@ -364,6 +365,7 @@ From ' . $user_email;
             ->getForm();
         $data['commentForm'] = $commentForm->createView();
 
+        $data['filters'] = FinancialStatements::getOptionsFilter();
 
         if ($request->query->has('new')) {
             return $this->render('@GovWikiFrontend/Government/index_new.html.twig', $data);

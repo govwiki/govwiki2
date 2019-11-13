@@ -67,11 +67,11 @@ class MainController extends AbstractGovWikiController
      */
     public function mapAction(Request $request): Response
     {
-        if ($this->getCurrentEnvironment() === null) {
+        $environment = $this->getCurrentEnvironment();
+
+        if (!$environment instanceof Environment) {
             return $this->redirectToRoute('disabled');
         }
-
-        $environment = $this->getCurrentEnvironment();
 
         if ($environment->getMap()->isCreated()) {
             return $this->renderMap($request, $environment);
