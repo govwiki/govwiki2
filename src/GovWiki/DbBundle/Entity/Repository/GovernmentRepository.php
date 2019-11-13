@@ -179,6 +179,7 @@ class GovernmentRepository extends EntityRepository
                 'status' => 'pending',
             ])
             ->orderBy($expr->desc('EditRequest.created'))
+            ->addOrderBy($expr->desc('Issue.id'))
             ->getQuery()
             ->useQueryCache(true)
             ->useResultCache(true)
