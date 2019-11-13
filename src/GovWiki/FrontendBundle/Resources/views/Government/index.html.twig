@@ -174,16 +174,6 @@
 
     {{parent()}}
 
-    <style>
-        {# Filter style in Financial Statements #}
-        .show-table-td {
-            display: table-cell;
-        }
-        .hide-table-td {
-            display: none;
-        }
-    </style>
-
     {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/government.scss' filter='scss' %}
         <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
