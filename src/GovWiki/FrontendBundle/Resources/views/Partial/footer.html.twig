@@ -5,7 +5,7 @@
 <!--start Footer-->
 <footer class="footer">
     <div class="footer_row">
-        <a href="#" class="footer_logo"><img src="{{ asset('/img/AbrePR20Logo.png') }}" alt=""></a>
+        <a href="{{ environment.logoHref }}" class="footer_logo"><img src="{{ asset('/img/AbrePRLogo.png') }}" alt=""></a>
         {% if social is defined and social is not empty %}
             <ul class="footer_networks">
                 <li><a href="https://www.facebook.com/AbrePuertoRico" target="_blank" title="Facebook"><img src="{{ asset('/img/network/02_facebook.png') }}" class="icon_network"></a></li>
