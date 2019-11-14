@@ -1,0 +1,101 @@
+{#
+
+    Template for badge category in Municipito page.
+
+#}
+{%- set letter_grade = '' -%}
+{%- set financial_health_ranking = '' -%}
+{% for field in category.formats %}
+    {% if field.field == 'letter_grade' %}
+        {%- set letter_grade = government|applay_mask(field) -%}
+    {% endif %}
+
+    {% if field.field == 'financial_health_ranking' %}
+        {%- set financial_health_ranking = government|applay_mask(field) -%}
+    {% endif %}
+{% endfor %}
+
+
+<div class="badge_section">
+    <h3 class="badge_section__title">FINANCIAL PERFORMANCE GRADE</h3>
+    <div class="row badge_section__row">
+        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12 badge_box">
+
+            {% if letter_grade is defined and letter_grade is not empty%}
+                <div class="badge" style="background: #00B9C4;">
+                    <span>{{ letter_grade }}</span>
+                </div>
+            {% endif %}
+
+            {% if financial_health_ranking is defined and financial_health_ranking is not empty%}
+                <div class="ranking">
+                    <span class="ranking_title">Financial Health Ranking</span>
+                    <div class="ranking_numbers">
+                        <span class="active" style="color: #00B9C4;">{{ financial_health_ranking }}</span> of 100
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 space"></div>
+        <div class="col-lg-4 col-md-5 col-sm-6 col-xs-12 general_information">
+            <table class="table_info">
+                {%- for field in category.formats -%}
+                    {%- set value = government|applay_mask(field) -%}
+
+                    {% if (field.field != 'letter_grade') and (field.field != 'financial_health_ranking') %}
+
+                        {%- if not value is null -%}
+                            <tr class="statistics-row">
+                                {# Field name #}
+                                <td>
+                                    {%- set helpTextKey = 'format.'~field.field~'.help_text' -%}
+                                    {%- set helpText = helpTextKey|trans -%}
+
+                                    {{- ('format.'~field.field)|trans -}}
+                                    {%- if ((helpTextKey != helpText) and (helpText|trim != '')) -%}
+                                        <img src="{{ asset('bundles/govwikifrontend/img/help.png') }}"
+                                             data-toggle="tooltip"
+                                             data-placement="bottom"
+                                             title="{{- helpText -}}">
+                                    {%- endif -%}
+                                </td>
+
+                                {# Field value #}
+                                <td>
+                                    {{- value|display|raw -}}
+                                    {%- set rankName = field.field|rankName -%}
+
+
+                                    {%- if government.ranks[rankName] is defined -%}
+                                        {{ dump(government.ranks[rankName]) }}
+                                        {%- set rank = government.ranks[rankName] -%}
+
+                                        &nbsp;
+                                        <a class='rank'
+                                           data-field='{{- rankName -}}'
+                                           data-mask='{{- field.mask -}}'
+                                           title='{{- ('format.'~field.field)|trans }}'>
+                                            {%- if rank.type == 'letter' -%}
+                                                {{ rank.letter|upper }}
+                                            {%- else -%}
+                                                ({{- rank.current -}}
+                                                &nbsp;{{- 'preposition.of'|trans -}}&nbsp;
+                                                {{- rank.max -}})
+                                            {%- endif -%}
+                                        </a>
+                                    {%- endif -%}
+                                </td>
+                            </tr>
+                        {%- endif -%}
+
+                    {% endif %}
+
+
+                {%- endfor -%}
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
