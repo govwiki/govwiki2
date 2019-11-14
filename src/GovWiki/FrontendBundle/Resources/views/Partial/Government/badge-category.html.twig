@@ -67,10 +67,8 @@
 
 
                                     {%- if government.ranks[rankName] is defined -%}
-                                        {{ dump(government.ranks[rankName]) }}
                                         {%- set rank = government.ranks[rankName] -%}
 
-                                        &nbsp;
                                         <a class='rank'
                                            data-field='{{- rankName -}}'
                                            data-mask='{{- field.mask -}}'
