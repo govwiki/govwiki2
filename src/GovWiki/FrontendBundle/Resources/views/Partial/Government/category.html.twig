@@ -3,7 +3,7 @@
     Template for one category in tab.
 
 #}
-<table class="table table-striped statistics-table">
+<table class="table table-striped statistics-table table_main">
     {%- for field in category.formats -%}
         {%- set value = government|applay_mask(field) -%}
 

@@ -47,13 +47,9 @@
         {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
         <!--end Header-->
 
-        <!--start section.introduction-->
-        <section class="introduction">
-             {{- insertMonetization('top') -}}
-            {% block main %}{% endblock %}
-             {{- insertMonetization('bottom') -}}
-        </section>
-        <!--end section.introduction-->
+        {{- insertMonetization('top') -}}
+        {% block main %}{% endblock %}
+        {{- insertMonetization('bottom') -}}
 
         <!--start Footer-->
         {{ include('GovWikiFrontendBundle:Partial:footer.html.twig') }}
