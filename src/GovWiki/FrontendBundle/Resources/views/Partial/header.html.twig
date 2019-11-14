@@ -37,7 +37,7 @@
             {% endif %}
         </div>
         <div class="col-md-6 col-sm-6 col-xs-6 header_languages">
-            <a href="#" class="link_main">ABREPR.ORG</a>
+            <a href="https://www.abrepr.org/" class="link_main">ABREPR.ORG</a>
             {% set _locales = render(controller('GovWikiFrontendBundle:Localization:showLocalesInHeader', {'current_page_route': app.request.attributes.get('_route')})) %}
 
             {% if _locales is defined %}

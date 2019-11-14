@@ -1,32 +1,39 @@
-<div class="row footer">
+{% set copyright = 'footer.copyright'|trans %}
+{% set links     = 'footer.links'|trans %}
+{% set social    = 'footer.social'|trans %}
 
-    {# Copyright #}
-    <div class="copyright-wrapper col-xs-12 col-sm-6 col-md-8">
+<!--start Footer-->
+<footer class="footer">
+    <div class="footer_row">
+        <a href="#" class="footer_logo"><img src="{{ asset('/img/AbrePR20Logo.png') }}" alt=""></a>
+        {% if social is defined and social is not empty %}
+            <ul class="footer_networks">
+                <li><a href="https://www.facebook.com/AbrePuertoRico" target="_blank" title="Facebook"><img src="{{ asset('/img/network/02_facebook.png') }}" class="icon_network"></a></li>
+                <li> <a href="https://twitter.com/abrepuertorico" target="_blank" title="Twitter"><img src="{{ asset('/img/network/01_twitter.png') }}" class="icon_network"></a></li>
+                <li><a href="#"><img src="{{ asset('/img/network/03_youtube.png') }}" class="icon_network"></a></li>
+                <li><a href="#"><img src="{{ asset('/img/network/07_linkedin.png') }}" class="icon_network"></a></li>
+                <li><a href="http://plus.google.com/communities/102227212053653047640"><img src="{{ asset('/img/network/14_google+.png') }}" class="icon_network"></a></li>
+                <li><a href="#"><img src="{{ asset('/img/network/15_tumblr.png') }}" class="icon_network"></a></li>
+            </ul>
+        {% endif %}
+    </div>
+    <address class="footer_address">
+        1001 Ave Ponce de Leon San Juan, PR 00907
+        <a href="tel:(212) 334-1300" class="phone">(212) 334-1300</a>
+    </address>
+    <p class="footer__sub_text">The Center for Integrity in Public Policy is a 501(c)3 non-profit public charity. PR Corp. # 317048. Federal EIN 66-0791661.
+        {% if copyright is defined and copyright is not empty %}
+        <br>Copyright © copyright.</p>
+    {% endif %}
 
-        <div class="copyright">
-            {#{{ environment_content.get('footer_copyright')|raw }}#}
-            {{ 'footer.copyright'|trans|raw }}
+    {% if links is defined and links is not empty %}
+        <div class="footer__row_links">
+            {{ links|raw }}
         </div>
+    {% endif %}
 
-    </div>
-
-    {# Site links #}
-    <div class="col-xs-6 col-sm-3 col-md-2">
-
-        <div class="site-links">
-            {#{{ environment_content.get('footer_links')|raw }}#}
-            {{ 'footer.links'|trans|raw }}
-        </div>
-
-    </div>
-
-    {# Social links #}
-    <div class="col-xs-6 col-sm-3 col-md-2">
-        {#{{ environment_content.get('footer_social')|raw }}#}
-        {{ 'footer.social'|trans|raw }}
-    </div>
-
-</div>
+</footer>
+<!--end Footer-->
 
 
 

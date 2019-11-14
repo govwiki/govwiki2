@@ -1,12 +1,23 @@
 {% if locale_names_list|length > 1 %}
-    {% for locale in locale_names_list %}
-        <li>
-            <a href="{{- path(
-                'govwiki_mobile_localization_changelocale',
-                { 'locale': locale.shortName })
-            -}}">
-                {{- ('general.'~ locale.shortName) | trans -}}
-            </a>
-        </li>
-    {% endfor %}
+
+    <ul class="header_languages__list">
+        {% for locale in locale_names_list %}
+
+            {% if app.request.locale == locale.shortName%}
+                {% set classActive = 'active' %}
+            {% else %}
+                {% set classActive = '' %}
+            {% endif %}
+
+                <li class="{{ classActive }}">
+                    <a href="{{ path('govwiki_mobile_localization_changelocale', { 'locale': locale.shortName }) }}">
+                        {{- ('general.'~ locale.shortName) | trans -}}
+                    </a>
+                </li>
+
+            {% if loop.last == false %}
+                <li>/</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
 {% endif %}

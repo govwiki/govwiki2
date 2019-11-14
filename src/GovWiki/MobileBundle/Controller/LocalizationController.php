@@ -52,9 +52,9 @@ class LocalizationController extends AbstractGovWikiController
             ->getRepository('GovWikiDbBundle:AbstractLocale')
             ->getListLocaleNames($environment);
 
-        return [
+        return $this->render('@GovWikiMobile/Localization/showLocalesInHeader.html.twig', [
             'locale_names_list' => $locale_names_list,
             'current_page_route' => $current_page_route,
-        ];
+        ]);
     }
 }

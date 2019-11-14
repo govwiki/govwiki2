@@ -18,7 +18,6 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap" rel="stylesheet">
     <!--Fonts-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap" rel="stylesheet">
     {% if environment is defined %}
         <link rel="icon" href="{{ asset('/img/'~ environment.slug ~'/favicon.ico') }}" type="image/x-icon" />
         {#        <style>{{ environment.style|raw }}</style>#}
@@ -29,144 +28,143 @@
 
 <body>
 
-<!--Wrapper-->
-<div id="wrapper" class="wrapper">
-    <script>
-        (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            var currentLocale = '{{ (app.request.locale == 'es') ? 'es_ES' : 'en_US' }}';
-            js.src = "https://connect.facebook.net/" + currentLocale + "/sdk.js#xfbml=1&version=v2.5";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));</script>
+    <!--Wrapper-->
+    <div id="wrapper" class="wrapper">
+        <script>
+            (function(d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s); js.id = id;
+                var currentLocale = '{{ (app.request.locale == 'es') ? 'es_ES' : 'en_US' }}';
+                js.src = "https://connect.facebook.net/" + currentLocale + "/sdk.js#xfbml=1&version=v2.5";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));</script>
 
-    <div class="container wrapper_container">
+        <div class="container wrapper_container">
 
-        <!--start Header-->
-        {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
-        <!--end Header-->
+            <!--start Header-->
+            {{ include('GovWikiFrontendBundle:Partial:header.html.twig') }}
+            <!--end Header-->
 
-        {{- insertMonetization('top') -}}
-        {% block main %}{% endblock %}
-        {{- insertMonetization('bottom') -}}
+            {{- insertMonetization('top') -}}
+            {% block main %}{% endblock %}
+            {{- insertMonetization('bottom') -}}
 
-        <!--start Footer-->
-        {{ include('GovWikiFrontendBundle:Partial:footer.html.twig') }}
-        <!--end Footer-->
-
-    </div>
-</div>
-<!--Wrapper end-->
-
-{# Login modal window #}
-<div id="modal-window" class="modal fade">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Login</h4>
-            </div>
-
-            <div class="modal-body">
-
-                <form id="ajax-login-form" action="{{ path('fos_user_security_check') }}" method="post">
-                    <input type="hidden" name="_csrf_token" value="qpkx1M6O5lzDwG4Eisz4fMM9A8oweUFEIXRPstJa6VA" />
-
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input class="form-control" type="text" id="username" name="_username" value="" required="required" />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input class="form-control" type="password" id="password" name="_password" required="required" />
-                    </div>
-
-                    <div class="checkbox">
-                        <label for="remember_me">
-                            <input class="" type="checkbox" id="remember_me" name="_remember_me" value="on" /> Remember me
-                        </label>
-                    </div>
-
-                    <input class="btn btn-default" type="submit" id="_submit" name="_submit" value="Log in" />
-                    {% if environment.canSignUp %}
-                        <a href="{{ path('fos_user_registration_register') }}" class="btn btn-default pull-right">Sign up</a>
-                    {% endif %}
-                </form>
-
-            </div>
+            <!--start Footer-->
+            {{ include('GovWikiFrontendBundle:Partial:footer.html.twig') }}
+            <!--end Footer-->
 
         </div>
     </div>
-</div>
+    <!--Wrapper end-->
 
-{# Change password modal window #}
-{%- if form is defined -%}
-    <div id="change-password-modal-window" class="modal fade">
+    {# Login modal window #}
+    <div id="modal-window" class="modal fade">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
 
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Change password</h4>
+                    <h4 class="modal-title">Login</h4>
                 </div>
 
                 <div class="modal-body">
-                    {{- form_start(form) -}}
-                    {{- form_widget(form) -}}
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-primary">Change</button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">Cancel</button>
-                    </div>
-                    {{- form_end(form) -}}
+
+                    <form id="ajax-login-form" action="{{ path('fos_user_security_check') }}" method="post">
+                        <input type="hidden" name="_csrf_token" value="qpkx1M6O5lzDwG4Eisz4fMM9A8oweUFEIXRPstJa6VA" />
+
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input class="form-control" type="text" id="username" name="_username" value="" required="required" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input class="form-control" type="password" id="password" name="_password" required="required" />
+                        </div>
+
+                        <div class="checkbox">
+                            <label for="remember_me">
+                                <input class="" type="checkbox" id="remember_me" name="_remember_me" value="on" /> Remember me
+                            </label>
+                        </div>
+
+                        <input class="btn btn-default" type="submit" id="_submit" name="_submit" value="Log in" />
+                        {% if environment.canSignUp %}
+                            <a href="{{ path('fos_user_registration_register') }}" class="btn btn-default pull-right">Sign up</a>
+                        {% endif %}
+                    </form>
+
                 </div>
 
             </div>
         </div>
     </div>
-{%- endif -%}
 
-{# Overflow all page and show loader (disabled via script.js) #}
-{#<div class="loader_wrap">#}
-{#<div class="loader"></div>#}
-{#</div>#}
+    {# Change password modal window #}
+    {%- if form is defined -%}
+        <div id="change-password-modal-window" class="modal fade">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
 
-{#{% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/jquery.min.js' output='js/jquery.js' %}#}
-{#<script src="{{ asset_url }}"></script>#}
-{#{% endjavascripts %}#}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Change password</h4>
+                    </div>
 
-{% if app.environment == 'prod' %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.1/lodash.min.js"></script>
-{% else %}
-    {% javascripts '@GovWikiFrontendBundle/Resources/public/js/vendor/lodash.min.js'%}
-    <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-{% endif %}
+                    <div class="modal-body">
+                        {{- form_start(form) -}}
+                        {{- form_widget(form) -}}
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">Change</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">Cancel</button>
+                        </div>
+                        {{- form_end(form) -}}
+                    </div>
 
-{% block javascripts %}
-    {# Govwiki namespace #}
-    <script> window.gw = {}; </script>
-    <script> window.gw.authorized = "{{ app.user }}"; </script>
-    {% set username = '' %}
-    {% if app.user %}
-    <script> window.gw.user_id = "{{ app.user.id }}"; </script>
-    {% set username = app.user.username %}
-    {% endif %}
-    {%- if (formValid is not defined or formValid is null) -%}
-    <script> window.gw.formValid = null; </script>
-    {%- else -%}
-    <script> window.gw.formValid = {{ (formValid) ? 1 : 0  }}; </script>
+                </div>
+            </div>
+        </div>
     {%- endif -%}
-    <script> window.gw.username = "{{ username }}"; </script>
-{% endblock %}
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    {# Overflow all page and show loader (disabled via script.js) #}
+    {#<div class="loader_wrap">#}
+    {#<div class="loader"></div>#}
+    {#</div>#}
 
-{%- if (environment.analytics is defined) -%}
-    {{- environment.analytics|raw -}}
-{%- endif -%}
+    {#{% javascripts  '@GovWikiFrontendBundle/Resources/public/js/vendor/jquery.min.js' output='js/jquery.js' %}#}
+    {#<script src="{{ asset_url }}"></script>#}
+    {#{% endjavascripts %}#}
 
+    {% if app.environment == 'prod' %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.1/lodash.min.js"></script>
+    {% else %}
+        {% javascripts '@GovWikiFrontendBundle/Resources/public/js/vendor/lodash.min.js'%}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endif %}
+
+    {% block javascripts %}
+        {# Govwiki namespace #}
+        <script> window.gw = {}; </script>
+        <script> window.gw.authorized = "{{ app.user }}"; </script>
+        {% set username = '' %}
+        {% if app.user %}
+        <script> window.gw.user_id = "{{ app.user.id }}"; </script>
+        {% set username = app.user.username %}
+        {% endif %}
+        {%- if (formValid is not defined or formValid is null) -%}
+        <script> window.gw.formValid = null; </script>
+        {%- else -%}
+        <script> window.gw.formValid = {{ (formValid) ? 1 : 0  }}; </script>
+        {%- endif -%}
+        <script> window.gw.username = "{{ username }}"; </script>
+    {% endblock %}
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    {%- if (environment.analytics is defined) -%}
+        {{- environment.analytics|raw -}}
+    {%- endif -%}
 </body>
 </html>
