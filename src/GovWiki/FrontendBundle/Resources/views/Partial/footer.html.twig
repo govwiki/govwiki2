@@ -21,9 +21,8 @@
         1001 Ave Ponce de Leon San Juan, PR 00907
         <a href="tel:(212) 334-1300" class="phone">(212) 334-1300</a>
     </address>
-    <p class="footer__sub_text">The Center for Integrity in Public Policy is a 501(c)3 non-profit public charity. PR Corp. # 317048. Federal EIN 66-0791661.
-        {% if copyright is defined and copyright is not empty %}
-        <br>Copyright © {{ copyright|raw }}.</p>
+    {% if copyright is defined and copyright is not empty %}
+        {{ copyright|raw }}
     {% endif %}
 
     {% if links is defined and links is not empty %}
