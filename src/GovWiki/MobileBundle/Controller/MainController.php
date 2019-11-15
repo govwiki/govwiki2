@@ -142,9 +142,15 @@ class MainController extends AbstractGovWikiController
             $greetingText = '';
         }
 
+        $greetingTextLinks = $translator->trans('map.greeting_text.links');
+        if ($greetingTextLinks === 'map.greeting_text.links') {
+            $greetingTextLinks = '';
+        }
+
         $params = [
             'map' => \json_encode($map),
             'greetingText' => $greetingText,
+            'greetingTextLinks' => $greetingTextLinks,
             'years' => $years,
             'currentYear' => $currentYear,
         ];

@@ -11,6 +11,7 @@ use GovWiki\DbBundle\Form\MessageType;
 use GovWiki\EnvironmentBundle\Controller\AbstractGovWikiController;
 use GovWiki\EnvironmentBundle\GovWikiEnvironmentService;
 use GovWiki\EnvironmentBundle\Manager\FinData\FinDataProcessorInterface;
+use GovWiki\FrontendBundle\Helpers\FinancialStatements;
 use GovWiki\UserBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -360,6 +361,8 @@ From ' . $user_email;
             ])
             ->getForm();
         $data['commentForm'] = $commentForm->createView();
+
+        $data['filters'] = FinancialStatements::getOptionsFilter();
 
         return $data;
     }

@@ -1,18 +1,11 @@
 {% extends "GovWikiMobileBundle:Layout:main.html.twig" %}
+
 {% import _self as self %}
 
 {% block main %}
-    {% for flash_message in app.session.flashbag.get('message_saved_success') %}
-        <div class="row">
-            <div class="alert alert-success alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                {{ flash_message }}
-            </div>
-        </div>
-    {% endfor %}
 
-    <!--start section.introduction-->
     {% if government is defined %}
+        <!--start section.introduction-->
         <section class="introduction">
             {# Government name & wikipedia links #}
 
@@ -61,35 +54,35 @@
 
             {#  End Badge block #}
         </section>
+        <!--end section.introduction-->
     {% endif %}
-    <!--end section.introduction-->
 
-    <!--start section.financial-->
     <section class="financial governmentController">
+
 
         {# Tabs control#}
         {% if government is defined %}
 
-        {% for flash_message in app.session.flashbag.get('message_saved_success') %}
-            <div class="row">
-                <div class="alert alert-success alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    {{ flash_message }}
+            {% for flash_message in app.session.flashbag.get('message_saved_success') %}
+                <div class="row">
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ flash_message }}
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
 
-        <nav class="financial__navbar">
-            <ul class="nav list_navbar">
-                {%- if (tabs is defined) and (tabs is not empty) -%}
-                    {{- self.renderTabPils(tabs) -}}
-                {%- endif -%}
-            </ul>
-        </nav>
+            <nav class="financial__navbar">
+                <ul class="nav list_navbar">
+                    {%- if (tabs is defined) and (tabs is not empty) -%}
+                        {{- self.renderTabPils(tabs) -}}
+                    {%- endif -%}
+                </ul>
+            </nav>
 
-        {%- set commentChanged = government.commentChanges.changed -%}
-        {%- set currentUserChangeComment = (app.user is not null)
-            and (government.commentChanges.changedBy == app.user.id) -%}
+            {%- set commentChanged = government.commentChanges.changed -%}
+            {%- set currentUserChangeComment = (app.user is not null)
+                and (government.commentChanges.changedBy == app.user.id) -%}
 
             <div class="tab-content">
                 {%- if (tabs is defined) and (tabs is not empty) -%}
@@ -132,7 +125,42 @@
 
 
 
-    <!--end section.financial-->
+
+    {% if app.user and environment_is_subscribable %}
+        <div class="subscribe-row">
+            <a href="{{-
+            path('govwiki_frontend_government_subscribe', {
+                'government': government.id
+            })
+            -}}" class="btn {% if isSubscriber -%}btn-danger unsubscribe{%- else -%}btn-success subscribe{%- endif -%}" id="subscribe">
+                {%- if isSubscriber -%}
+                    Unsubscribe
+                {%- else -%}
+                    Subscribe
+                {%- endif -%}
+            </a>
+        </div>
+
+        <div class="message_form_container" id="chat_message_container">
+            {{ form_start(message_form) }}
+            {{ form_row(message_form.text, {'label': 'Message'}) }}
+            {{ form_row(message_form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+            {{ form_end(message_form) }}
+        </div>
+    {% endif %}
+
+    <br>
+    <br>
+
+    {% if bottomText %}
+        <div class="panel panel-danger notice">
+            <div class="panel-body">
+                {{ bottomText|raw }}
+            </div>
+        </div>
+        <br>
+    {% endif %}
+
 
     <div class="modal fade" id="addIssue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-entity-type="Contribution">
         <div class="modal-dialog" role="document">
@@ -153,7 +181,6 @@
             {{- form_end(issueForm) -}}
         </div>
     </div>
-
 {% endblock %}
 
 
@@ -162,7 +189,7 @@
 
     {{parent()}}
 
-    {% stylesheets '@GovWikiMobileBundle/Resources/public/css/government.scss' filter='scss' %}
+    {% stylesheets '@GovWikiFrontendBundle/Resources/public/css/government.scss' filter='scss' %}
         <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
 
@@ -175,7 +202,7 @@
     {{parent()}}
 
     <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
     <script src='http://www.google.com/jsapi'></script>
 
     {% if government is defined %}
@@ -189,11 +216,13 @@
             window.gw.urls.search = '{{ path('govwiki_api_v1_comparison_search') }}';
             window.gw.urls.captions = '{{ path('govwiki_api_v1_comparison_captions') }}';
             window.gw.urls.compare = '{{ path('govwiki_api_v1_comparison_compare') }}';
+            window.gw.urls.create_request = '{{ path('govwiki_api_v1_createrequest_create') }}';
+            window.gw.urls.edit_request = '{{ path('govwiki_api_v1_editrequest_create') }}';
         </script>
     {% endif %}
 
-    <script src="/js/mobile/common.js"></script>
-    <script src="/js/mobile/government.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/government.js"></script>
 
     <script>
         $( document ).ready(function() {
@@ -268,7 +297,7 @@
 {% endblock %}
 
 {%- macro tabSlug(tabName) -%}
-    {{- tabName | replace(' ', '_') | replace('+', 'a') -}}
+    {{ tabName | replace(' ', '_') | replace('+', 'a') }}
 {%- endmacro -%}
 
 {%- macro renderTabPils(tabs) -%}

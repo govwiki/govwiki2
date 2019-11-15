@@ -1,3 +1,10 @@
+.show-table-td {
+    display: table-cell;
+}
+.hide-table-td {
+    display: none;
+}
+
 .treemap-tooltip {
     bottom: 0;
 }

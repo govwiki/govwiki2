@@ -56,7 +56,7 @@
 
                     <form class="government-compare">
 
-                        First condition
+                        {# First condition #}
                         <div class="col-md-3 first-condition">
                             <h4 class="text-center">{{ 'general.findata.main.step_1'|trans }}</h4>
                             <div class="form-group">
@@ -71,10 +71,11 @@
                             </div>
                         </div>
 
-                        Divider
+
+                        {# Divider #}
                         <div class="col-md-1 form-group text-center divider">{{ 'general.findata.main.to'|trans }}</div>
 
-                        Second condition
+                        {# Second condition #}
                         <div class="col-md-3 second-condition">
                             <h4 class="text-center">{{ 'general.findata.main.step_2'|trans }}</h4>
                             <div class="form-group">
@@ -89,10 +90,10 @@
                             </div>
                         </div>
 
-                        Divider
+                        {# Divider #}
                         <div class="col-md-1 form-group text-center divider">{{ 'general.findata.main.by'|trans }}</div>
 
-                        Caption Selector
+                        {# Caption Selector #}
                         <div class="col-md-3 form-group government-categories">
                             <h4 class="text-center">{{ 'general.findata.main.step_3'|trans }}</h4>
                             <select class="form-control disabled category">
@@ -208,7 +209,6 @@
         </table>
     </div>
 {% endfor %}
-
 
 
 {% macro displayValue(value) %}

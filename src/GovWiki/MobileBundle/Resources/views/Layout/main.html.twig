@@ -37,7 +37,7 @@
     <body>
     <!--Wrapper-->
     <div id="wrapper" class="wrapper">
-        <div class="container wrapper_container">
+        <div class="container wrapper_container" style="padding: 0 40px 250px;">
 
             <!--start Header-->
             <script>
@@ -97,11 +97,9 @@
             {% endif %}
 
             {# Main content #}
-            <main>
-                {{- insertMonetization('top') -}}
-                {% block main %}{% endblock %}
-                {{- insertMonetization('bottom') -}}
-            </main>
+            {{- insertMonetization('top') -}}
+            {% block main %}{% endblock %}
+            {{- insertMonetization('bottom') -}}
 
             {# Footer #}
             {{ include('GovWikiMobileBundle:Partial:footer.html.twig') }}
@@ -200,11 +198,15 @@
         <script> window.gw.user_id = "{{ app.user.id }}"; </script>
         {% set username = app.user.username %}
         {% endif %}
-        {%- if (formValid is null) -%}
-        <script> window.gw.formValid = null; </script>
-        {%- else -%}
-        <script> window.gw.formValid = {{ (formValid) ? 1 : 0  }}; </script>
+
+        {%- if (formValid is defined) -%}
+            {%- if (formValid is null) -%}
+            <script> window.gw.formValid = null; </script>
+            {%- else -%}
+            <script> window.gw.formValid = {{ (formValid) ? 1 : 0  }}; </script>
+            {%- endif -%}
         {%- endif -%}
+
         <script> window.gw.username = "{{ username }}"; </script>
     {% endblock %}
 
