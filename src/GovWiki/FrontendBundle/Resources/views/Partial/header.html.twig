@@ -6,25 +6,25 @@
 
                 <a href="{{ environment.logoHref }}" class="logo">
                     <span class="sub_name">{{ 'develop.by'|trans }}</span>
-                    <img src="{{ environment.logo }}" alt="">
+                    <img class="img-responsive" src="{{ environment.logo }}" alt="">
                 </a>
 
                 {% if government.secondaryLogoUrl %}
                     <a href="{{ government.secondaryLogoUrl }}" class="logo">
                         <span class="sub_name">{{ 'develop.by'|trans }}</span>
-                        <img src="{{ asset(government.secondaryLogoPath) }}" alt="">
+                        <img class="img-responsive" src="{{ asset(government.secondaryLogoPath) }}" alt="">
                     </a>
                 {% else %}
-                    <img src="{{ asset(government.secondaryLogoPath) }}" alt="">
+                    <img class="img-responsive" src="{{ asset(government.secondaryLogoPath) }}" alt="">
                 {% endif %}
             {% elseif elected.government is defined and elected.government.secondaryLogoPath %}
                 <a class="anchor" href="{{ environment.logoHref }}">
-                    <img src="{{ environment.logo }}" class="logo" width="70%">
+                    <img class="img-responsive" src="{{ environment.logo }}" class="logo" width="70%">
                 </a>
                 {% if elected.government.secondaryLogoUrl %}
                     <a href="{{ elected.government.secondaryLogoUrl }}" class="logo">
                         <span class="sub_name">{{ 'develop.by'|trans }}</span>
-                        <img src="{{ asset(elected.government.secondaryLogoPath) }}" alt="">
+                        <img class="img-responsive" src="{{ asset(elected.government.secondaryLogoPath) }}" alt="">
                     </a>
                 {% else %}
                     <img src="{{ asset(elected.government.secondaryLogoPath) }}" alt="">
@@ -32,7 +32,7 @@
             {% else %}
                 <a href="{{ environment.logoHref }}" class="logo">
                     <span class="sub_name">{{ 'develop.by'|trans }}</span>
-                    <img src="{{ environment.logo }}" alt="">
+                    <img class="img-responsive" src="{{ environment.logo }}" alt="">
                 </a>
             {% endif %}
         </div>

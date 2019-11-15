@@ -4,6 +4,10 @@
 .hide-table-td {
     display: none;
 }
+.nav>li>a:focus,
+.nav>li>a:hover {
+    background-color: transparent !important;
+}
 
 .treemap-tooltip {
     bottom: 0;
