@@ -5,7 +5,7 @@
 <!--start Footer-->
 <footer class="footer">
     <div class="footer_row">
-        <a href="{{ environment.logoHref }}" class="footer_logo"><img src="{{ asset('/img/AbrePRLogo.png') }}" alt=""></a>
+        <a href="{{ environment.logoHref }}" class="footer_logo"><img src="{{ environment.logo }}" alt=""></a>
         {% if social is defined and social is not empty %}
             {{ social|raw }}
         {% endif %}
