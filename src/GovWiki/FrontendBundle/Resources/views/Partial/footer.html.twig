@@ -23,7 +23,7 @@
     </address>
     <p class="footer__sub_text">The Center for Integrity in Public Policy is a 501(c)3 non-profit public charity. PR Corp. # 317048. Federal EIN 66-0791661.
         {% if copyright is defined and copyright is not empty %}
-        <br>Copyright © {{ copyright }}.</p>
+        <br>Copyright © {{ copyright|raw }}.</p>
     {% endif %}
 
     {% if links is defined and links is not empty %}
