@@ -157,6 +157,11 @@ class MainController extends AbstractGovWikiController
             $greetingText = '';
         }
 
+        $greetingTextLinks = $translator->trans('map.greeting_text.links');
+        if ($greetingTextLinks === 'map.greeting_text.links') {
+            $greetingTextLinks = '';
+        }
+
         /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */
         $formFactory = $this->get('fos_user.change_password.form.factory');
 
@@ -164,6 +169,7 @@ class MainController extends AbstractGovWikiController
         $params = [
             'map' => json_encode($map),
             'greetingText' => $greetingText,
+            'greetingTextLinks' => $greetingTextLinks,
             'years' => $years,
             'currentYear' => $currentYear,
         ];
@@ -187,6 +193,8 @@ class MainController extends AbstractGovWikiController
 
             $params['form'] = $form->createView();
         }
+
+        $params['environment'] = $environment;
 
         return $this->render('GovWikiFrontendBundle:Main:map.html.twig', $params);
     }

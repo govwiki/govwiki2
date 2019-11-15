@@ -1,0 +1,50 @@
+<div class="col-sm-12 col-md-12 col-lg-12">
+
+    {# Map wrapper #}
+    <div id="map_wrap">
+
+        {# Preloader #}
+        <div class="loader"></div>
+
+        {# Notification message #}
+        <div class="mapOnProcessing">
+            <h5>Please wait, map recently created</h5>
+            <h5>Please refresh page later</h5>
+        </div>
+
+        {# Legend #}
+        <ul id='menu'>
+
+            {% if 'altTypes' in environment.map.legendTypes %}
+                <li class="legend-header">
+                    <span>{{ 'map.select.types'|trans }}:</span>
+                    {#<span>Select type(s):</span>#}
+                </li>
+            {% endif %}
+
+        </ul>
+
+        {# Map #}
+        <div id="map"></div>
+
+    </div>
+
+</div>
+
+{# Intro text #}
+<div class="col-sm-12 col-md-12 col-lg-12">
+
+    <div class="intro-text">
+        {{- greetingText|raw -}}
+        {% if environment == 'Puerto Rico' %}
+            <p><a href="{{ path('download_all_data') }}">
+                    {% if app.request.locale == 'es' %}
+                        Descargar datos del sitio web
+                    {% else %}
+                        Download web site data
+                    {% endif %}
+                </a></p>
+        {% endif %}
+    </div>
+
+</div>

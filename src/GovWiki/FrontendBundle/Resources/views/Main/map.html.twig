@@ -1,75 +1,91 @@
 {% extends "GovWikiFrontendBundle:Layout:main.html.twig" %}
 
 {% block main %}
-    <section class="mapController">
-
-        <div class="row">
-            {# Typeahead Search #}
-
-            {% if hasElectedOfficials %}
-                {#
-
-                    Current environment has elected officials in government.
-                    Show not only government search but also elected official
-                    search.
-
-                #}
-                <div class="typeahead_wrap col-md-6 col-lg-5">
-                    <input id="search_government" type="text" placeholder="{{ 'map.government.name'|trans }}" class="text-uppercase typeahead_government form-control" disabled>
-                    {#<input id="search_government" type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" disabled>#}
-                </div>
-                <div class="typeahead_wrap col-md-6 col-lg-5">
-                    <input id="search_elected" type="text" placeholder="Loading the list of elected officials" class="text-uppercase typeahead_elected form-control" disabled>
-                </div>
-
-                <div class="col-md-6 col-lg-5">
-                    <p class="text-center text-nowrap hidden-xs hidden-sm">
-                        {{ 'map.type_part_agency_name'|trans }}
-                        {#Type part of the agency's name#}
-                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowUp.gif') }}" style="width:40px">
-                        {{ 'map.click_on_map'|trans }}
-                        {#or click it on the map#}
-                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowDown.gif') }}" style="width:40px">
-                    </p>
-                </div>
-                <div class="col-md-6 col-lg-5">
-                    <p class="text-nowrap hidden-xs hidden-sm" style="margin-left: 8%">
-                        Type part of the official's name
-                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowUp.gif') }}" style="width:40px">
-                    </p>
-                </div>
-            {% else %}
-                {#
-
-                    Environment hasn't any elected official, show only
-                    government search.
-
-                #}
-                <div class="col-md-6 col-lg-5">
-                    <div class="typeahead_wrap">
-                        <input id="search_government" type="text" placeholder="{{ 'map.government.name'|trans }}" class="text-uppercase typeahead_government form-control" disabled>
-                        {#<input id="search_government" type="text" placeholder="Government name" class="text-uppercase typeahead_government form-control" disabled>#}
-                    </div>
-                    <p class="text-center text-nowrap hidden-xs hidden-sm">
-                        {{ 'map.type_part_agency_name'|trans }}
-                        {#Type part of the agency's name#}
-                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowUp.gif') }}" style="width:40px">
-                        {{ 'map.click_on_map'|trans }}
-                        {#or click it on the map#}
-                        <img src="{{ asset('bundles/govwikifrontend/img/ArrowDown.gif') }}" style="width:40px">
-                    </p>
-                </div>
-            {% endif %}
-
-
+    <!--start section.introduction-->
+    <section class="introduction mapController">
+        <div class="row_caption">
+            <h1 class="caption">{{ environment.name }}</h1>
         </div>
 
-        <div class="row">
-            {{ include('@GovWikiFrontend/Partial/Main/'~ environment.map.position ~'.html.twig') }}
+        <div class="row__sub_caption">
+            <h5 class="sub_caption">{{ 'home.sub.caption'|trans }}</h5>
+            <div class="group_select">
+                {% if years is defined and years|length > 1 %}
+                    <select id="year-selector" class="select_years">
+                        {%- if (app.request.attributes.get('_route') ==
+                            'map') -%}
+                        <option value="latest" {% if (currentYear == 'latest') -%}selected{%- endif -%}>
+                            {%- endif -%}
+                            {%- spaceless -%}
+                                Latest
+                            {%- endspaceless -%}
+                        </option>
+                        {% for year in years %}
+                            <option value="{{ year }}" {%-
+                                if (currentYear == year)
+                            -%}
+                            selected
+                                    {%- endif -%}>
+                                {{- year -}}
+                            </option>
+                        {% endfor %}
+                    </select>
+                {% endif %}
+            </div>
         </div>
+
+        <p class="description">{{ 'home.description'|trans }}</p>
+
+        {# Typeahead Search #}
+
+        {% if hasElectedOfficials %}
+            {#
+
+                Current environment has elected officials in government.
+                Show not only government search but also elected official
+                search.
+
+            #}
+
+            <div class="row__group_search typeahead_wrap">
+                <div class="group_search">
+
+                    <span class="title">{{'home.search.map.form'|trans}}</span>
+                    <input id="search_government" type="text" placeholder="{{ 'map.government.name'|trans }}" class="typeahead_government form-control">
+                    <span class="line"></span>
+                </div>
+            </div>
+
+            <div class="row__group_search typeahead_wrap">
+                <div class="group_search">
+                    <span class="title">{{'home.search.map.form'|trans}}</span>
+                    <input id="search_elected" type="text" placeholder="Loading the list of elected officials" class="typeahead_elected form-control">
+                    <span class="line"></span>
+                </div>
+            </div>
+        {% else %}
+            {#
+
+                Environment hasn't any elected official, show only
+                government search.
+
+            #}
+
+            <div class="row__group_search typeahead_wrap">
+                <div class="group_search">
+
+                    <span class="title">{{'home.search.map.form'|trans}}</span>
+                    <input id="search_government" type="text" placeholder="{{ 'map.government.name'|trans }}" class="typeahead_government form-control">
+                    <span class="line"></span>
+                </div>
+            </div>
+
+        {% endif %}
+
+        {{ include('@GovWikiFrontend/Partial/Main/'~ environment.map.position ~'.html.twig') }}
 
     </section>
-
+    <!--end section.introduction-->
 {% endblock %}
 
 
