@@ -7,14 +7,7 @@
     <div class="footer_row">
         <a href="{{ environment.logoHref }}" class="footer_logo"><img src="{{ asset('/img/AbrePRLogo.png') }}" alt=""></a>
         {% if social is defined and social is not empty %}
-            <ul class="footer_networks">
-                <li><a href="https://www.facebook.com/AbrePuertoRico" target="_blank" title="Facebook"><img src="{{ asset('/img/network/02_facebook.png') }}" class="icon_network"></a></li>
-                <li> <a href="https://twitter.com/abrepuertorico" target="_blank" title="Twitter"><img src="{{ asset('/img/network/01_twitter.png') }}" class="icon_network"></a></li>
-                <li><a href="#"><img src="{{ asset('/img/network/03_youtube.png') }}" class="icon_network"></a></li>
-                <li><a href="#"><img src="{{ asset('/img/network/07_linkedin.png') }}" class="icon_network"></a></li>
-                <li><a href="http://plus.google.com/communities/102227212053653047640"><img src="{{ asset('/img/network/14_google+.png') }}" class="icon_network"></a></li>
-                <li><a href="#"><img src="{{ asset('/img/network/15_tumblr.png') }}" class="icon_network"></a></li>
-            </ul>
+            {{ links|raw }}
         {% endif %}
     </div>
     <address class="footer_address">
