@@ -322,8 +322,7 @@
                     </ul>
                 </li>
             {%- else -%}
-                <li class="clearfix"
-                        {{ loop.first ? 'class="active"' -}}>
+                <li class="col-lg-3 {{ loop.first ? 'active' -}}">
                     <a class="tabs tab_{{ slug|lower }}"
                        href="#{{ slug }}" aria-controls="{{ slug }}"
                        role="tab" data-toggle="tab"
