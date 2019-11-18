@@ -318,8 +318,7 @@
                     </ul>
                 </li>
             {%- else -%}
-                <li class="col-lg-3"
-                        {{ loop.first ? 'class="active"' -}}>
+                <li class="col-lg-3 {{ loop.first ? 'active' -}}">
                     <a href="#{{ slug }}" data-toggle="tab">
                         {{- ('groups.group_id_'~tab.id)|trans -}}
                     </a>

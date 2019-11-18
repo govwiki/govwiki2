@@ -12,7 +12,14 @@
 .treemap-tooltip {
     bottom: 0;
     max-height: 45px;
-    min-height: 45px;
+}
+.popover.bottom {
+    height: 250px;
+    overflow: auto;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background: #fff!important;
 }
 
 .wrapper {
@@ -172,7 +179,7 @@
     padding: 17px 0;
 }
 
-.header_row {
+.header .row_header {
     -webkit-box-pack: justify;
     -webkit-justify-content: space-between;
     -ms-flex-pack: justify;
@@ -181,6 +188,7 @@
     -webkit-align-items: flex-end;
     -ms-flex-align: end;
     align-items: flex-end;
+    flex-wrap: nowrap;
 }
 
 .header_logo .logo {
@@ -795,6 +803,10 @@
     letter-spacing: .4px;
     text-decoration: none;
     position: relative;
+    border-radius: none!important;
+    border: none!important;
+    box-shadow: none!important;
+    background: none!important;
 }
 
 .financial__navbar .list_navbar li a:before {
@@ -1143,6 +1155,12 @@
 }
 
 @media screen and (max-width: 767px) {
+    .popover.bottom {
+        height: 180px;
+        overflow: auto;
+        left: auto!important;
+        right: 0!important;
+    }
     .wrapper_container {
         padding: 0 15px 350px;
     }
@@ -1280,6 +1298,10 @@
     }
 
     .financial__navbar {
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 555;
         margin-top: 5px;
         margin-bottom: 25px;
     }

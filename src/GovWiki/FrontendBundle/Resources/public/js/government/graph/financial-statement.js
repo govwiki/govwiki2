@@ -300,13 +300,13 @@ function expendituresTree() {
  * #Financial_Statements (.chart-controls .btn)
  */
 function handlerSwitchChart() {
+
   hideChartGroup('tree-charts', false);
   hideChartGroup('pie-charts', true);
   hideChartGroup('compare-charts', true);
 
   $('#Financial_Statements').on('click', '.chart-controls .btn', function click() {
     var chartType = this.getElementsByTagName('input')[0].id;
-
     if (chartType === 'chart') {
       hideTableGroup('financialTable', true);
       hideTableGroup('compareTables', false);
