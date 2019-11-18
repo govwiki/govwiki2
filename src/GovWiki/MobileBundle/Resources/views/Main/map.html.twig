@@ -51,7 +51,7 @@
                 <div class="group_search">
 
                     <span class="title">{{'home.search.map.form'|trans}}</span>
-                    <input id="search_government" type="search" placeholder="{{ 'map.government.name'|trans }}" class="typeahead_government form-control">
+                    <input id="search_government" type="text" placeholder="{{ 'map.government.name'|trans }}" class="typeahead_government form-control">
                     <span class="line"></span>
                 </div>
             </div>
@@ -59,7 +59,7 @@
             <div class="row__group_search typeahead_wrap">
                 <div class="group_search">
                     <span class="title">{{'home.search.map.form'|trans}}</span>
-                    <input id="search_elected" type="search" placeholder="Loading the list of elected officials" class="typeahead_elected form-control">
+                    <input id="search_elected" type="text" placeholder="Loading the list of elected officials" class="typeahead_elected form-control">
                     <span class="line"></span>
                 </div>
             </div>
@@ -75,7 +75,7 @@
                 <div class="group_search">
 
                     <span class="title">{{'home.search.map.form'|trans}}</span>
-                    <input id="search_government" type="search" placeholder="{{ 'map.government.name'|trans }}" class="typeahead_government form-control">
+                    <input id="search_government" type="text" placeholder="{{ 'map.government.name'|trans }}" class="typeahead_government form-control">
                     <span class="line"></span>
                 </div>
             </div>
@@ -133,12 +133,13 @@
         window.gw.map = '{{ map | escape('js') }}';
         window.gw.environment = '{{ environment|cartoDbDataset }}';
         window.gw.urls = {};
-        window.gw.urls.search = '{{ path('govwiki_api_v1_search_search') }}';
+        window.gw.urls.search_government = '{{ path('govwiki_api_v1_government_search') }}';
+        window.gw.urls.search_elected = '{{ path('govwiki_api_v1_electedofficial_search') }}';
     </script>
 
     <script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
     {#<script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.uncompressed.js"></script>#}
-    <script src="/js/mobile/common.js"></script>
-    <script src="/js/mobile/map.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/map.js"></script>
 
 {% endblock %}
