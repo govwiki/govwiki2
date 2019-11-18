@@ -11,15 +11,15 @@
 
             <div class="row_caption">
                 <h1 class="caption">{{government.name}}</h1>
-                {% if government.audit_url is defined and government.audit_url %}
-                    <a href="{{government.audit_url}}" class="btn_audit">
-                        Audit <span class="icon">A</span>
-                    </a>
-                {% elseif government.latestAuditUrl is defined%}
-                    <a href="{{government.latestAuditUrl.link}}" class="btn_audit">
-                        Audit <span class="icon">A</span>
-                    </a>
-                {% endif %}
+{#                {% if government.audit_url is defined and government.audit_url %}#}
+{#                    <a href="{{government.audit_url}}" class="btn_audit">#}
+{#                        Audit <span class="icon">A</span>#}
+{#                    </a>#}
+{#                {% elseif government.latestAuditUrl is defined%}#}
+{#                    <a href="{{government.latestAuditUrl.link}}" class="btn_audit">#}
+{#                        Audit <span class="icon">A</span>#}
+{#                    </a>#}
+{#                {% endif %}#}
             </div>
 
             {# Begin Badge block #}
