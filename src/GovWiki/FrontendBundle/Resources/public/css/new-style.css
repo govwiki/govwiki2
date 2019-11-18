@@ -11,6 +11,8 @@
 
 .treemap-tooltip {
     bottom: 0;
+    max-height: 45px;
+    min-height: 45px;
 }
 
 .wrapper {
