@@ -294,7 +294,10 @@
                 </li>
             {%- else -%}
                 <li class="col-lg-3 {{ loop.first ? 'active' -}}">
-                    <a href="#{{ slug }}" data-toggle="tab" class="chart-controls btn">
+                    <a class="tabs tab_{{ slug|lower }}"
+                       href="#{{ slug }}" aria-controls="{{ slug }}"
+                       role="tab" data-toggle="tab"
+                       data-tabname="{{ tab.name }}">
                         {{- ('groups.group_id_'~tab.id)|trans -}}
                     </a>
                 </li>
