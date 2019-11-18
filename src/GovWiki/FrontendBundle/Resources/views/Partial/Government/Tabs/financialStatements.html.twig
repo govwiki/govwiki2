@@ -6,7 +6,7 @@
 <div class="financial_filter__row">
     {# Filter #}
     <div class="filter_funds">
-        <span class="filter_funds__title">Visualize by:</span>
+        <span class="filter_funds__title">{{ 'format.filter.funds'|trans }}</span>
         <div class="group_select">
             <select id="visualize" class="select_total">
                 {% for option, key in filters %}
@@ -18,7 +18,7 @@
 
     {# Chart Control #}
     <div class="filter_charts chart-controls">
-        <span class="filter_charts__title">Visualize as:</span>
+        <span class="filter_charts__title">{{ 'format.filter.charts'|trans }}</span>
         <div class="filter_charts__group btn-group" data-toggle="buttons">
             <label class="btn btn_filter active">
                 <input type="radio" name="options" id="tree-charts" autocomplete="off" checked> {{ 'general.findata.main.tree_charts'|trans }}

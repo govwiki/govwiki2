@@ -17,7 +17,7 @@
 
 
 <div class="badge_section">
-    <h3 class="badge_section__title">FINANCIAL PERFORMANCE GRADE</h3>
+    <h3 class="badge_section__title">{{ 'format.badge'|trans }}</h3>
     <div class="row badge_section__row">
         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12 badge_box">
 
@@ -29,9 +29,14 @@
 
             {% if financial_health_ranking is defined and financial_health_ranking is not empty%}
                 <div class="ranking">
-                    <span class="ranking_title">Financial Health Ranking</span>
+                    <span class="ranking_title">{{ 'format.ranking.title'|trans }}</span>
                     <div class="ranking_numbers">
-                        <span class="active" style="color: #00B9C4;">{{ financial_health_ranking }}</span> of 100
+                        <span class="active" style="color: #00B9C4;">{{ financial_health_ranking }}</span>
+
+                        {% if government.ranks is defined and government.ranks.total_unrestricted_net_position_total_assets_rank is defined%}
+                            of {{ government.ranks.total_unrestricted_net_position_total_assets_rank['max'] }}
+                        {% endif %}
+
                     </div>
                 </div>
             {% endif %}

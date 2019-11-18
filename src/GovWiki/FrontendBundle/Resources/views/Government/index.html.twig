@@ -76,6 +76,7 @@
                 </div>
             {% endfor %}
 
+            {# Tabs control #}
             <nav class="financial__navbar">
                 <ul class="nav list_navbar">
                     {%- if (tabs is defined) and (tabs is not empty) -%}
@@ -237,7 +238,6 @@
                 const KEY_TOTAL_GOV_FUNDS = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_TOTAL_GOV_FUNDS')) }}';
                 const KEY_OTHER_FUNDS     = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_OTHER_FUNDS')) }}';
                 const KEY_GENERAL_FUNDS   = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_GENERAL_FUNDS')) }}';
-                const KEY_NO_CHOICE       = '{{ (constant('GovWiki\\FrontendBundle\\Helpers\\FinancialStatements::KEY_NO_CHOICE')) }}';
 
                 switch ($class) {
                     case KEY_TOTAL_GOV_FUNDS:
@@ -255,7 +255,7 @@
                         $addElemClass    = KEY_GENERAL_FUNDS;
 
                         break;
-                    case KEY_NO_CHOICE:
+                    default:
                         $removeClasses = [KEY_TOTAL_GOV_FUNDS, KEY_OTHER_FUNDS, KEY_GENERAL_FUNDS];
 
                         $removeClasses.forEach(function (element) {
@@ -322,8 +322,12 @@
                     </ul>
                 </li>
             {%- else -%}
-                <li class="col-lg-3 {{ loop.first ? 'active' -}}">
-                    <a href="#{{ slug }}" data-toggle="tab">
+                <li class="clearfix"
+                        {{ loop.first ? 'class="active"' -}}>
+                    <a class="tabs tab_{{ slug|lower }}"
+                       href="#{{ slug }}" aria-controls="{{ slug }}"
+                       role="tab" data-toggle="tab"
+                       data-tabname="{{ tab.name }}">
                         {{- ('groups.group_id_'~tab.id)|trans -}}
                     </a>
                 </li>
