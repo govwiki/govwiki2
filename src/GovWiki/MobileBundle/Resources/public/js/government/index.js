@@ -292,15 +292,6 @@ function gotoTab($mobileTab) {
   window.scrollBy(0, -45);
 }
 
-// Sticky header.
-// $(window).scroll(function windowScroll() {
-//   if (window.pageYOffset > 147) {
-//     $mobileNav.addClass("nav_fixed");
-//   } else {
-//     $mobileNav.removeClass("nav_fixed");
-//   }
-// });
-
 // Init tooltip.
 $('[data-toggle=tooltip]').tooltip({
   trigger: 'click'
