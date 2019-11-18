@@ -15,7 +15,7 @@
                     <a href="{{government.audit_url}}" class="btn_audit">
                         Audit <span class="icon">A</span>
                     </a>
-                {% else %}
+                {% elseif government.latestAuditUr is defined%}
                     <a href="{{government.latestAuditUrl.link}}" class="btn_audit">
                         Audit <span class="icon">A</span>
                     </a>
