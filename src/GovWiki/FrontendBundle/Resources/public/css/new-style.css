@@ -12,6 +12,10 @@
 .governmentController .statistics-table thead > .statistics-row > td, .governmentController .statistics-table tbody > .statistics-row > td {
     padding: 8px!important;
 }
+.mapController .twitter-typeahead {
+    padding-left: 0;
+    padding-right: 0;
+}
 
 .treemap-tooltip {
     bottom: 0;
