@@ -9,6 +9,10 @@
     background-color: transparent !important;
 }
 
+.governmentController .statistics-table thead > .statistics-row > td, .governmentController .statistics-table tbody > .statistics-row > td {
+    padding: 8px!important;
+}
+
 .treemap-tooltip {
     bottom: 0;
     max-height: 45px;
@@ -777,6 +781,10 @@
     display: -ms-flexbox;
     display: flex;
     list-style: none;
+}
+.financial__navbar .list_navbar.nav_fixed {
+    position: relative!important;
+    z-index: 5;
 }
 
 .financial__navbar .list_navbar li {
