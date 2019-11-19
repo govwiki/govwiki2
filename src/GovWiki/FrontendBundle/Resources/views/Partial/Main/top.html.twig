@@ -1,69 +1,64 @@
-<!--start section.home_content-->
-<section class="home_content">
+<div class="home_content__map">
+    <h4 class="title">SELECT A MUNICIPALITY FROM THE MAP</h4>
+    <div class="map_area" style="height: 450px; background: #f1f1f1;">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                {# Map wrapper #}
+                <div id="map_wrap">
 
-    <div class="home_content__map">
-        <h4 class="title">SELECT A MUNICIPALITY FROM THE MAP</h4>
-        <div class="map_area" style="height: 450px; background: #f1f1f1;">
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    {# Map wrapper #}
-                    <div id="map_wrap">
+                    {# Preloader #}
+                    <div class="loader"></div>
 
-                        {# Preloader #}
-                        <div class="loader"></div>
-
-                        {# Notification message #}
-                        <div class="mapOnProcessing">
-                            <h5>Please wait, map recently created</h5>
-                            <h5>Please refresh page later</h5>
-                        </div>
-
-                        {# Legend #}
-                        <ul id='menu'>
-
-                            {% if 'altTypes' in environment.map.legendTypes %}
-                                <li class="legend-header">
-                                    <span>{{ 'map.select.types'|trans }}:</span>
-                                    {#<span>Select type(s):</span>#}
-                                </li>
-                            {% endif %}
-
-                        </ul>
-
-                        {# Map #}
-                        <div id="map"></div>
-
+                    {# Notification message #}
+                    <div class="mapOnProcessing">
+                        <h5>Please wait, map recently created</h5>
+                        <h5>Please refresh page later</h5>
                     </div>
+
+                    {# Legend #}
+                    <ul id='menu'>
+
+                        {% if 'altTypes' in environment.map.legendTypes %}
+                            <li class="legend-header">
+                                <span>{{ 'map.select.types'|trans }}:</span>
+                                {#<span>Select type(s):</span>#}
+                            </li>
+                        {% endif %}
+
+                    </ul>
+
+                    {# Map #}
+                    <div id="map"></div>
+
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <br>
-    <br>
+<br>
+<br>
 
-    <div class="row">
-        {# Intro text #}
-        <div class="col-sm-12 col-md-12 col-lg-12">
+<div class="row">
+    {# Intro text #}
+    <div class="col-sm-12 col-md-12 col-lg-12">
 
-            {{- greetingText|raw -}}
+        {{- greetingText|raw -}}
 
-            <div class="download_links">
-                <h3 class="download_links__caption">Downloads</h3>
-                {% if environment == 'Puerto Rico' %}
-                    <a class="link" href="{{ path('download_all_data') }}">
-                            {% if app.request.locale == 'es' %}
-                                Descargar datos del sitio web
-                            {% else %}
-                                Download web site data
-                            {% endif %}
-                        </a>
-                {% endif %}
+        <div class="download_links">
+            <h3 class="download_links__caption">Downloads</h3>
+            {% if environment == 'Puerto Rico' %}
+                <a class="link" href="{{ path('download_all_data') }}">
+                        {% if app.request.locale == 'es' %}
+                            Descargar datos del sitio web
+                        {% else %}
+                            Download web site data
+                        {% endif %}
+                    </a>
+            {% endif %}
 
-                {{- greetingTextLinks|raw -}}
-            </div>
+            {{- greetingTextLinks|raw -}}
         </div>
     </div>
+</div>
 
-</section>
-<!--end section.home_content-->

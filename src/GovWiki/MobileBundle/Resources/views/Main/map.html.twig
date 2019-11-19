@@ -2,7 +2,7 @@
 
 {% block main %}
     <!--start section.introduction-->
-    <section class="introduction mapController">
+    <section class="home_content introduction mapController">
         <div class="row_caption">
             <h1 class="caption">{{ environment.name }}</h1>
         </div>
@@ -103,6 +103,29 @@
             {# Map #}
             <div id="map"></div>
 
+        </div>
+
+        <div class="row">
+            {# Intro text #}
+            <div class="col-sm-12 col-md-12 col-lg-12">
+
+                {{- greetingText|raw -}}
+
+                <div class="download_links">
+                    <h3 class="download_links__caption">Downloads</h3>
+                    {% if environment == 'Puerto Rico' %}
+                        <a class="link" href="{{ path('download_all_data') }}">
+                            {% if app.request.locale == 'es' %}
+                                Descargar datos del sitio web
+                            {% else %}
+                                Download web site data
+                            {% endif %}
+                        </a>
+                    {% endif %}
+
+                    {{- greetingTextLinks|raw -}}
+                </div>
+            </div>
         </div>
 
     </section>
