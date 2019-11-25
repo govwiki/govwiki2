@@ -228,7 +228,6 @@ webpackJsonp([0,2],[
 /***/ function(module, exports) {
 
 	var data = JSON.parse(window.gw.government);
-	
 	module.exports = {
 	    data: data
 	};
@@ -451,7 +450,7 @@ webpackJsonp([0,2],[
 	            rows.push(r);
 	        }
 	    }
-	
+
 	    vis_data.addRows(rows);
 	    options = {
 	        'title': 'Total Revenues',
@@ -605,7 +604,7 @@ webpackJsonp([0,2],[
 	 * #total-expenditures-tree
 	 */
 	function financialStatementsTree_expenditures() {
-	
+
 	    var chart, item, len3, options, p, r, ref1, ExpendituresDataTable, RevenuesDataTable, vis_data;
 	
 	    ExpendituresDataTable = [
@@ -715,7 +714,7 @@ webpackJsonp([0,2],[
 	        function hideChartGroup(chartGroup, hide) {
 	
 	            var display = hide ? {display: 'none'} : {display: 'block'};
-	
+
 	            if (chartGroup == 'pie-charts') {
 	                $('#total-expenditures-pie').css(display);
 	                $('#total-revenue-pie').css(display);

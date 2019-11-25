@@ -10,6 +10,20 @@ function init() {
   handlerSwitchChart();
   revenuesTree();
   expendituresTree();
+  handleChangeFilter();
+}
+
+/**
+ * Visualizes graphics by the selected filter
+ */
+function handleChangeFilter() {
+  $('#visualize').on('change', function change(e) {
+    var visualizeBy = e.target.value;
+    revenuePie(visualizeBy);
+    expendituresPie(visualizeBy);
+    revenuesTree(visualizeBy);
+    expendituresTree(visualizeBy);
+  });
 }
 
 function renderTooltip(caption, totalfunds, totalAmount) {
@@ -17,11 +31,10 @@ function renderTooltip(caption, totalfunds, totalAmount) {
   percent = percent.toFixed(2);
   return '' + caption + ': ' + numeral(totalfunds).format('$0,0') + ' (' + percent + '%)';
 }
-
 /**
  * #total-revenue-pie
  */
-function revenuePie() {
+function revenuePie(visualizeBy) {
   var subCatValue;
   var subCategory;
   var rKey;
@@ -46,7 +59,7 @@ function revenuePie() {
 
   // Prepare Revenues data to Google Tree Chart
   for (rKey in revenues) {
-    if (revenues.hasOwnProperty(rKey) && (revenues[rKey].caption !== 'Total Revenues')) {
+    if (revenues.hasOwnProperty(rKey) && (revenues[rKey].caption !== 'Total revenues')) {
       subCategory = revenues[rKey];
       subCatValue = getSubCatValue(subCategory);
       if (!subCatValue) {
@@ -58,9 +71,9 @@ function revenuePie() {
   }
 
   for (key in revenues) {
-    if (revenues.hasOwnProperty(key) && (revenues[key].caption !== 'Total Revenues')) {
+    if (revenues.hasOwnProperty(key) && (revenues[key].caption !== 'Total revenues')) {
       caption = revenues[key].translatedCaption;
-      totalfunds = parseInt(revenues[key].totalfunds, 10);
+      totalfunds = parseInt(revenues[key][visualizeBy], 10);
       tooltip = renderTooltip(caption, totalfunds, totalAmount);
       r = [caption, totalfunds, tooltip];
       rows.push(r);
@@ -94,13 +107,13 @@ function revenuePie() {
   };
 
   chart = new google.visualization.PieChart(document.getElementById(container));
+
   chart.draw(visData, options);
 }
-
 /**
  * #total-expenditures-pie
  */
-function expendituresPie() {
+function expendituresPie(visualizeBy) {
   var subCatValue;
   var subCategory;
   var tooltip;
@@ -125,7 +138,7 @@ function expendituresPie() {
 
   // Prepare Expenditures data to Google Tree Chart
   for (rKey in expenditures) {
-    if (expenditures.hasOwnProperty(rKey) && (expenditures[rKey].caption !== 'Total Expenditures')) {
+    if (expenditures.hasOwnProperty(rKey) && (expenditures[rKey].caption !== 'Total expenditures')) {
       subCategory = expenditures[rKey];
       subCatValue = getSubCatValue(subCategory);
       if (!subCatValue) {
@@ -137,9 +150,9 @@ function expendituresPie() {
   }
 
   for (key in expenditures) {
-    if (expenditures.hasOwnProperty(key) && (expenditures[key].caption !== 'Total Expenditures')) {
+    if (expenditures.hasOwnProperty(key) && (expenditures[key].caption !== 'Total expenditures')) {
       caption = expenditures[key].translatedCaption;
-      totalfunds = parseInt(expenditures[key].totalfunds, 10);
+      totalfunds = parseInt(expenditures[key][visualizeBy], 10);
       tooltip = renderTooltip(caption, totalfunds, totalAmount);
       r = [caption, totalfunds, tooltip];
       rows.push(r);
@@ -175,13 +188,11 @@ function expendituresPie() {
   chart = new google.visualization.PieChart(document.getElementById(container));
   chart.draw(visData, options);
 }
-
-
 /**
  * TODO: Refactor
  * #total-revenue-tree
  */
-function revenuesTree() {
+function revenuesTree(visualizeBy) {
   var selector = '#total-revenue-tree';
   var rKey;
   var subCategory;
@@ -201,9 +212,9 @@ function revenuesTree() {
 
   // Prepare Revenues data to Google Tree Chart
   for (rKey in RevenuesData) {
-    if (RevenuesData.hasOwnProperty(rKey) && (RevenuesData[rKey].caption !== 'Total Revenues')) {
+    if (RevenuesData.hasOwnProperty(rKey) && (RevenuesData[rKey].caption !== 'Total revenues')) {
       subCategory = RevenuesData[rKey];
-      subCatValue = parseInt(getSubCatValue(subCategory), 10);
+      subCatValue = parseInt(getSubCatValue(subCategory, visualizeBy), 10);
 
       if (!subCatValue) {
         continue;
@@ -235,12 +246,11 @@ function revenuesTree() {
     totalAmount: totalAmount
   })
 }
-
 /**
  * TODO: Refactor
  * #total-expenditures-tree
  */
-function expendituresTree() {
+function expendituresTree(visualizeBy) {
   var selector = '#total-expenditures-tree';
   var subCatValue;
   var subCategory;
@@ -261,9 +271,9 @@ function expendituresTree() {
 
   // Prepare ExpendituresData data to Google Tree Chart
   for (eKey in ExpendituresData) {
-    if (ExpendituresData.hasOwnProperty(eKey) && (ExpendituresData[eKey].caption !== 'Total Expenditures')) {
+    if (ExpendituresData.hasOwnProperty(eKey) && (ExpendituresData[eKey].caption !== 'Total expenditures')) {
       subCategory = ExpendituresData[eKey];
-      subCatValue = parseInt(getSubCatValue(subCategory), 10);
+      subCatValue = parseInt(getSubCatValue(subCategory, visualizeBy), 10);
 
       if (!subCatValue) {
         continue;
@@ -306,6 +316,10 @@ function handlerSwitchChart() {
   hideChartGroup('compare-charts', true);
 
   $('#Financial_Statements').on('click', '.chart-controls .btn', function click() {
+
+    var filterSelect = document.getElementById('visualize');
+    var filterName = filterSelect.options[filterSelect.selectedIndex].value;
+
     var chartType = this.getElementsByTagName('input')[0].id;
     if (chartType === 'chart') {
       hideTableGroup('financialTable', true);
@@ -315,8 +329,8 @@ function handlerSwitchChart() {
       hideChartGroup('tree-charts', true);
       if (!chartStatus.revenuePie.init ||
         !chartStatus.expendituresPie.init) {
-        revenuePie();
-        expendituresPie();
+        revenuePie(filterName);
+        expendituresPie(filterName);
       }
       $('#charts-row').css('margin-bottom', '0');
     } else if (chartType === 'tree-charts') {
@@ -327,8 +341,8 @@ function handlerSwitchChart() {
       hideChartGroup('tree-charts', false);
       if (!chartStatus.expendituresTree.init ||
         !chartStatus.revenuesTree.init) {
-        expendituresTree();
-        revenuesTree();
+        revenuesTree(filterName);
+        expendituresTree(filterName);
       }
       $('#charts-row').css('margin-bottom', '52px');
     } else if (chartType === 'compare-charts') {
@@ -339,8 +353,8 @@ function handlerSwitchChart() {
       hideChartGroup('tree-charts', true);
       if (!chartStatus.expendituresTree.init ||
         !chartStatus.revenuesTree.init) {
-        expendituresTree();
-        revenuesTree();
+        revenuesTree(filterName);
+        expendituresTree(filterName);
       }
       $('#charts-row').css('margin-bottom', '0');
     }
@@ -397,19 +411,20 @@ function handlerSwitchChart() {
     }
   }
 }
-
 /**
  * TODO: Hardcoded!! Please ask the question to client, which field must be there?
  */
-function getSubCatValue(subCategory) {
+function getSubCatValue(subCategory, visualizeBy ) {
+  var filterName = typeof visualizeBy !== 'undefined' ?  visualizeBy : 'totalfunds';
+
   var cpySubCategory = $.extend({}, subCategory);
-  if (cpySubCategory.totalfunds) {
-    if (cpySubCategory.totalfunds < 0) {
-      cpySubCategory.totalfunds = -(subCategory.totalfunds);
+
+  if (cpySubCategory[filterName]) {
+    if (cpySubCategory[filterName] < 0) {
+      cpySubCategory.visualizeBy = -(subCategory[filterName]);
     }
   }
-
-  return cpySubCategory.totalfunds || false;
+  return cpySubCategory[filterName] || false;
 }
 
 function drawTreemap(values, params) {
