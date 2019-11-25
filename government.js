@@ -714,8 +714,7 @@ webpackJsonp([0,2],[
 	        function hideChartGroup(chartGroup, hide) {
 	
 	            var display = hide ? {display: 'none'} : {display: 'block'};
-							console.log(display)
-	
+
 	            if (chartGroup == 'pie-charts') {
 	                $('#total-expenditures-pie').css(display);
 	                $('#total-revenue-pie').css(display);
