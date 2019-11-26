@@ -50,7 +50,6 @@ function revenuePie(visualizeBy) {
   var revenues = data.financialStatements.Revenues;
   var totalAmount = 0;
   var key;
-
   visData = new google.visualization.DataTable();
   visData.addColumn('string', 'Total Gov. Revenues');
   visData.addColumn('number', 'Total');
@@ -59,19 +58,19 @@ function revenuePie(visualizeBy) {
 
   // Prepare Revenues data to Google Tree Chart
   for (rKey in revenues) {
-    if (revenues.hasOwnProperty(rKey) && (revenues[rKey].caption !== 'Total revenues')) {
+
+    if (revenues.hasOwnProperty(rKey) && (revenues[rKey].caption.toLowerCase() !== 'total revenues')) {
       subCategory = revenues[rKey];
       subCatValue = getSubCatValue(subCategory);
       if (!subCatValue) {
         continue;
       }
-
       totalAmount += parseInt(subCatValue, 10);
     }
   }
 
   for (key in revenues) {
-    if (revenues.hasOwnProperty(key) && (revenues[key].caption !== 'Total revenues')) {
+    if (revenues.hasOwnProperty(key) && (revenues[key].caption.toLowerCase() !== 'total revenues')) {
       caption = revenues[key].translatedCaption;
       totalfunds = parseInt(revenues[key][visualizeBy], 10);
       tooltip = renderTooltip(caption, totalfunds, totalAmount);
@@ -110,6 +109,7 @@ function revenuePie(visualizeBy) {
 
   chart.draw(visData, options);
 }
+
 /**
  * #total-expenditures-pie
  */
@@ -138,7 +138,7 @@ function expendituresPie(visualizeBy) {
 
   // Prepare Expenditures data to Google Tree Chart
   for (rKey in expenditures) {
-    if (expenditures.hasOwnProperty(rKey) && (expenditures[rKey].caption !== 'Total expenditures')) {
+    if (expenditures.hasOwnProperty(rKey) && (expenditures[rKey].caption.toLowerCase() !== 'total expenditures')) {
       subCategory = expenditures[rKey];
       subCatValue = getSubCatValue(subCategory);
       if (!subCatValue) {
@@ -150,7 +150,7 @@ function expendituresPie(visualizeBy) {
   }
 
   for (key in expenditures) {
-    if (expenditures.hasOwnProperty(key) && (expenditures[key].caption !== 'Total expenditures')) {
+    if (expenditures.hasOwnProperty(key) && (expenditures[key].caption.toLowerCase() !== 'total expenditures')) {
       caption = expenditures[key].translatedCaption;
       totalfunds = parseInt(expenditures[key][visualizeBy], 10);
       tooltip = renderTooltip(caption, totalfunds, totalAmount);
@@ -212,7 +212,7 @@ function revenuesTree(visualizeBy) {
 
   // Prepare Revenues data to Google Tree Chart
   for (rKey in RevenuesData) {
-    if (RevenuesData.hasOwnProperty(rKey) && (RevenuesData[rKey].caption !== 'Total revenues')) {
+    if (RevenuesData.hasOwnProperty(rKey) && (RevenuesData[rKey].caption.toLowerCase() !== 'total revenues')) {
       subCategory = RevenuesData[rKey];
       subCatValue = parseInt(getSubCatValue(subCategory, visualizeBy), 10);
 
@@ -268,10 +268,9 @@ function expendituresTree(visualizeBy) {
   // Set treemap title.
   $('#total-expenditures-tree-title').text(data.translations.total_expenditure);
 
-
-  // Prepare ExpendituresData data to Google Tree Chart
   for (eKey in ExpendituresData) {
-    if (ExpendituresData.hasOwnProperty(eKey) && (ExpendituresData[eKey].caption !== 'Total expenditures')) {
+    if (ExpendituresData.hasOwnProperty(eKey) &&
+      (ExpendituresData[eKey].caption.toLowerCase() !== 'total expenditures')) {
       subCategory = ExpendituresData[eKey];
       subCatValue = parseInt(getSubCatValue(subCategory, visualizeBy), 10);
 
