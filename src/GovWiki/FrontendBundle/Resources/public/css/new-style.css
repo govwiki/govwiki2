@@ -22,25 +22,6 @@
     bottom: 0;
 }
 
-.svg-container {
-    display: inline-block;
-
-    width: 100%;
-    vertical-align: top;
-    overflow: hidden;
-}
-.svg-content-responsive {
-    display: inline-block;
-    top: 10px;
-    left: 0;
-}
-
-.rect {
-    position: relative;
-    stroke: steelblue;
-    stroke-width: 5px;
-}
-
 .popover.bottom {
     height: 250px;
     overflow: auto;
