@@ -56,6 +56,8 @@ function revenuePie(visualizeBy) {
   visData.addColumn({ type: 'string', role: 'tooltip' });
   rows = [];
 
+  $('#total-revenue-tree-title').text('');
+
   // Prepare Revenues data to Google Tree Chart
   for (rKey in revenues) {
 
@@ -95,7 +97,7 @@ function revenuePie(visualizeBy) {
         fontSize: 12
       }
     },
-    width: 470,
+    width: 450,
     height: 350,
     sliceVisibilityThreshold: 0,
     forceIFrame: true,
@@ -136,6 +138,8 @@ function expendituresPie(visualizeBy) {
   visData.addColumn({ type: 'string', role: 'tooltip' });
   rows = [];
 
+  $('#total-expenditures-tree-title').text('');
+
   // Prepare Expenditures data to Google Tree Chart
   for (rKey in expenditures) {
     if (expenditures.hasOwnProperty(rKey) && (expenditures[rKey].caption.toLowerCase() !== 'total expenditures')) {
@@ -175,7 +179,7 @@ function expendituresPie(visualizeBy) {
         fontSize: 12
       }
     },
-    width: 470,
+    width: 450,
     height: 350,
     sliceVisibilityThreshold: 0,
     forceIFrame: true,
