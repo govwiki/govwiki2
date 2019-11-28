@@ -8,6 +8,9 @@ Project uses:
 Before:
 1. [Install nodejs + npm](https://nodejs.org/en/)
 2. Install bower globally via npm ($npm install -g bower)
+3. Install Popper Js bower install popper.js --save
+4. Install npm i -g npx
+5. Build front npx webpack --config webpack.config.desktop.js
 
 Gulp tasks:
 - gulp install
