@@ -114,7 +114,15 @@
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
 }
-
+.revenue_form_row {
+    width: 50% !important;
+}
+.revenue_graphs_row {
+    width: 100% !important;
+}
+#total-compare-pie {
+    width: 100%;
+}
 .wrapper_container {
     padding: 0 40px 250px;
     position: relative;
@@ -1152,6 +1160,11 @@
         padding: 0 20px;
     }
 
+    .charts_item {
+        width: 90% !important;
+        margin-bottom: 10px;
+    }
+
     .financial__content .financial_table .table thead tr th {
         font-size: 14px;
         width: 160px;
@@ -1181,7 +1194,9 @@
     .wrapper_container {
         padding: 0 15px 350px;
     }
-
+    .charts_item {
+        margin-bottom: 0;
+    }
     .wrapper p {
         font-size: 14px;
     }
